@@ -50,6 +50,7 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\imran\Archives\SDK\vstsdk2.4\pluginterfaces\vst2.x;C:\Users\imran\Archives\SDK\ASIOSDK2\common;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
