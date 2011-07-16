@@ -98,6 +98,11 @@ void TestVersion()
 		VERIFY_EQUAL( MptVersion::ToNum("1.17.02.28"), 18285096 );
 		VERIFY_EQUAL( MptVersion::ToNum(MptVersion::str), MptVersion::num );
 		VERIFY_EQUAL( MptVersion::ToStr(MptVersion::num), MptVersion::str );
+		VERIFY_EQUAL( MptVersion::RemoveBuildNumber(MAKE_VERSION_NUMERIC(1,19,02,00)), MAKE_VERSION_NUMERIC(1,19,02,00));
+		VERIFY_EQUAL( MptVersion::RemoveBuildNumber(MAKE_VERSION_NUMERIC(1,18,03,20)), MAKE_VERSION_NUMERIC(1,18,03,00));
+		VERIFY_EQUAL( MptVersion::IsTestBuild(MAKE_VERSION_NUMERIC(1,18,01,13)), true);
+		VERIFY_EQUAL( MptVersion::IsTestBuild(MAKE_VERSION_NUMERIC(1,19,01,00)), false);
+		VERIFY_EQUAL( MptVersion::IsTestBuild(MAKE_VERSION_NUMERIC(1,17,02,54)), false);
 		STATIC_ASSERT( MAKE_VERSION_NUMERIC(1,17,2,28) == 18285096 );
 		STATIC_ASSERT( MAKE_VERSION_NUMERIC(1,17,02,48) == 18285128 );
 		STATIC_ASSERT( MAKE_VERSION_NUMERIC(01,17,02,52) == 18285138 );
@@ -414,19 +419,23 @@ void TestLoadFile(const CModDoc *pModDoc)
 void TestLoadSaveFile()
 //---------------------
 {
-	CString theFile = __FILE__;
-	theFile.Replace(".cpp", ".mptm");
+	CString theFile = theApp.GetAppDirPath();
+	// Only run the tests when we're in the project directory structure.
+	if(theFile.Mid(theFile.GetLength() - 6, 5) != "Debug")
+		return;
+	theFile.Delete(theFile.GetLength() - 6, 6);
+	theFile.Append("test/test.");
+
 	// Test file loading
-	CModDoc *pModDoc = (CModDoc *)theApp.OpenDocumentFile(theFile);
+	CModDoc *pModDoc = (CModDoc *)theApp.OpenDocumentFile(theFile + "mptm");
 	TestLoadFile(pModDoc);
 
 	// Test file saving
-	theFile.Replace(".mptm", ".saved.mptm");
- 	pModDoc->DoSave(theFile);
+ 	pModDoc->DoSave(theFile + "saved.mptm");
 	pModDoc->OnCloseDocument();
 	
 	// Reload the saved file and test if everything is still working correctly.
-	pModDoc = (CModDoc *)theApp.OpenDocumentFile(theFile);
+	pModDoc = (CModDoc *)theApp.OpenDocumentFile(theFile + "saved.mptm");
 	TestLoadFile(pModDoc);
 	pModDoc->OnCloseDocument();
 }

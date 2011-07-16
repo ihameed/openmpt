@@ -2035,6 +2035,7 @@ BOOL CSoundFile::ReadNote()
 			if ((pChn->dwFlags & CHN_VOLUMERAMP) // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
 			 && ((pChn->nRightVol != pChn->nNewRightVol) || (pChn->nLeftVol != pChn->nNewLeftVol)))
 			{
+				bool rampDown = (pChn->nRightVol > pChn->nNewRightVol) || (pChn->nLeftVol > pChn->nNewLeftVol);
 				LONG nRampLength = gnVolumeRampSamples;
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
