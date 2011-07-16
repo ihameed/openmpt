@@ -42,7 +42,8 @@ DWORD CSoundFile::gdwMixingFreq = 44100;
 DWORD CSoundFile::gnBitsPerSample = 16;
 // Mixing data initialized in
 UINT CSoundFile::gnAGC = AGC_UNITY;
-UINT CSoundFile::gnVolumeRampSamples = 42;		//default value
+UINT CSoundFile::gnVolumeRampInSamples = 0;		//default value
+UINT CSoundFile::gnVolumeRampOutSamples = 42;		//default value
 UINT CSoundFile::gnCPUUsage = 0;
 LPSNDMIXHOOKPROC CSoundFile::gpSndMixHook = NULL;
 PMIXPLUGINCREATEPROC CSoundFile::gpMixPluginCreateProc = NULL;
@@ -226,7 +227,8 @@ BOOL CSoundFile::InitPlayer(BOOL bReset)
 	if (gdwMixingFreq > MAX_SAMPLE_RATE) gdwMixingFreq = MAX_SAMPLE_RATE;
 	// Start with ramping disabled to avoid clicks on first read.
 	// Ramping is now set after the first read in CSoundFile::Read();
-	gnVolumeRampSamples = 0; 
+	gnVolumeRampInSamples = 0;
+	gnVolumeRampOutSamples = 0;
 	gnDryROfsVol = gnDryLOfsVol = 0;
 #ifndef NO_REVERB
 	gnRvbROfsVol = gnRvbLOfsVol = 0;
@@ -425,7 +427,8 @@ UINT CSoundFile::Read(LPVOID lpDestBuffer, UINT cbBuffer)
 		m_nBufferCount -= lCount;
 		m_lTotalSampleCount += lCount;		// increase sample count for VSTTimeInfo.
 		// Turn on ramping after first read (fix http://forum.openmpt.org/index.php?topic=523.0 )
-		gnVolumeRampSamples = CMainFrame::glVolumeRampSamples;
+		gnVolumeRampInSamples = CMainFrame::glVolumeRampInSamples;
+		gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
 	}
 MixDone:
 	if (lRead) memset(lpBuffer, (gnBitsPerSample == 8) ? 0x80 : 0, lRead * lSampleSize);
@@ -2014,6 +2017,7 @@ BOOL CSoundFile::ReadNote()
 				}
 #else
 				if (pChn->nInc >= 0xFE00) pChn->dwFlags |= CHN_NOIDO;
+				if (true) pChn->dwFlags |= CHN_NOIDO;
 #endif // FASTSOUNDLIB
 			}
 
@@ -2031,17 +2035,24 @@ BOOL CSoundFile::ReadNote()
 			if ((pChn->dwFlags & CHN_SURROUND) && (gnChannels == 2)) pChn->nNewLeftVol = - pChn->nNewLeftVol;
 			// Checking Ping-Pong Loops
 			if (pChn->dwFlags & CHN_PINGPONGFLAG) pChn->nInc = -pChn->nInc;
+
 			// Setting up volume ramp
-			if ((pChn->dwFlags & CHN_VOLUMERAMP) // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
-			 && ((pChn->nRightVol != pChn->nNewRightVol) || (pChn->nLeftVol != pChn->nNewLeftVol)))
-			{
-				bool rampDown = (pChn->nRightVol > pChn->nNewRightVol) || (pChn->nLeftVol > pChn->nNewLeftVol);
-				LONG nRampLength = gnVolumeRampSamples;
+			 // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
+			if ((pChn->dwFlags & CHN_VOLUMERAMP) && ((pChn->nRightVol != pChn->nNewRightVol) || (pChn->nLeftVol != pChn->nNewLeftVol)))	{
+				bool rampUp = (pChn->nNewRightVol > pChn->nRightVol) || (pChn->nNewLeftVol > pChn->nLeftVol);
+				LONG nRampLength, nConfiguredRampLength;
+				nRampLength = nConfiguredRampLength = rampUp ? gnVolumeRampInSamples : gnVolumeRampOutSamples;
+				//XXXih: add real support for bidi ramping here
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
+				//XXXih: jesus.
 				BOOL enableCustomRamp = pChn->pModInstrument && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM));
-				if(enableCustomRamp) nRampLength = pChn->pModInstrument->nVolRamp ? (gdwMixingFreq * pChn->pModInstrument->nVolRamp / 100000) : gnVolumeRampSamples;
-				if(!nRampLength) nRampLength = 1;
+				if (enableCustomRamp) {
+					nRampLength = pChn->pModInstrument->nVolRamp ? (gdwMixingFreq * pChn->pModInstrument->nVolRamp / 100000) : nConfiguredRampLength;
+				}
+				if (!nRampLength) {
+					nRampLength = 1;
+				}
 // -! NEW_FEATURE#0027
 				LONG nRightDelta = ((pChn->nNewRightVol - pChn->nRightVol) << VOLUMERAMPPRECISION);
 				LONG nLeftDelta = ((pChn->nNewLeftVol - pChn->nLeftVol) << VOLUMERAMPPRECISION);
@@ -2051,16 +2062,16 @@ BOOL CSoundFile::ReadNote()
 //				if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
 //				 || ((gdwSysInfo & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU))
 //				  && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50)))
-				if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
-				 || ((gdwSysInfo & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU))
-				  && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && pChn->pModInstrument->nVolRamp)))
+				if ((gdwSoundSetup & SNDMIX_DIRECTTODISK) || ((gdwSysInfo & (SYSMIX_ENABLEMMX | SYSMIX_FASTCPU)) && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && pChn->pModInstrument->nVolRamp))) {
 // -! NEW_FEATURE#0027
-				{
-					if ((pChn->nRightVol|pChn->nLeftVol) && (pChn->nNewRightVol|pChn->nNewLeftVol) && (!(pChn->dwFlags & CHN_FASTVOLRAMP)))
-					{
+					if ((pChn->nRightVol | pChn->nLeftVol) && (pChn->nNewRightVol | pChn->nNewLeftVol) && (!(pChn->dwFlags & CHN_FASTVOLRAMP)))	{
 						nRampLength = m_nBufferCount;
-						if (nRampLength > (1 << (VOLUMERAMPPRECISION-1))) nRampLength = (1 << (VOLUMERAMPPRECISION-1));
-						if (nRampLength < (LONG)gnVolumeRampSamples) nRampLength = gnVolumeRampSamples;
+						if (nRampLength > (1 << (VOLUMERAMPPRECISION-1))) {
+							nRampLength = (1 << (VOLUMERAMPPRECISION-1));
+						}
+						if (nRampLength < (LONG)nConfiguredRampLength) {
+							nRampLength = nConfiguredRampLength;
+						}
 					}
 				}
 #endif // FASTSOUNDLIB
@@ -2290,30 +2301,31 @@ int CSoundFile::GetVolEnvValueFromPosition(int position, MODINSTRUMENT* pIns) co
 VOID CSoundFile::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount)
 //---------------------------------------------------------------------------
 {
-		long delta=0;
-		long step=0;
+		long delta       = 0;
+		long step        = 0;
+		long ramp_length = 0;
 
 		if (m_nGlobalVolumeDestination != m_nGlobalVolume) { //user has provided new global volume
+			bool rampUp = m_nGlobalVolumeDestination > m_nGlobalVolume;
 			m_nGlobalVolumeDestination = m_nGlobalVolume;
-			m_nSamplesToGlobalVolRampDest = gnVolumeRampSamples;
+			ramp_length = m_nSamplesToGlobalVolRampDest = rampUp ? gnVolumeRampInSamples : gnVolumeRampOutSamples;
 		} 
 
-		if (m_nSamplesToGlobalVolRampDest>0) {	// still some ramping left to do.
+		if (m_nSamplesToGlobalVolRampDest > 0) {	// still some ramping left to do.
 			long highResGlobalVolumeDestination = static_cast<long>(m_nGlobalVolumeDestination)<<VOLUMERAMPPRECISION;
 			
 			delta = highResGlobalVolumeDestination-m_lHighResRampingGlobalVolume;
 			step = delta/static_cast<long>(m_nSamplesToGlobalVolRampDest);
 			
-			UINT maxStep = max(50, (10000/gnVolumeRampSamples+1)); //define max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
-			while (abs(step)>maxStep) {					 //if step is too big (might cause click), extend ramp length.
-				m_nSamplesToGlobalVolRampDest += gnVolumeRampSamples;
-				step = delta/static_cast<long>(m_nSamplesToGlobalVolRampDest);
+			UINT maxStep = max(50, (10000 / ramp_length + 1)); //define max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
+			while (abs(step) > maxStep) {					 //if step is too big (might cause click), extend ramp length.
+				m_nSamplesToGlobalVolRampDest += ramp_length;
+				step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
 			}
 		}
 
 		for (int pos=0; pos<lTotalSampleCount; pos++) {
-
-			if (m_nSamplesToGlobalVolRampDest>0) { //ramping required
+			if (m_nSamplesToGlobalVolRampDest > 0) { //ramping required
 				m_lHighResRampingGlobalVolume += step;
 				SoundBuffer[pos] = _muldiv(SoundBuffer[pos], m_lHighResRampingGlobalVolume, MAX_GLOBAL_VOLUME<<VOLUMERAMPPRECISION);
 				m_nSamplesToGlobalVolRampDest--;

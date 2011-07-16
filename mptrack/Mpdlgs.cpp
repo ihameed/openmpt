@@ -435,7 +435,9 @@ BEGIN_MESSAGE_MAP(COptionsPlayer, CPropertyPage)
 	//rewbs.resamplerConf
 	ON_CBN_SELCHANGE(IDC_WFIRTYPE,OnWFIRTypeChanged)
 	ON_EN_UPDATE(IDC_WFIRCUTOFF,OnSettingsChanged)
-	ON_EN_UPDATE(IDC_RAMPING,	OnSettingsChanged)
+	//XXXih: rampin/rampout
+	ON_EN_UPDATE(IDC_RAMPIN,	OnSettingsChanged)
+	ON_EN_UPDATE(IDC_RAMPOUT,	OnSettingsChanged)
 	//end rewbs.resamplerConf
 	ON_COMMAND(IDC_CHECK1,		OnSettingsChanged)
 	ON_COMMAND(IDC_CHECK2,		OnSettingsChanged)
@@ -457,7 +459,8 @@ void COptionsPlayer::DoDataExchange(CDataExchange* pDX)
 	//rewbs.resamplerConf
 	DDX_Control(pDX, IDC_WFIRTYPE,		m_CbnWFIRType);
 	DDX_Control(pDX, IDC_WFIRCUTOFF,	m_CEditWFIRCutoff);
-	DDX_Control(pDX, IDC_RAMPING,		m_CEditRamping);
+	DDX_Control(pDX, IDC_RAMPIN,		m_CEditRampIn);
+	DDX_Control(pDX, IDC_RAMPOUT,		m_CEditRampOut);
 	//end rewbs.resamplerConf
 	DDX_Control(pDX, IDC_COMBO2,		m_CbnReverbPreset);
 	DDX_Control(pDX, IDC_SLIDER1,		m_SbXBassDepth);
@@ -538,8 +541,11 @@ BOOL COptionsPlayer::OnInitDialog()
 	//rewbs.resamplerConf
 	OnResamplerChanged();
 	char s[20] = "";
-	_ltoa(CMainFrame::glVolumeRampSamples,s, 10);
-	m_CEditRamping.SetWindowText(s);
+	_ltoa(CMainFrame::glVolumeRampInSamples, s, 10);
+	m_CEditRampIn.SetWindowText(s);
+
+	_ltoa(CMainFrame::glVolumeRampOutSamples, s, 10);
+	m_CEditRampOut.SetWindowText(s);
 	//end rewbs.resamplerConf
 	return TRUE;
 }
@@ -625,7 +631,8 @@ void COptionsPlayer::OnDefaultResampling()
 	m_CbnResampling.SetCurSel(SRCMODE_POLYPHASE);
 	OnResamplerChanged();
 	m_CEditWFIRCutoff.SetWindowText("97");
-	m_CEditRamping.SetWindowText("42");
+	m_CEditRampIn.SetWindowText("0");
+	m_CEditRampOut.SetWindowText("42");
 	
 }
 
@@ -677,8 +684,10 @@ void COptionsPlayer::OnOK()
 	if (s != "")
 		CMainFrame::gdWFIRCutoff = atoi(s)/100.0;
 	//CMainFrame::gbWFIRType set in OnWFIRTypeChange
-	m_CEditRamping.GetWindowText(s);
-	CMainFrame::glVolumeRampSamples = atol(s);
+	m_CEditRampIn.GetWindowText(s);
+	CMainFrame::glVolumeRampInSamples = atol(s);
+	m_CEditRampOut.GetWindowText(s);
+	CMainFrame::glVolumeRampOutSamples = atol(s);
 	SndMixInitializeTables(); //regenerate resampling tables
 	//end rewbs.resamplerConf
 	if (pParent) pParent->SetupPlayer(dwQuality, dwSrcMode, TRUE);

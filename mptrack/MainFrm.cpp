@@ -147,7 +147,8 @@ CString CMainFrame::gcsInstallGUID = "";
 DWORD CMainFrame::gnHotKeyMask = 0;
 // Audio Setup
 //rewbs.resamplerConf
-long CMainFrame::glVolumeRampSamples = 42;
+long CMainFrame::glVolumeRampInSamples = 0;
+long CMainFrame::glVolumeRampOutSamples = 42;
 double CMainFrame::gdWFIRCutoff = 0.97;
 BYTE  CMainFrame::gbWFIRType = 7; //WFIR_KAISER4T;
 //end rewbs.resamplerConf
@@ -490,7 +491,9 @@ void CMainFrame::LoadIniSettings()
 	CSoundFile::m_nMaxMixChannels = GetPrivateProfileLong("Sound Settings", "MixChannels", MAX_CHANNELS, iniFile);
 	gbWFIRType = static_cast<BYTE>(GetPrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", 7, iniFile));
 	gdWFIRCutoff = static_cast<double>(GetPrivateProfileLong("Sound Settings", "ResamplerWFIRCutoff", 97, iniFile))/100.0;
-	glVolumeRampSamples = GetPrivateProfileLong("Sound Settings", "VolumeRampSamples", 42, iniFile);
+	//XXXih: kill the old registry entry or something
+	glVolumeRampInSamples = GetPrivateProfileLong("Sound Settings", "VolumeRampInSamples", 0, iniFile);
+	glVolumeRampOutSamples = GetPrivateProfileLong("Sound Settings", "VolumeRampOutSamples", 42, iniFile);
 
 	m_dwMidiSetup = GetPrivateProfileDWord("MIDI Settings", "MidiSetup", m_dwMidiSetup, iniFile);
 	m_nMidiDevice = GetPrivateProfileDWord("MIDI Settings", "MidiDevice", m_nMidiDevice, iniFile);
@@ -664,8 +667,10 @@ bool CMainFrame::LoadRegistrySettings()
 		RegQueryValueEx(key, "XMMSModplugResamplerWFIRType", NULL, &dwREG_DWORD, (LPBYTE)&gbWFIRType, &dwDWORDSize);
 		dwDWORDSize = sizeof(gdWFIRCutoff);
 		RegQueryValueEx(key, "ResamplerWFIRCutoff", NULL, &dwREG_DWORD, (LPBYTE)&gdWFIRCutoff, &dwDWORDSize);
-		dwDWORDSize = sizeof(glVolumeRampSamples);
-		RegQueryValueEx(key, "VolumeRampSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampSamples, &dwDWORDSize);
+		dwDWORDSize = sizeof(glVolumeRampInSamples);
+		RegQueryValueEx(key, "VolumeRampInSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampInSamples, &dwDWORDSize);
+		dwDWORDSize = sizeof(glVolumeRampOutSamples);
+		RegQueryValueEx(key, "VolumeRampOutSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampOutSamples, &dwDWORDSize);
 		
 		//end rewbs.resamplerConf
 		//rewbs.autochord
@@ -1064,7 +1069,8 @@ void CMainFrame::SaveIniSettings()
 	WritePrivateProfileLong("Sound Settings", "MixChannels", CSoundFile::m_nMaxMixChannels, iniFile);
 	WritePrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", gbWFIRType, iniFile);
 	WritePrivateProfileLong("Sound Settings", "ResamplerWFIRCutoff", static_cast<int>(gdWFIRCutoff*100+0.5), iniFile);
-	WritePrivateProfileLong("Sound Settings", "VolumeRampSamples", glVolumeRampSamples, iniFile);
+	WritePrivateProfileLong("Sound Settings", "VolumeRampInSamples", glVolumeRampInSamples, iniFile);
+	WritePrivateProfileLong("Sound Settings", "VolumeRampOutSamples", glVolumeRampOutSamples, iniFile);
 
 	WritePrivateProfileDWord("MIDI Settings", "MidiSetup", m_dwMidiSetup, iniFile);
 	WritePrivateProfileDWord("MIDI Settings", "MidiDevice", m_nMidiDevice, iniFile);

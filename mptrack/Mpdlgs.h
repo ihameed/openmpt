@@ -51,7 +51,9 @@ protected:
 	CSliderCtrl m_SbXBassDepth, m_SbXBassRange;
 	CSliderCtrl m_SbSurroundDepth, m_SbSurroundDelay;
 	CSliderCtrl m_SbReverbDepth;
-	CEdit m_CEditWFIRCutoff, m_CEditRamping; //rewbs.resamplerConf: added m_CEditRamping
+	CEdit m_CEditWFIRCutoff;
+	CEdit m_CEditRampIn;
+	CEdit m_CEditRampOut;
 
 public:
 	COptionsPlayer():CPropertyPage(IDD_OPTIONS_PLAYER) {}

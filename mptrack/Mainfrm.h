@@ -466,7 +466,8 @@ public:
 	//rewbs.resamplerConf
 	static double gdWFIRCutoff;
 	static BYTE gbWFIRType;
-	static long glVolumeRampSamples;
+	static long glVolumeRampInSamples;
+	static long glVolumeRampOutSamples;
 	//end rewbs.resamplerConf
 	static UINT gnAutoChordWaitTime;
 
