@@ -49,8 +49,6 @@ public:
 	CModDocTemplate(UINT nIDResource, CRuntimeClass* pDocClass, CRuntimeClass* pFrameClass, CRuntimeClass* pViewClass):
 		CMultiDocTemplate(nIDResource, pDocClass, pFrameClass, pViewClass) {}
 	virtual CDocument* OpenDocumentFile(LPCTSTR, BOOL, BOOL);
-private:
-	bool DocumentIsOpen(const char*, CDocument**);
 };
 
 CDocument *CModDocTemplate::OpenDocumentFile(LPCTSTR path, BOOL addToMru, BOOL makeVisible) {
