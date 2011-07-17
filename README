@@ -16,33 +16,4 @@ How to compile the code:
 
 
 Coding conventions (see below for an example):
-
-* Functions / methods are "underlined" (The "//------" comment, see below for an
-  example what it should look like).
-* Place curly braces at the beginning of the line, not at the end
-* Generally make use of the custom index types like SAMPLEINDEX or ORDERINDEX
-  when referring to samples, orders, etc.
-* When changing playback behaviour, make sure that you use the function
-* CSoundFile::IsCompatibleMode() so that modules made with previous versions of
-  MPT still sound correct (if the change is extremely small, this might be
-  unnecessary)
-* CamelCase function and variable names are preferred.
-* When checking the module type, use something like
-    if(GetType() & MOD_TYPE_XXX)
-  instead of
-    if(GetType() == MOD_TYPE_XXX)
-  as it could be theoretically possible that two mod types are set (currently
-  this doesn't happen, but in the future this might actually be used as a code
-  feature :)
-
-Code example:
-
-void Foo::Bar(int foobar)
-//-----------------------
-{
-    while(true)
-    {
-        // some code
-    }
-}
-
+http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
