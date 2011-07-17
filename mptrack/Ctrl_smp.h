@@ -38,6 +38,7 @@ protected:
 
 	int PitchShift(float pitch);
 	int TimeStretch(float ratio);
+	int ElastiqueTimeStretch(float ratio);
 	void UpdateTimeStretchParameterString();
 	void ReadTimeStretchParameters();
 

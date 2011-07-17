@@ -1814,10 +1814,16 @@ void CCtrlSamples::OnPitchShiftTimeStretch()
 	m_pModDoc->SetModified();
 }
 
-
 int CCtrlSamples::TimeStretch(float ratio)
 //----------------------------------------
 {
+	CString sPath;
+	
+	sPath.Format(TEXT("%s%s"), CTrackApp::GetAppDirPath(), TEXT("elastique2.dll"));
+		if (sPath.GetLength() <= _MAX_PATH && PathFileExists(sPath) == TRUE) {
+			return ElastiqueTimeStretch(ratio);
+		}
+		
 	static HANDLE handleSt = NULL; // Handle to SoundTouch object.
 	if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return -1;
 	MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
@@ -2012,6 +2018,264 @@ int CCtrlSamples::TimeStretch(float ratio)
 
 	return 0;
 }
+
+/* coda.elastique */
+enum _ElastiqueProStereoInputMode_ {
+	kPlainStereoMode = 0,
+	kMSMode
+};
+
+enum _elastiquePro_proc_mode {
+	kProDefaultMode = 0,
+	kProTransientMode, 
+	kEfficientTransientMode, 
+	kEfficientTonalMode, 
+};
+
+#define _FALSE 0
+
+class CElastiqueProIf {
+public:
+	static int CreateInstance(CElastiqueProIf*&,int,int,float,_elastiquePro_proc_mode);
+
+	static int DestroyInstance(CElastiqueProIf*&);
+
+	virtual ~CElastiqueProIf();
+	virtual int ProcessData (float **ppInSampleData, int iNumOfInFrames, float
+		**ppOutSampleData)=0;
+	 virtual int GetFramesNeeded (int iOutBufferSize)=0;
+	 virtual int GetFramesNeeded ()=0;
+	 virtual int GetMaxFramesNeeded (float fMinStretchFactor=0.1, float fMinPitchFactor=1.0)=0;
+	 virtual int SetStretchQPitchFactor (float &fStretchFactor, float fPitchFactor, bool
+	bUsePitchSync=_FALSE)=0;
+	 virtual int SetStretchPitchQFactor (float fStretchFactor, float &fPitchFactor, bool
+	bUsePitchSync=_FALSE)=0;
+	 virtual void Reset ()=0;
+	 virtual int FlushBuffer (float **ppfOutSampleData)=0;
+	 virtual int GetFramesBuffered ()=0;
+	 virtual int SetStereoInputMode (_ElastiqueProStereoInputMode_ eStereoInputMode)=0;
+	 virtual int SetEnvelopeFactor (float fShiftFactor)=0;
+	 virtual int SetEnvelopeOrder (int iOrder)=0;
+	 virtual double GetCurrentTimePos ()=0;
+
+	static char* GetVersionString();
+	static char* GetBuildDateString();
+	
+
+
+};
+typedef CElastiqueProIf*(*pfnCreateInstance)(int,int,float,_elastiquePro_proc_mode);
+
+
+int CCtrlSamples::ElastiqueTimeStretch(float ratio)
+//----------------------------------------
+{
+	static CElastiqueProIf *handleSt = NULL; // Handle to SoundTouch object.
+	if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return -1;
+	MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+	if(!pSmp) return -1;
+
+	const uint32 nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
+
+	// SoundTouch(1.3.1) seems to crash with short samples. Don't know what
+	// the actual limit or whether it depends on sample rate,
+	// but simply set some semiarbitrary threshold here.
+	if(pSmp->nLength < 256)
+		return 6;
+
+	// Refuse processing when ratio is negative, equal to zero or equal to 1.0
+	if(ratio <= 0.0 || ratio == 1.0) return -1;
+
+	// Convert to pitch factor
+	float pitch = Round(ratio, 4);
+	if(pitch < 0.5f) return 2 + (1<<8);
+	if(pitch > 2.0f) return 2 + (2<<8);
+
+	const uint8 nChn = pSmp->GetNumChannels();
+	
+	if (handleSt == NULL)
+	{
+		// Check whether the DLL file exists.
+		CString sPath;
+		sPath.Format(TEXT("%s%s"), CTrackApp::GetAppDirPath(), TEXT("elastique2.dll"));
+		if (sPath.GetLength() <= _MAX_PATH && PathFileExists(sPath) == TRUE) {
+			HMODULE lib = LoadLibrary(sPath);
+			pfnCreateInstance create;
+			create = (pfnCreateInstance)GetProcAddress(lib, "CreateInstance_E21");
+			handleSt = create(512, nChn, 44100.0, kProDefaultMode);
+		}
+	}
+	if (handleSt == NULL) 
+	{
+		AfxMessageBox(IDS_SOUNDTOUCH_LOADFAILURE);
+		return -1;
+	}
+
+	// Get number of channels & sample size
+	uint8 smpsize = pSmp->GetElementarySampleSize();
+
+	// Stretching is implemented only for 16-bit samples.
+	if(smpsize != 2)
+	{
+		// This has to be converted to 16-bit first.
+		SetSelectionPoints(0, 0); // avoid partial upsampling.
+		OnUpsample();
+		smpsize = pSmp->GetElementarySampleSize();
+	}
+
+
+
+	// Allocate new sample. Returned sample may not be exactly the size what ratio would suggest
+	// so allocate a bit more(1.03*).
+	const DWORD nNewSampleLength = (DWORD)(2.03 * ratio * (double)pSmp->nLength);
+	//const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->nLength);
+	PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
+	if(pNewSample == NULL)
+		return 3;
+
+	// Save process button text (to be used as "progress bar" indicator while processing)
+	CHAR oldText[255];
+	GetDlgItemText(IDC_BUTTON1, oldText, 255);
+
+	// Get process button device context & client rect
+	RECT progressBarRECT, processButtonRect;
+	HDC processButtonDC = ::GetDC(((CButton*)GetDlgItem(IDC_BUTTON1))->m_hWnd);
+	::GetClientRect(((CButton*)GetDlgItem(IDC_BUTTON1))->m_hWnd,&processButtonRect);
+	processButtonRect.top += 1;
+	processButtonRect.left += 1;
+	processButtonRect.right -= 1;
+	processButtonRect.bottom -= 2;
+	progressBarRECT = processButtonRect;
+
+	// Progress bar brushes
+	HBRUSH green = CreateSolidBrush(RGB(96,192,96));
+	HBRUSH red = CreateSolidBrush(RGB(192,96,96));
+
+	// Show wait mouse cursor
+	BeginWaitCursor();
+
+	UINT pos = 0;
+	UINT len = 0; //To contain length of processing step.
+
+	// Initialize soundtouch object.
+	{	
+		if(nSampleRate < 300) // Too low samplerate crashes soundtouch.
+		{                     // Limiting it to value 300(quite arbitrarily chosen).
+			return 5;         
+		}
+		float stretch = ratio;
+		handleSt->SetStretchQPitchFactor(stretch, 1.0);
+
+	}
+
+	// Keeps count of the sample length received from stretching process.
+	UINT nLengthCounter = 0;
+
+	float **inChannels = new float*[nChn];
+	
+	float **outChannels = new float*[nChn];
+	
+	
+	// Process sample in steps.
+	while(pos < pSmp->nLength)
+	{
+		len  = handleSt->GetFramesNeeded();
+		int full_len = len;
+		// Current chunk size limit test
+		if(len >= pSmp->nLength - pos) 
+				len = pSmp->nLength - pos;
+
+		// Show progress bar using process button painting & text label
+		CHAR progress[16];
+		float percent = 100.0f * (pos + len) / pSmp->nLength;
+		progressBarRECT.right = processButtonRect.left + (int)percent * (processButtonRect.right - processButtonRect.left) / 100;
+		wsprintf(progress,"%d%%",(UINT)percent);
+
+		::FillRect(processButtonDC,&processButtonRect,red);
+		::FrameRect(processButtonDC,&processButtonRect,CMainFrame::brushBlack);
+		::FillRect(processButtonDC,&progressBarRECT,green);
+		::SelectObject(processButtonDC,(HBRUSH)HOLLOW_BRUSH);
+		::SetBkMode(processButtonDC,TRANSPARENT);
+		::DrawText(processButtonDC,progress,strlen(progress),&processButtonRect,DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+		::GdiFlush();
+
+		// Send sampledata for processing.
+		for(int ch=0;ch<nChn;ch++) {
+			if(len) {
+				inChannels[ch] = new float[full_len];
+				memset(inChannels[ch], 0, sizeof(float)*full_len);
+			}
+			outChannels[ch] = new float[512];
+			for(UINT s=0;s<len;s++) {
+				inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16*>(pSmp->pSample) + (pos + s)*nChn + ch);
+			}
+		}
+		
+		handleSt->ProcessData(inChannels, full_len, outChannels);
+		
+		for(int ch=0;ch<nChn;ch++) {
+			if(len) delete[] inChannels[ch];
+			for(UINT s=0;s<512;s++) {
+				*(reinterpret_cast<int16*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
+			}
+			delete[] outChannels[ch];
+		}		
+		
+		//soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->pSample + pos * smpsize * nChn), len);
+
+		// Receive some processed samples (it's not guaranteed that there is any available).
+		nLengthCounter += 512;
+
+		// Next buffer chunk
+		pos += len;
+	}
+
+	// The input sample should now be processed. Receive remaining samples.
+	int extra = handleSt->GetFramesBuffered();
+	while(handleSt->GetFramesBuffered() && nLengthCounter < nNewSampleLength) {
+		for(int ch=0;ch<nChn;ch++) {
+			outChannels[ch] = new float[512];
+		}
+		
+		extra = handleSt->FlushBuffer(outChannels);
+		
+		for(int ch=0;ch<nChn;ch++) {
+			for(UINT s=0;s<extra;s++) {
+				*(reinterpret_cast<int16*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
+			}
+			delete[] outChannels[ch];
+		}		
+		nLengthCounter += extra;
+	}
+		
+
+
+	handleSt->Reset();
+
+	
+	delete[] outChannels;
+	delete[] inChannels;
+
+
+	ASSERT(nNewSampleLength >= nLengthCounter);
+
+	m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
+	// Swap sample buffer pointer to new buffer, update song + sample data & free old sample buffer
+	ctrlSmp::ReplaceSample(*pSmp, (LPSTR)pNewSample, min(nLengthCounter, nNewSampleLength), m_pSndFile);
+
+	// Free progress bar brushes
+	DeleteObject((HBRUSH)green);
+	DeleteObject((HBRUSH)red);
+
+	// Restore process button text
+	SetDlgItemText(IDC_BUTTON1, oldText);
+
+	// Restore mouse cursor
+	EndWaitCursor();
+
+	return 0;
+}
+
 
 int CCtrlSamples::PitchShift(float pitch)
 //---------------------------------------
