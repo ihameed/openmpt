@@ -821,7 +821,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
 		Log("VST plugin to host: Process Events\n");
 		break;
 	// DEPRECATED in VST 2.4
-	case audioMasterSetTime:						
+	case audioMasterSetTime:
 		Log("VST plugin to host: Set Time\n");
 		break;
 	// returns tempo (in bpm * 10000) at sample frame location passed in <value> - DEPRECATED in VST 2.4
@@ -840,15 +840,15 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
 		}
 		return 125*10000;
 	// parameters - DEPRECATED in VST 2.4
-	case audioMasterGetNumAutomatableParameters:						
+	case audioMasterGetNumAutomatableParameters:
 		Log("VST plugin to host: Get Num Automatable Parameters\n");
 		break;
 	// Apparently, this one is broken in VST SDK anyway. - DEPRECATED in VST 2.4
-	case audioMasterGetParameterQuantization:						
+	case audioMasterGetParameterQuantization:
 		Log("VST plugin to host: Audio Master Get Parameter Quantization\n");
 		break;
 	// numInputs and/or numOutputs has changed
-	case audioMasterIOChanged:					
+	case audioMasterIOChanged:
 		Log("VST plugin to host: IOchanged\n");
 		break;	
 	// plug needs idle calls (outside its editor window) - DEPRECATED in VST 2.4
@@ -1759,6 +1759,8 @@ CVstPlugin::CVstPlugin(HMODULE hLibrary, PVSTPLUGINLIB pFactory, PSNDMIXPLUGIN p
 	m_MixState.pMixBuffer = (int *)((((DWORD)m_MixBuffer)+7)&~7);
 	m_MixState.pOutBufferL = (float *)((((DWORD)&m_FloatBuffer[0])+7)&~7);
 	m_MixState.pOutBufferR = (float *)((((DWORD)&m_FloatBuffer[MIXBUFFERSIZE])+7)&~7);
+	//XXXih: awful!
+	memset(dummyBuffer_, 0, sizeof(float) * (MIXBUFFERSIZE + 2));
 	
 	//rewbs.dryRatio: we now initialise this in CVstPlugin::Initialize(). 
 	//m_pTempBuffer = (float *)((((DWORD)&m_FloatBuffer[MIXBUFFERSIZE*2])+7)&~7);
@@ -1885,6 +1887,9 @@ void CVstPlugin::Initialize(CSoundFile* pSndFile)
 	m_pInputs = (m_nInputs >= 2) ? new (float *[m_nInputs]) : new (float*[2]);
 	m_pInputs[0] = m_MixState.pOutBufferL;
 	m_pInputs[1] = m_MixState.pOutBufferR;
+	for (size_t i = 2; i < m_nInputs; ++i) {
+		m_pInputs[i] = dummyBuffer_;
+	}
 
 	m_pOutputs = new (float *[m_nOutputs]);
 	m_pTempBuffer = new (float *[m_nOutputs]);	//rewbs.dryRatio
