@@ -1254,7 +1254,7 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
 	}
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 
 	// Leave if no extra instrument settings are available (end of file reached)
 	if(dwMemPos >= dwFileLength) return true;
@@ -1611,7 +1611,7 @@ bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwF
 // ITS Samples
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 //BOOL CSoundFile::ReadITSSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset)
 UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset)
 //-------------------------------------------------------------------------------------------------------
@@ -1621,7 +1621,7 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
 	DWORD dwMemPos;
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 //	if ((!lpMemFile) || (dwFileLength < sizeof(ITSAMPLESTRUCT))
 //	 || (pis->id != LittleEndian(IT_IMPS)) || (((DWORD)pis->samplepointer) >= dwFileLength + dwOffset)) return FALSE;
 	if ((!lpMemFile) || (dwFileLength < sizeof(ITSAMPLESTRUCT))
@@ -1683,7 +1683,7 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
 		if (pis->flags & 8)	flags =	RS_IT2148;
 	}
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 //	ReadSample(pSmp, flags, (LPSTR)(lpMemFile+dwMemPos), dwFileLength + dwOffset - dwMemPos);
 //	return TRUE;
 	return ReadSample(pSmp, flags, (LPSTR)(lpMemFile+dwMemPos), dwFileLength + dwOffset - dwMemPos);
@@ -1723,7 +1723,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 	nsmp = 1;
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 	// In order to properly compute the position, in file, of eventual extended settings
 	// such as "attack" we need to keep the "real" size of the last sample as those extra
 	// setting will follow this sample in the file
@@ -1738,7 +1738,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 		if (m_nSamples < nsmp) m_nSamples = nsmp;
 		samplemap[i] = nsmp;
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 //		ReadITSSample(nsmp, lpMemFile+dwMemPos, dwFileLength-dwMemPos, dwMemPos);
 		lastSampleSize = ReadITSSample(nsmp, lpMemFile+dwMemPos, dwFileLength-dwMemPos, dwMemPos);
 // -! NEW_FEATURE#0027
@@ -1758,7 +1758,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 	}
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 
 	// Rewind file pointer offset (dwMemPos) to last sample header position
 	dwMemPos -= sizeof(ITSAMPLESTRUCT);

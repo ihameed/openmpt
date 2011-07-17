@@ -704,9 +704,10 @@
 #define IDC_WFIRCUTOFF                  2202
 #define IDC_WFIRTYPE                    2203
 #define IDC_RAMPING                     2204
-#define IDC_RAMPIN                      2204
+#define IDC_RAMPUP                      2204
 #define IDC_PLAYEROPTIONS               2205
 #define IDC_RAMPOUT                     2205
+#define IDC_RAMPDOWN                    2205
 #define IDC_CHORDDETECTWAITTIME         2206
 #define IDC_STATIC2                     2207
 #define IDC_STATIC1                     2208
@@ -934,6 +935,10 @@
 #define IDC_SAMPLE_QUICKFADE            2433
 #define IDC_SAMPLE_XFADE                2434
 #define IDC_LASTUPDATE                  2435
+#define IDC_INSTR_RAMPUP                2436
+#define IDC_INSTR_RAMPUP_SPIN           2437
+#define IDC_INSTR_RAMPDOWN              2438
+#define IDC_INSTR_RAMPDOWN_SPIN         2439
 #define ID_FILE_NEWMOD                  32771
 #define ID_FILE_NEWXM                   32772
 #define ID_FILE_NEWS3M                  32773
@@ -1199,7 +1204,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        530
 #define _APS_NEXT_COMMAND_VALUE         60459
-#define _APS_NEXT_CONTROL_VALUE         2436
+#define _APS_NEXT_CONTROL_VALUE         2438
 #define _APS_NEXT_SYMED_VALUE           901
 #endif
 #endif

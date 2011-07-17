@@ -89,7 +89,7 @@ static char UnpackTable[MAX_PACK_TABLES][16] =
 };
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 
 /*---------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ VE[.			VolEnv.Values[MAX_ENVPOINTS];
 VLE.			VolEnv.nLoopEnd;
 VLS.			VolEnv.nLoopStart;
 VP[.			VolEnv.Ticks[MAX_ENVPOINTS];
-VR..			nVolRamp;
+VR..			nVolRampUp;
 VS..			nVolSwing;
 VSB.			VolEnv.nSustainStart;
 VSE.			VolEnv.nSustainEnd;
@@ -217,6 +217,8 @@ VERN			VolEnv.nReleaseNode
 PFLG			PitchEnv.dwFlag
 AFLG			PanEnv.dwFlags
 VFLG			VolEnv.dwFlags
+VRD.			nVolRampDown;
+//XXXih: volume ramp down instr support
 -----------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------*/
 
@@ -325,7 +327,8 @@ WRITE_MPTHEADER_array_member(	Keyboard				, WORD			, K[..		, 128				)
 WRITE_MPTHEADER_array_member(	name					, CHAR			, n[..		, 32				)
 WRITE_MPTHEADER_array_member(	filename				, CHAR			, fn[.		, 12				)
 WRITE_MPTHEADER_sized_member(	nMixPlug				, BYTE			, MiP.							)
-WRITE_MPTHEADER_sized_member(	nVolRamp				, USHORT		, VR..							)
+WRITE_MPTHEADER_sized_member(	nVolRampUp				, USHORT		, VR..							)
+WRITE_MPTHEADER_sized_member(	nVolRampDown			, USHORT		, VRD.							)
 WRITE_MPTHEADER_sized_member(	nResampling				, USHORT		, R...							)
 WRITE_MPTHEADER_sized_member(	nCutSwing				, BYTE			, CS..							)
 WRITE_MPTHEADER_sized_member(	nResSwing				, BYTE			, RS..							)
@@ -407,7 +410,8 @@ GET_MPTHEADER_array_member(	Keyboard				, WORD			, K[..		, 128				)
 GET_MPTHEADER_array_member(	name					, CHAR			, n[..		, 32				)
 GET_MPTHEADER_array_member(	filename				, CHAR			, fn[.		, 12				)
 GET_MPTHEADER_sized_member(	nMixPlug				, BYTE			, MiP.							)
-GET_MPTHEADER_sized_member(	nVolRamp				, USHORT		, VR..							)
+GET_MPTHEADER_sized_member(	nVolRampUp				, USHORT		, VR..							)
+GET_MPTHEADER_sized_member(	nVolRampDown			, USHORT		, VRD.							)
 GET_MPTHEADER_sized_member(	nResampling				, UINT			, R...							)
 GET_MPTHEADER_sized_member(	nCutSwing				, BYTE			, CS..							)
 GET_MPTHEADER_sized_member(	nResSwing				, BYTE			, RS..							)

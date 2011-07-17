@@ -71,7 +71,7 @@ struct MODSAMPLE
 
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 
 /*---------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
@@ -130,8 +130,9 @@ struct MODINSTRUMENT
 
 	PLUGINDEX nMixPlug;				// Plugin assigned to this instrument
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-	USHORT nVolRamp;				// Default sample ramping
+// -> DESC="per-instrument volume ramping setup"
+	USHORT nVolRampUp;				// Default sample ramping up
+	USHORT nVolRampDown;			// Default sample ramping down
 // -! NEW_FEATURE#0027
 	UINT nResampling;				// Resampling mode
 	BYTE nCutSwing;					// Random cutoff factor
@@ -966,7 +967,7 @@ public:
 	bool ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 //	BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
 	UINT ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
 // -! NEW_FEATURE#0027

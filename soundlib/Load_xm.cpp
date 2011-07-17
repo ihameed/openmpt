@@ -698,7 +698,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
 	}
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 
 	// Leave if no extra instrument settings are available (end of file reached)
 	if(dwMemPos >= dwMemLength) return true;

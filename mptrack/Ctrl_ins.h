@@ -91,9 +91,9 @@ protected:
 	INSTRUMENTINDEX m_nInstrument;
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-	CSliderCtrl m_SliderAttack;
-	CSpinButtonCtrl m_SpinAttack;
+// -> DESC="per-instrument volume ramping setup"
+	CSpinButtonCtrl m_spinRampUp;
+	CSpinButtonCtrl m_spinRampDown;
 // -! NEW_FEATURE#0027
 
 	//Tuning
@@ -120,6 +120,9 @@ public:
 	BOOL EditSample(UINT nSample);
 	VOID UpdateFilterText();
 	LONG* GetSplitPosRef() {return &CMainFrame::glInstrumentWindowHeight;} 	//rewbs.varWindowSize
+
+private:
+	void CCtrlInstruments::UpdateRampingInPlace(int, int, USHORT *);
 
 public:
 	//{{AFX_VIRTUAL(CCtrlInstruments)
@@ -168,8 +171,8 @@ protected:
 
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-	afx_msg void OnAttackChanged();
+// -> DESC="per-instrument volume ramping setup"
+	afx_msg void OnRampChanged();
 // -! NEW_FEATURE#0027
 
 	afx_msg void OnEnableCutOff();

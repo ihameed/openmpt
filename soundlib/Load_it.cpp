@@ -951,13 +951,12 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
 	}
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 	// In order to properly compute the position, in file, of eventual extended settings
-	// such as "attack" we need to keep the "real" size of the last sample as those extra
+	// such as custom ramping we need to keep the "real" size of the last sample as those extra
 	// setting will follow this sample in the file
 	UINT lastSampleOffset = 0;
-	if(pifh->smpnum > 0)
-	{
+	if (pifh->smpnum > 0) {
 		lastSampleOffset = smppos[pifh->smpnum - 1] + sizeof(ITSAMPLESTRUCT);
 	}
 // -! NEW_FEATURE#0027
@@ -1023,7 +1022,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
 					if (pis->flags & 8)	flags =	((pifh->cmwt >= 0x215) && (pis->cvt & 4)) ? RS_IT2158 : RS_IT2148;
 				}
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 //				ReadSample(&Ins[nsmp+1], flags, (LPSTR)(lpStream+pis->samplepointer), dwMemLength - pis->samplepointer);
 				lastSampleOffset = pis->samplepointer + ReadSample(&Samples[nsmp+1], flags, (LPSTR)(lpStream+pis->samplepointer), dwMemLength - pis->samplepointer);
 // -! NEW_FEATURE#0027
@@ -1038,7 +1037,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
 	m_nMaxPeriod = 0xF000;
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 
 	// Compute extra instruments settings position
 	if(lastSampleOffset > 0) dwMemPos = lastSampleOffset;
@@ -2938,7 +2937,7 @@ void CSoundFile::SaveExtendedInstrumentProperties(MODINSTRUMENT *instruments[], 
 // whereas ITP saves [code][size][ins1.Value][code][size][ins2.Value]...
 // too late to turn back....
 {
-	__int32 code=0;
+	__int32 code = 0;
 
 /*	if(Instruments[1] == NULL) {
 		return;
@@ -2947,10 +2946,12 @@ void CSoundFile::SaveExtendedInstrumentProperties(MODINSTRUMENT *instruments[], 
 	code = 'MPTX';							// write extension header code
 	fwrite(&code, 1, sizeof(__int32), f);		
 
-	if (nInstruments == 0)
+	if (nInstruments == 0) {
 		return;
-	
-	WriteInstrumentPropertyForAllInstruments('VR..', sizeof(m_defaultInstrument.nVolRamp),    f, instruments, nInstruments);
+	}
+
+	WriteInstrumentPropertyForAllInstruments('VR..', sizeof(m_defaultInstrument.nVolRampUp),  f, instruments, nInstruments);
+	WriteInstrumentPropertyForAllInstruments('VRD.', sizeof(m_defaultInstrument.nVolRampDown),f, instruments, nInstruments);
 	WriteInstrumentPropertyForAllInstruments('MiP.', sizeof(m_defaultInstrument.nMixPlug),    f, instruments, nInstruments);
 	WriteInstrumentPropertyForAllInstruments('MC..', sizeof(m_defaultInstrument.nMidiChannel),f, instruments, nInstruments);
 	WriteInstrumentPropertyForAllInstruments('MP..', sizeof(m_defaultInstrument.nMidiProgram),f, instruments, nInstruments);
@@ -2969,18 +2970,15 @@ void CSoundFile::SaveExtendedInstrumentProperties(MODINSTRUMENT *instruments[], 
 	WriteInstrumentPropertyForAllInstruments('PVEH', sizeof(m_defaultInstrument.nPluginVelocityHandling),  f, instruments, nInstruments);
 	WriteInstrumentPropertyForAllInstruments('PVOH', sizeof(m_defaultInstrument.nPluginVolumeHandling),  f, instruments, nInstruments);
 
-	if(m_nType & MOD_TYPE_MPT)
-	{
+	if (m_nType & MOD_TYPE_MPT) {
 		UINT maxNodes = 0;
-		for(INSTRUMENTINDEX nIns = 1; nIns <= m_nInstruments; nIns++) if(Instruments[nIns] != nullptr)
-		{
+		for (INSTRUMENTINDEX nIns = 1; nIns <= m_nInstruments; nIns++) if(Instruments[nIns] != nullptr) {
 			maxNodes = max(maxNodes, Instruments[nIns]->VolEnv.nNodes);
 			maxNodes = max(maxNodes, Instruments[nIns]->PanEnv.nNodes);
 			maxNodes = max(maxNodes, Instruments[nIns]->PitchEnv.nNodes);
 		}
 		// write full envelope information for MPTM files (more env points)
-		if(maxNodes > 25)
-		{
+		if (maxNodes > 25) {
 			WriteInstrumentPropertyForAllInstruments('VE..', sizeof(m_defaultInstrument.VolEnv.nNodes), f, instruments, nInstruments);
 			WriteInstrumentPropertyForAllInstruments('VP[.', sizeof(m_defaultInstrument.VolEnv.Ticks ), f, instruments, nInstruments);
 			WriteInstrumentPropertyForAllInstruments('VE[.', sizeof(m_defaultInstrument.VolEnv.Values), f, instruments, nInstruments);
@@ -2994,26 +2992,23 @@ void CSoundFile::SaveExtendedInstrumentProperties(MODINSTRUMENT *instruments[], 
 			WriteInstrumentPropertyForAllInstruments('PiE[', sizeof(m_defaultInstrument.PitchEnv.Values), f, instruments, nInstruments);
 		}
 	}
-
-	return;
 }
 
 void CSoundFile::WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, MODINSTRUMENT *instruments[], UINT nInstruments) 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
+	//XXXih: this is disgusting
 	fwrite(&code, 1, sizeof(__int32), f);		//write code
 	fwrite(&size, 1, sizeof(__int16), f);		//write size
-	for(UINT nins=1; nins<=nInstruments; nins++) {  //for all instruments...
+	for (UINT nins = 1; nins <= nInstruments; nins++) {  //for all instruments...
 		BYTE* pField;
-		if (instruments[nins])	{
+		if (instruments[nins]) {
 			pField = GetInstrumentHeaderFieldPointer(instruments[nins], code, size); //get ptr to field
-		} else { 
+		} else {
 			pField = GetInstrumentHeaderFieldPointer(&m_defaultInstrument, code, size); //get ptr to field
 		}
 		fwrite(pField, 1, size, f);				//write field data
 	}
-
-	return;
 }
 
 void CSoundFile::SaveExtendedSongProperties(FILE* f)

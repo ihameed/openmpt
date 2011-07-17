@@ -436,8 +436,8 @@ BEGIN_MESSAGE_MAP(COptionsPlayer, CPropertyPage)
 	ON_CBN_SELCHANGE(IDC_WFIRTYPE,OnWFIRTypeChanged)
 	ON_EN_UPDATE(IDC_WFIRCUTOFF,OnSettingsChanged)
 	//XXXih: rampin/rampout
-	ON_EN_UPDATE(IDC_RAMPIN,	OnSettingsChanged)
-	ON_EN_UPDATE(IDC_RAMPOUT,	OnSettingsChanged)
+	ON_EN_UPDATE(IDC_RAMPUP,	OnSettingsChanged)
+	ON_EN_UPDATE(IDC_RAMPDOWN,	OnSettingsChanged)
 	//end rewbs.resamplerConf
 	ON_COMMAND(IDC_CHECK1,		OnSettingsChanged)
 	ON_COMMAND(IDC_CHECK2,		OnSettingsChanged)
@@ -459,8 +459,8 @@ void COptionsPlayer::DoDataExchange(CDataExchange* pDX)
 	//rewbs.resamplerConf
 	DDX_Control(pDX, IDC_WFIRTYPE,		m_CbnWFIRType);
 	DDX_Control(pDX, IDC_WFIRCUTOFF,	m_CEditWFIRCutoff);
-	DDX_Control(pDX, IDC_RAMPIN,		m_CEditRampIn);
-	DDX_Control(pDX, IDC_RAMPOUT,		m_CEditRampOut);
+	DDX_Control(pDX, IDC_RAMPUP,		m_CEditRampIn);
+	DDX_Control(pDX, IDC_RAMPDOWN,		m_CEditRampOut);
 	//end rewbs.resamplerConf
 	DDX_Control(pDX, IDC_COMBO2,		m_CbnReverbPreset);
 	DDX_Control(pDX, IDC_SLIDER1,		m_SbXBassDepth);

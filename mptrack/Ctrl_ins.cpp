@@ -755,7 +755,7 @@ void CNoteMapWnd::StopNote(int note = -1)
 // CCtrlInstruments
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
+// -> DESC="per-instrument volume ramping setup"
 #define MAX_ATTACK_LENGTH	2001
 #define MAX_ATTACK_VALUE	(MAX_ATTACK_LENGTH - 1)  // 16 bit unsigned max
 // -! NEW_FEATURE#0027
@@ -786,8 +786,9 @@ BEGIN_MESSAGE_MAP(CCtrlInstruments, CModControlDlg)
 	ON_EN_CHANGE(IDC_EDIT15,			OnPPSChanged)
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-	ON_EN_CHANGE(IDC_EDIT2,				OnAttackChanged)
+// -> DESC="per-instrument volume ramping setup"
+	ON_EN_CHANGE(IDC_INSTR_RAMPUP,		OnRampChanged)
+	ON_EN_CHANGE(IDC_INSTR_RAMPDOWN,	OnRampChanged)
 // -! NEW_FEATURE#0027
 
 	ON_CBN_SELCHANGE(IDC_COMBO1,		OnNNAChanged)
@@ -846,9 +847,9 @@ void CCtrlInstruments::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER6,				m_SliderCutSwing);
 	DDX_Control(pDX, IDC_SLIDER7,				m_SliderResSwing);
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-	DDX_Control(pDX, IDC_SLIDER5,				m_SliderAttack);
-	DDX_Control(pDX, IDC_SPIN1,					m_SpinAttack);
+// -> DESC="per-instrument volume ramping setup"
+	DDX_Control(pDX, IDC_INSTR_RAMPUP_SPIN,		m_spinRampUp);
+	DDX_Control(pDX, IDC_INSTR_RAMPDOWN_SPIN,	m_spinRampDown);
 // -! NEW_FEATURE#0027
 	DDX_Control(pDX, IDC_COMBOTUNING,			m_ComboTuning);
 	DDX_Control(pDX, IDC_CHECK_PITCHTEMPOLOCK,	m_CheckPitchTempoLock);
@@ -965,10 +966,9 @@ BOOL CCtrlInstruments::OnInitDialog()
 	AppendNotesToControl(m_ComboPPC, 0, NOTE_MAX-1);
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-	// Volume ramping (attack)
-	m_SliderAttack.SetRange(0,MAX_ATTACK_VALUE);
-	m_SpinAttack.SetRange(0,MAX_ATTACK_VALUE);
+// -> DESC="per-instrument volume ramping setup"
+	m_spinRampUp.SetRange(0, MAX_ATTACK_VALUE);
+	m_spinRampDown.SetRange(0, MAX_ATTACK_VALUE);
 // -! NEW_FEATURE#0027
 
 	m_SpinInstrument.SetFocus();
@@ -1012,29 +1012,21 @@ BOOL CCtrlInstruments::SetCurrentInstrument(UINT nIns, BOOL bUpdNum)
 	if (m_pSndFile->m_nInstruments < 1) return FALSE;
 	if ((nIns < 1) || (nIns > m_pSndFile->m_nInstruments)) return FALSE;
 	LockControls();
-	if ((m_nInstrument != nIns) || (!m_bInitialized))
-	{
+	if ((m_nInstrument != nIns) || (!m_bInitialized)) {
 		m_nInstrument = nIns;
 		m_NoteMap.SetCurrentInstrument(m_pModDoc, m_nInstrument);
 		UpdateView((m_nInstrument << HINT_SHIFT_INS) | HINT_INSTRUMENT | HINT_ENVELOPE, NULL);
-	} else
-	{
+	} else {
 		// Just in case
 		m_NoteMap.SetCurrentInstrument(m_pModDoc, m_nInstrument);
 	}
-	if (bUpdNum)
-	{
+	if (bUpdNum) {
 		SetDlgItemInt(IDC_EDIT_INSTRUMENT, m_nInstrument);
 		m_SpinInstrument.SetRange(1, m_pSndFile->m_nInstruments);
 		m_SpinInstrument.EnableWindow((m_pSndFile->m_nInstruments) ? TRUE : FALSE);
 		// Is this a bug ?
 		m_SliderCutOff.InvalidateRect(NULL, FALSE);
 		m_SliderResonance.InvalidateRect(NULL, FALSE);
-// -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-		// Volume ramping (attack)
-		m_SliderAttack.InvalidateRect(NULL, FALSE);
-// -! NEW_FEATURE#0027
 	}
 	PostViewMessage(VIEWMSG_SETCURRENTINSTRUMENT, m_nInstrument);
 	UnlockControls();
@@ -1172,8 +1164,8 @@ void CCtrlInstruments::UpdateView(DWORD dwHintMask, CObject *pObj)
 		::EnableWindow(::GetDlgItem(m_hWnd, IDC_EDIT10), bITandXM);
 		::EnableWindow(::GetDlgItem(m_hWnd, IDC_EDIT11), bITandXM);
 		::EnableWindow(::GetDlgItem(m_hWnd, IDC_EDIT7), bITandXM);
-		::EnableWindow(::GetDlgItem(m_hWnd, IDC_EDIT2), bITandXM);
-		m_SliderAttack.EnableWindow(bITandXM);
+		::EnableWindow(::GetDlgItem(m_hWnd, IDC_INSTR_RAMPUP), bITandXM);
+		::EnableWindow(::GetDlgItem(m_hWnd, IDC_INSTR_RAMPDOWN), bITandXM);
 		m_EditName.EnableWindow(bITandXM);
 		m_EditFileName.EnableWindow(bITandMPT);
 		m_CbnMidiCh.EnableWindow(bITandXM);
@@ -1219,7 +1211,7 @@ void CCtrlInstruments::UpdateView(DWORD dwHintMask, CObject *pObj)
 		m_EditPitchTempoLock.EnableWindow(bITandMPT);
 		m_CheckPitchTempoLock.EnableWindow(bITandMPT);
 	}
-	if (dwHintMask & (HINT_INSTRUMENT|HINT_MODTYPE))
+	if (dwHintMask & (HINT_INSTRUMENT | HINT_MODTYPE))
 	{
 		CHAR s[128];
 		MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
@@ -1301,12 +1293,20 @@ void CCtrlInstruments::UpdateView(DWORD dwHintMask, CObject *pObj)
 				UpdateFilterText();
 			}
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-			// Volume ramping (attack)
-			int n = pIns->nVolRamp; //? MAX_ATTACK_LENGTH - pIns->nVolRamp : 0;
-			m_SliderAttack.SetPos(n);
-			if(n == 0) SetDlgItemText(IDC_EDIT2,"default");
-			else SetDlgItemInt(IDC_EDIT2,n);
+// -> DESC="per-instrument volume ramping setup"
+			int n = pIns->nVolRampUp; //? MAX_ATTACK_LENGTH - pIns->nVolRamp : 0;
+			if (n == 0) {
+				SetDlgItemText(IDC_INSTR_RAMPUP, "default");
+			} else {
+				SetDlgItemInt(IDC_INSTR_RAMPUP, n);
+			}
+
+			n = pIns->nVolRampDown;
+			if (n == 0) {
+				SetDlgItemText(IDC_INSTR_RAMPDOWN, "default");
+			} else {
+				SetDlgItemInt(IDC_INSTR_RAMPDOWN, n);
+			}
 // -! NEW_FEATURE#0027
 
 			UpdateTuningComboBox();
@@ -2147,27 +2147,27 @@ void CCtrlInstruments::OnPPSChanged()
 }
 
 // -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-void CCtrlInstruments::OnAttackChanged()
-{
+// -> DESC="per-instrument volume ramping setup"
+void CCtrlInstruments::OnRampChanged() {
 	MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
-	if(!IsLocked() && pIns){
-		int n = GetDlgItemInt(IDC_EDIT2);
-		if(n < 0) n = 0;
-		if(n > MAX_ATTACK_VALUE) n = MAX_ATTACK_VALUE;
-		int newRamp = n; //? MAX_ATTACK_LENGTH - n : 0;
+	if (pIns) {
+		UpdateRampingInPlace(IDC_INSTR_RAMPUP, IDC_INSTR_RAMPUP_SPIN, &pIns->nVolRampUp);
+		UpdateRampingInPlace(IDC_INSTR_RAMPDOWN, IDC_INSTR_RAMPDOWN_SPIN, &pIns->nVolRampDown);
+	}
+}
 
-		if(pIns->nVolRamp != newRamp)
-		{
-			pIns->nVolRamp = newRamp;
+void CCtrlInstruments::UpdateRampingInPlace(int editId, int spinId, USHORT *instRamp) {
+	if (!IsLocked()) {
+		int newRamp = CLAMP(GetDlgItemInt(editId), 0, MAX_ATTACK_VALUE);
+
+		if (*instRamp != newRamp) {
+			*instRamp = newRamp;
 			SetInstrumentModified(true);
 		}
-
-		m_SliderAttack.SetPos(n);
-		if( CSpinButtonCtrl *spin = (CSpinButtonCtrl *)GetDlgItem(IDC_SPIN1) ) spin->SetPos(n);
-		LockControls();
-		if (n == 0) SetDlgItemText(IDC_EDIT2,"default");
-		UnlockControls();
+		//XXih: ugh.  ugh!
+		if (CSpinButtonCtrl *spin = static_cast<CSpinButtonCtrl *>(GetDlgItem(spinId))) {
+			spin->SetPos(newRamp);
+		}
 	}
 }
 // -! NEW_FEATURE#0027
@@ -2330,29 +2330,14 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
 		CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
 		MODINSTRUMENT *pIns = pSndFile->Instruments[m_nInstrument];
 
-		if (pIns)
-		{
-		//Various optimisations by rewbs
+		if (pIns) {
+			//Various optimisations by rewbs
 			CSliderCtrl* pSlider = (CSliderCtrl*) pSB;
 			short int n;
 			bool filterChanger = false;
 
-// -> CODE#0027
-// -> DESC="per-instrument volume ramping setup (refered as attack)"
-			// Volume ramping (attack)
-			if (pSlider==&m_SliderAttack) {
-				n = m_SliderAttack.GetPos();
-				int newRamp = n; //? MAX_ATTACK_LENGTH - n : 0;
-				if(pIns->nVolRamp != newRamp)
-				{
-					pIns->nVolRamp = newRamp;
-					SetDlgItemInt(IDC_EDIT2,n);
-					SetInstrumentModified(true);
-				}
-// -! NEW_FEATURE#0027
-			} 
 			// Volume Swing
-			else if (pSlider==&m_SliderVolSwing) 
+			if (pSlider==&m_SliderVolSwing) 
 			{
 				n = m_SliderVolSwing.GetPos();
 				if ((n >= 0) && (n <= 64) && (n != (int)pIns->nVolSwing))
