@@ -473,7 +473,6 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
 
 /////////////////////////////////////////////////////
 //
-extern void X86_StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount, const float _i2fc);
 extern void X86_FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount, const float _f2ic);
 extern void X86_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc);
 extern void X86_FloatToMonoMix(const float *pIn, int *pOut, UINT nCount, const float _f2ic);
@@ -1942,7 +1941,7 @@ VOID CSoundFile::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, U
     }
 #endif
 
-    X86_StereoMixToFloat(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
+    modplug::mixer::stereo_mix_to_float(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
 
 }
 
@@ -1960,7 +1959,7 @@ VOID CSoundFile::FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOu
             return;
         }
     }
-    X86_FloatToStereoMix(pIn1, pIn2, pOut, nCount, m_pConfig->getFloatToInt());
+    modplug::mixer::float_to_stereo_mix(pIn1, pIn2, pOut, nCount, m_pConfig->getFloatToInt());
 }
 
 
@@ -1984,7 +1983,7 @@ VOID CSoundFile::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
             return;
         }
     }
-    X86_MonoMixToFloat(pSrc, pOut, nCount, m_pConfig->getIntToFloat());	
+    modplug::mixer::mono_mix_to_float(pSrc, pOut, nCount, m_pConfig->getIntToFloat());	
 
 }
 
@@ -2002,7 +2001,7 @@ VOID CSoundFile::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
             return;
         }
     }
-    X86_FloatToMonoMix(pIn, pOut, nCount, m_pConfig->getFloatToInt());
+    modplug::mixer::float_to_mono_mix(pIn, pOut, nCount, m_pConfig->getFloatToInt());
 }
 
 

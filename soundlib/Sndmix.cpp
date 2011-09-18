@@ -2120,7 +2120,8 @@ VOID CSoundFile::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount)
             delta = highResGlobalVolumeDestination - m_lHighResRampingGlobalVolume;
             step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
             
-            UINT maxStep = max(50, (10000 / ramp_length + 1)); //define max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
+            //XXXih: divide by zero >:l
+            UINT maxStep = max(50, (10000 / (ramp_length + 1))); //define max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
             while (abs(step) > maxStep) {					 //if step is too big (might cause click), extend ramp length.
                 m_nSamplesToGlobalVolRampDest += ramp_length;
                 step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);

@@ -19,10 +19,10 @@ void end_channel_ofs(MODCHANNEL *, int *, size_t);
 void interleave_front_rear(int *, int *, size_t);
 void mono_from_stereo(int *, size_t);
 
-void stereo_mix_to_float(const int *, float *, float *, size_t);
-void float_to_stereo_mix(const float *, const float *, int *, size_t);
-void mono_mix_to_float(const int *, float *, size_t);
-void float_to_mono_mix(const float *, int *, size_t);
+void stereo_mix_to_float(const int *, float *, float *, size_t, const float);
+void float_to_stereo_mix(const float *, const float *, int *, size_t, const float);
+void mono_mix_to_float(const int *, float *, size_t, const float);
+void float_to_mono_mix(const float *, int *, size_t, const float);
 
 
 }
