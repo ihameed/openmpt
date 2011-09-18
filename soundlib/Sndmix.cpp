@@ -15,6 +15,7 @@
 #include "../mptrack/moddoc.h"
 #include "../mptrack/MainFrm.h"
 #include "../mptrack/misc_util.h"
+#include "../mptrack/mixer/constants.h"
 #include "../mptrack/mixer/mixutil.h"
 // -! NEW_FEATURE#0022
 #include "sndfile.h"
@@ -53,12 +54,8 @@ LONG gnDryLOfsVol = 0;
 int gbInitPlugins = 0;
 bool gbInitTables = 0;
 
-typedef DWORD (MPPASMCALL * LPCONVERTPROC)(LPVOID, int *, DWORD);
+typedef size_t (MPPASMCALL * LPCONVERTPROC)(void *, int *, size_t);
 
-extern DWORD MPPASMCALL X86_Convert32To8(LPVOID lpBuffer, int *, DWORD nSamples);
-extern DWORD MPPASMCALL X86_Convert32To16(LPVOID lpBuffer, int *, DWORD nSamples);
-extern DWORD MPPASMCALL X86_Convert32To24(LPVOID lpBuffer, int *, DWORD nSamples);
-extern DWORD MPPASMCALL X86_Convert32To32(LPVOID lpBuffer, int *, DWORD nSamples);
 extern UINT MPPASMCALL X86_AGC(int *pBuffer, UINT nSamples, UINT nAGC);
 extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
 extern VOID MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, DWORD nSamples);
@@ -77,8 +74,8 @@ extern DWORD LinearSlideDownTable[256];
 extern DWORD FineLinearSlideUpTable[16];
 extern DWORD FineLinearSlideDownTable[16];
 extern signed char ft2VibratoTable[256];	// -64 .. +64
-extern int MixSoundBuffer[MIXBUFFERSIZE*4];
-extern int MixRearBuffer[MIXBUFFERSIZE*2];
+extern int MixSoundBuffer[modplug::mixer::MIX_BUFFER_SIZE*4];
+extern int MixRearBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
 
 #ifndef NO_REVERB
 extern UINT gnReverbSend;
@@ -257,10 +254,10 @@ BOOL CSoundFile::FadeSong(UINT msec)
         MODCHANNEL *pramp = &Chn[ChnMix[noff]];
         if (!pramp) continue;
         pramp->nNewLeftVol = pramp->nNewRightVol = 0;
-        pramp->nRightRamp = (-pramp->nRightVol << VOLUMERAMPPRECISION) / nRampLength;
-        pramp->nLeftRamp = (-pramp->nLeftVol << VOLUMERAMPPRECISION) / nRampLength;
-        pramp->nRampRightVol = pramp->nRightVol << VOLUMERAMPPRECISION;
-        pramp->nRampLeftVol = pramp->nLeftVol << VOLUMERAMPPRECISION;
+        pramp->nRightRamp = (-pramp->nRightVol << modplug::mixer::VOLUME_RAMP_PRECISION) / nRampLength;
+        pramp->nLeftRamp = (-pramp->nLeftVol << modplug::mixer::VOLUME_RAMP_PRECISION) / nRampLength;
+        pramp->nRampRightVol = pramp->nRightVol << modplug::mixer::VOLUME_RAMP_PRECISION;
+        pramp->nRampLeftVol = pramp->nLeftVol << modplug::mixer::VOLUME_RAMP_PRECISION;
         pramp->nRampLength = nRampLength;
         pramp->dwFlags |= CHN_VOLUMERAMP;
     }
@@ -280,22 +277,26 @@ BOOL CSoundFile::GlobalFadeSong(UINT msec)
 }
 
 
-UINT CSoundFile::Read(LPVOID lpDestBuffer, UINT cbBuffer) {
+UINT CSoundFile::ReadPattern(LPVOID lpDestBuffer, UINT cbBuffer) {
     //XXXih: i render here!
     LPBYTE lpBuffer = (LPBYTE)lpDestBuffer;
-    LPCONVERTPROC pCvt = X86_Convert32To8;
+    LPCONVERTPROC pCvt = modplug::mixer::clip_32_to_8;
     UINT lRead, lMax, lSampleSize, lCount, lSampleCount, nStat=0;
     UINT nMaxPlugins;
-        
+
     nMaxPlugins = MAX_MIXPLUGINS;
     while ((nMaxPlugins > 0) && (!m_MixPlugins[nMaxPlugins-1].pMixPlugin)) nMaxPlugins--;
     m_nMixStat = 0;
     lSampleSize = gnChannels;
-    if (gnBitsPerSample == 16) { lSampleSize *= 2; pCvt = X86_Convert32To16; }
-#ifndef FASTSOUNDLIB
-    else if (gnBitsPerSample == 24) { lSampleSize *= 3; pCvt = X86_Convert32To24; } 
-    else if (gnBitsPerSample == 32) { lSampleSize *= 4; pCvt = X86_Convert32To32; } 
-#endif
+    switch (gnBitsPerSample) {
+        case 16:
+            lSampleSize *= 2; pCvt = modplug::mixer::clip_32_to_16; break;
+        case 24:
+            lSampleSize *= 3; pCvt = modplug::mixer::clip_32_to_24; break;
+        case 32:
+            lSampleSize *= 4; pCvt = modplug::mixer::clip_32_to_32; break;
+    }
+
     lMax = cbBuffer / lSampleSize;
     if ((!lMax) || (!lpBuffer) || (!m_nChannels)) return 0;
     lRead = lMax;
@@ -345,7 +346,7 @@ UINT CSoundFile::Read(LPVOID lpDestBuffer, UINT cbBuffer) {
             }
         }
         lCount = m_nBufferCount;
-        if (lCount > MIXBUFFERSIZE) lCount = MIXBUFFERSIZE;
+        if (lCount > modplug::mixer::MIX_BUFFER_SIZE) lCount = modplug::mixer::MIX_BUFFER_SIZE;
         if (lCount > lRead) lCount = lRead;
         if (!lCount) 
             break;
@@ -356,7 +357,7 @@ UINT CSoundFile::Read(LPVOID lpDestBuffer, UINT cbBuffer) {
         // Resetting sound buffer
         modplug::mixer::stereo_fill(MixSoundBuffer, lSampleCount, &gnDryROfsVol, &gnDryLOfsVol);
         
-        ASSERT(lCount<=MIXBUFFERSIZE);		// ensure MIXBUFFERSIZE really is our max buffer size
+        ASSERT(lCount<=modplug::mixer::MIX_BUFFER_SIZE);		// ensure modplug::mixer::MIX_BUFFER_SIZE really is our max buffer size
         if (gnChannels >= 2)
         {
             lSampleCount *= 2;
@@ -1825,8 +1826,8 @@ BOOL CSoundFile::ReadNote()
 
             /*if (m_pConfig->getUseGlobalPreAmp())
             {
-                pChn->nNewRightVol >>= MIXING_ATTENUATION;
-                pChn->nNewLeftVol >>= MIXING_ATTENUATION;
+                pChn->nNewRightVol >>= modplug::mixer::MIXING_ATTENUATION;
+                pChn->nNewLeftVol >>= modplug::mixer::MIXING_ATTENUATION;
             }*/
             const int extraAttenuation = m_pConfig->getExtraSampleAttenuation();
             pChn->nNewRightVol >>= extraAttenuation;
@@ -1857,8 +1858,8 @@ BOOL CSoundFile::ReadNote()
                     rampLength = 1;
                 }
 // -! NEW_FEATURE#0027
-                LONG nRightDelta = ((pChn->nNewRightVol - pChn->nRightVol) << VOLUMERAMPPRECISION);
-                LONG nLeftDelta  = ((pChn->nNewLeftVol - pChn->nLeftVol) << VOLUMERAMPPRECISION);
+                LONG nRightDelta = ((pChn->nNewRightVol - pChn->nRightVol) << modplug::mixer::VOLUME_RAMP_PRECISION);
+                LONG nLeftDelta  = ((pChn->nNewLeftVol - pChn->nLeftVol) << modplug::mixer::VOLUME_RAMP_PRECISION);
 #ifndef FASTSOUNDLIB
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup "
@@ -1869,8 +1870,8 @@ BOOL CSoundFile::ReadNote()
 // -! NEW_FEATURE#0027
                     if ((pChn->nRightVol | pChn->nLeftVol) && (pChn->nNewRightVol | pChn->nNewLeftVol) && (!(pChn->dwFlags & CHN_FASTVOLRAMP)))	{
                         rampLength = m_nBufferCount;
-                        if (rampLength > (1 << (VOLUMERAMPPRECISION-1))) {
-                            rampLength = (1 << (VOLUMERAMPPRECISION-1));
+                        if (rampLength > (1 << (modplug::mixer::VOLUME_RAMP_PRECISION-1))) {
+                            rampLength = (1 << (modplug::mixer::VOLUME_RAMP_PRECISION-1));
                         }
                         if (rampLength < (LONG)globalRampLength) {
                             rampLength = globalRampLength;
@@ -1880,8 +1881,8 @@ BOOL CSoundFile::ReadNote()
 #endif // FASTSOUNDLIB
                 pChn->nRightRamp = nRightDelta / rampLength;
                 pChn->nLeftRamp = nLeftDelta / rampLength;
-                pChn->nRightVol = pChn->nNewRightVol - ((pChn->nRightRamp * rampLength) >> VOLUMERAMPPRECISION);
-                pChn->nLeftVol = pChn->nNewLeftVol - ((pChn->nLeftRamp * rampLength) >> VOLUMERAMPPRECISION);
+                pChn->nRightVol = pChn->nNewRightVol - ((pChn->nRightRamp * rampLength) >> modplug::mixer::VOLUME_RAMP_PRECISION);
+                pChn->nLeftVol = pChn->nNewLeftVol - ((pChn->nLeftRamp * rampLength) >> modplug::mixer::VOLUME_RAMP_PRECISION);
                 if (pChn->nRightRamp|pChn->nLeftRamp)
                 {
                     pChn->nRampLength = rampLength;
@@ -1897,8 +1898,8 @@ BOOL CSoundFile::ReadNote()
                 pChn->nRightVol = pChn->nNewRightVol;
                 pChn->nLeftVol = pChn->nNewLeftVol;
             }
-            pChn->nRampRightVol = pChn->nRightVol << VOLUMERAMPPRECISION;
-            pChn->nRampLeftVol = pChn->nLeftVol << VOLUMERAMPPRECISION;
+            pChn->nRampRightVol = pChn->nRightVol << modplug::mixer::VOLUME_RAMP_PRECISION;
+            pChn->nRampLeftVol = pChn->nLeftVol << modplug::mixer::VOLUME_RAMP_PRECISION;
             // Adding the channel in the channel list
             ChnMix[m_nMixChannels++] = nChn;
         } else
@@ -2115,7 +2116,7 @@ VOID CSoundFile::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount)
         } 
 
         if (m_nSamplesToGlobalVolRampDest > 0) {	// still some ramping left to do.
-            long highResGlobalVolumeDestination = static_cast<long>(m_nGlobalVolumeDestination)<<VOLUMERAMPPRECISION;
+            long highResGlobalVolumeDestination = static_cast<long>(m_nGlobalVolumeDestination)<<modplug::mixer::VOLUME_RAMP_PRECISION;
             
             delta = highResGlobalVolumeDestination - m_lHighResRampingGlobalVolume;
             step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
@@ -2131,11 +2132,11 @@ VOID CSoundFile::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount)
         for (int pos = 0; pos < lTotalSampleCount; pos++) {
             if (m_nSamplesToGlobalVolRampDest > 0) { //ramping required
                 m_lHighResRampingGlobalVolume += step;
-                SoundBuffer[pos] = _muldiv(SoundBuffer[pos], m_lHighResRampingGlobalVolume, MAX_GLOBAL_VOLUME<<VOLUMERAMPPRECISION);
+                SoundBuffer[pos] = _muldiv(SoundBuffer[pos], m_lHighResRampingGlobalVolume, MAX_GLOBAL_VOLUME<<modplug::mixer::VOLUME_RAMP_PRECISION);
                 m_nSamplesToGlobalVolRampDest--;
             } else {
                 SoundBuffer[pos] = _muldiv(SoundBuffer[pos], m_nGlobalVolume, MAX_GLOBAL_VOLUME);
-                m_lHighResRampingGlobalVolume = m_nGlobalVolume<<VOLUMERAMPPRECISION;
+                m_lHighResRampingGlobalVolume = m_nGlobalVolume<<modplug::mixer::VOLUME_RAMP_PRECISION;
             }
 
         }

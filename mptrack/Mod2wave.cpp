@@ -606,7 +606,7 @@ BOOL CDoWaveConvert::OnInitDialog()
 // -> CODE#0024
 // -> DESC="wav export update"
 //#define WAVECONVERTBUFSIZE	2048
-#define WAVECONVERTBUFSIZE	MIXBUFFERSIZE //Going over MIXBUFFERSIZE can kill VSTPlugs 
+#define WAVECONVERTBUFSIZE	modplug::mixer::MIX_BUFFER_SIZE //Going over modplug::mixer::MIX_BUFFER_SIZE can kill VSTPlugs 
 // -! NEW_FEATURE#0024
 
 
@@ -716,7 +716,7 @@ void CDoWaveConvert::OnButton1()
     CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);	//rewbs.VSTTimeInfo
     for (UINT n = 0; ; n++)
     {
-        UINT lRead = m_pSndFile->Read(buffer, sizeof(buffer));
+        UINT lRead = m_pSndFile->ReadPattern(buffer, sizeof(buffer));
 
         // Process cue points (add base offset), if there are any to process.
         vector<PatternCuePoint>::reverse_iterator iter;
@@ -1088,7 +1088,7 @@ void CDoAcmConvert::OnButton1()
         UINT lRead = 0;
         if (!bFinished)
         {
-            lRead = m_pSndFile->Read(pcmBuffer + WAVECONVERTBUFSIZE - pcmBufSize, pcmBufSize);
+            lRead = m_pSndFile->ReadPattern(pcmBuffer + WAVECONVERTBUFSIZE - pcmBufSize, pcmBufSize);
             if (!lRead) bFinished = true;
         }
         ullSamples += lRead;

@@ -2,6 +2,7 @@
 
 #include "constants.h"
 #include <vector>
+#include <map>
 
 namespace modplug {
 namespace graph {
@@ -13,9 +14,12 @@ public:
     graph();
     ~graph();
 
-    node *channel_inputs[MAX_CHANNELS];
+    void process();
 
+    node *channel_inputs[MAX_CHANNELS];
     node *mixed_output;
+
+    //std::map<int, node>
 };
 
 }

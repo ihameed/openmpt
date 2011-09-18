@@ -1,6 +1,8 @@
 #ifndef _VST_PLUGIN_MANAGER_H_
 #define _VST_PLUGIN_MANAGER_H_
 
+#include "mixer/constants.h"
+
 #ifndef NO_VST
 	#define VST_FORCE_DEPRECATED 0
 	#include <aeffectx.h>			// VST
@@ -84,9 +86,9 @@ protected:
 	float **m_pInputs;
 	float **m_pOutputs;
 	int m_nEditorX, m_nEditorY;
-	int m_MixBuffer[MIXBUFFERSIZE*2+2];		// Stereo interleaved
-	float m_FloatBuffer[MIXBUFFERSIZE*(2+32)+34];	// 2ch separated + up to 32 VSTi outputs...
-	float dummyBuffer_[MIXBUFFERSIZE + 2];
+	int m_MixBuffer[modplug::mixer::MIX_BUFFER_SIZE*2+2];		// Stereo interleaved
+	float m_FloatBuffer[modplug::mixer::MIX_BUFFER_SIZE*(2+32)+34];	// 2ch separated + up to 32 VSTi outputs...
+	float dummyBuffer_[modplug::mixer::MIX_BUFFER_SIZE + 2];
 	VstMidiEvent m_ev_queue[VSTEVENT_QUEUE_LEN];
 	CModDoc* m_pModDoc;			 //rewbs.plugDocAware
 	CSoundFile* m_pSndFile;			 //rewbs.plugDocAware

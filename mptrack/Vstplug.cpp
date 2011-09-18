@@ -883,7 +883,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
     case audioMasterGetSampleRate:		
         return CMainFrame::GetMainFrame()->GetSampleRate();
     case audioMasterGetBlockSize:		
-        return MIXBUFFERSIZE;
+        return modplug::mixer::MIX_BUFFER_SIZE;
     case audioMasterGetInputLatency:
         Log("VST plugin to host: Get Input Latency\n");
         break;
@@ -1758,12 +1758,12 @@ CVstPlugin::CVstPlugin(HMODULE hLibrary, PVSTPLUGINLIB pFactory, PSNDMIXPLUGIN p
     m_MixState.nVolDecayR = 0;
     m_MixState.pMixBuffer = (int *)((((DWORD)m_MixBuffer)+7)&~7);
     m_MixState.pOutBufferL = (float *)((((DWORD)&m_FloatBuffer[0])+7)&~7);
-    m_MixState.pOutBufferR = (float *)((((DWORD)&m_FloatBuffer[MIXBUFFERSIZE])+7)&~7);
+    m_MixState.pOutBufferR = (float *)((((DWORD)&m_FloatBuffer[modplug::mixer::MIX_BUFFER_SIZE])+7)&~7);
     //XXXih: awful!
-    memset(dummyBuffer_, 0, sizeof(float) * (MIXBUFFERSIZE + 2));
+    memset(dummyBuffer_, 0, sizeof(float) * (modplug::mixer::MIX_BUFFER_SIZE + 2));
     
     //rewbs.dryRatio: we now initialise this in CVstPlugin::Initialize(). 
-    //m_pTempBuffer = (float *)((((DWORD)&m_FloatBuffer[MIXBUFFERSIZE*2])+7)&~7);
+    //m_pTempBuffer = (float *)((((DWORD)&m_FloatBuffer[modplug::mixer::MIX_BUFFER_SIZE*2])+7)&~7);
 
     m_bSongPlaying = false; //rewbs.VSTCompliance
     m_bPlugResumed = false;
@@ -1864,7 +1864,7 @@ void CVstPlugin::Initialize(CSoundFile* pSndFile)
 
     m_nSampleRate=CSoundFile::gdwMixingFreq;
     Dispatch(effSetSampleRate, 0, 0, NULL, CSoundFile::gdwMixingFreq);
-    Dispatch(effSetBlockSize, 0, MIXBUFFERSIZE, NULL, 0.0f);
+    Dispatch(effSetBlockSize, 0, modplug::mixer::MIX_BUFFER_SIZE, NULL, 0.0f);
     if (m_pEffect->numPrograms > 0)	{
         Dispatch(effSetProgram, 0, 0, NULL, 0);
     }
@@ -1896,7 +1896,7 @@ void CVstPlugin::Initialize(CSoundFile* pSndFile)
 
     for (UINT iOut=0; iOut<m_nOutputs; iOut++)
     {
-        m_pTempBuffer[iOut]=(float *)((((DWORD_PTR)&m_FloatBuffer[MIXBUFFERSIZE*(2+iOut)])+7)&~7); //rewbs.dryRatio
+        m_pTempBuffer[iOut]=(float *)((((DWORD_PTR)&m_FloatBuffer[modplug::mixer::MIX_BUFFER_SIZE*(2+iOut)])+7)&~7); //rewbs.dryRatio
     }	
 
 #ifdef VST_LOG
@@ -2337,7 +2337,7 @@ void CVstPlugin::Resume()
             m_nSampleRate=sampleRate;
             Dispatch(effSetSampleRate, 0, 0, NULL, m_nSampleRate);
         }
-        Dispatch(effSetBlockSize, 0, MIXBUFFERSIZE, NULL, 0);
+        Dispatch(effSetBlockSize, 0, modplug::mixer::MIX_BUFFER_SIZE, NULL, 0);
         //start off some stuff
         Dispatch(effMainsChanged, 0, 1, NULL, 0.0f);	// calls plugin's resume
         Dispatch(effStartProcess, 0, 0, NULL, 0.0f);
@@ -2435,7 +2435,7 @@ void CVstPlugin::Process(float **pOutputs, unsigned long nSamples)
         //Do the VST processing magic
         m_dwTimeAtStartOfProcess = timeGetTime();
         try {
-            ASSERT(nSamples<=MIXBUFFERSIZE);
+            ASSERT(nSamples<=modplug::mixer::MIX_BUFFER_SIZE);
             m_pProcessFP(m_pEffect, m_pInputs, m_pOutputs, nSamples);
         } catch (char * str) {
             m_pMixStruct->Info.dwInputRouting |= MIXPLUG_INPUTF_BYPASS;
@@ -2497,7 +2497,7 @@ void CVstPlugin::Process(float *pOutL, float *pOutR, unsigned long nSamples)
         m_dwTimeAtStartOfProcess = timeGetTime();
         //Do the VST processing magic
         try {
-            ASSERT(nSamples<=MIXBUFFERSIZE);
+            ASSERT(nSamples<=modplug::mixer::MIX_BUFFER_SIZE);
             m_pProcessFP(m_pEffect, m_pInputs, m_pOutputs, nSamples);
         } catch (...) {
             m_pMixStruct->Info.dwInputRouting |= MIXPLUG_INPUTF_BYPASS;
@@ -2795,7 +2795,7 @@ void CVstPlugin::HardAllNotesOff()
 //--------------------------------
 {
     bool overflow;
-    float in[2][SCRATCH_BUFFER_SIZE], out[2][SCRATCH_BUFFER_SIZE]; // scratch buffers
+    float in[2][modplug::mixer::SCRATCH_BUFFER_SIZE], out[2][modplug::mixer::SCRATCH_BUFFER_SIZE]; // scratch buffers
 
     // Relies on a wait on processCalled, which will never get set
     // if plug is bypassed.
@@ -2836,7 +2836,7 @@ void CVstPlugin::HardAllNotesOff()
         //ResetEvent(processCalled);				 // Unset processCalled.
         //WaitForSingleObject(processCalled, 10000); // Will not return until processCalled is set again,
         //                                           // i.e. until processReplacing() has been called.
-        Process((float*)in, (float*)out, SCRATCH_BUFFER_SIZE);
+        Process((float*)in, (float*)out, modplug::mixer::SCRATCH_BUFFER_SIZE);
 
     // If we had hit an overflow, we need to loop around and start again.
     } while (overflow);
@@ -3823,7 +3823,7 @@ void CBuzz2Vst::Process(float **inputs, float **outputs, long sampleframes)
 {
     float *pinL = inputs[0], *pinR = inputs[1];
     float *poutL = outputs[0], *poutR = outputs[1];
-    float Buffer[MIXBUFFERSIZE*2];		// Stereo interleaved
+    float Buffer[modplug::mixer::MIX_BUFFER_SIZE*2];		// Stereo interleaved
     
     // Re-interleave the stereo mix
     X86_Interleave(pinL, pinR, Buffer, sampleframes);
@@ -3865,7 +3865,7 @@ protected:
     AEffect m_Effect;
     REFERENCE_TIME m_DataTime;
     short int *m_pMixBuffer;
-    short int m_MixBuffer[MIXBUFFERSIZE*2+16];		// 16-bit Stereo interleaved
+    short int m_MixBuffer[modplug::mixer::MIX_BUFFER_SIZE*2+16];		// 16-bit Stereo interleaved
 
 public:
     CDmo2Vst(IMediaObject *pMO, IMediaObjectInPlace *pMOIP, DWORD uid);

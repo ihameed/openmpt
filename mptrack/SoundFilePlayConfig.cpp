@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Sndfile.h"
 #include ".\soundfileplayconfig.h"
+#include "mixer/constants.h"
 
 CSoundFilePlayConfig::CSoundFilePlayConfig(void) {
 	setVSTiVolume(1.0f);
@@ -26,7 +27,7 @@ void CSoundFilePlayConfig::SetMixLevels(int mixLevelType)
 			setNormalSamplePreAmp(128.0);
 			setNormalVSTiVol(100.0);
 			setNormalGlobalVol(128.0);
-			setExtraSampleAttenuation(MIXING_ATTENUATION);
+			setExtraSampleAttenuation(modplug::mixer::MIXING_ATTENUATION);
 			break;
 
 		// Ericus' version gives us floats in [-0.06;0.06] and requires attenuation to
@@ -42,7 +43,7 @@ void CSoundFilePlayConfig::SetMixLevels(int mixLevelType)
 			setNormalSamplePreAmp(128.0);
 			setNormalVSTiVol(100.0);
 			setNormalGlobalVol(128.0);
-			setExtraSampleAttenuation(MIXING_ATTENUATION);
+			setExtraSampleAttenuation(modplug::mixer::MIXING_ATTENUATION);
 			break;
 
 		// 117RC2 gives us floats in [-1.0; 1.0] and hopefully plays VSTis at 
@@ -59,7 +60,7 @@ void CSoundFilePlayConfig::SetMixLevels(int mixLevelType)
 			setNormalSamplePreAmp(128.0);
 			setNormalVSTiVol(100.0);
 			setNormalGlobalVol(128.0);
-			setExtraSampleAttenuation(MIXING_ATTENUATION);
+			setExtraSampleAttenuation(modplug::mixer::MIXING_ATTENUATION);
 			break;
 
 		// 117RC3 ignores the horrible global, system-specific pre-amp, 

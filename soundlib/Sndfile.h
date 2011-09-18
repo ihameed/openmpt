@@ -825,7 +825,7 @@ public:
     void StopAllVsti();    //rewbs.VSTCompliance
     void RecalculateGainForAllPlugs();
     void ResetChannels();
-    UINT Read(LPVOID lpBuffer, UINT cbBuffer);
+    UINT ReadPattern(LPVOID lpBuffer, UINT cbBuffer);
     UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, CSoundFile *, DWORD *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
     UINT GetResamplingFlag(const MODCHANNEL *pChannel);
@@ -1111,12 +1111,8 @@ inline IMixPlugin* CSoundFile::GetInstrumentPlugin(INSTRUMENTINDEX instr)
 ///////////////////////////////////////////////////////////
 // Low-level Mixing functions
 
-#define MIXBUFFERSIZE		512
-#define SCRATCH_BUFFER_SIZE 64 //Used for plug's final processing (cleanup)
-#define MIXING_ATTENUATION	4
-#define VOLUMERAMPPRECISION	12	
 #define FADESONGDELAY		100
-#define EQ_BUFFERSIZE		(MIXBUFFERSIZE)
+#define EQ_BUFFERSIZE		(modplug::mixer::MIX_BUFFER_SIZE)
 #define AGC_PRECISION		10
 #define AGC_UNITY			(1 << AGC_PRECISION)
 

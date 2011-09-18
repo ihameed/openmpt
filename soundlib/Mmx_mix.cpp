@@ -24,6 +24,7 @@
 //
 ////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
+#include "../mptrack/mixer/constants.h"
 #include "sndfile.h"
 
 extern short int gFastSinc[];
@@ -721,7 +722,7 @@ mixloop:
     movq mm7, mm4
     movq mm0, mm6
     psrlq mm6, 32
-    psrad mm7, VOLUMERAMPPRECISION-1		// nRampVol >> VOLUMERAMPPRECISION-1
+    psrad mm7, modplug::mixer::VOLUME_RAMP_PRECISION-1		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION-1
     paddd mm0, mm6
     pxor mm6, mm6
     psrad mm0, 15
@@ -756,7 +757,7 @@ mixloop2x:
     movq mm7, mm4
     movq mm0, mm6
     psrlq mm6, 32
-    psrad mm7, VOLUMERAMPPRECISION-1		// nRampVol >> VOLUMERAMPPRECISION-1
+    psrad mm7, modplug::mixer::VOLUME_RAMP_PRECISION-1		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION-1
     paddd mm0, mm6
     pxor mm6, mm6
     psrad mm0, 15
@@ -791,7 +792,7 @@ mixloop3x:
     movq mm7, mm4
     movq mm0, mm6
     psrlq mm6, 32
-    psrad mm7, VOLUMERAMPPRECISION-1		// nRampVol >> VOLUMERAMPPRECISION-1
+    psrad mm7, modplug::mixer::VOLUME_RAMP_PRECISION-1		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION-1
     paddd mm0, mm6
     pxor mm6, mm6
     psrad mm0, 15
@@ -810,7 +811,7 @@ done:
     sar ebx, 16
     add dword ptr [ecx+CHNOFS_NPOS], ebx
     movq qword ptr [ecx+MODCHANNEL.nRampRightVol], mm4
-    psrad mm4, VOLUMERAMPPRECISION
+    psrad mm4, modplug::mixer::VOLUME_RAMP_PRECISION
     movq qword ptr [ecx+MODCHANNEL.nRightVol], mm4
     MMX_LEAVE
     }
@@ -969,7 +970,7 @@ mixloop:
     movq mm7, mm4
     movq mm0, mm6
     psrlq mm6, 32
-    psrad mm7, VOLUMERAMPPRECISION		// nRampVol >> VOLUMERAMPPRECISION
+    psrad mm7, modplug::mixer::VOLUME_RAMP_PRECISION		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION
     paddd mm0, mm6
     pxor mm6, mm6
     psrad mm0, 14
@@ -1001,7 +1002,7 @@ mixloop2x:
     movq mm7, mm4
     movq mm0, mm6
     psrlq mm6, 32
-    psrad mm7, VOLUMERAMPPRECISION		// nRampVol >> VOLUMERAMPPRECISION
+    psrad mm7, modplug::mixer::VOLUME_RAMP_PRECISION		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION
     paddd mm0, mm6
     pxor mm6, mm6
     psrad mm0, 14
@@ -1033,7 +1034,7 @@ mixloop3x:
     movq mm7, mm4
     movq mm0, mm6
     psrlq mm6, 32
-    psrad mm7, VOLUMERAMPPRECISION		// nRampVol >> VOLUMERAMPPRECISION
+    psrad mm7, modplug::mixer::VOLUME_RAMP_PRECISION		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION
     paddd mm0, mm6
     pxor mm6, mm6
     psrad mm0, 14
@@ -1052,7 +1053,7 @@ done:
     sar ebx, 16
     add dword ptr [ecx+CHNOFS_NPOS], ebx
     movq qword ptr [ecx+MODCHANNEL.nRampRightVol], mm4
-    psrad mm4, VOLUMERAMPPRECISION
+    psrad mm4, modplug::mixer::VOLUME_RAMP_PRECISION
     movq qword ptr [ecx+MODCHANNEL.nRightVol], mm4
     MMX_LEAVE
     }
@@ -1080,7 +1081,7 @@ _declspec(naked) VOID __cdecl MMX_FilterMono8BitLinearRampMix(MODCHANNEL *pChann
     jnz noramp
     movq mm4, qword ptr [ecx+MODCHANNEL.nRightVol]
     pxor mm3, mm3
-    pslld mm4, VOLUMERAMPPRECISION
+    pslld mm4, modplug::mixer::VOLUME_RAMP_PRECISION
 noramp:
     movq mm6, qword ptr [ecx+MODCHANNEL.nFilter_Y1]		// mm6 = [ y2 | y1 ]
     movd mm0, dword ptr [ecx+MODCHANNEL.nFilter_B0]
@@ -1125,7 +1126,7 @@ mixloop:
     psubd mm1, mm5
     movq mm5, qword ptr [edi-8]
     movq mm2, mm4
-    psrad mm2, VOLUMERAMPPRECISION		// nRampVol >> VOLUMERAMPPRECISION
+    psrad mm2, modplug::mixer::VOLUME_RAMP_PRECISION		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION
     packssdw mm2, mm2
     packssdw mm0, mm0
     punpcklwd mm2, mm2
@@ -1142,7 +1143,7 @@ mixloop:
     sar ebx, 16
     add dword ptr [ecx+CHNOFS_NPOS], ebx
     movq qword ptr [ecx+MODCHANNEL.nRampRightVol], mm4
-    psrad mm4, VOLUMERAMPPRECISION
+    psrad mm4, modplug::mixer::VOLUME_RAMP_PRECISION
     movq qword ptr [ecx+MODCHANNEL.nRightVol], mm4
     movq qword ptr [ecx+MODCHANNEL.nFilter_Y1], mm6
     MMX_LEAVE
@@ -1168,7 +1169,7 @@ _declspec(naked) VOID __cdecl MMX_FilterMono16BitLinearRampMix(MODCHANNEL *pChan
     jnz noramp
     movq mm4, qword ptr [ecx+MODCHANNEL.nRightVol]
     pxor mm3, mm3
-    pslld mm4, VOLUMERAMPPRECISION
+    pslld mm4, modplug::mixer::VOLUME_RAMP_PRECISION
 noramp:
     movq mm6, qword ptr [ecx+MODCHANNEL.nFilter_Y1]		// mm6 = [ y2 | y1 ]
     movd mm0, dword ptr [ecx+MODCHANNEL.nFilter_B0]
@@ -1212,7 +1213,7 @@ mixloop:
     psubd mm1, mm5
     movq mm5, qword ptr [edi-8]
     movq mm2, mm4
-    psrad mm2, VOLUMERAMPPRECISION		// nRampVol >> VOLUMERAMPPRECISION
+    psrad mm2, modplug::mixer::VOLUME_RAMP_PRECISION		// nRampVol >> modplug::mixer::VOLUME_RAMP_PRECISION
     packssdw mm2, mm2
     packssdw mm0, mm0
     punpcklwd mm2, mm2
@@ -1229,7 +1230,7 @@ mixloop:
     sar ebx, 16
     add dword ptr [ecx+CHNOFS_NPOS], ebx
     movq qword ptr [ecx+MODCHANNEL.nRampRightVol], mm4
-    psrad mm4, VOLUMERAMPPRECISION
+    psrad mm4, modplug::mixer::VOLUME_RAMP_PRECISION
     movq qword ptr [ecx+MODCHANNEL.nRightVol], mm4
     movq qword ptr [ecx+MODCHANNEL.nFilter_Y1], mm6
     MMX_LEAVE

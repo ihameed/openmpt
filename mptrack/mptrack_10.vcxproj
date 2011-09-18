@@ -324,6 +324,7 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mixer\constants.h" />
     <ClInclude Include="graph\constants.h" />
     <ClInclude Include="graph\graph.h" />
     <ClInclude Include="graph\node.h" />

@@ -8,6 +8,8 @@
 */
 
 #include "stdafx.h"
+#include "../mptrack/mixer/constants.h"
+#include "../mptrack/mixer/mixutil.h"
 #include "sndfile.h"
 #include <math.h>
 
@@ -69,8 +71,8 @@ static LONG SurroundBuffer[SURROUNDBUFFERSIZE];
 
 
 // Access the main temporary mix buffer directly: avoids an extra pointer
-extern int MixSoundBuffer[MIXBUFFERSIZE*4];
-extern int MixRearBuffer[MIXBUFFERSIZE*2];
+extern int MixSoundBuffer[modplug::mixer::MIX_BUFFER_SIZE*4];
+extern int MixRearBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
 
 extern VOID InitializeReverb(BOOL bReset);
 extern VOID ProcessReverb(UINT nSamples);

@@ -31,6 +31,7 @@ rudely sepple-ized and jammed into openmpt by xaimus  : - [
 #include <cstring>
 
 #include "sndfile.h"
+#include "constants.h"
 #include "mixutil.h"
 
 namespace modplug {
@@ -141,13 +142,11 @@ void float_to_mono_mix(const float *in, int *out, size_t count, const float f2ic
 // ----------------------------------------------------------------------------
 // Clip and convert functions
 // ----------------------------------------------------------------------------
-// XXX mins/max were int[2]
-//
 // The original C version was written by Rani Assaf <rani@magic.metawire.com>
 
 
-// Clip and convert to 8 bit
-size_t clip_32_to_8(void *ptr, int *buffer, size_t samples, int *mins, int *maxs) {
+//XXXih: write tests!
+size_t clip_32_to_8(void *ptr, int *buffer, size_t samples) {
     unsigned char *p = (unsigned char *) ptr;
 
     for (size_t i = 0; i < samples; i++) {
@@ -158,75 +157,61 @@ size_t clip_32_to_8(void *ptr, int *buffer, size_t samples, int *mins, int *maxs
         else if (n > MIXING_CLIPMAX)
             n = MIXING_CLIPMAX;
 
-        if (n < mins[i & 1])
-            mins[i & 1] = n;
-        else if (n > maxs[i & 1])
-            maxs[i & 1] = n;
-
         // 8-bit unsigned
-        p[i] = static_cast<unsigned char>((n >> (24 - MIXING_ATTENUATION)) ^ 0x80);
+        p[i] = static_cast<unsigned char>((n >> (24 - modplug::mixer::MIXING_ATTENUATION)) ^ 0x80);
     }
 
     return samples;
 }
 
 
-size_t clip_32_to_16(void *ptr, int *buffer, size_t samples, int *mins, int *maxs) {
+size_t clip_32_to_16(void *ptr, int *buffer, size_t samples) {
     signed short *p = (signed short *) ptr;
 
     for (size_t i = 0; i < samples; i++) {
         int n = buffer[i];
+        n += 1 << (15 - modplug::mixer::MIXING_ATTENUATION);
 
         if (n < MIXING_CLIPMIN)
             n = MIXING_CLIPMIN;
         else if (n > MIXING_CLIPMAX)
             n = MIXING_CLIPMAX;
 
-        if (n < mins[i & 1])
-            mins[i & 1] = n;
-        else if (n > maxs[i & 1])
-            maxs[i & 1] = n;
-
         // 16-bit signed
-        p[i] = static_cast<signed short>(n >> (16 - MIXING_ATTENUATION));
+        p[i] = static_cast<signed short>(n >> (16 - modplug::mixer::MIXING_ATTENUATION));
     }
 
     return samples * 2;
 }
 
 
-// 24-bit might not work...
-size_t clip_32_to_24(void *ptr, int *buffer, size_t samples, int *mins, int *maxs) {
+// XXXih: untested
+size_t clip_32_to_24(void *ptr, int *buffer, size_t samples) {
     /* the inventor of 24bit anything should be shot */
     unsigned char *p = (unsigned char *) ptr;
 
     for (size_t i = 0; i < samples; i++) {
         int n = buffer[i];
+        n += 1 << (7 - modplug::mixer::MIXING_ATTENUATION);
 
         if (n < MIXING_CLIPMIN)
             n = MIXING_CLIPMIN;
         else if (n > MIXING_CLIPMAX)
             n = MIXING_CLIPMAX;
 
-        if (n < mins[i & 1])
-            mins[i & 1] = n;
-        else if (n > maxs[i & 1])
-            maxs[i & 1] = n;
-
         // 24-bit signed
-        n = n >> (8 - MIXING_ATTENUATION);
+        n = n >> (8 - modplug::mixer::MIXING_ATTENUATION);
 
         /* err, assume same endian */
         memcpy(p, &n, 3);
         p += 3;
     }
 
-    return samples * 2;
+    return samples * 3;
 }
 
 
-// 32-bit might not work...
-size_t clip_32_to_32(void *ptr, int *buffer, size_t samples, int *mins, int *maxs) {
+size_t clip_32_to_32(void *ptr, int *buffer, size_t samples) {
     signed int *p = (signed int *) ptr;
 
     for (size_t i = 0; i < samples; i++) {
@@ -237,16 +222,11 @@ size_t clip_32_to_32(void *ptr, int *buffer, size_t samples, int *mins, int *max
         else if (n > MIXING_CLIPMAX)
             n = MIXING_CLIPMAX;
 
-        if (n < mins[i & 1])
-            mins[i & 1] = n;
-        else if (n > maxs[i & 1])
-            maxs[i & 1] = n;
-
         // 32-bit signed
-        p[i] = (n >> MIXING_ATTENUATION);
+        p[i] = (n << modplug::mixer::MIXING_ATTENUATION);
     }
 
-    return samples * 2;
+    return samples * 4;
 }
 
 

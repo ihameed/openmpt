@@ -13,6 +13,7 @@
 #include <math.h>
 #endif
 
+#include "mixer/constants.h"
 #include "mixer/mixutil.h"
 
 // rewbs.resamplerConf
@@ -24,16 +25,16 @@
 #pragma bss_seg(".modplug")
 
 // Front Mix Buffer (Also room for interleaved rear mix)
-int MixSoundBuffer[MIXBUFFERSIZE*4];
+int MixSoundBuffer[modplug::mixer::MIX_BUFFER_SIZE*4];
 
 // Reverb Mix Buffer
 #ifndef NO_REVERB
-int MixReverbBuffer[MIXBUFFERSIZE*2];
+int MixReverbBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
 #endif
 
 #ifndef FASTSOUNDLIB
-int MixRearBuffer[MIXBUFFERSIZE*2];
-float MixFloatBuffer[MIXBUFFERSIZE*2];
+int MixRearBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
+float MixFloatBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
 #endif
 
 #pragma bss_seg()
@@ -317,13 +318,13 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 #define SNDMIX_RAMPMONOVOL\
     nRampLeftVol += pChn->nLeftRamp;\
     nRampRightVol += pChn->nRightRamp;\
-    pvol[0] += vol * (nRampRightVol >> VOLUMERAMPPRECISION);\
-    pvol[1] += vol * (nRampLeftVol >> VOLUMERAMPPRECISION);\
+    pvol[0] += vol * (nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
+    pvol[1] += vol * (nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
     pvol += 2;
 
 #define SNDMIX_RAMPFASTMONOVOL\
     nRampRightVol += pChn->nRightRamp;\
-    int fastvol = vol * (nRampRightVol >> VOLUMERAMPPRECISION);\
+    int fastvol = vol * (nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
     pvol[0] += fastvol;\
     pvol[1] += fastvol;\
     pvol += 2;
@@ -331,8 +332,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 #define SNDMIX_RAMPSTEREOVOL\
     nRampLeftVol += pChn->nLeftRamp;\
     nRampRightVol += pChn->nRightRamp;\
-    pvol[0] += vol_l * (nRampRightVol >> VOLUMERAMPPRECISION);\
-    pvol[1] += vol_r * (nRampLeftVol >> VOLUMERAMPPRECISION);\
+    pvol[0] += vol_l * (nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
+    pvol[1] += vol_r * (nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
     pvol += 2;
 
 
@@ -400,9 +401,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
 #define END_RAMPMIX_INTERFACE()\
         SNDMIX_ENDSAMPLELOOP\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> VOLUMERAMPPRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> VOLUMERAMPPRECISION;\
+        pChannel->nLeftVol = nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
     }
 
 #define BEGIN_FASTRAMPMIX_INTERFACE(func)\
@@ -413,7 +414,7 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
         SNDMIX_ENDSAMPLELOOP\
         pChannel->nRampRightVol = nRampRightVol;\
         pChannel->nRampLeftVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> VOLUMERAMPPRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
         pChannel->nLeftVol = pChannel->nRightVol;\
     }
 
@@ -439,9 +440,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
         SNDMIX_ENDSAMPLELOOP\
         MIX_END_FILTER\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> VOLUMERAMPPRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> VOLUMERAMPPRECISION;\
+        pChannel->nLeftVol = nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
     }
 
 // Stereo Resonant Filters
@@ -465,17 +466,14 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
         SNDMIX_ENDSAMPLELOOP\
         MIX_END_STEREO_FILTER\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> VOLUMERAMPPRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> VOLUMERAMPPRECISION;\
+        pChannel->nLeftVol = nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
     }
 
 
 /////////////////////////////////////////////////////
 //
-extern void X86_FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount, const float _f2ic);
-extern void X86_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc);
-extern void X86_FloatToMonoMix(const float *pIn, int *pOut, UINT nCount, const float _f2ic);
 
 #ifdef ENABLE_MMX
 extern VOID MMX_EndMix();
@@ -1812,9 +1810,9 @@ void CSoundFile::ProcessPlugins(UINT nCount)
         }
     }
     // Convert mix buffer
-    StereoMixToFloat(MixSoundBuffer, MixFloatBuffer, MixFloatBuffer+MIXBUFFERSIZE, nCount);
+    StereoMixToFloat(MixSoundBuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixer::MIX_BUFFER_SIZE, nCount);
     FLOAT *pMixL = MixFloatBuffer;
-    FLOAT *pMixR = MixFloatBuffer + MIXBUFFERSIZE;
+    FLOAT *pMixR = MixFloatBuffer + modplug::mixer::MIX_BUFFER_SIZE;
 
     // Process Plugins
     //XXXih replace
@@ -1833,7 +1831,7 @@ void CSoundFile::ProcessPlugins(UINT nCount)
             {
                 bMasterMix = TRUE;
                 pMixL = MixFloatBuffer;
-                pMixR = MixFloatBuffer + MIXBUFFERSIZE;
+                pMixR = MixFloatBuffer + modplug::mixer::MIX_BUFFER_SIZE;
             }
             IMixPlugin *pObject = pPlugin->pMixPlugin;
             PSNDMIXPLUGINSTATE pState = pPlugin->pMixState;
@@ -2005,165 +2003,6 @@ VOID CSoundFile::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
 }
 
 
-#pragma warning (disable:4100)
-
-// Clip and convert to 8 bit
-DWORD MPPASMCALL X86_Convert32To8(LPVOID lp16, int *pBuffer, DWORD lSampleCount)
-//------------------------------------------------------------------------------
-{
-    DWORD result;
-    _asm {
-    mov ebx, lp16			// ebx = 8-bit buffer
-    mov edx, pBuffer		// edx = pBuffer
-    mov edi, lSampleCount	// edi = lSampleCount
-cliploop:
-    mov eax, dword ptr [edx]
-    inc ebx
-    add eax, (1<<(23-MIXING_ATTENUATION))
-    add edx, 4
-    cmp eax, MIXING_CLIPMIN
-    jl cliplow
-    cmp eax, MIXING_CLIPMAX
-    jg cliphigh
-cliprecover:
-    sar eax, (24-MIXING_ATTENUATION)
-    xor eax, 0x80
-    dec edi
-    mov byte ptr [ebx-1], al
-    jnz cliploop
-    jmp done
-cliplow:
-    mov eax, MIXING_CLIPMIN
-    jmp cliprecover
-cliphigh:
-    mov eax, MIXING_CLIPMAX
-    jmp cliprecover
-done:
-    mov eax, lSampleCount
-    mov result, eax
-    }
-    return result;
-}
-
-
-// Clip and convert to 16 bit
-DWORD MPPASMCALL X86_Convert32To16(LPVOID lp16, int *pBuffer, DWORD lSampleCount)
-//-------------------------------------------------------------------------------
-{
-    DWORD result;
-    _asm {
-    mov ebx, lp16				// ebx = 16-bit buffer
-    mov edx, pBuffer			// edx = pBuffer
-    mov edi, lSampleCount		// edi = lSampleCount
-cliploop:
-    mov eax, dword ptr [edx]
-    add ebx, 2
-    add eax, (1<<(15-MIXING_ATTENUATION))
-    add edx, 4
-    cmp eax, MIXING_CLIPMIN
-    jl cliplow
-    cmp eax, MIXING_CLIPMAX
-    jg cliphigh
-cliprecover:
-    sar eax, 16-MIXING_ATTENUATION
-    dec edi
-    mov word ptr [ebx-2], ax
-    jnz cliploop
-    jmp done
-cliplow:
-    mov eax, MIXING_CLIPMIN
-    jmp cliprecover
-cliphigh:
-    mov eax, MIXING_CLIPMAX
-    jmp cliprecover
-done:
-    mov eax, lSampleCount
-    add eax, eax
-    mov result, eax
-    }
-    return result;
-}
-
-
-// Clip and convert to 24 bit
-DWORD MPPASMCALL X86_Convert32To24(LPVOID lp16, int *pBuffer, DWORD lSampleCount)
-//-------------------------------------------------------------------------------
-{
-    DWORD result;
-    _asm {
-    mov ebx, lp16			// ebx = 8-bit buffer
-    mov edx, pBuffer		// edx = pBuffer
-    mov edi, lSampleCount	// edi = lSampleCount
-cliploop:
-    mov eax, dword ptr [edx]
-    add ebx, 3
-    //add eax, (7-MIXING_ATTENUATION)
-    add eax, (1<<(7-MIXING_ATTENUATION))  //ericus' 24bit fix
-    add edx, 4
-    cmp eax, MIXING_CLIPMIN
-    jl cliplow
-    cmp eax, MIXING_CLIPMAX
-    jg cliphigh
-cliprecover:
-    sar eax, (8-MIXING_ATTENUATION)
-    mov word ptr [ebx-3], ax
-    shr eax, 16
-    dec edi
-    mov byte ptr [ebx-1], al
-    jnz cliploop
-    jmp done
-cliplow:
-    mov eax, MIXING_CLIPMIN
-    jmp cliprecover
-cliphigh:
-    mov eax, MIXING_CLIPMAX
-    jmp cliprecover
-done:
-    mov eax, lSampleCount
-    lea eax, [eax*2+eax]
-    mov result, eax
-    }
-    return result;
-}
-
-
-// Clip and convert to 32 bit
-DWORD MPPASMCALL X86_Convert32To32(LPVOID lp16, int *pBuffer, DWORD lSampleCount)
-//-------------------------------------------------------------------------------
-{
-    DWORD result;
-    _asm {
-    mov ebx, lp16			// ebx = 32-bit buffer
-    mov edx, pBuffer		// edx = pBuffer
-    mov edi, lSampleCount	// edi = lSampleCount
-cliploop:
-    mov eax, dword ptr [edx]
-    add ebx, 4
-    add edx, 4
-    cmp eax, MIXING_CLIPMIN
-    jl cliplow
-    cmp eax, MIXING_CLIPMAX
-    jg cliphigh
-cliprecover:
-    shl eax, MIXING_ATTENUATION
-    dec edi
-    mov dword ptr [ebx-4], eax
-    jnz cliploop
-    jmp done
-cliplow:
-    mov eax, MIXING_CLIPMIN
-    jmp cliprecover
-cliphigh:
-    mov eax, MIXING_CLIPMAX
-    jmp cliprecover
-done:
-    mov eax, lSampleCount
-    lea eax, [eax*4]
-    mov result, eax
-    }
-    return result;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 // Noise Shaping (Dither)
@@ -2183,7 +2022,7 @@ void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits)
     mov ecx, nBits		// ecx = number of bits of noise
     mov edi, gDitherA	// Noise generation
     mov ebx, gDitherB
-    add ecx, MIXING_ATTENUATION+1
+    add ecx, modplug::mixer::MIXING_ATTENUATION+1
     push ebp
     mov ebp, eax
 noiseloop:

@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "sndfile.h"
+#include "../mptrack/mixer/constants.h"
 #include "../mptrack/mixer/mixutil.h"
 #include "snd_rvb.h"
 
 #pragma warning(disable:4725)	// Pentium fdiv bug
 #pragma warning(disable:4731)	// ebp modified
 
-extern int MixReverbBuffer[MIXBUFFERSIZE*2];
-extern int MixSoundBuffer[MIXBUFFERSIZE*4];
+extern int MixReverbBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
+extern int MixSoundBuffer[modplug::mixer::MIX_BUFFER_SIZE*4];
 
 // Reverb mix buffers
 #pragma bss_seg(".modplug")
