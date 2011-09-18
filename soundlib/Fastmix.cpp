@@ -478,8 +478,6 @@ extern void X86_FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut
 extern void X86_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc);
 extern void X86_FloatToMonoMix(const float *pIn, int *pOut, UINT nCount, const float _f2ic);
 
-void MPPASMCALL X86_InitMixBuffer(int *pBuffer, UINT nSamples);
-
 #ifdef ENABLE_MMX
 extern VOID MMX_EndMix();
 extern VOID MMX_Mono8BitMix(MODCHANNEL *, int *, int *);
@@ -1557,7 +1555,9 @@ UINT CSoundFile::CreateStereoMix(int count)
     if (!count) return 0;
 #ifndef FASTSOUNDLIB
     BOOL bSurround;
-    if (gnChannels > 2) X86_InitMixBuffer(MixRearBuffer, count*2);
+    if (gnChannels > 2) {
+        modplug::mixer::init_mix_buffer(MixRearBuffer, count * 2);
+    }
 #endif
     nchused = nchmixed = 0;
     for (UINT nChn=0; nChn<m_nMixChannels; nChn++)
@@ -2163,39 +2163,6 @@ done:
     mov result, eax
     }
     return result;
-}
-
-
-void MPPASMCALL X86_InitMixBuffer(int *pBuffer, UINT nSamples)
-//------------------------------------------------------------
-{
-    _asm {
-    mov ecx, nSamples
-    mov esi, pBuffer
-    xor eax, eax
-    mov edx, ecx
-    shr ecx, 2
-    and edx, 3
-    jz unroll4x
-loop1x:
-    add esi, 4
-    dec edx
-    mov dword ptr [esi-4], eax
-    jnz loop1x
-unroll4x:
-    or ecx, ecx
-    jnz loop4x
-    jmp done
-loop4x:
-    add esi, 16
-    dec ecx
-    mov dword ptr [esi-16], eax
-    mov dword ptr [esi-12], eax
-    mov dword ptr [esi-8], eax
-    mov dword ptr [esi-4], eax
-    jnz loop4x
-done:;
-    }
 }
 
 

@@ -74,7 +74,6 @@ extern int MixRearBuffer[MIXBUFFERSIZE*2];
 
 extern VOID InitializeReverb(BOOL bReset);
 extern VOID ProcessReverb(UINT nSamples);
-extern VOID MPPASMCALL X86_InitMixBuffer(int *pBuffer, UINT nSamples);
 extern VOID MPPASMCALL X86_StereoDCRemoval(int *, UINT count);
 extern VOID MPPASMCALL X86_MonoDCRemoval(int *, UINT count);
 
