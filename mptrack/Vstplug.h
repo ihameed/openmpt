@@ -58,7 +58,11 @@ class CVstPlugin: public IMixPlugin
 	friend class CAbstractVstEditor;	//rewbs.defaultPlugGUI
 	friend class COwnerVstEditor;		//rewbs.defaultPlugGUI
 	friend class CVstPluginManager;
+
 #ifndef NO_VST
+public:
+	UINT m_nInputs, m_nOutputs;
+
 protected:
 	enum {VSTEVENT_QUEUE_LEN=256}; 
 
@@ -73,7 +77,6 @@ protected:
 	UINT m_nSampleRate;
 	bool m_bIsVst2;
 	SNDMIXPLUGINSTATE m_MixState;
-	UINT m_nInputs, m_nOutputs;
 	VstEvents *m_pEvList;
 	VSTINSTCH m_MidiCh[16];
 	short m_nMidiPitchBendPos[16];

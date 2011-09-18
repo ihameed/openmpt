@@ -50,8 +50,8 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\imran\Archives\SDK\vstsdk2.4\pluginterfaces\vst2.x;C:\Users\imran\Archives\SDK\ASIOSDK2\common;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\imran\Archives\SDK\vstsdk2.4\pluginterfaces\vst2.x;C:\Users\imran\Archives\SDK\ASIOSDK2\common;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -190,6 +190,9 @@
     <ClCompile Include="..\soundlib\Fastmix.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
+    <ClCompile Include="graph\graph.cpp" />
+    <ClCompile Include="graph\node.cpp" />
+    <ClCompile Include="graph\vst_node.cpp" />
     <ClCompile Include="HyperEdit.cpp" />
     <ClCompile Include="HyperEdit2.cpp" />
     <ClCompile Include="HyperEdit3.cpp" />
@@ -202,6 +205,7 @@
     <ClCompile Include="misc_util.cpp" />
     <ClCompile Include="..\soundlib\mmcmp.cpp" />
     <ClCompile Include="..\soundlib\Mmx_mix.cpp" />
+    <ClCompile Include="mixer\mixutil.cpp" />
     <ClCompile Include="mod2midi.cpp" />
     <ClCompile Include="Mod2wave.cpp" />
     <ClCompile Include="..\soundlib\mod_specifications.cpp" />
@@ -270,9 +274,15 @@
     <ClCompile Include="ctrl_graph.cpp" />
     <ClCompile Include="EffectNode.cpp" />
     <ClCompile Include="FinalNode.cpp" />
-    <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="Graph.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release/graphass.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug/graphass.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="InstrumentNode.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="Node.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release/nodeass.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug/nodeass.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="view_graph.cpp" />
     <ClCompile Include="..\soundlib\tuning.cpp" />
@@ -314,6 +324,11 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="graph\constants.h" />
+    <ClInclude Include="graph\graph.h" />
+    <ClInclude Include="graph\node.h" />
+    <ClInclude Include="graph\vst_node.h" />
+    <ClInclude Include="mixer\mixutil.h" />
     <ClInclude Include="PatternRandomizer.h" />
     <ClInclude Include="PatternRandomizerGUI.h" />
     <ClInclude Include="PatternRandomizerGUIEffect.h" />

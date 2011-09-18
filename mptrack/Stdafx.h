@@ -13,9 +13,9 @@
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #if _MSC_VER >= 1500
-	#define _WIN32_WINNT	0x0500	// 0x0500 = Windows 2000
+    #define _WIN32_WINNT	0x0500	// 0x0500 = Windows 2000
 #else
-	#define WINVER	0x0401
+    #define WINVER	0x0401
 #endif
 
 // windows excludes
@@ -87,7 +87,7 @@ typedef struct {
 
 // Define to build without MO3 support.
 //#define NO_MO3_SUPPORT
-				  
+                  
 // Define to build without DirectSound support.
 //#define NO_DSOUND
 
