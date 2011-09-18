@@ -619,7 +619,7 @@ public:	// Static Members
     static UINT gnVolumeRampInSamples;
     static UINT gnVolumeRampOutSamples;
     static UINT gnCPUUsage;
-    static LPSNDMIXHOOKPROC gpSndMixHook;
+    static LPSNDMIXHOOKPROC sound_mix_callback;
     static PMIXPLUGINCREATEPROC gpMixPluginCreateProc;
     static uint8 s_DefaultPlugVolumeHandling;
 

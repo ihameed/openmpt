@@ -9,28 +9,27 @@
 
 #include "stdafx.h"
 
-// -> CODE#0022
-// -> DESC="alternative BPM/Speed interpretation method"
 #include "../mptrack/mptrack.h"
 #include "../mptrack/moddoc.h"
 #include "../mptrack/MainFrm.h"
 #include "../mptrack/misc_util.h"
+
 #include "../mptrack/mixer/constants.h"
 #include "../mptrack/mixer/mixutil.h"
-// -! NEW_FEATURE#0022
 #include "sndfile.h"
 #include "midi.h"
 #include "tuning.h"
 
 #ifdef MODPLUG_TRACKER
-#define ENABLE_STEREOVU
+    #define ENABLE_STEREOVU
 #endif
 
 // Volume ramp length, in 1/10 ms
 #define VOLUMERAMPLEN	0	// 1.46ms = 64 samples at 44.1kHz		//rewbs.soundQ exp - was 146
 
 // VU-Meter
-#define VUMETER_DECAY		4
+
+static const unsigned int VUMETER_DECAY = 4;
 
 // SNDMIX: These are global flags for playback control
 UINT CSoundFile::m_nStereoSeparation = 128;
@@ -47,7 +46,7 @@ UINT CSoundFile::gnAGC = AGC_UNITY;
 UINT CSoundFile::gnVolumeRampInSamples = 0;		//default value
 UINT CSoundFile::gnVolumeRampOutSamples = 42;		//default value
 UINT CSoundFile::gnCPUUsage = 0;
-LPSNDMIXHOOKPROC CSoundFile::gpSndMixHook = NULL;
+LPSNDMIXHOOKPROC CSoundFile::sound_mix_callback = NULL;
 PMIXPLUGINCREATEPROC CSoundFile::gpMixPluginCreateProc = NULL;
 LONG gnDryROfsVol = 0;
 LONG gnDryLOfsVol = 0;
@@ -277,29 +276,32 @@ BOOL CSoundFile::GlobalFadeSong(UINT msec)
 }
 
 
-UINT CSoundFile::ReadPattern(LPVOID lpDestBuffer, UINT cbBuffer) {
+UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
     //XXXih: i render here!
-    LPBYTE lpBuffer = (LPBYTE)lpDestBuffer;
-    LPCONVERTPROC pCvt = modplug::mixer::clip_32_to_8;
-    UINT lRead, lMax, lSampleSize, lCount, lSampleCount, nStat=0;
-    UINT nMaxPlugins;
+    unsigned char *buffer = static_cast<unsigned char *>(out_buffer);
+    LPCONVERTPROC clip_samples = modplug::mixer::clip_32_to_8;
+    size_t max_samples;
+    size_t sample_width;
+    size_t num_samples;
+    unsigned int lRead, lCount, nStat=0;
+    unsigned int last_plugin_idx;
 
-    nMaxPlugins = MAX_MIXPLUGINS;
-    while ((nMaxPlugins > 0) && (!m_MixPlugins[nMaxPlugins-1].pMixPlugin)) nMaxPlugins--;
+    last_plugin_idx = MAX_MIXPLUGINS;
+    while ((last_plugin_idx > 0) && (!m_MixPlugins[last_plugin_idx-1].pMixPlugin)) last_plugin_idx--;
     m_nMixStat = 0;
-    lSampleSize = gnChannels;
+    sample_width = gnChannels;
     switch (gnBitsPerSample) {
         case 16:
-            lSampleSize *= 2; pCvt = modplug::mixer::clip_32_to_16; break;
+            sample_width *= 2; clip_samples = modplug::mixer::clip_32_to_16; break;
         case 24:
-            lSampleSize *= 3; pCvt = modplug::mixer::clip_32_to_24; break;
+            sample_width *= 3; clip_samples = modplug::mixer::clip_32_to_24; break;
         case 32:
-            lSampleSize *= 4; pCvt = modplug::mixer::clip_32_to_32; break;
+            sample_width *= 4; clip_samples = modplug::mixer::clip_32_to_32; break;
     }
 
-    lMax = cbBuffer / lSampleSize;
-    if ((!lMax) || (!lpBuffer) || (!m_nChannels)) return 0;
-    lRead = lMax;
+    max_samples = out_buffer_length / sample_width;
+    if ((!max_samples) || (!buffer) || (!m_nChannels)) return 0;
+    lRead = max_samples;
     if (m_dwSongFlags & SONG_ENDREACHED) 
         goto MixDone;
     while (lRead > 0)
@@ -308,41 +310,36 @@ UINT CSoundFile::ReadPattern(LPVOID lpDestBuffer, UINT cbBuffer) {
         if (!m_nBufferCount)
         {
 #ifndef FASTSOUNDLIB
-            if (m_dwSongFlags & SONG_FADINGSONG)
-            {
+            if (m_dwSongFlags & SONG_FADINGSONG) {
                 m_dwSongFlags |= SONG_ENDREACHED;
                 m_nBufferCount = lRead;
             } else
 #endif
-            if (ReadNote())
-            {
+            if (ReadNote()) {
                 // Save pattern cue points for WAV rendering here (if we reached a new pattern, that is.)
-                if(m_bIsRendering && (m_PatternCuePoints.empty() || m_nCurrentPattern != m_PatternCuePoints.back().order))
-                {
+                if (m_bIsRendering && (m_PatternCuePoints.empty() || m_nCurrentPattern != m_PatternCuePoints.back().order)) {
                     PatternCuePoint cue;
-                    cue.offset = lMax - lRead;
+                    cue.offset = max_samples - lRead;
                     cue.order = m_nCurrentPattern;
                     cue.processed = false;	// We don't know the base offset in the file here. It has to be added in the main conversion loop.
                     m_PatternCuePoints.push_back(cue);
                 }
-            } else 
-            {
-#ifdef MODPLUG_TRACKER
-                if ((m_nMaxOrderPosition) && (m_nCurrentPattern >= m_nMaxOrderPosition))
-                {
-                    m_dwSongFlags |= SONG_ENDREACHED;
-                    break;
-                }
-#endif // MODPLUG_TRACKER
-#ifndef FASTSOUNDLIB
-                if (!FadeSong(FADESONGDELAY) || m_bIsRendering)	//rewbs: disable song fade when rendering.
-#endif
-                {
-                    m_dwSongFlags |= SONG_ENDREACHED;
-                    if (lRead == lMax || m_bIsRendering)		//rewbs: don't complete buffer when rendering
-                        goto MixDone;
-                    m_nBufferCount = lRead;
-                }
+            } else {
+                #ifdef MODPLUG_TRACKER
+                    if ((m_nMaxOrderPosition) && (m_nCurrentPattern >= m_nMaxOrderPosition)) {
+                        m_dwSongFlags |= SONG_ENDREACHED;
+                        break;
+                    }
+                #endif
+                #ifndef FASTSOUNDLIB
+                    if (!FadeSong(FADESONGDELAY) || m_bIsRendering)	//rewbs: disable song fade when rendering.
+                #endif
+                    {
+                        m_dwSongFlags |= SONG_ENDREACHED;
+                        if (lRead == max_samples || m_bIsRendering)		//rewbs: don't complete buffer when rendering
+                            goto MixDone;
+                        m_nBufferCount = lRead;
+                    }
             }
         }
         lCount = m_nBufferCount;
@@ -350,77 +347,57 @@ UINT CSoundFile::ReadPattern(LPVOID lpDestBuffer, UINT cbBuffer) {
         if (lCount > lRead) lCount = lRead;
         if (!lCount) 
             break;
-        lSampleCount = lCount;
-    #ifndef NO_REVERB
-        gnReverbSend = 0;
-    #endif
+        num_samples = lCount;
+        #ifndef NO_REVERB
+            gnReverbSend = 0;
+        #endif
         // Resetting sound buffer
-        modplug::mixer::stereo_fill(MixSoundBuffer, lSampleCount, &gnDryROfsVol, &gnDryLOfsVol);
-        
-        ASSERT(lCount<=modplug::mixer::MIX_BUFFER_SIZE);		// ensure modplug::mixer::MIX_BUFFER_SIZE really is our max buffer size
-        if (gnChannels >= 2)
-        {
-            lSampleCount *= 2;
-            m_nMixStat += CreateStereoMix(lCount);
+        modplug::mixer::stereo_fill(MixSoundBuffer, num_samples, &gnDryROfsVol, &gnDryLOfsVol);
+
+        // ensure modplug::mixer::MIX_BUFFER_SIZE really is our max buffer size
+        ASSERT (lCount <= modplug::mixer::MIX_BUFFER_SIZE);
+
+        num_samples *= (gnChannels >= 2) ? 2 : 1;
+        m_nMixStat += CreateStereoMix(lCount);
         #ifndef NO_REVERB
             ProcessReverb(lCount);
         #endif
-            if (nMaxPlugins) ProcessPlugins(lCount);
-            ProcessStereoDSP(lCount);
-        } else
-        {
-            m_nMixStat += CreateStereoMix(lCount);
-        #ifndef NO_REVERB
-            ProcessReverb(lCount);
-        #endif
-            if (nMaxPlugins) ProcessPlugins(lCount);
+        if (last_plugin_idx) {
+            ProcessPlugins(lCount);
+        }
+        if (gnChannels < 2) {
             X86_MonoFromStereo(MixSoundBuffer, lCount);
-            ProcessMonoDSP(lCount);
         }
-        // Graphic Equalizer
-#ifdef ENABLE_EQ
-        if (gdwSoundSetup & SNDMIX_EQ)
-        {
-            if (gnChannels >= 2)
-                EQStereo(MixSoundBuffer, lCount);
-            else
-                EQMono(MixSoundBuffer, lCount);
-        }
-#endif
         nStat++;
-#ifndef NO_AGC
-        // Automatic Gain Control
-        if (gdwSoundSetup & SNDMIX_AGC) ProcessAGC(lSampleCount);
-#endif
-        UINT lTotalSampleCount = lSampleCount;
-#ifndef FASTSOUNDLIB
+
+        size_t total_num_samples = num_samples;
+
         // Multichannel
         if (gnChannels > 2)
         {
-            X86_InterleaveFrontRear(MixSoundBuffer, MixRearBuffer, lSampleCount);
-            lTotalSampleCount *= 2;
+            X86_InterleaveFrontRear(MixSoundBuffer, MixRearBuffer, num_samples);
+            total_num_samples *= 2;
         }
         // Noise Shaping
         if (gnBitsPerSample <= 16)
         {
             if ((gdwSoundSetup & SNDMIX_HQRESAMPLER)
              && ((gnCPUUsage < 25) || (gdwSoundSetup & SNDMIX_DIRECTTODISK)))
-                X86_Dither(MixSoundBuffer, lTotalSampleCount, gnBitsPerSample);
+                X86_Dither(MixSoundBuffer, total_num_samples, gnBitsPerSample);
         }
 
         //Apply global volume
         if (m_pConfig->getGlobalVolumeAppliesToMaster()) {
-            ApplyGlobalVolume(MixSoundBuffer, lTotalSampleCount);
+            ApplyGlobalVolume(MixSoundBuffer, total_num_samples);
         }
 
         // Hook Function
-        if (gpSndMixHook) {	//Currently only used for VU Meter, so it's OK to do it after global Vol.
-            gpSndMixHook(MixSoundBuffer, lTotalSampleCount, gnChannels);
+        if (sound_mix_callback) {	//Currently only used for VU Meter, so it's OK to do it after global Vol.
+            sound_mix_callback(MixSoundBuffer, total_num_samples, gnChannels);
         }
-#endif
 
         // Perform clipping
-        lpBuffer += pCvt(lpBuffer, MixSoundBuffer, lTotalSampleCount);
+        buffer += clip_samples(buffer, MixSoundBuffer, total_num_samples);
 
         // Buffer ready
         lRead -= lCount;
@@ -431,9 +408,9 @@ UINT CSoundFile::ReadPattern(LPVOID lpDestBuffer, UINT cbBuffer) {
         gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
     }
 MixDone:
-    if (lRead) memset(lpBuffer, (gnBitsPerSample == 8) ? 0x80 : 0, lRead * lSampleSize);
+    if (lRead) memset(buffer, (gnBitsPerSample == 8) ? 0x80 : 0, lRead * sample_width);
     if (nStat) { m_nMixStat += nStat-1; m_nMixStat /= nStat; }
-    return lMax - lRead;
+    return max_samples - lRead;
 }
 
 /////////////////////////////////////////////////////////////////////////////

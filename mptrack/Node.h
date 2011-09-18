@@ -1,5 +1,5 @@
 #pragma once
-#include ".\vertex.h"@
+#include ".\vertex.h"
 class CVertex;
 
 typedef CArray<CVertex, CVertex> VertexArray;

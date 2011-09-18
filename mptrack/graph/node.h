@@ -7,6 +7,7 @@
 namespace modplug {
 namespace graph {
 
+
 class node {
 public:
     node();

@@ -1965,10 +1965,10 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, DWORD dwNotifyType)
     if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
     {
         gnLVuMeter = gnRVuMeter = 0;
-        CSoundFile::gpSndMixHook = CalcStereoVuMeters;
+        CSoundFile::sound_mix_callback = CalcStereoVuMeters;
     } else
     {
-        CSoundFile::gpSndMixHook = NULL;
+        CSoundFile::sound_mix_callback = NULL;
     }
     if (!audioOpenDevice())
     {
@@ -2279,11 +2279,11 @@ BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, DWORD
     if (dwType) m_dwNotifyType = dwType;
     if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
     {
-        CSoundFile::gpSndMixHook = CalcStereoVuMeters;
+        CSoundFile::sound_mix_callback = CalcStereoVuMeters;
     } else
     {
         gnLVuMeter = gnRVuMeter = 0;
-        CSoundFile::gpSndMixHook = NULL;
+        CSoundFile::sound_mix_callback = NULL;
     }
     return TRUE;
 }
