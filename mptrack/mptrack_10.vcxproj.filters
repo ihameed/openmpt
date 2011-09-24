@@ -144,7 +144,9 @@
     <ClCompile Include="graph\core.cpp">
       <Filter>graph</Filter>
     </ClCompile>
-    <ClCompile Include="pervasives\pervasives.cpp" />
+    <ClCompile Include="pervasives\pervasives.cpp">
+      <Filter>pervasives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PatternRandomizer.h" />
@@ -260,7 +262,9 @@
     <ClInclude Include="graph\core.h">
       <Filter>graph</Filter>
     </ClInclude>
-    <ClInclude Include="pervasives\pervasives.h" />
+    <ClInclude Include="pervasives\pervasives.h">
+      <Filter>pervasives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />
@@ -297,6 +301,9 @@
     </Filter>
     <Filter Include="mixer">
       <UniqueIdentifier>{01bb63ce-b410-4179-a96b-dede1a6cdc8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pervasives">
+      <UniqueIdentifier>{aa00e032-7a0f-42a7-9d75-e1efd2a8efa6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

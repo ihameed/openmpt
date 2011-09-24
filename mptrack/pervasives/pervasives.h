@@ -26,10 +26,13 @@ DAMAGE.
 
 #pragma once
 
+#include <cstdarg>
+
 namespace modplug {
 namespace pervasives {
 
 
+void vdebug_log(const char *, va_list);
 void debug_log(const char *, ...); 
 
 

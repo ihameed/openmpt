@@ -1,6 +1,7 @@
 #ifndef _VST_PLUGIN_MANAGER_H_
 #define _VST_PLUGIN_MANAGER_H_
 
+#include "sndfile.h"
 #include "mixer/constants.h"
 
 #ifndef NO_VST
@@ -51,7 +52,6 @@ typedef struct _VSTINSTCH
 	UINT nProgram;
 	WORD wMidiBank; //rewbs.MidiBank
 } VSTINSTCH, *PVSTINSTCH;
-
 
 //=================================
 class CVstPlugin: public IMixPlugin

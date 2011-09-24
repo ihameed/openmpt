@@ -4,7 +4,7 @@ class CPerformanceCounter
 {
 protected: 
 	LARGE_INTEGER lFreq, lStart;
-	long lFreqRDTSC, lStartRDTSC;
+	unsigned __int64 lFreqRDTSC, lStartRDTSC;
 
 	inline static unsigned __int64 _RDTSC()
 	{
@@ -54,7 +54,7 @@ public:
 	}
 
 	inline double StopRDTSC() {
-		long lEndRDTSC = _RDTSC();
+		unsigned __int64 lEndRDTSC = _RDTSC();
 		return (double(lEndRDTSC-lStartRDTSC)/lFreqRDTSC);
 	}
 

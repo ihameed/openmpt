@@ -276,14 +276,15 @@ BOOL CSoundFile::GlobalFadeSong(UINT msec)
 }
 
 
-UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
+UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     //XXXih: i render here!
     unsigned char *buffer = static_cast<unsigned char *>(out_buffer);
     LPCONVERTPROC clip_samples = modplug::mixer::clip_32_to_8;
     size_t max_samples;
     size_t sample_width;
     size_t num_samples;
-    unsigned int lRead, lCount, nStat=0;
+    size_t uncomputed_samples;
+    unsigned int lCount, nStat=0;
     unsigned int last_plugin_idx;
 
     last_plugin_idx = MAX_MIXPLUGINS;
@@ -291,20 +292,17 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
     m_nMixStat = 0;
     sample_width = gnChannels;
     switch (gnBitsPerSample) {
-        case 16:
-            sample_width *= 2; clip_samples = modplug::mixer::clip_32_to_16; break;
-        case 24:
-            sample_width *= 3; clip_samples = modplug::mixer::clip_32_to_24; break;
-        case 32:
-            sample_width *= 4; clip_samples = modplug::mixer::clip_32_to_32; break;
+        case 16: sample_width *= 2; clip_samples = modplug::mixer::clip_32_to_16; break;
+        case 24: sample_width *= 3; clip_samples = modplug::mixer::clip_32_to_24; break;
+        case 32: sample_width *= 4; clip_samples = modplug::mixer::clip_32_to_32; break;
     }
 
     max_samples = out_buffer_length / sample_width;
     if ((!max_samples) || (!buffer) || (!m_nChannels)) return 0;
-    lRead = max_samples;
+    uncomputed_samples = max_samples;
     if (m_dwSongFlags & SONG_ENDREACHED)
         goto MixDone;
-    while (lRead > 0)
+    while (uncomputed_samples > 0)
     {
         // Update Channel Data
         if (!m_nBufferCount)
@@ -312,14 +310,14 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
 #ifndef FASTSOUNDLIB
             if (m_dwSongFlags & SONG_FADINGSONG) {
                 m_dwSongFlags |= SONG_ENDREACHED;
-                m_nBufferCount = lRead;
+                m_nBufferCount = uncomputed_samples;
             } else
 #endif
             if (ReadNote()) {
                 // Save pattern cue points for WAV rendering here (if we reached a new pattern, that is.)
                 if (m_bIsRendering && (m_PatternCuePoints.empty() || m_nCurrentPattern != m_PatternCuePoints.back().order)) {
                     PatternCuePoint cue;
-                    cue.offset = max_samples - lRead;
+                    cue.offset = max_samples - uncomputed_samples;
                     cue.order = m_nCurrentPattern;
                     cue.processed = false;	// We don't know the base offset in the file here. It has to be added in the main conversion loop.
                     m_PatternCuePoints.push_back(cue);
@@ -336,15 +334,15 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
                 #endif
                     {
                         m_dwSongFlags |= SONG_ENDREACHED;
-                        if (lRead == max_samples || m_bIsRendering)		//rewbs: don't complete buffer when rendering
+                        if (uncomputed_samples == max_samples || m_bIsRendering)		//rewbs: don't complete buffer when rendering
                             goto MixDone;
-                        m_nBufferCount = lRead;
+                        m_nBufferCount = uncomputed_samples;
                     }
             }
         }
         lCount = m_nBufferCount;
         if (lCount > modplug::mixer::MIX_BUFFER_SIZE) lCount = modplug::mixer::MIX_BUFFER_SIZE;
-        if (lCount > lRead) lCount = lRead;
+        if (lCount > uncomputed_samples) lCount = uncomputed_samples;
         if (!lCount) 
             break;
         num_samples = lCount;
@@ -403,7 +401,7 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
         buffer += clip_samples(buffer, MixSoundBuffer, total_num_samples);
 
         // Buffer ready
-        lRead -= lCount;
+        uncomputed_samples -= lCount;
         m_nBufferCount -= lCount;
         m_lTotalSampleCount += lCount;		// increase sample count for VSTTimeInfo.
         // Turn on ramping after first read (fix http://forum.openmpt.org/index.php?topic=523.0 )
@@ -411,9 +409,10 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
         gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
     }
 MixDone:
-    if (lRead) memset(buffer, (gnBitsPerSample == 8) ? 0x80 : 0, lRead * sample_width);
+    if (uncomputed_samples) memset(buffer, (gnBitsPerSample == 8) ? 0x80 : 0, uncomputed_samples * sample_width);
     if (nStat) { m_nMixStat += nStat-1; m_nMixStat /= nStat; }
-    return max_samples - lRead;
+    size_t computed_samples = max_samples - uncomputed_samples;
+    return computed_samples;
 }
 
 /////////////////////////////////////////////////////////////////////////////

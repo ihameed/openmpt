@@ -36,6 +36,7 @@ DAMAGE.
 
 #include <cstdio>
 
+using namespace modplug::pervasives;
 
 namespace modplug {
 namespace graph {
@@ -97,7 +98,7 @@ bool id_map_del(std::map<id_t, Has_Id> &map, const id_t key) {
 
 
 core::core() : _largest_id(1) {
-    modplug::pervasives::debug_log("created core\n");
+    debug_log("created core\n");
     for (size_t idx = 0; idx < modplug::graph::MAX_CHANNELS; ++idx) {
         char my_nuts[256];
         sprintf(my_nuts, "channel %d", idx);
@@ -118,7 +119,7 @@ core::~core() {
     }
     delete _master_sink;
 
-    Log("destroyed core\n");
+    debug_log("destroyed core\n");
 }
 
 id_t core::new_id() {
@@ -171,7 +172,6 @@ bool core::remove_vertex(id_t vertex_id) {
 }
 
 void core::process(int *samples, const size_t num_samples, const size_t sample_width) {
-    //Log("sup   i should process something");
 }
 
 void _process(int *samples, const size_t num_samples, const size_t sample_width) {

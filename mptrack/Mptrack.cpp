@@ -2955,7 +2955,7 @@ void Log(LPCSTR format, ...) {
 #ifdef _DEBUG
     va_list arglist;
     va_start(arglist, format);
-    modplug::pervasives::debug_log(format, arglist);
+    modplug::pervasives::vdebug_log(format, arglist);
     va_end(arglist);
 #endif
 }
