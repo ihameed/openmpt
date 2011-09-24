@@ -302,7 +302,7 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
     max_samples = out_buffer_length / sample_width;
     if ((!max_samples) || (!buffer) || (!m_nChannels)) return 0;
     lRead = max_samples;
-    if (m_dwSongFlags & SONG_ENDREACHED) 
+    if (m_dwSongFlags & SONG_ENDREACHED)
         goto MixDone;
     while (lRead > 0)
     {
@@ -365,6 +365,9 @@ UINT CSoundFile::ReadPattern(void * out_buffer, size_t out_buffer_length) {
         if (last_plugin_idx) {
             ProcessPlugins(lCount);
         }
+
+        _graph.process(MixSoundBuffer, lCount, sample_width);
+
         if (gnChannels < 2) {
             X86_MonoFromStereo(MixSoundBuffer, lCount);
         }
@@ -712,16 +715,6 @@ BOOL CSoundFile::ReadNote()
     }
     
     m_nSamplesPerTick = m_nBufferCount; //rewbs.flu
-
-
-// robinf: this block causes envelopes to behave incorrectly when 
-// playback is triggered from instrument panel. 
-// I can't see why it would be useful. Dissabling for now.
-//
-//	if (m_dwSongFlags & SONG_PAUSED) {
-//		m_nBufferCount = gdwMixingFreq / 64; // 1/64 seconds
-//	}
-
 
     // Master Volume + Pre-Amplification / Attenuation setup
     DWORD nMasterVol;

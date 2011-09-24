@@ -26,22 +26,11 @@ DAMAGE.
 
 #pragma once
 
-#include <cstddef>
-#include "../../soundlib/Snd_defs.h"
-
 namespace modplug {
-namespace graph {
+namespace pervasives {
 
 
-typedef unsigned int id_t;
-typedef double sample_t;
-
-static const id_t ID_INVALID = 0;
-static const id_t ID_MASTER_SINK = 1;
-
-static const size_t MAX_CHANNELS = MAX_BASECHANNELS;
-static const size_t MAX_NODE_CHANNELS = 64;
-static const size_t MAX_CHANNEL_ENDPOINTS = 64;
+void debug_log(const char *, ...); 
 
 
 }

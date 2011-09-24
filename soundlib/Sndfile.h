@@ -19,6 +19,8 @@
 #include "Snd_defs.h"
 #include "Endianness.h"
 
+#include "graph/core.h"
+
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
 #define VST_FORCE_DEPRECATED 0
@@ -1081,6 +1083,10 @@ public:
     static uint16 CSoundFile::GetEffectWeight(MODCOMMAND::COMMAND cmd);
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8 *e, uint8 *p, bool bForce);
+
+public:
+    //XXXih:   <:(
+    modplug::graph::core _graph;
 };
 
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())

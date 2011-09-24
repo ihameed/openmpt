@@ -1579,11 +1579,11 @@ BOOL CAboutDlg::OnInitDialog()
 
     const char* const pArrCredit = { 
         "OpenMPT / ModPlug Tracker|"
-        "Copyright © 2004-2011 Contributors|"
-        "Copyright © 1997-2003 Olivier Lapicque (olivier@modplug.com)|"
+        "Copyright ï¿½ 2004-2011 Contributors|"
+        "Copyright ï¿½ 1997-2003 Olivier Lapicque (olivier@modplug.com)|"
         "|"
         "Contributors:|"
-        "Ahti Leppänen (2005-2011)|"
+        "Ahti Leppï¿½nen (2005-2011)|"
         "Johannes Schultz (2008-2011)|"
         "Robin Fernandes (2004-2007)|"
         "Sergiy Pylypenko (2007)|"
@@ -2951,25 +2951,13 @@ BOOL CTrackApp::OpenURL(LPCSTR lpszURL)
 ///////////////////////////////////////////////////////////////////////////////////
 // Debug
 
-void Log(LPCSTR format,...)
-//-------------------------
-{
-    #ifdef _DEBUG
-        CHAR cBuf[1024];
-        va_list va;
-        va_start(va, format);
-        wvsprintf(cBuf, format, va);
-        OutputDebugString(cBuf);
-        #ifdef LOG_TO_FILE
-            FILE *f = fopen("c:\\mptrack.log", "a");
-            if (f)
-            {
-                fwrite(cBuf, 1, strlen(cBuf), f);
-                fclose(f);
-            }
-        #endif //LOG_TO_FILE
-        va_end(va);
-    #endif //_DEBUG
+void Log(LPCSTR format, ...) {
+#ifdef _DEBUG
+    va_list arglist;
+    va_start(arglist, format);
+    modplug::pervasives::debug_log(format, arglist);
+    va_end(arglist);
+#endif
 }
 
 

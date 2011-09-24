@@ -26,22 +26,28 @@ DAMAGE.
 
 #pragma once
 
-#include <cstddef>
-#include "../../soundlib/Snd_defs.h"
+#include "graph/constants.h"
+
+#define VST_FORCE_DEPRECATED 0
+#include <aeffectx.h>
+#include <vstfxstore.h>
+
+class CVstPlugin;
 
 namespace modplug {
 namespace graph {
 
 
-typedef unsigned int id_t;
-typedef double sample_t;
+class vertex;
 
-static const id_t ID_INVALID = 0;
-static const id_t ID_MASTER_SINK = 1;
+class vst_vertex : public vertex {
+public:
+    vst_vertex(id_t, CVstPlugin *);
+    ~vst_vertex();
 
-static const size_t MAX_CHANNELS = MAX_BASECHANNELS;
-static const size_t MAX_NODE_CHANNELS = 64;
-static const size_t MAX_CHANNEL_ENDPOINTS = 64;
+private:
+    CVstPlugin *_vst;
+};
 
 
 }

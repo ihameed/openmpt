@@ -24,24 +24,29 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE. 
 */
 
-#pragma once
+#include "stdafx.h"
 
-#include <cstddef>
-#include "../../soundlib/Snd_defs.h"
+#include "vertex.h"
+#include "vst_vertex.h"
+
+#include "../vstplug.h"
+
+#include "../pervasives/pervasives.h"
+using namespace modplug::pervasives;
 
 namespace modplug {
 namespace graph {
 
+vst_vertex::vst_vertex(id_t id, CVstPlugin *vst) : vertex(id, "emptyvst") {
+    _vst = vst;
+    _input_channels  = _vst->m_nInputs;
+    _output_channels = _vst->m_nOutputs;
+    debug_log("vst_vertex::vst_vertex()");
+}
 
-typedef unsigned int id_t;
-typedef double sample_t;
-
-static const id_t ID_INVALID = 0;
-static const id_t ID_MASTER_SINK = 1;
-
-static const size_t MAX_CHANNELS = MAX_BASECHANNELS;
-static const size_t MAX_NODE_CHANNELS = 64;
-static const size_t MAX_CHANNEL_ENDPOINTS = 64;
+vst_vertex::~vst_vertex() {
+    debug_log("vst_vertex::~vst_vertex()");
+}
 
 
 }

@@ -26,6 +26,8 @@ mixutil.c nabbed from schism
 rudely sepple-ized and jammed into openmpt by xaimus  : - [
 */
 
+//TODO: replace this with a clean bsdl rewrite
+
 #include "stdafx.h"
 
 #include <cstring>
@@ -44,7 +46,6 @@ static const unsigned int OFSDECAYMASK = 0xFF;
 void init_mix_buffer(int *buffer, size_t samples) {
     memset(buffer, 0, samples * sizeof(int));
 }
-
 
 void stereo_fill(int *buffer, size_t samples, long *profs, long *plofs) {
     long rofs = *profs;
@@ -69,7 +70,6 @@ void stereo_fill(int *buffer, size_t samples, long *profs, long *plofs) {
     *plofs = lofs;
 }
 
-
 void end_channel_ofs(MODCHANNEL *channel, int *buffer, size_t samples) {
     int rofs = channel->nROfs;
     int lofs = channel->nLOfs;
@@ -91,7 +91,6 @@ void end_channel_ofs(MODCHANNEL *channel, int *buffer, size_t samples) {
     channel->nLOfs = lofs;
 }
 
-
 void mono_from_stereo(int *mix_buf, size_t samples) {
     for (size_t j, i = 0; i < samples; i++) {
         j = i << 1;
@@ -101,6 +100,15 @@ void mono_from_stereo(int *mix_buf, size_t samples) {
 
 
 
+void stereo_mix_to_sample_t(const int *src, modplug::graph::sample_t *out1, modplug::graph::sample_t *out2, size_t count, const float i2fc) {
+    for (size_t i = 0; i < count; i++) {
+        *out1++ = *src * i2fc;
+        src++;
+
+        *out2++ = *src * i2fc;
+        src++;
+    }
+}
 
 void stereo_mix_to_float(const int *src, float *out1, float *out2, size_t count, const float i2fc) {
     for (size_t i = 0; i < count; i++) {
@@ -112,7 +120,6 @@ void stereo_mix_to_float(const int *src, float *out1, float *out2, size_t count,
     }
 }
 
-
 void float_to_stereo_mix(const float *in1, const float *in2, int *out, size_t count, const float f2ic) {
     for (size_t i = 0; i < count; i++) {
         *out++ = (int) (*in1 * f2ic);
@@ -122,14 +129,12 @@ void float_to_stereo_mix(const float *in1, const float *in2, int *out, size_t co
     }
 }
 
-
 void mono_mix_to_float(const int *src, float *out, size_t count, const float i2fc) {
     for (size_t i = 0; i < count; i++) {
         *out++ = *src * i2fc;
         src++;
     }
 }
-
 
 void float_to_mono_mix(const float *in, int *out, size_t count, const float f2ic) {
     for (size_t i = 0; i < count; i++) {
@@ -164,7 +169,6 @@ size_t clip_32_to_8(void *ptr, int *buffer, size_t samples) {
     return samples;
 }
 
-
 size_t clip_32_to_16(void *ptr, int *buffer, size_t samples) {
     signed short *p = (signed short *) ptr;
 
@@ -183,7 +187,6 @@ size_t clip_32_to_16(void *ptr, int *buffer, size_t samples) {
 
     return samples * 2;
 }
-
 
 // XXXih: untested
 size_t clip_32_to_24(void *ptr, int *buffer, size_t samples) {
@@ -209,7 +212,6 @@ size_t clip_32_to_24(void *ptr, int *buffer, size_t samples) {
 
     return samples * 3;
 }
-
 
 size_t clip_32_to_32(void *ptr, int *buffer, size_t samples) {
     signed int *p = (signed int *) ptr;

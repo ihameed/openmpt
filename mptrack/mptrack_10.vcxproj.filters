@@ -95,14 +95,6 @@
     <ClCompile Include="PatternRandomizerGUIInstrument.cpp" />
     <ClCompile Include="PatternRandomizerGUINote.cpp" />
     <ClCompile Include="PatternRandomizerGUIVolCmd.cpp" />
-    <ClCompile Include="ChannelNode.cpp" />
-    <ClCompile Include="ctrl_graph.cpp" />
-    <ClCompile Include="EffectNode.cpp" />
-    <ClCompile Include="FinalNode.cpp" />
-    <ClCompile Include="Graph.cpp" />
-    <ClCompile Include="InstrumentNode.cpp" />
-    <ClCompile Include="Vertex.cpp" />
-    <ClCompile Include="view_graph.cpp" />
     <ClCompile Include="..\soundlib\tuning.cpp" />
     <ClCompile Include="..\soundlib\tuningbase.cpp" />
     <ClCompile Include="..\soundlib\tuningCollection.cpp" />
@@ -137,19 +129,22 @@
     <ClCompile Include="..\Soundlib\Load_umx.cpp" />
     <ClCompile Include="..\soundlib\Load_wav.cpp" />
     <ClCompile Include="..\soundlib\Load_xm.cpp" />
-    <ClCompile Include="graph\node.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\vst_node.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="Node.cpp" />
-    <ClCompile Include="graph\graph.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
     <ClCompile Include="mixer\mixutil.cpp">
       <Filter>mixer</Filter>
     </ClCompile>
+    <ClCompile Include="graph\vertex.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\source_vertex.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\vst_vertex.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="graph\core.cpp">
+      <Filter>graph</Filter>
+    </ClCompile>
+    <ClCompile Include="pervasives\pervasives.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PatternRandomizer.h" />
@@ -158,15 +153,6 @@
     <ClInclude Include="PatternRandomizerGUIInstrument.h" />
     <ClInclude Include="PatternRandomizerGUINote.h" />
     <ClInclude Include="PatternRandomizerGUIVolCmd.h" />
-    <ClInclude Include="ChannelNode.h" />
-    <ClInclude Include="ctrl_graph.h" />
-    <ClInclude Include="EffectNode.h" />
-    <ClInclude Include="FinalNode.h" />
-    <ClInclude Include="Graph.h" />
-    <ClInclude Include="InstrumentNode.h" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="Vertex.h" />
-    <ClInclude Include="view_graph.h" />
     <ClInclude Include="AbstractVstEditor.h" />
     <ClInclude Include="ArrayUtils.h" />
     <ClInclude Include="AutoSaver.h" />
@@ -253,15 +239,6 @@
     <ClInclude Include="tuningRatioMapWnd.h" />
     <ClInclude Include="test\test.h" />
     <ClInclude Include="..\soundlib\Loaders.h" />
-    <ClInclude Include="graph\node.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\vst_node.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\graph.h">
-      <Filter>graph</Filter>
-    </ClInclude>
     <ClInclude Include="graph\constants.h">
       <Filter>graph</Filter>
     </ClInclude>
@@ -271,6 +248,19 @@
     <ClInclude Include="mixer\constants.h">
       <Filter>mixer</Filter>
     </ClInclude>
+    <ClInclude Include="graph\vertex.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\source_vertex.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\vst_vertex.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="graph\core.h">
+      <Filter>graph</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\pervasives.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />

@@ -1565,6 +1565,9 @@ UINT CSoundFile::CreateStereoMix(int count)
         LONG nSmpCount;
         int nsamples;
         int *pbuffer;
+        int *JUICY_FRUITS;
+
+        size_t channel_i_care_about = pChannel->nMasterChn ? (pChannel->nMasterChn - 1) : (ChnMix[nChn]);
 
         if (!pChannel->pCurrentSample) continue;
         nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
@@ -1598,6 +1601,9 @@ UINT CSoundFile::CreateStereoMix(int count)
         pbuffer = (gdwSoundSetup & SNDMIX_REVERB) ? MixReverbBuffer : MixSoundBuffer;
         if ((pChannel->dwFlags & CHN_SURROUND) && (gnChannels > 2)) pbuffer = MixRearBuffer;
         if (pChannel->dwFlags & CHN_NOREVERB) pbuffer = MixSoundBuffer;
+
+        JUICY_FRUITS = pbuffer;
+        //pbuffer = _graph.channel_vertices[channel_i_care_about]->ghetto_channels;
 
     #ifdef ENABLE_MMX
         if ((pChannel->dwFlags & CHN_REVERB) && (gdwSysInfo & SYSMIX_ENABLEMMX))
@@ -1668,7 +1674,10 @@ UINT CSoundFile::CreateStereoMix(int count)
             pChannel->nPos = 0;
             pChannel->nPosLo = 0;
             pChannel->nRampLength = 0;
+
+            //modplug::mixer::end_channel_ofs(pChannel, JUICY_FRUITS, nsamples);
             modplug::mixer::end_channel_ofs(pChannel, pbuffer, nsamples);
+
             *pOfsR += pChannel->nROfs;
             *pOfsL += pChannel->nLOfs;
             *pOfsR = 0;
@@ -1686,6 +1695,8 @@ UINT CSoundFile::CreateStereoMix(int count)
             pChannel->nPosLo = delta & 0xFFFF;
             pChannel->nPos += (delta >> 16);
             pChannel->nROfs = pChannel->nLOfs = 0;
+
+            JUICY_FRUITS += nSmpCount*2;
             pbuffer += nSmpCount*2;
             naddmix = 0;
         } else
@@ -1694,13 +1705,22 @@ UINT CSoundFile::CreateStereoMix(int count)
             // Choose function for mixing
             LPMIXINTERFACE pMixFunc;
             pMixFunc = (pChannel->nRampLength) ? pMixFuncTable[nFlags|MIXNDX_RAMP] : pMixFuncTable[nFlags];
+
             int *pbufmax = pbuffer + (nSmpCount*2);
+            int *MAXXXIMUM_JUICY_FRUITS = JUICY_FRUITS + (nSmpCount*2);
+
             pChannel->nROfs = - *(pbufmax-2);
             pChannel->nLOfs = - *(pbufmax-1);
-            pMixFunc(pChannel, pbuffer, pbufmax);
+
+            //pMixFunc(pChannel, JUICY_FRUITS, MAXXXIMUM_JUICY_FRUITS); //XXXih: homie homie look   homie look here homie
+            pMixFunc(pChannel, pbuffer, pbufmax); //XXXih: homie homie look   homie look here homie
+
             pChannel->nROfs += *(pbufmax-2);
             pChannel->nLOfs += *(pbufmax-1);
+
+            JUICY_FRUITS = MAXXXIMUM_JUICY_FRUITS;
             pbuffer = pbufmax;
+
             naddmix = 1;
         }
         nsamples -= nSmpCount;
@@ -1722,6 +1742,14 @@ UINT CSoundFile::CreateStereoMix(int count)
         }
         if (nsamples > 0) goto SampleLooping;
         nchmixed += naddmix;
+
+        //XXXih: the worst
+        /*
+        modplug::graph::vertex *channel_vertex  = _graph.channel_vertices[channel_i_care_about];
+        modplug::graph::sample_t *left_channel  = channel_vertex->channels[0];
+        modplug::graph::sample_t *right_channel = channel_vertex->channels[1];
+        modplug::mixer::stereo_mix_to_sample_t(pbuffer, left_channel, right_channel, modplug::mixer::MIX_BUFFER_SIZE, m_pConfig->getIntToFloat());
+        */
     }
 #ifdef ENABLE_MMX
     if ((gdwSysInfo & SYSMIX_ENABLEMMX) && (gdwSoundSetup & SNDMIX_ENABLEMMX))

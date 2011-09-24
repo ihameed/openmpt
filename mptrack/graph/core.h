@@ -26,22 +26,49 @@ DAMAGE.
 
 #pragma once
 
-#include <cstddef>
-#include "../../soundlib/Snd_defs.h"
+#include <vector>
+#include <map>
+#include <utility>
+
+#include "constants.h"
+#include "vertex.h"
 
 namespace modplug {
 namespace graph {
 
 
-typedef unsigned int id_t;
-typedef double sample_t;
+typedef std::map<id_t, vertex *> vertex_map_t;
+typedef std::map<id_t, arrow>  arrow_map_t;
 
-static const id_t ID_INVALID = 0;
-static const id_t ID_MASTER_SINK = 1;
+class core {
+public:
+    core();
+    ~core();
 
-static const size_t MAX_CHANNELS = MAX_BASECHANNELS;
-static const size_t MAX_NODE_CHANNELS = 64;
-static const size_t MAX_CHANNEL_ENDPOINTS = 64;
+    void process(int *, size_t, size_t);
+
+    id_t add_channel();
+    id_t add_vst();
+
+    id_t load_vertex();
+
+    bool remove_vertex(id_t);
+    void rename_vertex();
+
+
+    vertex *vertex(id_t vertex);
+
+    id_t link_vertices(id_t, size_t, id_t, size_t);
+    bool unlink_vertices(id_t);
+
+    id_t new_id();
+    id_t _largest_id;
+    
+    modplug::graph::vertex *channel_vertices[MAX_CHANNELS];
+    vertex_map_t _vertices;
+    arrow_map_t  _arrows;
+    modplug::graph::vertex *_master_sink;
+};
 
 
 }

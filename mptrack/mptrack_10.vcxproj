@@ -62,7 +62,7 @@
       <TypeLibraryName>.\Debug/mptrack.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/EHsc %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/EHsc /Zc:auto %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;ENABLE_MMX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -119,7 +119,7 @@
       <TypeLibraryName>.\Bin/mptrack.tlb</TypeLibraryName>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/EHsc /O2 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/EHsc /O2 /Zc:auto %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -190,9 +190,10 @@
     <ClCompile Include="..\soundlib\Fastmix.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
-    <ClCompile Include="graph\graph.cpp" />
-    <ClCompile Include="graph\node.cpp" />
-    <ClCompile Include="graph\vst_node.cpp" />
+    <ClCompile Include="graph\core.cpp" />
+    <ClCompile Include="graph\vertex.cpp" />
+    <ClCompile Include="graph\source_vertex.cpp" />
+    <ClCompile Include="graph\vst_vertex.cpp" />
     <ClCompile Include="HyperEdit.cpp" />
     <ClCompile Include="HyperEdit2.cpp" />
     <ClCompile Include="HyperEdit3.cpp" />
@@ -230,6 +231,7 @@
     <ClCompile Include="PatternGotoDialog.cpp" />
     <ClCompile Include="PerformanceCounter.cpp" />
     <ClCompile Include="..\soundlib\PlaybackEventer.cpp" />
+    <ClCompile Include="pervasives\pervasives.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
     <ClCompile Include="SampleEditorDialogs.cpp" />
     <ClCompile Include="..\soundlib\Sampleio.cpp" />
@@ -270,21 +272,6 @@
     <ClCompile Include="PatternRandomizerGUIInstrument.cpp" />
     <ClCompile Include="PatternRandomizerGUINote.cpp" />
     <ClCompile Include="PatternRandomizerGUIVolCmd.cpp" />
-    <ClCompile Include="ChannelNode.cpp" />
-    <ClCompile Include="ctrl_graph.cpp" />
-    <ClCompile Include="EffectNode.cpp" />
-    <ClCompile Include="FinalNode.cpp" />
-    <ClCompile Include="Graph.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release/graphass.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug/graphass.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="InstrumentNode.cpp" />
-    <ClCompile Include="Node.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release/nodeass.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug/nodeass.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Vertex.cpp" />
-    <ClCompile Include="view_graph.cpp" />
     <ClCompile Include="..\soundlib\tuning.cpp" />
     <ClCompile Include="..\soundlib\tuningbase.cpp" />
     <ClCompile Include="..\soundlib\tuningCollection.cpp" />
@@ -324,11 +311,12 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="graph\source_vertex.h" />
     <ClInclude Include="mixer\constants.h" />
     <ClInclude Include="graph\constants.h" />
-    <ClInclude Include="graph\graph.h" />
-    <ClInclude Include="graph\node.h" />
-    <ClInclude Include="graph\vst_node.h" />
+    <ClInclude Include="graph\core.h" />
+    <ClInclude Include="graph\vertex.h" />
+    <ClInclude Include="graph\vst_vertex.h" />
     <ClInclude Include="mixer\mixutil.h" />
     <ClInclude Include="PatternRandomizer.h" />
     <ClInclude Include="PatternRandomizerGUI.h" />
@@ -336,15 +324,6 @@
     <ClInclude Include="PatternRandomizerGUIInstrument.h" />
     <ClInclude Include="PatternRandomizerGUINote.h" />
     <ClInclude Include="PatternRandomizerGUIVolCmd.h" />
-    <ClInclude Include="ChannelNode.h" />
-    <ClInclude Include="ctrl_graph.h" />
-    <ClInclude Include="EffectNode.h" />
-    <ClInclude Include="FinalNode.h" />
-    <ClInclude Include="Graph.h" />
-    <ClInclude Include="InstrumentNode.h" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="Vertex.h" />
-    <ClInclude Include="view_graph.h" />
     <ClInclude Include="AbstractVstEditor.h" />
     <ClInclude Include="ArrayUtils.h" />
     <ClInclude Include="AutoSaver.h" />
@@ -396,6 +375,7 @@
     <ClInclude Include="PatternGotoDialog.h" />
     <ClInclude Include="PerformanceCounter.h" />
     <ClInclude Include="..\soundlib\PlaybackEventer.h" />
+    <ClInclude Include="pervasives\pervasives.h" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SampleEditorDialogs.h" />
