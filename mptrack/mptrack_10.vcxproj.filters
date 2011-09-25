@@ -51,9 +51,6 @@
     <ClCompile Include="mpt_midi.cpp" />
     <ClCompile Include="MPTHacks.cpp" />
     <ClCompile Include="mptrack.cpp" />
-    <ClCompile Include="OpenGLControl.cpp" />
-    <ClCompile Include="OpenGLDevice.cpp" />
-    <ClCompile Include="OpenGLEditor.cpp" />
     <ClCompile Include="..\soundlib\pattern.cpp" />
     <ClCompile Include="..\soundlib\patternContainer.cpp" />
     <ClCompile Include="PatternEditorDialogs.cpp" />
@@ -197,9 +194,6 @@
     <ClInclude Include="MoveFXSlotDialog.h" />
     <ClInclude Include="Mpdlgs.h" />
     <ClInclude Include="mptrack.h" />
-    <ClInclude Include="OpenGLControl.h" />
-    <ClInclude Include="OpenGLDevice.h" />
-    <ClInclude Include="OpenGLEditor.h" />
     <ClInclude Include="..\soundlib\pattern.h" />
     <ClInclude Include="..\soundlib\patternContainer.h" />
     <ClInclude Include="PatternEditorDialogs.h" />
@@ -242,9 +236,6 @@
     <ClInclude Include="test\test.h" />
     <ClInclude Include="..\soundlib\Loaders.h" />
     <ClInclude Include="mixer\mixutil.h">
-      <Filter>mixer</Filter>
-    </ClInclude>
-    <ClInclude Include="mixer\constants.h">
       <Filter>mixer</Filter>
     </ClInclude>
     <ClInclude Include="pervasives\pervasives.h">

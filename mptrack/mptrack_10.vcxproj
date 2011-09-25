@@ -135,10 +135,14 @@
       <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
       <ObjectFileName>.\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>false</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -222,9 +226,6 @@
     <ClCompile Include="mpt_midi.cpp" />
     <ClCompile Include="MPTHacks.cpp" />
     <ClCompile Include="mptrack.cpp" />
-    <ClCompile Include="OpenGLControl.cpp" />
-    <ClCompile Include="OpenGLDevice.cpp" />
-    <ClCompile Include="OpenGLEditor.cpp" />
     <ClCompile Include="..\soundlib\pattern.cpp" />
     <ClCompile Include="..\soundlib\patternContainer.cpp" />
     <ClCompile Include="PatternEditorDialogs.cpp" />
@@ -312,7 +313,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mixgraph\source_vertex.h" />
-    <ClInclude Include="mixer\constants.h" />
     <ClInclude Include="mixgraph\constants.h" />
     <ClInclude Include="mixgraph\core.h" />
     <ClInclude Include="mixgraph\vertex.h" />
@@ -366,9 +366,6 @@
     <ClInclude Include="MoveFXSlotDialog.h" />
     <ClInclude Include="Mpdlgs.h" />
     <ClInclude Include="mptrack.h" />
-    <ClInclude Include="OpenGLControl.h" />
-    <ClInclude Include="OpenGLDevice.h" />
-    <ClInclude Include="OpenGLEditor.h" />
     <ClInclude Include="..\soundlib\pattern.h" />
     <ClInclude Include="..\soundlib\patternContainer.h" />
     <ClInclude Include="PatternEditorDialogs.h" />

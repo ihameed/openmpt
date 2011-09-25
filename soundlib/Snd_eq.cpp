@@ -16,7 +16,7 @@
 #include "stdafx.h"
 #include "sndfile.h"
 
-#include "../mptrack/mixer/constants.h"
+#include "../mptrack/mixgraph/constants.h"
 #include "../mptrack/mixer/mixutil.h"
 
 #define EQ_BANDWIDTH	2.0
@@ -401,7 +401,7 @@ void CSoundFile::EQStereo(int *pbuffer, UINT nCount)
 #endif // ENABLE_AMD
 
     {	
-        modplug::mixer::stereo_mix_to_float(pbuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixer::MIX_BUFFER_SIZE, nCount, m_pConfig->getIntToFloat());
+        modplug::mixer::stereo_mix_to_float(pbuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, nCount, m_pConfig->getIntToFloat());
         
         for (UINT bl=0; bl<MAX_EQ_BANDS; bl++)
         {
@@ -409,10 +409,10 @@ void CSoundFile::EQStereo(int *pbuffer, UINT nCount)
         }
         for (UINT br=MAX_EQ_BANDS; br<MAX_EQ_BANDS*2; br++)
         {
-            if ((gEQ[br].bEnable) && (gEQ[br].Gain != 1.0f)) EQFilter(&gEQ[br], MixFloatBuffer+modplug::mixer::MIX_BUFFER_SIZE, nCount);
+            if ((gEQ[br].bEnable) && (gEQ[br].Gain != 1.0f)) EQFilter(&gEQ[br], MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, nCount);
         }
 
-        modplug::mixer::float_to_stereo_mix(MixFloatBuffer, MixFloatBuffer+modplug::mixer::MIX_BUFFER_SIZE, pbuffer, nCount, m_pConfig->getFloatToInt());
+        modplug::mixer::float_to_stereo_mix(MixFloatBuffer, MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, pbuffer, nCount, m_pConfig->getFloatToInt());
     }
 }
 

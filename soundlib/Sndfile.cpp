@@ -16,7 +16,7 @@
 #include "sndfile.h"
 #include "wavConverter.h"
 #include "tuningcollection.h"
-#include "../mptrack/mixer/constants.h"
+#include "../mptrack/mixgraph/constants.h"
 #include <vector>
 #include <list>
 #include <algorithm>
@@ -743,7 +743,7 @@ BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
     m_nMusicSpeed = m_nDefaultSpeed;
     m_nMusicTempo = m_nDefaultTempo;
     m_nGlobalVolume = m_nDefaultGlobalVolume;
-    m_lHighResRampingGlobalVolume = m_nGlobalVolume<<modplug::mixer::VOLUME_RAMP_PRECISION;
+    m_lHighResRampingGlobalVolume = m_nGlobalVolume<<modplug::mixgraph::VOLUME_RAMP_PRECISION;
     m_nGlobalVolumeDestination = m_nGlobalVolume;
     m_nSamplesToGlobalVolRampDest=0;
     m_nNextPattern = 0;

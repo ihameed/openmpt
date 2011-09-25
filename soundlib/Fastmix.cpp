@@ -13,7 +13,7 @@
 #include <math.h>
 #endif
 
-#include "mixer/constants.h"
+#include "mixgraph/constants.h"
 #include "mixer/mixutil.h"
 
 // rewbs.resamplerConf
@@ -25,16 +25,16 @@
 #pragma bss_seg(".modplug")
 
 // Front Mix Buffer (Also room for interleaved rear mix)
-int MixSoundBuffer[modplug::mixer::MIX_BUFFER_SIZE*4];
+int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 
 // Reverb Mix Buffer
 #ifndef NO_REVERB
-int MixReverbBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
+int MixReverbBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 #endif
 
 #ifndef FASTSOUNDLIB
-int MixRearBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
-float MixFloatBuffer[modplug::mixer::MIX_BUFFER_SIZE*2];
+int MixRearBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
+float MixFloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 #endif
 
 #pragma bss_seg()
@@ -318,13 +318,13 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 #define SNDMIX_RAMPMONOVOL\
     nRampLeftVol += pChn->nLeftRamp;\
     nRampRightVol += pChn->nRightRamp;\
-    pvol[0] += vol * (nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
-    pvol[1] += vol * (nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
+    pvol[0] += vol * (nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
+    pvol[1] += vol * (nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol += 2;
 
 #define SNDMIX_RAMPFASTMONOVOL\
     nRampRightVol += pChn->nRightRamp;\
-    int fastvol = vol * (nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
+    int fastvol = vol * (nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol[0] += fastvol;\
     pvol[1] += fastvol;\
     pvol += 2;
@@ -332,8 +332,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 #define SNDMIX_RAMPSTEREOVOL\
     nRampLeftVol += pChn->nLeftRamp;\
     nRampRightVol += pChn->nRightRamp;\
-    pvol[0] += vol_l * (nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
-    pvol[1] += vol_r * (nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION);\
+    pvol[0] += vol_l * (nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
+    pvol[1] += vol_r * (nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol += 2;
 
 
@@ -401,9 +401,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
 #define END_RAMPMIX_INTERFACE()\
         SNDMIX_ENDSAMPLELOOP\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nLeftVol = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
     }
 
 #define BEGIN_FASTRAMPMIX_INTERFACE(func)\
@@ -414,7 +414,7 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
         SNDMIX_ENDSAMPLELOOP\
         pChannel->nRampRightVol = nRampRightVol;\
         pChannel->nRampLeftVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nLeftVol = pChannel->nRightVol;\
     }
 
@@ -440,9 +440,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
         SNDMIX_ENDSAMPLELOOP\
         MIX_END_FILTER\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nLeftVol = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
     }
 
 // Stereo Resonant Filters
@@ -466,9 +466,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
         SNDMIX_ENDSAMPLELOOP\
         MIX_END_STEREO_FILTER\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> modplug::mixer::VOLUME_RAMP_PRECISION;\
+        pChannel->nLeftVol = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
     }
 
 
@@ -1839,9 +1839,9 @@ void CSoundFile::ProcessPlugins(UINT nCount)
         }
     }
     // Convert mix buffer
-    StereoMixToFloat(MixSoundBuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixer::MIX_BUFFER_SIZE, nCount);
+    StereoMixToFloat(MixSoundBuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, nCount);
     FLOAT *pMixL = MixFloatBuffer;
-    FLOAT *pMixR = MixFloatBuffer + modplug::mixer::MIX_BUFFER_SIZE;
+    FLOAT *pMixR = MixFloatBuffer + modplug::mixgraph::MIX_BUFFER_SIZE;
 
     // Process Plugins
     //XXXih replace
@@ -1860,7 +1860,7 @@ void CSoundFile::ProcessPlugins(UINT nCount)
             {
                 bMasterMix = TRUE;
                 pMixL = MixFloatBuffer;
-                pMixR = MixFloatBuffer + modplug::mixer::MIX_BUFFER_SIZE;
+                pMixR = MixFloatBuffer + modplug::mixgraph::MIX_BUFFER_SIZE;
             }
             IMixPlugin *pObject = pPlugin->pMixPlugin;
             PSNDMIXPLUGINSTATE pState = pPlugin->pMixState;
@@ -2051,7 +2051,7 @@ void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits)
     mov ecx, nBits		// ecx = number of bits of noise
     mov edi, gDitherA	// Noise generation
     mov ebx, gDitherB
-    add ecx, modplug::mixer::MIXING_ATTENUATION+1
+    add ecx, modplug::mixgraph::MIXING_ATTENUATION+1
     push ebp
     mov ebp, eax
 noiseloop:

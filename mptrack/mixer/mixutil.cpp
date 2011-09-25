@@ -33,7 +33,7 @@ rudely sepple-ized and jammed into openmpt by xaimus  : - [
 #include <cstring>
 
 #include "sndfile.h"
-#include "constants.h"
+#include "../mixgraph/constants.h"
 #include "mixutil.h"
 
 namespace modplug {
@@ -135,7 +135,7 @@ size_t clip_32_to_8(void *ptr, int *buffer, size_t samples) {
             n = MIXING_CLIPMAX;
 
         // 8-bit unsigned
-        p[i] = static_cast<unsigned char>((n >> (24 - modplug::mixer::MIXING_ATTENUATION)) ^ 0x80);
+        p[i] = static_cast<unsigned char>((n >> (24 - modplug::mixgraph::MIXING_ATTENUATION)) ^ 0x80);
     }
 
     return samples;
@@ -146,7 +146,7 @@ size_t clip_32_to_16(void *ptr, int *buffer, size_t samples) {
 
     for (size_t i = 0; i < samples; i++) {
         int n = buffer[i];
-        n += 1 << (15 - modplug::mixer::MIXING_ATTENUATION);
+        n += 1 << (15 - modplug::mixgraph::MIXING_ATTENUATION);
 
         if (n < MIXING_CLIPMIN)
             n = MIXING_CLIPMIN;
@@ -154,7 +154,7 @@ size_t clip_32_to_16(void *ptr, int *buffer, size_t samples) {
             n = MIXING_CLIPMAX;
 
         // 16-bit signed
-        p[i] = static_cast<signed short>(n >> (16 - modplug::mixer::MIXING_ATTENUATION));
+        p[i] = static_cast<signed short>(n >> (16 - modplug::mixgraph::MIXING_ATTENUATION));
     }
 
     return samples * 2;
@@ -167,7 +167,7 @@ size_t clip_32_to_24(void *ptr, int *buffer, size_t samples) {
 
     for (size_t i = 0; i < samples; i++) {
         int n = buffer[i];
-        n += 1 << (7 - modplug::mixer::MIXING_ATTENUATION);
+        n += 1 << (7 - modplug::mixgraph::MIXING_ATTENUATION);
 
         if (n < MIXING_CLIPMIN)
             n = MIXING_CLIPMIN;
@@ -175,7 +175,7 @@ size_t clip_32_to_24(void *ptr, int *buffer, size_t samples) {
             n = MIXING_CLIPMAX;
 
         // 24-bit signed
-        n = n >> (8 - modplug::mixer::MIXING_ATTENUATION);
+        n = n >> (8 - modplug::mixgraph::MIXING_ATTENUATION);
 
         /* err, assume same endian */
         memcpy(p, &n, 3);
@@ -197,7 +197,7 @@ size_t clip_32_to_32(void *ptr, int *buffer, size_t samples) {
             n = MIXING_CLIPMAX;
 
         // 32-bit signed
-        p[i] = (n << modplug::mixer::MIXING_ATTENUATION);
+        p[i] = (n << modplug::mixgraph::MIXING_ATTENUATION);
     }
 
     return samples * 4;

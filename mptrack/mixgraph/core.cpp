@@ -197,14 +197,12 @@ inline void __mix_buffer_in_place(sample_t *mixtarget, const sample_t *source, c
 void __process(vertex *tail, const size_t num_samples) {
     for (size_t idx = 0, maxsz = tail->_input_arrows.size(); idx < maxsz; ++idx) {
         arrow *link = tail->_input_arrows[idx];
-        if (link != nullptr) {
-            vertex *head = link->head;
-            __process(head, num_samples);
+        vertex *head = link->head;
+        __process(head, num_samples);
 
-            sample_t *tail_channel = tail->channels[link->tail_channel];
-            sample_t *head_channel = head->channels[link->head_channel];
-            __mix_buffer_in_place(tail_channel, head_channel, num_samples);
-        }
+        sample_t *tail_channel = tail->channels[link->tail_channel];
+        sample_t *head_channel = head->channels[link->head_channel];
+        __mix_buffer_in_place(tail_channel, head_channel, num_samples);
     }
 }
 
@@ -220,7 +218,7 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
             channel->ghetto_channels,
             channel->channels[0],
             channel->channels[1],
-            mixer::MIX_BUFFER_SIZE,
+            modplug::mixgraph::MIX_BUFFER_SIZE,
             int_to_float_scale
         );
     }

@@ -43,6 +43,10 @@ static const size_t MAX_CHANNELS = MAX_BASECHANNELS;
 static const size_t MAX_NODE_CHANNELS = 64;
 static const size_t MAX_CHANNEL_ENDPOINTS = 256;
 
+static const size_t MIX_BUFFER_SIZE = 512;
+static const size_t SCRATCH_BUFFER_SIZE = 64; //Used for plug's final processing (cleanup)
+static const unsigned int MIXING_ATTENUATION = 4;
+static const unsigned int VOLUME_RAMP_PRECISION = 12;
 
 }
 }

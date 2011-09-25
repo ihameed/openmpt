@@ -606,7 +606,7 @@ BOOL CDoWaveConvert::OnInitDialog()
 // -> CODE#0024
 // -> DESC="wav export update"
 //#define WAVECONVERTBUFSIZE	2048
-#define WAVECONVERTBUFSIZE	modplug::mixer::MIX_BUFFER_SIZE //Going over modplug::mixer::MIX_BUFFER_SIZE can kill VSTPlugs 
+#define WAVECONVERTBUFSIZE	modplug::mixgraph::MIX_BUFFER_SIZE //Going over modplug::mixgraph::MIX_BUFFER_SIZE can kill VSTPlugs 
 // -! NEW_FEATURE#0024
 
 

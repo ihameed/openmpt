@@ -32,7 +32,7 @@ DAMAGE.
 
 #include "../pervasives/pervasives.h"
 #include "./constants.h"
-#include "../mixer/constants.h"
+#include "./constants.h"
 
 namespace modplug {
 namespace mixgraph {
@@ -47,9 +47,9 @@ public:
 
     const id_t id;
 
-    sample_t channels[MAX_NODE_CHANNELS][modplug::mixer::MIX_BUFFER_SIZE + 2];
+    sample_t channels[MAX_NODE_CHANNELS][modplug::mixgraph::MIX_BUFFER_SIZE + 2];
 
-    int ghetto_channels[modplug::mixer::MIX_BUFFER_SIZE * 2 + 2];
+    int ghetto_channels[modplug::mixgraph::MIX_BUFFER_SIZE * 2 + 2];
     long ghetto_vol_decay_l;
     long ghetto_vol_decay_r;
 
