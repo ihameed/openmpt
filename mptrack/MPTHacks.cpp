@@ -87,7 +87,7 @@ struct FixHackedPatterns
 
 
 // Find and fix envelopes where two nodes are on the same tick.
-bool FindIncompatibleEnvelopes(INSTRUMENTENVELOPE &env, bool autofix)
+bool FindIncompatibleEnvelopes(modplug::mixer::INSTRUMENTENVELOPE &env, bool autofix)
 //-------------------------------------------------------------------
 {
 	bool found = false;
@@ -259,7 +259,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 	foundHere = false;
 	for(SAMPLEINDEX i = 1; i <= m_SndFile.GetNumSamples(); i++)
 	{
-		MODSAMPLE &smp = m_SndFile.Samples[i];
+		modplug::mixer::MODSAMPLE &smp = m_SndFile.Samples[i];
 		if(m_SndFile.GetType() == MOD_TYPE_XM && smp.GetNumChannels() > 1)
 		{
 			foundHere = foundHacks = true;
@@ -289,7 +289,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 	bool foundEnvelopes = false;
 	for(INSTRUMENTINDEX i = 1; i <= m_SndFile.GetNumInstruments(); i++)
 	{
-		MODINSTRUMENT *instr = m_SndFile.Instruments[i];
+		modplug::mixer::MODINSTRUMENT *instr = m_SndFile.Instruments[i];
 		if(instr == nullptr) continue;
 
 		// Extended instrument attributes

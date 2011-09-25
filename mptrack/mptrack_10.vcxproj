@@ -314,6 +314,7 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mixer\modchannel.h" />
     <ClInclude Include="mixgraph\mixer.h" />
     <ClInclude Include="mixgraph\source_vertex.h" />
     <ClInclude Include="mixgraph\constants.h" />

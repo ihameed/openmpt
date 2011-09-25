@@ -263,7 +263,7 @@ void TestLoadFile(const CModDoc *pModDoc)
 
 	// Samples
 	VERIFY_EQUAL_NONCONT(pSndFile->GetNumSamples(), 1);
-	const MODSAMPLE *pSmp = &pSndFile->Samples[1];
+	const modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[1];
 	VERIFY_EQUAL_NONCONT(pSmp->GetBytesPerSample(), 1);
 	VERIFY_EQUAL_NONCONT(pSmp->GetNumChannels(), 1);
 	VERIFY_EQUAL_NONCONT(pSmp->GetElementarySampleSize(), 1);
@@ -283,7 +283,7 @@ void TestLoadFile(const CModDoc *pModDoc)
 
 	// Instruments
 	VERIFY_EQUAL_NONCONT(pSndFile->GetNumInstruments(), 1);
-	const MODINSTRUMENT *pIns = pSndFile->Instruments[1];
+	const modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[1];
 	VERIFY_EQUAL_NONCONT(pIns->nGlobalVol, 32);
 	VERIFY_EQUAL_NONCONT(pIns->nFadeOut, 1024);
 	VERIFY_EQUAL_NONCONT(pIns->nPan, 64);

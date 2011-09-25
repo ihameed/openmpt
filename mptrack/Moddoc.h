@@ -288,7 +288,7 @@ public:
 	PATTERNINDEX InsertPattern(ORDERINDEX nOrd = ORDERINDEX_INVALID, ROWINDEX nRows = 64);
 	SAMPLEINDEX InsertSample(bool bLimit = false);
 	INSTRUMENTINDEX InsertInstrument(SAMPLEINDEX lSample = SAMPLEINDEX_INVALID, INSTRUMENTINDEX lDuplicate = INSTRUMENTINDEX_INVALID);
-	void InitializeInstrument(MODINSTRUMENT *pIns, UINT nsample=0);
+	void InitializeInstrument(modplug::mixer::MODINSTRUMENT *pIns, UINT nsample=0);
 	bool RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd);
 	bool RemovePattern(PATTERNINDEX nPat);
 	bool RemoveSample(SAMPLEINDEX nSmp);
@@ -361,7 +361,7 @@ public:
 
 	void OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder);
 
-	// Returns formatted MODINSTRUMENT name.
+	// Returns formatted modplug::mixer::MODINSTRUMENT name.
 	// [in] bEmptyInsteadOfNoName: In case of unnamed instrument string, "(no name)" is returned unless this 
 	//                             parameter is true is case which an empty name is returned.
 	// [in] bIncludeIndex: True to include instrument index in front of the instrument name, false otherwise.

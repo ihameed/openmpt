@@ -1694,7 +1694,7 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
                 UINT nSmp = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_CHANNELS; k++)
                 {
-                    MODCHANNEL *pChn = &m_pSndFile->Chn[k];
+                    modplug::mixer::MODCHANNEL *pChn = &m_pSndFile->Chn[k];
                     p->dwPos[k] = 0;
                     if ((nSmp) && (nSmp <= m_pSndFile->m_nSamples) && (pChn->nLength)
                      && (pChn->pSample) && (pChn->pSample == m_pSndFile->Samples[nSmp].pSample)
@@ -1709,7 +1709,7 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
                 UINT nIns = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_CHANNELS; k++)
                 {
-                    MODCHANNEL *pChn = &m_pSndFile->Chn[k];
+                    modplug::mixer::MODCHANNEL *pChn = &m_pSndFile->Chn[k];
                     p->dwPos[k] = 0;
                     if ((nIns) && (nIns <= m_pSndFile->m_nInstruments) && (pChn->nLength)
                      && (pChn->pModInstrument) && (pChn->pModInstrument == m_pSndFile->Instruments[nIns])
@@ -1733,7 +1733,7 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
             {
                 for (UINT k=0; k<MAX_CHANNELS; k++)
                 {
-                    MODCHANNEL *pChn = &m_pSndFile->Chn[k];
+                    modplug::mixer::MODCHANNEL *pChn = &m_pSndFile->Chn[k];
                     UINT vul = pChn->nLeftVU;
                     UINT vur = pChn->nRightVU;
                     p->dwPos[k] = (vul << 8) | (vur);

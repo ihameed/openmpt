@@ -658,7 +658,7 @@ bool CModCleanupDlg::RearrangeSamples()
 			// Also update instrument mapping (if module is in instrument mode)
 			for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->GetNumInstruments(); nIns++)
 			{
-				MODINSTRUMENT *pIns = pSndFile->Instruments[nIns];
+				modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[nIns];
 				if(pIns)
 				{
 					for(size_t iNote = 0; iNote < 128; iNote++)

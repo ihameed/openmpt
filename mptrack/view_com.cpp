@@ -244,7 +244,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 				UINT nCol = 0;
 				for (UINT iCol=0; iCol<SMPLIST_COLUMNS; iCol++)
 				{
-					MODSAMPLE *pSmp = &pSndFile->Samples[iSmp+1];
+					modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[iSmp+1];
 					s[0] = 0;
 					switch(iCol)
 					{
@@ -275,7 +275,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 							UINT k = 0;
 							for (UINT i=0; i<pSndFile->m_nInstruments; i++) if (pSndFile->Instruments[i+1])
 							{
-								MODINSTRUMENT *pIns = pSndFile->Instruments[i+1];
+								modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[i+1];
 								for (UINT j=0; j<NOTE_MAX; j++)
 								{
 									if ((UINT)pIns->Keyboard[j] == (iSmp+1))
@@ -350,7 +350,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 				UINT nCol = 0;
 				for (UINT iCol=0; iCol<INSLIST_COLUMNS; iCol++)
 				{
-					MODINSTRUMENT *pIns = pSndFile->Instruments[iIns+1];
+					modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[iIns+1];
 					s[0] = 0;
 					switch(iCol)
 					{
@@ -515,7 +515,7 @@ VOID CViewComments::OnEndLabelEdit(LPNMHDR pnmhdr, LRESULT *)
 		{
 			if ((iItem < pSndFile->m_nInstruments) && (pSndFile->Instruments[iItem + 1]))
 			{
-				MODINSTRUMENT *pIns = pSndFile->Instruments[iItem+1];
+				modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[iItem+1];
 				memcpy(pIns->name, s, sizeof(pIns->name));
 				SetNullTerminator(pIns->name);
 				pModDoc->UpdateAllViews(this, ((iItem + 1) << HINT_SHIFT_INS) | (HINT_INSNAMES|HINT_INSTRUMENT), this);

@@ -199,8 +199,8 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 		}
 	}
 
-	MODCHANNEL chns[MAX_BASECHANNELS];		
-	MODCHANNELSETTINGS settings[MAX_BASECHANNELS];
+	modplug::mixer::MODCHANNEL chns[MAX_BASECHANNELS];		
+	modplug::mixer::MODCHANNELSETTINGS settings[MAX_BASECHANNELS];
 	vector<UINT> recordStates(GetNumChannels(), 0);
 	vector<bool> chnMutePendings(GetNumChannels(), false);
 
@@ -315,7 +315,7 @@ struct ConvertInstrumentsToSamplesInPatterns
 
 			if((instr < MAX_INSTRUMENTS) && (pSndFile->Instruments[instr]))
 			{
-				const MODINSTRUMENT *pIns = pSndFile->Instruments[instr];
+				const modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[instr];
 				newinstr = pIns->Keyboard[note];
 				newnote = pIns->NoteMap[note];
 				if(newinstr >= MAX_SAMPLES) newinstr = 0;
@@ -384,7 +384,7 @@ UINT CModDoc::RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS])
 BOOL CModDoc::AdjustEndOfSample(UINT nSample)
 //-------------------------------------------
 {
-	MODSAMPLE *pSmp;
+	modplug::mixer::MODSAMPLE *pSmp;
 	if (nSample >= MAX_SAMPLES) return FALSE;
 	pSmp = &m_SndFile.Samples[nSample];
 	if ((!pSmp->nLength) || (!pSmp->pSample)) return FALSE;
@@ -454,7 +454,7 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
 		return SAMPLEINDEX_INVALID;
 	}
 	if (!m_SndFile.m_szNames[i][0]) strcpy(m_SndFile.m_szNames[i], "untitled");
-	MODSAMPLE *pSmp = &m_SndFile.Samples[i];
+	modplug::mixer::MODSAMPLE *pSmp = &m_SndFile.Samples[i];
 	pSmp->nVolume = 256;
 	pSmp->nGlobalVol = 64;
 	pSmp->nPan = 128;
@@ -478,7 +478,7 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
 INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX nDuplicate)
 //----------------------------------------------------------------------------------------
 {
-	MODINSTRUMENT *pDup = nullptr;
+	modplug::mixer::MODINSTRUMENT *pDup = nullptr;
 	const INSTRUMENTINDEX nInstrumentMax = m_SndFile.GetModSpecifications().instrumentsMax - 1;
 	if ((m_SndFile.m_nType != MOD_TYPE_XM) && !(m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))) return INSTRUMENTINDEX_INVALID;
 	if ((nDuplicate > 0) && (nDuplicate <= m_SndFile.m_nInstruments))
@@ -498,7 +498,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
 				m_SndFile.Samples[smp].uFlags &= ~CHN_MUTE;
 				if (!m_SndFile.Instruments[smp])
 				{
-					MODINSTRUMENT *p = new MODINSTRUMENT;
+					modplug::mixer::MODINSTRUMENT *p = new modplug::mixer::MODINSTRUMENT;
 					if (!p)
 					{
 						ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
@@ -531,7 +531,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
 		}
 		newins = ++m_SndFile.m_nInstruments;
 	}
-	MODINSTRUMENT *pIns = new MODINSTRUMENT;
+	modplug::mixer::MODINSTRUMENT *pIns = new modplug::mixer::MODINSTRUMENT;
 	if (pIns)
 	{
 		SAMPLEINDEX newsmp = 0;
@@ -580,7 +580,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
 }
 
 
-void CModDoc::InitializeInstrument(MODINSTRUMENT *pIns, UINT nsample)
+void CModDoc::InitializeInstrument(modplug::mixer::MODINSTRUMENT *pIns, UINT nsample)
 //-------------------------------------------------------------------
 {
 	if(pIns == nullptr)
@@ -1194,7 +1194,7 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 	HANDLE hCpy;
 	CHAR s[4096];
-	MODINSTRUMENT *pIns;
+	modplug::mixer::MODINSTRUMENT *pIns;
 	DWORD dwMemSize;
 
 	if ((nIns < 1) || (nIns > m_SndFile.m_nInstruments) || (!m_SndFile.Instruments[nIns]) || (!pMainFrm)) return false;
@@ -1202,7 +1202,7 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 	pIns = m_SndFile.Instruments[nIns];
 	if(pIns == nullptr) return false;
 	
-	INSTRUMENTENVELOPE *pEnv = nullptr;
+	modplug::mixer::INSTRUMENTENVELOPE *pEnv = nullptr;
 
 	switch(nEnv)
 	{
@@ -1266,8 +1266,8 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 	LPCSTR p;
 	if ((hCpy) && ((p = (LPSTR)GlobalLock(hCpy)) != NULL))
 	{
-		MODINSTRUMENT *pIns = m_SndFile.Instruments[nIns];
-		INSTRUMENTENVELOPE *pEnv = nullptr;
+		modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[nIns];
+		modplug::mixer::INSTRUMENTENVELOPE *pEnv = nullptr;
 
 		UINT susBegin = 0, susEnd = 0, loopBegin = 0, loopEnd = 0, bSus = 0, bLoop = 0, bCarry = 0, nPoints = 0, releaseNode = ENV_RELEASE_NODE_UNSET;
 		DWORD dwMemSize = GlobalSize(hCpy), dwPos = strlen(pszEnvHdr);

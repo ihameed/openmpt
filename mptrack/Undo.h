@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "mixer/modchannel.h"
+
 #define MAX_UNDO_LEVEL 1000	// 1000 undo steps for each undo type!
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ enum sampleUndoTypes
 
 struct SAMPLEUNDOBUFFER
 {
-	MODSAMPLE OldSample;
+	modplug::mixer::MODSAMPLE OldSample;
 	CHAR szOldName[MAX_SAMPLENAME];
 	LPSTR SamplePtr;
 	UINT nChangeStart, nChangeEnd;

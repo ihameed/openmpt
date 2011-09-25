@@ -1486,7 +1486,7 @@ BOOL CDLSBank::ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT
 	{
 		pSndFile->DestroySample(nSample);
 		UINT nWaveLink = pDlsIns->Regions[nRgn].nWaveLink;
-		MODSAMPLE *psmp = &pSndFile->Samples[nSample];
+		modplug::mixer::MODSAMPLE *psmp = &pSndFile->Samples[nSample];
 		if (pSndFile->m_nSamples < nSample) pSndFile->m_nSamples = nSample;
 		if ((nWaveLink < m_nSamplesEx) && (m_pSamplesEx))
 		{
@@ -1513,7 +1513,7 @@ BOOL CDLSBank::ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT
 	}
 	if (bWaveForm)
 	{
-		MODSAMPLE *psmp = &pSndFile->Samples[nSample];
+		modplug::mixer::MODSAMPLE *psmp = &pSndFile->Samples[nSample];
 		DLSREGION *pRgn = &pDlsIns->Regions[nRgn];
 		psmp->uFlags &= ~(CHN_LOOP|CHN_PINGPONGLOOP|CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
 		if (pRgn->fuOptions & DLSREGION_SAMPLELOOP) psmp->uFlags |= CHN_LOOP;
@@ -1607,7 +1607,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
 {
 	BYTE RgnToSmp[DLSMAXREGIONS];
 	DLSINSTRUMENT *pDlsIns;
-	MODINSTRUMENT *pIns;
+	modplug::mixer::MODINSTRUMENT *pIns;
 	UINT nSample, nRgnMin, nRgnMax, nEnv;
 	
 	if ((!m_pInstruments) || (nIns >= m_nInstruments) || (!pSndFile)) return FALSE;
@@ -1639,7 +1639,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
 		Log("  usVolume = %3d, Unity Note = %d\n", prgn->usVolume, prgn->uUnityNote);
 	}
 #endif
-	pIns = new MODINSTRUMENT;
+	pIns = new modplug::mixer::MODINSTRUMENT;
 	if (!pIns) return FALSE;
 	MemsetZero(*pIns);
 	pIns->pTuning = pIns->s_DefaultTuning;

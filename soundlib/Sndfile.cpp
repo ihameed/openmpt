@@ -94,16 +94,16 @@ static char UnpackTable[MAX_PACK_TABLES][16] =
 
 /*---------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
-MODULAR (in/out) MODINSTRUMENT :
+MODULAR (in/out) modplug::mixer::MODINSTRUMENT :
 -----------------------------------------------------------------------------------------------
 
 * to update:
 ------------
 
-- both following functions need to be updated when adding a new member in MODINSTRUMENT :
+- both following functions need to be updated when adding a new member in modplug::mixer::MODINSTRUMENT :
 
-void WriteInstrumentHeaderStruct(MODINSTRUMENT * input, FILE * file);
-BYTE * GetInstrumentHeaderFieldPointer(MODINSTRUMENT * input, __int32 fcode, __int16 fsize);
+void WriteInstrumentHeaderStruct(modplug::mixer::MODINSTRUMENT * input, FILE * file);
+BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __int32 fcode, __int16 fsize);
 
 - see below for body declaration.
 
@@ -140,7 +140,7 @@ Example with "PanEnv.nLoopEnd" , "PitchEnv.nLoopEnd" & "VolEnv.Values[MAX_ENVPOI
                         !!! SECTION TO BE UPDATED !!!
                         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        [EXT]	means external (not related) to MODINSTRUMENT content
+        [EXT]	means external (not related) to modplug::mixer::MODINSTRUMENT content
 
 C...	[EXT]	nChannels
 ChnS	[EXT]	IT/MPTM: Channel settings for channels 65-127 if needed (doesn't fit to IT header).
@@ -247,7 +247,7 @@ fwrite(&input-> name , 1 , fsize , file);
 
 namespace {
 // Create 'dF..' entry.
-DWORD CreateExtensionFlags(const MODINSTRUMENT& ins)
+DWORD CreateExtensionFlags(const modplug::mixer::MODINSTRUMENT& ins)
 //--------------------------------------------------
 {
     DWORD dwFlags = 0;
@@ -270,8 +270,8 @@ DWORD CreateExtensionFlags(const MODINSTRUMENT& ins)
 }
 } // unnamed namespace.
 
-// Write (in 'file') 'input' MODINSTRUMENT with 'code' & 'size' extra field infos for each member
-void WriteInstrumentHeaderStruct(MODINSTRUMENT * input, FILE * file)
+// Write (in 'file') 'input' modplug::mixer::MODINSTRUMENT with 'code' & 'size' extra field infos for each member
+void WriteInstrumentHeaderStruct(modplug::mixer::MODINSTRUMENT * input, FILE * file)
 {
 __int32 fcode;
 __int16 fsize;
@@ -361,8 +361,8 @@ case( #@code ):\
 if( fsize <= sizeof( type ) * arraysize ) pointer = (BYTE *)&input-> name ;\
 break;
 
-// Return a pointer on the wanted field in 'input' MODINSTRUMENT given field code & size
-BYTE * GetInstrumentHeaderFieldPointer(MODINSTRUMENT * input, __int32 fcode, __int16 fsize)
+// Return a pointer on the wanted field in 'input' modplug::mixer::MODINSTRUMENT given field code & size
+BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __int32 fcode, __int16 fsize)
 {
 if(input == NULL) return NULL;
 BYTE * pointer = NULL;
@@ -434,7 +434,7 @@ return pointer;
 // -! NEW_FEATURE#0027
 
 
-CTuning* MODINSTRUMENT::s_DefaultTuning = 0;
+CTuning* modplug::mixer::MODINSTRUMENT::s_DefaultTuning = 0;
 
 
 //////////////////////////////////////////////////////////
@@ -706,7 +706,7 @@ BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
         }
     }
     // Checking instruments
-    MODSAMPLE *pSmp = Samples;
+    modplug::mixer::MODSAMPLE *pSmp = Samples;
     for (UINT iIns=0; iIns<MAX_INSTRUMENTS; iIns++, pSmp++)
     {
         if (pSmp->pSample)
@@ -859,7 +859,7 @@ BOOL CSoundFile::Destroy()
 
     for (i=1; i<MAX_SAMPLES; i++)
     {
-        MODSAMPLE *pSmp = &Samples[i];
+        modplug::mixer::MODSAMPLE *pSmp = &Samples[i];
         if (pSmp->pSample)
         {
             FreeSample(pSmp->pSample);
@@ -1583,7 +1583,7 @@ bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *re
 
 #ifndef MODPLUG_NO_FILESAVE
 
-UINT CSoundFile::WriteSample(FILE *f, MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen)
+UINT CSoundFile::WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen)
 //-------------------------------------------------------------------------------
 {
     UINT len = 0, bufcount;
@@ -1815,7 +1815,7 @@ UINT CSoundFile::WriteSample(FILE *f, MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen
 //	5 = signed 16-bit PCM data
 //	6 = unsigned 16-bit PCM data
 
-UINT CSoundFile::ReadSample(MODSAMPLE *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const WORD format)
+UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const WORD format)
 //---------------------------------------------------------------------------------------------------------------
 {
     if ((!pSmp) || (pSmp->nLength < 2) || (!lpMemFile)) return 0;
@@ -2295,7 +2295,7 @@ UINT CSoundFile::ReadSample(MODSAMPLE *pSmp, UINT nFlags, LPCSTR lpMemFile, DWOR
 }
 
 
-void CSoundFile::AdjustSampleLoop(MODSAMPLE *pSmp)
+void CSoundFile::AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp)
 //------------------------------------------------
 {
     if ((!pSmp->pSample) || (!pSmp->nLength)) return;
@@ -2444,7 +2444,7 @@ int CSoundFile::FrequencyToTranspose(DWORD freq)
 }
 
 
-void CSoundFile::FrequencyToTranspose(MODSAMPLE *psmp)
+void CSoundFile::FrequencyToTranspose(modplug::mixer::MODSAMPLE *psmp)
 //----------------------------------------------------
 {
     int f2t = FrequencyToTranspose(psmp->nC5Speed);
@@ -2504,7 +2504,7 @@ bool CSoundFile::IsSampleUsed(SAMPLEINDEX nSample) const
     {
         for (UINT i = 1; i <= GetNumInstruments(); i++) if (Instruments[i])
         {
-            MODINSTRUMENT *pIns = Instruments[i];
+            modplug::mixer::MODINSTRUMENT *pIns = Instruments[i];
             for (UINT j = 0; j < CountOf(pIns->Keyboard); j++)
             {
                 if (pIns->Keyboard[j] == nSample) return true;
@@ -2569,7 +2569,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
             {
                 if ((p->instr) && (p->instr < MAX_INSTRUMENTS))
                 {
-                    MODINSTRUMENT *pIns = Instruments[p->instr];
+                    modplug::mixer::MODINSTRUMENT *pIns = Instruments[p->instr];
                     if (pIns)
                     {
                         SAMPLEINDEX n = pIns->Keyboard[p->note-1];
@@ -2579,7 +2579,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
                 {
                     for (INSTRUMENTINDEX k = GetNumInstruments(); k >= 1; k--)
                     {
-                        MODINSTRUMENT *pIns = Instruments[k];
+                        modplug::mixer::MODINSTRUMENT *pIns = Instruments[k];
                         if (pIns)
                         {
                             SAMPLEINDEX n = pIns->Keyboard[p->note-1];
@@ -2628,7 +2628,7 @@ bool CSoundFile::DestroySample(SAMPLEINDEX nSample)
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
     if (!Samples[nSample].pSample) return true;
-    MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
     LPSTR pSample = pSmp->pSample;
     pSmp->pSample = nullptr;
     pSmp->nLength = 0;
@@ -2653,10 +2653,10 @@ bool CSoundFile::MoveSample(SAMPLEINDEX from, SAMPLEINDEX to)
     if (!from || from >= MAX_SAMPLES || !to || to >= MAX_SAMPLES) return false;
     if (/*!Ins[from].pSample ||*/ Samples[to].pSample) return true;
 
-    MODSAMPLE *pFrom = &Samples[from];
-    MODSAMPLE *pTo = &Samples[to];
+    modplug::mixer::MODSAMPLE *pFrom = &Samples[from];
+    modplug::mixer::MODSAMPLE *pTo = &Samples[to];
 
-    memcpy(pTo, pFrom, sizeof(MODSAMPLE));
+    memcpy(pTo, pFrom, sizeof(modplug::mixer::MODSAMPLE));
 
     pFrom->pSample = nullptr;
     pFrom->nLength = 0;
@@ -2773,14 +2773,14 @@ bool CSoundFile::LoadStaticTunings()
         s_pTuningsSharedBuiltIn->SetConstStatus(CTuningCollection::EM_CONST);
     #endif
 
-    MODINSTRUMENT::s_DefaultTuning = NULL;
+    modplug::mixer::MODINSTRUMENT::s_DefaultTuning = NULL;
 
     return false;
 }
 
 
 
-void CSoundFile::SetDefaultInstrumentValues(MODINSTRUMENT *pIns)
+void CSoundFile::SetDefaultInstrumentValues(modplug::mixer::MODINSTRUMENT *pIns)
 //--------------------------------------------------------------
 {
     pIns->nResampling = m_defaultInstrument.nResampling;

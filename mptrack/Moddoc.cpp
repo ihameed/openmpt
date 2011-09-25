@@ -117,8 +117,8 @@ CModDoc::CModDoc()
     m_bsInstrumentModified.reset();
 
 #ifdef _DEBUG
-    MODCHANNEL *p = m_SndFile.Chn;
-    if (((DWORD)p) & 7) Log("MODCHANNEL is not aligned (0x%08X)\n", p);
+    modplug::mixer::MODCHANNEL *p = m_SndFile.Chn;
+    if (((DWORD)p) & 7) Log("modplug::mixer::MODCHANNEL is not aligned (0x%08X)\n", p);
 #endif
 // Fix: save pattern scrollbar position when switching to other tab
     m_szOldPatternScrollbarsPos = CSize(-10,-10);
@@ -236,7 +236,7 @@ BOOL CModDoc::OnOpenDocument(LPCTSTR lpszPathName)
         if (lpMidiLib) for (INSTRUMENTINDEX nIns = 1; nIns <= m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
         {
             LPCSTR pszMidiMapName;
-            MODINSTRUMENT *pIns = m_SndFile.Instruments[nIns];
+            modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[nIns];
             UINT nMidiCode;
             BOOL bEmbedded = FALSE;
 
@@ -718,7 +718,7 @@ BOOL CModDoc::InitializeMod()
         if ((!m_SndFile.m_nInstruments) && (m_SndFile.m_nType & MOD_TYPE_XM))
         {
             m_SndFile.m_nInstruments = 1;
-            m_SndFile.Instruments[1] = new MODINSTRUMENT;
+            m_SndFile.Instruments[1] = new modplug::mixer::MODINSTRUMENT;
             InitializeInstrument(m_SndFile.Instruments[1], 1);
         }
         if (m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT|MOD_TYPE_XM))
@@ -889,7 +889,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             nChn = FindAvailableChannel();
         //}
 
-        MODCHANNEL *pChn = &m_SndFile.Chn[nChn];
+        modplug::mixer::MODCHANNEL *pChn = &m_SndFile.Chn[nChn];
         
         //stop channel, just in case.
         if (pChn->nLength)
@@ -918,7 +918,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         } 
         else if ((nsmp) && (nsmp < MAX_SAMPLES))	// Or set sample
         {
-            MODSAMPLE *pSmp = &m_SndFile.Samples[nsmp];
+            modplug::mixer::MODSAMPLE *pSmp = &m_SndFile.Samples[nsmp];
             pChn->pCurrentSample = pSmp->pSample;
             pChn->pModInstrument = nullptr;
             pChn->pModSample = pSmp;
@@ -987,7 +987,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         //rewbs.vstiLive
         if (nins <= m_SndFile.m_nInstruments)
         {
-            MODINSTRUMENT *pIns = m_SndFile.Instruments[nins];
+            modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[nins];
             if (pIns && pIns->nMidiChannel > 0 && pIns->nMidiChannel < 17) // instro sends to a midi chan
             {
                 // UINT nPlugin = m_SndFile.GetBestPlugin(nChn, PRIORITISE_INSTRUMENT, EVEN_IF_MUTED);
@@ -1030,7 +1030,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
     if((nins > 0) && (nins <= m_SndFile.m_nInstruments) && (note >= NOTE_MIN) && (note <= NOTE_MAX))
     {
 
-        MODINSTRUMENT *pIns = m_SndFile.Instruments[nins];
+        modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[nins];
         if (pIns && pIns->nMidiChannel > 0 && pIns->nMidiChannel < 17) // instro sends to a midi chan
         {
 
@@ -1049,7 +1049,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
     }
     //end rewbs.vstiLive
 
-    MODCHANNEL *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
+    modplug::mixer::MODCHANNEL *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
     for (UINT i=m_SndFile.m_nChannels; i<MAX_CHANNELS; i++, pChn++) if (!pChn->nMasterChn)
     {
         DWORD mask = (bFade) ? CHN_NOTEFADE : (CHN_NOTEFADE|CHN_KEYOFF);
@@ -1074,7 +1074,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
 BOOL CModDoc::IsNotePlaying(UINT note, UINT nsmp, UINT nins)
 //----------------------------------------------------------
 {
-    MODCHANNEL *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
+    modplug::mixer::MODCHANNEL *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
     for (UINT i=m_SndFile.m_nChannels; i<MAX_CHANNELS; i++, pChn++) if (!pChn->nMasterChn)
     {
         if ((pChn->nLength) && (!(pChn->dwFlags & (CHN_NOTEFADE|CHN_KEYOFF|CHN_MUTE)))
@@ -1109,7 +1109,7 @@ bool CModDoc::MuteChannel(CHANNELINDEX nChn, bool doMute)
         UINT nPlug = m_SndFile.GetBestPlugin(nChn, PRIORITISE_INSTRUMENT, EVEN_IF_MUTED);
         if ((nPlug) && (nPlug<=MAX_MIXPLUGINS))	{
             CVstPlugin *pPlug = (CVstPlugin*)m_SndFile.m_MixPlugins[nPlug-1].pMixPlugin;
-            MODINSTRUMENT* pIns = m_SndFile.Chn[nChn].pModInstrument;
+            modplug::mixer::MODINSTRUMENT* pIns = m_SndFile.Chn[nChn].pModInstrument;
             if (pPlug && pIns) {
                 pPlug->MidiCommand(pIns->nMidiChannel, pIns->nMidiProgram, pIns->wMidiBank, NOTE_KEYOFF, 0, nChn);
             }
@@ -1378,7 +1378,7 @@ void CModDoc::SetFollowWnd(HWND hwnd, DWORD dwType)
 BOOL CModDoc::IsChildSample(UINT nIns, UINT nSmp) const
 //-----------------------------------------------------
 {
-    MODINSTRUMENT *pIns;
+    modplug::mixer::MODINSTRUMENT *pIns;
     if ((nIns < 1) || (nIns > m_SndFile.m_nInstruments)) return FALSE;
     pIns = m_SndFile.Instruments[nIns];
     if (pIns)
@@ -1398,7 +1398,7 @@ UINT CModDoc::FindSampleParent(UINT nSmp) const
     if ((!m_SndFile.m_nInstruments) || (!nSmp)) return 0;
     for (UINT i=1; i<=m_SndFile.m_nInstruments; i++)
     {
-        MODINSTRUMENT *pIns = m_SndFile.Instruments[i];
+        modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[i];
         if (pIns)
         {
             for (UINT j=0; j<NOTE_MAX; j++)
@@ -1414,7 +1414,7 @@ UINT CModDoc::FindSampleParent(UINT nSmp) const
 UINT CModDoc::FindInstrumentChild(UINT nIns) const
 //------------------------------------------------
 {
-    MODINSTRUMENT *pIns;
+    modplug::mixer::MODINSTRUMENT *pIns;
     if ((!nIns) || (nIns > m_SndFile.m_nInstruments)) return 0;
     pIns = m_SndFile.Instruments[nIns];
     if (pIns)
@@ -3683,7 +3683,7 @@ UINT CModDoc::FindAvailableChannel()
     // Search for available channel
     for (CHANNELINDEX j = m_SndFile.m_nChannels; j < MAX_CHANNELS; j++)
     {
-        MODCHANNEL *p = &m_SndFile.Chn[j];
+        modplug::mixer::MODCHANNEL *p = &m_SndFile.Chn[j];
         if (!p->nLength)
             return j;
         else if(p->dwFlags & CHN_NOTEFADE)

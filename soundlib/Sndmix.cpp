@@ -250,7 +250,7 @@ BOOL CSoundFile::FadeSong(UINT msec)
     // Ramp everything down
     for (UINT noff=0; noff < m_nMixChannels; noff++)
     {
-        MODCHANNEL *pramp = &Chn[ChnMix[noff]];
+        modplug::mixer::MODCHANNEL *pramp = &Chn[ChnMix[noff]];
         if (!pramp) continue;
         pramp->nNewLeftVol = pramp->nNewRightVol = 0;
         pramp->nRightRamp = (-pramp->nRightVol << modplug::mixgraph::VOLUME_RAMP_PRECISION) / nRampLength;
@@ -611,7 +611,7 @@ BOOL CSoundFile::ProcessRow()
             }
         }
         // Reset channel values
-        MODCHANNEL *pChn = Chn;
+        modplug::mixer::MODCHANNEL *pChn = Chn;
         MODCOMMAND *m = Patterns[m_nPattern] + m_nRow * m_nChannels;
         for (UINT nChn=0; nChn<m_nChannels; pChn++, nChn++, m++)
         {
@@ -723,7 +723,7 @@ BOOL CSoundFile::ReadNote()
     DWORD nMasterVol;
     {
         /*int nchn32 = 0;
-        MODCHANNEL *pChn = Chn;
+        modplug::mixer::MODCHANNEL *pChn = Chn;
         for (UINT nChn=0; nChn<m_nChannels; nChn++,pChn++)
         {
             //if(!(pChn->dwFlags & CHN_MUTE))	//removed by rewbs: fix http://www.modplug.com/forum/viewtopic.php?t=3358
@@ -763,7 +763,7 @@ BOOL CSoundFile::ReadNote()
     ////////////////////////////////////////////////////////////////////////////////////
     // Update channels data
     m_nMixChannels = 0;
-    MODCHANNEL *pChn = Chn;
+    modplug::mixer::MODCHANNEL *pChn = Chn;
     for (UINT nChn = 0; nChn < MAX_CHANNELS; nChn++, pChn++)
     {
     skipchn:
@@ -821,7 +821,7 @@ BOOL CSoundFile::ReadNote()
         CTuning::RATIOTYPE vibratoFactor = 1;
         CTuning::NOTEINDEXTYPE arpeggioSteps = 0;
 
-        MODINSTRUMENT *pIns = pChn->pModInstrument;
+        modplug::mixer::MODINSTRUMENT *pIns = pChn->pModInstrument;
 
         // Calc Frequency
         if ((pChn->nPeriod)	&& (pChn->nLength))
@@ -1343,7 +1343,7 @@ BOOL CSoundFile::ReadNote()
             // Sample Auto-Vibrato
             if ((pChn->pModSample) && (pChn->pModSample->nVibDepth))
             {
-                MODSAMPLE *pSmp = pChn->pModSample;
+                modplug::mixer::MODSAMPLE *pSmp = pChn->pModSample;
                 const bool alternativeTuning = pChn->pModInstrument && pChn->pModInstrument->pTuning;
 
                 // IT compatibility: Autovibrato is so much different in IT that I just put this in a separate code block, to get rid of a dozen IsCompatibilityMode() calls.
@@ -1921,7 +1921,7 @@ BOOL CSoundFile::ReadNote()
 
 #ifdef MODPLUG_TRACKER
 
-VOID CSoundFile::ProcessMidiOut(UINT nChn, MODCHANNEL *pChn)	//rewbs.VSTdelay: added arg
+VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//rewbs.VSTdelay: added arg
 //----------------------------------------------------------
 {
     // Do we need to process midi?
@@ -1944,7 +1944,7 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, MODCHANNEL *pChn)	//rewbs.VSTdelay: a
     }
 
     // Get instrument info and plugin reference
-    MODINSTRUMENT *pIns = pChn->pModInstrument;
+    modplug::mixer::MODINSTRUMENT *pIns = pChn->pModInstrument;
     IMixPlugin *pPlugin = nullptr;
 
     if ((instr) && (instr < MAX_INSTRUMENTS))
@@ -2027,7 +2027,7 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, MODCHANNEL *pChn)	//rewbs.VSTdelay: a
     }
 }
 
-int CSoundFile::GetVolEnvValueFromPosition(int position, MODINSTRUMENT* pIns) const
+int CSoundFile::GetVolEnvValueFromPosition(int position, modplug::mixer::MODINSTRUMENT* pIns) const
 //---------------------------------------------------------------------------------
 {
     UINT pt = pIns->VolEnv.nNodes - 1;

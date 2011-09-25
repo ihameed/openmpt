@@ -151,7 +151,7 @@ void CViewSample::UpdateScrollSize(const UINT nZoomOld)
 
 		if ((m_nSample > 0) && (m_nSample <= pSndFile->m_nSamples))
 		{
-			MODSAMPLE *pIns = &pSndFile->Samples[m_nSample];
+			modplug::mixer::MODSAMPLE *pIns = &pSndFile->Samples[m_nSample];
 			if (pIns->pSample) dwLen = pIns->nLength;
 		}
 		if (m_nZoom)
@@ -775,7 +775,7 @@ void CViewSample::OnDraw(CDC *pDC)
 	rect = rcClient;
 	if ((rcClient.bottom > rcClient.top) && (rcClient.right > rcClient.left))
 	{
-		MODSAMPLE *pSmp = &pSndFile->Samples[(m_nSample < MAX_SAMPLES) ? m_nSample : 0];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[(m_nSample < MAX_SAMPLES) ? m_nSample : 0];
 		int ymed = (rect.top + rect.bottom) / 2;
 		int yrange = (rect.bottom - rect.top) / 2;
 		
@@ -1462,7 +1462,7 @@ void CViewSample::OnRButtonDown(UINT, CPoint pt)
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		HMENU hMenu = ::CreatePopupMenu();
 		CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler(); //rewbs.customKeys
 		if (!hMenu)	return;
@@ -1659,7 +1659,7 @@ void CViewSample::OnSetLoop()
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((m_dwEndSel > m_dwBeginSel + 15) && (m_dwEndSel <= pSmp->nLength))
 		{
 			if ((pSmp->nLoopStart != m_dwBeginSel) || (pSmp->nLoopEnd != m_dwEndSel))
@@ -1683,7 +1683,7 @@ void CViewSample::OnSetSustainLoop()
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((m_dwEndSel > m_dwBeginSel + 15) && (m_dwEndSel <= pSmp->nLength))
 		{
 			if ((pSmp->nSustainStart != m_dwBeginSel) || (pSmp->nSustainEnd != m_dwEndSel))
@@ -1718,7 +1718,7 @@ void CViewSample::OnEditDelete()
 {
 	CModDoc *pModDoc = GetDocument();
 	CSoundFile *pSndFile;
-	MODSAMPLE *pSmp;
+	modplug::mixer::MODSAMPLE *pSmp;
 	DWORD dwUpdateFlags = HINT_SAMPLEINFO | HINT_SAMPLEDATA;
 	DWORD len;
 
@@ -1817,7 +1817,7 @@ void CViewSample::OnEditCopy()
 	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 	CModDoc *pModDoc = GetDocument();
 	CSoundFile *pSndFile;
-	MODSAMPLE *pSmp;
+	modplug::mixer::MODSAMPLE *pSmp;
 	DWORD dwMemSize, dwSmpLen, dwSmpOffset;
 	HGLOBAL hCpy;
 	BOOL bExtra = TRUE;
@@ -1994,7 +1994,7 @@ void CViewSample::On8BitConvert()
 	if ((pModDoc) && (m_nSample < MAX_SAMPLES))
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((pSmp->uFlags & CHN_16BIT) && (pSmp->pSample) && (pSmp->nLength))
 		{
 			pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
@@ -2028,7 +2028,7 @@ void CViewSample::OnMonoConvert()
 	if ((pModDoc) && (m_nSample < MAX_SAMPLES))
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((pSmp->uFlags & CHN_STEREO) && (pSmp->pSample) && (pSmp->nLength))
 		{
 			pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
@@ -2054,7 +2054,7 @@ void CViewSample::OnSampleTrim()
 	if(!pModDoc || m_nSample >= MAX_SAMPLES) return;
 
 	CSoundFile *pSndFile = pModDoc->GetSoundFile();
-	MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+	modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 
 	if(m_dwBeginSel == m_dwEndSel)
 	{
@@ -2359,7 +2359,7 @@ void CViewSample::OnSetLoopStart()
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((m_dwMenuParam+4 <= pSmp->nLoopEnd) && (pSmp->nLoopStart != m_dwMenuParam))
 		{
 			pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_none);
@@ -2384,7 +2384,7 @@ void CViewSample::OnSetLoopEnd()
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((m_dwMenuParam >= pSmp->nLoopStart+4) && (pSmp->nLoopEnd != m_dwMenuParam))
 		{
 			pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_none);
@@ -2409,7 +2409,7 @@ void CViewSample::OnSetSustainStart()
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((m_dwMenuParam+4 <= pSmp->nSustainEnd) && (pSmp->nSustainStart != m_dwMenuParam))
 		{
 			pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_none);
@@ -2429,7 +2429,7 @@ void CViewSample::OnSetSustainEnd()
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+		modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 		if ((m_dwMenuParam >= pSmp->nSustainStart+4) && (pSmp->nSustainEnd != m_dwMenuParam))
 		{
 			pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_none);
@@ -2476,7 +2476,7 @@ void CViewSample::OnAddSilence()
 	CAddSilenceDlg dlg(this, 32, pSndFile->Samples[m_nSample].nLength);
 	if (dlg.DoModal() != IDOK) return;
 
-	MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
+	modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[m_nSample];
 	const ctrlSmp::SmpLength nOldLength = pSmp->nLength;
 
 	if( MAX_SAMPLE_LENGTH - nOldLength < dlg.m_nSamples )
@@ -2659,7 +2659,7 @@ LRESULT CViewSample::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
 // If auto-zoom gives bigger zoom than zoom level N but smaller than zoom level N-1,
 // return value is N. If zoom is bigger than the biggest zoom, returns MIN_ZOOM + 1 and
 // if smaller than the smallest zoom, returns value >= MAX_ZOOM + 1.
-UINT CViewSample::GetAutoZoomLevel(const MODSAMPLE& smp)
+UINT CViewSample::GetAutoZoomLevel(const modplug::mixer::MODSAMPLE& smp)
 //-----------------------------------------------------
 {
 	m_rcClient.NormalizeRect();

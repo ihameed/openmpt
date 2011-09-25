@@ -257,6 +257,7 @@
       <Filter>mixgraph</Filter>
     </ClInclude>
     <ClInclude Include="mixgraph\mixer.h" />
+    <ClInclude Include="mixer\modchannel.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />

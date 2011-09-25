@@ -250,7 +250,7 @@ bool CSampleUndo::PrepareUndo(const SAMPLEINDEX nSmp, sampleUndoTypes nChangeTyp
 	SAMPLEUNDOBUFFER sUndo;
 
 	// Save old sample header
-	memcpy(&sUndo.OldSample, &pSndFile->Samples[nSmp], sizeof(MODSAMPLE));
+	memcpy(&sUndo.OldSample, &pSndFile->Samples[nSmp], sizeof(modplug::mixer::MODSAMPLE));
 	memcpy(sUndo.szOldName, pSndFile->m_szNames[nSmp], sizeof(sUndo.szOldName));
 	sUndo.nChangeType = nChangeType;
 
@@ -385,7 +385,7 @@ bool CSampleUndo::Undo(const SAMPLEINDEX nSmp)
 	}
 
 	// Restore old sample header
-	memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(MODSAMPLE));
+	memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(modplug::mixer::MODSAMPLE));
 	pSndFile->Samples[nSmp].pSample = pCurrentSample; // select the "correct" old sample
 	memcpy(pSndFile->m_szNames[nSmp], pUndo->szOldName, sizeof(pUndo->szOldName));
 

@@ -19,6 +19,7 @@
 #include "Snd_defs.h"
 #include "Endianness.h"
 
+#include "../mptrack/mixer/modchannel.h"
 #include "mixgraph/core.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
@@ -30,142 +31,16 @@ typedef int32 VstInt32;
 typedef intptr_t VstIntPtr;
 #endif
 
-class CTuningBase;
-typedef CTuningBase CTuning;
 
 
-// Sample Struct
-struct MODSAMPLE
-{
-    UINT nLength, nLoopStart, nLoopEnd;	// In samples, not bytes
-    UINT nSustainStart, nSustainEnd;	// Dito
-    LPSTR pSample;						// Pointer to sample data
-    UINT nC5Speed;						// Frequency of middle c, in Hz (for IT/S3M/MPTM)
-    WORD nPan;							// Default sample panning (if pan flag is set)
-    WORD nVolume;						// Default volume
-    WORD nGlobalVol;					// Global volume (sample volume is multiplied by this)
-    WORD uFlags;						// Sample flags
-    signed char RelativeTone;			// Relative note to middle c (for MOD/XM)
-    signed char nFineTune;				// Finetune period (for MOD/XM)
-    BYTE nVibType;						// Auto vibrato type
-    BYTE nVibSweep;						// Auto vibrato sweep (i.e. how long it takes until the vibrato effect reaches its full strength)
-    BYTE nVibDepth;						// Auto vibrato depth
-    BYTE nVibRate;						// Auto vibrato rate (speed)
-    //CHAR name[MAX_SAMPLENAME];		// Maybe it would be nicer to have sample names here, but that would require some refactoring. Also, would this slow down the mixer (cache misses)?
-    CHAR filename[MAX_SAMPLEFILENAME];
 
-    // Return the size of one (elementary) sample in bytes.
-    uint8 GetElementarySampleSize() const {return (uFlags & CHN_16BIT) ? 2 : 1;}
-
-    // Return the number of channels in the sample.
-    uint8 GetNumChannels() const {return (uFlags & CHN_STEREO) ? 2 : 1;}
-
-    // Return the number of bytes per sampling point. (Channels * Elementary Sample Size)
-    uint8 GetBytesPerSample() const {return GetElementarySampleSize() * GetNumChannels();}
-
-    // Return the size which pSample is at least.
-    DWORD GetSampleSizeInBytes() const {return nLength * GetBytesPerSample();}
-
-    // Returns sample rate of the sample. The argument is needed because 
-    // the sample rate is obtained differently for different module types.
-    uint32 GetSampleRate(const MODTYPE type) const;
-};
-
-
-// -> CODE#0027
-// -> DESC="per-instrument volume ramping setup"
-
-/*---------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------
-MODULAR STRUCT DECLARATIONS :
------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------*/
-
-// Instrument Envelopes
-struct INSTRUMENTENVELOPE
-{
-    DWORD dwFlags;				// envelope flags
-    WORD Ticks[MAX_ENVPOINTS];	// envelope point position (x axis)
-    BYTE Values[MAX_ENVPOINTS];	// envelope point value (y axis)
-    UINT nNodes;				// amount of nodes used
-    BYTE nLoopStart;			// loop start node
-    BYTE nLoopEnd;				// loop end node
-    BYTE nSustainStart;			// sustain start node
-    BYTE nSustainEnd;			// sustain end node
-    BYTE nReleaseNode;			// release node
-};
-
-// Instrument Struct
-struct MODINSTRUMENT
-{
-    UINT nFadeOut;				// Instrument fadeout speed
-    DWORD dwFlags;				// Instrument flags
-    UINT nGlobalVol;			// Global volume (all sample volumes are multiplied with this)
-    UINT nPan;					// Default pan (overrides sample panning), if the appropriate flag is set
-
-    INSTRUMENTENVELOPE VolEnv;		// Volume envelope data
-    INSTRUMENTENVELOPE PanEnv;		// Panning envelope data
-    INSTRUMENTENVELOPE PitchEnv;	// Pitch / filter envelope data
-
-    BYTE NoteMap[128];	// Note mapping, f.e. C-5 => D-5.
-    WORD Keyboard[128];	// Sample mapping, f.e. C-5 => Sample 1
-
-    BYTE nNNA;			// New note action
-    BYTE nDCT;			// Duplicate check type	(i.e. which condition will trigger the duplicate note action)
-    BYTE nDNA;			// Duplicate note action
-    BYTE nPanSwing;		// Random panning factor
-    BYTE nVolSwing;		// Random volume factor
-    BYTE nIFC;			// Default filter cutoff (00...7F). Used if the high bit is set
-    BYTE nIFR;			// Default filter resonance (00...7F). Used if the high bit is set
-
-    WORD wMidiBank;		// MIDI bank
-    BYTE nMidiProgram;	// MIDI program
-    BYTE nMidiChannel;	// MIDI channel
-    BYTE nMidiDrumKey;	// Drum set note mapping (currently only used by the .MID loader)
-    signed char nPPS;	//Pitch/Pan separation (i.e. how wide the panning spreads)
-    unsigned char nPPC;	//Pitch/Pan centre
-
-    CHAR name[32];		// Note: not guaranteed to be null-terminated.
-    CHAR filename[32];
-
-    PLUGINDEX nMixPlug;				// Plugin assigned to this instrument
-// -> CODE#0027
-// -> DESC="per-instrument volume ramping setup"
-    USHORT nVolRampUp;				// Default sample ramping up
-    USHORT nVolRampDown;			// Default sample ramping down
-// -! NEW_FEATURE#0027
-    UINT nResampling;				// Resampling mode
-    BYTE nCutSwing;					// Random cutoff factor
-    BYTE nResSwing;					// Random resonance factor
-    BYTE nFilterMode;				// Default filter mode
-    WORD wPitchToTempoLock;			// BPM at which the samples assigned to this instrument loop correctly
-    BYTE nPluginVelocityHandling;	// How to deal with plugin velocity
-    BYTE nPluginVolumeHandling;		// How to deal with plugin volume
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// WHEN adding new members here, ALSO update Sndfile.cpp (instructions near the top of this file)!
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-    CTuning* pTuning;				// sample tuning assigned to this instrument
-    static CTuning* s_DefaultTuning;
-
-    void SetTuning(CTuning* pT)
-    {
-        pTuning = pT;
-    }
-
-    
-
-};
-
-//MODINSTRUMENT;
+//modplug::mixer::MODINSTRUMENT;
 
 // -----------------------------------------------------------------------------------------
-// MODULAR MODINSTRUMENT FIELD ACCESS : body content at the (near) top of Sndfile.cpp !!!
+// MODULAR modplug::mixer::MODINSTRUMENT FIELD ACCESS : body content at the (near) top of Sndfile.cpp !!!
 // -----------------------------------------------------------------------------------------
-extern void WriteInstrumentHeaderStruct(MODINSTRUMENT * input, FILE * file);
-extern BYTE * GetInstrumentHeaderFieldPointer(MODINSTRUMENT * input, __int32 fcode, __int16 fsize);
+extern void WriteInstrumentHeaderStruct(modplug::mixer::MODINSTRUMENT * input, FILE * file);
+extern BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __int32 fcode, __int16 fsize);
 
 // -! NEW_FEATURE#0027
 
@@ -173,126 +48,7 @@ extern BYTE * GetInstrumentHeaderFieldPointer(MODINSTRUMENT * input, __int32 fco
 // --------------------------------------------------------------------------------------------
 
 
-// Envelope playback info for each MODCHANNEL
-struct  MODCHANNEL_ENVINFO
-{
-    DWORD nEnvPosition;
-    LONG nEnvValueAtReleaseJump;
-};
 
-
-#pragma warning(disable : 4324) //structure was padded due to __declspec(align())
-
-// Channel Struct
-typedef struct __declspec(align(32)) _MODCHANNEL
-{
-    // First 32-bytes: Most used mixing information: don't change it
-    // These fields are accessed directly by the MMX mixing code (look out for CHNOFS_PCURRENTSAMPLE), so the order is crucial
-    LPSTR pCurrentSample;		
-    DWORD nPos;
-    DWORD nPosLo;	// actually 16-bit
-    LONG nInc;		// 16.16
-    LONG nRightVol;
-    LONG nLeftVol;
-    LONG nRightRamp;
-    LONG nLeftRamp;
-    // 2nd cache line
-    DWORD nLength;
-    DWORD dwFlags;
-    DWORD nLoopStart;
-    DWORD nLoopEnd;
-    LONG nRampRightVol;
-    LONG nRampLeftVol;
-    LONG nFilter_Y1, nFilter_Y2, nFilter_Y3, nFilter_Y4;
-    LONG nFilter_A0, nFilter_B0, nFilter_B1, nFilter_HP;
-    LONG nROfs, nLOfs;
-    LONG nRampLength;
-    // Information not used in the mixer
-    LPSTR pSample;
-    LONG nNewRightVol, nNewLeftVol;
-    LONG nRealVolume, nRealPan;
-    LONG nVolume, nPan, nFadeOutVol;
-    LONG nPeriod, nC5Speed, nPortamentoDest;
-    MODINSTRUMENT *pModInstrument;					// Currently assigned instrument slot
-    MODCHANNEL_ENVINFO VolEnv, PanEnv, PitchEnv;	// Envelope playback info
-    MODSAMPLE *pModSample;							// Currently assigned sample slot
-    DWORD nMasterChn, nVUMeter;
-    LONG nGlobalVol, nInsVol;
-    LONG nFineTune, nTranspose;
-    LONG nPortamentoSlide, nAutoVibDepth;
-    UINT nAutoVibPos, nVibratoPos, nTremoloPos, nPanbrelloPos;
-    LONG nVolSwing, nPanSwing;
-    LONG nCutSwing, nResSwing;
-    LONG nRestorePanOnNewNote; //If > 0, nPan should be set to nRestorePanOnNewNote - 1 on new note. Used to recover from panswing.
-    UINT nOldGlobalVolSlide;
-    DWORD nEFxOffset; // offset memory for Invert Loop (EFx, .MOD only)
-    int nRetrigCount, nRetrigParam;
-    ROWINDEX nPatternLoop;
-    // 8-bit members
-    BYTE nRestoreResonanceOnNewNote; //Like above
-    BYTE nRestoreCutoffOnNewNote; //Like above
-    BYTE nNote, nNNA;
-    BYTE nNewNote, nNewIns, nCommand, nArpeggio;
-    BYTE nOldVolumeSlide, nOldFineVolUpDown;
-    BYTE nOldPortaUpDown, nOldFinePortaUpDown;
-    BYTE nOldPanSlide, nOldChnVolSlide;
-    UINT nNoteSlideCounter, nNoteSlideSpeed, nNoteSlideStep;
-    BYTE nVibratoType, nVibratoSpeed, nVibratoDepth;
-    BYTE nTremoloType, nTremoloSpeed, nTremoloDepth;
-    BYTE nPanbrelloType, nPanbrelloSpeed, nPanbrelloDepth;
-    BYTE nOldCmdEx, nOldVolParam, nOldTempo;
-    BYTE nOldOffset, nOldHiOffset;
-    BYTE nCutOff, nResonance;
-    BYTE nTremorCount, nTremorParam;
-    BYTE nPatternLoopCount;
-    BYTE nRowNote, nRowInstr;
-    BYTE nRowVolCmd, nRowVolume;
-    BYTE nRowCommand, nRowParam;
-    BYTE nLeftVU, nRightVU;
-    BYTE nActiveMacro, nFilterMode;
-    BYTE nEFxSpeed, nEFxDelay; // memory for Invert Loop (EFx, .MOD only)
-
-    uint16 m_RowPlugParam;			//NOTE_PCs memory.
-    float m_nPlugParamValueStep;  //rewbs.smoothVST 
-    float m_nPlugInitialParamValue; //rewbs.smoothVST
-    PLUGINDEX m_RowPlug;			//NOTE_PCs memory.
-    
-    void ClearRowCmd() {nRowNote = NOTE_NONE; nRowInstr = 0; nRowVolCmd = VOLCMD_NONE; nRowVolume = 0; nRowCommand = CMD_NONE; nRowParam = 0;}
-
-    typedef UINT VOLUME;
-    VOLUME GetVSTVolume() {return (pModInstrument) ? pModInstrument->nGlobalVol*4 : nVolume;}
-
-    //-->Variables used to make user-definable tuning modes work with pattern effects.
-        bool m_ReCalculateFreqOnFirstTick;
-        //If true, freq should be recalculated in ReadNote() on first tick.
-        //Currently used only for vibrato things - using in other context might be 
-        //problematic.
-
-        bool m_CalculateFreq;
-        //To tell whether to calculate frequency.
-
-        int32 m_PortamentoFineSteps;
-        long m_PortamentoTickSlide;
-
-        UINT m_Freq;
-        float m_VibratoDepth;
-    //<----
-} MODCHANNEL;
-
-#define CHNRESET_CHNSETTINGS	1 //  1 b 
-#define CHNRESET_SETPOS_BASIC	2 // 10 b
-#define	CHNRESET_SETPOS_FULL	7 //111 b
-#define CHNRESET_TOTAL			255 //11111111b
-
-
-struct MODCHANNELSETTINGS
-{
-    UINT nPan;
-    UINT nVolume;
-    DWORD dwFlags;
-    PLUGINDEX nMixPlugin;
-    CHAR szName[MAX_CHANNELNAME];
-};
 
 #include "modcommand.h"
 
@@ -588,8 +344,8 @@ public: //Get 'controllers'
     const CMIDIMapper& GetMIDIMapper() const {return m_MIDIMapper;}
 
 private: //Effect functions
-    void PortamentoMPT(MODCHANNEL*, int);
-    void PortamentoFineMPT(MODCHANNEL*, int);
+    void PortamentoMPT(modplug::mixer::MODCHANNEL*, int);
+    void PortamentoFineMPT(modplug::mixer::MODCHANNEL*, int);
 
 private: //Misc private methods.
     static void SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type);
@@ -662,13 +418,13 @@ public:	// for Editing
     UINT m_nMaxOrderPosition;
     LPSTR m_lpszSongComments;
     UINT ChnMix[MAX_CHANNELS];							// Channels to be mixed
-    MODCHANNEL Chn[MAX_CHANNELS];						// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
-    MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];	// Initial channels settings
+    modplug::mixer::MODCHANNEL Chn[MAX_CHANNELS];						// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
+    modplug::mixer::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];	// Initial channels settings
     CPatternContainer Patterns;							// Patterns
     ModSequenceSet Order;								// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
-    MODSAMPLE Samples[MAX_SAMPLES];						// Sample Headers
-    MODINSTRUMENT *Instruments[MAX_INSTRUMENTS];		// Instrument Headers
-    MODINSTRUMENT m_defaultInstrument;					// Currently only used to get default values for extented properties. 
+    modplug::mixer::MODSAMPLE Samples[MAX_SAMPLES];						// Sample Headers
+    modplug::mixer::MODINSTRUMENT *Instruments[MAX_INSTRUMENTS];		// Instrument Headers
+    modplug::mixer::MODINSTRUMENT m_defaultInstrument;					// Currently only used to get default values for extented properties. 
     CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];		// Song and sample names
     MODMIDICFG m_MidiCfg;								// Midi macro config table
     SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];			// Mix plugins
@@ -788,7 +544,7 @@ public:
 
     // Save Functions
 #ifndef MODPLUG_NO_FILESAVE
-    UINT WriteSample(FILE *f, MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen=0);
+    UINT WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen=0);
     bool SaveXM(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
     bool SaveS3M(LPCSTR lpszFileName, UINT nPacking=0);
     bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
@@ -796,8 +552,8 @@ public:
     bool SaveCompatIT(LPCSTR lpszFileName);
     bool SaveITProject(LPCSTR lpszFileName); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
     UINT SaveMixPlugins(FILE *f=NULL, BOOL bUpdate=TRUE);
-    void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, MODINSTRUMENT* instruments[], UINT nInstruments);
-    void SaveExtendedInstrumentProperties(MODINSTRUMENT *instruments[], UINT nInstruments, FILE* f);
+    void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::mixer::MODINSTRUMENT* instruments[], UINT nInstruments);
+    void SaveExtendedInstrumentProperties(modplug::mixer::MODINSTRUMENT *instruments[], UINT nInstruments, FILE* f);
     void SaveExtendedSongProperties(FILE* f);
     void LoadExtendedSongProperties(const MODTYPE modtype, LPCBYTE ptr, const LPCBYTE startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
 #endif // MODPLUG_NO_FILESAVE
@@ -830,7 +586,7 @@ public:
     UINT ReadPattern(LPVOID lpBuffer, UINT cbBuffer);
     UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, CSoundFile *, DWORD *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
-    UINT GetResamplingFlag(const MODCHANNEL *pChannel);
+    UINT GetResamplingFlag(const modplug::mixer::MODCHANNEL *pChannel);
     BOOL FadeSong(UINT msec);
     BOOL GlobalFadeSong(UINT msec);
     UINT GetTotalTickCount() const { return m_nTotalCount; }
@@ -888,7 +644,7 @@ public:
     UINT GetNNAChannel(UINT nChn) const;
     void CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut);
     void NoteChange(UINT nChn, int note, bool bPorta = false, bool bResetEnv = true, bool bManual = false);
-    void InstrumentChange(MODCHANNEL *pChn, UINT instr, bool bPorta = false, bool bUpdVol = true, bool bResetEnv = true);
+    void InstrumentChange(modplug::mixer::MODCHANNEL *pChn, UINT instr, bool bPorta = false, bool bUpdVol = true, bool bResetEnv = true);
 
     // Channel Effects
     void KeyOff(UINT nChn);
@@ -898,36 +654,36 @@ public:
 
 private:
     // Channel Effects
-    void PortamentoUp(MODCHANNEL *pChn, UINT param, const bool fineAsRegular = false);
-    void PortamentoDown(MODCHANNEL *pChn, UINT param, const bool fineAsRegular = false);
-    void MidiPortamento(MODCHANNEL *pChn, int param);
-    void FinePortamentoUp(MODCHANNEL *pChn, UINT param);
-    void FinePortamentoDown(MODCHANNEL *pChn, UINT param);
-    void ExtraFinePortamentoUp(MODCHANNEL *pChn, UINT param);
-    void ExtraFinePortamentoDown(MODCHANNEL *pChn, UINT param);
-    void NoteSlide(MODCHANNEL *pChn, UINT param, int sign);
-    void TonePortamento(MODCHANNEL *pChn, UINT param);
-    void Vibrato(MODCHANNEL *pChn, UINT param);
-    void FineVibrato(MODCHANNEL *pChn, UINT param);
-    void VolumeSlide(MODCHANNEL *pChn, UINT param);
-    void PanningSlide(MODCHANNEL *pChn, UINT param);
-    void ChannelVolSlide(MODCHANNEL *pChn, UINT param);
-    void FineVolumeUp(MODCHANNEL *pChn, UINT param);
-    void FineVolumeDown(MODCHANNEL *pChn, UINT param);
-    void Tremolo(MODCHANNEL *pChn, UINT param);
-    void Panbrello(MODCHANNEL *pChn, UINT param);
+    void PortamentoUp(modplug::mixer::MODCHANNEL *pChn, UINT param, const bool fineAsRegular = false);
+    void PortamentoDown(modplug::mixer::MODCHANNEL *pChn, UINT param, const bool fineAsRegular = false);
+    void MidiPortamento(modplug::mixer::MODCHANNEL *pChn, int param);
+    void FinePortamentoUp(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void FinePortamentoDown(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void ExtraFinePortamentoUp(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void ExtraFinePortamentoDown(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void NoteSlide(modplug::mixer::MODCHANNEL *pChn, UINT param, int sign);
+    void TonePortamento(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void Vibrato(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void FineVibrato(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void VolumeSlide(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void PanningSlide(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void ChannelVolSlide(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void FineVolumeUp(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void FineVolumeDown(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void Tremolo(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void Panbrello(modplug::mixer::MODCHANNEL *pChn, UINT param);
     void RetrigNote(UINT nChn, int param, UINT offset=0);  //rewbs.volOffset: added last param
     void SampleOffset(UINT nChn, UINT param, bool bPorta);	//rewbs.volOffset: moved offset code to own method
     void NoteCut(UINT nChn, UINT nTick);
-    int PatternLoop(MODCHANNEL *, UINT param);
+    int PatternLoop(modplug::mixer::MODCHANNEL *, UINT param);
     void ExtendedMODCommands(UINT nChn, UINT param);
     void ExtendedS3MCommands(UINT nChn, UINT param);
-    void ExtendedChannelEffect(MODCHANNEL *, UINT param);
-    inline void InvertLoop(MODCHANNEL* pChn);
+    void ExtendedChannelEffect(modplug::mixer::MODCHANNEL *, UINT param);
+    inline void InvertLoop(modplug::mixer::MODCHANNEL* pChn);
     void ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro, UINT param = 0);
-    void SetupChannelFilter(MODCHANNEL *pChn, bool bReset, int flt_modifier = 256) const;
+    void SetupChannelFilter(modplug::mixer::MODCHANNEL *pChn, bool bReset, int flt_modifier = 256) const;
     // Low-Level effect processing
-    void DoFreqSlide(MODCHANNEL *pChn, LONG nFreqSlide);
+    void DoFreqSlide(modplug::mixer::MODCHANNEL *pChn, LONG nFreqSlide);
     void GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide);
     DWORD IsSongFinished(UINT nOrder, UINT nRow) const;
     void UpdateTimeSignature();
@@ -941,7 +697,7 @@ public:
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
     UINT PackSample(int &sample, int next);
     bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *result=NULL);
-    UINT ReadSample(MODSAMPLE *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const WORD format = 1);
+    UINT ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const WORD format = 1);
     bool DestroySample(SAMPLEINDEX nSample);
 
 // -> CODE#0020
@@ -959,7 +715,7 @@ public:
     bool RemoveInstrumentSamples(INSTRUMENTINDEX nInstr);
     SAMPLEINDEX DetectUnusedSamples(vector<bool> &sampleUsed) const;
     SAMPLEINDEX RemoveSelectedSamples(const vector<bool> &keepSamples);
-    void AdjustSampleLoop(MODSAMPLE *pSmp);
+    void AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp);
     // Samples file I/O
     bool ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
     bool ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD *pdwWSMPOffset=NULL);
@@ -993,18 +749,18 @@ public:
     UINT GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const;
     UINT GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac=0) const;
     // Misc functions
-    MODSAMPLE *GetSample(UINT n) { return Samples+n; }
+    modplug::mixer::MODSAMPLE *GetSample(UINT n) { return Samples+n; }
     void ResetMidiCfg();
     void SanitizeMacros();
     UINT MapMidiInstrument(DWORD dwProgram, UINT nChannel, UINT nNote);
-    long ITInstrToMPT(const void *p, MODINSTRUMENT *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
+    long ITInstrToMPT(const void *p, modplug::mixer::MODINSTRUMENT *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
     UINT LoadMixPlugins(const void *pData, UINT nLen);
 //	PSNDMIXPLUGIN GetSndPlugMixPlug(IMixPlugin *pPlugin); //rewbs.plugDocAware
 #ifndef NO_FILTER
     DWORD CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
 #endif
 #ifdef MODPLUG_TRACKER
-    VOID ProcessMidiOut(UINT nChn, MODCHANNEL *pChn);		//rewbs.VSTdelay : added arg.
+    VOID ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn);		//rewbs.VSTdelay : added arg.
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
@@ -1012,7 +768,7 @@ public:
 public:
     static DWORD TransposeToFrequency(int transp, int ftune=0);
     static int FrequencyToTranspose(DWORD freq);
-    static void FrequencyToTranspose(MODSAMPLE *psmp);
+    static void FrequencyToTranspose(modplug::mixer::MODSAMPLE *psmp);
 
     // System-Dependant functions
 public:
@@ -1053,14 +809,14 @@ protected:
     UINT GetRawSongMessage(LPSTR s, UINT cbsize, UINT linesize=32);
 
 public:
-    int GetVolEnvValueFromPosition(int position, MODINSTRUMENT* pIns) const;
-    void ResetChannelEnvelopes(MODCHANNEL *pChn);
-    void ResetChannelEnvelope(MODCHANNEL_ENVINFO &env);
-    void SetDefaultInstrumentValues(MODINSTRUMENT *pIns);
+    int GetVolEnvValueFromPosition(int position, modplug::mixer::MODINSTRUMENT* pIns) const;
+    void ResetChannelEnvelopes(modplug::mixer::MODCHANNEL *pChn);
+    void ResetChannelEnvelope(modplug::mixer::MODCHANNEL_ENVINFO &env);
+    void SetDefaultInstrumentValues(modplug::mixer::MODINSTRUMENT *pIns);
 private:
     UINT  __cdecl GetChannelPlugin(UINT nChan, bool respectMutes) const;
     UINT  __cdecl GetActiveInstrumentPlugin(UINT nChan, bool respectMutes) const;
-    UINT GetBestMidiChan(const MODCHANNEL *pChn) const;
+    UINT GetBestMidiChan(const modplug::mixer::MODCHANNEL *pChn) const;
 
     void HandlePatternTransitionEvents();
     void BuildDefaultInstrument();
@@ -1092,7 +848,7 @@ public:
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())
 
 
-inline uint32 MODSAMPLE::GetSampleRate(const MODTYPE type) const
+inline uint32 modplug::mixer::MODSAMPLE::GetSampleRate(const MODTYPE type) const
 //--------------------------------------------------------------
 {
     uint32 nRate;
@@ -1160,16 +916,16 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16 size)
 
 // Read instrument property with 'code' and 'size' from 'ptr' to instrument 'pIns'.
 // Note: (ptr, size) pair must be valid (e.g. can read 'size' bytes from 'ptr')
-void ReadInstrumentExtensionField(MODINSTRUMENT* pIns, LPCBYTE& ptr, const int32 code, const int16 size);
+void ReadInstrumentExtensionField(modplug::mixer::MODINSTRUMENT* pIns, LPCBYTE& ptr, const int32 code, const int16 size);
 
 // Read instrument property with 'code' from 'pData' to instrument 'pIns'.
-void ReadExtendedInstrumentProperty(MODINSTRUMENT* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd);
+void ReadExtendedInstrumentProperty(modplug::mixer::MODINSTRUMENT* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd);
 
 // Read extended instrument properties from 'pDataStart' to instrument 'pIns'.
-void ReadExtendedInstrumentProperties(MODINSTRUMENT* pIns, const LPCBYTE pDataStart, const size_t nMemLength);
+void ReadExtendedInstrumentProperties(modplug::mixer::MODINSTRUMENT* pIns, const LPCBYTE pDataStart, const size_t nMemLength);
 
 // Convert instrument flags which were read from 'dF..' extension to proper internal representation.
-void ConvertReadExtendedFlags(MODINSTRUMENT* pIns);
+void ConvertReadExtendedFlags(modplug::mixer::MODINSTRUMENT* pIns);
 
 
 #endif

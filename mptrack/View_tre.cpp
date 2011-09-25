@@ -1561,7 +1561,7 @@ VOID CModTree::FillInstrumentLibrary()
 		SetItemImage(m_hInsLib, IMAGE_FOLDERSONG, IMAGE_FOLDERSONG);
 		for (UINT iIns=1; iIns<=m_SongFile.m_nInstruments; iIns++)
 		{
-			MODINSTRUMENT *pIns = m_SongFile.Instruments[iIns];
+			modplug::mixer::MODINSTRUMENT *pIns = m_SongFile.Instruments[iIns];
 			if (pIns)
 			{
 				lstrcpyn(szPath, pIns->name, 32);
@@ -1572,7 +1572,7 @@ VOID CModTree::FillInstrumentLibrary()
 		}
 		for (UINT iSmp=1; iSmp<=m_SongFile.m_nSamples; iSmp++)
 		{
-			MODSAMPLE *psmp = &m_SongFile.Samples[iSmp];
+			modplug::mixer::MODSAMPLE *psmp = &m_SongFile.Samples[iSmp];
 			lstrcpyn(szPath, m_SongFile.m_szNames[iSmp], 32);
 			if (psmp->pSample)
 			{

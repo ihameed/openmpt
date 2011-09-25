@@ -137,7 +137,7 @@ CModToMidi::CModToMidi(LPCSTR pszPathName, CSoundFile *pSndFile, CWnd *pWndParen
 	MemsetZero(m_InstrMap);
 	for (UINT nIns=1; nIns<=m_pSndFile->m_nInstruments; nIns++)
 	{
-		MODINSTRUMENT *pIns = m_pSndFile->Instruments[nIns];
+		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[nIns];
 		if ((pIns) && (pIns->nMidiChannel <= 16))
 		{
 			m_InstrMap[nIns].nChannel = pIns->nMidiChannel;
@@ -170,7 +170,7 @@ BOOL CModToMidi::OnInitDialog()
 	{
 		for(INSTRUMENTINDEX nIns = 1; nIns <= m_pSndFile->m_nInstruments; nIns++)
 		{
-			MODINSTRUMENT *pIns = m_pSndFile->Instruments[nIns];
+			modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[nIns];
 			if ((pIns) && (m_pSndFile->IsInstrumentUsed(nIns)))
 			{
 				memset(s, 0, sizeof(s));
@@ -325,7 +325,7 @@ VOID CModToMidi::OnOK()
 {
 	for (UINT i=1; i<=m_pSndFile->m_nInstruments; i++)
 	{
-		MODINSTRUMENT *pIns = m_pSndFile->Instruments[i];
+		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[i];
 		if (pIns)
 		{
 			pIns->nMidiProgram = m_InstrMap[i].nProgram;
@@ -487,7 +487,7 @@ BOOL CModToMidi::DoConvert()
 						{
 							if ((nsmp < MAX_INSTRUMENTS) && (m_pSndFile->Instruments[nsmp]))
 							{
-								MODINSTRUMENT *pIns = m_pSndFile->Instruments[nsmp];
+								modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[nsmp];
 								nsmp = pIns->Keyboard[note];
 							} else nsmp = 0;
 						}

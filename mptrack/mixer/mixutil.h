@@ -6,9 +6,8 @@ rudely sepple-ized and jammed into openmpt by xaimus  : - [
 #pragma once
 
 #include <cstddef>
-#include "../../soundlib/sndfile.h"
+#include "modchannel.h"
 
-struct modchannel;
 
 namespace modplug {
 namespace mixer {

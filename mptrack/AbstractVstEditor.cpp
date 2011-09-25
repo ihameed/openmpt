@@ -772,7 +772,7 @@ bool CAbstractVstEditor::CreateInstrument()
 		return false;
 	}
 
-	MODINSTRUMENT *pIns = pSndFile->Instruments[nIns];
+	modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[nIns];
 	m_nInstrument = nIns;
 
 	_snprintf(pIns->name, CountOf(pIns->name) - 1, _T("%d: %s"), m_pVstPlugin->GetSlot() + 1, pSndFile->m_MixPlugins[m_pVstPlugin->GetSlot()].Info.szName);

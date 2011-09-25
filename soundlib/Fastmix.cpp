@@ -60,7 +60,7 @@ extern short int gDownsample2x[]; // 2x downsampling
 // Mixing Macros
 
 #define SNDMIX_BEGINSAMPLELOOP8\
-    register MODCHANNEL * const pChn = pChannel;\
+    register modplug::mixer::MODCHANNEL * const pChn = pChannel;\
     nPos = pChn->nPosLo;\
     const signed char *p = (signed char *)(pChn->pCurrentSample+pChn->nPos);\
     if (pChn->dwFlags & CHN_STEREO) p += pChn->nPos;\
@@ -68,7 +68,7 @@ extern short int gDownsample2x[]; // 2x downsampling
     do {
 
 #define SNDMIX_BEGINSAMPLELOOP16\
-    register MODCHANNEL * const pChn = pChannel;\
+    register modplug::mixer::MODCHANNEL * const pChn = pChannel;\
     nPos = pChn->nPosLo;\
     const signed short *p = (signed short *)(pChn->pCurrentSample+(pChn->nPos*2));\
     if (pChn->dwFlags & CHN_STEREO) p += pChn->nPos;\
@@ -381,10 +381,10 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 //////////////////////////////////////////////////////////
 // Interfaces
 
-typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
+typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::mixer::MODCHANNEL *, int *, int *);
 
 #define BEGIN_MIX_INTERFACE(func)\
-    VOID MPPASMCALL func(MODCHANNEL *pChannel, int *pbuffer, int *pbufmax)\
+    VOID MPPASMCALL func(modplug::mixer::MODCHANNEL *pChannel, int *pbuffer, int *pbufmax)\
     {\
         LONG nPos;
 
@@ -1349,7 +1349,7 @@ const LPMIXINTERFACE gpFastMixFunctionTable[2*16] =
 
 /////////////////////////////////////////////////////////////////////////
 
-static LONG MPPFASTCALL GetSampleCount(MODCHANNEL *pChn, LONG nSamples, bool bITBidiMode)
+static LONG MPPFASTCALL GetSampleCount(modplug::mixer::MODCHANNEL *pChn, LONG nSamples, bool bITBidiMode)
 //---------------------------------------------------------------------------------------
 {
     LONG nLoopStart = (pChn->dwFlags & CHN_LOOP) ? pChn->nLoopStart : 0;
@@ -1489,7 +1489,7 @@ UINT CSoundFile::CreateStereoMix(int count)
     for (UINT nChn=0; nChn<m_nMixChannels; nChn++)
     {
         const LPMIXINTERFACE *pMixFuncTable;
-        MODCHANNEL * const pChannel = &Chn[ChnMix[nChn]];
+        modplug::mixer::MODCHANNEL * const pChannel = &Chn[ChnMix[nChn]];
         UINT nFlags, nMasterCh;
         LONG nSmpCount;
         int nsamples;
@@ -1679,7 +1679,7 @@ UINT CSoundFile::CreateStereoMix(int count)
     return nchused;
 }
 
-UINT CSoundFile::GetResamplingFlag(const MODCHANNEL *pChannel)
+UINT CSoundFile::GetResamplingFlag(const modplug::mixer::MODCHANNEL *pChannel)
 //------------------------------------------------------------
 {
     if (pChannel->pModInstrument) {

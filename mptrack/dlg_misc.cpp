@@ -1373,7 +1373,7 @@ BOOL CSampleMapDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 	if (m_pSndFile)
 	{
-		MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
+		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
 		if (pIns)
 		{
 			for (UINT i=0; i<NOTE_MAX; i++)
@@ -1493,7 +1493,7 @@ LRESULT CSampleMapDlg::OnKeyboardNotify(WPARAM wParam, LPARAM lParam)
 		else
 			wsprintf(s, "%s", temp.c_str());
 
-		MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
+		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
 		if ((wParam == KBDNOTIFY_LBUTTONDOWN) && (nSample < MAX_SAMPLES) && (pIns))
 		{
 			UINT iNote = nBaseOctave*12+lParam;
@@ -1530,7 +1530,7 @@ VOID CSampleMapDlg::OnOK()
 {
 	if (m_pSndFile)
 	{
-		MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
+		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[m_nInstrument];
 		if (pIns)
 		{
 			BOOL bModified = FALSE;

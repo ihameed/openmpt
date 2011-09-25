@@ -1,5 +1,5 @@
 /*
- * MODSAMPLE related functions.
+ * modplug::mixer::MODSAMPLE related functions.
  */
 
 #include "stdafx.h"
@@ -11,7 +11,7 @@
 namespace ctrlSmp
 {
 
-void ReplaceSample(MODSAMPLE& smp, const LPSTR pNewSample, const SmpLength nNewLength, CSoundFile* pSndFile)
+void ReplaceSample(modplug::mixer::MODSAMPLE& smp, const LPSTR pNewSample, const SmpLength nNewLength, CSoundFile* pSndFile)
 //----------------------------------------------------------------------------------------------------------
 {
 	LPSTR const pOldSmp = smp.pSample;
@@ -36,7 +36,7 @@ void ReplaceSample(MODSAMPLE& smp, const LPSTR pNewSample, const SmpLength nNewL
 }
 
 
-SmpLength InsertSilence(MODSAMPLE& smp, const SmpLength nSilenceLength, const SmpLength nStartFrom, CSoundFile* pSndFile)
+SmpLength InsertSilence(modplug::mixer::MODSAMPLE& smp, const SmpLength nSilenceLength, const SmpLength nStartFrom, CSoundFile* pSndFile)
 //-----------------------------------------------------------------------------------------------------------------------
 {
 	if(nSilenceLength == 0 || nSilenceLength >= MAX_SAMPLE_LENGTH || smp.nLength > MAX_SAMPLE_LENGTH - nSilenceLength)
@@ -92,7 +92,7 @@ SmpLength InsertSilence(MODSAMPLE& smp, const SmpLength nSilenceLength, const Sm
 }
 
 
-SmpLength ResizeSample(MODSAMPLE& smp, const SmpLength nNewLength, CSoundFile* pSndFile)
+SmpLength ResizeSample(modplug::mixer::MODSAMPLE& smp, const SmpLength nNewLength, CSoundFile* pSndFile)
 //--------------------------------------------------------------------------------------
 {
 	// Invalid sample size
@@ -140,10 +140,10 @@ namespace // Unnamed namespace for local implementation functions.
 
 
 template <class T>
-void AdjustEndOfSampleImpl(MODSAMPLE& smp)
+void AdjustEndOfSampleImpl(modplug::mixer::MODSAMPLE& smp)
 //----------------------------------------
 {
-	MODSAMPLE* const pSmp = &smp;
+	modplug::mixer::MODSAMPLE* const pSmp = &smp;
 	const UINT len = pSmp->nLength;
 	T* p = reinterpret_cast<T*>(pSmp->pSample);
 	if (pSmp->uFlags & CHN_STEREO)
@@ -169,10 +169,10 @@ void AdjustEndOfSampleImpl(MODSAMPLE& smp)
 } // unnamed namespace.
 
 
-bool AdjustEndOfSample(MODSAMPLE& smp, CSoundFile* pSndFile)
+bool AdjustEndOfSample(modplug::mixer::MODSAMPLE& smp, CSoundFile* pSndFile)
 //----------------------------------------------------------
 {
-	MODSAMPLE* const pSmp = &smp;
+	modplug::mixer::MODSAMPLE* const pSmp = &smp;
 
 	if ((!pSmp->nLength) || (!pSmp->pSample)) 
 		return false;
@@ -312,7 +312,7 @@ namespace
 
 
 // Remove DC offset
-float RemoveDCOffset(MODSAMPLE& smp,
+float RemoveDCOffset(modplug::mixer::MODSAMPLE& smp,
 					 SmpLength iStart,
 					 SmpLength iEnd,
 					 const MODTYPE modtype,
@@ -322,7 +322,7 @@ float RemoveDCOffset(MODSAMPLE& smp,
 	if(smp.pSample == nullptr || smp.nLength < 1)
 		return 0;
 
-	MODSAMPLE* const pSmp = &smp;
+	modplug::mixer::MODSAMPLE* const pSmp = &smp;
 
 	if (iEnd > pSmp->nLength) iEnd = pSmp->nLength;
 	if (iStart > iEnd) iStart = iEnd;
@@ -397,7 +397,7 @@ void ReverseSampleImpl(T* pStart, const SmpLength nLength)
 }
 
 // Reverse sample data
-bool ReverseSample(MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile)
+bool ReverseSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile)
 //-----------------------------------------------------------------------------------------
 {
 	if(pSmp->pSample == nullptr) return false;
@@ -437,7 +437,7 @@ void UnsignSampleImpl(T* pStart, const SmpLength nLength)
 }
 
 // Virtually unsign sample data
-bool UnsignSample(MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile)
+bool UnsignSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile)
 //----------------------------------------------------------------------------------------
 {
 	if(pSmp->pSample == nullptr) return false;
@@ -471,7 +471,7 @@ void InvertSampleImpl(T* pStart, const SmpLength nLength)
 }
 
 // Invert sample data (flip by 180 degrees)
-bool InvertSample(MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile)
+bool InvertSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile)
 //----------------------------------------------------------------------------------------
 {
 	if(pSmp->pSample == nullptr) return false;
@@ -506,7 +506,7 @@ void XFadeSampleImpl(T* pStart, const SmpLength nOffset, SmpLength nFadeLength)
 }
 
 // X-Fade sample data to create smooth loop transitions
-bool XFadeSample(MODSAMPLE *pSmp, SmpLength iFadeLength, CSoundFile *pSndFile)
+bool XFadeSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iFadeLength, CSoundFile *pSndFile)
 //----------------------------------------------------------------------------
 {
 	if(pSmp->pSample == nullptr) return false;
@@ -544,7 +544,7 @@ void ConvertStereoToMonoImpl(T* pDest, const SmpLength length)
 
 
 // Convert a multichannel sample to mono (currently only implemented for stereo)
-bool ConvertToMono(MODSAMPLE *pSmp, CSoundFile *pSndFile)
+bool ConvertToMono(modplug::mixer::MODSAMPLE *pSmp, CSoundFile *pSndFile)
 //-------------------------------------------------------
 {
 	if(pSmp->pSample == nullptr || pSmp->nLength == 0 || pSmp->GetNumChannels() != 2) return false;
@@ -580,7 +580,7 @@ bool ConvertToMono(MODSAMPLE *pSmp, CSoundFile *pSndFile)
 namespace ctrlChn
 {
 
-void ReplaceSample( MODCHANNEL (&Chn)[MAX_CHANNELS],
+void ReplaceSample( modplug::mixer::MODCHANNEL (&Chn)[MAX_CHANNELS],
 					LPCSTR pOldSample,
 					LPSTR pNewSample,
 					const ctrlSmp::SmpLength nNewLength,
