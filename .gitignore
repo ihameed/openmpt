@@ -1,6 +1,9 @@
 [Tt]humbs.db
 *.DS_Store
 
+*.i
+*.vsp
+
 *.[Oo]bj
 *.user
 *.aps

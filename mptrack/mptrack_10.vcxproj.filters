@@ -256,6 +256,7 @@
     <ClInclude Include="mixgraph\vst_vertex.h">
       <Filter>mixgraph</Filter>
     </ClInclude>
+    <ClInclude Include="mixgraph\mixer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />

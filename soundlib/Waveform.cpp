@@ -226,8 +226,6 @@ void X86_Spectrum(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nSmpSize,
 }
 
 
-extern void __cdecl MMX_Spectrum(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nSmpSize, LPLONG lpSinCos);
-
 
 LONG CSoundFile::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nChannels)
 //-----------------------------------------------------------------------------------------------
@@ -237,12 +235,7 @@ LONG CSoundFile::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc
     if ((pBuffer) && (n))
     {
         sincos[0] = sincos[1] = 0;
-#ifdef ENABLE_MMX
-        if ((gdwSysInfo & SYSMIX_ENABLEMMX) && (gdwSoundSetup & SNDMIX_ENABLEMMX))
-            MMX_Spectrum(pBuffer, n, nInc, nChannels, sincos);
-        else
-#endif
-            X86_Spectrum(pBuffer, n, nInc, nChannels, sincos);
+        X86_Spectrum(pBuffer, n, nInc, nChannels, sincos);
         LONG esin = sincos[0], ecos = sincos[1];
         if (ecos < 0) ecos = -ecos;
         if (esin < 0) esin = -esin;

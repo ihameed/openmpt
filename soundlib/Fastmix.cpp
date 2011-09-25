@@ -475,28 +475,6 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(MODCHANNEL *, int *, int *);
 /////////////////////////////////////////////////////
 //
 
-#ifdef ENABLE_MMX
-extern VOID MMX_EndMix();
-extern VOID MMX_Mono8BitMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono16BitMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono8BitLinearMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono16BitLinearMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono8BitHQMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono16BitHQMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono8BitKaiserMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono16BitKaiserMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono8BitKaiserRampMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_Mono16BitKaiserRampMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_FilterMono8BitLinearRampMix(MODCHANNEL *, int *, int *);
-extern VOID MMX_FilterMono16BitLinearRampMix(MODCHANNEL *, int *, int *);
-#define MMX_FilterMono8BitMix			MMX_FilterMono8BitLinearRampMix
-#define MMX_FilterMono16BitMix			MMX_FilterMono16BitLinearRampMix
-#define MMX_FilterMono8BitRampMix		MMX_FilterMono8BitLinearRampMix
-#define MMX_FilterMono16BitRampMix		MMX_FilterMono16BitLinearRampMix
-#define MMX_FilterMono8BitLinearMix		MMX_FilterMono8BitLinearRampMix
-#define MMX_FilterMono16BitLinearMix	MMX_FilterMono16BitLinearRampMix
-#endif
-
 
 #ifdef ENABLE_AMD
 extern void AMD_StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount, const float _i2fc);
@@ -1369,55 +1347,6 @@ const LPMIXINTERFACE gpFastMixFunctionTable[2*16] =
 };
 
 
-#ifdef ENABLE_MMX
-//const LPMIXINTERFACE gpMMXFunctionTable[4*16] =
-const LPMIXINTERFACE gpMMXFunctionTable[5*16] =     //rewbs.resamplerConf: increased to 5 to cope with FIR
-{
-    // No SRC
-    MMX_Mono8BitMix,			MMX_Mono16BitMix,			Stereo8BitMix,			Stereo16BitMix,
-    Mono8BitRampMix,			Mono16BitRampMix,			Stereo8BitRampMix,		Stereo16BitRampMix,
-    // No SRC, Filter
-    MMX_FilterMono8BitMix,		MMX_FilterMono16BitMix,		FilterStereo8BitMix,	FilterStereo16BitMix,
-    MMX_FilterMono8BitRampMix,	MMX_FilterMono16BitRampMix,	FilterStereo8BitRampMix,FilterStereo16BitRampMix,
-    // Linear SRC
-    MMX_Mono8BitLinearMix,		MMX_Mono16BitLinearMix,		Stereo8BitLinearMix,	Stereo16BitLinearMix,
-    Mono8BitLinearRampMix,		Mono16BitLinearRampMix,		Stereo8BitLinearRampMix,Stereo16BitLinearRampMix,
-    // Linear SRC, Filter
-    MMX_FilterMono8BitLinearMix,MMX_FilterMono16BitLinearMix,FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
-    MMX_FilterMono8BitLinearRampMix,MMX_FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
-    // HQ SRC
-    MMX_Mono8BitHQMix,			MMX_Mono16BitHQMix,			Stereo8BitHQMix,		Stereo16BitHQMix,
-    Mono8BitHQRampMix,			Mono16BitHQRampMix,			Stereo8BitHQRampMix,	Stereo16BitHQRampMix,
-    // HQ SRC, Filter
-    MMX_FilterMono8BitLinearMix,MMX_FilterMono16BitLinearMix,FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
-    MMX_FilterMono8BitLinearRampMix,MMX_FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
-
-    // Kaiser SRC
-// -> CODE#0025
-// -> DESC="enable polyphase resampling on stereo samples"
-//	MMX_Mono8BitKaiserMix,		MMX_Mono16BitKaiserMix,		Stereo8BitHQMix,		Stereo16BitHQMix,
-//	MMX_Mono8BitKaiserRampMix,	MMX_Mono16BitKaiserRampMix,	Stereo8BitHQRampMix,	Stereo16BitHQRampMix,
-    MMX_Mono8BitKaiserMix,		MMX_Mono16BitKaiserMix,		Stereo8BitKaiserMix,	Stereo16BitKaiserMix,
-    MMX_Mono8BitKaiserRampMix,	MMX_Mono16BitKaiserRampMix,	Stereo8BitKaiserRampMix,Stereo16BitKaiserRampMix,
-
-    // Kaiser SRC, Filter - no ASM routines written for this yet.
-    FilterMono8BitKaiserMix, FilterMono16BitKaiserMix,FilterStereo8BitKaiserMix,	FilterStereo16BitKaiserMix,
-    FilterMono8BitKaiserRampMix, FilterMono16BitKaiserRampMix,FilterStereo8BitKaiserRampMix,FilterStereo16BitKaiserRampMix,
-
-    // FIRFilter SRC - no ASM routines written for this yet.
-    Mono8BitFIRFilterMix,		Mono16BitFIRFilterMix,		Stereo8BitFIRFilterMix,	Stereo16BitFIRFilterMix,
-    Mono8BitFIRFilterRampMix,	Mono16BitFIRFilterRampMix,	Stereo8BitFIRFilterRampMix,Stereo16BitFIRFilterRampMix,
-
-    // FIRFilter SRC, Filter - no ASM routines written for this yet.
-    FilterMono8BitFIRFilterMix, FilterMono16BitFIRFilterMix,FilterStereo8BitFIRFilterMix,	FilterStereo16BitFIRFilterMix,
-    FilterMono8BitFIRFilterRampMix, FilterMono16BitFIRFilterRampMix,FilterStereo8BitFIRFilterRampMix,FilterStereo16BitFIRFilterRampMix,
-
-
-// -! BEHAVIOUR_CHANGE#0025
-};
-#endif
-
-
 /////////////////////////////////////////////////////////////////////////
 
 static LONG MPPFASTCALL GetSampleCount(MODCHANNEL *pChn, LONG nSamples, bool bITBidiMode)
@@ -1582,12 +1511,6 @@ UINT CSoundFile::CreateStereoMix(int count)
         //rewbs.resamplerConf
         nFlags |= GetResamplingFlag(pChannel);
         //end rewbs.resamplerConf
-    #ifdef ENABLE_MMX
-        if ((gdwSysInfo & SYSMIX_ENABLEMMX) && (gdwSoundSetup & SNDMIX_ENABLEMMX))
-        {
-            pMixFuncTable = gpMMXFunctionTable;
-        } else
-    #endif
         if ((nFlags < 0x20) && (pChannel->nLeftVol == pChannel->nRightVol)
          && ((!pChannel->nRampLength) || (pChannel->nLeftRamp == pChannel->nRightRamp)))
         {
@@ -1607,6 +1530,7 @@ UINT CSoundFile::CreateStereoMix(int count)
         pbuffer = _graph.channel_vertices[channel_i_care_about]->ghetto_channels;
 
     #ifdef ENABLE_MMX
+        //XXXih: reverb - delete
         if ((pChannel->dwFlags & CHN_REVERB) && (gdwSysInfo & SYSMIX_ENABLEMMX))
             pbuffer = MixReverbBuffer;
     #endif
@@ -1752,12 +1676,6 @@ UINT CSoundFile::CreateStereoMix(int count)
         modplug::mixer::stereo_mix_to_sample_t(pbuffer, left_channel, right_channel, modplug::mixer::MIX_BUFFER_SIZE, m_pConfig->getIntToFloat());
         */
     }
-#ifdef ENABLE_MMX
-    if ((gdwSysInfo & SYSMIX_ENABLEMMX) && (gdwSoundSetup & SNDMIX_ENABLEMMX))
-    {
-        MMX_EndMix();
-    }
-#endif
     return nchused;
 }
 
