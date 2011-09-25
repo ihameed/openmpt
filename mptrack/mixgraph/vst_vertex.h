@@ -24,49 +24,30 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE. 
 */
 
-#include "stdafx.h"
+#pragma once
 
-#include "pervasives.h"
+#include "./constants.h"
 
-#include <algorithm>
+#define VST_FORCE_DEPRECATED 0
+#include <aeffectx.h>
+#include <vstfxstore.h>
 
-#include <Windows.h>
-#include <strsafe.h>
+class CVstPlugin;
 
 namespace modplug {
-namespace pervasives {
+namespace graph {
 
 
-void vdebug_log(const char *fmt, va_list arglist) {
-#ifdef _DEBUG
-    static const size_t maxlen = 2048;
-    static const size_t buflen = maxlen + 1;
-    char buf[buflen];
-    char *sprintf_end = nullptr;
+class vertex;
 
-    std::fill_n(buf, buflen, 0);
+class vst_vertex : public vertex {
+public:
+    vst_vertex(id_t, CVstPlugin *);
+    ~vst_vertex();
 
-    HRESULT ret = StringCchVPrintfEx(buf, maxlen, &sprintf_end, nullptr, STRSAFE_IGNORE_NULLS, fmt, arglist);
-    if (SUCCEEDED(ret)) {
-        sprintf_end[0] = '\n';
-        sprintf_end[1] = 0;
-        OutputDebugString(buf);
-    } else {
-        OutputDebugString("modplug::pervasives::debug_log(): failure in StringCchVPrintfEx!\n");
-    }
-#endif
-}
-
-void debug_log(const char *fmt, ...) {
-#ifdef _DEBUG
-    va_list arglist;
-    va_start(arglist, fmt);
-
-    vdebug_log(fmt, arglist);
-
-    va_end(arglist);
-#endif
-}
+private:
+    CVstPlugin *_vst;
+};
 
 
 }

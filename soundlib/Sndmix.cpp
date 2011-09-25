@@ -284,7 +284,8 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     size_t sample_width;
     size_t num_samples;
     size_t uncomputed_samples;
-    unsigned int lCount, nStat=0;
+    size_t computed_samples;
+    unsigned int nStat=0;
     unsigned int last_plugin_idx;
 
     last_plugin_idx = MAX_MIXPLUGINS;
@@ -340,12 +341,12 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
                     }
             }
         }
-        lCount = m_nBufferCount;
-        if (lCount > modplug::mixer::MIX_BUFFER_SIZE) lCount = modplug::mixer::MIX_BUFFER_SIZE;
-        if (lCount > uncomputed_samples) lCount = uncomputed_samples;
-        if (!lCount) 
+        computed_samples = m_nBufferCount;
+        if (computed_samples > modplug::mixer::MIX_BUFFER_SIZE) computed_samples = modplug::mixer::MIX_BUFFER_SIZE;
+        if (computed_samples > uncomputed_samples) computed_samples = uncomputed_samples;
+        if (!computed_samples) 
             break;
-        num_samples = lCount;
+        num_samples = computed_samples;
         #ifndef NO_REVERB
             gnReverbSend = 0;
         #endif
@@ -353,21 +354,25 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         modplug::mixer::stereo_fill(MixSoundBuffer, num_samples, &gnDryROfsVol, &gnDryLOfsVol);
 
         // ensure modplug::mixer::MIX_BUFFER_SIZE really is our max buffer size
-        ASSERT (lCount <= modplug::mixer::MIX_BUFFER_SIZE);
+        ASSERT (computed_samples <= modplug::mixer::MIX_BUFFER_SIZE);
 
         num_samples *= (gnChannels >= 2) ? 2 : 1;
-        m_nMixStat += CreateStereoMix(lCount);
+        _graph.pre_process(computed_samples);
+        m_nMixStat += CreateStereoMix(computed_samples);
+
+        //XXXih: JUICY FRUITS
+        /*
         #ifndef NO_REVERB
-            ProcessReverb(lCount);
+            ProcessReverb(computed_samples);
         #endif
         if (last_plugin_idx) {
-            ProcessPlugins(lCount);
+            ProcessPlugins(computed_samples);
         }
-
-        _graph.process(MixSoundBuffer, lCount, sample_width);
+        */
+        _graph.process(MixSoundBuffer, computed_samples, m_pConfig->getFloatToInt(), m_pConfig->getIntToFloat());
 
         if (gnChannels < 2) {
-            X86_MonoFromStereo(MixSoundBuffer, lCount);
+            X86_MonoFromStereo(MixSoundBuffer, computed_samples);
         }
         nStat++;
 
@@ -401,9 +406,9 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         buffer += clip_samples(buffer, MixSoundBuffer, total_num_samples);
 
         // Buffer ready
-        uncomputed_samples -= lCount;
-        m_nBufferCount -= lCount;
-        m_lTotalSampleCount += lCount;		// increase sample count for VSTTimeInfo.
+        uncomputed_samples -= computed_samples;
+        m_nBufferCount -= computed_samples;
+        m_lTotalSampleCount += computed_samples;		// increase sample count for VSTTimeInfo.
         // Turn on ramping after first read (fix http://forum.openmpt.org/index.php?topic=523.0 )
         gnVolumeRampInSamples = CMainFrame::glVolumeRampInSamples;
         gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
@@ -411,8 +416,7 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
 MixDone:
     if (uncomputed_samples) memset(buffer, (gnBitsPerSample == 8) ? 0x80 : 0, uncomputed_samples * sample_width);
     if (nStat) { m_nMixStat += nStat-1; m_nMixStat /= nStat; }
-    size_t computed_samples = max_samples - uncomputed_samples;
-    return computed_samples;
+    return max_samples - uncomputed_samples;;
 }
 
 /////////////////////////////////////////////////////////////////////////////

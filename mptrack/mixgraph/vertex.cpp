@@ -26,47 +26,32 @@ DAMAGE.
 
 #include "stdafx.h"
 
-#include "pervasives.h"
-
-#include <algorithm>
-
-#include <Windows.h>
-#include <strsafe.h>
+#include "vertex.h"
+#include "../mptrack.h"
 
 namespace modplug {
-namespace pervasives {
+namespace graph {
 
 
-void vdebug_log(const char *fmt, va_list arglist) {
-#ifdef _DEBUG
-    static const size_t maxlen = 2048;
-    static const size_t buflen = maxlen + 1;
-    char buf[buflen];
-    char *sprintf_end = nullptr;
-
-    std::fill_n(buf, buflen, 0);
-
-    HRESULT ret = StringCchVPrintfEx(buf, maxlen, &sprintf_end, nullptr, STRSAFE_IGNORE_NULLS, fmt, arglist);
-    if (SUCCEEDED(ret)) {
-        sprintf_end[0] = '\n';
-        sprintf_end[1] = 0;
-        OutputDebugString(buf);
-    } else {
-        OutputDebugString("modplug::pervasives::debug_log(): failure in StringCchVPrintfEx!\n");
-    }
-#endif
+vertex::vertex(id_t id, std::string name = "anon") : id(id), name(name) {
+    _input_channels  = 0;
+    _output_channels = 0;
+    _input_arrows.reserve(MAX_CHANNEL_ENDPOINTS);
+    _output_arrows.reserve(MAX_CHANNEL_ENDPOINTS);
+    ghetto_vol_decay_l = 0;
+    ghetto_vol_decay_r = 0;
+    //modplug::pervasives::debug_log("vertex::vertex(%s)", name.c_str());
 }
 
-void debug_log(const char *fmt, ...) {
-#ifdef _DEBUG
-    va_list arglist;
-    va_start(arglist, fmt);
-
-    vdebug_log(fmt, arglist);
-
-    va_end(arglist);
-#endif
+vertex::~vertex() {
+    //modplug::pervasives::debug_log("vertex::~vertex(%s)", name.c_str());
 }
+
+
+arrow::arrow(id_t id, vertex *head, size_t head_channel, vertex *tail, size_t tail_channel) :
+    id(id), head(head), tail(tail),
+    head_channel(head_channel),
+    tail_channel(tail_channel) { }
 
 
 }

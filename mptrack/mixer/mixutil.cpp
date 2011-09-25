@@ -100,34 +100,6 @@ void mono_from_stereo(int *mix_buf, size_t samples) {
 
 
 
-void stereo_mix_to_sample_t(const int *src, modplug::graph::sample_t *out1, modplug::graph::sample_t *out2, size_t count, const float i2fc) {
-    for (size_t i = 0; i < count; i++) {
-        *out1++ = *src * i2fc;
-        src++;
-
-        *out2++ = *src * i2fc;
-        src++;
-    }
-}
-
-void stereo_mix_to_float(const int *src, float *out1, float *out2, size_t count, const float i2fc) {
-    for (size_t i = 0; i < count; i++) {
-        *out1++ = *src * i2fc;
-        src++;
-
-        *out2++ = *src * i2fc;
-        src++;
-    }
-}
-
-void float_to_stereo_mix(const float *in1, const float *in2, int *out, size_t count, const float f2ic) {
-    for (size_t i = 0; i < count; i++) {
-        *out++ = (int) (*in1 * f2ic);
-        *out++ = (int) (*in2 * f2ic);
-        in1++;
-        in2++;
-    }
-}
 
 void mono_mix_to_float(const int *src, float *out, size_t count, const float i2fc) {
     for (size_t i = 0; i < count; i++) {

@@ -19,7 +19,7 @@
 #include "Snd_defs.h"
 #include "Endianness.h"
 
-#include "graph/core.h"
+#include "mixgraph/core.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST

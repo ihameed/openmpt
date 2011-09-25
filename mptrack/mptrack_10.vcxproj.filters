@@ -132,20 +132,20 @@
     <ClCompile Include="mixer\mixutil.cpp">
       <Filter>mixer</Filter>
     </ClCompile>
-    <ClCompile Include="graph\vertex.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\source_vertex.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\vst_vertex.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
-    <ClCompile Include="graph\core.cpp">
-      <Filter>graph</Filter>
-    </ClCompile>
     <ClCompile Include="pervasives\pervasives.cpp">
       <Filter>pervasives</Filter>
+    </ClCompile>
+    <ClCompile Include="mixgraph\core.cpp">
+      <Filter>mixgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="mixgraph\source_vertex.cpp">
+      <Filter>mixgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="mixgraph\vertex.cpp">
+      <Filter>mixgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="mixgraph\vst_vertex.cpp">
+      <Filter>mixgraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,29 +241,29 @@
     <ClInclude Include="tuningRatioMapWnd.h" />
     <ClInclude Include="test\test.h" />
     <ClInclude Include="..\soundlib\Loaders.h" />
-    <ClInclude Include="graph\constants.h">
-      <Filter>graph</Filter>
-    </ClInclude>
     <ClInclude Include="mixer\mixutil.h">
       <Filter>mixer</Filter>
     </ClInclude>
     <ClInclude Include="mixer\constants.h">
       <Filter>mixer</Filter>
     </ClInclude>
-    <ClInclude Include="graph\vertex.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\source_vertex.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\vst_vertex.h">
-      <Filter>graph</Filter>
-    </ClInclude>
-    <ClInclude Include="graph\core.h">
-      <Filter>graph</Filter>
-    </ClInclude>
     <ClInclude Include="pervasives\pervasives.h">
       <Filter>pervasives</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\constants.h">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\core.h">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\source_vertex.h">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\vertex.h">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\vst_vertex.h">
+      <Filter>mixgraph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -296,14 +296,14 @@
     <None Include="VTune\mptrack.vpj" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="graph">
-      <UniqueIdentifier>{3339e9b4-f7e6-4584-9585-d530a2b17205}</UniqueIdentifier>
-    </Filter>
     <Filter Include="mixer">
       <UniqueIdentifier>{01bb63ce-b410-4179-a96b-dede1a6cdc8a}</UniqueIdentifier>
     </Filter>
     <Filter Include="pervasives">
       <UniqueIdentifier>{aa00e032-7a0f-42a7-9d75-e1efd2a8efa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mixgraph">
+      <UniqueIdentifier>{3339e9b4-f7e6-4584-9585-d530a2b17205}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

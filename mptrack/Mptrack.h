@@ -372,7 +372,7 @@ void DrawButtonRect(HDC hdc, LPRECT lpRect, LPCSTR lpszText=NULL, BOOL bDisabled
 
 // Misc functions
 class CVstPlugin;
-void Log(LPCSTR* fmt, ...);
+void Log(LPCSTR fmt, ...);
 UINT MsgBox(UINT nStringID, CWnd *p=NULL, LPCSTR lpszTitle=NULL, UINT n=MB_OK);
 void ErrorBox(UINT nStringID, CWnd*p=NULL);
 

@@ -26,27 +26,57 @@ DAMAGE.
 
 #pragma once
 
-#include "graph/constants.h"
+#include <string>
+#include <vector>
+#include <cstdio>
 
-#define VST_FORCE_DEPRECATED 0
-#include <aeffectx.h>
-#include <vstfxstore.h>
-
-class CVstPlugin;
+#include "../pervasives/pervasives.h"
+#include "./constants.h"
+#include "../mixer/constants.h"
 
 namespace modplug {
 namespace graph {
 
+class arrow;
 
-class vertex;
-
-class vst_vertex : public vertex {
+class vertex {
 public:
-    vst_vertex(id_t, CVstPlugin *);
-    ~vst_vertex();
+    vertex() : id(ID_INVALID) { };
+    vertex(id_t, std::string);
+    virtual ~vertex();
 
-private:
-    CVstPlugin *_vst;
+    const id_t id;
+
+    sample_t channels[MAX_NODE_CHANNELS][modplug::mixer::MIX_BUFFER_SIZE + 2];
+
+    int ghetto_channels[modplug::mixer::MIX_BUFFER_SIZE * 2 + 2];
+    long ghetto_vol_decay_l;
+    long ghetto_vol_decay_r;
+
+    std::vector<arrow *> _input_arrows;
+    std::vector<arrow *> _output_arrows;
+
+    size_t _input_channels;
+    size_t _output_channels;
+
+    std::string name;
+};
+
+class arrow {
+public:
+    arrow() : id(ID_INVALID), head(nullptr), tail(nullptr), head_channel(0), tail_channel(0) { }
+    arrow(id_t, vertex *, size_t, vertex *, size_t);
+
+    vertex *const head;
+    const size_t head_channel;
+
+    vertex *const tail;
+    const size_t tail_channel;
+
+    const id_t id;
+
+    size_t _head_idx;
+    size_t _tail_idx;
 };
 
 

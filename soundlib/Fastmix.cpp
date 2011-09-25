@@ -1603,7 +1603,8 @@ UINT CSoundFile::CreateStereoMix(int count)
         if (pChannel->dwFlags & CHN_NOREVERB) pbuffer = MixSoundBuffer;
 
         JUICY_FRUITS = pbuffer;
-        //pbuffer = _graph.channel_vertices[channel_i_care_about]->ghetto_channels;
+        //XXXih: JUICY FRUITS
+        pbuffer = _graph.channel_vertices[channel_i_care_about]->ghetto_channels;
 
     #ifdef ENABLE_MMX
         if ((pChannel->dwFlags & CHN_REVERB) && (gdwSysInfo & SYSMIX_ENABLEMMX))

@@ -190,10 +190,10 @@
     <ClCompile Include="..\soundlib\Fastmix.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
-    <ClCompile Include="graph\core.cpp" />
-    <ClCompile Include="graph\vertex.cpp" />
-    <ClCompile Include="graph\source_vertex.cpp" />
-    <ClCompile Include="graph\vst_vertex.cpp" />
+    <ClCompile Include="mixgraph\core.cpp" />
+    <ClCompile Include="mixgraph\vertex.cpp" />
+    <ClCompile Include="mixgraph\source_vertex.cpp" />
+    <ClCompile Include="mixgraph\vst_vertex.cpp" />
     <ClCompile Include="HyperEdit.cpp" />
     <ClCompile Include="HyperEdit2.cpp" />
     <ClCompile Include="HyperEdit3.cpp" />
@@ -311,12 +311,12 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="graph\source_vertex.h" />
+    <ClInclude Include="mixgraph\source_vertex.h" />
     <ClInclude Include="mixer\constants.h" />
-    <ClInclude Include="graph\constants.h" />
-    <ClInclude Include="graph\core.h" />
-    <ClInclude Include="graph\vertex.h" />
-    <ClInclude Include="graph\vst_vertex.h" />
+    <ClInclude Include="mixgraph\constants.h" />
+    <ClInclude Include="mixgraph\core.h" />
+    <ClInclude Include="mixgraph\vertex.h" />
+    <ClInclude Include="mixgraph\vst_vertex.h" />
     <ClInclude Include="mixer\mixutil.h" />
     <ClInclude Include="PatternRandomizer.h" />
     <ClInclude Include="PatternRandomizerGUI.h" />

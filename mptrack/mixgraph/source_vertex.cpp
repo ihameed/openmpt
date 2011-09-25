@@ -27,17 +27,20 @@ DAMAGE.
 #include "Stdafx.h"
 
 #include "source_vertex.h"
+#include "../pervasives/pervasives.h"
+
+using namespace modplug::pervasives;
 
 namespace modplug {
 namespace graph {
 
 
 source_vertex::source_vertex(id_t id, std::string name) : vertex(id, name) {
-    Log("source_vertex::source_vertex()");
+    //debug_log("source_vertex::source_vertex()");
 }
 
 source_vertex::~source_vertex() {
-    Log("source_vertex::~source_vertex()");
+    //debug_log("source_vertex::~source_vertex()");
 }
 
 
