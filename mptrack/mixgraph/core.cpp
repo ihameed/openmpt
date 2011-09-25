@@ -40,7 +40,7 @@ DAMAGE.
 using namespace modplug::pervasives;
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 
@@ -105,15 +105,15 @@ bool id_map_del(std::map<id_t, Has_Id> &map, const id_t key) {
 core::core() : _largest_id(1) {
     debug_log("created core");
 
-    _master_sink = new modplug::graph::vertex(1, std::string("audio out"));
+    _master_sink = new modplug::mixgraph::vertex(1, std::string("audio out"));
     _master_sink->_input_channels = 2;
     id_map_put(_vertices, 1, _master_sink);
 
-    for (size_t idx = 0; idx < modplug::graph::MAX_CHANNELS; ++idx) {
+    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
         char my_nuts[256];
         sprintf(my_nuts, "channel %d", idx);
 
-        modplug::graph::vertex *jenkmaster = new source_vertex(new_id(), std::string(my_nuts));
+        modplug::mixgraph::vertex *jenkmaster = new source_vertex(new_id(), std::string(my_nuts));
         id_map_put(_vertices, jenkmaster->id, jenkmaster);
         channel_vertices[idx] = jenkmaster;
 
@@ -126,8 +126,8 @@ core::core() : _largest_id(1) {
 
 core::~core() {
     //the power of sepples
-    std::for_each(_vertices.begin(), _vertices.end(), [](std::pair<id_t, modplug::graph::vertex *> item) { delete item.second; });
-    for (size_t idx = 0; idx < modplug::graph::MAX_CHANNELS; ++idx) {
+    std::for_each(_vertices.begin(), _vertices.end(), [](std::pair<id_t, modplug::mixgraph::vertex *> item) { delete item.second; });
+    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
         channel_vertices[idx] = nullptr;
     }
 
@@ -214,8 +214,8 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
     memset(_master_sink->channels[0], 0, sizeof(sample_t) * num_samples);
     memset(_master_sink->channels[1], 0, sizeof(sample_t) * num_samples);
 
-    for (size_t idx = 0; idx < graph::MAX_CHANNELS; ++idx) {
-        modplug::graph::vertex *channel = channel_vertices[idx];
+    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
+        modplug::mixgraph::vertex *channel = channel_vertices[idx];
         modplug::mixer::stereo_mix_to_float(
             channel->ghetto_channels,
             channel->channels[0],
@@ -237,8 +237,8 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
 }
 
 void core::pre_process(const size_t num_samples) {
-    for (size_t idx = 0; idx < graph::MAX_CHANNELS; ++idx) {
-        modplug::graph::vertex *channel = channel_vertices[idx];
+    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
+        modplug::mixgraph::vertex *channel = channel_vertices[idx];
         modplug::mixer::stereo_fill(channel->ghetto_channels, num_samples, &channel->ghetto_vol_decay_l, &channel->ghetto_vol_decay_r);
     }
 }

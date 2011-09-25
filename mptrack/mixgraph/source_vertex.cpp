@@ -32,7 +32,7 @@ DAMAGE.
 using namespace modplug::pervasives;
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 source_vertex::source_vertex(id_t id, std::string name) : vertex(id, name) {

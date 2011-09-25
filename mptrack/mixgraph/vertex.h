@@ -35,7 +35,7 @@ DAMAGE.
 #include "../mixer/constants.h"
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 class arrow;
 

@@ -1746,9 +1746,9 @@ UINT CSoundFile::CreateStereoMix(int count)
 
         //XXXih: the worst
         /*
-        modplug::graph::vertex *channel_vertex  = _graph.channel_vertices[channel_i_care_about];
-        modplug::graph::sample_t *left_channel  = channel_vertex->channels[0];
-        modplug::graph::sample_t *right_channel = channel_vertex->channels[1];
+        modplug::mixgraph::vertex *channel_vertex  = _graph.channel_vertices[channel_i_care_about];
+        modplug::mixgraph::sample_t *left_channel  = channel_vertex->channels[0];
+        modplug::mixgraph::sample_t *right_channel = channel_vertex->channels[1];
         modplug::mixer::stereo_mix_to_sample_t(pbuffer, left_channel, right_channel, modplug::mixer::MIX_BUFFER_SIZE, m_pConfig->getIntToFloat());
         */
     }

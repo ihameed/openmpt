@@ -30,7 +30,7 @@ DAMAGE.
 #include "../mptrack.h"
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 vertex::vertex(id_t id, std::string name = "anon") : id(id), name(name) {

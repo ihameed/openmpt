@@ -30,11 +30,11 @@ DAMAGE.
 #include <map>
 #include <utility>
 
-#include "constants.h"
+#include "./constants.h"
 #include "vertex.h"
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 typedef std::map<id_t, vertex *> vertex_map_t;
@@ -65,10 +65,10 @@ public:
     id_t new_id();
     id_t _largest_id;
     
-    modplug::graph::vertex *channel_vertices[MAX_CHANNELS];
+    modplug::mixgraph::vertex *channel_vertices[MAX_CHANNELS];
     vertex_map_t _vertices;
     arrow_map_t  _arrows;
-    modplug::graph::vertex *_master_sink;
+    modplug::mixgraph::vertex *_master_sink;
 };
 
 

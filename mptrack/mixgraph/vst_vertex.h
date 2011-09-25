@@ -35,7 +35,7 @@ DAMAGE.
 class CVstPlugin;
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 class vertex;

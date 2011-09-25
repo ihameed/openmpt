@@ -35,7 +35,7 @@ DAMAGE.
 using namespace modplug::pervasives;
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 vst_vertex::vst_vertex(id_t id, CVstPlugin *vst) : vertex(id, "emptyvst") {
     _vst = vst;

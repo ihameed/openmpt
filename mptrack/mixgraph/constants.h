@@ -30,7 +30,7 @@ DAMAGE.
 #include "../../soundlib/Snd_defs.h"
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 typedef unsigned int id_t;

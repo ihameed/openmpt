@@ -1086,7 +1086,7 @@ public:
 
 public:
     //XXXih:   <:(
-    modplug::graph::core _graph;
+    modplug::mixgraph::core _graph;
 };
 
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())

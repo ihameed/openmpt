@@ -31,7 +31,7 @@ DAMAGE.
 
 
 namespace modplug {
-namespace graph {
+namespace mixgraph {
 
 
 class vertex;
