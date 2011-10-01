@@ -144,6 +144,7 @@
     <ClCompile Include="mixgraph\vst_vertex.cpp">
       <Filter>mixgraph</Filter>
     </ClCompile>
+    <ClCompile Include="mixgraph\mixer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PatternRandomizer.h" />

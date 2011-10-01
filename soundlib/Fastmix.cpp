@@ -14,6 +14,7 @@
 #endif
 
 #include "mixgraph/constants.h"
+#include "mixgraph/mixer.h"
 #include "mixer/mixutil.h"
 
 // rewbs.resamplerConf
@@ -492,6 +493,8 @@ extern void SSE_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const 
 /////////////////////////////////////////////////////
 // Mono samples functions
 
+//XXXih: disabled legacy garbage
+/*
 BEGIN_MIX_INTERFACE(Mono8BitMix)
     SNDMIX_BEGINSAMPLELOOP8
     SNDMIX_GETMONOVOL8NOIDO
@@ -1199,10 +1202,13 @@ BEGIN_RAMPMIX_STFLT_INTERFACE(FilterStereo16BitFIRFilterRampMix)
     SNDMIX_PROCESSSTEREOFILTER
     SNDMIX_RAMPSTEREOVOL
 END_RAMPMIX_STFLT_INTERFACE()
+*/
 
 // end rewbs.resamplerConf
 // -! BEHAVIOUR_CHANGE#0025
 
+//XXXih: disabled legacy garbage
+/*
 #else
 // Mono
 #define FilterMono8BitMix				Mono8BitMix
@@ -1250,6 +1256,7 @@ END_RAMPMIX_STFLT_INTERFACE()
 #define FilterStereo16BitFIRFilterRampMix	Stereo16BitFIRFilterRampMix
 // -! BEHAVIOUR_CHANGE#0025
 #endif
+*/
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1273,7 +1280,8 @@ END_RAMPMIX_STFLT_INTERFACE()
 #define MIXNDX_KAISERSRC	0x30
 #define MIXNDX_FIRFILTERSRC	0x40 // rewbs.resamplerConf
 
-
+//XXXih: disabled legacy garbage
+/*
 //const LPMIXINTERFACE gpMixFunctionTable[4*16] =
 const LPMIXINTERFACE gpMixFunctionTable[5*16] =    //rewbs.resamplerConf: increased to 5 to cope with FIR
 {
@@ -1326,8 +1334,6 @@ const LPMIXINTERFACE gpMixFunctionTable[5*16] =    //rewbs.resamplerConf: increa
     FilterMono8BitFIRFilterRampMix,FilterMono16BitFIRFilterRampMix,FilterStereo8BitFIRFilterRampMix,FilterStereo16BitFIRFilterRampMix,
 
 // -! BEHAVIOUR_CHANGE#0025
-
-
 };
 
 const LPMIXINTERFACE gpFastMixFunctionTable[2*16] =
@@ -1345,6 +1351,7 @@ const LPMIXINTERFACE gpFastMixFunctionTable[2*16] =
     FilterMono8BitLinearMix,	FilterMono16BitLinearMix,	FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
     FilterMono8BitLinearRampMix,FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
 };
+*/
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -1497,6 +1504,9 @@ UINT CSoundFile::CreateStereoMix(int count)
         int *JUICY_FRUITS;
 
         size_t channel_i_care_about = pChannel->nMasterChn ? (pChannel->nMasterChn - 1) : (ChnMix[nChn]);
+        auto herp = _graph.channel_vertices[channel_i_care_about];
+        auto herp_left = herp->channels[0];
+        auto herp_right = herp->channels[1];
 
         if (!pChannel->pCurrentSample) continue;
         nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
@@ -1511,6 +1521,8 @@ UINT CSoundFile::CreateStereoMix(int count)
         //rewbs.resamplerConf
         nFlags |= GetResamplingFlag(pChannel);
         //end rewbs.resamplerConf
+        //XXXih: disabled legacy garbage
+        /*
         if ((nFlags < 0x20) && (pChannel->nLeftVol == pChannel->nRightVol)
          && ((!pChannel->nRampLength) || (pChannel->nLeftRamp == pChannel->nRightRamp)))
         {
@@ -1519,6 +1531,7 @@ UINT CSoundFile::CreateStereoMix(int count)
         {
             pMixFuncTable = gpMixFunctionTable;
         }
+        */
         nsamples = count;
     #ifndef NO_REVERB
         pbuffer = (gdwSoundSetup & SNDMIX_REVERB) ? MixReverbBuffer : MixSoundBuffer;
@@ -1601,7 +1614,7 @@ UINT CSoundFile::CreateStereoMix(int count)
             pChannel->nRampLength = 0;
 
             //modplug::mixer::end_channel_ofs(pChannel, JUICY_FRUITS, nsamples);
-            modplug::mixer::end_channel_ofs(pChannel, pbuffer, nsamples);
+            //modplug::mixer::end_channel_ofs(pChannel, pbuffer, nsamples);
 
             *pOfsR += pChannel->nROfs;
             *pOfsL += pChannel->nLOfs;
@@ -1621,30 +1634,38 @@ UINT CSoundFile::CreateStereoMix(int count)
             pChannel->nPos += (delta >> 16);
             pChannel->nROfs = pChannel->nLOfs = 0;
 
-            JUICY_FRUITS += nSmpCount*2;
-            pbuffer += nSmpCount*2;
+            //JUICY_FRUITS += nSmpCount*2;
+            //pbuffer += nSmpCount*2;
+            herp_left += nSmpCount;
+            herp_right += nSmpCount;
             naddmix = 0;
         } else
         // Do mixing
         {
             // Choose function for mixing
             LPMIXINTERFACE pMixFunc;
-            pMixFunc = (pChannel->nRampLength) ? pMixFuncTable[nFlags|MIXNDX_RAMP] : pMixFuncTable[nFlags];
+            //XXXih: disabled legacy garbage
+            //pMixFunc = (pChannel->nRampLength) ? pMixFuncTable[nFlags|MIXNDX_RAMP] : pMixFuncTable[nFlags];
 
             int *pbufmax = pbuffer + (nSmpCount*2);
+            int maxlen = nSmpCount;
             int *MAXXXIMUM_JUICY_FRUITS = JUICY_FRUITS + (nSmpCount*2);
 
             pChannel->nROfs = - *(pbufmax-2);
             pChannel->nLOfs = - *(pbufmax-1);
 
             //pMixFunc(pChannel, JUICY_FRUITS, MAXXXIMUM_JUICY_FRUITS); //XXXih: homie homie look   homie look here homie
-            pMixFunc(pChannel, pbuffer, pbufmax); //XXXih: homie homie look   homie look here homie
+            modplug::mixgraph::resample_and_mix(herp_left, herp_right, pChannel, maxlen);
+            //pMixFunc(pChannel, pbuffer, pbufmax); //XXXih: homie homie look   homie look here homie
 
             pChannel->nROfs += *(pbufmax-2);
             pChannel->nLOfs += *(pbufmax-1);
 
             JUICY_FRUITS = MAXXXIMUM_JUICY_FRUITS;
-            pbuffer = pbufmax;
+
+            herp_left += maxlen;
+            herp_right += maxlen;
+            //pbuffer = pbufmax;
 
             naddmix = 1;
         }

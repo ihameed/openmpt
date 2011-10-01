@@ -211,6 +211,7 @@ rneg:
 BOOL CSoundFile::InitPlayer(BOOL bReset)
 //--------------------------------------
 {
+    Log("CSoundFile::InitPlayer!!!");
 #ifndef FASTSOUNDLIB
     if (!gbInitTables)
     {

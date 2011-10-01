@@ -127,15 +127,15 @@ void CSoundFile::SetupChannelFilter(modplug::mixer::MODCHANNEL *pChn, bool bRese
 	switch(pChn->nFilterMode)
 	{
 	case FLTMODE_HIGHPASS:
-		pChn->nFilter_A0 = (int)((1.0f-fg) * FILTER_PRECISION);
-		pChn->nFilter_B0 = (int)(fb0 * FILTER_PRECISION);
-		pChn->nFilter_B1 = (int)(fb1 * FILTER_PRECISION);
-		pChn->nFilter_HP = -1;
+		pChn->nFilter_A0 = 1.0f - fg;
+		pChn->nFilter_B0 = fb0;
+		pChn->nFilter_B1 = fb1;
+		pChn->nFilter_HP = 1;
 		break;
 	default:
-		pChn->nFilter_A0 = (int)(fg * FILTER_PRECISION);
-		pChn->nFilter_B0 = (int)(fb0 * FILTER_PRECISION);
-		pChn->nFilter_B1 = (int)(fb1 * FILTER_PRECISION);
+		pChn->nFilter_A0 = fg;
+		pChn->nFilter_B0 = fb0;
+		pChn->nFilter_B1 = fb1;
 		pChn->nFilter_HP = 0;
 	}
 	

@@ -212,17 +212,6 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
     memset(_master_sink->channels[0], 0, sizeof(sample_t) * num_samples);
     memset(_master_sink->channels[1], 0, sizeof(sample_t) * num_samples);
 
-    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
-        modplug::mixgraph::vertex *channel = channel_vertices[idx];
-        modplug::mixer::stereo_mix_to_float(
-            channel->ghetto_channels,
-            channel->channels[0],
-            channel->channels[1],
-            modplug::mixgraph::MIX_BUFFER_SIZE,
-            int_to_float_scale
-        );
-    }
-
     sample_t *left  = _master_sink->channels[0];
     sample_t *right = _master_sink->channels[1];
 
@@ -230,7 +219,7 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
     __process(_master_sink, num_samples);
     //debug_log("process master vs child (left %f, right %f), (left %f, right %f)", left[0], right[0], channel_vertices[0]->channels[0][0], channel_vertices[0]->channels[0][1]);
 
-    modplug::mixer::float_to_stereo_mix(left, right, destbuf, num_samples, float_to_int_scale);
+    modplug::mixer::float_to_stereo_mix(right, left, destbuf, num_samples, float_to_int_scale);
     //modplug::mixer::float_to_stereo_mix(channel_vertices[0]->channels[0], channel_vertices[0]->channels[1], samples, num_samples, float_to_int_scale);
 }
 
@@ -238,6 +227,8 @@ void core::pre_process(const size_t num_samples) {
     for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
         modplug::mixgraph::vertex *channel = channel_vertices[idx];
         modplug::mixer::stereo_fill(channel->ghetto_channels, num_samples, &channel->ghetto_vol_decay_l, &channel->ghetto_vol_decay_r);
+        memset(channel->channels[0], 0, sizeof(sample_t) * num_samples);
+        memset(channel->channels[1], 0, sizeof(sample_t) * num_samples);
     }
 }
 

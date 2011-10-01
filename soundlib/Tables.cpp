@@ -16,6 +16,7 @@
 #include "sndfile.h"
 
 // rewbs.resamplerConf
+#include "../mptrack/mixgraph/mixer.h"
 #include "../mptrack/mptrack.h"
 #include "../mptrack/MainFrm.h"
 #include "WindowedFIR.h"
@@ -656,6 +657,7 @@ static void getdownsample2x(short int *psinc)
 
 VOID SndMixInitializeTables()
 {
+    modplug::mixgraph::init_tables();
 	CWindowedFIR::InitTable();
 	getsinc(gKaiserSinc, 9.6377, CMainFrame::gdWFIRCutoff);
  	//ericus' downsampling improvement.

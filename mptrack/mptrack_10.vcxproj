@@ -197,6 +197,7 @@
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="mixgraph\core.cpp" />
+    <ClCompile Include="mixgraph\mixer.cpp" />
     <ClCompile Include="mixgraph\vertex.cpp" />
     <ClCompile Include="mixgraph\source_vertex.cpp" />
     <ClCompile Include="mixgraph\vst_vertex.cpp" />

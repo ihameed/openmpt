@@ -49,6 +49,8 @@ struct MODSAMPLE
 };
 
 
+
+
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
 
@@ -167,8 +169,11 @@ typedef struct __declspec(align(32)) _MODCHANNEL
     uint32_t nLoopEnd;
     int32_t nRampRightVol;
     int32_t nRampLeftVol;
-    int32_t nFilter_Y1, nFilter_Y2, nFilter_Y3, nFilter_Y4;
-    int32_t nFilter_A0, nFilter_B0, nFilter_B1, nFilter_HP;
+
+    float nFilter_Y1, nFilter_Y2, nFilter_Y3, nFilter_Y4;
+    float nFilter_A0, nFilter_B0, nFilter_B1;
+    uint8_t nFilter_HP;
+
     int32_t nROfs, nLOfs;
     int32_t nRampLength;
     // Information not used in the mixer
