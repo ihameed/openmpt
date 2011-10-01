@@ -124,7 +124,7 @@ inline void hurfa(sample_t *left, sample_t *right, modplug::mixer::MODCHANNEL *s
 
         if (source->dwFlags & CHN_FILTER) apply_filter(left_smp, right_smp, source, filterstate);
 
-        *left  += static_cast<double>(source->nLeftVol) / 4096.0 * left_smp;
+        *left  += static_cast<double>(source->nLeftVol)  / 4096.0 * left_smp;
         *right += static_cast<double>(source->nRightVol) / 4096.0 * right_smp;
         ++left;
         ++right;
