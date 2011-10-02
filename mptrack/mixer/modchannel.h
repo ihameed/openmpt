@@ -154,7 +154,7 @@ typedef struct __declspec(align(32)) _MODCHANNEL
 {
     // First 32-bytes: Most used mixing information: don't change it
     // These fields are accessed directly by the MMX mixing code (look out for CHNOFS_PCURRENTSAMPLE), so the order is crucial
-    char *pCurrentSample;		
+    char *pCurrentSample;
     uint32_t nPos;
     uint32_t nPosLo;	// actually 16-bit
     int32_t nInc;		// 16.16
@@ -171,8 +171,7 @@ typedef struct __declspec(align(32)) _MODCHANNEL
     int32_t nRampLeftVol;
 
     float nFilter_Y1, nFilter_Y2, nFilter_Y3, nFilter_Y4;
-    float nFilter_A0, nFilter_B0, nFilter_B1;
-    uint8_t nFilter_HP;
+    float nFilter_A0, nFilter_B0, nFilter_B1, nFilter_HP;
 
     int32_t nROfs, nLOfs;
     int32_t nRampLength;

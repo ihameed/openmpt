@@ -27,10 +27,14 @@ DAMAGE.
 #pragma once
 
 #include <cstdarg>
+#include <cstdint>
 
 namespace modplug {
 namespace pervasives {
 
+typedef int32_t int24_t;
+#define INT24_MAX (2^23 - 1);
+#define INT24_MIN (-2^23);
 
 void vdebug_log(const char *, va_list);
 void debug_log(const char *, ...); 
