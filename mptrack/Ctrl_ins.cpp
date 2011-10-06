@@ -1220,7 +1220,7 @@ void CCtrlInstruments::UpdateView(DWORD dwHintMask, CObject *pObj)
 			memcpy(s, pIns->name, 32);
 			s[32] = 0;
 			m_EditName.SetWindowText(s);
-			memcpy(s, pIns->filename, 12);
+			memcpy(s, pIns->legacy_filename, 12);
 			s[12] = 0;
 			m_EditFileName.SetWindowText(s);
 			// Fade Out Volume
@@ -1444,12 +1444,12 @@ OpenError:
 				memset(pIns->name, 0, 32);
 				strcpy(pIns->name, szName);
 			}
-			if (!pIns->filename[0])
+			if (!pIns->legacy_filename[0])
 			{
 				strcat(szName, szExt);
 				szName[11] = 0;
-				strcpy(pIns->filename, szName);
-				pIns->filename[11] = 0;
+				strcpy(pIns->legacy_filename, szName);
+				pIns->legacy_filename[11] = 0;
 			}
 			SetCurrentInstrument(m_nInstrument);
 			if (m_pModDoc)
@@ -1710,9 +1710,9 @@ void CCtrlInstruments::OnInstrumentSave()
 	modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
 	
 	if (!pIns) return;
-	if (pIns->filename[0])
+	if (pIns->legacy_filename[0])
 	{
-		strncpy(szFileName, pIns->filename, min(CountOf(pIns->filename), CountOf(szFileName) - 1));
+		strncpy(szFileName, pIns->legacy_filename, min(CountOf(pIns->legacy_filename), CountOf(szFileName) - 1));
 	} else
 	{
 		strncpy(szFileName, pIns->name, min(CountOf(pIns->name), CountOf(szFileName) - 1));
@@ -1810,9 +1810,9 @@ void CCtrlInstruments::OnFileNameChanged()
 		m_EditFileName.GetWindowText(s, sizeof(s));
 		for (UINT i=strlen(s); i<=12; i++) s[i] = 0;
 		modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
-		if ((pIns) && (strncmp(s, pIns->filename, 12)))
+		if ((pIns) && (strncmp(s, pIns->legacy_filename, 12)))
 		{
-			memcpy(pIns->filename, s, 12);
+			memcpy(pIns->legacy_filename, s, 12);
 			SetInstrumentModified(true);
 		}
 	}

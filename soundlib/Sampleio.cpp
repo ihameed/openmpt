@@ -1796,7 +1796,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     memset(smptable, 0, sizeof(smptable));
     memset(smpmap, 0, sizeof(smpmap));
     iti->id = LittleEndian(IT_IMPI);	// "IMPI"
-    memcpy(iti->filename, pIns->filename, 12);
+    memcpy(iti->filename, pIns->legacy_filename, 12);
     memcpy(iti->name, pIns->name, 26);
     SetNullTerminator(iti->name);
     iti->mpr = pIns->midi_program;

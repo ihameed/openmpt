@@ -108,7 +108,7 @@ struct modinstrument_t {
     unsigned char pitch_pan_center;
 
     char name[32];		// Note: not guaranteed to be null-terminated.
-    char filename[32];
+    char legacy_filename[32];
 
     PLUGINDEX nMixPlug;				// Plugin assigned to this instrument
 

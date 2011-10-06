@@ -310,9 +310,9 @@ long CSoundFile::ITInstrToMPT(const void *p, modinstrument_t *pIns, UINT trkvers
     {
         const ITOLDINSTRUMENT *pis = (const ITOLDINSTRUMENT *)p;
         memcpy(pIns->name, pis->name, 26);
-        memcpy(pIns->filename, pis->filename, 12);
+        memcpy(pIns->legacy_filename, pis->filename, 12);
         SpaceToNullStringFixed<26>(pIns->name);
-        SpaceToNullStringFixed<12>(pIns->filename);
+        SpaceToNullStringFixed<12>(pIns->legacy_filename);
         pIns->fadeout = pis->fadeout << 6;
         pIns->global_volume = 64;
         for (UINT j = 0; j < 120; j++)
@@ -352,9 +352,9 @@ long CSoundFile::ITInstrToMPT(const void *p, modinstrument_t *pIns, UINT trkvers
     {
         const ITINSTRUMENT *pis = (const ITINSTRUMENT *)p;
         memcpy(pIns->name, pis->name, 26);
-        memcpy(pIns->filename, pis->filename, 12);
+        memcpy(pIns->legacy_filename, pis->filename, 12);
         SpaceToNullStringFixed<26>(pIns->name);
-        SpaceToNullStringFixed<12>(pIns->filename);
+        SpaceToNullStringFixed<12>(pIns->legacy_filename);
         if (pis->mpr<=128)
             pIns->midi_program = pis->mpr;
         pIns->midi_channel = pis->mch;
@@ -1561,7 +1561,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         if (Instruments[nins])
         {
             modinstrument_t *pIns = Instruments[nins];
-            memcpy(iti.filename, pIns->filename, 12);
+            memcpy(iti.filename, pIns->legacy_filename, 12);
             memcpy(iti.name, pIns->name, 26);
             iti.mbank = pIns->midi_bank;
             iti.mpr = pIns->midi_program;
@@ -2163,7 +2163,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
         if (Instruments[nins])
         {
             modinstrument_t *pIns = Instruments[nins];
-            memcpy(iti.filename, pIns->filename, 12);
+            memcpy(iti.filename, pIns->legacy_filename, 12);
             memcpy(iti.name, pIns->name, 26);
             SetNullTerminator(iti.name);
             iti.mbank = pIns->midi_bank;

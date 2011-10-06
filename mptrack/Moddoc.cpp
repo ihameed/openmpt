@@ -326,7 +326,7 @@ BOOL CModDoc::OnOpenDocument(LPCTSTR lpszPathName)
                             _splitpath(pszMidiMapName, NULL, NULL, szName, szExt);
                             strncat(szName, szExt, sizeof(szName));
                             pIns = m_SndFile.Instruments[nIns];
-                            if (!pIns->filename[0]) lstrcpyn(pIns->filename, szName, sizeof(pIns->filename));
+                            if (!pIns->legacy_filename[0]) lstrcpyn(pIns->legacy_filename, szName, sizeof(pIns->legacy_filename));
                             if (!pIns->name[0])
                             {
                                 if (nMidiCode < 128)
@@ -3880,7 +3880,7 @@ void CModDoc::FixNullStrings()
         if(m_SndFile.Instruments[nIns] != nullptr)
         {		
             FixNullString(m_SndFile.Instruments[nIns]->name);
-            FixNullString(m_SndFile.Instruments[nIns]->filename);
+            FixNullString(m_SndFile.Instruments[nIns]->legacy_filename);
         }
     }
 

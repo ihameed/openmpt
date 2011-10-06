@@ -42,7 +42,7 @@ bool _wao_write_envelope(Json::Value &out, const modplug::tracker::modenvelope_t
 
 bool _wao_write_instrument(Json::Value &out, const modplug::tracker::modinstrument_t &instrument) {
     out["name"]            = std::string(instrument.name,     32);
-    out["legacy_filename"] = std::string(instrument.filename, 32);
+    out["legacy_filename"] = std::string(instrument.legacy_filename, 32);
     out["fadeout"]         = instrument.fadeout;
     out["global_volume"]   = instrument.global_volume;
     out["default_pan"]     = instrument.default_pan;
