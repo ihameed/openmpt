@@ -810,7 +810,7 @@ BOOL CTrackApp::InitInstance()
     m_pDocManager = new CModDocManager();
 
 #ifdef _DEBUG
-        ASSERT((sizeof(modplug::mixer::MODCHANNEL)&7) == 0);
+        ASSERT((sizeof(modplug::tracker::modchannel_t)&7) == 0);
     // Disabled by rewbs for smoothVST. Might cause minor perf issues due to increased cache misses?
 #endif
 

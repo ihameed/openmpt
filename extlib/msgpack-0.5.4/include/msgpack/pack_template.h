@@ -40,6 +40,7 @@
 #error msgpack_pack_append_buffer callback is not defined
 #endif
 
+#pragma warning( disable : 4244 )
 
 /*
  * Integer
@@ -745,6 +746,8 @@ msgpack_pack_inline_func(_raw_body)(msgpack_pack_user x, const void* b, size_t l
 {
 	msgpack_pack_append_buffer(x, (const unsigned char*)b, l);
 }
+
+#pragma warning( default : 4244 )
 
 #undef msgpack_pack_inline_func
 #undef msgpack_pack_user

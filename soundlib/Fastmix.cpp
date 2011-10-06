@@ -61,26 +61,26 @@ extern short int gDownsample2x[]; // 2x downsampling
 // Mixing Macros
 
 #define SNDMIX_BEGINSAMPLELOOP8\
-    register modplug::mixer::MODCHANNEL * const pChn = pChannel;\
-    nPos = pChn->nPosLo;\
-    const signed char *p = (signed char *)(pChn->pCurrentSample+pChn->nPos);\
-    if (pChn->dwFlags & CHN_STEREO) p += pChn->nPos;\
+    register modplug::tracker::modchannel_t * const pChn = pChannel;\
+    sample_position = pChn->fractional_sample_position;\
+    const signed char *p = (signed char *)(pChn->active_sample_data+pChn->sample_position);\
+    if (pChn->flags & CHN_STEREO) p += pChn->sample_position;\
     int *pvol = pbuffer;\
     do {
 
 #define SNDMIX_BEGINSAMPLELOOP16\
-    register modplug::mixer::MODCHANNEL * const pChn = pChannel;\
-    nPos = pChn->nPosLo;\
-    const signed short *p = (signed short *)(pChn->pCurrentSample+(pChn->nPos*2));\
-    if (pChn->dwFlags & CHN_STEREO) p += pChn->nPos;\
+    register modplug::tracker::modchannel_t * const pChn = pChannel;\
+    sample_position = pChn->fractional_sample_position;\
+    const signed short *p = (signed short *)(pChn->active_sample_data+(pChn->sample_position*2));\
+    if (pChn->flags & CHN_STEREO) p += pChn->sample_position;\
     int *pvol = pbuffer;\
     do {
 
 #define SNDMIX_ENDSAMPLELOOP\
-        nPos += pChn->nInc;\
+        sample_position += pChn->position_delta;\
     } while (pvol < pbufmax);\
-    pChn->nPos += nPos >> 16;\
-    pChn->nPosLo = nPos & 0xFFFF;
+    pChn->sample_position += sample_position >> 16;\
+    pChn->fractional_sample_position = sample_position & 0xFFFF;
 
 #define SNDMIX_ENDSAMPLELOOP8	SNDMIX_ENDSAMPLELOOP
 #define SNDMIX_ENDSAMPLELOOP16	SNDMIX_ENDSAMPLELOOP
@@ -91,59 +91,59 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 
 // No interpolation
 #define SNDMIX_GETMONOVOL8NOIDO\
-    int vol = p[nPos >> 16] << 8;
+    int vol = p[sample_position >> 16] << 8;
 
 #define SNDMIX_GETMONOVOL16NOIDO\
-    int vol = p[nPos >> 16];
+    int vol = p[sample_position >> 16];
 
 // Linear Interpolation
 #define SNDMIX_GETMONOVOL8LINEAR\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 8) & 0xFF;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 8) & 0xFF;\
     int srcvol = p[poshi];\
     int destvol = p[poshi+1];\
     int vol = (srcvol<<8) + ((int)(poslo * (destvol - srcvol)));
 
 #define SNDMIX_GETMONOVOL16LINEAR\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 8) & 0xFF;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 8) & 0xFF;\
     int srcvol = p[poshi];\
     int destvol = p[poshi+1];\
     int vol = srcvol + ((int)(poslo * (destvol - srcvol)) >> 8);
 
 // Cubic Spline
 #define SNDMIX_GETMONOVOL8HQSRC\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 6) & 0x3FC;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 6) & 0x3FC;\
     int vol = (gFastSinc[poslo]*p[poshi-1] + gFastSinc[poslo+1]*p[poshi]\
          + gFastSinc[poslo+2]*p[poshi+1] + gFastSinc[poslo+3]*p[poshi+2]) >> 6;\
 
 #define SNDMIX_GETMONOVOL16HQSRC\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 6) & 0x3FC;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 6) & 0x3FC;\
     int vol = (gFastSinc[poslo]*p[poshi-1] + gFastSinc[poslo+1]*p[poshi]\
          + gFastSinc[poslo+2]*p[poshi+1] + gFastSinc[poslo+3]*p[poshi+2]) >> 14;\
 
 // 8-taps polyphase
 #define SNDMIX_GETMONOVOL8KAISER\
-    int poshi = nPos >> 16;\
-    const short int *poslo = (const short int *)(sinc+(nPos&0xfff0));\
+    int poshi = sample_position >> 16;\
+    const short int *poslo = (const short int *)(sinc+(sample_position&0xfff0));\
     int vol = (poslo[0]*p[poshi-3] + poslo[1]*p[poshi-2]\
          + poslo[2]*p[poshi-1] + poslo[3]*p[poshi]\
          + poslo[4]*p[poshi+1] + poslo[5]*p[poshi+2]\
          + poslo[6]*p[poshi+3] + poslo[7]*p[poshi+4]) >> 6;\
 
 #define SNDMIX_GETMONOVOL16KAISER\
-    int poshi = nPos >> 16;\
-    const short int *poslo = (const short int *)(sinc+(nPos&0xfff0));\
+    int poshi = sample_position >> 16;\
+    const short int *poslo = (const short int *)(sinc+(sample_position&0xfff0));\
     int vol = (poslo[0]*p[poshi-3] + poslo[1]*p[poshi-2]\
          + poslo[2]*p[poshi-1] + poslo[3]*p[poshi]\
          + poslo[4]*p[poshi+1] + poslo[5]*p[poshi+2]\
          + poslo[6]*p[poshi+3] + poslo[7]*p[poshi+4]) >> 14;\
 // rewbs.resamplerConf
 #define SNDMIX_GETMONOVOL8FIRFILTER \
-    int poshi  = nPos >> 16;\
-    int poslo  = (nPos & 0xFFFF);\
+    int poshi  = sample_position >> 16;\
+    int poslo  = (sample_position & 0xFFFF);\
     int firidx = ((poslo+WFIR_FRACHALVE)>>WFIR_FRACSHIFT) & WFIR_FRACMASK; \
     int vol    = (CWindowedFIR::lut[firidx+0]*(int)p[poshi+1-4]);	\
         vol   += (CWindowedFIR::lut[firidx+1]*(int)p[poshi+2-4]);	\
@@ -156,8 +156,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
         vol  >>= WFIR_8SHIFT;
 
 #define SNDMIX_GETMONOVOL16FIRFILTER \
-    int poshi  = nPos >> 16;\
-    int poslo  = (nPos & 0xFFFF);\
+    int poshi  = sample_position >> 16;\
+    int poslo  = (sample_position & 0xFFFF);\
     int firidx = ((poslo+WFIR_FRACHALVE)>>WFIR_FRACSHIFT) & WFIR_FRACMASK; \
     int vol1   = (CWindowedFIR::lut[firidx+0]*(int)p[poshi+1-4]);	\
         vol1  += (CWindowedFIR::lut[firidx+1]*(int)p[poshi+2-4]);	\
@@ -172,33 +172,33 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 
 // end rewbs.resamplerConf
 #define SNDMIX_INITSINCTABLE\
-    const char * const sinc = (const char *)(((pChannel->nInc > 0x13000) || (pChannel->nInc < -0x13000)) ?\
-        (((pChannel->nInc > 0x18000) || (pChannel->nInc < -0x18000)) ? gDownsample2x : gDownsample13x) : gKaiserSinc);
+    const char * const sinc = (const char *)(((pChannel->position_delta > 0x13000) || (pChannel->position_delta < -0x13000)) ?\
+        (((pChannel->position_delta > 0x18000) || (pChannel->position_delta < -0x18000)) ? gDownsample2x : gDownsample13x) : gKaiserSinc);
 
 /////////////////////////////////////////////////////////////////////////////
 // Stereo
 
 // No interpolation
 #define SNDMIX_GETSTEREOVOL8NOIDO\
-    int vol_l = p[(nPos>>16)*2] << 8;\
-    int vol_r = p[(nPos>>16)*2+1] << 8;
+    int vol_l = p[(sample_position>>16)*2] << 8;\
+    int vol_r = p[(sample_position>>16)*2+1] << 8;
 
 #define SNDMIX_GETSTEREOVOL16NOIDO\
-    int vol_l = p[(nPos>>16)*2];\
-    int vol_r = p[(nPos>>16)*2+1];
+    int vol_l = p[(sample_position>>16)*2];\
+    int vol_r = p[(sample_position>>16)*2+1];
 
 // Linear Interpolation
 #define SNDMIX_GETSTEREOVOL8LINEAR\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 8) & 0xFF;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 8) & 0xFF;\
     int srcvol_l = p[poshi*2];\
     int vol_l = (srcvol_l<<8) + ((int)(poslo * (p[poshi*2+2] - srcvol_l)));\
     int srcvol_r = p[poshi*2+1];\
     int vol_r = (srcvol_r<<8) + ((int)(poslo * (p[poshi*2+3] - srcvol_r)));
 
 #define SNDMIX_GETSTEREOVOL16LINEAR\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 8) & 0xFF;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 8) & 0xFF;\
     int srcvol_l = p[poshi*2];\
     int vol_l = srcvol_l + ((int)(poslo * (p[poshi*2+2] - srcvol_l)) >> 8);\
     int srcvol_r = p[poshi*2+1];\
@@ -206,16 +206,16 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 
 // Cubic Spline
 #define SNDMIX_GETSTEREOVOL8HQSRC\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 6) & 0x3FC;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 6) & 0x3FC;\
     int vol_l = (gFastSinc[poslo]*p[poshi*2-2] + gFastSinc[poslo+1]*p[poshi*2]\
          + gFastSinc[poslo+2]*p[poshi*2+2] + gFastSinc[poslo+3]*p[poshi*2+4]) >> 6;\
     int vol_r = (gFastSinc[poslo]*p[poshi*2-1] + gFastSinc[poslo+1]*p[poshi*2+1]\
          + gFastSinc[poslo+2]*p[poshi*2+3] + gFastSinc[poslo+3]*p[poshi*2+5]) >> 6;\
 
 #define SNDMIX_GETSTEREOVOL16HQSRC\
-    int poshi = nPos >> 16;\
-    int poslo = (nPos >> 6) & 0x3FC;\
+    int poshi = sample_position >> 16;\
+    int poslo = (sample_position >> 6) & 0x3FC;\
     int vol_l = (gFastSinc[poslo]*p[poshi*2-2] + gFastSinc[poslo+1]*p[poshi*2]\
          + gFastSinc[poslo+2]*p[poshi*2+2] + gFastSinc[poslo+3]*p[poshi*2+4]) >> 14;\
     int vol_r = (gFastSinc[poslo]*p[poshi*2-1] + gFastSinc[poslo+1]*p[poshi*2+1]\
@@ -225,8 +225,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 // -> DESC="enable polyphase resampling on stereo samples"
 // 8-taps polyphase
 #define SNDMIX_GETSTEREOVOL8KAISER\
-    int poshi = nPos >> 16;\
-    const short int *poslo = (const short int *)(sinc+(nPos&0xfff0));\
+    int poshi = sample_position >> 16;\
+    const short int *poslo = (const short int *)(sinc+(sample_position&0xfff0));\
     int vol_l = (poslo[0]*p[poshi*2-6] + poslo[1]*p[poshi*2-4]\
          + poslo[2]*p[poshi*2-2] + poslo[3]*p[poshi*2]\
          + poslo[4]*p[poshi*2+2] + poslo[5]*p[poshi*2+4]\
@@ -237,8 +237,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
          + poslo[6]*p[poshi*2+7] + poslo[7]*p[poshi*2+9]) >> 6;\
 
 #define SNDMIX_GETSTEREOVOL16KAISER\
-    int poshi = nPos >> 16;\
-    const short int *poslo = (const short int *)(sinc+(nPos&0xfff0));\
+    int poshi = sample_position >> 16;\
+    const short int *poslo = (const short int *)(sinc+(sample_position&0xfff0));\
     int vol_l = (poslo[0]*p[poshi*2-6] + poslo[1]*p[poshi*2-4]\
          + poslo[2]*p[poshi*2-2] + poslo[3]*p[poshi*2]\
          + poslo[4]*p[poshi*2+2] + poslo[5]*p[poshi*2+4]\
@@ -250,8 +250,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 // rewbs.resamplerConf
 // fir interpolation
 #define SNDMIX_GETSTEREOVOL8FIRFILTER \
-    int poshi   = nPos >> 16;\
-    int poslo   = (nPos & 0xFFFF);\
+    int poshi   = sample_position >> 16;\
+    int poslo   = (sample_position & 0xFFFF);\
     int firidx  = ((poslo+WFIR_FRACHALVE)>>WFIR_FRACSHIFT) & WFIR_FRACMASK; \
     int vol_l   = (CWindowedFIR::lut[firidx+0]*(int)p[(poshi+1-4)*2  ]);   \
         vol_l  += (CWindowedFIR::lut[firidx+1]*(int)p[(poshi+2-4)*2  ]);   \
@@ -273,8 +273,8 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
         vol_r >>= WFIR_8SHIFT;
 
 #define SNDMIX_GETSTEREOVOL16FIRFILTER \
-    int poshi   = nPos >> 16;\
-    int poslo   = (nPos & 0xFFFF);\
+    int poshi   = sample_position >> 16;\
+    int poslo   = (sample_position & 0xFFFF);\
     int firidx  = ((poslo+WFIR_FRACHALVE)>>WFIR_FRACSHIFT) & WFIR_FRACMASK; \
     int vol1_l  = (CWindowedFIR::lut[firidx+0]*(int)p[(poshi+1-4)*2  ]);   \
         vol1_l += (CWindowedFIR::lut[firidx+1]*(int)p[(poshi+2-4)*2  ]);   \
@@ -301,38 +301,38 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 /////////////////////////////////////////////////////////////////////////////
 
 #define SNDMIX_STOREMONOVOL\
-    pvol[0] += vol * pChn->nRightVol;\
-    pvol[1] += vol * pChn->nLeftVol;\
+    pvol[0] += vol * pChn->right_volume;\
+    pvol[1] += vol * pChn->left_volume;\
     pvol += 2;
 
 #define SNDMIX_STORESTEREOVOL\
-    pvol[0] += vol_l * pChn->nRightVol;\
-    pvol[1] += vol_r * pChn->nLeftVol;\
+    pvol[0] += vol_l * pChn->right_volume;\
+    pvol[1] += vol_r * pChn->left_volume;\
     pvol += 2;
 
 #define SNDMIX_STOREFASTMONOVOL\
-    int v = vol * pChn->nRightVol;\
+    int v = vol * pChn->right_volume;\
     pvol[0] += v;\
     pvol[1] += v;\
     pvol += 2;
 
 #define SNDMIX_RAMPMONOVOL\
-    nRampLeftVol += pChn->nLeftRamp;\
-    nRampRightVol += pChn->nRightRamp;\
+    nRampLeftVol += pChn->left_ramp;\
+    nRampRightVol += pChn->right_ramp;\
     pvol[0] += vol * (nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol[1] += vol * (nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol += 2;
 
 #define SNDMIX_RAMPFASTMONOVOL\
-    nRampRightVol += pChn->nRightRamp;\
+    nRampRightVol += pChn->right_ramp;\
     int fastvol = vol * (nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol[0] += fastvol;\
     pvol[1] += fastvol;\
     pvol += 2;
 
 #define SNDMIX_RAMPSTEREOVOL\
-    nRampLeftVol += pChn->nLeftRamp;\
-    nRampRightVol += pChn->nRightRamp;\
+    nRampLeftVol += pChn->left_ramp;\
+    nRampRightVol += pChn->right_ramp;\
     pvol[0] += vol_l * (nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol[1] += vol_r * (nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION);\
     pvol += 2;
@@ -382,12 +382,12 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 //////////////////////////////////////////////////////////
 // Interfaces
 
-typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::mixer::MODCHANNEL *, int *, int *);
+typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::modchannel_t *, int *, int *);
 
 #define BEGIN_MIX_INTERFACE(func)\
-    VOID MPPASMCALL func(modplug::mixer::MODCHANNEL *pChannel, int *pbuffer, int *pbufmax)\
+    VOID MPPASMCALL func(modplug::tracker::modchannel_t *pChannel, int *pbuffer, int *pbufmax)\
     {\
-        LONG nPos;
+        LONG sample_position;
 
 #define END_MIX_INTERFACE()\
         SNDMIX_ENDSAMPLELOOP\
@@ -402,9 +402,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::mixer::MODCHANNEL *, int *, 
 #define END_RAMPMIX_INTERFACE()\
         SNDMIX_ENDSAMPLELOOP\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->right_volume = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->left_volume = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
     }
 
 #define BEGIN_FASTRAMPMIX_INTERFACE(func)\
@@ -415,8 +415,8 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::mixer::MODCHANNEL *, int *, 
         SNDMIX_ENDSAMPLELOOP\
         pChannel->nRampRightVol = nRampRightVol;\
         pChannel->nRampLeftVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
-        pChannel->nLeftVol = pChannel->nRightVol;\
+        pChannel->right_volume = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->left_volume = pChannel->right_volume;\
     }
 
 
@@ -441,9 +441,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::mixer::MODCHANNEL *, int *, 
         SNDMIX_ENDSAMPLELOOP\
         MIX_END_FILTER\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->right_volume = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->left_volume = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
     }
 
 // Stereo Resonant Filters
@@ -467,9 +467,9 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::mixer::MODCHANNEL *, int *, 
         SNDMIX_ENDSAMPLELOOP\
         MIX_END_STEREO_FILTER\
         pChannel->nRampRightVol = nRampRightVol;\
-        pChannel->nRightVol = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->right_volume = nRampRightVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
         pChannel->nRampLeftVol = nRampLeftVol;\
-        pChannel->nLeftVol = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
+        pChannel->left_volume = nRampLeftVol >> modplug::mixgraph::VOLUME_RAMP_PRECISION;\
     }
 
 
@@ -1356,81 +1356,81 @@ const LPMIXINTERFACE gpFastMixFunctionTable[2*16] =
 
 /////////////////////////////////////////////////////////////////////////
 
-static LONG MPPFASTCALL GetSampleCount(modplug::mixer::MODCHANNEL *pChn, LONG nSamples, bool bITBidiMode)
+static LONG MPPFASTCALL GetSampleCount(modplug::tracker::modchannel_t *pChn, LONG nSamples, bool bITBidiMode)
 //---------------------------------------------------------------------------------------
 {
-    LONG nLoopStart = (pChn->dwFlags & CHN_LOOP) ? pChn->nLoopStart : 0;
-    LONG nInc = pChn->nInc;
+    LONG nLoopStart = (pChn->flags & CHN_LOOP) ? pChn->loop_start : 0;
+    LONG nInc = pChn->position_delta;
 
-    if ((nSamples <= 0) || (!nInc) || (!pChn->nLength)) return 0;
+    if ((nSamples <= 0) || (!nInc) || (!pChn->length)) return 0;
     // Under zero ?
-    if ((LONG)pChn->nPos < nLoopStart)
+    if ((LONG)pChn->sample_position < nLoopStart)
     {
         if (nInc < 0)
         {
             // Invert loop for bidi loops
-            LONG nDelta = ((nLoopStart - pChn->nPos) << 16) - (pChn->nPosLo & 0xffff);
-            pChn->nPos = nLoopStart | (nDelta>>16);
-            pChn->nPosLo = nDelta & 0xffff;
-            if (((LONG)pChn->nPos < nLoopStart) || (pChn->nPos >= (nLoopStart+pChn->nLength)/2))
+            LONG nDelta = ((nLoopStart - pChn->sample_position) << 16) - (pChn->fractional_sample_position & 0xffff);
+            pChn->sample_position = nLoopStart | (nDelta>>16);
+            pChn->fractional_sample_position = nDelta & 0xffff;
+            if (((LONG)pChn->sample_position < nLoopStart) || (pChn->sample_position >= (nLoopStart+pChn->length)/2))
             {
-                pChn->nPos = nLoopStart; pChn->nPosLo = 0;
+                pChn->sample_position = nLoopStart; pChn->fractional_sample_position = 0;
             }
             nInc = -nInc;
-            pChn->nInc = nInc;
-            pChn->dwFlags &= ~(CHN_PINGPONGFLAG); // go forward
-            if ((!(pChn->dwFlags & CHN_LOOP)) || (pChn->nPos >= pChn->nLength))
+            pChn->position_delta = nInc;
+            pChn->flags &= ~(CHN_PINGPONGFLAG); // go forward
+            if ((!(pChn->flags & CHN_LOOP)) || (pChn->sample_position >= pChn->length))
             {
-                pChn->nPos = pChn->nLength;
-                pChn->nPosLo = 0;
+                pChn->sample_position = pChn->length;
+                pChn->fractional_sample_position = 0;
                 return 0;
             }
         } else
         {
             // We probably didn't hit the loop end yet (first loop), so we do nothing
-            if ((LONG)pChn->nPos < 0) pChn->nPos = 0;
+            if ((LONG)pChn->sample_position < 0) pChn->sample_position = 0;
         }
     } else
     // Past the end
-    if (pChn->nPos >= pChn->nLength)
+    if (pChn->sample_position >= pChn->length)
     {
-        if (!(pChn->dwFlags & CHN_LOOP)) return 0; // not looping -> stop this channel
-        if (pChn->dwFlags & CHN_PINGPONGLOOP)
+        if (!(pChn->flags & CHN_LOOP)) return 0; // not looping -> stop this channel
+        if (pChn->flags & CHN_PINGPONGLOOP)
         {
             // Invert loop
             if (nInc > 0)
             {
                 nInc = -nInc;
-                pChn->nInc = nInc;
+                pChn->position_delta = nInc;
             }
-            pChn->dwFlags |= CHN_PINGPONGFLAG;
+            pChn->flags |= CHN_PINGPONGFLAG;
             // adjust loop position
-            LONG nDeltaHi = (pChn->nPos - pChn->nLength);
-            LONG nDeltaLo = 0x10000 - (pChn->nPosLo & 0xffff);
-            pChn->nPos = pChn->nLength - nDeltaHi - (nDeltaLo>>16);
-            pChn->nPosLo = nDeltaLo & 0xffff;
+            LONG nDeltaHi = (pChn->sample_position - pChn->length);
+            LONG nDeltaLo = 0x10000 - (pChn->fractional_sample_position & 0xffff);
+            pChn->sample_position = pChn->length - nDeltaHi - (nDeltaLo>>16);
+            pChn->fractional_sample_position = nDeltaLo & 0xffff;
             // Impulse Tracker's software mixer would put a -2 (instead of -1) in the following line (doesn't happen on a GUS)
-            if ((pChn->nPos <= pChn->nLoopStart) || (pChn->nPos >= pChn->nLength)) pChn->nPos = pChn->nLength - (bITBidiMode ? 2 : 1);
+            if ((pChn->sample_position <= pChn->loop_start) || (pChn->sample_position >= pChn->length)) pChn->sample_position = pChn->length - (bITBidiMode ? 2 : 1);
         } else
         {
             if (nInc < 0) // This is a bug
             {
                 nInc = -nInc;
-                pChn->nInc = nInc;
+                pChn->position_delta = nInc;
             }
             // Restart at loop start
-            pChn->nPos += nLoopStart - pChn->nLength;
-            if ((LONG)pChn->nPos < nLoopStart) pChn->nPos = pChn->nLoopStart;
+            pChn->sample_position += nLoopStart - pChn->length;
+            if ((LONG)pChn->sample_position < nLoopStart) pChn->sample_position = pChn->loop_start;
         }
     }
-    LONG nPos = pChn->nPos;
+    LONG nPos = pChn->sample_position;
     // too big increment, and/or too small loop length
     if (nPos < nLoopStart)
     {
         if ((nPos < 0) || (nInc < 0)) return 0;
     }
-    if ((nPos < 0) || (nPos >= (LONG)pChn->nLength)) return 0;
-    LONG nPosLo = (USHORT)pChn->nPosLo, nSmpCount = nSamples;
+    if ((nPos < 0) || (nPos >= (LONG)pChn->length)) return 0;
+    LONG nPosLo = (USHORT)pChn->fractional_sample_position, nSmpCount = nSamples;
     if (nInc < 0)
     {
         LONG nInv = -nInc;
@@ -1452,9 +1452,9 @@ static LONG MPPFASTCALL GetSampleCount(modplug::mixer::MODCHANNEL *pChn, LONG nS
         LONG nDeltaHi = (nInc>>16) * (nSamples - 1);
         LONG nDeltaLo = (nInc&0xffff) * (nSamples - 1);
         LONG nPosDest = nPos + nDeltaHi + ((nPosLo + nDeltaLo)>>16);
-        if (nPosDest >= (LONG)pChn->nLength)
+        if (nPosDest >= (LONG)pChn->length)
         {
-            nSmpCount = (ULONG)(((((LONGLONG)pChn->nLength - nPos) << 16) - nPosLo - 1) / nInc) + 1;
+            nSmpCount = (ULONG)(((((LONGLONG)pChn->length - nPos) << 16) - nPosLo - 1) / nInc) + 1;
         }
     }
 #ifdef _DEBUG
@@ -1462,11 +1462,11 @@ static LONG MPPFASTCALL GetSampleCount(modplug::mixer::MODCHANNEL *pChn, LONG nS
         LONG nDeltaHi = (nInc>>16) * (nSmpCount - 1);
         LONG nDeltaLo = (nInc&0xffff) * (nSmpCount - 1);
         LONG nPosDest = nPos + nDeltaHi + ((nPosLo + nDeltaLo)>>16);
-        if ((nPosDest < 0) || (nPosDest > (LONG)pChn->nLength))
+        if ((nPosDest < 0) || (nPosDest > (LONG)pChn->length))
         {
             Log("Incorrect delta:\n");
             Log("nSmpCount=%d: nPos=%5d.x%04X Len=%5d Inc=%2d.x%04X\n",
-                nSmpCount, nPos, nPosLo, pChn->nLength, pChn->nInc>>16, pChn->nInc&0xffff);
+                nSmpCount, nPos, nPosLo, pChn->length, pChn->position_delta>>16, pChn->position_delta&0xffff);
             return 0;
         }
     }
@@ -1496,35 +1496,35 @@ UINT CSoundFile::CreateStereoMix(int count)
     for (UINT nChn=0; nChn<m_nMixChannels; nChn++)
     {
         const LPMIXINTERFACE *pMixFuncTable;
-        modplug::mixer::MODCHANNEL * const pChannel = &Chn[ChnMix[nChn]];
+        modplug::tracker::modchannel_t * const pChannel = &Chn[ChnMix[nChn]];
         UINT nFlags, nMasterCh;
         LONG nSmpCount;
         int nsamples;
         int *pbuffer;
         int *JUICY_FRUITS;
 
-        size_t channel_i_care_about = pChannel->nMasterChn ? (pChannel->nMasterChn - 1) : (ChnMix[nChn]);
+        size_t channel_i_care_about = pChannel->parent_channel ? (pChannel->parent_channel - 1) : (ChnMix[nChn]);
         auto herp = _graph.channel_vertices[channel_i_care_about];
         auto herp_left = herp->channels[0];
         auto herp_right = herp->channels[1];
 
-        if (!pChannel->pCurrentSample) continue;
-        nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->nMasterChn;
+        if (!pChannel->active_sample_data) continue;
+        nMasterCh = (ChnMix[nChn] < m_nChannels) ? ChnMix[nChn]+1 : pChannel->parent_channel;
         pOfsR = &gnDryROfsVol;
         pOfsL = &gnDryLOfsVol;
         nFlags = 0;
-        if (pChannel->dwFlags & CHN_16BIT) nFlags |= MIXNDX_16BIT;
-        if (pChannel->dwFlags & CHN_STEREO) nFlags |= MIXNDX_STEREO;
+        if (pChannel->flags & CHN_16BIT) nFlags |= MIXNDX_16BIT;
+        if (pChannel->flags & CHN_STEREO) nFlags |= MIXNDX_STEREO;
     #ifndef NO_FILTER
-        if (pChannel->dwFlags & CHN_FILTER) nFlags |= MIXNDX_FILTER;
+        if (pChannel->flags & CHN_FILTER) nFlags |= MIXNDX_FILTER;
     #endif
         //rewbs.resamplerConf
         nFlags |= GetResamplingFlag(pChannel);
         //end rewbs.resamplerConf
         //XXXih: disabled legacy garbage
         /*
-        if ((nFlags < 0x20) && (pChannel->nLeftVol == pChannel->nRightVol)
-         && ((!pChannel->nRampLength) || (pChannel->nLeftRamp == pChannel->nRightRamp)))
+        if ((nFlags < 0x20) && (pChannel->left_volume == pChannel->right_volume)
+         && ((!pChannel->nRampLength) || (pChannel->left_ramp == pChannel->right_ramp)))
         {
             pMixFuncTable = gpFastMixFunctionTable;
         } else
@@ -1535,8 +1535,8 @@ UINT CSoundFile::CreateStereoMix(int count)
         nsamples = count;
     #ifndef NO_REVERB
         pbuffer = (gdwSoundSetup & SNDMIX_REVERB) ? MixReverbBuffer : MixSoundBuffer;
-        if ((pChannel->dwFlags & CHN_SURROUND) && (gnChannels > 2)) pbuffer = MixRearBuffer;
-        if (pChannel->dwFlags & CHN_NOREVERB) pbuffer = MixSoundBuffer;
+        if ((pChannel->flags & CHN_SURROUND) && (gnChannels > 2)) pbuffer = MixRearBuffer;
+        if (pChannel->flags & CHN_NOREVERB) pbuffer = MixSoundBuffer;
 
         JUICY_FRUITS = pbuffer;
         //XXXih: JUICY FRUITS
@@ -1544,7 +1544,7 @@ UINT CSoundFile::CreateStereoMix(int count)
 
     #ifdef ENABLE_MMX
         //XXXih: reverb - delete
-        if ((pChannel->dwFlags & CHN_REVERB) && (gdwSysInfo & SYSMIX_ENABLEMMX))
+        if ((pChannel->flags & CHN_REVERB) && (gdwSysInfo & SYSMIX_ENABLEMMX))
             pbuffer = MixReverbBuffer;
     #endif
 
@@ -1553,9 +1553,9 @@ UINT CSoundFile::CreateStereoMix(int count)
         
         //rewbs.instroVSTi
 /*		UINT nMixPlugin=0;
-        if (pChannel->pModInstrument && pChannel->pInstrument) {	// first try intrument VST
+        if (pChannel->instrument && pChannel->pInstrument) {	// first try intrument VST
             if (!(pChannel->pInstrument->uFlags & ENV_MUTE))
-                nMixPlugin = pChannel->pModInstrument->nMixPlug;
+                nMixPlugin = pChannel->instrument->nMixPlug;
         }
         if (!nMixPlugin && (nMasterCh > 0) && (nMasterCh <= m_nChannels)) { 	// Then try Channel VST
             if(!(pChannel->dwFlags & CHN_NOFX)) 
@@ -1607,10 +1607,10 @@ UINT CSoundFile::CreateStereoMix(int count)
         if ((nSmpCount = GetSampleCount(pChannel, nrampsamples, m_bITBidiMode)) <= 0)
         {
             // Stopping the channel
-            pChannel->pCurrentSample = NULL;
-            pChannel->nLength = 0;
-            pChannel->nPos = 0;
-            pChannel->nPosLo = 0;
+            pChannel->active_sample_data = NULL;
+            pChannel->length = 0;
+            pChannel->sample_position = 0;
+            pChannel->fractional_sample_position = 0;
             pChannel->nRampLength = 0;
 
             //modplug::mixer::end_channel_ofs(pChannel, JUICY_FRUITS, nsamples);
@@ -1621,17 +1621,17 @@ UINT CSoundFile::CreateStereoMix(int count)
             *pOfsR = 0;
             *pOfsL = 0;
             pChannel->nROfs = pChannel->nLOfs = 0;
-            pChannel->dwFlags &= ~CHN_PINGPONGFLAG;
+            pChannel->flags &= ~CHN_PINGPONGFLAG;
             continue;
         }
         // Should we mix this channel ?
         UINT naddmix;
         if (((nchmixed >= m_nMaxMixChannels) && (!(gdwSoundSetup & SNDMIX_DIRECTTODISK)))
-         || ((!pChannel->nRampLength) && (!(pChannel->nLeftVol|pChannel->nRightVol))))
+         || ((!pChannel->nRampLength) && (!(pChannel->left_volume|pChannel->right_volume))))
         {
-            LONG delta = (pChannel->nInc * (LONG)nSmpCount) + (LONG)pChannel->nPosLo;
-            pChannel->nPosLo = delta & 0xFFFF;
-            pChannel->nPos += (delta >> 16);
+            LONG delta = (pChannel->position_delta * (LONG)nSmpCount) + (LONG)pChannel->fractional_sample_position;
+            pChannel->fractional_sample_position = delta & 0xFFFF;
+            pChannel->sample_position += (delta >> 16);
             pChannel->nROfs = pChannel->nLOfs = 0;
 
             //JUICY_FRUITS += nSmpCount*2;
@@ -1676,13 +1676,13 @@ UINT CSoundFile::CreateStereoMix(int count)
             if (pChannel->nRampLength <= 0)
             {
                 pChannel->nRampLength = 0;
-                pChannel->nRightVol = pChannel->nNewRightVol;
-                pChannel->nLeftVol = pChannel->nNewLeftVol;
-                pChannel->nRightRamp = pChannel->nLeftRamp = 0;
-                if ((pChannel->dwFlags & CHN_NOTEFADE) && (!(pChannel->nFadeOutVol)))
+                pChannel->right_volume = pChannel->nNewRightVol;
+                pChannel->left_volume = pChannel->nNewLeftVol;
+                pChannel->right_ramp = pChannel->left_ramp = 0;
+                if ((pChannel->flags & CHN_NOTEFADE) && (!(pChannel->nFadeOutVol)))
                 {
-                    pChannel->nLength = 0;
-                    pChannel->pCurrentSample = NULL;
+                    pChannel->length = 0;
+                    pChannel->active_sample_data = NULL;
                 }
             }
         }
@@ -1700,11 +1700,11 @@ UINT CSoundFile::CreateStereoMix(int count)
     return nchused;
 }
 
-UINT CSoundFile::GetResamplingFlag(const modplug::mixer::MODCHANNEL *pChannel)
+UINT CSoundFile::GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel)
 //------------------------------------------------------------
 {
-    if (pChannel->pModInstrument) {
-        switch (pChannel->pModInstrument->nResampling) {
+    if (pChannel->instrument) {
+        switch (pChannel->instrument->resampling_mode) {
             case SRCMODE_NEAREST:	return 0;
             case SRCMODE_LINEAR:	return MIXNDX_LINEARSRC;
             case SRCMODE_SPLINE:	return MIXNDX_HQSRC;
@@ -1715,12 +1715,12 @@ UINT CSoundFile::GetResamplingFlag(const modplug::mixer::MODCHANNEL *pChannel)
     }
     
     //didn't manage to get flag from instrument header, use channel flags.
-    if (pChannel->dwFlags & CHN_HQSRC)
+    if (pChannel->flags & CHN_HQSRC)
     {
         if (gdwSoundSetup & SNDMIX_SPLINESRCMODE)		return MIXNDX_HQSRC;
         if (gdwSoundSetup & SNDMIX_POLYPHASESRCMODE)	return MIXNDX_KAISERSRC;
         if (gdwSoundSetup & SNDMIX_FIRFILTERSRCMODE)	return MIXNDX_FIRFILTERSRC;				
-    } else if (!(pChannel->dwFlags & CHN_NOIDO)) {
+    } else if (!(pChannel->flags & CHN_NOIDO)) {
         return MIXNDX_LINEARSRC;
     }
     

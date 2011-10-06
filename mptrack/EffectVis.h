@@ -54,7 +54,7 @@ protected:
 	int m_nParamToErase;
 
 	UINT m_nOldPlayPos;
-	MODCOMMAND m_templatePCNote;
+	modplug::tracker::modcommand_t m_templatePCNote;
 
 	CBrush m_brushBlack;
 

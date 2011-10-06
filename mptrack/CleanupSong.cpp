@@ -345,7 +345,7 @@ struct OrigPatSettings
 	bool isPatUsed;				// Is pattern used in sequence?
 	PATTERNINDEX newIndex;		// map old pattern index <-> new pattern index
 	// This stuff is needed for copying the old pattern properties to the new pattern number
-	MODCOMMAND *data;			// original pattern data
+	modplug::tracker::modcommand_t *data;			// original pattern data
 	ROWINDEX numRows;			// original pattern sizes
 	ROWINDEX rowsPerBeat;		// original pattern highlight
 	ROWINDEX rowsPerMeasure;	// original pattern highlight
@@ -523,7 +523,7 @@ bool CModCleanupDlg::RemoveUnusedSamples()
 	vector<bool> samplesUsed(pSndFile->GetNumSamples() + 1, true);
 
 	BeginWaitCursor();
-	for (SAMPLEINDEX nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].pSample)
+	for (SAMPLEINDEX nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].sample_data)
 	{
 		if (!pSndFile->IsSampleUsed(nSmp))
 		{
@@ -547,7 +547,7 @@ bool CModCleanupDlg::RemoveUnusedSamples()
 		{
 			for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
 			{
-				if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].pSample))
+				if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].sample_data))
 				{
 					m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete);
 					BEGIN_CRITICAL();
@@ -578,8 +578,8 @@ bool CModCleanupDlg::OptimizeSamples()
 	
 	for (SAMPLEINDEX nSmp=1; nSmp <= pSndFile->m_nSamples; nSmp++)
 	{
-		if(pSndFile->Samples[nSmp].pSample && (pSndFile->Samples[nSmp].uFlags & CHN_LOOP)
-			&& (pSndFile->Samples[nSmp].nLength > pSndFile->Samples[nSmp].nLoopEnd + 2)) nLoopOpt++;
+		if(pSndFile->Samples[nSmp].sample_data && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
+			&& (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2)) nLoopOpt++;
 	}
 	if (nLoopOpt == 0) return false;
 
@@ -590,13 +590,13 @@ bool CModCleanupDlg::OptimizeSamples()
 	{
 		for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
 		{
-			if ((pSndFile->Samples[nSmp].uFlags & CHN_LOOP)
-				&& (pSndFile->Samples[nSmp].nLength > pSndFile->Samples[nSmp].nLoopEnd + 2))
+			if ((pSndFile->Samples[nSmp].flags & CHN_LOOP)
+				&& (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2))
 			{
-				UINT lmax = pSndFile->Samples[nSmp].nLoopEnd + 2;
-				if ((lmax < pSndFile->Samples[nSmp].nLength) && (lmax >= 2))
+				UINT lmax = pSndFile->Samples[nSmp].loop_end + 2;
+				if ((lmax < pSndFile->Samples[nSmp].length) && (lmax >= 2))
 				{
-					m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, lmax, pSndFile->Samples[nSmp].nLength);
+					m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, lmax, pSndFile->Samples[nSmp].length);
 					ctrlSmp::ResizeSample(pSndFile->Samples[nSmp], lmax, pSndFile);
 				}
 			}
@@ -629,7 +629,7 @@ bool CModCleanupDlg::RearrangeSamples()
 	// First, find out which sample slots are unused and create the new sample map
 	for(SAMPLEINDEX i = 1; i <= pSndFile->GetNumSamples(); i++)
 	{
-		if(!pSndFile->Samples[i].pSample)
+		if(!pSndFile->Samples[i].sample_data)
 		{
 			// Move all following samples
 			nRemap++;
@@ -650,7 +650,7 @@ bool CModCleanupDlg::RearrangeSamples()
 			// This gotta be moved
 			BEGIN_CRITICAL();
 			pSndFile->MoveSample(i, nSampleMap[i]);
-			pSndFile->Samples[i].pSample = nullptr;
+			pSndFile->Samples[i].sample_data = nullptr;
 			END_CRITICAL();
 			if(nSampleMap[i] > 0) strcpy(pSndFile->m_szNames[nSampleMap[i]], pSndFile->m_szNames[i]);
 			memset(pSndFile->m_szNames[i], 0, sizeof(pSndFile->m_szNames[i]));
@@ -658,7 +658,7 @@ bool CModCleanupDlg::RearrangeSamples()
 			// Also update instrument mapping (if module is in instrument mode)
 			for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->GetNumInstruments(); nIns++)
 			{
-				modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[nIns];
+				modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[nIns];
 				if(pIns)
 				{
 					for(size_t iNote = 0; iNote < 128; iNote++)
@@ -673,7 +673,7 @@ bool CModCleanupDlg::RearrangeSamples()
 	{
 		for (PATTERNINDEX nPat = 0; nPat < pSndFile->Patterns.Size(); nPat++) if (pSndFile->Patterns[nPat])
 		{
-			MODCOMMAND *m = pSndFile->Patterns[nPat];
+			modplug::tracker::modcommand_t *m = pSndFile->Patterns[nPat];
 			for(UINT len = pSndFile->Patterns[nPat].GetNumRows() * pSndFile->GetNumChannels(); len; m++, len--)
 			{
 				if(!m->IsPcNote() &&  m->instr <= pSndFile->GetNumSamples()) m->instr = (BYTE)nSampleMap[m->instr];
@@ -780,7 +780,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
 		{
 			for (PATTERNINDEX iPat = 0; iPat < pSndFile->Patterns.Size(); iPat++) if (pSndFile->Patterns[iPat])
 			{
-				MODCOMMAND *p = pSndFile->Patterns[iPat];
+				modplug::tracker::modcommand_t *p = pSndFile->Patterns[iPat];
 				UINT nLen = pSndFile->m_nChannels * pSndFile->Patterns[iPat].GetNumRows();
 				while (nLen--)
 				{
@@ -788,7 +788,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
 					{
 						for (UINT k=0; k<nSwap; k++)
 						{
-							if (p->instr == swapmap[k]) p->instr = (MODCOMMAND::INSTR)swapdest[k];
+							if (p->instr == swapmap[k]) p->instr = (modplug::tracker::modcommand_t::INSTR)swapdest[k];
 						}
 					}
 					p++;
@@ -895,16 +895,16 @@ bool CModCleanupDlg::ResetVariables()
 	// reset instruments (if there are any)
 	for(INSTRUMENTINDEX i = 1; i <= pSndFile->GetNumInstruments(); i++) if(pSndFile->Instruments[i])
 	{
-		pSndFile->Instruments[i]->nFadeOut = 256;
-		pSndFile->Instruments[i]->nGlobalVol = 64;
-		pSndFile->Instruments[i]->nPan = 128;
-		pSndFile->Instruments[i]->dwFlags &= ~INS_SETPANNING;
+		pSndFile->Instruments[i]->fadeout = 256;
+		pSndFile->Instruments[i]->global_volume = 64;
+		pSndFile->Instruments[i]->default_pan = 128;
+		pSndFile->Instruments[i]->flags &= ~INS_SETPANNING;
 		pSndFile->Instruments[i]->nMixPlug = 0;
 
-		pSndFile->Instruments[i]->nVolSwing = 0;
-		pSndFile->Instruments[i]->nPanSwing = 0;
-		pSndFile->Instruments[i]->nCutSwing = 0;
-		pSndFile->Instruments[i]->nResSwing = 0;
+		pSndFile->Instruments[i]->random_volume_weight = 0;
+		pSndFile->Instruments[i]->random_pan_weight = 0;
+		pSndFile->Instruments[i]->random_cutoff_weight = 0;
+		pSndFile->Instruments[i]->random_resonance_weight = 0;
 	}
 
 	// reset samples
@@ -965,7 +965,7 @@ bool CModCleanupDlg::RemoveAllSamples()
 
 	for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
 	{
-		m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, 0, pSndFile->Samples[nSmp].nLength);
+		m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, 0, pSndFile->Samples[nSmp].length);
 	}
 	ctrlSmp::ResetSamples(*pSndFile, ctrlSmp::SmpResetInit);
 	BEGIN_CRITICAL();

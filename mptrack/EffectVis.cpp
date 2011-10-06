@@ -98,12 +98,12 @@ void CEffectVis::OnPaint()
 
 uint16 CEffectVis::GetParam(UINT row)
 {	
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	uint16 paramValue = 0;
 
 	if (pcmd)
 	{
-		MODCOMMAND cmd = pcmd[row*m_pSndFile->m_nChannels + m_nChan];
+		modplug::tracker::modcommand_t cmd = pcmd[row*m_pSndFile->m_nChannels + m_nChan];
 		if (cmd.IsPcNote()) 
 		{
 			paramValue = cmd.GetValueEffectCol();
@@ -122,7 +122,7 @@ uint16 CEffectVis::GetParam(UINT row)
 // as appropriate, depending on contents of row.
 void CEffectVis::SetParamFromY(UINT row, long y)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	if (!pcmd) {
 		return;
 	}
@@ -149,7 +149,7 @@ void CEffectVis::SetParamFromY(UINT row, long y)
 
 BYTE CEffectVis::GetCommand(UINT row)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	if (pcmd)
 		return pcmd[row*m_pSndFile->m_nChannels + m_nChan].command;
 	else
@@ -158,7 +158,7 @@ BYTE CEffectVis::GetCommand(UINT row)
 
 void CEffectVis::SetCommand(UINT row, BYTE command)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	BEGIN_CRITICAL();
 	if (pcmd) {
 		int offset = row*m_pSndFile->m_nChannels + m_nChan;
@@ -184,12 +184,12 @@ int CEffectVis::RowToScreenX(UINT row)
 
 int CEffectVis::RowToScreenY(UINT row)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	int screenY = -1;
 
 	if (pcmd)
 	{
-		MODCOMMAND cmd = pcmd[row*m_pSndFile->m_nChannels + m_nChan];
+		modplug::tracker::modcommand_t cmd = pcmd[row*m_pSndFile->m_nChannels + m_nChan];
 		if (cmd.IsPcNote()) 
 		{
 			uint16 paramValue = cmd.GetValueEffectCol();
@@ -214,7 +214,7 @@ int CEffectVis::FXParamToScreenY(uint16 param)
 
 int CEffectVis::PCParamToScreenY(uint16 param)
 {
-	if ((param >= 0x00) || (param <= MODCOMMAND::maxColumnValue))
+	if ((param >= 0x00) || (param <= modplug::tracker::modcommand_t::maxColumnValue))
 		return (int) (m_rcDraw.bottom - param*m_pixelsPerPCParam + 0.5);
 	return -1;
 }
@@ -232,8 +232,8 @@ BYTE CEffectVis::ScreenYToFXParam(int y)
 
 uint16 CEffectVis::ScreenYToPCParam(int y)
 {
-	if (y<=PCParamToScreenY(MODCOMMAND::maxColumnValue))
-		return MODCOMMAND::maxColumnValue;
+	if (y<=PCParamToScreenY(modplug::tracker::modcommand_t::maxColumnValue))
+		return modplug::tracker::modcommand_t::maxColumnValue;
 
 	if (y>=PCParamToScreenY(0x00))
 		return 0x00;
@@ -556,7 +556,7 @@ void CEffectVis::OnSize(UINT nType, int cx, int cy)
 
 	m_pixelsPerRow   = (float)(m_rcDraw.Width()-INNERLEFTBORDER-INNERRIGHTBORDER)/(float)m_nRows;
 	m_pixelsPerFXParam = (float)(m_rcDraw.Height())/(float)0xFF;
-	m_pixelsPerPCParam = (float)(m_rcDraw.Height())/(float)MODCOMMAND::maxColumnValue;
+	m_pixelsPerPCParam = (float)(m_rcDraw.Height())/(float)modplug::tracker::modcommand_t::maxColumnValue;
 	m_boolForceRedraw = TRUE;
     InvalidateRect(NULL, FALSE);	 //redraw everything
 } 
@@ -604,7 +604,7 @@ void CEffectVis::UpdateSelection(UINT startRow, UINT endRow, UINT nchn, CModDoc*
 	}
 
 	//Check pattern, start row and channel exist
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	if (!pcmd ||  (m_startRow >= m_pSndFile->Patterns[m_nPattern].GetNumRows()) || (m_nChan >= m_pSndFile->m_nChannels))
 	{
 		DoClose();
@@ -778,7 +778,7 @@ BOOL CEffectVis::OnInitDialog()
 		// If first selected row is a PC Note, default to PC note overwrite mode
 		// and use it as a template for new PC notes that will be created via the visualiser.
 		m_nAction = kAction_OverwritePC;
-		MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+		modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 		if (pcmd) {
 			int offset = m_startRow*m_pSndFile->m_nChannels + m_nChan;
 			m_templatePCNote.Set(pcmd[offset].note, pcmd[offset].instr, pcmd[offset].GetValueVolCol(), 0);
@@ -827,7 +827,7 @@ BOOL CEffectVis::OnInitDialog()
 
 void CEffectVis::MakeChange(int row, long y)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	if (!pcmd) {
 		return;
 	}
@@ -884,7 +884,7 @@ void CEffectVis::MakeChange(int row, long y)
 
 void CEffectVis::SetPcNote(int row)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	if (!pcmd) {
 		return;
 	}
@@ -897,7 +897,7 @@ void CEffectVis::SetPcNote(int row)
 
 bool CEffectVis::IsPcNote(int row)
 {
-	MODCOMMAND *pcmd = m_pSndFile->Patterns[m_nPattern];
+	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
 	if (pcmd)
 		return pcmd[row*m_pSndFile->m_nChannels + m_nChan].IsPcNote();
 	else

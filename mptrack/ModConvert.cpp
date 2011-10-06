@@ -47,7 +47,7 @@
 
 
 // Trim envelopes and remove release nodes.
-void UpdateEnvelopes(modplug::mixer::INSTRUMENTENVELOPE *mptEnv, CSoundFile *pSndFile, std::bitset<wNumWarnings> &warnings)
+void UpdateEnvelopes(modplug::tracker::modenvelope_t *mptEnv, CSoundFile *pSndFile, std::bitset<wNumWarnings> &warnings)
 //---------------------------------------------------------------------------------------------------------
 {
     // shorten instrument envelope if necessary (for mod conversion)
@@ -55,19 +55,19 @@ void UpdateEnvelopes(modplug::mixer::INSTRUMENTENVELOPE *mptEnv, CSoundFile *pSn
 
     #define TRIMENV(iEnvLen) if(iEnvLen > iEnvMax) { iEnvLen = iEnvMax; CHANGEMODTYPE_WARNING(wTrimmedEnvelopes); }
 
-    TRIMENV(mptEnv->nNodes);
-    TRIMENV(mptEnv->nLoopStart);
-    TRIMENV(mptEnv->nLoopEnd);
-    TRIMENV(mptEnv->nSustainStart);
-    TRIMENV(mptEnv->nSustainEnd);
-    if(mptEnv->nReleaseNode != ENV_RELEASE_NODE_UNSET)
+    TRIMENV(mptEnv->num_nodes);
+    TRIMENV(mptEnv->loop_start);
+    TRIMENV(mptEnv->loop_end);
+    TRIMENV(mptEnv->sustain_start);
+    TRIMENV(mptEnv->sustain_end);
+    if(mptEnv->release_node != ENV_RELEASE_NODE_UNSET)
     {
         if(pSndFile->GetModSpecifications().hasReleaseNode)
         {
-            TRIMENV(mptEnv->nReleaseNode);
+            TRIMENV(mptEnv->release_node);
         } else
         {
-            mptEnv->nReleaseNode = ENV_RELEASE_NODE_UNSET;
+            mptEnv->release_node = ENV_RELEASE_NODE_UNSET;
             CHANGEMODTYPE_WARNING(wReleaseNode);
         }
     }
@@ -150,7 +150,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Removing all instrument headers from channels
         for(CHANNELINDEX nChn = 0; nChn < MAX_CHANNELS; nChn++)
         {
-            m_SndFile.Chn[nChn].pModInstrument = nullptr;
+            m_SndFile.Chn[nChn].instrument = nullptr;
         }
 
         for(INSTRUMENTINDEX nIns = 0; nIns < m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
@@ -170,10 +170,10 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
 
     for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++) if (m_SndFile.Patterns[nPat])
     {
-        MODCOMMAND *m = m_SndFile.Patterns[nPat];
+        modplug::tracker::modcommand_t *m = m_SndFile.Patterns[nPat];
 
         // This is used for -> MOD/XM conversion
-        vector<vector<MODCOMMAND::PARAM> > cEffectMemory;
+        vector<vector<modplug::tracker::modcommand_t::PARAM> > cEffectMemory;
         cEffectMemory.resize(m_SndFile.GetNumChannels());
         for(size_t i = 0; i < m_SndFile.GetNumChannels(); i++)
         {
@@ -258,7 +258,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     for(SAMPLEINDEX nSmp = 1; nSmp <= m_SndFile.GetNumSamples(); nSmp++)
     {
         // Too many samples? Only 31 samples allowed in MOD format...
-        if(newTypeIsMOD && nSmp > 31 && m_SndFile.Samples[nSmp].nLength > 0)
+        if(newTypeIsMOD && nSmp > 31 && m_SndFile.Samples[nSmp].length > 0)
         {
             CHANGEMODTYPE_WARNING(wMOD31Samples);
         }
@@ -267,28 +267,28 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         if(newTypeIsMOD || newTypeIsS3M)
         {
             // Bidi loops
-            if((m_SndFile.Samples[nSmp].uFlags & CHN_PINGPONGLOOP) != 0)
+            if((m_SndFile.Samples[nSmp].flags & CHN_PINGPONGLOOP) != 0)
             {
-                m_SndFile.Samples[nSmp].uFlags &= ~CHN_PINGPONGLOOP;
+                m_SndFile.Samples[nSmp].flags &= ~CHN_PINGPONGLOOP;
                 CHANGEMODTYPE_WARNING(wSampleBidiLoops);
             }
 
             // Sustain loops - convert to normal loops
-            if((m_SndFile.Samples[nSmp].uFlags & CHN_SUSTAINLOOP) != 0)
+            if((m_SndFile.Samples[nSmp].flags & CHN_SUSTAINLOOP) != 0)
             {
                 // We probably overwrite a normal loop here, but since sustain loops are evaluated before normal loops, this is just correct.
-                m_SndFile.Samples[nSmp].nLoopStart = m_SndFile.Samples[nSmp].nSustainStart;
-                m_SndFile.Samples[nSmp].nLoopEnd = m_SndFile.Samples[nSmp].nSustainEnd;
-                m_SndFile.Samples[nSmp].uFlags |= CHN_LOOP;
+                m_SndFile.Samples[nSmp].loop_start = m_SndFile.Samples[nSmp].sustain_start;
+                m_SndFile.Samples[nSmp].loop_end = m_SndFile.Samples[nSmp].sustain_end;
+                m_SndFile.Samples[nSmp].flags |= CHN_LOOP;
                 CHANGEMODTYPE_WARNING(wSampleSustainLoops);
             }
-            m_SndFile.Samples[nSmp].nSustainStart = m_SndFile.Samples[nSmp].nSustainEnd = 0;
-            m_SndFile.Samples[nSmp].uFlags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
+            m_SndFile.Samples[nSmp].sustain_start = m_SndFile.Samples[nSmp].sustain_end = 0;
+            m_SndFile.Samples[nSmp].flags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
 
             // Autovibrato
-            if(m_SndFile.Samples[nSmp].nVibDepth || m_SndFile.Samples[nSmp].nVibRate || m_SndFile.Samples[nSmp].nVibSweep)
+            if(m_SndFile.Samples[nSmp].vibrato_depth || m_SndFile.Samples[nSmp].vibrato_rate || m_SndFile.Samples[nSmp].vibrato_sweep)
             {
-                m_SndFile.Samples[nSmp].nVibDepth = m_SndFile.Samples[nSmp].nVibRate = m_SndFile.Samples[nSmp].nVibSweep = m_SndFile.Samples[nSmp].nVibType = 0;
+                m_SndFile.Samples[nSmp].vibrato_depth = m_SndFile.Samples[nSmp].vibrato_rate = m_SndFile.Samples[nSmp].vibrato_sweep = m_SndFile.Samples[nSmp].vibrato_type = 0;
                 CHANGEMODTYPE_WARNING(wSampleAutoVibrato);
             }
         }
@@ -296,7 +296,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Transpose to Frequency (MOD/XM to S3M/IT/MPT)
         if(oldTypeIsMOD_XM && newTypeIsS3M_IT_MPT)
         {
-            m_SndFile.Samples[nSmp].nC5Speed = CSoundFile::TransposeToFrequency(m_SndFile.Samples[nSmp].RelativeTone, m_SndFile.Samples[nSmp].nFineTune);
+            m_SndFile.Samples[nSmp].c5_samplerate = CSoundFile::TransposeToFrequency(m_SndFile.Samples[nSmp].RelativeTone, m_SndFile.Samples[nSmp].nFineTune);
             m_SndFile.Samples[nSmp].RelativeTone = 0;
             m_SndFile.Samples[nSmp].nFineTune = 0;
         }
@@ -305,7 +305,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         if(oldTypeIsS3M_IT_MPT && newTypeIsMOD_XM)
         {
             CSoundFile::FrequencyToTranspose(&m_SndFile.Samples[nSmp]);
-            if (!(m_SndFile.Samples[nSmp].uFlags & CHN_PANNING)) m_SndFile.Samples[nSmp].nPan = 128;
+            if (!(m_SndFile.Samples[nSmp].flags & CHN_PANNING)) m_SndFile.Samples[nSmp].default_pan = 128;
             // No relative note for MOD files
             // TODO: Pattern notes could be transposed based on the previous relative tone?
             if(newTypeIsMOD && m_SndFile.Samples[nSmp].RelativeTone != 0)
@@ -318,13 +318,13 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         if(oldTypeIsXM && newTypeIsIT_MPT)
         {
             // Autovibrato settings (XM to IT, where sweep 0 means "no vibrato")
-            if(m_SndFile.Samples[nSmp].nVibSweep == 0 && m_SndFile.Samples[nSmp].nVibRate != 0 && m_SndFile.Samples[nSmp].nVibDepth != 0)
-                m_SndFile.Samples[nSmp].nVibSweep = 255;
+            if(m_SndFile.Samples[nSmp].vibrato_sweep == 0 && m_SndFile.Samples[nSmp].vibrato_rate != 0 && m_SndFile.Samples[nSmp].vibrato_depth != 0)
+                m_SndFile.Samples[nSmp].vibrato_sweep = 255;
         } else if(oldTypeIsIT_MPT && newTypeIsXM)
         {
             // Autovibrato settings (IT to XM, where sweep 0 means "no sweep")
-            if(m_SndFile.Samples[nSmp].nVibSweep == 0)
-                m_SndFile.Samples[nSmp].nVibRate = m_SndFile.Samples[nSmp].nVibDepth = 0;
+            if(m_SndFile.Samples[nSmp].vibrato_sweep == 0)
+                m_SndFile.Samples[nSmp].vibrato_rate = m_SndFile.Samples[nSmp].vibrato_depth = 0;
         }
     }
 
@@ -333,7 +333,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Convert IT/MPT to XM (fix instruments)
         if(oldTypeIsIT_MPT && newTypeIsXM)
         {
-            modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[nIns];
+            modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
             if (pIns)
             {
                 for (UINT k = 0; k < NOTE_MAX; k++)
@@ -345,22 +345,22 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
                     }
                 }
                 // Convert sustain loops to sustain "points"
-                if(pIns->VolEnv.nSustainStart != pIns->VolEnv.nSustainEnd)
+                if(pIns->volume_envelope.sustain_start != pIns->volume_envelope.sustain_end)
                 {
                     CHANGEMODTYPE_WARNING(wInstrumentSustainLoops);
-                    pIns->VolEnv.nSustainEnd = pIns->VolEnv.nSustainStart;
+                    pIns->volume_envelope.sustain_end = pIns->volume_envelope.sustain_start;
                 }
-                if(pIns->PanEnv.nSustainStart != pIns->PanEnv.nSustainEnd)
+                if(pIns->panning_envelope.sustain_start != pIns->panning_envelope.sustain_end)
                 {
                     CHANGEMODTYPE_WARNING(wInstrumentSustainLoops);
-                    pIns->PanEnv.nSustainEnd = pIns->PanEnv.nSustainStart;
+                    pIns->panning_envelope.sustain_end = pIns->panning_envelope.sustain_start;
                 }
-                pIns->VolEnv.dwFlags &= ~ENV_CARRY;
-                pIns->PanEnv.dwFlags &= ~ENV_CARRY;
-                pIns->PitchEnv.dwFlags &= ~(ENV_CARRY|ENV_ENABLED|ENV_FILTER);
-                pIns->dwFlags &= ~INS_SETPANNING;
-                pIns->nIFC &= 0x7F;
-                pIns->nIFR &= 0x7F;
+                pIns->volume_envelope.flags &= ~ENV_CARRY;
+                pIns->panning_envelope.flags &= ~ENV_CARRY;
+                pIns->pitch_envelope.flags &= ~(ENV_CARRY|ENV_ENABLED|ENV_FILTER);
+                pIns->flags &= ~INS_SETPANNING;
+                pIns->default_filter_cutoff &= 0x7F;
+                pIns->default_filter_resonance &= 0x7F;
             }
         }
         // Convert MPT to anything - remove instrument tunings
@@ -477,9 +477,9 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
 
     for(INSTRUMENTINDEX i = 1; i <= m_SndFile.m_nInstruments; i++) if(m_SndFile.Instruments[i] != nullptr)
     {
-        UpdateEnvelopes(&(m_SndFile.Instruments[i]->VolEnv), &m_SndFile, warnings);
-        UpdateEnvelopes(&(m_SndFile.Instruments[i]->PanEnv), &m_SndFile, warnings);
-        UpdateEnvelopes(&(m_SndFile.Instruments[i]->PitchEnv), &m_SndFile, warnings);
+        UpdateEnvelopes(&(m_SndFile.Instruments[i]->volume_envelope), &m_SndFile, warnings);
+        UpdateEnvelopes(&(m_SndFile.Instruments[i]->panning_envelope), &m_SndFile, warnings);
+        UpdateEnvelopes(&(m_SndFile.Instruments[i]->pitch_envelope), &m_SndFile, warnings);
     }
         
     CHAR s[64];

@@ -29,6 +29,9 @@ DAMAGE.
 #include "pervasives.h"
 
 #include <algorithm>
+#include <functional>
+#include <string>
+#include <locale>
 
 #include <Windows.h>
 #include <strsafe.h>
@@ -68,6 +71,30 @@ void debug_log(const char *fmt, ...) {
 #endif
 }
 
+::std::string &rtrim_whitespace(::std::string &str) {
+    str.erase(
+        ::std::find_if(
+            str.rbegin(),
+            str.rend(),
+            ::std::not1(
+                ::std::ptr_fun<int, int>(::isspace)
+            )
+        ).base(),
+        str.end()
+    );
+    return str;
+}
+
+void assign_without_padding(::std::string &dst, const char *src, const size_t len) {
+    rtrim_whitespace(dst.assign(src, len));
+}
+
+void copy_with_padding(char *dst, const size_t len, const ::std::string &src) {
+    size_t sz = src.copy(dst, len);
+    for (; sz < len; ++sz) {
+        dst[sz] = 0;
+    }
+}
 
 }
 }

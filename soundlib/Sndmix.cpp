@@ -251,15 +251,15 @@ BOOL CSoundFile::FadeSong(UINT msec)
     // Ramp everything down
     for (UINT noff=0; noff < m_nMixChannels; noff++)
     {
-        modplug::mixer::MODCHANNEL *pramp = &Chn[ChnMix[noff]];
+        modplug::tracker::modchannel_t *pramp = &Chn[ChnMix[noff]];
         if (!pramp) continue;
         pramp->nNewLeftVol = pramp->nNewRightVol = 0;
-        pramp->nRightRamp = (-pramp->nRightVol << modplug::mixgraph::VOLUME_RAMP_PRECISION) / nRampLength;
-        pramp->nLeftRamp = (-pramp->nLeftVol << modplug::mixgraph::VOLUME_RAMP_PRECISION) / nRampLength;
-        pramp->nRampRightVol = pramp->nRightVol << modplug::mixgraph::VOLUME_RAMP_PRECISION;
-        pramp->nRampLeftVol = pramp->nLeftVol << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+        pramp->right_ramp = (-pramp->right_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION) / nRampLength;
+        pramp->left_ramp = (-pramp->left_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION) / nRampLength;
+        pramp->nRampRightVol = pramp->right_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+        pramp->nRampLeftVol = pramp->left_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
         pramp->nRampLength = nRampLength;
-        pramp->dwFlags |= CHN_VOLUMERAMP;
+        pramp->flags |= CHN_VOLUMERAMP;
     }
     m_dwSongFlags |= SONG_FADINGSONG;
     return TRUE;
@@ -483,7 +483,7 @@ BOOL CSoundFile::ProcessRow()
                         m_nGlobalVolume = m_nDefaultGlobalVolume;
                         for (UINT i=0; i<MAX_CHANNELS; i++)
                         {
-                            Chn[i].dwFlags |= CHN_NOTEFADE | CHN_KEYOFF;
+                            Chn[i].flags |= CHN_NOTEFADE | CHN_KEYOFF;
                             Chn[i].nFadeOutVol = 0;
 
                             if (i < m_nChannels)
@@ -498,14 +498,14 @@ BOOL CSoundFile::ProcessRow()
                                 Chn[i].nOldHiOffset = 0;
                                 Chn[i].nPortamentoDest = 0;
 
-                                if (!Chn[i].nLength)
+                                if (!Chn[i].length)
                                 {
-                                    Chn[i].dwFlags = ChnSettings[i].dwFlags;
-                                    Chn[i].nLoopStart = 0;
-                                    Chn[i].nLoopEnd = 0;
-                                    Chn[i].pModInstrument = nullptr;
-                                    Chn[i].pSample = nullptr;
-                                    Chn[i].pModSample = nullptr;
+                                    Chn[i].flags = ChnSettings[i].dwFlags;
+                                    Chn[i].loop_start = 0;
+                                    Chn[i].loop_end = 0;
+                                    Chn[i].instrument = nullptr;
+                                    Chn[i].sample_data = nullptr;
+                                    Chn[i].sample = nullptr;
                                 }
                             }
                         }
@@ -612,8 +612,8 @@ BOOL CSoundFile::ProcessRow()
             }
         }
         // Reset channel values
-        modplug::mixer::MODCHANNEL *pChn = Chn;
-        MODCOMMAND *m = Patterns[m_nPattern] + m_nRow * m_nChannels;
+        modplug::tracker::modchannel_t *pChn = Chn;
+        modplug::tracker::modcommand_t *m = Patterns[m_nPattern] + m_nRow * m_nChannels;
         for (UINT nChn=0; nChn<m_nChannels; pChn++, nChn++, m++)
         {
             pChn->nRowNote = m->note;
@@ -623,9 +623,9 @@ BOOL CSoundFile::ProcessRow()
             pChn->nRowCommand = m->command;
             pChn->nRowParam = m->param;
 
-            pChn->nLeftVol = pChn->nNewLeftVol;
-            pChn->nRightVol = pChn->nNewRightVol;
-            pChn->dwFlags &= ~(CHN_PORTAMENTO | CHN_VIBRATO | CHN_TREMOLO | CHN_PANBRELLO);
+            pChn->left_volume = pChn->nNewLeftVol;
+            pChn->right_volume = pChn->nNewRightVol;
+            pChn->flags &= ~(CHN_PORTAMENTO | CHN_VIBRATO | CHN_TREMOLO | CHN_PANBRELLO);
             pChn->nCommand = 0;
             pChn->m_nPlugParamValueStep = 0;
         }
@@ -724,10 +724,10 @@ BOOL CSoundFile::ReadNote()
     DWORD nMasterVol;
     {
         /*int nchn32 = 0;
-        modplug::mixer::MODCHANNEL *pChn = Chn;
+        modplug::tracker::modchannel_t *pChn = Chn;
         for (UINT nChn=0; nChn<m_nChannels; nChn++,pChn++)
         {
-            //if(!(pChn->dwFlags & CHN_MUTE))	//removed by rewbs: fix http://www.modplug.com/forum/viewtopic.php?t=3358
+            //if(!(pChn->flags & CHN_MUTE))	//removed by rewbs: fix http://www.modplug.com/forum/viewtopic.php?t=3358
                 nchn32++;
         }
         nchn32 = CLAMP(nchn32, 1, 31);*/
@@ -764,7 +764,7 @@ BOOL CSoundFile::ReadNote()
     ////////////////////////////////////////////////////////////////////////////////////
     // Update channels data
     m_nMixChannels = 0;
-    modplug::mixer::MODCHANNEL *pChn = Chn;
+    modplug::tracker::modchannel_t *pChn = Chn;
     for (UINT nChn = 0; nChn < MAX_CHANNELS; nChn++, pChn++)
     {
     skipchn:
@@ -772,13 +772,13 @@ BOOL CSoundFile::ReadNote()
         // XM Compatibility: Prevent notes to be stopped after a fadeout. This way, a portamento effect can pick up a faded instrument which is long enough.
         // This occours for example in the bassline (channel 11) of jt_burn.xm. I hope this won't break anything else...
         // I also suppose this could decrease mixing performance a bit, but hey, which CPU can't handle 32 muted channels these days... :-)
-        if ((pChn->dwFlags & CHN_NOTEFADE) && (!(pChn->nFadeOutVol|pChn->nRightVol|pChn->nLeftVol)) && (!IsCompatibleMode(TRK_FASTTRACKER2)))
+        if ((pChn->flags & CHN_NOTEFADE) && (!(pChn->nFadeOutVol|pChn->right_volume|pChn->left_volume)) && (!IsCompatibleMode(TRK_FASTTRACKER2)))
         {
-            pChn->nLength = 0;
+            pChn->length = 0;
             pChn->nROfs = pChn->nLOfs = 0;
         }
         // Check for unused channel
-        if ((pChn->dwFlags & CHN_MUTE) || ((nChn >= m_nChannels) && (!pChn->nLength)))
+        if ((pChn->flags & CHN_MUTE) || ((nChn >= m_nChannels) && (!pChn->length)))
         {
             pChn->nVUMeter = 0;
 #ifdef ENABLE_STEREOVU
@@ -789,7 +789,7 @@ BOOL CSoundFile::ReadNote()
             pChn++;
             if (nChn >= m_nChannels)
             {
-                while ((nChn < MAX_CHANNELS) && (!pChn->nLength))
+                while ((nChn < MAX_CHANNELS) && (!pChn->length))
                 {
                     nChn++;
                     pChn++;
@@ -800,7 +800,7 @@ BOOL CSoundFile::ReadNote()
             break;
         }
         // Reset channel data
-        pChn->nInc = 0;
+        pChn->position_delta = 0;
         pChn->nRealVolume = 0;
 
         if(GetModFlag(MSF_OLDVOLSWING))
@@ -822,10 +822,10 @@ BOOL CSoundFile::ReadNote()
         CTuning::RATIOTYPE vibratoFactor = 1;
         CTuning::NOTEINDEXTYPE arpeggioSteps = 0;
 
-        modplug::mixer::MODINSTRUMENT *pIns = pChn->pModInstrument;
+        modplug::tracker::modinstrument_t *pIns = pChn->instrument;
 
         // Calc Frequency
-        if ((pChn->nPeriod)	&& (pChn->nLength))
+        if ((pChn->nPeriod)	&& (pChn->length))
         {
             int vol = pChn->nVolume;
 
@@ -847,7 +847,7 @@ BOOL CSoundFile::ReadNote()
             vol = CLAMP(vol, 0, 256);
 
             // Tremolo
-            if (pChn->dwFlags & CHN_TREMOLO)
+            if (pChn->flags & CHN_TREMOLO)
             {
                 UINT trempos = pChn->nTremoloPos;
                 // IT compatibility: Why would you not want to execute tremolo at volume 0?
@@ -893,7 +893,7 @@ BOOL CSoundFile::ReadNote()
                 // IT compatibility 12. / 13.: Tremor
                 if(IsCompatibleMode(TRK_IMPULSETRACKER))
                 {
-                    if ((pChn->nTremorCount & 128) && pChn->nLength)
+                    if ((pChn->nTremorCount & 128) && pChn->length)
                     {
                         if (pChn->nTremorCount == 128)
                             pChn->nTremorCount = (pChn->nTremorParam >> 4) | 192;
@@ -923,7 +923,7 @@ BOOL CSoundFile::ReadNote()
                         pChn->nTremorCount = (BYTE)(tremcount + 1);
                     }
                 }
-                pChn->dwFlags |= CHN_FASTVOLRAMP;
+                pChn->flags |= CHN_FASTVOLRAMP;
             }
 
             // Clip volume and multiply
@@ -935,24 +935,24 @@ BOOL CSoundFile::ReadNote()
                 // Volume Envelope
                 // IT Compatibility: S77 does not disable the volume envelope, it just pauses the counter
                 // Problem: This pauses on the wrong tick at the moment...
-                if (((pChn->dwFlags & CHN_VOLENV) || ((pIns->VolEnv.dwFlags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->VolEnv.nNodes))
+                if (((pChn->flags & CHN_VOLENV) || ((pIns->volume_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->volume_envelope.num_nodes))
                 {
-                    int envvol = GetVolEnvValueFromPosition(pChn->VolEnv.nEnvPosition, pIns);
+                    int envvol = GetVolEnvValueFromPosition(pChn->volume_envelope.position, pIns);
                     
                     // if we are in the release portion of the envelope,
                     // rescale envelope factor so that it is proportional to the release point
                     // and release envelope beginning.
-                    if (pIns->VolEnv.nReleaseNode != ENV_RELEASE_NODE_UNSET
-                        && pChn->VolEnv.nEnvPosition>=pIns->VolEnv.Ticks[pIns->VolEnv.nReleaseNode]
-                        && pChn->VolEnv.nEnvValueAtReleaseJump != NOT_YET_RELEASED)
+                    if (pIns->volume_envelope.release_node != ENV_RELEASE_NODE_UNSET
+                        && pChn->volume_envelope.position>=pIns->volume_envelope.Ticks[pIns->volume_envelope.release_node]
+                        && pChn->volume_envelope.release_value != NOT_YET_RELEASED)
                     {
-                        int envValueAtReleaseJump = pChn->VolEnv.nEnvValueAtReleaseJump;
-                        int envValueAtReleaseNode = pIns->VolEnv.Values[pIns->VolEnv.nReleaseNode] << 2;
+                        int envValueAtReleaseJump = pChn->volume_envelope.release_value;
+                        int envValueAtReleaseNode = pIns->volume_envelope.Values[pIns->volume_envelope.release_node] << 2;
 
                         //If we have just hit the release node, force the current env value
                         //to be that of the release node. This works around the case where 
                         // we have another node at the same position as the release node.
-                        if (pChn->VolEnv.nEnvPosition == pIns->VolEnv.Ticks[pIns->VolEnv.nReleaseNode])
+                        if (pChn->volume_envelope.position == pIns->volume_envelope.Ticks[pIns->volume_envelope.release_node])
                             envvol = envValueAtReleaseNode;
 
                         int relativeVolumeChange = (envvol - envValueAtReleaseNode) * 2;
@@ -963,19 +963,19 @@ BOOL CSoundFile::ReadNote()
                 // Panning Envelope
                 // IT Compatibility: S79 does not disable the panning envelope, it just pauses the counter
                 // Problem: This pauses on the wrong tick at the moment...
-                if (((pChn->dwFlags & CHN_PANENV) || ((pIns->PanEnv.dwFlags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->PanEnv.nNodes))
+                if (((pChn->flags & CHN_PANENV) || ((pIns->panning_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->panning_envelope.num_nodes))
                 {
-                    int envpos = pChn->PanEnv.nEnvPosition;
-                    UINT pt = pIns->PanEnv.nNodes - 1;
-                    for (UINT i=0; i<(UINT)(pIns->PanEnv.nNodes-1); i++)
+                    int envpos = pChn->panning_envelope.position;
+                    UINT pt = pIns->panning_envelope.num_nodes - 1;
+                    for (UINT i=0; i<(UINT)(pIns->panning_envelope.num_nodes-1); i++)
                     {
-                        if (envpos <= pIns->PanEnv.Ticks[i])
+                        if (envpos <= pIns->panning_envelope.Ticks[i])
                         {
                             pt = i;
                             break;
                         }
                     }
-                    int x2 = pIns->PanEnv.Ticks[pt], y2 = pIns->PanEnv.Values[pt];
+                    int x2 = pIns->panning_envelope.Ticks[pt], y2 = pIns->panning_envelope.Values[pt];
                     int x1, envpan;
                     if (envpos >= x2)
                     {
@@ -984,8 +984,8 @@ BOOL CSoundFile::ReadNote()
                     } else
                     if (pt)
                     {
-                        envpan = pIns->PanEnv.Values[pt-1];
-                        x1 = pIns->PanEnv.Ticks[pt-1];
+                        envpan = pIns->panning_envelope.Values[pt-1];
+                        x1 = pIns->panning_envelope.Ticks[pt-1];
                     } else
                     {
                         envpan = 128;
@@ -1009,9 +1009,9 @@ BOOL CSoundFile::ReadNote()
                     pChn->nRealPan = CLAMP(pan, 0, 256);
                 }
                 // FadeOut volume
-                if (pChn->dwFlags & CHN_NOTEFADE)
+                if (pChn->flags & CHN_NOTEFADE)
                 {
-                    UINT fadeout = pIns->nFadeOut;
+                    UINT fadeout = pIns->fadeout;
                     if (fadeout)
                     {
                         pChn->nFadeOutVol -= fadeout << 1;
@@ -1024,18 +1024,18 @@ BOOL CSoundFile::ReadNote()
                     }
                 }
                 // Pitch/Pan separation
-                if ((pIns->nPPS) && (pChn->nRealPan) && (pChn->nNote))
+                if ((pIns->pitch_pan_separation) && (pChn->nRealPan) && (pChn->nNote))
                 {
                     // PPS value is 1/512, i.e. PPS=1 will adjust by 8/512 = 1/64 for each 8 semitones
                     // with PPS = 32 / PPC = C-5, E-6 will pan hard right (and D#6 will not)
                     // IT compatibility: IT has a wider pan range here
-                    int pandelta = (int)pChn->nRealPan + (int)((int)(pChn->nNote - pIns->nPPC - 1) * (int)pIns->nPPS) / (int)(IsCompatibleMode(TRK_IMPULSETRACKER) ? 4 : 8);
+                    int pandelta = (int)pChn->nRealPan + (int)((int)(pChn->nNote - pIns->pitch_pan_center - 1) * (int)pIns->pitch_pan_separation) / (int)(IsCompatibleMode(TRK_IMPULSETRACKER) ? 4 : 8);
                     pChn->nRealPan = CLAMP(pandelta, 0, 256);
                 }
             } else
             {
                 // No Envelope: key off => note cut
-                if (pChn->dwFlags & CHN_NOTEFADE) // 1.41-: CHN_KEYOFF|CHN_NOTEFADE
+                if (pChn->flags & CHN_NOTEFADE) // 1.41-: CHN_KEYOFF|CHN_NOTEFADE
                 {
                     pChn->nFadeOutVol = 0;
                     vol = 0;
@@ -1051,7 +1051,7 @@ BOOL CSoundFile::ReadNote()
 
                 //Don't let global volume affect level of sample if
                 //global volume is going to be applied to master output anyway.
-                if (pChn->dwFlags & CHN_SYNCMUTE)
+                if (pChn->flags & CHN_SYNCMUTE)
                 {
                     pChn->nRealVolume = 0;
                 } else if (m_pConfig->getGlobalVolumeAppliesToMaster())
@@ -1064,7 +1064,7 @@ BOOL CSoundFile::ReadNote()
             }
             if (pChn->nPeriod < m_nMinPeriod) pChn->nPeriod = m_nMinPeriod;
             int period = pChn->nPeriod;
-            if ((pChn->dwFlags & (CHN_GLISSANDO|CHN_PORTAMENTO)) ==	(CHN_GLISSANDO|CHN_PORTAMENTO))
+            if ((pChn->flags & (CHN_GLISSANDO|CHN_PORTAMENTO)) ==	(CHN_GLISSANDO|CHN_PORTAMENTO))
             {
                 period = GetPeriodFromNote(GetNoteFromPeriod(period), pChn->nFineTune, pChn->nC5Speed);
             }
@@ -1072,7 +1072,7 @@ BOOL CSoundFile::ReadNote()
             // Arpeggio ?
             if (pChn->nCommand == CMD_ARPEGGIO)
             {
-                if(m_nType == MOD_TYPE_MPT && pChn->pModInstrument && pChn->pModInstrument->pTuning)
+                if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
                 {
                     switch(m_nTickCount % 3)
                     {
@@ -1145,29 +1145,29 @@ BOOL CSoundFile::ReadNote()
             // Pitch/Filter Envelope
             // IT Compatibility: S7B does not disable the pitch envelope, it just pauses the counter
             // Problem: This pauses on the wrong tick at the moment...
-            if ((pIns) && ((pChn->dwFlags & CHN_PITCHENV) || ((pIns->PitchEnv.dwFlags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pChn->pModInstrument->PitchEnv.nNodes))
+            if ((pIns) && ((pChn->flags & CHN_PITCHENV) || ((pIns->pitch_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pChn->instrument->pitch_envelope.num_nodes))
             {
-                int envpos = pChn->PitchEnv.nEnvPosition;
-                UINT pt = pIns->PitchEnv.nNodes - 1;
-                for (UINT i=0; i<(UINT)(pIns->PitchEnv.nNodes-1); i++)
+                int envpos = pChn->pitch_envelope.position;
+                UINT pt = pIns->pitch_envelope.num_nodes - 1;
+                for (UINT i=0; i<(UINT)(pIns->pitch_envelope.num_nodes-1); i++)
                 {
-                    if (envpos <= pIns->PitchEnv.Ticks[i])
+                    if (envpos <= pIns->pitch_envelope.Ticks[i])
                     {
                         pt = i;
                         break;
                     }
                 }
-                int x2 = pIns->PitchEnv.Ticks[pt];
+                int x2 = pIns->pitch_envelope.Ticks[pt];
                 int x1, envpitch;
                 if (envpos >= x2)
                 {
-                    envpitch = (((int)pIns->PitchEnv.Values[pt]) - ENVELOPE_MID) * 8;
+                    envpitch = (((int)pIns->pitch_envelope.Values[pt]) - ENVELOPE_MID) * 8;
                     x1 = x2;
                 } else
                 if (pt)
                 {
-                    envpitch = (((int)pIns->PitchEnv.Values[pt-1]) - ENVELOPE_MID) * 8;
-                    x1 = pIns->PitchEnv.Ticks[pt-1];
+                    envpitch = (((int)pIns->pitch_envelope.Values[pt-1]) - ENVELOPE_MID) * 8;
+                    x1 = pIns->pitch_envelope.Ticks[pt-1];
                 } else
                 {
                     envpitch = 0;
@@ -1176,21 +1176,21 @@ BOOL CSoundFile::ReadNote()
                 if (envpos > x2) envpos = x2;
                 if ((x2 > x1) && (envpos > x1))
                 {
-                    int envpitchdest = (((int)pIns->PitchEnv.Values[pt]) - 32) * 8;
+                    int envpitchdest = (((int)pIns->pitch_envelope.Values[pt]) - 32) * 8;
                     envpitch += ((envpos - x1) * (envpitchdest - envpitch)) / (x2 - x1);
                 }
                 envpitch = CLAMP(envpitch, -256, 256);
                 // Filter Envelope: controls cutoff frequency
-                //if (pIns->PitchEnv.dwFlags & ENV_FILTER)
-                if (pChn->dwFlags & CHN_FILTERENV)
+                //if (pIns->pitch_envelope.flags & ENV_FILTER)
+                if (pChn->flags & CHN_FILTERENV)
                 {
 #ifndef NO_FILTER
-                    SetupChannelFilter(pChn, (pChn->dwFlags & CHN_FILTER) ? false : true, envpitch);
+                    SetupChannelFilter(pChn, (pChn->flags & CHN_FILTER) ? false : true, envpitch);
 #endif // NO_FILTER
                 } else
                 // Pitch Envelope
                 {
-                    if(m_nType == MOD_TYPE_MPT && pChn->pModInstrument && pChn->pModInstrument->pTuning)
+                    if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
                     {
                         if(pChn->nFineTune != envpitch)
                         {
@@ -1219,7 +1219,7 @@ BOOL CSoundFile::ReadNote()
             }
             
             // Vibrato
-            if (pChn->dwFlags & CHN_VIBRATO)
+            if (pChn->flags & CHN_VIBRATO)
             {
                 UINT vibpos = pChn->nVibratoPos;
                 LONG vdelta;
@@ -1245,7 +1245,7 @@ BOOL CSoundFile::ReadNote()
                     vdelta = IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSinusTable[vibpos] : ModSinusTable[vibpos];
                 }
 
-                if(m_nType == MOD_TYPE_MPT && pChn->pModInstrument && pChn->pModInstrument->pTuning)
+                if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
                 {
                     //Hack implementation: Scaling vibratofactor to [0.95; 1.05]
                     //using figure from above tables and vibratodepth parameter
@@ -1303,7 +1303,7 @@ BOOL CSoundFile::ReadNote()
                 }
             }
             // Panbrello
-            if (pChn->dwFlags & CHN_PANBRELLO)
+            if (pChn->flags & CHN_PANBRELLO)
             {
                 UINT panpos;
                 // IT compatibility: IT has its own, more precise tables
@@ -1342,10 +1342,10 @@ BOOL CSoundFile::ReadNote()
             }
             int nPeriodFrac = 0;
             // Sample Auto-Vibrato
-            if ((pChn->pModSample) && (pChn->pModSample->nVibDepth))
+            if ((pChn->sample) && (pChn->sample->vibrato_depth))
             {
-                modplug::mixer::MODSAMPLE *pSmp = pChn->pModSample;
-                const bool alternativeTuning = pChn->pModInstrument && pChn->pModInstrument->pTuning;
+                modplug::tracker::modsample_t *pSmp = pChn->sample;
+                const bool alternativeTuning = pChn->instrument && pChn->instrument->pTuning;
 
                 // IT compatibility: Autovibrato is so much different in IT that I just put this in a separate code block, to get rid of a dozen IsCompatibilityMode() calls.
                 if(IsCompatibleMode(TRK_IMPULSETRACKER) && !alternativeTuning)
@@ -1362,15 +1362,15 @@ BOOL CSoundFile::ReadNote()
                     */
                     const int vibpos = pChn->nAutoVibPos & 0xFF;
                     int adepth = pChn->nAutoVibDepth; // (1)
-                    adepth += pSmp->nVibSweep & 0xFF; // (2 & 3)
-                    adepth = min(adepth, (int)(pSmp->nVibDepth << 8));
+                    adepth += pSmp->vibrato_sweep & 0xFF; // (2 & 3)
+                    adepth = min(adepth, (int)(pSmp->vibrato_depth << 8));
                     pChn->nAutoVibDepth = adepth; // (5)
                     adepth >>= 8; // (4)
 
-                    pChn->nAutoVibPos += pSmp->nVibRate;
+                    pChn->nAutoVibPos += pSmp->vibrato_rate;
 
                     int vdelta;
-                    switch(pSmp->nVibType)
+                    switch(pSmp->vibrato_type)
                     {
                     case VIB_RANDOM:
                         vdelta = (rand() & 0x7F) - 0x40;
@@ -1412,9 +1412,9 @@ BOOL CSoundFile::ReadNote()
                 } else
                 {
                     // MPT's autovibrato code
-                    if (pSmp->nVibSweep == 0)
+                    if (pSmp->vibrato_sweep == 0)
                     {
-                        pChn->nAutoVibDepth = pSmp->nVibDepth << 8;
+                        pChn->nAutoVibDepth = pSmp->vibrato_depth << 8;
                     } else
                     {
                         // Calculate current autovibrato depth using vibsweep
@@ -1422,20 +1422,20 @@ BOOL CSoundFile::ReadNote()
                         {
                             // Note: changed bitshift from 3 to 1 as the variable is not divided by 4 in the IT loader anymore
                             // - so we divide sweep by 4 here.
-                            pChn->nAutoVibDepth += pSmp->nVibSweep << 1;
+                            pChn->nAutoVibDepth += pSmp->vibrato_sweep << 1;
                         } else
                         {
-                            if (!(pChn->dwFlags & CHN_KEYOFF))
+                            if (!(pChn->flags & CHN_KEYOFF))
                             {
-                                pChn->nAutoVibDepth += (pSmp->nVibDepth << 8) /	pSmp->nVibSweep;
+                                pChn->nAutoVibDepth += (pSmp->vibrato_depth << 8) /	pSmp->vibrato_sweep;
                             }
                         }
-                        if ((pChn->nAutoVibDepth >> 8) > pSmp->nVibDepth)
-                            pChn->nAutoVibDepth = pSmp->nVibDepth << 8;
+                        if ((pChn->nAutoVibDepth >> 8) > pSmp->vibrato_depth)
+                            pChn->nAutoVibDepth = pSmp->vibrato_depth << 8;
                     }
-                    pChn->nAutoVibPos += pSmp->nVibRate;
+                    pChn->nAutoVibPos += pSmp->vibrato_rate;
                     int vdelta;
-                    switch(pSmp->nVibType)
+                    switch(pSmp->vibrato_type)
                     {
                     case VIB_RANDOM:
                         vdelta = ModRandomTable[pChn->nAutoVibPos & 0x3F];
@@ -1460,13 +1460,13 @@ BOOL CSoundFile::ReadNote()
                     if(alternativeTuning)
                     {
                         //Vib sweep is not taken into account here.
-                        vibratoFactor += 0.05F * pSmp->nVibDepth * vdelta / 4096.0F; //4096 == 64^2
+                        vibratoFactor += 0.05F * pSmp->vibrato_depth * vdelta / 4096.0F; //4096 == 64^2
                         //See vibrato for explanation.
                         pChn->m_CalculateFreq = true;
                         /*
                         Finestep vibrato:
-                        const float autoVibDepth = pSmp->nVibDepth * val / 4096.0F; //4096 == 64^2
-                        vibratoFineSteps += static_cast<CTuning::FINESTEPTYPE>(pChn->pModInstrument->pTuning->GetFineStepCount() *  autoVibDepth);
+                        const float autoVibDepth = pSmp->vibrato_depth * val / 4096.0F; //4096 == 64^2
+                        vibratoFineSteps += static_cast<CTuning::FINESTEPTYPE>(pChn->instrument->pTuning->GetFineStepCount() *  autoVibDepth);
                         pChn->m_CalculateFreq = true;
                         */
                     }
@@ -1502,7 +1502,7 @@ BOOL CSoundFile::ReadNote()
             // Final Period
             if (period <= m_nMinPeriod)
             {
-                if (m_nType & MOD_TYPE_S3M) pChn->nLength = 0;
+                if (m_nType & MOD_TYPE_S3M) pChn->length = 0;
                 period = m_nMinPeriod;
             }
             //rewbs: temporarily commenting out block to allow notes below A-0.
@@ -1511,7 +1511,7 @@ BOOL CSoundFile::ReadNote()
                 if ((m_nType & MOD_TYPE_IT) || (period >= 0x100000))
                 {
                     pChn->nFadeOutVol = 0;
-                    pChn->dwFlags |= CHN_NOTEFADE;
+                    pChn->flags |= CHN_NOTEFADE;
                     pChn->nRealVolume = 0;
                 }
                 period = m_nMaxPeriod;
@@ -1538,14 +1538,14 @@ BOOL CSoundFile::ReadNote()
             }
 
             //Applying Pitch/Tempo lock.
-            if(m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT) && pIns && pIns->wPitchToTempoLock)
-                freq *= (float)m_nMusicTempo / (float)pIns->wPitchToTempoLock;
+            if(m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT) && pIns && pIns->pitch_to_tempo_lock)
+                freq *= (float)m_nMusicTempo / (float)pIns->pitch_to_tempo_lock;
 
 
             if ((m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) && (freq < 256))
             {
                 pChn->nFadeOutVol = 0;
-                pChn->dwFlags |= CHN_NOTEFADE;
+                pChn->flags |= CHN_NOTEFADE;
                 pChn->nRealVolume = 0;
             }
 
@@ -1553,98 +1553,98 @@ BOOL CSoundFile::ReadNote()
             if ((ninc >= 0xFFB0) && (ninc <= 0x10090)) ninc = 0x10000;
             if (m_nFreqFactor != 128) ninc = (ninc * m_nFreqFactor) >> 7;
             if (ninc > 0xFF0000) ninc = 0xFF0000;
-            pChn->nInc = (ninc+1) & ~3;
+            pChn->position_delta = (ninc+1) & ~3;
         }
         
         // Increment envelope position
         if (pIns)
         {
             // Volume Envelope
-            if (pChn->dwFlags & CHN_VOLENV)
+            if (pChn->flags & CHN_VOLENV)
             {
                 // Increase position
-                pChn->VolEnv.nEnvPosition++;
+                pChn->volume_envelope.position++;
                 // Volume Loop ?
-                if (pIns->VolEnv.dwFlags & ENV_LOOP)
+                if (pIns->volume_envelope.flags & ENV_LOOP)
                 {
-                    UINT volloopend = pIns->VolEnv.Ticks[pIns->VolEnv.nLoopEnd];
+                    UINT volloopend = pIns->volume_envelope.Ticks[pIns->volume_envelope.loop_end];
                     if (m_nType != MOD_TYPE_XM) volloopend++;
-                    if (pChn->VolEnv.nEnvPosition == volloopend)
+                    if (pChn->volume_envelope.position == volloopend)
                     {
-                        pChn->VolEnv.nEnvPosition = pIns->VolEnv.Ticks[pIns->VolEnv.nLoopStart];
-                        if ((pIns->VolEnv.nLoopEnd == pIns->VolEnv.nLoopStart) && (!pIns->VolEnv.Values[pIns->VolEnv.nLoopStart])
-                         && ((!(m_nType & MOD_TYPE_XM)) || (pIns->VolEnv.nLoopEnd+1 == (int)pIns->VolEnv.nNodes)))
+                        pChn->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.loop_start];
+                        if ((pIns->volume_envelope.loop_end == pIns->volume_envelope.loop_start) && (!pIns->volume_envelope.Values[pIns->volume_envelope.loop_start])
+                         && ((!(m_nType & MOD_TYPE_XM)) || (pIns->volume_envelope.loop_end+1 == (int)pIns->volume_envelope.num_nodes)))
                         {
-                            pChn->dwFlags |= CHN_NOTEFADE;
+                            pChn->flags |= CHN_NOTEFADE;
                             pChn->nFadeOutVol = 0;
                         }
                     }
                 }
                 // Volume Sustain ?
-                if ((pIns->VolEnv.dwFlags & ENV_SUSTAIN) && (!(pChn->dwFlags & CHN_KEYOFF)))
+                if ((pIns->volume_envelope.flags & ENV_SUSTAIN) && (!(pChn->flags & CHN_KEYOFF)))
                 {
-                    if (pChn->VolEnv.nEnvPosition == (UINT)pIns->VolEnv.Ticks[pIns->VolEnv.nSustainEnd] + 1)
-                        pChn->VolEnv.nEnvPosition = pIns->VolEnv.Ticks[pIns->VolEnv.nSustainStart];
+                    if (pChn->volume_envelope.position == (UINT)pIns->volume_envelope.Ticks[pIns->volume_envelope.sustain_end] + 1)
+                        pChn->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.sustain_start];
                 } else
                 // End of Envelope ?
-                if (pChn->VolEnv.nEnvPosition > pIns->VolEnv.Ticks[pIns->VolEnv.nNodes - 1])
+                if (pChn->volume_envelope.position > pIns->volume_envelope.Ticks[pIns->volume_envelope.num_nodes - 1])
                 {
-                    if ((m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) || (pChn->dwFlags & CHN_KEYOFF)) pChn->dwFlags |= CHN_NOTEFADE;
-                    pChn->VolEnv.nEnvPosition = pIns->VolEnv.Ticks[pIns->VolEnv.nNodes - 1];
-                    if ((!pIns->VolEnv.Values[pIns->VolEnv.nNodes-1]) && ((nChn >= m_nChannels) || (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))))
+                    if ((m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) || (pChn->flags & CHN_KEYOFF)) pChn->flags |= CHN_NOTEFADE;
+                    pChn->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.num_nodes - 1];
+                    if ((!pIns->volume_envelope.Values[pIns->volume_envelope.num_nodes-1]) && ((nChn >= m_nChannels) || (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))))
                     {
-                        pChn->dwFlags |= CHN_NOTEFADE;
+                        pChn->flags |= CHN_NOTEFADE;
                         pChn->nFadeOutVol = 0;
                         pChn->nRealVolume = 0;
                     }
                 }
             }
             // Panning Envelope
-            if (pChn->dwFlags & CHN_PANENV)
+            if (pChn->flags & CHN_PANENV)
             {
-                pChn->PanEnv.nEnvPosition++;
-                if (pIns->PanEnv.dwFlags & ENV_LOOP)
+                pChn->panning_envelope.position++;
+                if (pIns->panning_envelope.flags & ENV_LOOP)
                 {
-                    UINT panloopend = pIns->PanEnv.Ticks[pIns->PanEnv.nLoopEnd];
+                    UINT panloopend = pIns->panning_envelope.Ticks[pIns->panning_envelope.loop_end];
                     if (m_nType != MOD_TYPE_XM) panloopend++;
-                    if (pChn->PanEnv.nEnvPosition == panloopend)
-                        pChn->PanEnv.nEnvPosition = pIns->PanEnv.Ticks[pIns->PanEnv.nLoopStart];
+                    if (pChn->panning_envelope.position == panloopend)
+                        pChn->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.loop_start];
                 }
                 // Panning Sustain ?
-                if ((pIns->PanEnv.dwFlags & ENV_SUSTAIN) && (pChn->PanEnv.nEnvPosition == (UINT)pIns->PanEnv.Ticks[pIns->PanEnv.nSustainEnd]+1)
-                 && (!(pChn->dwFlags & CHN_KEYOFF)))
+                if ((pIns->panning_envelope.flags & ENV_SUSTAIN) && (pChn->panning_envelope.position == (UINT)pIns->panning_envelope.Ticks[pIns->panning_envelope.sustain_end]+1)
+                 && (!(pChn->flags & CHN_KEYOFF)))
                 {
                     // Panning sustained
-                    pChn->PanEnv.nEnvPosition = pIns->PanEnv.Ticks[pIns->PanEnv.nSustainStart];
+                    pChn->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.sustain_start];
                 } else
                 {
-                    if (pChn->PanEnv.nEnvPosition > pIns->PanEnv.Ticks[pIns->PanEnv.nNodes - 1])
-                        pChn->PanEnv.nEnvPosition = pIns->PanEnv.Ticks[pIns->PanEnv.nNodes - 1];
+                    if (pChn->panning_envelope.position > pIns->panning_envelope.Ticks[pIns->panning_envelope.num_nodes - 1])
+                        pChn->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.num_nodes - 1];
                 }
             }
             // Pitch Envelope
-            if (pChn->dwFlags & CHN_PITCHENV)
+            if (pChn->flags & CHN_PITCHENV)
             {
                 // Increase position
-                pChn->PitchEnv.nEnvPosition++;
+                pChn->pitch_envelope.position++;
                 // Pitch Loop ?
-                if (pIns->PitchEnv.dwFlags & ENV_LOOP)
+                if (pIns->pitch_envelope.flags & ENV_LOOP)
                 {
-                    UINT pitchloopend = pIns->PitchEnv.Ticks[pIns->PitchEnv.nLoopEnd];
+                    UINT pitchloopend = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.loop_end];
                     //IT compatibility 24. Short envelope loops
                     if (IsCompatibleMode(TRK_IMPULSETRACKER)) pitchloopend++;
-                    if (pChn->PitchEnv.nEnvPosition >= pitchloopend)
-                        pChn->PitchEnv.nEnvPosition = pIns->PitchEnv.Ticks[pIns->PitchEnv.nLoopStart];
+                    if (pChn->pitch_envelope.position >= pitchloopend)
+                        pChn->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.loop_start];
                 }
                 // Pitch Sustain ?
-                if ((pIns->PitchEnv.dwFlags & ENV_SUSTAIN) && (!(pChn->dwFlags & CHN_KEYOFF)))
+                if ((pIns->pitch_envelope.flags & ENV_SUSTAIN) && (!(pChn->flags & CHN_KEYOFF)))
                 {
-                    if (pChn->PitchEnv.nEnvPosition == (UINT)pIns->PitchEnv.Ticks[pIns->PitchEnv.nSustainEnd]+1)
-                        pChn->PitchEnv.nEnvPosition = pIns->PitchEnv.Ticks[pIns->PitchEnv.nSustainStart];
+                    if (pChn->pitch_envelope.position == (UINT)pIns->pitch_envelope.Ticks[pIns->pitch_envelope.sustain_end]+1)
+                        pChn->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.sustain_start];
                 } else
                 {
-                    if (pChn->PitchEnv.nEnvPosition > pIns->PitchEnv.Ticks[pIns->PitchEnv.nNodes - 1])
-                        pChn->PitchEnv.nEnvPosition = pIns->PitchEnv.Ticks[pIns->PitchEnv.nNodes - 1];
+                    if (pChn->pitch_envelope.position > pIns->pitch_envelope.Ticks[pIns->pitch_envelope.num_nodes - 1])
+                        pChn->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.num_nodes - 1];
                 }
             }
         }
@@ -1653,13 +1653,13 @@ BOOL CSoundFile::ReadNote()
         // Limit CPU -> > 80% -> don't ramp
         if ((gnCPUUsage >= 80) && (!pChn->nRealVolume))
         {
-            pChn->nLeftVol = pChn->nRightVol = 0;
+            pChn->left_volume = pChn->right_volume = 0;
         }
 #endif // MODPLUG_PLAYER
         // Volume ramping
-        pChn->dwFlags &= ~CHN_VOLUMERAMP;
-        if ((pChn->nRealVolume) || (pChn->nLeftVol) || (pChn->nRightVol))
-            pChn->dwFlags |= CHN_VOLUMERAMP;
+        pChn->flags &= ~CHN_VOLUMERAMP;
+        if ((pChn->nRealVolume) || (pChn->left_volume) || (pChn->right_volume))
+            pChn->flags |= CHN_VOLUMERAMP;
 #ifdef MODPLUG_PLAYER
         // Decrease VU-Meter
         if (pChn->nVUMeter > VUMETER_DECAY)	pChn->nVUMeter -= VUMETER_DECAY; else pChn->nVUMeter = 0;
@@ -1668,11 +1668,11 @@ BOOL CSoundFile::ReadNote()
         if (pChn->nLeftVU > VUMETER_DECAY) pChn->nLeftVU -= VUMETER_DECAY; else pChn->nLeftVU = 0;
         if (pChn->nRightVU > VUMETER_DECAY) pChn->nRightVU -= VUMETER_DECAY; else pChn->nRightVU = 0;
 #endif
-        // Check for too big nInc
-        if (((pChn->nInc >> 16) + 1) >= (LONG)(pChn->nLoopEnd - pChn->nLoopStart)) pChn->dwFlags &= ~CHN_LOOP;
+        // Check for too big position_delta
+        if (((pChn->position_delta >> 16) + 1) >= (LONG)(pChn->loop_end - pChn->loop_start)) pChn->flags &= ~CHN_LOOP;
         pChn->nNewRightVol = pChn->nNewLeftVol = 0;
-        pChn->pCurrentSample = ((pChn->pSample) && (pChn->nLength) && (pChn->nInc)) ? pChn->pSample : NULL;
-        if (pChn->pCurrentSample)
+        pChn->active_sample_data = ((pChn->sample_data) && (pChn->length) && (pChn->position_delta)) ? pChn->sample_data : NULL;
+        if (pChn->active_sample_data)
         {
             // Update VU-Meter (nRealVolume is 14-bit)
 #ifdef MODPLUG_PLAYER
@@ -1695,7 +1695,7 @@ BOOL CSoundFile::ReadNote()
             if (pChn->nRightVU < vur) pChn->nRightVU = (BYTE)vur;
 #endif
 #ifdef MODPLUG_TRACKER
-            UINT kChnMasterVol = (pChn->dwFlags & CHN_EXTRALOUD) ? 0x100 : nMasterVol;
+            UINT kChnMasterVol = (pChn->flags & CHN_EXTRALOUD) ? 0x100 : nMasterVol;
 #else
 #define		kChnMasterVol	nMasterVol
 #endif // MODPLUG_TRACKER
@@ -1750,14 +1750,14 @@ BOOL CSoundFile::ReadNote()
             // Check IDO
             if (gdwSoundSetup & SNDMIX_NORESAMPLING)
             {
-                pChn->dwFlags |= CHN_NOIDO;
+                pChn->flags |= CHN_NOIDO;
             } else
             {
-                pChn->dwFlags &= ~(CHN_NOIDO|CHN_HQSRC);
+                pChn->flags &= ~(CHN_NOIDO|CHN_HQSRC);
 #ifndef FASTSOUNDLIB
-                if (pChn->nInc == 0x10000)
+                if (pChn->position_delta == 0x10000)
                 {
-                    pChn->dwFlags |= CHN_NOIDO;
+                    pChn->flags |= CHN_NOIDO;
                 } else
                 if ((gdwSoundSetup & SNDMIX_HQRESAMPLER) && ((gnCPUUsage < 80) || (gdwSoundSetup & SNDMIX_DIRECTTODISK) || (m_nMixChannels < 8)))
                 {
@@ -1773,28 +1773,28 @@ BOOL CSoundFile::ReadNote()
                             fmax = 0x18000;
                         }
                         if ((pChn->nNewLeftVol < 0x80) && (pChn->nNewRightVol < 0x80)
-                         && (pChn->nLeftVol < 0x80) && (pChn->nRightVol < 0x80))
+                         && (pChn->left_volume < 0x80) && (pChn->right_volume < 0x80))
                         {
-                            if (pChn->nInc >= 0xFF00) pChn->dwFlags |= CHN_NOIDO;
+                            if (pChn->position_delta >= 0xFF00) pChn->flags |= CHN_NOIDO;
                         } else
                         {
-                            pChn->dwFlags |= (pChn->nInc >= fmax) ? CHN_NOIDO : CHN_HQSRC;
+                            pChn->flags |= (pChn->position_delta >= fmax) ? CHN_NOIDO : CHN_HQSRC;
                         }
                     } else
                     {
-                        pChn->dwFlags |= CHN_HQSRC;
+                        pChn->flags |= CHN_HQSRC;
                     }
                     
                 } else
                 {
-                    if ((pChn->nInc >= 0x14000)
-                    || ((pChn->nInc >= 0xFF00) && ((pChn->nInc < 0x10100) || (gdwSysInfo & SYSMIX_SLOWCPU)))
+                    if ((pChn->position_delta >= 0x14000)
+                    || ((pChn->position_delta >= 0xFF00) && ((pChn->position_delta < 0x10100) || (gdwSysInfo & SYSMIX_SLOWCPU)))
                     || ((gnCPUUsage > 80) && (pChn->nNewLeftVol < 0x100) && (pChn->nNewRightVol < 0x100)))
-                        pChn->dwFlags |= CHN_NOIDO;
+                        pChn->flags |= CHN_NOIDO;
                 }
 #else
-                if (pChn->nInc >= 0xFE00) pChn->dwFlags |= CHN_NOIDO;
-                if (true) pChn->dwFlags |= CHN_NOIDO;
+                if (pChn->position_delta >= 0xFE00) pChn->flags |= CHN_NOIDO;
+                if (true) pChn->flags |= CHN_NOIDO;
 #endif // FASTSOUNDLIB
             }
 
@@ -1807,33 +1807,33 @@ BOOL CSoundFile::ReadNote()
             pChn->nNewRightVol >>= extraAttenuation;
             pChn->nNewLeftVol >>= extraAttenuation;
 
-            pChn->nRightRamp = pChn->nLeftRamp = 0;
+            pChn->right_ramp = pChn->left_ramp = 0;
             // Dolby Pro-Logic Surround
-            if ((pChn->dwFlags & CHN_SURROUND) && (gnChannels == 2)) pChn->nNewLeftVol = - pChn->nNewLeftVol;
+            if ((pChn->flags & CHN_SURROUND) && (gnChannels == 2)) pChn->nNewLeftVol = - pChn->nNewLeftVol;
             // Checking Ping-Pong Loops
-            if (pChn->dwFlags & CHN_PINGPONGFLAG) pChn->nInc = -pChn->nInc;
+            if (pChn->flags & CHN_PINGPONGFLAG) pChn->position_delta = -pChn->position_delta;
 
             // Setting up volume ramp
              // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
-            if ((pChn->dwFlags & CHN_VOLUMERAMP) && ((pChn->nRightVol != pChn->nNewRightVol) || (pChn->nLeftVol != pChn->nNewLeftVol)))	{
-                bool rampUp = (pChn->nNewRightVol > pChn->nRightVol) || (pChn->nNewLeftVol > pChn->nLeftVol);
+            if ((pChn->flags & CHN_VOLUMERAMP) && ((pChn->right_volume != pChn->nNewRightVol) || (pChn->left_volume != pChn->nNewLeftVol)))	{
+                bool rampUp = (pChn->nNewRightVol > pChn->right_volume) || (pChn->nNewLeftVol > pChn->left_volume);
                 LONG rampLength, globalRampLength, instrRampLength = 0;
                 rampLength = globalRampLength = rampUp ? gnVolumeRampInSamples : gnVolumeRampOutSamples;
                 //XXXih: add real support for bidi ramping here
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
                 //XXXih: jesus.
-                bool enableCustomRamp = pChn->pModInstrument && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM));
+                bool enableCustomRamp = pChn->instrument && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM));
                 if (enableCustomRamp) {
-                    instrRampLength = rampUp ? pChn->pModInstrument->nVolRampUp : pChn->pModInstrument->nVolRampDown;
+                    instrRampLength = rampUp ? pChn->instrument->volume_ramp_up : pChn->instrument->volume_ramp_down;
                     rampLength = instrRampLength ? (gdwMixingFreq * instrRampLength / 100000) : globalRampLength;
                 }
                 if (!rampLength) {
                     rampLength = 1;
                 }
 // -! NEW_FEATURE#0027
-                LONG nRightDelta = ((pChn->nNewRightVol - pChn->nRightVol) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                LONG nLeftDelta  = ((pChn->nNewLeftVol - pChn->nLeftVol) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                LONG nRightDelta = ((pChn->nNewRightVol - pChn->right_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                LONG nLeftDelta  = ((pChn->nNewLeftVol - pChn->left_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
 #ifndef FASTSOUNDLIB
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup "
@@ -1842,7 +1842,7 @@ BOOL CSoundFile::ReadNote()
 //				  && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50)))
                 if ((gdwSoundSetup & SNDMIX_DIRECTTODISK) || ((gdwSysInfo & (SYSMIX_ENABLEMMX | SYSMIX_FASTCPU)) && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && instrRampLength))) {
 // -! NEW_FEATURE#0027
-                    if ((pChn->nRightVol | pChn->nLeftVol) && (pChn->nNewRightVol | pChn->nNewLeftVol) && (!(pChn->dwFlags & CHN_FASTVOLRAMP)))	{
+                    if ((pChn->right_volume | pChn->left_volume) && (pChn->nNewRightVol | pChn->nNewLeftVol) && (!(pChn->flags & CHN_FASTVOLRAMP)))	{
                         rampLength = m_nBufferCount;
                         if (rampLength > (1 << (modplug::mixgraph::VOLUME_RAMP_PRECISION-1))) {
                             rampLength = (1 << (modplug::mixgraph::VOLUME_RAMP_PRECISION-1));
@@ -1853,27 +1853,27 @@ BOOL CSoundFile::ReadNote()
                     }
                 }
 #endif // FASTSOUNDLIB
-                pChn->nRightRamp = nRightDelta / rampLength;
-                pChn->nLeftRamp = nLeftDelta / rampLength;
-                pChn->nRightVol = pChn->nNewRightVol - ((pChn->nRightRamp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                pChn->nLeftVol = pChn->nNewLeftVol - ((pChn->nLeftRamp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                if (pChn->nRightRamp|pChn->nLeftRamp)
+                pChn->right_ramp = nRightDelta / rampLength;
+                pChn->left_ramp = nLeftDelta / rampLength;
+                pChn->right_volume = pChn->nNewRightVol - ((pChn->right_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                pChn->left_volume = pChn->nNewLeftVol - ((pChn->left_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                if (pChn->right_ramp|pChn->left_ramp)
                 {
                     pChn->nRampLength = rampLength;
                 } else
                 {
-                    pChn->dwFlags &= ~CHN_VOLUMERAMP;
-                    pChn->nRightVol = pChn->nNewRightVol;
-                    pChn->nLeftVol = pChn->nNewLeftVol;
+                    pChn->flags &= ~CHN_VOLUMERAMP;
+                    pChn->right_volume = pChn->nNewRightVol;
+                    pChn->left_volume = pChn->nNewLeftVol;
                 }
             } else
             {
-                pChn->dwFlags &= ~CHN_VOLUMERAMP;
-                pChn->nRightVol = pChn->nNewRightVol;
-                pChn->nLeftVol = pChn->nNewLeftVol;
+                pChn->flags &= ~CHN_VOLUMERAMP;
+                pChn->right_volume = pChn->nNewRightVol;
+                pChn->left_volume = pChn->nNewLeftVol;
             }
-            pChn->nRampRightVol = pChn->nRightVol << modplug::mixgraph::VOLUME_RAMP_PRECISION;
-            pChn->nRampLeftVol = pChn->nLeftVol << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+            pChn->nRampRightVol = pChn->right_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+            pChn->nRampLeftVol = pChn->left_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
             // Adding the channel in the channel list
             ChnMix[m_nMixChannels++] = nChn;
         } else
@@ -1884,8 +1884,8 @@ BOOL CSoundFile::ReadNote()
             if (pChn->nRightVU > 128) pChn->nRightVU = 0;
 #endif // ENABLE_STEREOVU
             if (pChn->nVUMeter > 0xFF) pChn->nVUMeter = 0;
-            pChn->nLeftVol = pChn->nRightVol = 0;
-            pChn->nLength = 0;
+            pChn->left_volume = pChn->right_volume = 0;
+            pChn->length = 0;
         }
     }
 
@@ -1922,30 +1922,30 @@ BOOL CSoundFile::ReadNote()
 
 #ifdef MODPLUG_TRACKER
 
-VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//rewbs.VSTdelay: added arg
+VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn)	//rewbs.VSTdelay: added arg
 //----------------------------------------------------------
 {
     // Do we need to process midi?
     // For now there is no difference between mute and sync mute with VSTis.
-    if (pChn->dwFlags & (CHN_MUTE|CHN_SYNCMUTE)) return;
+    if (pChn->flags & (CHN_MUTE|CHN_SYNCMUTE)) return;
     if ((!m_nInstruments) || (m_nPattern >= Patterns.Size())
          || (m_nRow >= Patterns[m_nPattern].GetNumRows()) || (!Patterns[m_nPattern])) return;
 
-    const MODCOMMAND::NOTE note = pChn->nRowNote;
-    const MODCOMMAND::INSTR instr = pChn->nRowInstr;
-    const MODCOMMAND::VOL vol = pChn->nRowVolume;
-    const MODCOMMAND::VOLCMD volcmd = pChn->nRowVolCmd;
+    const modplug::tracker::modcommand_t::NOTE note = pChn->nRowNote;
+    const modplug::tracker::modcommand_t::INSTR instr = pChn->nRowInstr;
+    const modplug::tracker::modcommand_t::VOL vol = pChn->nRowVolume;
+    const modplug::tracker::modcommand_t::VOLCMD volcmd = pChn->nRowVolCmd;
     // Debug
     {
         // Previously this function took modcommand directly from pattern. ASSERT is there
         // to detect possible behaviour change now that the data is accessed from channel.
-        const MODCOMMAND mc = *Patterns[m_nPattern].GetpModCommand(m_nRow, static_cast<CHANNELINDEX>(nChn));
+        const modplug::tracker::modcommand_t mc = *Patterns[m_nPattern].GetpModCommand(m_nRow, static_cast<CHANNELINDEX>(nChn));
         ASSERT( mc.IsPcNote() ||
             (note == mc.note && instr == mc.instr && volcmd == mc.volcmd && vol == mc.vol));
     }
 
     // Get instrument info and plugin reference
-    modplug::mixer::MODINSTRUMENT *pIns = pChn->pModInstrument;
+    modplug::tracker::modinstrument_t *pIns = pChn->instrument;
     IMixPlugin *pPlugin = nullptr;
 
     if ((instr) && (instr < MAX_INSTRUMENTS))
@@ -1954,7 +1954,7 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//r
     if (pIns)
     {
         // Check instrument plugins
-        if ((pIns->nMidiChannel >= 1) && (pIns->nMidiChannel <= 16))
+        if ((pIns->midi_channel >= 1) && (pIns->midi_channel <= 16))
         {
             UINT nPlugin = GetBestPlugin(nChn, PRIORITISE_INSTRUMENT, RESPECT_MUTES);
             if ((nPlugin) && (nPlugin <= MAX_MIXPLUGINS))
@@ -1964,7 +1964,7 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//r
         }
 
         // Muted instrument?
-        if (pIns && (pIns->dwFlags & INS_MUTE)) return;
+        if (pIns && (pIns->flags & INS_MUTE)) return;
     }
 
     // Do couldn't find a valid plugin
@@ -1974,20 +1974,20 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//r
     {
         if(note)
         {
-            MODCOMMAND::NOTE realNote = note;
+            modplug::tracker::modcommand_t::NOTE realNote = note;
             if((note >= NOTE_MIN) && (note <= NOTE_MAX))
                 realNote = pIns->NoteMap[note - 1];
-            pPlugin->MidiCommand(pIns->nMidiChannel, pIns->nMidiProgram, pIns->wMidiBank, realNote, pChn->nVolume, nChn);
+            pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, pChn->nVolume, nChn);
         } else if (volcmd == VOLCMD_VOLUME)
         {
-            pPlugin->MidiCC(pIns->nMidiChannel, MIDICC_Volume_Fine, vol, nChn);
+            pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Fine, vol, nChn);
         }
         return;
     }
 
 
     const bool hasVolCommand = (volcmd == VOLCMD_VOLUME);
-    const UINT defaultVolume = pIns->nGlobalVol;
+    const UINT defaultVolume = pIns->global_volume;
 
     
     //If new note, determine notevelocity to use.
@@ -2001,10 +2001,10 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//r
             break;
         }
 
-        MODCOMMAND::NOTE realNote = note;
+        modplug::tracker::modcommand_t::NOTE realNote = note;
         if((note >= NOTE_MIN) && (note <= NOTE_MAX))
             realNote = pIns->NoteMap[note - 1];
-        pPlugin->MidiCommand(pIns->nMidiChannel, pIns->nMidiProgram, pIns->wMidiBank, realNote, velocity, nChn);
+        pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, velocity, nChn);
     }
 
     
@@ -2020,43 +2020,43 @@ VOID CSoundFile::ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn)	//r
                 break;
 
             case PLUGIN_VOLUMEHANDLING_MIDI:
-                if(hasVolCommand) pPlugin->MidiCC(pIns->nMidiChannel, MIDICC_Volume_Coarse, min(127, 2*vol), nChn);
-                else pPlugin->MidiCC(pIns->nMidiChannel, MIDICC_Volume_Coarse, min(127, 2*defaultVolume), nChn);
+                if(hasVolCommand) pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Coarse, min(127, 2*vol), nChn);
+                else pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Coarse, min(127, 2*defaultVolume), nChn);
                 break;
 
         }
     }
 }
 
-int CSoundFile::GetVolEnvValueFromPosition(int position, modplug::mixer::MODINSTRUMENT* pIns) const
+int CSoundFile::GetVolEnvValueFromPosition(int position, modplug::tracker::modinstrument_t* pIns) const
 //---------------------------------------------------------------------------------
 {
-    UINT pt = pIns->VolEnv.nNodes - 1;
+    UINT pt = pIns->volume_envelope.num_nodes - 1;
 
     //Checking where current 'tick' is relative to the 
     //envelope points.
-    for (UINT i=0; i<(UINT)(pIns->VolEnv.nNodes-1); i++)
+    for (UINT i=0; i<(UINT)(pIns->volume_envelope.num_nodes-1); i++)
     {
-        if (position <= pIns->VolEnv.Ticks[i])
+        if (position <= pIns->volume_envelope.Ticks[i])
         {
             pt = i;
             break;
         }
     }
 
-    int x2 = pIns->VolEnv.Ticks[pt];
+    int x2 = pIns->volume_envelope.Ticks[pt];
     int x1, envvol;
     if (position >= x2) //Case: current 'tick' is on a envelope point.
     {
-        envvol = pIns->VolEnv.Values[pt] << 2;
+        envvol = pIns->volume_envelope.Values[pt] << 2;
         x1 = x2;
     }
     else //Case: current 'tick' is between two envelope points.
     {
         if (pt)
         {
-            envvol = pIns->VolEnv.Values[pt-1] << 2;
-            x1 = pIns->VolEnv.Ticks[pt-1];
+            envvol = pIns->volume_envelope.Values[pt-1] << 2;
+            x1 = pIns->volume_envelope.Ticks[pt-1];
         } else
         {
             envvol = 0;
@@ -2067,7 +2067,7 @@ int CSoundFile::GetVolEnvValueFromPosition(int position, modplug::mixer::MODINST
         {
             //Linear approximation between the points;
             //f(x+d) ~ f(x) + f'(x)*d, where f'(x) = (y2-y1)/(x2-x1)
-            envvol += ((position - x1) * (((int)pIns->VolEnv.Values[pt]<<2) - envvol)) / (x2 - x1);
+            envvol += ((position - x1) * (((int)pIns->volume_envelope.Values[pt]<<2) - envvol)) / (x2 - x1);
         }
     }
     return envvol;

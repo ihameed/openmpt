@@ -8,8 +8,10 @@
  */
 
 #include "Sndfile.h"
+#include "../mptrack/pervasives/pervasives.h"
 
-using namespace modplug::mixer;
+using namespace modplug::pervasives;
+using namespace modplug::tracker;
 
 // Execute "action" if "request_bytes" bytes cannot be read from stream at position "position"
 #define ASSERT_CAN_READ_PROTOTYPE(position, length, request_bytes, action) \

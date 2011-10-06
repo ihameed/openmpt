@@ -34,7 +34,7 @@ struct FixHackedPatterns
 		*foundHacks = false;
 	}
 
-	void operator()(MODCOMMAND& m)
+	void operator()(modplug::tracker::modcommand_t& m)
 	{
 		// definitely not perfect yet. :)
 		// Probably missing: Some extended effect parameters
@@ -87,11 +87,11 @@ struct FixHackedPatterns
 
 
 // Find and fix envelopes where two nodes are on the same tick.
-bool FindIncompatibleEnvelopes(modplug::mixer::INSTRUMENTENVELOPE &env, bool autofix)
+bool FindIncompatibleEnvelopes(modplug::tracker::modenvelope_t &env, bool autofix)
 //-------------------------------------------------------------------
 {
 	bool found = false;
-	for(UINT i = 1; i < env.nNodes; i++)
+	for(UINT i = 1; i < env.num_nodes; i++)
 	{
 		if(env.Ticks[i] <= env.Ticks[i - 1])	// "<=" so we can fix envelopes "on the fly"
 		{
@@ -259,7 +259,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 	foundHere = false;
 	for(SAMPLEINDEX i = 1; i <= m_SndFile.GetNumSamples(); i++)
 	{
-		modplug::mixer::MODSAMPLE &smp = m_SndFile.Samples[i];
+		modplug::tracker::modsample_t &smp = m_SndFile.Samples[i];
 		if(m_SndFile.GetType() == MOD_TYPE_XM && smp.GetNumChannels() > 1)
 		{
 			foundHere = foundHacks = true;
@@ -289,36 +289,36 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 	bool foundEnvelopes = false;
 	for(INSTRUMENTINDEX i = 1; i <= m_SndFile.GetNumInstruments(); i++)
 	{
-		modplug::mixer::MODINSTRUMENT *instr = m_SndFile.Instruments[i];
+		modplug::tracker::modinstrument_t *instr = m_SndFile.Instruments[i];
 		if(instr == nullptr) continue;
 
 		// Extended instrument attributes
-		if(instr->nFilterMode != FLTMODE_UNCHANGED || instr->nVolRampUp != 0 || instr->nResampling != SRCMODE_DEFAULT ||
-			instr->nCutSwing != 0 || instr->nResSwing != 0 || instr->nMixPlug != 0 || instr->wPitchToTempoLock != 0 ||
-			instr->nDCT == DCT_PLUGIN ||
-			instr->VolEnv.nReleaseNode != ENV_RELEASE_NODE_UNSET ||
-			instr->PanEnv.nReleaseNode != ENV_RELEASE_NODE_UNSET ||
-			instr->PitchEnv.nReleaseNode != ENV_RELEASE_NODE_UNSET
+		if(instr->default_filter_mode != FLTMODE_UNCHANGED || instr->volume_ramp_up != 0 || instr->resampling_mode != SRCMODE_DEFAULT ||
+			instr->random_cutoff_weight != 0 || instr->random_resonance_weight != 0 || instr->nMixPlug != 0 || instr->pitch_to_tempo_lock != 0 ||
+			instr->duplicate_check_type == DCT_PLUGIN ||
+			instr->volume_envelope.release_node != ENV_RELEASE_NODE_UNSET ||
+			instr->panning_envelope.release_node != ENV_RELEASE_NODE_UNSET ||
+			instr->pitch_envelope.release_node != ENV_RELEASE_NODE_UNSET
 		)
 		{
 			foundHere = foundHacks = true;
 			if(autofix)
 			{
-				instr->nFilterMode = FLTMODE_UNCHANGED;
-				instr->nVolRampUp = 0;
-				instr->nResampling = SRCMODE_DEFAULT;
-				instr->nCutSwing = 0;
-				instr->nResSwing = 0;
+				instr->default_filter_mode = FLTMODE_UNCHANGED;
+				instr->volume_ramp_up = 0;
+				instr->resampling_mode = SRCMODE_DEFAULT;
+				instr->random_cutoff_weight = 0;
+				instr->random_resonance_weight = 0;
 				instr->nMixPlug = 0;
-				instr->wPitchToTempoLock = 0;
-				if(instr->nDCT == DCT_PLUGIN) instr->nDCT = DCT_NONE;
-				instr->VolEnv.nReleaseNode = instr->PanEnv.nReleaseNode = instr->PitchEnv.nReleaseNode = ENV_RELEASE_NODE_UNSET;
+				instr->pitch_to_tempo_lock = 0;
+				if(instr->duplicate_check_type == DCT_PLUGIN) instr->duplicate_check_type = DCT_NONE;
+				instr->volume_envelope.release_node = instr->panning_envelope.release_node = instr->pitch_envelope.release_node = ENV_RELEASE_NODE_UNSET;
 			}
 		}
 		// Incompatible envelope shape
-		foundEnvelopes |= FindIncompatibleEnvelopes(instr->VolEnv, autofix);
-		foundEnvelopes |= FindIncompatibleEnvelopes(instr->PanEnv, autofix);
-		foundEnvelopes |= FindIncompatibleEnvelopes(instr->PitchEnv, autofix);
+		foundEnvelopes |= FindIncompatibleEnvelopes(instr->volume_envelope, autofix);
+		foundEnvelopes |= FindIncompatibleEnvelopes(instr->panning_envelope, autofix);
+		foundEnvelopes |= FindIncompatibleEnvelopes(instr->pitch_envelope, autofix);
 		foundHacks |= foundEnvelopes;
 	}
 	if(foundHere)

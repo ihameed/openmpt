@@ -200,9 +200,9 @@ void TestMisc()
 	VERIFY_EQUAL(ConvertStrTo<double>("-0.5e-6"), -0.5e-6);
 	VERIFY_EQUAL(ConvertStrTo<double>("58.65403492763"), 58.65403492763);
 
-	VERIFY_EQUAL(MODCOMMAND::IsPcNote(NOTE_MAX), false);
-	VERIFY_EQUAL(MODCOMMAND::IsPcNote(NOTE_PC), true);
-	VERIFY_EQUAL(MODCOMMAND::IsPcNote(NOTE_PCS), true);
+	VERIFY_EQUAL(modplug::tracker::modcommand_t::IsPcNote(NOTE_MAX), false);
+	VERIFY_EQUAL(modplug::tracker::modcommand_t::IsPcNote(NOTE_PC), true);
+	VERIFY_EQUAL(modplug::tracker::modcommand_t::IsPcNote(NOTE_PCS), true);
 }
 
 
@@ -213,7 +213,7 @@ void TestLoadFile(const CModDoc *pModDoc)
 	const CSoundFile *pSndFile = pModDoc->GetSoundFile();
 
 	// Global Variables
-	VERIFY_EQUAL_NONCONT(strcmp(pSndFile->m_szNames[0], "Test Module"), 0);
+	VERIFY_EQUAL_NONCONT(strcmp(pSndFile->song_name.c_str(), "Test Module"), 0);
 	VERIFY_EQUAL_NONCONT(pSndFile->m_lpszSongComments[0], 'O');
 	VERIFY_EQUAL_NONCONT(pSndFile->m_nDefaultTempo, 139);
 	VERIFY_EQUAL_NONCONT(pSndFile->m_nDefaultSpeed, 5);
@@ -263,59 +263,59 @@ void TestLoadFile(const CModDoc *pModDoc)
 
 	// Samples
 	VERIFY_EQUAL_NONCONT(pSndFile->GetNumSamples(), 1);
-	const modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[1];
+	const modplug::tracker::modsample_t *pSmp = &pSndFile->Samples[1];
 	VERIFY_EQUAL_NONCONT(pSmp->GetBytesPerSample(), 1);
 	VERIFY_EQUAL_NONCONT(pSmp->GetNumChannels(), 1);
 	VERIFY_EQUAL_NONCONT(pSmp->GetElementarySampleSize(), 1);
 	VERIFY_EQUAL_NONCONT(pSmp->GetSampleSizeInBytes(), 16);
 	VERIFY_EQUAL_NONCONT(pSmp->GetSampleRate(MOD_TYPE_MPT), 9001);
-	VERIFY_EQUAL_NONCONT(pSmp->uFlags, CHN_PANNING | CHN_LOOP | CHN_SUSTAINLOOP | CHN_PINGPONGSUSTAIN);
+	VERIFY_EQUAL_NONCONT(pSmp->flags, CHN_PANNING | CHN_LOOP | CHN_SUSTAINLOOP | CHN_PINGPONGSUSTAIN);
 
-	VERIFY_EQUAL_NONCONT(pSmp->nLoopStart, 1);
-	VERIFY_EQUAL_NONCONT(pSmp->nLoopEnd, 8);
-	VERIFY_EQUAL_NONCONT(pSmp->nSustainStart, 1);
-	VERIFY_EQUAL_NONCONT(pSmp->nSustainEnd, 7);
+	VERIFY_EQUAL_NONCONT(pSmp->loop_start, 1);
+	VERIFY_EQUAL_NONCONT(pSmp->loop_end, 8);
+	VERIFY_EQUAL_NONCONT(pSmp->sustain_start, 1);
+	VERIFY_EQUAL_NONCONT(pSmp->sustain_end, 7);
 
-	VERIFY_EQUAL_NONCONT(pSmp->nVibType, VIB_SQUARE);
-	VERIFY_EQUAL_NONCONT(pSmp->nVibSweep, 3);
-	VERIFY_EQUAL_NONCONT(pSmp->nVibRate, 4);
-	VERIFY_EQUAL_NONCONT(pSmp->nVibDepth, 5);
+	VERIFY_EQUAL_NONCONT(pSmp->vibrato_type, VIB_SQUARE);
+	VERIFY_EQUAL_NONCONT(pSmp->vibrato_sweep, 3);
+	VERIFY_EQUAL_NONCONT(pSmp->vibrato_rate, 4);
+	VERIFY_EQUAL_NONCONT(pSmp->vibrato_depth, 5);
 
 	// Instruments
 	VERIFY_EQUAL_NONCONT(pSndFile->GetNumInstruments(), 1);
-	const modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[1];
-	VERIFY_EQUAL_NONCONT(pIns->nGlobalVol, 32);
-	VERIFY_EQUAL_NONCONT(pIns->nFadeOut, 1024);
-	VERIFY_EQUAL_NONCONT(pIns->nPan, 64);
-	VERIFY_EQUAL_NONCONT(pIns->dwFlags, INS_SETPANNING);
+	const modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[1];
+	VERIFY_EQUAL_NONCONT(pIns->global_volume, 32);
+	VERIFY_EQUAL_NONCONT(pIns->fadeout, 1024);
+	VERIFY_EQUAL_NONCONT(pIns->default_pan, 64);
+	VERIFY_EQUAL_NONCONT(pIns->flags, INS_SETPANNING);
 
-	VERIFY_EQUAL_NONCONT(pIns->nPPS, 16);
-	VERIFY_EQUAL_NONCONT(pIns->nPPC, (NOTE_MIDDLEC - 1) + 6);	// F#5
+	VERIFY_EQUAL_NONCONT(pIns->pitch_pan_separation, 16);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_pan_center, (NOTE_MIDDLEC - 1) + 6);	// F#5
 
-	VERIFY_EQUAL_NONCONT(pIns->nVolRampUp, 1200);
-	VERIFY_EQUAL_NONCONT(pIns->nResampling, SRCMODE_POLYPHASE);
+	VERIFY_EQUAL_NONCONT(pIns->volume_ramp_up, 1200);
+	VERIFY_EQUAL_NONCONT(pIns->resampling_mode, SRCMODE_POLYPHASE);
 
-	VERIFY_EQUAL_NONCONT(pIns->nIFC, 0x80 | 0x32);
-	VERIFY_EQUAL_NONCONT(pIns->nIFR, 0x80 | 0x64);
-	VERIFY_EQUAL_NONCONT(pIns->nFilterMode, FLTMODE_HIGHPASS);
+	VERIFY_EQUAL_NONCONT(pIns->default_filter_cutoff, 0x80 | 0x32);
+	VERIFY_EQUAL_NONCONT(pIns->default_filter_resonance, 0x80 | 0x64);
+	VERIFY_EQUAL_NONCONT(pIns->default_filter_mode, FLTMODE_HIGHPASS);
 
-	VERIFY_EQUAL_NONCONT(pIns->nVolSwing, 0x30);
-	VERIFY_EQUAL_NONCONT(pIns->nPanSwing, 0x18);
-	VERIFY_EQUAL_NONCONT(pIns->nCutSwing, 0x0C);
-	VERIFY_EQUAL_NONCONT(pIns->nResSwing, 0x3C);
+	VERIFY_EQUAL_NONCONT(pIns->random_volume_weight, 0x30);
+	VERIFY_EQUAL_NONCONT(pIns->random_pan_weight, 0x18);
+	VERIFY_EQUAL_NONCONT(pIns->random_cutoff_weight, 0x0C);
+	VERIFY_EQUAL_NONCONT(pIns->random_resonance_weight, 0x3C);
 
-	VERIFY_EQUAL_NONCONT(pIns->nNNA, NNA_CONTINUE);
-	VERIFY_EQUAL_NONCONT(pIns->nDCT, DCT_NOTE);
-	VERIFY_EQUAL_NONCONT(pIns->nDNA, DNA_NOTEFADE);
+	VERIFY_EQUAL_NONCONT(pIns->new_note_action, NNA_CONTINUE);
+	VERIFY_EQUAL_NONCONT(pIns->duplicate_check_type, DCT_NOTE);
+	VERIFY_EQUAL_NONCONT(pIns->duplicate_note_action, DNA_NOTEFADE);
 
 	VERIFY_EQUAL_NONCONT(pIns->nMixPlug, 1);
-	VERIFY_EQUAL_NONCONT(pIns->nMidiChannel, 16);
-	VERIFY_EQUAL_NONCONT(pIns->nMidiProgram, 64);
-	VERIFY_EQUAL_NONCONT(pIns->wMidiBank, 2);
+	VERIFY_EQUAL_NONCONT(pIns->midi_channel, 16);
+	VERIFY_EQUAL_NONCONT(pIns->midi_program, 64);
+	VERIFY_EQUAL_NONCONT(pIns->midi_bank, 2);
 
 	VERIFY_EQUAL_NONCONT(pIns->pTuning, pIns->s_DefaultTuning)
 
-	VERIFY_EQUAL_NONCONT(pIns->wPitchToTempoLock, 130);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_to_tempo_lock, 130);
 
 	VERIFY_EQUAL_NONCONT(pIns->nPluginVelocityHandling, PLUGIN_VELOCITYHANDLING_VOLUME);
 	VERIFY_EQUAL_NONCONT(pIns->nPluginVolumeHandling, PLUGIN_VOLUMEHANDLING_MIDI);
@@ -334,26 +334,26 @@ void TestLoadFile(const CModDoc *pModDoc)
 		}
 	}
 
-	VERIFY_EQUAL_NONCONT(pIns->VolEnv.dwFlags, ENV_ENABLED | ENV_CARRY);
-	VERIFY_EQUAL_NONCONT(pIns->VolEnv.nNodes, 3);
-	VERIFY_EQUAL_NONCONT(pIns->VolEnv.nReleaseNode, 1);
-	VERIFY_EQUAL_NONCONT(pIns->VolEnv.Ticks[2], 96);
-	VERIFY_EQUAL_NONCONT(pIns->VolEnv.Values[2], 0);
+	VERIFY_EQUAL_NONCONT(pIns->volume_envelope.flags, ENV_ENABLED | ENV_CARRY);
+	VERIFY_EQUAL_NONCONT(pIns->volume_envelope.num_nodes, 3);
+	VERIFY_EQUAL_NONCONT(pIns->volume_envelope.release_node, 1);
+	VERIFY_EQUAL_NONCONT(pIns->volume_envelope.Ticks[2], 96);
+	VERIFY_EQUAL_NONCONT(pIns->volume_envelope.Values[2], 0);
 
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.dwFlags, ENV_LOOP);
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.nNodes, 76);
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.nLoopStart, 22);
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.nLoopEnd, 29);
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.nReleaseNode, ENV_RELEASE_NODE_UNSET);
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.Ticks[75], 427);
-	VERIFY_EQUAL_NONCONT(pIns->PanEnv.Values[75], 27);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.flags, ENV_LOOP);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.num_nodes, 76);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.loop_start, 22);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.loop_end, 29);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.release_node, ENV_RELEASE_NODE_UNSET);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.Ticks[75], 427);
+	VERIFY_EQUAL_NONCONT(pIns->panning_envelope.Values[75], 27);
 
-	VERIFY_EQUAL_NONCONT(pIns->PitchEnv.dwFlags, ENV_ENABLED | ENV_CARRY | ENV_SUSTAIN | ENV_FILTER);
-	VERIFY_EQUAL_NONCONT(pIns->PitchEnv.nNodes, 3);
-	VERIFY_EQUAL_NONCONT(pIns->PitchEnv.nSustainStart, 1);
-	VERIFY_EQUAL_NONCONT(pIns->PitchEnv.nSustainEnd, 2);
-	VERIFY_EQUAL_NONCONT(pIns->PitchEnv.Ticks[1], 96);
-	VERIFY_EQUAL_NONCONT(pIns->PitchEnv.Values[1], 64);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_envelope.flags, ENV_ENABLED | ENV_CARRY | ENV_SUSTAIN | ENV_FILTER);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_envelope.num_nodes, 3);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_envelope.sustain_start, 1);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_envelope.sustain_end, 2);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_envelope.Ticks[1], 96);
+	VERIFY_EQUAL_NONCONT(pIns->pitch_envelope.Values[1], 64);
 
 	// Sequences
 	VERIFY_EQUAL_NONCONT(pSndFile->Order.GetNumSequences(), 2);
@@ -467,8 +467,8 @@ void GenerateCommands(CPattern& pat, const double dProbPcs, const double dProbPc
 				i->note = NOTE_PC;
 
 			i->instr = Rand<BYTE>(0, MAX_MIXPLUGINS);
-			i->SetValueVolCol(Rand<uint16>(0, MODCOMMAND::maxColumnValue));
-			i->SetValueEffectCol(Rand<uint16>(0, MODCOMMAND::maxColumnValue));
+			i->SetValueVolCol(Rand<uint16>(0, modplug::tracker::modcommand_t::maxColumnValue));
+			i->SetValueEffectCol(Rand<uint16>(0, modplug::tracker::modcommand_t::maxColumnValue));
 		}
 		else
 			i->Clear();
@@ -503,7 +503,7 @@ void TestPCnoteSerialization()
 	GenerateCommands(pSndFile->Patterns[2], 0.5, 0.5);
 
 	//
-	vector<MODCOMMAND> pat[3];
+	vector<modplug::tracker::modcommand_t> pat[3];
 	const size_t numCommands[] = {	pSndFile->GetNumChannels() * pSndFile->Patterns[0].GetNumRows(),
 									pSndFile->GetNumChannels() * pSndFile->Patterns[1].GetNumRows(),
 									pSndFile->GetNumChannels() * pSndFile->Patterns[2].GetNumRows()

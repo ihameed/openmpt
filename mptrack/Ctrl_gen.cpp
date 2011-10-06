@@ -181,7 +181,7 @@ void CCtrlGeneral::UpdateView(DWORD dwHint, CObject *pHint)
 	if (dwHint & HINT_MODGENERAL)
 	{
 		if (!m_bEditsLocked) {
-			m_EditTitle.SetWindowText(m_pSndFile->m_szNames[0]);
+			m_EditTitle.SetWindowText(m_pSndFile->song_name.c_str());
 			wsprintf(s, "%d", m_pSndFile->m_nDefaultTempo);
 			m_EditTempo.SetWindowText(s);
 			wsprintf(s, "%d", m_pSndFile->m_nDefaultSpeed);

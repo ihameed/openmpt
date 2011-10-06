@@ -62,7 +62,7 @@ void Read_OKT_Samples(const BYTE *lpStream, const DWORD dwMemLength, vector<bool
 
 	for(SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
 	{
-		MODSAMPLE *pSmp = &pSndFile->Samples[nSmp];
+		modsample_t *pSmp = &pSndFile->Samples[nSmp];
 		OKT_SAMPLE oktsmp;
 		memcpy(&oktsmp, lpStream + (nSmp - 1) * 32, sizeof(OKT_SAMPLE));
 
@@ -76,19 +76,19 @@ void Read_OKT_Samples(const BYTE *lpStream, const DWORD dwMemLength, vector<bool
 		strncpy(pSndFile->m_szNames[nSmp], oktsmp.name, 20);
 		SpaceToNullStringFixed<20>(pSndFile->m_szNames[nSmp]);
 
-		pSmp->nC5Speed = 8287;
-		pSmp->nGlobalVol = 64;
-		pSmp->nVolume = min(oktsmp.volume, 64) * 4;
-		pSmp->nLength = oktsmp.length & ~1;	// round down
+		pSmp->c5_samplerate = 8287;
+		pSmp->global_volume = 64;
+		pSmp->default_volume = min(oktsmp.volume, 64) * 4;
+		pSmp->length = oktsmp.length & ~1;	// round down
 		// parse loops
-		if (oktsmp.looplen > 2 && ((UINT)oktsmp.loopstart) + ((UINT)oktsmp.looplen) <= pSmp->nLength)
+		if (oktsmp.looplen > 2 && ((UINT)oktsmp.loopstart) + ((UINT)oktsmp.looplen) <= pSmp->length)
 		{
-			pSmp->nSustainStart = oktsmp.loopstart;
-			pSmp->nSustainEnd = oktsmp.loopstart + oktsmp.looplen;
-			if (pSmp->nSustainStart < pSmp->nLength && pSmp->nSustainEnd <= pSmp->nLength)
-				pSmp->uFlags |= CHN_SUSTAINLOOP;
+			pSmp->sustain_start = oktsmp.loopstart;
+			pSmp->sustain_end = oktsmp.loopstart + oktsmp.looplen;
+			if (pSmp->sustain_start < pSmp->length && pSmp->sustain_end <= pSmp->length)
+				pSmp->flags |= CHN_SUSTAINLOOP;
 			else
-				pSmp->nSustainStart = pSmp->nSustainEnd = 0;
+				pSmp->sustain_start = pSmp->sustain_end = 0;
 		}
 		sample7bit[nSmp - 1] = (oktsmp.type == 0 || oktsmp.type == 2) ? true : false;
 	}
@@ -111,7 +111,7 @@ void Read_OKT_Pattern(const BYTE *lpStream, const DWORD dwMemLength, const PATTE
 		return;
 
 	const CHANNELINDEX nChns = pSndFile->GetNumChannels();
-	MODCOMMAND *mrow = pSndFile->Patterns[nPat], *m;
+	modplug::tracker::modcommand_t *mrow = pSndFile->Patterns[nPat], *m;
 
 	for(ROWINDEX nRow = 0; nRow < nRows; nRow++, mrow += nChns)
 	{
@@ -409,23 +409,23 @@ bool CSoundFile::ReadOKT(const BYTE *lpStream, const DWORD dwMemLength)
 		if(nFileSmp >= samplePos.size())
 			break;
 
-		MODSAMPLE *pSmp = &Samples[nSmp];
-		if(pSmp->nLength == 0)
+		modsample_t *pSmp = &Samples[nSmp];
+		if(pSmp->length == 0)
 			continue;
 
 		// weird stuff?
-		if(pSmp->nLength != samplePos[nFileSmp].length)
+		if(pSmp->length != samplePos[nFileSmp].length)
 		{
-			pSmp->nLength = min(pSmp->nLength, samplePos[nFileSmp].length);
+			pSmp->length = min(pSmp->length, samplePos[nFileSmp].length);
 		}
 
 		ReadSample(pSmp, RS_PCM8S, (LPCSTR)(lpStream + samplePos[nFileSmp].start), dwMemLength - samplePos[nFileSmp].start);
 
 		// 7-bit to 8-bit hack
-		if(sample7bit[nSmp - 1] && pSmp->pSample)
+		if(sample7bit[nSmp - 1] && pSmp->sample_data)
 		{
-			for(size_t i = 0; i < pSmp->nLength; i++)
-				pSmp->pSample[i] = CLAMP(pSmp->pSample[i] * 2, -128, 127);
+			for(size_t i = 0; i < pSmp->length; i++)
+				pSmp->sample_data[i] = CLAMP(pSmp->sample_data[i] * 2, -128, 127);
 		}
 
 		nFileSmp++;

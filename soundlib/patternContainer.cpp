@@ -88,7 +88,7 @@ bool CPatternContainer::IsPatternEmpty(const PATTERNINDEX nPat) const
 	if(!IsValidPat(nPat))
 		return false;
 	
-	const MODCOMMAND *m = m_Patterns[nPat].m_ModCommands;
+	const modplug::tracker::modcommand_t *m = m_Patterns[nPat].m_ModCommands;
 	for(size_t i = m_Patterns[nPat].GetNumChannels() * m_Patterns[nPat].GetNumRows(); i > 0; i--, m++)
 	{
 		if(!m->IsEmpty(true))

@@ -155,9 +155,9 @@ struct SplitKeyboardSettings
 //==========================
 {
 	bool IsSplitActive() const { return (octaveLink && (octaveModifier != 0)) || (splitInstrument > 0) || (splitVolume != 0); }
-	MODCOMMAND::NOTE splitNote;
-	MODCOMMAND::INSTR splitInstrument;
-	MODCOMMAND::VOL splitVolume;
+	modplug::tracker::modcommand_t::NOTE splitNote;
+	modplug::tracker::modcommand_t::INSTR splitInstrument;
+	modplug::tracker::modcommand_t::VOL splitVolume;
 	int octaveModifier;	// determines by how many octaves the notes should be transposed up or down
 	bool octaveLink;	// apply octaveModifier
 };
@@ -288,7 +288,7 @@ public:
 	PATTERNINDEX InsertPattern(ORDERINDEX nOrd = ORDERINDEX_INVALID, ROWINDEX nRows = 64);
 	SAMPLEINDEX InsertSample(bool bLimit = false);
 	INSTRUMENTINDEX InsertInstrument(SAMPLEINDEX lSample = SAMPLEINDEX_INVALID, INSTRUMENTINDEX lDuplicate = INSTRUMENTINDEX_INVALID);
-	void InitializeInstrument(modplug::mixer::MODINSTRUMENT *pIns, UINT nsample=0);
+	void InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT nsample=0);
 	bool RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd);
 	bool RemovePattern(PATTERNINDEX nPat);
 	bool RemoveSample(SAMPLEINDEX nSmp);
@@ -361,7 +361,7 @@ public:
 
 	void OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder);
 
-	// Returns formatted modplug::mixer::MODINSTRUMENT name.
+	// Returns formatted modplug::tracker::modinstrument_t name.
 	// [in] bEmptyInsteadOfNoName: In case of unnamed instrument string, "(no name)" is returned unless this 
 	//                             parameter is true is case which an empty name is returned.
 	// [in] bIncludeIndex: True to include instrument index in front of the instrument name, false otherwise.

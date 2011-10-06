@@ -62,9 +62,9 @@ bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
     )
     {
         // Loading Instrument
-        modplug::mixer::MODINSTRUMENT *pIns = new modplug::mixer::MODINSTRUMENT;
+        modplug::tracker::modinstrument_t *pIns = new modplug::tracker::modinstrument_t;
         if (!pIns) return false;
-        memset(pIns, 0, sizeof(modplug::mixer::MODINSTRUMENT));
+        memset(pIns, 0, sizeof(modplug::tracker::modinstrument_t));
         pIns->pTuning = pIns->s_DefaultTuning;
 // -> CODE#0003
 // -> DESC="remove instrument's samples"
@@ -76,7 +76,7 @@ bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
         UINT nSample = 0;
         for (UINT iscan=1; iscan<MAX_SAMPLES; iscan++)
         {
-            if ((!Samples[iscan].pSample) && (!m_szNames[iscan][0]))
+            if ((!Samples[iscan].sample_data) && (!m_szNames[iscan][0]))
             {
                 nSample = iscan;
                 if (nSample > m_nSamples) m_nSamples = nSample;
@@ -84,10 +84,10 @@ bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
             }
         }
         // Default values
-        pIns->nFadeOut = 1024;
-        pIns->nGlobalVol = 64;
-        pIns->nPan = 128;
-        pIns->nPPC = 5*12;
+        pIns->fadeout = 1024;
+        pIns->global_volume = 64;
+        pIns->default_pan = 128;
+        pIns->pitch_pan_center = 5*12;
         SetDefaultInstrumentValues(pIns);
         for (UINT iinit=0; iinit<128; iinit++)
         {
@@ -130,13 +130,13 @@ bool CSoundFile::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples)
 #endif // MODPLUG_TRACKER
 // -! NEW_FEATURE#0023
 
-    modplug::mixer::MODINSTRUMENT *pIns = Instruments[nInstr];
+    modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     Instruments[nInstr] = nullptr;
     for(CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
     {
-        if (Chn[i].pModInstrument == pIns)
+        if (Chn[i].instrument == pIns)
         {
-            Chn[i].pModInstrument = nullptr;
+            Chn[i].instrument = nullptr;
         }
     }
     delete pIns;
@@ -152,7 +152,7 @@ bool CSoundFile::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
 
     if (Instruments[nInstr])
     {
-        modplug::mixer::MODINSTRUMENT *p = Instruments[nInstr];
+        modplug::tracker::modinstrument_t *p = Instruments[nInstr];
         for (UINT r=0; r<128; r++)
         {
             UINT n = p->Keyboard[r];
@@ -193,8 +193,8 @@ bool CSoundFile::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrc
 //	RemoveInstrumentSamples(nInstr);
     DestroyInstrument(nInstr, 1);
 // -! BEHAVIOUR_CHANGE#0003
-    if (!Instruments[nInstr]) Instruments[nInstr] = new modplug::mixer::MODINSTRUMENT;
-    modplug::mixer::MODINSTRUMENT *pIns = Instruments[nInstr];
+    if (!Instruments[nInstr]) Instruments[nInstr] = new modplug::tracker::modinstrument_t;
+    modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     if (pIns)
     {
         WORD samplemap[32];
@@ -214,7 +214,7 @@ bool CSoundFile::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrc
                 }
                 if (j >= nSamples)
                 {
-                    while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].pSample) || (m_szNames[nsmp][0]))) nsmp++;
+                    while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
                     if ((nSamples < 32) && (nsmp < MAX_SAMPLES))
                     {
                         samplesrc[nSamples] = (WORD)n;
@@ -251,30 +251,30 @@ bool CSoundFile::ReadSampleFromSong(SAMPLEINDEX nSample, CSoundFile *pSrcSong, U
 //---------------------------------------------------------------------------------------------
 {
     if ((!pSrcSong) || (!nSrcSample) || (nSrcSample > pSrcSong->m_nSamples) || (nSample >= MAX_SAMPLES)) return false;
-    modplug::mixer::MODSAMPLE *psmp = &pSrcSong->Samples[nSrcSample];
-    UINT nSize = psmp->nLength;
-    if (psmp->uFlags & CHN_16BIT) nSize *= 2;
-    if (psmp->uFlags & CHN_STEREO) nSize *= 2;
+    modplug::tracker::modsample_t *psmp = &pSrcSong->Samples[nSrcSample];
+    UINT nSize = psmp->length;
+    if (psmp->flags & CHN_16BIT) nSize *= 2;
+    if (psmp->flags & CHN_STEREO) nSize *= 2;
     if (m_nSamples < nSample) m_nSamples = nSample;
-    if (Samples[nSample].pSample)
+    if (Samples[nSample].sample_data)
     {
-        Samples[nSample].nLength = 0;
-        FreeSample(Samples[nSample].pSample);
+        Samples[nSample].length = 0;
+        FreeSample(Samples[nSample].sample_data);
     }
     Samples[nSample] = *psmp;
-    if (psmp->pSample)
+    if (psmp->sample_data)
     {
-        Samples[nSample].pSample = AllocateSample(nSize+8);
-        if (Samples[nSample].pSample)
+        Samples[nSample].sample_data = AllocateSample(nSize+8);
+        if (Samples[nSample].sample_data)
         {
-            memcpy(Samples[nSample].pSample, psmp->pSample, nSize);
+            memcpy(Samples[nSample].sample_data, psmp->sample_data, nSize);
             AdjustSampleLoop(&Samples[nSample]);
         }
     }
     if ((!(m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) && (pSrcSong->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)))
     {
-        modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
-        pSmp->nC5Speed = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+        modplug::tracker::modsample_t *pSmp = &Samples[nSample];
+        pSmp->c5_samplerate = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
         pSmp->RelativeTone = 0;
         pSmp->nFineTune = 0;
     } else
@@ -410,36 +410,36 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
             else nType = (pfmt->bitspersample == 16) ? RS_STIPCM16S : RS_STIPCM8U;
     }
     UINT samplesize = pfmt->channels * (pfmt->bitspersample >> 3);
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
-    if (pSmp->pSample)
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
+    if (pSmp->sample_data)
     {
-        FreeSample(pSmp->pSample);
-        pSmp->pSample = nullptr;
-        pSmp->nLength = 0;
+        FreeSample(pSmp->sample_data);
+        pSmp->sample_data = nullptr;
+        pSmp->length = 0;
     }
-    pSmp->nLength = pdata->length / samplesize;
-    pSmp->nLoopStart = pSmp->nLoopEnd = 0;
-    pSmp->nSustainStart = pSmp->nSustainEnd = 0;
-    pSmp->nC5Speed = pfmt->freqHz;
-    pSmp->nPan = 128;
-    pSmp->nVolume = 256;
-    pSmp->nGlobalVol = 64;
-    pSmp->uFlags = (pfmt->bitspersample > 8) ? CHN_16BIT : 0;
-    if (m_nType & MOD_TYPE_XM) pSmp->uFlags |= CHN_PANNING;
+    pSmp->length = pdata->length / samplesize;
+    pSmp->loop_start = pSmp->loop_end = 0;
+    pSmp->sustain_start = pSmp->sustain_end = 0;
+    pSmp->c5_samplerate = pfmt->freqHz;
+    pSmp->default_pan = 128;
+    pSmp->default_volume = 256;
+    pSmp->global_volume = 64;
+    pSmp->flags = (pfmt->bitspersample > 8) ? CHN_16BIT : 0;
+    if (m_nType & MOD_TYPE_XM) pSmp->flags |= CHN_PANNING;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
     if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
-    pSmp->nVibType = pSmp->nVibSweep = pSmp->nVibDepth = pSmp->nVibRate = 0;
-    pSmp->filename[0] = 0;
+    pSmp->vibrato_type = pSmp->vibrato_sweep = pSmp->vibrato_depth = pSmp->vibrato_rate = 0;
+    pSmp->legacy_filename[0] = 0;
     memset(m_szNames[nSample], 0, 32);
-    if (pSmp->nLength > MAX_SAMPLE_LENGTH) pSmp->nLength = MAX_SAMPLE_LENGTH;
+    if (pSmp->length > MAX_SAMPLE_LENGTH) pSmp->length = MAX_SAMPLE_LENGTH;
     // IMA ADPCM 4:1
     if (pfmtpk)
     {
         if (dwFact < 4) dwFact = pdata->length * 2;
-        pSmp->nLength = dwFact;
-        pSmp->pSample = AllocateSample(pSmp->nLength*2+16);
-        IMAADPCMUnpack16((signed short *)pSmp->pSample, pSmp->nLength,
+        pSmp->length = dwFact;
+        pSmp->sample_data = AllocateSample(pSmp->length*2+16);
+        IMAADPCMUnpack16((signed short *)pSmp->sample_data, pSmp->length,
                          (LPBYTE)(lpMemFile+dwDataPos), dwFileLength-dwDataPos, pfmtpk->samplesize);
         AdjustSampleLoop(pSmp);
     } else
@@ -449,28 +449,28 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
     // smpl field
     if (psh)
     {
-        pSmp->nLoopStart = pSmp->nLoopEnd = 0;
+        pSmp->loop_start = pSmp->loop_end = 0;
         if ((psh->dwSampleLoops) && (sizeof(WAVESMPLHEADER) + psh->dwSampleLoops * sizeof(SAMPLELOOPSTRUCT) <= psh->smpl_len + 8))
         {
             SAMPLELOOPSTRUCT *psl = (SAMPLELOOPSTRUCT *)(&psh[1]);
             if (psh->dwSampleLoops > 1)
             {
-                pSmp->uFlags |= CHN_LOOP | CHN_SUSTAINLOOP;
-                if (psl[0].dwLoopType) pSmp->uFlags |= CHN_PINGPONGSUSTAIN;
-                if (psl[1].dwLoopType) pSmp->uFlags |= CHN_PINGPONGLOOP;
-                pSmp->nSustainStart = psl[0].dwLoopStart;
-                pSmp->nSustainEnd = psl[0].dwLoopEnd;
-                pSmp->nLoopStart = psl[1].dwLoopStart;
-                pSmp->nLoopEnd = psl[1].dwLoopEnd;
+                pSmp->flags |= CHN_LOOP | CHN_SUSTAINLOOP;
+                if (psl[0].dwLoopType) pSmp->flags |= CHN_PINGPONGSUSTAIN;
+                if (psl[1].dwLoopType) pSmp->flags |= CHN_PINGPONGLOOP;
+                pSmp->sustain_start = psl[0].dwLoopStart;
+                pSmp->sustain_end = psl[0].dwLoopEnd;
+                pSmp->loop_start = psl[1].dwLoopStart;
+                pSmp->loop_end = psl[1].dwLoopEnd;
             } else
             {
-                pSmp->uFlags |= CHN_LOOP;
-                if (psl->dwLoopType) pSmp->uFlags |= CHN_PINGPONGLOOP;
-                pSmp->nLoopStart = psl->dwLoopStart;
-                pSmp->nLoopEnd = psl->dwLoopEnd;
+                pSmp->flags |= CHN_LOOP;
+                if (psl->dwLoopType) pSmp->flags |= CHN_PINGPONGLOOP;
+                pSmp->loop_start = psl->dwLoopStart;
+                pSmp->loop_end = psl->dwLoopEnd;
             }
-            if (pSmp->nLoopStart >= pSmp->nLoopEnd) pSmp->uFlags &= ~(CHN_LOOP|CHN_PINGPONGLOOP);
-            if (pSmp->nSustainStart >= pSmp->nSustainEnd) pSmp->uFlags &= ~(CHN_PINGPONGLOOP|CHN_PINGPONGSUSTAIN);
+            if (pSmp->loop_start >= pSmp->loop_end) pSmp->flags &= ~(CHN_LOOP|CHN_PINGPONGLOOP);
+            if (pSmp->sustain_start >= pSmp->sustain_end) pSmp->flags &= ~(CHN_PINGPONGLOOP|CHN_PINGPONGSUSTAIN);
         }
     }
     // LIST field
@@ -492,9 +492,9 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
                     memcpy(m_szNames[nSample], lpMemFile+dwInfoList+d+8, dwNameLen);
                     if (phdr->id_RIFF != 0x46464952)
                     {
-                        // DLS sample -> sample filename
+                        // DLS sample -> sample legacy_filename
                         if (dwNameLen > 21) dwNameLen = 21;
-                        memcpy(pSmp->filename, lpMemFile+dwInfoList+d+8, dwNameLen);
+                        memcpy(pSmp->legacy_filename, lpMemFile+dwInfoList+d+8, dwNameLen);
                     }
                 }
                 break;
@@ -507,18 +507,18 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
     {
         if (!(GetType() & (MOD_TYPE_MOD|MOD_TYPE_S3M)))
         {
-            if (pxh->dwFlags & CHN_PINGPONGLOOP) pSmp->uFlags |= CHN_PINGPONGLOOP;
-            if (pxh->dwFlags & CHN_SUSTAINLOOP) pSmp->uFlags |= CHN_SUSTAINLOOP;
-            if (pxh->dwFlags & CHN_PINGPONGSUSTAIN) pSmp->uFlags |= CHN_PINGPONGSUSTAIN;
-            if (pxh->dwFlags & CHN_PANNING) pSmp->uFlags |= CHN_PANNING;
+            if (pxh->dwFlags & CHN_PINGPONGLOOP) pSmp->flags |= CHN_PINGPONGLOOP;
+            if (pxh->dwFlags & CHN_SUSTAINLOOP) pSmp->flags |= CHN_SUSTAINLOOP;
+            if (pxh->dwFlags & CHN_PINGPONGSUSTAIN) pSmp->flags |= CHN_PINGPONGSUSTAIN;
+            if (pxh->dwFlags & CHN_PANNING) pSmp->flags |= CHN_PANNING;
         }
-        pSmp->nPan = pxh->wPan;
-        pSmp->nVolume = pxh->wVolume;
-        pSmp->nGlobalVol = pxh->wGlobalVol;
-        pSmp->nVibType = pxh->nVibType;
-        pSmp->nVibSweep = pxh->nVibSweep;
-        pSmp->nVibDepth = pxh->nVibDepth;
-        pSmp->nVibRate = pxh->nVibRate;
+        pSmp->default_pan = pxh->wPan;
+        pSmp->default_volume = pxh->wVolume;
+        pSmp->global_volume = pxh->wGlobalVol;
+        pSmp->vibrato_type = pxh->nVibType;
+        pSmp->vibrato_sweep = pxh->nVibSweep;
+        pSmp->vibrato_depth = pxh->nVibDepth;
+        pSmp->vibrato_rate = pxh->nVibRate;
         // Name present (clipboard only)
         UINT xtrabytes = pxh->xtra_len + 8 - sizeof(WAVEEXTRAHEADER);
         LPSTR pszTextEx = (LPSTR)(pxh+1); 
@@ -529,7 +529,7 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
             xtrabytes -= MAX_SAMPLENAME;
             if (xtrabytes >= MAX_SAMPLEFILENAME)
             {
-                memcpy(pSmp->filename, pszTextEx, MAX_SAMPLEFILENAME);
+                memcpy(pSmp->legacy_filename, pszTextEx, MAX_SAMPLEFILENAME);
                 xtrabytes -= MAX_SAMPLEFILENAME;
             }
         }
@@ -551,7 +551,7 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     WAVESAMPLERINFO smpl;
     WAVELISTHEADER list;
     WAVEEXTRAHEADER extra;
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     FILE *f;
 
     if ((f = fopen(lpszFileName, "wb")) == NULL) return false;
@@ -564,7 +564,7 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     format.id_fmt = IFFID_fmt;
     format.hdrlen = 16;
     format.format = 1;
-    format.freqHz = pSmp->nC5Speed;
+    format.freqHz = pSmp->c5_samplerate;
     if (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) format.freqHz = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
     format.channels = pSmp->GetNumChannels();
     format.bitspersample = pSmp->GetElementarySampleSize() * 8;
@@ -573,12 +573,12 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     data.id_data = IFFID_data;
     UINT nType;
     data.length = pSmp->GetSampleSizeInBytes();
-    if (pSmp->uFlags & CHN_STEREO)
+    if (pSmp->flags & CHN_STEREO)
     {
-        nType = (pSmp->uFlags & CHN_16BIT) ? RS_STIPCM16S : RS_STIPCM8U;
+        nType = (pSmp->flags & CHN_16BIT) ? RS_STIPCM16S : RS_STIPCM8U;
     } else
     {
-        nType = (pSmp->uFlags & CHN_16BIT) ? RS_PCM16S : RS_PCM8U;
+        nType = (pSmp->flags & CHN_16BIT) ? RS_PCM16S : RS_PCM8U;
     }
     header.filesize += data.length;
     fwrite(&header, 1, sizeof(header), f);
@@ -589,25 +589,25 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     smpl.wsiHdr.smpl_id = 0x6C706D73;
     smpl.wsiHdr.smpl_len = sizeof(WAVESMPLHEADER) - 8;
     smpl.wsiHdr.dwSamplePeriod = 22675;
-    if (pSmp->nC5Speed >= 256) smpl.wsiHdr.dwSamplePeriod = 1000000000 / pSmp->nC5Speed;
+    if (pSmp->c5_samplerate >= 256) smpl.wsiHdr.dwSamplePeriod = 1000000000 / pSmp->c5_samplerate;
     smpl.wsiHdr.dwBaseNote = 60;
-    if (pSmp->uFlags & (CHN_LOOP|CHN_SUSTAINLOOP))
+    if (pSmp->flags & (CHN_LOOP|CHN_SUSTAINLOOP))
     {
-        if (pSmp->uFlags & CHN_SUSTAINLOOP)
+        if (pSmp->flags & CHN_SUSTAINLOOP)
         {
             smpl.wsiHdr.dwSampleLoops = 2;
-            smpl.wsiLoops[0].dwLoopType = (pSmp->uFlags & CHN_PINGPONGSUSTAIN) ? 1 : 0;
-            smpl.wsiLoops[0].dwLoopStart = pSmp->nSustainStart;
-            smpl.wsiLoops[0].dwLoopEnd = pSmp->nSustainEnd;
-            smpl.wsiLoops[1].dwLoopType = (pSmp->uFlags & CHN_PINGPONGLOOP) ? 1 : 0;
-            smpl.wsiLoops[1].dwLoopStart = pSmp->nLoopStart;
-            smpl.wsiLoops[1].dwLoopEnd = pSmp->nLoopEnd;
+            smpl.wsiLoops[0].dwLoopType = (pSmp->flags & CHN_PINGPONGSUSTAIN) ? 1 : 0;
+            smpl.wsiLoops[0].dwLoopStart = pSmp->sustain_start;
+            smpl.wsiLoops[0].dwLoopEnd = pSmp->sustain_end;
+            smpl.wsiLoops[1].dwLoopType = (pSmp->flags & CHN_PINGPONGLOOP) ? 1 : 0;
+            smpl.wsiLoops[1].dwLoopStart = pSmp->loop_start;
+            smpl.wsiLoops[1].dwLoopEnd = pSmp->loop_end;
         } else
         {
             smpl.wsiHdr.dwSampleLoops = 1;
-            smpl.wsiLoops[0].dwLoopType = (pSmp->uFlags & CHN_PINGPONGLOOP) ? 1 : 0;
-            smpl.wsiLoops[0].dwLoopStart = pSmp->nLoopStart;
-            smpl.wsiLoops[0].dwLoopEnd = pSmp->nLoopEnd;
+            smpl.wsiLoops[0].dwLoopType = (pSmp->flags & CHN_PINGPONGLOOP) ? 1 : 0;
+            smpl.wsiLoops[0].dwLoopStart = pSmp->loop_start;
+            smpl.wsiLoops[0].dwLoopEnd = pSmp->loop_end;
         }
         smpl.wsiHdr.smpl_len += sizeof(SAMPLELOOPSTRUCT) * smpl.wsiHdr.dwSampleLoops;
     }
@@ -630,15 +630,15 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     // "xtra" field
     extra.xtra_id = IFFID_xtra;
     extra.xtra_len = sizeof(extra) - 8;
-    extra.dwFlags = pSmp->uFlags;
-    extra.wPan = pSmp->nPan;
-    extra.wVolume = pSmp->nVolume;
-    extra.wGlobalVol = pSmp->nGlobalVol;
+    extra.dwFlags = pSmp->flags;
+    extra.wPan = pSmp->default_pan;
+    extra.wVolume = pSmp->default_volume;
+    extra.wGlobalVol = pSmp->global_volume;
     extra.wReserved = 0;
-    extra.nVibType = pSmp->nVibType;
-    extra.nVibSweep = pSmp->nVibSweep;
-    extra.nVibDepth = pSmp->nVibDepth;
-    extra.nVibRate = pSmp->nVibRate;
+    extra.nVibType = pSmp->vibrato_type;
+    extra.nVibSweep = pSmp->vibrato_sweep;
+    extra.nVibDepth = pSmp->vibrato_depth;
+    extra.nVibRate = pSmp->vibrato_rate;
     fwrite(&extra, 1, sizeof(extra), f);
     fclose(f);
     return true;
@@ -650,16 +650,16 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
 bool CSoundFile::SaveRAWSample(UINT nSample, LPCSTR lpszFileName)
 //---------------------------------------------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     FILE *f;
 
     if ((f = fopen(lpszFileName, "wb")) == NULL) return false;
 
     UINT nType;
-    if (pSmp->uFlags & CHN_STEREO)
-        nType = (pSmp->uFlags & CHN_16BIT) ? RS_STIPCM16S : RS_STIPCM8S;
+    if (pSmp->flags & CHN_STEREO)
+        nType = (pSmp->flags & CHN_16BIT) ? RS_STIPCM16S : RS_STIPCM8S;
     else
-        nType = (pSmp->uFlags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S;
+        nType = (pSmp->flags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S;
     WriteSample(f, pSmp, nType);
     fclose(f);
     return true;
@@ -782,7 +782,7 @@ LONG PatchFreqToNote(ULONG nFreq)
 void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, DWORD dwMemLength)
 //------------------------------------------------------------------------------------
 {
-    modplug::mixer::MODSAMPLE *pIns = &that->Samples[nSample];
+    modplug::tracker::modsample_t *pIns = &that->Samples[nSample];
     DWORD dwMemPos = sizeof(GF1SAMPLEHEADER);
     GF1SAMPLEHEADER *psh = (GF1SAMPLEHEADER *)(lpStream);
     UINT nSmpType;
@@ -793,34 +793,34 @@ void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, DWORD dwMemL
         memcpy(that->m_szNames[nSample], psh->name, 7);
         that->m_szNames[nSample][7] = 0;
     }
-    pIns->filename[0] = 0;
-    pIns->nGlobalVol = 64;
-    pIns->uFlags = (psh->flags & 1) ? CHN_16BIT : 0;
-    if (psh->flags & 4) pIns->uFlags |= CHN_LOOP;
-    if (psh->flags & 8) pIns->uFlags |= CHN_PINGPONGLOOP;
-    pIns->nLength = psh->length;
-    pIns->nLoopStart = psh->loopstart;
-    pIns->nLoopEnd = psh->loopend;
-    pIns->nC5Speed = psh->freq;
+    pIns->legacy_filename[0] = 0;
+    pIns->global_volume = 64;
+    pIns->flags = (psh->flags & 1) ? CHN_16BIT : 0;
+    if (psh->flags & 4) pIns->flags |= CHN_LOOP;
+    if (psh->flags & 8) pIns->flags |= CHN_PINGPONGLOOP;
+    pIns->length = psh->length;
+    pIns->loop_start = psh->loopstart;
+    pIns->loop_end = psh->loopend;
+    pIns->c5_samplerate = psh->freq;
     pIns->RelativeTone = 0;
     pIns->nFineTune = 0;
-    pIns->nVolume = 256;
-    pIns->nPan = (psh->balance << 4) + 8;
-    if (pIns->nPan > 256) pIns->nPan = 128;
-    pIns->nVibType = 0;
-    pIns->nVibSweep = psh->vibrato_sweep;
-    pIns->nVibDepth = psh->vibrato_depth;
-    pIns->nVibRate = psh->vibrato_rate/4;
+    pIns->default_volume = 256;
+    pIns->default_pan = (psh->balance << 4) + 8;
+    if (pIns->default_pan > 256) pIns->default_pan = 128;
+    pIns->vibrato_type = 0;
+    pIns->vibrato_sweep = psh->vibrato_sweep;
+    pIns->vibrato_depth = psh->vibrato_depth;
+    pIns->vibrato_rate = psh->vibrato_rate/4;
     that->FrequencyToTranspose(pIns);
     pIns->RelativeTone += 84 - PatchFreqToNote(psh->root_freq);
     if (psh->scale_factor) pIns->RelativeTone -= psh->scale_frequency - 60;
-    pIns->nC5Speed = that->TransposeToFrequency(pIns->RelativeTone, pIns->nFineTune);
-    if (pIns->uFlags & CHN_16BIT)
+    pIns->c5_samplerate = that->TransposeToFrequency(pIns->RelativeTone, pIns->nFineTune);
+    if (pIns->flags & CHN_16BIT)
     {
         nSmpType = (psh->flags & 2) ? RS_PCM16U : RS_PCM16S;
-        pIns->nLength >>= 1;
-        pIns->nLoopStart >>= 1;
-        pIns->nLoopEnd >>= 1;
+        pIns->length >>= 1;
+        pIns->loop_start >>= 1;
+        pIns->loop_end >>= 1;
     } else
     {
         nSmpType = (psh->flags & 2) ? RS_PCM8U : RS_PCM8S;
@@ -858,7 +858,7 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
     GF1PATCHFILEHEADER *phdr = (GF1PATCHFILEHEADER *)lpStream;
     GF1INSTRUMENT *pih = (GF1INSTRUMENT *)(lpStream+sizeof(GF1PATCHFILEHEADER));
     GF1LAYER *plh = (GF1LAYER *)(lpStream+sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT));
-    modplug::mixer::MODINSTRUMENT *pIns;
+    modplug::tracker::modinstrument_t *pIns;
     DWORD dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
     UINT nSamples;
 
@@ -873,7 +873,7 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
 //	RemoveInstrumentSamples(nInstr);
     DestroyInstrument(nInstr,1);
 // -! BEHAVIOUR_CHANGE#0003
-    pIns = new modplug::mixer::MODINSTRUMENT;
+    pIns = new modplug::tracker::modinstrument_t;
     if (!pIns) return false;
     MemsetZero(*pIns);
     pIns->pTuning = pIns->s_DefaultTuning;
@@ -882,16 +882,16 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
     if (nSamples > 16) nSamples = 16;
     memcpy(pIns->name, pih->name, 16);
     pIns->name[16] = 0;
-    pIns->nFadeOut = 2048;
-    pIns->nGlobalVol = 64;
-    pIns->nPan = 128;
-    pIns->nPPC = 60;
-    pIns->nResampling = SRCMODE_DEFAULT;
-    pIns->nFilterMode = FLTMODE_UNCHANGED;
+    pIns->fadeout = 2048;
+    pIns->global_volume = 64;
+    pIns->default_pan = 128;
+    pIns->pitch_pan_center = 60;
+    pIns->resampling_mode = SRCMODE_DEFAULT;
+    pIns->default_filter_mode = FLTMODE_UNCHANGED;
     if (m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT))
     {
-        pIns->nNNA = NNA_NOTEOFF;
-        pIns->nDNA = DNA_NOTEFADE;
+        pIns->new_note_action = NNA_NOTEOFF;
+        pIns->duplicate_note_action = DNA_NOTEFADE;
     }
     UINT nFreeSmp = 1;
     UINT nMinSmpNote = 0xff;
@@ -899,7 +899,7 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
     for (UINT iSmp=0; iSmp<nSamples; iSmp++)
     {
         // Find a free sample
-        while ((nFreeSmp < MAX_SAMPLES) && ((Samples[nFreeSmp].pSample) || (m_szNames[nFreeSmp][0]))) nFreeSmp++;
+        while ((nFreeSmp < MAX_SAMPLES) && ((Samples[nFreeSmp].sample_data) || (m_szNames[nFreeSmp][0]))) nFreeSmp++;
         if (nFreeSmp >= MAX_SAMPLES) break;
         if (m_nSamples < nFreeSmp) m_nSamples = nFreeSmp;
         if (!nMinSmp) nMinSmp = nFreeSmp;
@@ -934,17 +934,17 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
         // Create dummy envelope
         if (!iSmp)
         {
-            pIns->dwFlags |= ENV_VOLUME;
-            if (psh->flags & 32) pIns->dwFlags |= ENV_VOLSUSTAIN;
-            pIns->VolEnv.Values[0] = 64;
-            pIns->VolEnv.Ticks[0] = 0;
-            pIns->VolEnv.Values[1] = 64;
-            pIns->VolEnv.Ticks[1] = 1;
-            pIns->VolEnv.Values[2] = 32;
-            pIns->VolEnv.Ticks[2] = 20;
-            pIns->VolEnv.Values[3] = 0;
-            pIns->VolEnv.Ticks[3] = 100;
-            pIns->VolEnv.nNodes = 4;
+            pIns->flags |= ENV_VOLUME;
+            if (psh->flags & 32) pIns->flags |= ENV_VOLSUSTAIN;
+            pIns->volume_envelope.Values[0] = 64;
+            pIns->volume_envelope.Ticks[0] = 0;
+            pIns->volume_envelope.Values[1] = 64;
+            pIns->volume_envelope.Ticks[1] = 1;
+            pIns->volume_envelope.Values[2] = 32;
+            pIns->volume_envelope.Ticks[2] = 20;
+            pIns->volume_envelope.Values[3] = 0;
+            pIns->volume_envelope.Ticks[3] = 100;
+            pIns->volume_envelope.num_nodes = 4;
         }
     */
         // Skip to next sample
@@ -998,7 +998,7 @@ bool CSoundFile::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
 //---------------------------------------------------------------------------------------
 {
     S3ISAMPLESTRUCT *pss = (S3ISAMPLESTRUCT *)lpMemFile;
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     DWORD dwMemPos;
     UINT flags;
 
@@ -1007,21 +1007,21 @@ bool CSoundFile::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
      || (pss->scrs != 0x53524353)) return false;
     DestroySample(nSample);
     dwMemPos = pss->offset << 4;
-    memcpy(pSmp->filename, pss->filename, 12);
+    memcpy(pSmp->legacy_filename, pss->filename, 12);
     memcpy(m_szNames[nSample], pss->name, 28);
     m_szNames[nSample][28] = 0;
-    pSmp->nLength = pss->length;
-    pSmp->nLoopStart = pss->loopstart;
-    pSmp->nLoopEnd = pss->loopend;
-    pSmp->nGlobalVol = 64;
-    pSmp->nVolume = pss->volume << 2;
-    pSmp->uFlags = 0;
-    pSmp->nPan = 128;
-    pSmp->nC5Speed = pss->nC5Speed;
+    pSmp->length = pss->length;
+    pSmp->loop_start = pss->loopstart;
+    pSmp->loop_end = pss->loopend;
+    pSmp->global_volume = 64;
+    pSmp->default_volume = pss->volume << 2;
+    pSmp->flags = 0;
+    pSmp->default_pan = 128;
+    pSmp->c5_samplerate = pss->nC5Speed;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
     if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
-    if (pss->flags & 0x01) pSmp->uFlags |= CHN_LOOP;
+    if (pss->flags & 0x01) pSmp->flags |= CHN_LOOP;
     flags = (pss->flags & 0x04) ? RS_PCM16U : RS_PCM8U;
     if (pss->flags & 0x02) flags |= RSF_STEREO;
     ReadSample(pSmp, flags, (LPSTR)(lpMemFile+dwMemPos), dwFileLength-dwMemPos);
@@ -1096,10 +1096,10 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
 //	RemoveInstrumentSamples(nInstr);
     DestroyInstrument(nInstr,1);
 // -! BEHAVIOUR_CHANGE#0003
-    Instruments[nInstr] = new modplug::mixer::MODINSTRUMENT;
-    modplug::mixer::MODINSTRUMENT *pIns = Instruments[nInstr];
+    Instruments[nInstr] = new modplug::tracker::modinstrument_t;
+    modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     if (!pIns) return false;
-    memset(pIns, 0, sizeof(modplug::mixer::MODINSTRUMENT));
+    memset(pIns, 0, sizeof(modplug::tracker::modinstrument_t));
     pIns->pTuning = pIns->s_DefaultTuning;
     memcpy(pIns->name, pxh->name, 22);
     nsamples = 0;
@@ -1115,7 +1115,7 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
     UINT nsmp = 1;
     for (UINT j=0; j<nsamples; j++)
     {
-        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].pSample) || (m_szNames[nsmp][0]))) nsmp++;
+        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
         if (nsmp >= MAX_SAMPLES) break;
         samplemap[j] = nsmp;
         if (m_nSamples < nsmp) m_nSamples = nsmp;
@@ -1127,55 +1127,55 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
         UINT n = pih->snum[k];
         if (n < nsamples) pIns->Keyboard[k+12] = samplemap[n];
     }
-    pIns->nFadeOut = pih->volfade;
-    if (pih->vtype & 1) pIns->VolEnv.dwFlags |= ENV_ENABLED;
-    if (pih->vtype & 2) pIns->VolEnv.dwFlags |= ENV_SUSTAIN;
-    if (pih->vtype & 4) pIns->VolEnv.dwFlags |= ENV_LOOP;
-    if (pih->ptype & 1) pIns->PanEnv.dwFlags |= ENV_ENABLED;
-    if (pih->ptype & 2) pIns->PanEnv.dwFlags |= ENV_SUSTAIN;
-    if (pih->ptype & 4) pIns->PanEnv.dwFlags |= ENV_LOOP;
-    pIns->VolEnv.nNodes = pih->vnum;
-    pIns->PanEnv.nNodes = pih->pnum;
-    if (pIns->VolEnv.nNodes > 12) pIns->VolEnv.nNodes = 12;
-    if (pIns->PanEnv.nNodes > 12) pIns->PanEnv.nNodes = 12;
-    if (!pIns->VolEnv.nNodes) pIns->VolEnv.dwFlags &= ~ENV_ENABLED;
-    if (!pIns->PanEnv.nNodes) pIns->PanEnv.dwFlags &= ~ENV_ENABLED;
-    pIns->VolEnv.nSustainStart = pih->vsustain;
-    pIns->VolEnv.nSustainEnd = pih->vsustain;
-    if (pih->vsustain >= 12) pIns->VolEnv.dwFlags &= ~ENV_SUSTAIN;
-    pIns->VolEnv.nLoopStart = pih->vloops;
-    pIns->VolEnv.nLoopEnd = pih->vloope;
-    if (pIns->VolEnv.nLoopEnd >= 12) pIns->VolEnv.nLoopEnd = 0;
-    if (pIns->VolEnv.nLoopStart >= pIns->VolEnv.nLoopEnd) pIns->VolEnv.dwFlags &= ~ENV_LOOP;
-    pIns->PanEnv.nSustainStart = pih->psustain;
-    pIns->PanEnv.nSustainEnd = pih->psustain;
-    if (pih->psustain >= 12) pIns->PanEnv.dwFlags &= ~ENV_SUSTAIN;
-    pIns->PanEnv.nLoopStart = pih->ploops;
-    pIns->PanEnv.nLoopEnd = pih->ploope;
-    if (pIns->PanEnv.nLoopEnd >= 12) pIns->PanEnv.nLoopEnd = 0;
-    if (pIns->PanEnv.nLoopStart >= pIns->PanEnv.nLoopEnd) pIns->PanEnv.dwFlags &= ~ENV_LOOP;
-    pIns->nGlobalVol = 64;
-    pIns->nPPC = 5*12;
+    pIns->fadeout = pih->volfade;
+    if (pih->vtype & 1) pIns->volume_envelope.flags |= ENV_ENABLED;
+    if (pih->vtype & 2) pIns->volume_envelope.flags |= ENV_SUSTAIN;
+    if (pih->vtype & 4) pIns->volume_envelope.flags |= ENV_LOOP;
+    if (pih->ptype & 1) pIns->panning_envelope.flags |= ENV_ENABLED;
+    if (pih->ptype & 2) pIns->panning_envelope.flags |= ENV_SUSTAIN;
+    if (pih->ptype & 4) pIns->panning_envelope.flags |= ENV_LOOP;
+    pIns->volume_envelope.num_nodes = pih->vnum;
+    pIns->panning_envelope.num_nodes = pih->pnum;
+    if (pIns->volume_envelope.num_nodes > 12) pIns->volume_envelope.num_nodes = 12;
+    if (pIns->panning_envelope.num_nodes > 12) pIns->panning_envelope.num_nodes = 12;
+    if (!pIns->volume_envelope.num_nodes) pIns->volume_envelope.flags &= ~ENV_ENABLED;
+    if (!pIns->panning_envelope.num_nodes) pIns->panning_envelope.flags &= ~ENV_ENABLED;
+    pIns->volume_envelope.sustain_start = pih->vsustain;
+    pIns->volume_envelope.sustain_end = pih->vsustain;
+    if (pih->vsustain >= 12) pIns->volume_envelope.flags &= ~ENV_SUSTAIN;
+    pIns->volume_envelope.loop_start = pih->vloops;
+    pIns->volume_envelope.loop_end = pih->vloope;
+    if (pIns->volume_envelope.loop_end >= 12) pIns->volume_envelope.loop_end = 0;
+    if (pIns->volume_envelope.loop_start >= pIns->volume_envelope.loop_end) pIns->volume_envelope.flags &= ~ENV_LOOP;
+    pIns->panning_envelope.sustain_start = pih->psustain;
+    pIns->panning_envelope.sustain_end = pih->psustain;
+    if (pih->psustain >= 12) pIns->panning_envelope.flags &= ~ENV_SUSTAIN;
+    pIns->panning_envelope.loop_start = pih->ploops;
+    pIns->panning_envelope.loop_end = pih->ploope;
+    if (pIns->panning_envelope.loop_end >= 12) pIns->panning_envelope.loop_end = 0;
+    if (pIns->panning_envelope.loop_start >= pIns->panning_envelope.loop_end) pIns->panning_envelope.flags &= ~ENV_LOOP;
+    pIns->global_volume = 64;
+    pIns->pitch_pan_center = 5*12;
     SetDefaultInstrumentValues(pIns);
     for (UINT ienv=0; ienv<12; ienv++)
     {
-        pIns->VolEnv.Ticks[ienv] = (WORD)pih->venv[ienv*2];
-        pIns->VolEnv.Values[ienv] = (BYTE)pih->venv[ienv*2+1];
-        pIns->PanEnv.Ticks[ienv] = (WORD)pih->pIns[ienv*2];
-        pIns->PanEnv.Values[ienv] = (BYTE)pih->pIns[ienv*2+1];
+        pIns->volume_envelope.Ticks[ienv] = (WORD)pih->venv[ienv*2];
+        pIns->volume_envelope.Values[ienv] = (BYTE)pih->venv[ienv*2+1];
+        pIns->panning_envelope.Ticks[ienv] = (WORD)pih->pIns[ienv*2];
+        pIns->panning_envelope.Values[ienv] = (BYTE)pih->pIns[ienv*2+1];
         if (ienv)
         {
-            if (pIns->VolEnv.Ticks[ienv] < pIns->VolEnv.Ticks[ienv-1])
+            if (pIns->volume_envelope.Ticks[ienv] < pIns->volume_envelope.Ticks[ienv-1])
             {
-                pIns->VolEnv.Ticks[ienv] &= 0xFF;
-                pIns->VolEnv.Ticks[ienv] += pIns->VolEnv.Ticks[ienv-1] & 0xFF00;
-                if (pIns->VolEnv.Ticks[ienv] < pIns->VolEnv.Ticks[ienv-1]) pIns->VolEnv.Ticks[ienv] += 0x100;
+                pIns->volume_envelope.Ticks[ienv] &= 0xFF;
+                pIns->volume_envelope.Ticks[ienv] += pIns->volume_envelope.Ticks[ienv-1] & 0xFF00;
+                if (pIns->volume_envelope.Ticks[ienv] < pIns->volume_envelope.Ticks[ienv-1]) pIns->volume_envelope.Ticks[ienv] += 0x100;
             }
-            if (pIns->PanEnv.Ticks[ienv] < pIns->PanEnv.Ticks[ienv-1])
+            if (pIns->panning_envelope.Ticks[ienv] < pIns->panning_envelope.Ticks[ienv-1])
             {
-                pIns->PanEnv.Ticks[ienv] &= 0xFF;
-                pIns->PanEnv.Ticks[ienv] += pIns->PanEnv.Ticks[ienv-1] & 0xFF00;
-                if (pIns->PanEnv.Ticks[ienv] < pIns->PanEnv.Ticks[ienv-1]) pIns->PanEnv.Ticks[ienv] += 0x100;
+                pIns->panning_envelope.Ticks[ienv] &= 0xFF;
+                pIns->panning_envelope.Ticks[ienv] += pIns->panning_envelope.Ticks[ienv-1] & 0xFF00;
+                if (pIns->panning_envelope.Ticks[ienv] < pIns->panning_envelope.Ticks[ienv-1]) pIns->panning_envelope.Ticks[ienv] += 0x100;
             }
         }
     }
@@ -1193,56 +1193,56 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
         sampleflags[ismp] = RS_PCM8S;
         samplesize[ismp] = psh->samplen;
         if (!samplemap[ismp]) continue;
-        modplug::mixer::MODSAMPLE *pSmp = &Samples[samplemap[ismp]];
-        pSmp->uFlags = 0;
-        pSmp->nLength = psh->samplen;
-        pSmp->nLoopStart = psh->loopstart;
-        pSmp->nLoopEnd = psh->loopstart + psh->looplen;
+        modplug::tracker::modsample_t *pSmp = &Samples[samplemap[ismp]];
+        pSmp->flags = 0;
+        pSmp->length = psh->samplen;
+        pSmp->loop_start = psh->loopstart;
+        pSmp->loop_end = psh->loopstart + psh->looplen;
         if (psh->type & 0x10)
         {
-            pSmp->nLength /= 2;
-            pSmp->nLoopStart /= 2;
-            pSmp->nLoopEnd /= 2;
+            pSmp->length /= 2;
+            pSmp->loop_start /= 2;
+            pSmp->loop_end /= 2;
         }
         if (psh->type & 0x20)
         {
-            pSmp->nLength /= 2;
-            pSmp->nLoopStart /= 2;
-            pSmp->nLoopEnd /= 2;
+            pSmp->length /= 2;
+            pSmp->loop_start /= 2;
+            pSmp->loop_end /= 2;
         }
-        if (pSmp->nLength > MAX_SAMPLE_LENGTH) pSmp->nLength = MAX_SAMPLE_LENGTH;
-        if (psh->type & 3) pSmp->uFlags |= CHN_LOOP;
-        if (psh->type & 2) pSmp->uFlags |= CHN_PINGPONGLOOP;
-        if (pSmp->nLoopEnd > pSmp->nLength) pSmp->nLoopEnd = pSmp->nLength;
-        if (pSmp->nLoopStart >= pSmp->nLoopEnd)
+        if (pSmp->length > MAX_SAMPLE_LENGTH) pSmp->length = MAX_SAMPLE_LENGTH;
+        if (psh->type & 3) pSmp->flags |= CHN_LOOP;
+        if (psh->type & 2) pSmp->flags |= CHN_PINGPONGLOOP;
+        if (pSmp->loop_end > pSmp->length) pSmp->loop_end = pSmp->length;
+        if (pSmp->loop_start >= pSmp->loop_end)
         {
-            pSmp->uFlags &= ~CHN_LOOP;
-            pSmp->nLoopStart = 0;
+            pSmp->flags &= ~CHN_LOOP;
+            pSmp->loop_start = 0;
         }
-        pSmp->nVolume = psh->vol << 2;
-        if (pSmp->nVolume > 256) pSmp->nVolume = 256;
-        pSmp->nGlobalVol = 64;
+        pSmp->default_volume = psh->vol << 2;
+        if (pSmp->default_volume > 256) pSmp->default_volume = 256;
+        pSmp->global_volume = 64;
         sampleflags[ismp] = (psh->type & 0x10) ? RS_PCM16D : RS_PCM8D;
         if (psh->type & 0x20) sampleflags[ismp] = (psh->type & 0x10) ? RS_STPCM16D : RS_STPCM8D;
         pSmp->nFineTune = psh->finetune;
-        pSmp->nC5Speed = 8363;
+        pSmp->c5_samplerate = 8363;
         pSmp->RelativeTone = (int)psh->relnote;
         if (m_nType != MOD_TYPE_XM)
         {
-            pSmp->nC5Speed = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+            pSmp->c5_samplerate = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
             pSmp->RelativeTone = 0;
             pSmp->nFineTune = 0;
         }
-        pSmp->nPan = psh->pan;
-        pSmp->uFlags |= CHN_PANNING;
-        pSmp->nVibType = pih->vibtype;
-        pSmp->nVibSweep = pih->vibsweep;
-        pSmp->nVibDepth = pih->vibdepth;
-        pSmp->nVibRate = pih->vibrate;
+        pSmp->default_pan = psh->pan;
+        pSmp->flags |= CHN_PANNING;
+        pSmp->vibrato_type = pih->vibtype;
+        pSmp->vibrato_sweep = pih->vibsweep;
+        pSmp->vibrato_depth = pih->vibdepth;
+        pSmp->vibrato_rate = pih->vibrate;
         memset(m_szNames[samplemap[ismp]], 0, 32);
         memcpy(m_szNames[samplemap[ismp]], psh->name, 22);
-        memcpy(pSmp->filename, psh->name, 22);
-        pSmp->filename[21] = 0;
+        memcpy(pSmp->legacy_filename, psh->name, 22);
+        pSmp->legacy_filename[21] = 0;
     }
     // Reading sample data
     for (UINT dsmp=0; dsmp<nsamples; dsmp++)
@@ -1273,7 +1273,7 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     XIFILEHEADER xfh;
     XIINSTRUMENTHEADER xih;
     XISAMPLEHEADER xsh;
-    modplug::mixer::MODINSTRUMENT *pIns = Instruments[nInstr];
+    modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     UINT smptable[32];
     UINT nsamples;
     FILE *f;
@@ -1290,30 +1290,30 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     xfh.shsize = 0x102;
     fwrite(&xfh, 1, sizeof(xfh), f);
     // XI Instrument Header
-    xih.volfade = pIns->nFadeOut;
-    xih.vnum = pIns->VolEnv.nNodes;
-    xih.pnum = pIns->PanEnv.nNodes;
+    xih.volfade = pIns->fadeout;
+    xih.vnum = pIns->volume_envelope.num_nodes;
+    xih.pnum = pIns->panning_envelope.num_nodes;
     if (xih.vnum > 12) xih.vnum = 12;
     if (xih.pnum > 12) xih.pnum = 12;
     for (UINT ienv=0; ienv<12; ienv++)
     {
-        xih.venv[ienv*2] = (BYTE)pIns->VolEnv.Ticks[ienv];
-        xih.venv[ienv*2+1] = pIns->VolEnv.Values[ienv];
-        xih.pIns[ienv*2] = (BYTE)pIns->PanEnv.Ticks[ienv];
-        xih.pIns[ienv*2+1] = pIns->PanEnv.Values[ienv];
+        xih.venv[ienv*2] = (BYTE)pIns->volume_envelope.Ticks[ienv];
+        xih.venv[ienv*2+1] = pIns->volume_envelope.Values[ienv];
+        xih.pIns[ienv*2] = (BYTE)pIns->panning_envelope.Ticks[ienv];
+        xih.pIns[ienv*2+1] = pIns->panning_envelope.Values[ienv];
     }
-    if (pIns->VolEnv.dwFlags & ENV_ENABLED) xih.vtype |= 1;
-    if (pIns->VolEnv.dwFlags & ENV_SUSTAIN) xih.vtype |= 2;
-    if (pIns->VolEnv.dwFlags & ENV_LOOP) xih.vtype |= 4;
-    if (pIns->PanEnv.dwFlags & ENV_ENABLED) xih.ptype |= 1;
-    if (pIns->PanEnv.dwFlags & ENV_SUSTAIN) xih.ptype |= 2;
-    if (pIns->PanEnv.dwFlags & ENV_LOOP) xih.ptype |= 4;
-    xih.vsustain = (BYTE)pIns->VolEnv.nSustainStart;
-    xih.vloops = (BYTE)pIns->VolEnv.nLoopStart;
-    xih.vloope = (BYTE)pIns->VolEnv.nLoopEnd;
-    xih.psustain = (BYTE)pIns->PanEnv.nSustainStart;
-    xih.ploops = (BYTE)pIns->PanEnv.nLoopStart;
-    xih.ploope = (BYTE)pIns->PanEnv.nLoopEnd;
+    if (pIns->volume_envelope.flags & ENV_ENABLED) xih.vtype |= 1;
+    if (pIns->volume_envelope.flags & ENV_SUSTAIN) xih.vtype |= 2;
+    if (pIns->volume_envelope.flags & ENV_LOOP) xih.vtype |= 4;
+    if (pIns->panning_envelope.flags & ENV_ENABLED) xih.ptype |= 1;
+    if (pIns->panning_envelope.flags & ENV_SUSTAIN) xih.ptype |= 2;
+    if (pIns->panning_envelope.flags & ENV_LOOP) xih.ptype |= 4;
+    xih.vsustain = (BYTE)pIns->volume_envelope.sustain_start;
+    xih.vloops = (BYTE)pIns->volume_envelope.loop_start;
+    xih.vloope = (BYTE)pIns->volume_envelope.loop_end;
+    xih.psustain = (BYTE)pIns->panning_envelope.sustain_start;
+    xih.ploops = (BYTE)pIns->panning_envelope.loop_start;
+    xih.ploope = (BYTE)pIns->panning_envelope.loop_end;
     nsamples = 0;
     for (UINT j=0; j<96; j++) if (pIns->Keyboard[j+12])
     {
@@ -1324,10 +1324,10 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
         {
             if (!k)
             {
-                xih.vibtype = Samples[n].nVibType;
-                xih.vibsweep = min(Samples[n].nVibSweep, 255);
-                xih.vibdepth = min(Samples[n].nVibDepth, 15);
-                xih.vibrate = min(Samples[n].nVibRate, 63);
+                xih.vibtype = Samples[n].vibrato_type;
+                xih.vibsweep = min(Samples[n].vibrato_sweep, 255);
+                xih.vibdepth = min(Samples[n].vibrato_depth, 15);
+                xih.vibrate = min(Samples[n].vibrato_rate, 63);
             }
             if (nsamples < 32) smptable[nsamples++] = n;
             k = nsamples - 1;
@@ -1339,51 +1339,51 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     // XI Sample Headers
     for (UINT ismp=0; ismp<nsamples; ismp++)
     {
-        modplug::mixer::MODSAMPLE *pSmp = &Samples[smptable[ismp]];
-        xsh.samplen = pSmp->nLength;
-        xsh.loopstart = pSmp->nLoopStart;
-        xsh.looplen = pSmp->nLoopEnd - pSmp->nLoopStart;
-        xsh.vol = pSmp->nVolume >> 2;
+        modplug::tracker::modsample_t *pSmp = &Samples[smptable[ismp]];
+        xsh.samplen = pSmp->length;
+        xsh.loopstart = pSmp->loop_start;
+        xsh.looplen = pSmp->loop_end - pSmp->loop_start;
+        xsh.vol = pSmp->default_volume >> 2;
         xsh.finetune = (signed char)pSmp->nFineTune;
         xsh.type = 0;
-        if (pSmp->uFlags & CHN_16BIT)
+        if (pSmp->flags & CHN_16BIT)
         {
             xsh.type |= 0x10;
             xsh.samplen *= 2;
             xsh.loopstart *= 2;
             xsh.looplen *= 2;
         }
-        if (pSmp->uFlags & CHN_STEREO)
+        if (pSmp->flags & CHN_STEREO)
         {
             xsh.type |= 0x20;
             xsh.samplen *= 2;
             xsh.loopstart *= 2;
             xsh.looplen *= 2;
         }
-        if (pSmp->uFlags & CHN_LOOP)
+        if (pSmp->flags & CHN_LOOP)
         {
-            xsh.type |= (pSmp->uFlags & CHN_PINGPONGLOOP) ? 0x02 : 0x01;
+            xsh.type |= (pSmp->flags & CHN_PINGPONGLOOP) ? 0x02 : 0x01;
         }
-        xsh.pan = (BYTE)pSmp->nPan;
-        if (pSmp->nPan > 0xFF) xsh.pan = 0xFF;
-        if ((m_nType & MOD_TYPE_XM) || (!pSmp->nC5Speed))
+        xsh.pan = (BYTE)pSmp->default_pan;
+        if (pSmp->default_pan > 0xFF) xsh.pan = 0xFF;
+        if ((m_nType & MOD_TYPE_XM) || (!pSmp->c5_samplerate))
             xsh.relnote = (signed char) pSmp->RelativeTone;
         else
         {
-            int f2t = FrequencyToTranspose(pSmp->nC5Speed);
+            int f2t = FrequencyToTranspose(pSmp->c5_samplerate);
             xsh.relnote = (signed char)(f2t >> 7);
             xsh.finetune = (signed char)(f2t & 0x7F);
         }
         xsh.res = 0;
-        memcpy(xsh.name, pSmp->filename, 22);
+        memcpy(xsh.name, pSmp->legacy_filename, 22);
         fwrite(&xsh, 1, sizeof(xsh), f);
     }
     // XI Sample Data
     for (UINT dsmp=0; dsmp<nsamples; dsmp++)
     {
-        modplug::mixer::MODSAMPLE *pSmp = &Samples[smptable[dsmp]];
-        UINT smpflags = (pSmp->uFlags & CHN_16BIT) ? RS_PCM16D : RS_PCM8D;
-        if (pSmp->uFlags & CHN_STEREO) smpflags = (pSmp->uFlags & CHN_16BIT) ? RS_STPCM16D : RS_STPCM8D;
+        modplug::tracker::modsample_t *pSmp = &Samples[smptable[dsmp]];
+        UINT smpflags = (pSmp->flags & CHN_16BIT) ? RS_PCM16D : RS_PCM8D;
+        if (pSmp->flags & CHN_STEREO) smpflags = (pSmp->flags & CHN_16BIT) ? RS_STPCM16D : RS_STPCM8D;
         WriteSample(f, pSmp, smpflags);
     }
 
@@ -1404,7 +1404,7 @@ bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFil
     XIINSTRUMENTHEADER *pih = (XIINSTRUMENTHEADER *)(lpMemFile+sizeof(XIFILEHEADER));
     UINT sampleflags = 0;
     DWORD dwMemPos = sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER);
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     UINT nsamples;
 
     if ((!lpMemFile) || (dwFileLength < sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER))) return false;
@@ -1419,8 +1419,8 @@ bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFil
     }
     nsamples++;
     memcpy(m_szNames[nSample], pxh->name, 22);
-    pSmp->uFlags = 0;
-    pSmp->nGlobalVol = 64;
+    pSmp->flags = 0;
+    pSmp->global_volume = 64;
     // Reading sample
     UINT maxsmp = nsamples;
     if ((pih->reserved2 <= 16) && (pih->reserved2 > maxsmp)) maxsmp = pih->reserved2;
@@ -1431,52 +1431,52 @@ bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFil
         dwMemPos += sizeof(XISAMPLEHEADER);
         if (ismp) continue;
         sampleflags = RS_PCM8S;
-        pSmp->nLength = psh->samplen;
-        pSmp->nLoopStart = psh->loopstart;
-        pSmp->nLoopEnd = psh->loopstart + psh->looplen;
+        pSmp->length = psh->samplen;
+        pSmp->loop_start = psh->loopstart;
+        pSmp->loop_end = psh->loopstart + psh->looplen;
         if (psh->type & 0x10)
         {
-            pSmp->nLength /= 2;
-            pSmp->nLoopStart /= 2;
-            pSmp->nLoopEnd /= 2;
+            pSmp->length /= 2;
+            pSmp->loop_start /= 2;
+            pSmp->loop_end /= 2;
         }
         if (psh->type & 0x20)
         {
-            pSmp->nLength /= 2;
-            pSmp->nLoopStart /= 2;
-            pSmp->nLoopEnd /= 2;
+            pSmp->length /= 2;
+            pSmp->loop_start /= 2;
+            pSmp->loop_end /= 2;
         }
-        if (pSmp->nLength > MAX_SAMPLE_LENGTH) pSmp->nLength = MAX_SAMPLE_LENGTH;
-        if (psh->type & 3) pSmp->uFlags |= CHN_LOOP;
-        if (psh->type & 2) pSmp->uFlags |= CHN_PINGPONGLOOP;
-        if (pSmp->nLoopEnd > pSmp->nLength) pSmp->nLoopEnd = pSmp->nLength;
-        if (pSmp->nLoopStart >= pSmp->nLoopEnd)
+        if (pSmp->length > MAX_SAMPLE_LENGTH) pSmp->length = MAX_SAMPLE_LENGTH;
+        if (psh->type & 3) pSmp->flags |= CHN_LOOP;
+        if (psh->type & 2) pSmp->flags |= CHN_PINGPONGLOOP;
+        if (pSmp->loop_end > pSmp->length) pSmp->loop_end = pSmp->length;
+        if (pSmp->loop_start >= pSmp->loop_end)
         {
-            pSmp->uFlags &= ~CHN_LOOP;
-            pSmp->nLoopStart = 0;
+            pSmp->flags &= ~CHN_LOOP;
+            pSmp->loop_start = 0;
         }
-        pSmp->nVolume = psh->vol << 2;
-        if (pSmp->nVolume > 256) pSmp->nVolume = 256;
-        pSmp->nGlobalVol = 64;
+        pSmp->default_volume = psh->vol << 2;
+        if (pSmp->default_volume > 256) pSmp->default_volume = 256;
+        pSmp->global_volume = 64;
         sampleflags = (psh->type & 0x10) ? RS_PCM16D : RS_PCM8D;
         if (psh->type & 0x20) sampleflags = (psh->type & 0x10) ? RS_STPCM16D : RS_STPCM8D;
         pSmp->nFineTune = psh->finetune;
-        pSmp->nC5Speed = 8363;
+        pSmp->c5_samplerate = 8363;
         pSmp->RelativeTone = (int)psh->relnote;
         if (m_nType != MOD_TYPE_XM)
         {
-            pSmp->nC5Speed = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+            pSmp->c5_samplerate = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
             pSmp->RelativeTone = 0;
             pSmp->nFineTune = 0;
         }
-        pSmp->nPan = psh->pan;
-        pSmp->uFlags |= CHN_PANNING;
-        pSmp->nVibType = pih->vibtype;
-        pSmp->nVibSweep = pih->vibsweep;
-        pSmp->nVibDepth = pih->vibdepth;
-        pSmp->nVibRate = pih->vibrate;
-        memcpy(pSmp->filename, psh->name, 22);
-        pSmp->filename[21] = 0;
+        pSmp->default_pan = psh->pan;
+        pSmp->flags |= CHN_PANNING;
+        pSmp->vibrato_type = pih->vibtype;
+        pSmp->vibrato_sweep = pih->vibsweep;
+        pSmp->vibrato_depth = pih->vibdepth;
+        pSmp->vibrato_rate = pih->vibrate;
+        memcpy(pSmp->legacy_filename, psh->name, 22);
+        pSmp->legacy_filename[21] = 0;
     }
     if (dwMemPos >= dwFileLength) return true;
     ReadSample(pSmp, sampleflags, (LPSTR)(lpMemFile+dwMemPos), dwFileLength-dwMemPos);
@@ -1578,30 +1578,30 @@ bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwF
     }
     UINT samplesize = (pcomm->wSampleSize >> 11) * (pcomm->wChannels >> 8);
     if (!samplesize) samplesize = 1;
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
-    if (pSmp->pSample)
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
+    if (pSmp->sample_data)
     {
-        FreeSample(pSmp->pSample);
-        pSmp->pSample = nullptr;
-        pSmp->nLength = 0;
+        FreeSample(pSmp->sample_data);
+        pSmp->sample_data = nullptr;
+        pSmp->length = 0;
     }
-    pSmp->nLength = dwSSNDLen / samplesize;
-    pSmp->nLoopStart = pSmp->nLoopEnd = 0;
-    pSmp->nSustainStart = pSmp->nSustainEnd = 0;
-    pSmp->nC5Speed = Ext2Long(pcomm->xSampleRate);
-    pSmp->nPan = 128;
-    pSmp->nVolume = 256;
-    pSmp->nGlobalVol = 64;
-    pSmp->uFlags = (pcomm->wSampleSize > 0x0800) ? CHN_16BIT : 0;
-    if (pcomm->wChannels >= 0x0200) pSmp->uFlags |= CHN_STEREO;
-    if (m_nType & MOD_TYPE_XM) pSmp->uFlags |= CHN_PANNING;
+    pSmp->length = dwSSNDLen / samplesize;
+    pSmp->loop_start = pSmp->loop_end = 0;
+    pSmp->sustain_start = pSmp->sustain_end = 0;
+    pSmp->c5_samplerate = Ext2Long(pcomm->xSampleRate);
+    pSmp->default_pan = 128;
+    pSmp->default_volume = 256;
+    pSmp->global_volume = 64;
+    pSmp->flags = (pcomm->wSampleSize > 0x0800) ? CHN_16BIT : 0;
+    if (pcomm->wChannels >= 0x0200) pSmp->flags |= CHN_STEREO;
+    if (m_nType & MOD_TYPE_XM) pSmp->flags |= CHN_PANNING;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
     if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
-    pSmp->nVibType = pSmp->nVibSweep = pSmp->nVibDepth = pSmp->nVibRate = 0;
-    pSmp->filename[0] = 0;
+    pSmp->vibrato_type = pSmp->vibrato_sweep = pSmp->vibrato_depth = pSmp->vibrato_rate = 0;
+    pSmp->legacy_filename[0] = 0;
     m_szNames[nSample][0] = 0;
-    if (pSmp->nLength > MAX_SAMPLE_LENGTH) pSmp->nLength = MAX_SAMPLE_LENGTH;
+    if (pSmp->length > MAX_SAMPLE_LENGTH) pSmp->length = MAX_SAMPLE_LENGTH;
     ReadSample(pSmp, nType, (LPSTR)(lpMemFile+dwMemPos), dwFileLength-dwMemPos);
     return true;
 }
@@ -1617,7 +1617,7 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
 //-------------------------------------------------------------------------------------------------------
 {
     ITSAMPLESTRUCT *pis = (ITSAMPLESTRUCT *)lpMemFile;
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     DWORD dwMemPos;
 
 // -> CODE#0027
@@ -1629,37 +1629,37 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
 // -! NEW_FEATURE#0027
     DestroySample(nSample);
     dwMemPos = pis->samplepointer - dwOffset;
-    memcpy(pSmp->filename, pis->filename, 12);
+    memcpy(pSmp->legacy_filename, pis->filename, 12);
     memcpy(m_szNames[nSample], pis->name, 26);
     m_szNames[nSample][26] = 0;
-    pSmp->nLength = pis->length;
-    if (pSmp->nLength > MAX_SAMPLE_LENGTH) pSmp->nLength = MAX_SAMPLE_LENGTH;
-    pSmp->nLoopStart = pis->loopbegin;
-    pSmp->nLoopEnd = pis->loopend;
-    pSmp->nSustainStart = pis->susloopbegin;
-    pSmp->nSustainEnd = pis->susloopend;
-    pSmp->nC5Speed = pis->C5Speed;
-    if (!pSmp->nC5Speed) pSmp->nC5Speed = 8363;
-    if (pis->C5Speed < 256) pSmp->nC5Speed = 256;
+    pSmp->length = pis->length;
+    if (pSmp->length > MAX_SAMPLE_LENGTH) pSmp->length = MAX_SAMPLE_LENGTH;
+    pSmp->loop_start = pis->loopbegin;
+    pSmp->loop_end = pis->loopend;
+    pSmp->sustain_start = pis->susloopbegin;
+    pSmp->sustain_end = pis->susloopend;
+    pSmp->c5_samplerate = pis->C5Speed;
+    if (!pSmp->c5_samplerate) pSmp->c5_samplerate = 8363;
+    if (pis->C5Speed < 256) pSmp->c5_samplerate = 256;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
     if (GetType() == MOD_TYPE_XM) FrequencyToTranspose(pSmp);
-    pSmp->nVolume = pis->vol << 2;
-    if (pSmp->nVolume > 256) pSmp->nVolume = 256;
-    pSmp->nGlobalVol = pis->gvl;
-    if (pSmp->nGlobalVol > 64) pSmp->nGlobalVol = 64;
-    pSmp->uFlags = 0;
-    if (pis->flags & 0x10) pSmp->uFlags |= CHN_LOOP;
-    if (pis->flags & 0x20) pSmp->uFlags |= CHN_SUSTAINLOOP;
-    if (pis->flags & 0x40) pSmp->uFlags |= CHN_PINGPONGLOOP;
-    if (pis->flags & 0x80) pSmp->uFlags |= CHN_PINGPONGSUSTAIN;
-    pSmp->nPan = (pis->dfp & 0x7F) << 2;
-    if (pSmp->nPan > 256) pSmp->nPan = 256;
-    if (pis->dfp & 0x80) pSmp->uFlags |= CHN_PANNING;
-    pSmp->nVibType = autovibit2xm[pis->vit & 7];
-    pSmp->nVibSweep = pis->vir;
-    pSmp->nVibDepth = pis->vid;
-    pSmp->nVibRate = pis->vis;
+    pSmp->default_volume = pis->vol << 2;
+    if (pSmp->default_volume > 256) pSmp->default_volume = 256;
+    pSmp->global_volume = pis->gvl;
+    if (pSmp->global_volume > 64) pSmp->global_volume = 64;
+    pSmp->flags = 0;
+    if (pis->flags & 0x10) pSmp->flags |= CHN_LOOP;
+    if (pis->flags & 0x20) pSmp->flags |= CHN_SUSTAINLOOP;
+    if (pis->flags & 0x40) pSmp->flags |= CHN_PINGPONGLOOP;
+    if (pis->flags & 0x80) pSmp->flags |= CHN_PINGPONGSUSTAIN;
+    pSmp->default_pan = (pis->dfp & 0x7F) << 2;
+    if (pSmp->default_pan > 256) pSmp->default_pan = 256;
+    if (pis->dfp & 0x80) pSmp->flags |= CHN_PANNING;
+    pSmp->vibrato_type = autovibit2xm[pis->vit & 7];
+    pSmp->vibrato_sweep = pis->vir;
+    pSmp->vibrato_depth = pis->vid;
+    pSmp->vibrato_rate = pis->vis;
     UINT flags = (pis->cvt & 1) ? RS_PCM8S : RS_PCM8U;
     if (pis->flags & 2)
     {
@@ -1669,10 +1669,10 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
             flags |= RSF_STEREO;
 // -> CODE#0001
 // -> DESC="enable saving stereo ITI"
-            pSmp->uFlags |= CHN_STEREO;
+            pSmp->flags |= CHN_STEREO;
 // -! BUG_FIX#0001
         }
-        pSmp->uFlags |= CHN_16BIT;
+        pSmp->flags |= CHN_16BIT;
         // IT 2.14 16-bit packed sample ?
         if (pis->flags & 8) flags = RS_IT21416;
     } else
@@ -1707,10 +1707,10 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 //	RemoveInstrumentSamples(nInstr);
     DestroyInstrument(nInstr,1);
 // -! BEHAVIOUR_CHANGE#0003
-    Instruments[nInstr] = new modplug::mixer::MODINSTRUMENT;
-    modplug::mixer::MODINSTRUMENT *pIns = Instruments[nInstr];
+    Instruments[nInstr] = new modplug::tracker::modinstrument_t;
+    modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     if (!pIns) return false;
-    memset(pIns, 0, sizeof(modplug::mixer::MODINSTRUMENT));
+    memset(pIns, 0, sizeof(modplug::tracker::modinstrument_t));
     pIns->pTuning = pIns->s_DefaultTuning;
     memset(samplemap, 0, sizeof(samplemap));
     dwMemPos = 554;
@@ -1733,7 +1733,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
     // Reading Samples
     for (UINT i=0; i<nsamples; i++)
     {
-        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].pSample) || (m_szNames[nsmp][0]))) nsmp++;
+        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
         if (nsmp >= MAX_SAMPLES) break;
         if (m_nSamples < nsmp) m_nSamples = nsmp;
         samplemap[i] = nsmp;
@@ -1784,7 +1784,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     BYTE buffer[554];
     ITINSTRUMENT *iti = (ITINSTRUMENT *)buffer;
     ITSAMPLESTRUCT itss;
-    modplug::mixer::MODINSTRUMENT *pIns = Instruments[nInstr];
+    modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     vector<bool> smpcount(GetNumSamples(), false);
     UINT smptable[MAX_SAMPLES], smpmap[MAX_SAMPLES];
     DWORD dwPos;
@@ -1799,22 +1799,22 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     memcpy(iti->filename, pIns->filename, 12);
     memcpy(iti->name, pIns->name, 26);
     SetNullTerminator(iti->name);
-    iti->mpr = pIns->nMidiProgram;
-    iti->mch = pIns->nMidiChannel;
-    iti->mbank = pIns->wMidiBank; //rewbs.MidiBank
-    iti->nna = pIns->nNNA;
-    iti->dct = pIns->nDCT;
-    iti->dca = pIns->nDNA;
-    iti->fadeout = pIns->nFadeOut >> 5;
-    iti->pps = pIns->nPPS;
-    iti->ppc = pIns->nPPC;
-    iti->gbv = (BYTE)(pIns->nGlobalVol << 1);
-    iti->dfp = (BYTE)pIns->nPan >> 2;
-    if (!(pIns->dwFlags & INS_SETPANNING)) iti->dfp |= 0x80;
-    iti->rv = pIns->nVolSwing;
-    iti->rp = pIns->nPanSwing;
-    iti->ifc = pIns->nIFC;
-    iti->ifr = pIns->nIFR;
+    iti->mpr = pIns->midi_program;
+    iti->mch = pIns->midi_channel;
+    iti->mbank = pIns->midi_bank; //rewbs.MidiBank
+    iti->nna = pIns->new_note_action;
+    iti->dct = pIns->duplicate_check_type;
+    iti->dca = pIns->duplicate_note_action;
+    iti->fadeout = pIns->fadeout >> 5;
+    iti->pps = pIns->pitch_pan_separation;
+    iti->ppc = pIns->pitch_pan_center;
+    iti->gbv = (BYTE)(pIns->global_volume << 1);
+    iti->dfp = (BYTE)pIns->default_pan >> 2;
+    if (!(pIns->flags & INS_SETPANNING)) iti->dfp |= 0x80;
+    iti->rv = pIns->random_volume_weight;
+    iti->rp = pIns->random_pan_weight;
+    iti->ifc = pIns->default_filter_cutoff;
+    iti->ifr = pIns->default_filter_resonance;
     //iti->trkvers = 0x202;
     iti->trkvers =	0x220;	 //rewbs.ITVersion (was 0x202)
     iti->nos = 0;
@@ -1836,48 +1836,48 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 // -! BUG_FIX#0019
     }
     // Writing Volume envelope
-    if (pIns->VolEnv.dwFlags & ENV_ENABLED) iti->volenv.flags |= 0x01;
-    if (pIns->VolEnv.dwFlags & ENV_LOOP) iti->volenv.flags |= 0x02;
-    if (pIns->VolEnv.dwFlags & ENV_SUSTAIN) iti->volenv.flags |= 0x04;
-    if (pIns->VolEnv.dwFlags & ENV_CARRY) iti->volenv.flags |= 0x08;
-    iti->volenv.num = (BYTE)pIns->VolEnv.nNodes;
-    iti->volenv.lpb = (BYTE)pIns->VolEnv.nLoopStart;
-    iti->volenv.lpe = (BYTE)pIns->VolEnv.nLoopEnd;
-    iti->volenv.slb = pIns->VolEnv.nSustainStart;
-    iti->volenv.sle = pIns->VolEnv.nSustainEnd;
+    if (pIns->volume_envelope.flags & ENV_ENABLED) iti->volenv.flags |= 0x01;
+    if (pIns->volume_envelope.flags & ENV_LOOP) iti->volenv.flags |= 0x02;
+    if (pIns->volume_envelope.flags & ENV_SUSTAIN) iti->volenv.flags |= 0x04;
+    if (pIns->volume_envelope.flags & ENV_CARRY) iti->volenv.flags |= 0x08;
+    iti->volenv.num = (BYTE)pIns->volume_envelope.num_nodes;
+    iti->volenv.lpb = (BYTE)pIns->volume_envelope.loop_start;
+    iti->volenv.lpe = (BYTE)pIns->volume_envelope.loop_end;
+    iti->volenv.slb = pIns->volume_envelope.sustain_start;
+    iti->volenv.sle = pIns->volume_envelope.sustain_end;
     // Writing Panning envelope
-    if (pIns->PanEnv.dwFlags & ENV_ENABLED) iti->panenv.flags |= 0x01;
-    if (pIns->PanEnv.dwFlags & ENV_LOOP) iti->panenv.flags |= 0x02;
-    if (pIns->PanEnv.dwFlags & ENV_SUSTAIN) iti->panenv.flags |= 0x04;
-    if (pIns->PanEnv.dwFlags & ENV_CARRY) iti->panenv.flags |= 0x08;
-    iti->panenv.num = (BYTE)pIns->PanEnv.nNodes;
-    iti->panenv.lpb = (BYTE)pIns->PanEnv.nLoopStart;
-    iti->panenv.lpe = (BYTE)pIns->PanEnv.nLoopEnd;
-    iti->panenv.slb = pIns->PanEnv.nSustainStart;
-    iti->panenv.sle = pIns->PanEnv.nSustainEnd;
+    if (pIns->panning_envelope.flags & ENV_ENABLED) iti->panenv.flags |= 0x01;
+    if (pIns->panning_envelope.flags & ENV_LOOP) iti->panenv.flags |= 0x02;
+    if (pIns->panning_envelope.flags & ENV_SUSTAIN) iti->panenv.flags |= 0x04;
+    if (pIns->panning_envelope.flags & ENV_CARRY) iti->panenv.flags |= 0x08;
+    iti->panenv.num = (BYTE)pIns->panning_envelope.num_nodes;
+    iti->panenv.lpb = (BYTE)pIns->panning_envelope.loop_start;
+    iti->panenv.lpe = (BYTE)pIns->panning_envelope.loop_end;
+    iti->panenv.slb = pIns->panning_envelope.sustain_start;
+    iti->panenv.sle = pIns->panning_envelope.sustain_end;
     // Writing Pitch Envelope
-    if (pIns->PitchEnv.dwFlags & ENV_ENABLED) iti->pitchenv.flags |= 0x01;
-    if (pIns->PitchEnv.dwFlags & ENV_LOOP) iti->pitchenv.flags |= 0x02;
-    if (pIns->PitchEnv.dwFlags & ENV_SUSTAIN) iti->pitchenv.flags |= 0x04;
-    if (pIns->PitchEnv.dwFlags & ENV_CARRY) iti->pitchenv.flags |= 0x08;
-    if (pIns->PitchEnv.dwFlags & ENV_FILTER) iti->pitchenv.flags |= 0x80;
-    iti->pitchenv.num = (BYTE)pIns->PitchEnv.nNodes;
-    iti->pitchenv.lpb = (BYTE)pIns->PitchEnv.nLoopStart;
-    iti->pitchenv.lpe = (BYTE)pIns->PitchEnv.nLoopEnd;
-    iti->pitchenv.slb = (BYTE)pIns->PitchEnv.nSustainStart;
-    iti->pitchenv.sle = (BYTE)pIns->PitchEnv.nSustainEnd;
+    if (pIns->pitch_envelope.flags & ENV_ENABLED) iti->pitchenv.flags |= 0x01;
+    if (pIns->pitch_envelope.flags & ENV_LOOP) iti->pitchenv.flags |= 0x02;
+    if (pIns->pitch_envelope.flags & ENV_SUSTAIN) iti->pitchenv.flags |= 0x04;
+    if (pIns->pitch_envelope.flags & ENV_CARRY) iti->pitchenv.flags |= 0x08;
+    if (pIns->pitch_envelope.flags & ENV_FILTER) iti->pitchenv.flags |= 0x80;
+    iti->pitchenv.num = (BYTE)pIns->pitch_envelope.num_nodes;
+    iti->pitchenv.lpb = (BYTE)pIns->pitch_envelope.loop_start;
+    iti->pitchenv.lpe = (BYTE)pIns->pitch_envelope.loop_end;
+    iti->pitchenv.slb = (BYTE)pIns->pitch_envelope.sustain_start;
+    iti->pitchenv.sle = (BYTE)pIns->pitch_envelope.sustain_end;
     // Writing Envelopes data
     for (UINT ev=0; ev<25; ev++)
     {
-        iti->volenv.data[ev*3] = pIns->VolEnv.Values[ev];
-        iti->volenv.data[ev*3+1] = pIns->VolEnv.Ticks[ev] & 0xFF;
-        iti->volenv.data[ev*3+2] = pIns->VolEnv.Ticks[ev] >> 8;
-        iti->panenv.data[ev*3] = pIns->PanEnv.Values[ev] - 32;
-        iti->panenv.data[ev*3+1] = pIns->PanEnv.Ticks[ev] & 0xFF;
-        iti->panenv.data[ev*3+2] = pIns->PanEnv.Ticks[ev] >> 8;
-        iti->pitchenv.data[ev*3] = pIns->PitchEnv.Values[ev] - 32;
-        iti->pitchenv.data[ev*3+1] = pIns->PitchEnv.Ticks[ev] & 0xFF;
-        iti->pitchenv.data[ev*3+2] = pIns->PitchEnv.Ticks[ev] >> 8;
+        iti->volenv.data[ev*3] = pIns->volume_envelope.Values[ev];
+        iti->volenv.data[ev*3+1] = pIns->volume_envelope.Ticks[ev] & 0xFF;
+        iti->volenv.data[ev*3+2] = pIns->volume_envelope.Ticks[ev] >> 8;
+        iti->panenv.data[ev*3] = pIns->panning_envelope.Values[ev] - 32;
+        iti->panenv.data[ev*3+1] = pIns->panning_envelope.Ticks[ev] & 0xFF;
+        iti->panenv.data[ev*3+2] = pIns->panning_envelope.Ticks[ev] >> 8;
+        iti->pitchenv.data[ev*3] = pIns->pitch_envelope.Values[ev] - 32;
+        iti->pitchenv.data[ev*3+1] = pIns->pitch_envelope.Ticks[ev] & 0xFF;
+        iti->pitchenv.data[ev*3+2] = pIns->pitch_envelope.Ticks[ev] >> 8;
     }
     dwPos = 554;
     fwrite(buffer, 1, dwPos, f);
@@ -1889,33 +1889,33 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
         UINT smpsize = 0;
         UINT nsmp = smptable[j];
         memset(&itss, 0, sizeof(itss));
-        modplug::mixer::MODSAMPLE *psmp = &Samples[nsmp];
+        modplug::tracker::modsample_t *psmp = &Samples[nsmp];
         itss.id = LittleEndian(IT_IMPS);
-        memcpy(itss.filename, psmp->filename, 12);
+        memcpy(itss.filename, psmp->legacy_filename, 12);
         memcpy(itss.name, m_szNames[nsmp], 26);
-        itss.gvl = (BYTE)psmp->nGlobalVol;
+        itss.gvl = (BYTE)psmp->global_volume;
         itss.flags = 0x01;
-        if (psmp->uFlags & CHN_LOOP) itss.flags |= 0x10;
-        if (psmp->uFlags & CHN_SUSTAINLOOP) itss.flags |= 0x20;
-        if (psmp->uFlags & CHN_PINGPONGLOOP) itss.flags |= 0x40;
-        if (psmp->uFlags & CHN_PINGPONGSUSTAIN) itss.flags |= 0x80;
-        itss.C5Speed = psmp->nC5Speed;
+        if (psmp->flags & CHN_LOOP) itss.flags |= 0x10;
+        if (psmp->flags & CHN_SUSTAINLOOP) itss.flags |= 0x20;
+        if (psmp->flags & CHN_PINGPONGLOOP) itss.flags |= 0x40;
+        if (psmp->flags & CHN_PINGPONGSUSTAIN) itss.flags |= 0x80;
+        itss.C5Speed = psmp->c5_samplerate;
         if (!itss.C5Speed) itss.C5Speed = 8363;
-        itss.length = psmp->nLength;
-        itss.loopbegin = psmp->nLoopStart;
-        itss.loopend = psmp->nLoopEnd;
-        itss.susloopbegin = psmp->nSustainStart;
-        itss.susloopend = psmp->nSustainEnd;
-        itss.vol = psmp->nVolume >> 2;
-        itss.dfp = psmp->nPan >> 2;
-        itss.vit = autovibxm2it[psmp->nVibType & 7];
-        itss.vir = min(psmp->nVibSweep, 255);
-        itss.vid = min(psmp->nVibDepth, 32);
-        itss.vis = min(psmp->nVibRate, 64);
-        if (psmp->uFlags & CHN_PANNING) itss.dfp |= 0x80;
+        itss.length = psmp->length;
+        itss.loopbegin = psmp->loop_start;
+        itss.loopend = psmp->loop_end;
+        itss.susloopbegin = psmp->sustain_start;
+        itss.susloopend = psmp->sustain_end;
+        itss.vol = psmp->default_volume >> 2;
+        itss.dfp = psmp->default_pan >> 2;
+        itss.vit = autovibxm2it[psmp->vibrato_type & 7];
+        itss.vir = min(psmp->vibrato_sweep, 255);
+        itss.vid = min(psmp->vibrato_depth, 32);
+        itss.vis = min(psmp->vibrato_rate, 64);
+        if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
         itss.cvt = 0x01;
-        smpsize = psmp->nLength;
-        if (psmp->uFlags & CHN_16BIT)
+        smpsize = psmp->length;
+        if (psmp->flags & CHN_16BIT)
         {
             itss.flags |= 0x02; 
             smpsize <<= 1;
@@ -1924,7 +1924,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
             itss.flags &= ~(0x02);
         }
         //rewbs.enableStereoITI
-        if (psmp->uFlags & CHN_STEREO)
+        if (psmp->flags & CHN_STEREO)
         {
             itss.flags |= 0x04;
             smpsize <<= 1; 
@@ -1948,11 +1948,11 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 // -> CODE#0001
 // -> DESC="enable saving stereo ITI"
         //UINT nsmp = smptable[k];
-        //modplug::mixer::MODINSTRUMENT *psmp = &Ins[nsmp];
-        //WriteSample(f, psmp, (psmp->uFlags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S);
-        modplug::mixer::MODSAMPLE *pSmp = &Samples[smptable[k]];
-        UINT smpflags = (pSmp->uFlags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S;
-        if (pSmp->uFlags & CHN_STEREO) smpflags = (pSmp->uFlags & CHN_16BIT) ? RS_STPCM16S : RS_STPCM8S;
+        //modplug::tracker::modinstrument_t *psmp = &Ins[nsmp];
+        //WriteSample(f, psmp, (psmp->flags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S);
+        modplug::tracker::modsample_t *pSmp = &Samples[smptable[k]];
+        UINT smpflags = (pSmp->flags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S;
+        if (pSmp->flags & CHN_STEREO) smpflags = (pSmp->flags & CHN_16BIT) ? RS_STPCM16S : RS_STPCM8S;
         WriteSample(f, pSmp, smpflags);
 // -! BUG_FIX#0001
     }
@@ -1977,7 +1977,7 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16 size)
 }
 
 
-void ReadInstrumentExtensionField(modplug::mixer::MODINSTRUMENT* pIns, LPCBYTE& ptr, const int32 code, const int16 size)
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16 size)
 //------------------------------------------------------------------------------------------------------------
 {
     // get field's address in instrument's header
@@ -1992,7 +1992,7 @@ void ReadInstrumentExtensionField(modplug::mixer::MODINSTRUMENT* pIns, LPCBYTE& 
 }
 
 
-void ReadExtendedInstrumentProperty(modplug::mixer::MODINSTRUMENT* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd)
+void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd)
 //---------------------------------------------------------------------------------------------------------------
 {
     if(pEnd < pData || uintptr_t(pEnd - pData) < 2)
@@ -2009,7 +2009,7 @@ void ReadExtendedInstrumentProperty(modplug::mixer::MODINSTRUMENT* pIns, const i
 }
 
 
-void ReadExtendedInstrumentProperties(modplug::mixer::MODINSTRUMENT* pIns, const LPCBYTE pDataStart, const size_t nMemLength)
+void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const LPCBYTE pDataStart, const size_t nMemLength)
 //--------------------------------------------------------------------------------------------------------------
 {
     if(pIns == 0 || pDataStart == 0 || nMemLength < 4)
@@ -2036,26 +2036,26 @@ void ReadExtendedInstrumentProperties(modplug::mixer::MODINSTRUMENT* pIns, const
 }
 
 
-void ConvertReadExtendedFlags(modplug::mixer::MODINSTRUMENT *pIns)
+void ConvertReadExtendedFlags(modplug::tracker::modinstrument_t *pIns)
 //------------------------------------------------
 {
-    const DWORD dwOldFlags = pIns->dwFlags;
-    pIns->dwFlags = pIns->VolEnv.dwFlags = pIns->PanEnv.dwFlags = pIns->PitchEnv.dwFlags = 0;
-    if(dwOldFlags & dFdd_VOLUME)		pIns->VolEnv.dwFlags |= ENV_ENABLED;
-    if(dwOldFlags & dFdd_VOLSUSTAIN)	pIns->VolEnv.dwFlags |= ENV_SUSTAIN;
-    if(dwOldFlags & dFdd_VOLLOOP)		pIns->VolEnv.dwFlags |= ENV_LOOP;
-    if(dwOldFlags & dFdd_PANNING)		pIns->PanEnv.dwFlags |= ENV_ENABLED;
-    if(dwOldFlags & dFdd_PANSUSTAIN)	pIns->PanEnv.dwFlags |= ENV_SUSTAIN;
-    if(dwOldFlags & dFdd_PANLOOP)		pIns->PanEnv.dwFlags |= ENV_LOOP;
-    if(dwOldFlags & dFdd_PITCH)			pIns->PitchEnv.dwFlags |= ENV_ENABLED;
-    if(dwOldFlags & dFdd_PITCHSUSTAIN)	pIns->PitchEnv.dwFlags |= ENV_SUSTAIN;
-    if(dwOldFlags & dFdd_PITCHLOOP)		pIns->PitchEnv.dwFlags |= ENV_LOOP;
-    if(dwOldFlags & dFdd_SETPANNING)	pIns->dwFlags |= INS_SETPANNING;
-    if(dwOldFlags & dFdd_FILTER)		pIns->PitchEnv.dwFlags |= ENV_FILTER;
-    if(dwOldFlags & dFdd_VOLCARRY)		pIns->VolEnv.dwFlags |= ENV_CARRY;
-    if(dwOldFlags & dFdd_PANCARRY)		pIns->PanEnv.dwFlags |= ENV_CARRY;
-    if(dwOldFlags & dFdd_PITCHCARRY)	pIns->PitchEnv.dwFlags |= ENV_CARRY;
-    if(dwOldFlags & dFdd_MUTE)			pIns->dwFlags |= INS_MUTE;
+    const DWORD dwOldFlags = pIns->flags;
+    pIns->flags = pIns->volume_envelope.flags = pIns->panning_envelope.flags = pIns->pitch_envelope.flags = 0;
+    if(dwOldFlags & dFdd_VOLUME)		pIns->volume_envelope.flags |= ENV_ENABLED;
+    if(dwOldFlags & dFdd_VOLSUSTAIN)	pIns->volume_envelope.flags |= ENV_SUSTAIN;
+    if(dwOldFlags & dFdd_VOLLOOP)		pIns->volume_envelope.flags |= ENV_LOOP;
+    if(dwOldFlags & dFdd_PANNING)		pIns->panning_envelope.flags |= ENV_ENABLED;
+    if(dwOldFlags & dFdd_PANSUSTAIN)	pIns->panning_envelope.flags |= ENV_SUSTAIN;
+    if(dwOldFlags & dFdd_PANLOOP)		pIns->panning_envelope.flags |= ENV_LOOP;
+    if(dwOldFlags & dFdd_PITCH)			pIns->pitch_envelope.flags |= ENV_ENABLED;
+    if(dwOldFlags & dFdd_PITCHSUSTAIN)	pIns->pitch_envelope.flags |= ENV_SUSTAIN;
+    if(dwOldFlags & dFdd_PITCHLOOP)		pIns->pitch_envelope.flags |= ENV_LOOP;
+    if(dwOldFlags & dFdd_SETPANNING)	pIns->flags |= INS_SETPANNING;
+    if(dwOldFlags & dFdd_FILTER)		pIns->pitch_envelope.flags |= ENV_FILTER;
+    if(dwOldFlags & dFdd_VOLCARRY)		pIns->volume_envelope.flags |= ENV_CARRY;
+    if(dwOldFlags & dFdd_PANCARRY)		pIns->panning_envelope.flags |= ENV_CARRY;
+    if(dwOldFlags & dFdd_PITCHCARRY)	pIns->pitch_envelope.flags |= ENV_CARRY;
+    if(dwOldFlags & dFdd_MUTE)			pIns->flags |= INS_MUTE;
 }
 
 
@@ -2106,7 +2106,7 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLeng
 {
     IFF8SVXFILEHEADER *pfh = (IFF8SVXFILEHEADER *)lpMemFile;
     IFFVHDR *pvh = (IFFVHDR *)(lpMemFile + 12);
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     DWORD dwMemPos = 12;
     
     if ((!lpMemFile) || (dwFileLength < sizeof(IFFVHDR)+12) || (pfh->dwFORM != IFFID_FORM)
@@ -2114,19 +2114,19 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLeng
      || (pvh->dwVHDR != IFFID_VHDR) || (BigEndian(pvh->dwSize) >= dwFileLength)) return false;
     DestroySample(nSample);
     // Default values
-    pSmp->nGlobalVol = 64;
-    pSmp->nPan = 128;
-    pSmp->nLength = 0;
-    pSmp->nLoopStart = BigEndian(pvh->oneShotHiSamples);
-    pSmp->nLoopEnd = pSmp->nLoopStart + BigEndian(pvh->repeatHiSamples);
-    pSmp->nSustainStart = 0;
-    pSmp->nSustainEnd = 0;
-    pSmp->uFlags = 0;
-    pSmp->nVolume = (WORD)(BigEndianW((WORD)pvh->Volume) >> 8);
-    pSmp->nC5Speed = BigEndianW(pvh->samplesPerSec);
-    pSmp->filename[0] = 0;
-    if ((!pSmp->nVolume) || (pSmp->nVolume > 256)) pSmp->nVolume = 256;
-    if (!pSmp->nC5Speed) pSmp->nC5Speed = 22050;
+    pSmp->global_volume = 64;
+    pSmp->default_pan = 128;
+    pSmp->length = 0;
+    pSmp->loop_start = BigEndian(pvh->oneShotHiSamples);
+    pSmp->loop_end = pSmp->loop_start + BigEndian(pvh->repeatHiSamples);
+    pSmp->sustain_start = 0;
+    pSmp->sustain_end = 0;
+    pSmp->flags = 0;
+    pSmp->default_volume = (WORD)(BigEndianW((WORD)pvh->Volume) >> 8);
+    pSmp->c5_samplerate = BigEndianW(pvh->samplesPerSec);
+    pSmp->legacy_filename[0] = 0;
+    if ((!pSmp->default_volume) || (pSmp->default_volume > 256)) pSmp->default_volume = 256;
+    if (!pSmp->c5_samplerate) pSmp->c5_samplerate = 22050;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
     if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
@@ -2149,14 +2149,14 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLeng
             }
             break;
         case IFFID_BODY:
-            if (!pSmp->pSample)
+            if (!pSmp->sample_data)
             {
                 UINT len = dwChunkLen;
                 if (len > dwFileLength - dwMemPos - 8) len = dwFileLength - dwMemPos - 8;
                 if (len > 4)
                 {
-                    pSmp->nLength = len;
-                    if ((pSmp->nLoopStart + 4 < pSmp->nLoopEnd) && (pSmp->nLoopEnd < pSmp->nLength)) pSmp->uFlags |= CHN_LOOP;
+                    pSmp->length = len;
+                    if ((pSmp->loop_start + 4 < pSmp->loop_end) && (pSmp->loop_end < pSmp->length)) pSmp->flags |= CHN_LOOP;
                     ReadSample(pSmp, RS_PCM8S, (LPSTR)(pChunkData), len);
                 }
             }
@@ -2164,6 +2164,6 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLeng
         }
         dwMemPos += dwChunkLen + 8;
     }
-    return (pSmp->pSample != nullptr);
+    return (pSmp->sample_data != nullptr);
 }
 

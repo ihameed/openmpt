@@ -64,7 +64,7 @@ public:
 	// If auto-zoom gives bigger zoom than zoom level N but smaller than zoom level N-1,
 	// return value is N. If zoom is bigger than the biggest zoom, returns MIN_ZOOM + 1 and
 	// if smaller than the smallest zoom, returns value >= MAX_ZOOM + 1.
-	UINT GetAutoZoomLevel(const modplug::mixer::MODSAMPLE& smp);
+	UINT GetAutoZoomLevel(const modplug::tracker::modsample_t& smp);
 
 	UINT ScrollPosToSamplePos() const {return ScrollPosToSamplePos(m_nZoom);}
 	UINT ScrollPosToSamplePos(UINT nZoom) const {return (nZoom > 0) ? (m_nScrollPos << (nZoom - 1)) : 0;}

@@ -138,7 +138,7 @@ public:
 	CPageEditCommand(CModDoc *pModDoc, CEditCommand *parent, UINT id):CPropertyPage(id) { m_pModDoc = pModDoc; m_pParent = parent; m_bInitialized = false; }
 	virtual ~CPageEditCommand() {}
 	virtual BOOL OnInitDialog();
-	virtual void Init(MODCOMMAND&)=0;
+	virtual void Init(modplug::tracker::modcommand_t&)=0;
 	virtual void UpdateDialog() {}
 };
 
@@ -152,7 +152,7 @@ protected:
 
 public:
 	CPageEditNote(CModDoc *pModDoc, CEditCommand *parent):CPageEditCommand(pModDoc, parent, IDD_PAGEEDITNOTE) {}
-	void Init(MODCOMMAND &m) { m_nNote = m.note; m_nInstr = m.instr; }
+	void Init(modplug::tracker::modcommand_t &m) { m_nNote = m.note; m_nInstr = m.instr; }
 	void UpdateDialog();
 
 protected:
@@ -174,7 +174,7 @@ protected:
 
 public:
 	CPageEditVolume(CModDoc *pModDoc, CEditCommand *parent):CPageEditCommand(pModDoc, parent, IDD_PAGEEDITVOLUME) {}
-	void Init(MODCOMMAND &m) { m_nVolCmd = m.volcmd; m_nVolume = m.vol; m_bIsParamControl = (m.IsPcNote()) ? true : false;}
+	void Init(modplug::tracker::modcommand_t &m) { m_nVolCmd = m.volcmd; m_nVolume = m.vol; m_bIsParamControl = (m.IsPcNote()) ? true : false;}
 	void UpdateDialog();
 	void UpdateRanges();
 
@@ -200,13 +200,13 @@ protected:
 	UINT m_nXParam, m_nMultiplier;
 	// -! NEW_FEATURE#0010
 
-	MODCOMMAND* m_pModcommand;
+	modplug::tracker::modcommand_t* m_pModcommand;
 
 public:
 	CPageEditEffect(CModDoc *pModDoc, CEditCommand *parent):CPageEditCommand(pModDoc, parent, IDD_PAGEEDITEFFECT) {}
 	// -> CODE#0010
 	// -> DESC="add extended parameter mechanism to pattern effects"
-	void Init(MODCOMMAND &m) { m_nCommand = m.command; m_nParam = m.param; m_pModcommand = &m; m_bIsParamControl = (m.IsPcNote()) ? true : false; m_nPlugin = m.instr; m_nPluginParam = MODCOMMAND::GetValueVolCol(m.volcmd, m.vol);}
+	void Init(modplug::tracker::modcommand_t &m) { m_nCommand = m.command; m_nParam = m.param; m_pModcommand = &m; m_bIsParamControl = (m.IsPcNote()) ? true : false; m_nPlugin = m.instr; m_nPluginParam = modplug::tracker::modcommand_t::GetValueVolCol(m.volcmd, m.vol);}
 	void XInit(UINT xparam = 0, UINT multiplier = 1) { m_nXParam = xparam; m_nMultiplier = multiplier; }
 	// -! NEW_FEATURE#0010
 	void UpdateDialog();
@@ -234,7 +234,7 @@ protected:
 	CModDoc *m_pModDoc;
 	HWND m_hWndView;
 	UINT m_nPattern, m_nRow, m_nChannel;
-	MODCOMMAND m_Command;
+	modplug::tracker::modcommand_t m_Command;
 	bool m_bModified;
 
 public:

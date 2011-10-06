@@ -19,7 +19,7 @@ public:
 
 //BEGIN: OPERATORS
 public:
-	//To mimic old pattern == MODCOMMAND* behavior.
+	//To mimic old pattern == modplug::tracker::modcommand_t* behavior.
 	MODPATTERN& operator[](const int pat) {return m_Patterns[pat];}
 	const MODPATTERN& operator[](const int pat) const {return m_Patterns[pat];}
 //END: OPERATORS

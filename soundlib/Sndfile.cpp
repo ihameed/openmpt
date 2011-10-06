@@ -8,6 +8,10 @@
 */
 
 #include "stdafx.h"
+
+#include "../mptrack/serializers/wao.h";
+
+
 #include "../mptrack/mptrack.h"
 #include "../mptrack/mainfrm.h"
 #include "../mptrack/moddoc.h"
@@ -94,16 +98,16 @@ static char UnpackTable[MAX_PACK_TABLES][16] =
 
 /*---------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
-MODULAR (in/out) modplug::mixer::MODINSTRUMENT :
+MODULAR (in/out) modplug::tracker::modinstrument_t :
 -----------------------------------------------------------------------------------------------
 
 * to update:
 ------------
 
-- both following functions need to be updated when adding a new member in modplug::mixer::MODINSTRUMENT :
+- both following functions need to be updated when adding a new member in modplug::tracker::modinstrument_t :
 
-void WriteInstrumentHeaderStruct(modplug::mixer::MODINSTRUMENT * input, FILE * file);
-BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __int32 fcode, __int16 fsize);
+void WriteInstrumentHeaderStruct(modplug::tracker::modinstrument_t * input, FILE * file);
+BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize);
 
 - see below for body declaration.
 
@@ -127,10 +131,10 @@ BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __
 - use only caracters used in full member name, ordered as they appear in it
 - match caracter attribute (small,capital)
 
-Example with "PanEnv.nLoopEnd" , "PitchEnv.nLoopEnd" & "VolEnv.Values[MAX_ENVPOINTS]" members : 
-- use 'PLE.' for PanEnv.nLoopEnd
-- use 'PiLE' for PitchEnv.nLoopEnd
-- use 'VE[.' for VolEnv.Values[MAX_ENVPOINTS]
+Example with "panning_envelope.loop_end" , "pitch_envelope.loop_end" & "volume_envelope.Values[MAX_ENVPOINTS]" members : 
+- use 'PLE.' for panning_envelope.loop_end
+- use 'PiLE' for pitch_envelope.loop_end
+- use 'VE[.' for volume_envelope.Values[MAX_ENVPOINTS]
 
 
 * In use CODE tag dictionary (alphabetical order): [ see in Sndfile.cpp ]
@@ -140,85 +144,85 @@ Example with "PanEnv.nLoopEnd" , "PitchEnv.nLoopEnd" & "VolEnv.Values[MAX_ENVPOI
                         !!! SECTION TO BE UPDATED !!!
                         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        [EXT]	means external (not related) to modplug::mixer::MODINSTRUMENT content
+        [EXT]	means external (not related) to modplug::tracker::modinstrument_t content
 
 C...	[EXT]	nChannels
 ChnS	[EXT]	IT/MPTM: Channel settings for channels 65-127 if needed (doesn't fit to IT header).
-CS..			nCutSwing
+CS..			random_cutoff_weight
 CWV.	[EXT]	dwCreatedWithVersion
-DCT.			nDCT;
+DCT.			duplicate_check_type;
 dF..			dwFlags;
 DGV.	[EXT]	nDefaultGlobalVolume
 DT..	[EXT]	nDefaultTempo;			
-DNA.			nDNA;
+DNA.			duplicate_note_action;
 EBIH	[EXT]	embeded instrument header tag (ITP file format)
-FM..			nFilterMode;
-fn[.			filename[12];
-FO..			nFadeOut;
-GV..			nGlobalVol;
-IFC.			nIFC;
-IFR.			nIFR;
+FM..			default_filter_mode;
+fn[.			legacy_filename[12];
+FO..			fadeout;
+GV..			global_volume;
+IFC.			default_filter_cutoff;
+IFR.			default_filter_resonance;
 K[.				Keyboard[128];
 LSWV	[EXT]	Last Saved With Version
-MB..			wMidiBank;
-MC..			nMidiChannel;
-MDK.			nMidiDrumKey;
+MB..			midi_bank;
+MC..			midi_channel;
+MDK.			midi_drum_set;
 MIMA	[EXT]									MIdi MApping directives
 MiP.			nMixPlug;
-MP..			nMidiProgram;
+MP..			midi_program;
 MPTS	[EXT]									Extra song info tag
 MPTX	[EXT]									EXTRA INFO tag
 MSF.	[EXT]									Mod(Specific)Flags
 n[..			name[32];
-NNA.			nNNA;
+NNA.			new_note_action;
 NM[.			NoteMap[128];
-P...			nPan;
-PE..			PanEnv.nNodes;
-PE[.			PanEnv.Values[MAX_ENVPOINTS];
-PiE.			PitchEnv.nNodes;
-PiE[			PitchEnv.Values[MAX_ENVPOINTS];
-PiLE			PitchEnv.nLoopEnd;
-PiLS			PitchEnv.nLoopStart;
-PiP[			PitchEnv.Ticks[MAX_ENVPOINTS];
-PiSB			PitchEnv.nSustainStart;
-PiSE			PitchEnv.nSustainEnd;
-PLE.			PanEnv.nLoopEnd;
-PLS.			PanEnv.nLoopStart;
+P...			default_pan;
+PE..			panning_envelope.num_nodes;
+PE[.			panning_envelope.Values[MAX_ENVPOINTS];
+PiE.			pitch_envelope.num_nodes;
+PiE[			pitch_envelope.Values[MAX_ENVPOINTS];
+PiLE			pitch_envelope.loop_end;
+PiLS			pitch_envelope.loop_start;
+PiP[			pitch_envelope.Ticks[MAX_ENVPOINTS];
+PiSB			pitch_envelope.sustain_start;
+PiSE			pitch_envelope.sustain_end;
+PLE.			panning_envelope.loop_end;
+PLS.			panning_envelope.loop_start;
 PMM.	[EXT]	nPlugMixMode;
-PP[.			PanEnv.Ticks[MAX_ENVPOINTS];
-PPC.			nPPC;
-PPS.			nPPS;
-PS..			nPanSwing;
-PSB.			PanEnv.nSustainStart;
-PSE.			PanEnv.nSustainEnd;
-PTTL			wPitchToTempoLock;
+PP[.			panning_envelope.Ticks[MAX_ENVPOINTS];
+PPC.			pitch_pan_center;
+PPS.			pitch_pan_separation;
+PS..			random_pan_weight;
+PSB.			panning_envelope.sustain_start;
+PSE.			panning_envelope.sustain_end;
+PTTL			pitch_to_tempo_lock;
 PVEH			nPluginVelocityHandling;
 PVOH			nPluginVolumeHandling;
-R...			nResampling;
+R...			resampling_mode;
 RP..	[EXT]	nRestartPos;
 RPB.	[EXT]	nRowsPerBeat;
 RPM.	[EXT]	nRowsPerMeasure;
-RS..			nResSwing;
+RS..			random_resonance_weight;
 SEP@	[EXT]									chunk SEPARATOR tag
 SPA.	[EXT]	m_nSamplePreAmp;
 TM..	[EXT]	nTempoMode;
-VE..			VolEnv.nNodes;
-VE[.			VolEnv.Values[MAX_ENVPOINTS];
-VLE.			VolEnv.nLoopEnd;
-VLS.			VolEnv.nLoopStart;
-VP[.			VolEnv.Ticks[MAX_ENVPOINTS];
-VR..			nVolRampUp;
-VS..			nVolSwing;
-VSB.			VolEnv.nSustainStart;
-VSE.			VolEnv.nSustainEnd;
+VE..			volume_envelope.num_nodes;
+VE[.			volume_envelope.Values[MAX_ENVPOINTS];
+VLE.			volume_envelope.loop_end;
+VLS.			volume_envelope.loop_start;
+VP[.			volume_envelope.Ticks[MAX_ENVPOINTS];
+VR..			volume_ramp_up;
+VS..			random_volume_weight;
+VSB.			volume_envelope.sustain_start;
+VSE.			volume_envelope.sustain_end;
 VSTV	[EXT]	nVSTiVolume;
-PERN			PitchEnv.nReleaseNode
-AERN			PanEnv.nReleaseNode
-VERN			VolEnv.nReleaseNode
-PFLG			PitchEnv.dwFlag
-AFLG			PanEnv.dwFlags
-VFLG			VolEnv.dwFlags
-VRD.			nVolRampDown;
+PERN			pitch_envelope.release_node
+AERN			panning_envelope.release_node
+VERN			volume_envelope.release_node
+PFLG			pitch_envelope.dwFlag
+AFLG			panning_envelope.dwFlags
+VFLG			volume_envelope.dwFlags
+VRD.			volume_ramp_down;
 //XXXih: volume ramp down instr support
 -----------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------*/
@@ -247,35 +251,35 @@ fwrite(&input-> name , 1 , fsize , file);
 
 namespace {
 // Create 'dF..' entry.
-DWORD CreateExtensionFlags(const modplug::mixer::MODINSTRUMENT& ins)
+DWORD CreateExtensionFlags(const modplug::tracker::modinstrument_t& ins)
 //--------------------------------------------------
 {
     DWORD dwFlags = 0;
-    if (ins.VolEnv.dwFlags & ENV_ENABLED)	dwFlags |= dFdd_VOLUME;
-    if (ins.VolEnv.dwFlags & ENV_SUSTAIN)	dwFlags |= dFdd_VOLSUSTAIN;
-    if (ins.VolEnv.dwFlags & ENV_LOOP)		dwFlags |= dFdd_VOLLOOP;
-    if (ins.PanEnv.dwFlags & ENV_ENABLED)	dwFlags |= dFdd_PANNING;
-    if (ins.PanEnv.dwFlags & ENV_SUSTAIN)	dwFlags |= dFdd_PANSUSTAIN;
-    if (ins.PanEnv.dwFlags & ENV_LOOP)		dwFlags |= dFdd_PANLOOP;
-    if (ins.PitchEnv.dwFlags & ENV_ENABLED)	dwFlags |= dFdd_PITCH;
-    if (ins.PitchEnv.dwFlags & ENV_SUSTAIN)	dwFlags |= dFdd_PITCHSUSTAIN;
-    if (ins.PitchEnv.dwFlags & ENV_LOOP)	dwFlags |= dFdd_PITCHLOOP;
-    if (ins.dwFlags & INS_SETPANNING)		dwFlags |= dFdd_SETPANNING;
-    if (ins.PitchEnv.dwFlags & ENV_FILTER)	dwFlags |= dFdd_FILTER;
-    if (ins.VolEnv.dwFlags & ENV_CARRY)		dwFlags |= dFdd_VOLCARRY;
-    if (ins.PanEnv.dwFlags & ENV_CARRY)		dwFlags |= dFdd_PANCARRY;
-    if (ins.PitchEnv.dwFlags & ENV_CARRY)	dwFlags |= dFdd_PITCHCARRY;
-    if (ins.dwFlags & INS_MUTE)				dwFlags |= dFdd_MUTE;
+    if (ins.volume_envelope.flags & ENV_ENABLED)	dwFlags |= dFdd_VOLUME;
+    if (ins.volume_envelope.flags & ENV_SUSTAIN)	dwFlags |= dFdd_VOLSUSTAIN;
+    if (ins.volume_envelope.flags & ENV_LOOP)		dwFlags |= dFdd_VOLLOOP;
+    if (ins.panning_envelope.flags & ENV_ENABLED)	dwFlags |= dFdd_PANNING;
+    if (ins.panning_envelope.flags & ENV_SUSTAIN)	dwFlags |= dFdd_PANSUSTAIN;
+    if (ins.panning_envelope.flags & ENV_LOOP)		dwFlags |= dFdd_PANLOOP;
+    if (ins.pitch_envelope.flags & ENV_ENABLED)	dwFlags |= dFdd_PITCH;
+    if (ins.pitch_envelope.flags & ENV_SUSTAIN)	dwFlags |= dFdd_PITCHSUSTAIN;
+    if (ins.pitch_envelope.flags & ENV_LOOP)	dwFlags |= dFdd_PITCHLOOP;
+    if (ins.flags & INS_SETPANNING)		dwFlags |= dFdd_SETPANNING;
+    if (ins.pitch_envelope.flags & ENV_FILTER)	dwFlags |= dFdd_FILTER;
+    if (ins.volume_envelope.flags & ENV_CARRY)		dwFlags |= dFdd_VOLCARRY;
+    if (ins.panning_envelope.flags & ENV_CARRY)		dwFlags |= dFdd_PANCARRY;
+    if (ins.pitch_envelope.flags & ENV_CARRY)	dwFlags |= dFdd_PITCHCARRY;
+    if (ins.flags & INS_MUTE)				dwFlags |= dFdd_MUTE;
     return dwFlags;
 }
 } // unnamed namespace.
 
-// Write (in 'file') 'input' modplug::mixer::MODINSTRUMENT with 'code' & 'size' extra field infos for each member
-void WriteInstrumentHeaderStruct(modplug::mixer::MODINSTRUMENT * input, FILE * file)
+// Write (in 'file') 'input' modplug::tracker::modinstrument_t with 'code' & 'size' extra field infos for each member
+void WriteInstrumentHeaderStruct(modplug::tracker::modinstrument_t * input, FILE * file)
 {
 __int32 fcode;
 __int16 fsize;
-WRITE_MPTHEADER_sized_member(	nFadeOut				, UINT			, FO..							)
+WRITE_MPTHEADER_sized_member(	fadeout, UINT			, FO..							)
 
 { // dwFlags needs to be constructed so write it manually.
     //WRITE_MPTHEADER_sized_member(	dwFlags					, DWORD			, dF..							)
@@ -287,62 +291,62 @@ WRITE_MPTHEADER_sized_member(	nFadeOut				, UINT			, FO..							)
     fwrite(&dwFlags, 1, fsize, file);
 }
 
-WRITE_MPTHEADER_sized_member(	nGlobalVol				, UINT			, GV..							)
-WRITE_MPTHEADER_sized_member(	nPan					, UINT			, P...							)
-WRITE_MPTHEADER_sized_member(	VolEnv.nNodes			, UINT			, VE..							)
-WRITE_MPTHEADER_sized_member(	PanEnv.nNodes			, UINT			, PE..							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.nNodes			, UINT			, PiE.							)
-WRITE_MPTHEADER_sized_member(	VolEnv.nLoopStart		, BYTE			, VLS.							)
-WRITE_MPTHEADER_sized_member(	VolEnv.nLoopEnd			, BYTE			, VLE.							)
-WRITE_MPTHEADER_sized_member(	VolEnv.nSustainStart	, BYTE			, VSB.							)
-WRITE_MPTHEADER_sized_member(	VolEnv.nSustainEnd		, BYTE			, VSE.							)
-WRITE_MPTHEADER_sized_member(	PanEnv.nLoopStart		, BYTE			, PLS.							)
-WRITE_MPTHEADER_sized_member(	PanEnv.nLoopEnd			, BYTE			, PLE.							)
-WRITE_MPTHEADER_sized_member(	PanEnv.nSustainStart	, BYTE			, PSB.							)
-WRITE_MPTHEADER_sized_member(	PanEnv.nSustainEnd		, BYTE			, PSE.							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.nLoopStart		, BYTE			, PiLS							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.nLoopEnd		, BYTE			, PiLE							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.nSustainStart	, BYTE			, PiSB							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.nSustainEnd	, BYTE			, PiSE							)
-WRITE_MPTHEADER_sized_member(	nNNA					, BYTE			, NNA.							)
-WRITE_MPTHEADER_sized_member(	nDCT					, BYTE			, DCT.							)
-WRITE_MPTHEADER_sized_member(	nDNA					, BYTE			, DNA.							)
-WRITE_MPTHEADER_sized_member(	nPanSwing				, BYTE			, PS..							)
-WRITE_MPTHEADER_sized_member(	nVolSwing				, BYTE			, VS..							)
-WRITE_MPTHEADER_sized_member(	nIFC					, BYTE			, IFC.							)
-WRITE_MPTHEADER_sized_member(	nIFR					, BYTE			, IFR.							)
-WRITE_MPTHEADER_sized_member(	wMidiBank				, WORD			, MB..							)
-WRITE_MPTHEADER_sized_member(	nMidiProgram			, BYTE			, MP..							)
-WRITE_MPTHEADER_sized_member(	nMidiChannel			, BYTE			, MC..							)
-WRITE_MPTHEADER_sized_member(	nMidiDrumKey			, BYTE			, MDK.							)
-WRITE_MPTHEADER_sized_member(	nPPS					, signed char	, PPS.							)
-WRITE_MPTHEADER_sized_member(	nPPC					, unsigned char	, PPC.							)
-WRITE_MPTHEADER_array_member(	VolEnv.Ticks			, WORD			, VP[.		, ((input->VolEnv.nNodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(	PanEnv.Ticks			, WORD			, PP[.		, ((input->PanEnv.nNodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(	PitchEnv.Ticks			, WORD			, PiP[		, ((input->PitchEnv.nNodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(	VolEnv.Values			, BYTE			, VE[.		, ((input->VolEnv.nNodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(	PanEnv.Values			, BYTE			, PE[.		, ((input->PanEnv.nNodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(	PitchEnv.Values			, BYTE			, PiE[		, ((input->PitchEnv.nNodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_sized_member(	global_volume, UINT			, GV..							)
+WRITE_MPTHEADER_sized_member(	default_pan, UINT			, P...							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.num_nodes			, UINT			, VE..							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.num_nodes			, UINT			, PE..							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.num_nodes			, UINT			, PiE.							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.loop_start		, BYTE			, VLS.							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.loop_end			, BYTE			, VLE.							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.sustain_start	, BYTE			, VSB.							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.sustain_end		, BYTE			, VSE.							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.loop_start		, BYTE			, PLS.							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.loop_end			, BYTE			, PLE.							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.sustain_start	, BYTE			, PSB.							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.sustain_end		, BYTE			, PSE.							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.loop_start		, BYTE			, PiLS							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.loop_end		, BYTE			, PiLE							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.sustain_start	, BYTE			, PiSB							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.sustain_end	, BYTE			, PiSE							)
+WRITE_MPTHEADER_sized_member(	new_note_action, BYTE			, NNA.							)
+WRITE_MPTHEADER_sized_member(	duplicate_check_type, BYTE			, DCT.							)
+WRITE_MPTHEADER_sized_member(	duplicate_note_action, BYTE			, DNA.							)
+WRITE_MPTHEADER_sized_member(	random_pan_weight, BYTE			, PS..							)
+WRITE_MPTHEADER_sized_member(	random_volume_weight, BYTE			, VS..							)
+WRITE_MPTHEADER_sized_member(	default_filter_cutoff					, BYTE			, IFC.							)
+WRITE_MPTHEADER_sized_member(	default_filter_resonance, BYTE			, IFR.							)
+WRITE_MPTHEADER_sized_member(	midi_bank, WORD			, MB..							)
+WRITE_MPTHEADER_sized_member(	midi_program, BYTE			, MP..							)
+WRITE_MPTHEADER_sized_member(	midi_channel, BYTE			, MC..							)
+WRITE_MPTHEADER_sized_member(	midi_drum_set, BYTE			, MDK.							)
+WRITE_MPTHEADER_sized_member(	pitch_pan_separation					, signed char	, PPS.							)
+WRITE_MPTHEADER_sized_member(	pitch_pan_center					, unsigned char	, PPC.							)
+WRITE_MPTHEADER_array_member(	volume_envelope.Ticks			, WORD			, VP[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(	panning_envelope.Ticks			, WORD			, PP[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(	pitch_envelope.Ticks			, WORD			, PiP[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(	volume_envelope.Values			, BYTE			, VE[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(	panning_envelope.Values			, BYTE			, PE[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(	pitch_envelope.Values			, BYTE			, PiE[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(	NoteMap					, BYTE			, NM[.		, 128				)
 WRITE_MPTHEADER_array_member(	Keyboard				, WORD			, K[..		, 128				)
 WRITE_MPTHEADER_array_member(	name					, CHAR			, n[..		, 32				)
 WRITE_MPTHEADER_array_member(	filename				, CHAR			, fn[.		, 12				)
 WRITE_MPTHEADER_sized_member(	nMixPlug				, BYTE			, MiP.							)
-WRITE_MPTHEADER_sized_member(	nVolRampUp				, USHORT		, VR..							)
-WRITE_MPTHEADER_sized_member(	nVolRampDown			, USHORT		, VRD.							)
-WRITE_MPTHEADER_sized_member(	nResampling				, USHORT		, R...							)
-WRITE_MPTHEADER_sized_member(	nCutSwing				, BYTE			, CS..							)
-WRITE_MPTHEADER_sized_member(	nResSwing				, BYTE			, RS..							)
-WRITE_MPTHEADER_sized_member(	nFilterMode				, BYTE			, FM..							)
+WRITE_MPTHEADER_sized_member(	volume_ramp_up, USHORT		, VR..							)
+WRITE_MPTHEADER_sized_member(	volume_ramp_down			, USHORT		, VRD.							)
+WRITE_MPTHEADER_sized_member(	resampling_mode, USHORT		, R...							)
+WRITE_MPTHEADER_sized_member(	random_cutoff_weight, BYTE			, CS..							)
+WRITE_MPTHEADER_sized_member(	random_resonance_weight, BYTE			, RS..							)
+WRITE_MPTHEADER_sized_member(	default_filter_mode, BYTE			, FM..							)
 WRITE_MPTHEADER_sized_member(	nPluginVelocityHandling	, BYTE			, PVEH							)
 WRITE_MPTHEADER_sized_member(	nPluginVolumeHandling	, BYTE			, PVOH							)
-WRITE_MPTHEADER_sized_member(	wPitchToTempoLock		, WORD			, PTTL							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.nReleaseNode	, BYTE			, PERN							)
-WRITE_MPTHEADER_sized_member(	PanEnv.nReleaseNode		, BYTE		    , AERN							)
-WRITE_MPTHEADER_sized_member(	VolEnv.nReleaseNode		, BYTE			, VERN							)
-WRITE_MPTHEADER_sized_member(	PitchEnv.dwFlags		, DWORD			, PFLG							)
-WRITE_MPTHEADER_sized_member(	PanEnv.dwFlags			, DWORD		    , AFLG							)
-WRITE_MPTHEADER_sized_member(	VolEnv.dwFlags			, DWORD			, VFLG							)
+WRITE_MPTHEADER_sized_member(	pitch_to_tempo_lock, WORD			, PTTL							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.release_node	, BYTE			, PERN							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.release_node		, BYTE		    , AERN							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.release_node		, BYTE			, VERN							)
+WRITE_MPTHEADER_sized_member(	pitch_envelope.flags		, DWORD			, PFLG							)
+WRITE_MPTHEADER_sized_member(	panning_envelope.flags			, DWORD		    , AFLG							)
+WRITE_MPTHEADER_sized_member(	volume_envelope.flags			, DWORD			, VFLG							)
 }
 
 // --------------------------------------------------------------------------------------------
@@ -361,71 +365,71 @@ case( #@code ):\
 if( fsize <= sizeof( type ) * arraysize ) pointer = (BYTE *)&input-> name ;\
 break;
 
-// Return a pointer on the wanted field in 'input' modplug::mixer::MODINSTRUMENT given field code & size
-BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __int32 fcode, __int16 fsize)
+// Return a pointer on the wanted field in 'input' modplug::tracker::modinstrument_t given field code & size
+BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize)
 {
 if(input == NULL) return NULL;
 BYTE * pointer = NULL;
 
 switch(fcode){
-GET_MPTHEADER_sized_member(	nFadeOut				, UINT			, FO..							)
-GET_MPTHEADER_sized_member(	dwFlags					, DWORD			, dF..							)
-GET_MPTHEADER_sized_member(	nGlobalVol				, UINT			, GV..							)
-GET_MPTHEADER_sized_member(	nPan					, UINT			, P...							)
-GET_MPTHEADER_sized_member(	VolEnv.nNodes			, UINT			, VE..							)
-GET_MPTHEADER_sized_member(	PanEnv.nNodes			, UINT			, PE..							)
-GET_MPTHEADER_sized_member(	PitchEnv.nNodes			, UINT			, PiE.							)
-GET_MPTHEADER_sized_member(	VolEnv.nLoopStart		, BYTE			, VLS.							)
-GET_MPTHEADER_sized_member(	VolEnv.nLoopEnd			, BYTE			, VLE.							)
-GET_MPTHEADER_sized_member(	VolEnv.nSustainStart	, BYTE			, VSB.							)
-GET_MPTHEADER_sized_member(	VolEnv.nSustainEnd		, BYTE			, VSE.							)
-GET_MPTHEADER_sized_member(	PanEnv.nLoopStart		, BYTE			, PLS.							)
-GET_MPTHEADER_sized_member(	PanEnv.nLoopEnd			, BYTE			, PLE.							)
-GET_MPTHEADER_sized_member(	PanEnv.nSustainStart	, BYTE			, PSB.							)
-GET_MPTHEADER_sized_member(	PanEnv.nSustainEnd		, BYTE			, PSE.							)
-GET_MPTHEADER_sized_member(	PitchEnv.nLoopStart		, BYTE			, PiLS							)
-GET_MPTHEADER_sized_member(	PitchEnv.nLoopEnd		, BYTE			, PiLE							)
-GET_MPTHEADER_sized_member(	PitchEnv.nSustainStart	, BYTE			, PiSB							)
-GET_MPTHEADER_sized_member(	PitchEnv.nSustainEnd	, BYTE			, PiSE							)
-GET_MPTHEADER_sized_member(	nNNA					, BYTE			, NNA.							)
-GET_MPTHEADER_sized_member(	nDCT					, BYTE			, DCT.							)
-GET_MPTHEADER_sized_member(	nDNA					, BYTE			, DNA.							)
-GET_MPTHEADER_sized_member(	nPanSwing				, BYTE			, PS..							)
-GET_MPTHEADER_sized_member(	nVolSwing				, BYTE			, VS..							)
-GET_MPTHEADER_sized_member(	nIFC					, BYTE			, IFC.							)
-GET_MPTHEADER_sized_member(	nIFR					, BYTE			, IFR.							)
-GET_MPTHEADER_sized_member(	wMidiBank				, WORD			, MB..							)
-GET_MPTHEADER_sized_member(	nMidiProgram			, BYTE			, MP..							)
-GET_MPTHEADER_sized_member(	nMidiChannel			, BYTE			, MC..							)
-GET_MPTHEADER_sized_member(	nMidiDrumKey			, BYTE			, MDK.							)
-GET_MPTHEADER_sized_member(	nPPS					, signed char	, PPS.							)
-GET_MPTHEADER_sized_member(	nPPC					, unsigned char	, PPC.							)
-GET_MPTHEADER_array_member(	VolEnv.Ticks			, WORD			, VP[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(	PanEnv.Ticks			, WORD			, PP[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(	PitchEnv.Ticks			, WORD			, PiP[		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(	VolEnv.Values			, BYTE			, VE[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(	PanEnv.Values			, BYTE			, PE[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(	PitchEnv.Values			, BYTE			, PiE[		, MAX_ENVPOINTS		)
+GET_MPTHEADER_sized_member(	fadeout				, UINT			, FO..							)
+GET_MPTHEADER_sized_member(	flags					, DWORD			, dF..							)
+GET_MPTHEADER_sized_member(	global_volume				, UINT			, GV..							)
+GET_MPTHEADER_sized_member(	default_pan					, UINT			, P...							)
+GET_MPTHEADER_sized_member(	volume_envelope.num_nodes			, UINT			, VE..							)
+GET_MPTHEADER_sized_member(	panning_envelope.num_nodes			, UINT			, PE..							)
+GET_MPTHEADER_sized_member(	pitch_envelope.num_nodes			, UINT			, PiE.							)
+GET_MPTHEADER_sized_member(	volume_envelope.loop_start		, BYTE			, VLS.							)
+GET_MPTHEADER_sized_member(	volume_envelope.loop_end			, BYTE			, VLE.							)
+GET_MPTHEADER_sized_member(	volume_envelope.sustain_start	, BYTE			, VSB.							)
+GET_MPTHEADER_sized_member(	volume_envelope.sustain_end		, BYTE			, VSE.							)
+GET_MPTHEADER_sized_member(	panning_envelope.loop_start		, BYTE			, PLS.							)
+GET_MPTHEADER_sized_member(	panning_envelope.loop_end			, BYTE			, PLE.							)
+GET_MPTHEADER_sized_member(	panning_envelope.sustain_start	, BYTE			, PSB.							)
+GET_MPTHEADER_sized_member(	panning_envelope.sustain_end		, BYTE			, PSE.							)
+GET_MPTHEADER_sized_member(	pitch_envelope.loop_start		, BYTE			, PiLS							)
+GET_MPTHEADER_sized_member(	pitch_envelope.loop_end		, BYTE			, PiLE							)
+GET_MPTHEADER_sized_member(	pitch_envelope.sustain_start	, BYTE			, PiSB							)
+GET_MPTHEADER_sized_member(	pitch_envelope.sustain_end	, BYTE			, PiSE							)
+GET_MPTHEADER_sized_member(	new_note_action					, BYTE			, NNA.							)
+GET_MPTHEADER_sized_member(	duplicate_check_type					, BYTE			, DCT.							)
+GET_MPTHEADER_sized_member(	duplicate_note_action					, BYTE			, DNA.							)
+GET_MPTHEADER_sized_member(	random_pan_weight				, BYTE			, PS..							)
+GET_MPTHEADER_sized_member(	random_volume_weight				, BYTE			, VS..							)
+GET_MPTHEADER_sized_member(	default_filter_cutoff					, BYTE			, IFC.							)
+GET_MPTHEADER_sized_member(	default_filter_resonance					, BYTE			, IFR.							)
+GET_MPTHEADER_sized_member(	midi_bank				, WORD			, MB..							)
+GET_MPTHEADER_sized_member(	midi_program			, BYTE			, MP..							)
+GET_MPTHEADER_sized_member(	midi_channel			, BYTE			, MC..							)
+GET_MPTHEADER_sized_member(	midi_drum_set			, BYTE			, MDK.							)
+GET_MPTHEADER_sized_member(	pitch_pan_separation					, signed char	, PPS.							)
+GET_MPTHEADER_sized_member(	pitch_pan_center					, unsigned char	, PPC.							)
+GET_MPTHEADER_array_member(	volume_envelope.Ticks			, WORD			, VP[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(	panning_envelope.Ticks			, WORD			, PP[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(	pitch_envelope.Ticks			, WORD			, PiP[		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(	volume_envelope.Values			, BYTE			, VE[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(	panning_envelope.Values			, BYTE			, PE[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(	pitch_envelope.Values			, BYTE			, PiE[		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(	NoteMap					, BYTE			, NM[.		, 128				)
 GET_MPTHEADER_array_member(	Keyboard				, WORD			, K[..		, 128				)
 GET_MPTHEADER_array_member(	name					, CHAR			, n[..		, 32				)
 GET_MPTHEADER_array_member(	filename				, CHAR			, fn[.		, 12				)
 GET_MPTHEADER_sized_member(	nMixPlug				, BYTE			, MiP.							)
-GET_MPTHEADER_sized_member(	nVolRampUp				, USHORT		, VR..							)
-GET_MPTHEADER_sized_member(	nVolRampDown			, USHORT		, VRD.							)
-GET_MPTHEADER_sized_member(	nResampling				, UINT			, R...							)
-GET_MPTHEADER_sized_member(	nCutSwing				, BYTE			, CS..							)
-GET_MPTHEADER_sized_member(	nResSwing				, BYTE			, RS..							)
-GET_MPTHEADER_sized_member(	nFilterMode				, BYTE			, FM..							)
-GET_MPTHEADER_sized_member(	wPitchToTempoLock		, WORD			, PTTL							)
+GET_MPTHEADER_sized_member(	volume_ramp_up				, USHORT		, VR..							)
+GET_MPTHEADER_sized_member(	volume_ramp_down			, USHORT		, VRD.							)
+GET_MPTHEADER_sized_member(	resampling_mode, UINT			, R...							)
+GET_MPTHEADER_sized_member(	random_cutoff_weight				, BYTE			, CS..							)
+GET_MPTHEADER_sized_member(	random_resonance_weight				, BYTE			, RS..							)
+GET_MPTHEADER_sized_member(	default_filter_mode				, BYTE			, FM..							)
+GET_MPTHEADER_sized_member(	pitch_to_tempo_lock		, WORD			, PTTL							)
 GET_MPTHEADER_sized_member(	nPluginVelocityHandling	, BYTE			, PVEH							)
 GET_MPTHEADER_sized_member(	nPluginVolumeHandling	, BYTE			, PVOH							)
-GET_MPTHEADER_sized_member(	PitchEnv.nReleaseNode	, BYTE			, PERN							)
-GET_MPTHEADER_sized_member(	PanEnv.nReleaseNode		, BYTE		    , AERN							)
-GET_MPTHEADER_sized_member(	VolEnv.nReleaseNode		, BYTE			, VERN							)
-GET_MPTHEADER_sized_member(	PitchEnv.dwFlags     	, DWORD			, PFLG							)
-GET_MPTHEADER_sized_member(	PanEnv.dwFlags     		, DWORD		    , AFLG							)
-GET_MPTHEADER_sized_member(	VolEnv.dwFlags     		, DWORD			, VFLG							)
+GET_MPTHEADER_sized_member(	pitch_envelope.release_node	, BYTE			, PERN							)
+GET_MPTHEADER_sized_member(	panning_envelope.release_node		, BYTE		    , AERN							)
+GET_MPTHEADER_sized_member(	volume_envelope.release_node		, BYTE			, VERN							)
+GET_MPTHEADER_sized_member(	pitch_envelope.flags     	, DWORD			, PFLG							)
+GET_MPTHEADER_sized_member(	panning_envelope.flags     		, DWORD		    , AFLG							)
+GET_MPTHEADER_sized_member(	volume_envelope.flags     		, DWORD			, VFLG							)
 }
 
 return pointer;
@@ -434,7 +438,7 @@ return pointer;
 // -! NEW_FEATURE#0027
 
 
-CTuning* modplug::mixer::MODINSTRUMENT::s_DefaultTuning = 0;
+CTuning* modplug::tracker::modinstrument_t::s_DefaultTuning = 0;
 
 
 //////////////////////////////////////////////////////////
@@ -695,7 +699,7 @@ BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
         if (ChnSettings[ich].nPan > 256) ChnSettings[ich].nPan = 128;
         Chn[ich].nPan = ChnSettings[ich].nPan;
         Chn[ich].nGlobalVol = ChnSettings[ich].nVolume;
-        Chn[ich].dwFlags = ChnSettings[ich].dwFlags;
+        Chn[ich].flags = ChnSettings[ich].dwFlags;
         Chn[ich].nVolume = 256;
         Chn[ich].nCutOff = 0x7F;
         Chn[ich].nEFxSpeed = 0;
@@ -706,34 +710,34 @@ BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
         }
     }
     // Checking instruments
-    modplug::mixer::MODSAMPLE *pSmp = Samples;
+    modplug::tracker::modsample_t *pSmp = Samples;
     for (UINT iIns=0; iIns<MAX_INSTRUMENTS; iIns++, pSmp++)
     {
-        if (pSmp->pSample)
+        if (pSmp->sample_data)
         {
-            if (pSmp->nLoopEnd > pSmp->nLength) pSmp->nLoopEnd = pSmp->nLength;
-            if (pSmp->nLoopStart >= pSmp->nLoopEnd)
+            if (pSmp->loop_end > pSmp->length) pSmp->loop_end = pSmp->length;
+            if (pSmp->loop_start >= pSmp->loop_end)
             {
-                pSmp->nLoopStart = 0;
-                pSmp->nLoopEnd = 0;
+                pSmp->loop_start = 0;
+                pSmp->loop_end = 0;
             }
-            if (pSmp->nSustainEnd > pSmp->nLength) pSmp->nSustainEnd = pSmp->nLength;
-            if (pSmp->nSustainStart >= pSmp->nSustainEnd)
+            if (pSmp->sustain_end > pSmp->length) pSmp->sustain_end = pSmp->length;
+            if (pSmp->sustain_start >= pSmp->sustain_end)
             {
-                pSmp->nSustainStart = 0;
-                pSmp->nSustainEnd = 0;
+                pSmp->sustain_start = 0;
+                pSmp->sustain_end = 0;
             }
         } else
         {
-            pSmp->nLength = 0;
-            pSmp->nLoopStart = 0;
-            pSmp->nLoopEnd = 0;
-            pSmp->nSustainStart = 0;
-            pSmp->nSustainEnd = 0;
+            pSmp->length = 0;
+            pSmp->loop_start = 0;
+            pSmp->loop_end = 0;
+            pSmp->sustain_start = 0;
+            pSmp->sustain_end = 0;
         }
-        if (!pSmp->nLoopEnd) pSmp->uFlags &= ~(CHN_LOOP|CHN_PINGPONGLOOP);
-        if (!pSmp->nSustainEnd) pSmp->uFlags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
-        if (pSmp->nGlobalVol > 64) pSmp->nGlobalVol = 64;
+        if (!pSmp->loop_end) pSmp->flags &= ~(CHN_LOOP|CHN_PINGPONGLOOP);
+        if (!pSmp->sustain_end) pSmp->flags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
+        if (pSmp->global_volume > 64) pSmp->global_volume = 64;
     }
     // Check invalid instruments
     while ((m_nInstruments > 0) && (!Instruments[m_nInstruments])) m_nInstruments--;
@@ -836,6 +840,8 @@ BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
     m_pConfig->SetMixLevels(m_nMixLevels);
     RecalculateGainForAllPlugs();
 
+    modplug::serializers::write_wao(Patterns, *this);
+
     if (m_nType)
     {
         SetModSpecsPointer(m_pModSpecs, m_nType);
@@ -859,11 +865,11 @@ BOOL CSoundFile::Destroy()
 
     for (i=1; i<MAX_SAMPLES; i++)
     {
-        modplug::mixer::MODSAMPLE *pSmp = &Samples[i];
-        if (pSmp->pSample)
+        modplug::tracker::modsample_t *pSmp = &Samples[i];
+        if (pSmp->sample_data)
         {
-            FreeSample(pSmp->pSample);
-            pSmp->pSample = nullptr;
+            FreeSample(pSmp->sample_data);
+            pSmp->sample_data = nullptr;
         }
     }
     for (i = 0; i < MAX_INSTRUMENTS; i++)
@@ -1128,7 +1134,7 @@ void CSoundFile::SetCurrentPos(UINT nPos)
     UINT nRow = nPos;
     if ((nRow) && (Order[nPattern] < Patterns.Size()))
     {
-        MODCOMMAND *p = Patterns[Order[nPattern]];
+        modplug::tracker::modcommand_t *p = Patterns[Order[nPattern]];
         if ((p) && (nRow < Patterns[Order[nPattern]].GetNumRows()))
         {
             bool bOk = false;
@@ -1289,7 +1295,7 @@ void CSoundFile::ResetChannels()
     m_nBufferCount = 0;
     for (UINT i=0; i<MAX_CHANNELS; i++)
     {
-        Chn[i].nROfs = Chn[i].nLOfs = Chn[i].nLength = 0;
+        Chn[i].nROfs = Chn[i].nLOfs = Chn[i].length = 0;
     }
 }
 
@@ -1452,14 +1458,14 @@ void CSoundFile::ResetChannelState(CHANNELINDEX i, BYTE resetMask)
     if(resetMask & 2)
     {
         Chn[i].nNote = Chn[i].nNewNote = Chn[i].nNewIns = 0;
-        Chn[i].pModSample = nullptr;
-        Chn[i].pModInstrument = nullptr;
+        Chn[i].sample = nullptr;
+        Chn[i].instrument = nullptr;
         Chn[i].nPortamentoDest = 0;
         Chn[i].nCommand = 0;
         Chn[i].nPatternLoopCount = 0;
         Chn[i].nPatternLoop = 0;
         Chn[i].nFadeOutVol = 0;
-        Chn[i].dwFlags |= CHN_KEYOFF|CHN_NOTEFADE;
+        Chn[i].flags |= CHN_KEYOFF|CHN_NOTEFADE;
         //IT compatibility 15. Retrigger
         if(IsCompatibleMode(TRK_IMPULSETRACKER))
         {
@@ -1473,19 +1479,19 @@ void CSoundFile::ResetChannelState(CHANNELINDEX i, BYTE resetMask)
     if(resetMask & 4)
     {
         Chn[i].nPeriod = 0;
-        Chn[i].nPos = Chn[i].nLength = 0;
-        Chn[i].nLoopStart = 0;
-        Chn[i].nLoopEnd = 0;
+        Chn[i].sample_position = Chn[i].length = 0;
+        Chn[i].loop_start = 0;
+        Chn[i].loop_end = 0;
         Chn[i].nROfs = Chn[i].nLOfs = 0;
-        Chn[i].pSample = nullptr;
-        Chn[i].pModSample = nullptr;
-        Chn[i].pModInstrument = nullptr;
+        Chn[i].sample_data = nullptr;
+        Chn[i].sample = nullptr;
+        Chn[i].instrument = nullptr;
         Chn[i].nCutOff = 0x7F;
         Chn[i].nResonance = 0;
         Chn[i].nFilterMode = 0;
-        Chn[i].nLeftVol = Chn[i].nRightVol = 0;
+        Chn[i].left_volume = Chn[i].right_volume = 0;
         Chn[i].nNewLeftVol = Chn[i].nNewRightVol = 0;
-        Chn[i].nLeftRamp = Chn[i].nRightRamp = 0;
+        Chn[i].left_ramp = Chn[i].right_ramp = 0;
         Chn[i].nVolume = 256;
         Chn[i].nVibratoPos = Chn[i].nTremoloPos = Chn[i].nPanbrelloPos = 0;
 
@@ -1503,13 +1509,13 @@ void CSoundFile::ResetChannelState(CHANNELINDEX i, BYTE resetMask)
     {
         if(i < MAX_BASECHANNELS)
         {
-            Chn[i].dwFlags = ChnSettings[i].dwFlags;
+            Chn[i].flags = ChnSettings[i].dwFlags;
             Chn[i].nPan = ChnSettings[i].nPan;
             Chn[i].nGlobalVol = ChnSettings[i].nVolume;
         }
         else
         {
-            Chn[i].dwFlags = 0;
+            Chn[i].flags = 0;
             Chn[i].nPan = 128;
             Chn[i].nGlobalVol = 64;
         }
@@ -1583,13 +1589,13 @@ bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *re
 
 #ifndef MODPLUG_NO_FILESAVE
 
-UINT CSoundFile::WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen)
+UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen)
 //-------------------------------------------------------------------------------
 {
     UINT len = 0, bufcount;
     char buffer[4096];
-    signed char *pSample = (signed char *)pSmp->pSample;
-    UINT nLen = pSmp->nLength;
+    signed char *pSample = (signed char *)pSmp->sample_data;
+    UINT nLen = pSmp->length;
     
     if ((nMaxLen) && (nLen > nMaxLen)) nLen = nMaxLen;
 // -> CODE#0023
@@ -1643,7 +1649,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFla
             {
                 int s_new = *p;
                 p++;
-                if (pSmp->uFlags & CHN_STEREO)
+                if (pSmp->flags & CHN_STEREO)
                 {
                     s_new = (s_new + (*p) + 1) >> 1;
                     p++;
@@ -1771,14 +1777,14 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFla
         bufcount = 0;
         {
             int8 *p = (int8 *)pSample;
-            int sinc = (pSmp->uFlags & CHN_16BIT) ? 2 : 1;
+            int sinc = (pSmp->flags & CHN_16BIT) ? 2 : 1;
             int s_old = 0, s_ofs = (nFlags == RS_PCM8U) ? 0x80 : 0;
-            if (pSmp->uFlags & CHN_16BIT) p++;
+            if (pSmp->flags & CHN_16BIT) p++;
             for (UINT j=0; j<len; j++)
             {
                 int s_new = (int8)(*p);
                 p += sinc;
-                if (pSmp->uFlags & CHN_STEREO)
+                if (pSmp->flags & CHN_STEREO)
                 {
                     s_new = (s_new + ((int)*p) + 1) >> 1;
                     p += sinc;
@@ -1815,31 +1821,31 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFla
 //	5 = signed 16-bit PCM data
 //	6 = unsigned 16-bit PCM data
 
-UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const WORD format)
+UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const WORD format)
 //---------------------------------------------------------------------------------------------------------------
 {
-    if ((!pSmp) || (pSmp->nLength < 2) || (!lpMemFile)) return 0;
+    if ((!pSmp) || (pSmp->length < 2) || (!lpMemFile)) return 0;
 
-    if(pSmp->nLength > MAX_SAMPLE_LENGTH)
-        pSmp->nLength = MAX_SAMPLE_LENGTH;
+    if(pSmp->length > MAX_SAMPLE_LENGTH)
+        pSmp->length = MAX_SAMPLE_LENGTH;
     
-    UINT len = 0, mem = pSmp->nLength+6;
+    UINT len = 0, mem = pSmp->length+6;
 
-    pSmp->uFlags &= ~(CHN_16BIT|CHN_STEREO);
+    pSmp->flags &= ~(CHN_16BIT|CHN_STEREO);
     if (nFlags & RSF_16BIT)
     {
         mem *= 2;
-        pSmp->uFlags |= CHN_16BIT;
+        pSmp->flags |= CHN_16BIT;
     }
     if (nFlags & RSF_STEREO)
     {
         mem *= 2;
-        pSmp->uFlags |= CHN_STEREO;
+        pSmp->flags |= CHN_STEREO;
     }
 
-    if ((pSmp->pSample = AllocateSample(mem)) == NULL)
+    if ((pSmp->sample_data = AllocateSample(mem)) == NULL)
     {
-        pSmp->nLength = 0;
+        pSmp->length = 0;
         return 0;
     }
 
@@ -1847,9 +1853,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // thinks it is.
     if( mem < pSmp->GetSampleSizeInBytes() )
     {
-        pSmp->nLength = 0;
-        FreeSample(pSmp->pSample);
-        pSmp->pSample = nullptr;
+        pSmp->length = 0;
+        FreeSample(pSmp->sample_data);
+        pSmp->sample_data = nullptr;
         MessageBox(0, str_SampleAllocationError, str_Error, MB_ICONERROR);
         return 0;
     }
@@ -1859,9 +1865,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // 1: 8-bit unsigned PCM data
     case RS_PCM8U:
         {
-            len = pSmp->nLength;
-            if (len > dwMemLength) len = pSmp->nLength = dwMemLength;
-            LPSTR pSample = pSmp->pSample;
+            len = pSmp->length;
+            if (len > dwMemLength) len = pSmp->length = dwMemLength;
+            LPSTR pSample = pSmp->sample_data;
             for (UINT j=0; j<len; j++) pSample[j] = (char)(lpMemFile[j] - 0x80); 
         }
         break;
@@ -1869,9 +1875,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // 2: 8-bit ADPCM data with linear table
     case RS_PCM8D:
         {
-            len = pSmp->nLength;
+            len = pSmp->length;
             if (len > dwMemLength) break;
-            LPSTR pSample = pSmp->pSample;
+            LPSTR pSample = pSmp->sample_data;
             const char *p = (const char *)lpMemFile;
             int delta = 0;
             for (UINT j=0; j<len; j++)
@@ -1885,11 +1891,11 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // 3: 4-bit ADPCM data
     case RS_ADPCM4:
         {
-            len = (pSmp->nLength + 1) / 2;
+            len = (pSmp->length + 1) / 2;
             if (len > dwMemLength - 16) break;
             memcpy(CompressionTable, lpMemFile, 16);
             lpMemFile += 16;
-            LPSTR pSample = pSmp->pSample;
+            LPSTR pSample = pSmp->sample_data;
             char delta = 0;
             for (UINT j=0; j<len; j++)
             {
@@ -1908,9 +1914,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // 4: 16-bit ADPCM data with linear table
     case RS_PCM16D:
         {
-            len = pSmp->nLength * 2;
+            len = pSmp->length * 2;
             if (len > dwMemLength) break;
-            short int *pSample = (short int *)pSmp->pSample;
+            short int *pSample = (short int *)pSmp->sample_data;
             short int *p = (short int *)lpMemFile;
             int delta16 = 0;
             for (UINT j=0; j<len; j+=2)
@@ -1923,17 +1929,17 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
 
     // 5: 16-bit signed PCM data
     case RS_PCM16S:
-        len = pSmp->nLength * 2;
-        if (len <= dwMemLength) memcpy(pSmp->pSample, lpMemFile, len);
+        len = pSmp->length * 2;
+        if (len <= dwMemLength) memcpy(pSmp->sample_data, lpMemFile, len);
         break;
 
     // 16-bit signed mono PCM motorola byte order
     case RS_PCM16M:
-        len = pSmp->nLength * 2;
+        len = pSmp->length * 2;
         if (len > dwMemLength) len = dwMemLength & ~1;
         if (len > 1)
         {
-            char *pSample = (char *)pSmp->pSample;
+            char *pSample = (char *)pSmp->sample_data;
             char *pSrc = (char *)lpMemFile;
             for (UINT j=0; j<len; j+=2)
             {
@@ -1946,9 +1952,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // 6: 16-bit unsigned PCM data
     case RS_PCM16U:
         {
-            len = pSmp->nLength * 2;
+            len = pSmp->length * 2;
             if (len > dwMemLength) break;
-            short int *pSample = (short int *)pSmp->pSample;
+            short int *pSample = (short int *)pSmp->sample_data;
             short int *pSrc = (short int *)lpMemFile;
             for (UINT j=0; j<len; j+=2) *pSample++ = (*(pSrc++)) - 0x8000;
         }
@@ -1956,10 +1962,10 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
 
     // 16-bit signed stereo big endian
     case RS_STPCM16M:
-        len = pSmp->nLength * 2;
+        len = pSmp->length * 2;
         if (len*2 <= dwMemLength)
         {
-            char *pSample = (char *)pSmp->pSample;
+            char *pSample = (char *)pSmp->sample_data;
             char *pSrc = (char *)lpMemFile;
             for (UINT j=0; j<len; j+=2)
             {
@@ -1977,9 +1983,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     case RS_STPCM8U:
     case RS_STPCM8D:
         {
-            len = pSmp->nLength;
+            len = pSmp->length;
             char *psrc = (char *)lpMemFile;
-            char *pSample = (char *)pSmp->pSample;
+            char *pSample = (char *)pSmp->sample_data;
             if (len*2 > dwMemLength) break;
             for (UINT c=0; c<2; c++)
             {
@@ -2012,9 +2018,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     case RS_STPCM16U:
     case RS_STPCM16D:
         {
-            len = pSmp->nLength;
+            len = pSmp->length;
             short int *psrc = (short int *)lpMemFile;
-            short int *pSample = (short int *)pSmp->pSample;
+            short int *pSample = (short int *)pSmp->sample_data;
             if (len*4 > dwMemLength) break;
             for (UINT c=0; c<2; c++)
             {
@@ -2050,9 +2056,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         len = dwMemLength;
         if (len < 4) break;
         if ((nFlags == RS_IT2148) || (nFlags == RS_IT2158))
-            ITUnpack8Bit(pSmp->pSample, pSmp->nLength, (LPBYTE)lpMemFile, dwMemLength, (nFlags == RS_IT2158));
+            ITUnpack8Bit(pSmp->sample_data, pSmp->length, (LPBYTE)lpMemFile, dwMemLength, (nFlags == RS_IT2158));
         else
-            ITUnpack16Bit(pSmp->pSample, pSmp->nLength, (LPBYTE)lpMemFile, dwMemLength, (nFlags == RS_IT21516));
+            ITUnpack16Bit(pSmp->sample_data, pSmp->length, (LPBYTE)lpMemFile, dwMemLength, (nFlags == RS_IT21516));
         break;
 
 #ifndef MODPLUG_BASIC_SUPPORT
@@ -2063,10 +2069,10 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         {
             int iadd = 0;
             if (nFlags == RS_STIPCM8U) { iadd = -0x80; }
-            len = pSmp->nLength;
+            len = pSmp->length;
             if (len*2 > dwMemLength) len = dwMemLength >> 1;
             LPBYTE psrc = (LPBYTE)lpMemFile;
-            LPBYTE pSample = (LPBYTE)pSmp->pSample;
+            LPBYTE pSample = (LPBYTE)pSmp->sample_data;
             for (UINT j=0; j<len; j++)
             {
                 pSample[j*2] = (char)(psrc[0] + iadd);
@@ -2083,10 +2089,10 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         {
             int iadd = 0;
             if (nFlags == RS_STIPCM16U) iadd = -32768;
-            len = pSmp->nLength;
+            len = pSmp->length;
             if (len*4 > dwMemLength) len = dwMemLength >> 2;
             short int *psrc = (short int *)lpMemFile;
-            short int *pSample = (short int *)pSmp->pSample;
+            short int *pSample = (short int *)pSmp->sample_data;
             for (UINT j=0; j<len; j++)
             {
                 pSample[j*2] = (short int)(psrc[0] + iadd);
@@ -2104,11 +2110,11 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         if (dwMemLength > 9)
         {
             const char *psrc = lpMemFile;
-            char packcharacter = lpMemFile[8], *pdest = (char *)pSmp->pSample;
+            char packcharacter = lpMemFile[8], *pdest = (char *)pSmp->sample_data;
             len += *((LPDWORD)(lpMemFile+4));
             if (len > dwMemLength) len = dwMemLength;
-            UINT dmax = pSmp->nLength;
-            if (pSmp->uFlags & CHN_16BIT) dmax <<= 1;
+            UINT dmax = pSmp->length;
+            if (pSmp->flags & CHN_16BIT) dmax <<= 1;
             AMSUnpack(psrc+9, len-9, pdest, dmax, packcharacter);
         }
         break;
@@ -2116,9 +2122,9 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // PTM 8bit delta to 16-bit sample
     case RS_PTM8DTO16:
         {
-            len = pSmp->nLength * 2;
+            len = pSmp->length * 2;
             if (len > dwMemLength) break;
-            signed char *pSample = (signed char *)pSmp->pSample;
+            signed char *pSample = (signed char *)pSmp->sample_data;
             signed char delta8 = 0;
             for (UINT j=0; j<len; j++)
             {
@@ -2134,13 +2140,13 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         len = dwMemLength;
         if (len >= 4)
         {
-            LPBYTE pSample = (LPBYTE)pSmp->pSample;
+            LPBYTE pSample = (LPBYTE)pSmp->sample_data;
             LPBYTE ibuf = (LPBYTE)lpMemFile;
             DWORD bitbuf = *((DWORD *)ibuf);
             UINT bitnum = 32;
             BYTE dlt = 0, lowbyte = 0;
             ibuf += 4;
-            for (UINT j=0; j<pSmp->nLength; j++)
+            for (UINT j=0; j<pSmp->length; j++)
             {
                 BYTE hibyte;
                 BYTE sign;
@@ -2173,10 +2179,10 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         len = dwMemLength;
         if (len >= 4)
         {
-            UINT maxlen = pSmp->nLength;
-            if (pSmp->uFlags & CHN_16BIT) maxlen <<= 1;
+            UINT maxlen = pSmp->length;
+            if (pSmp->flags & CHN_16BIT) maxlen <<= 1;
             uint8 *ibuf = (uint8 *)lpMemFile, *ibufmax = (uint8 *)(lpMemFile + dwMemLength);
-            len = DMFUnpack((LPBYTE)pSmp->pSample, ibuf, ibufmax, maxlen);
+            len = DMFUnpack((LPBYTE)pSmp->sample_data, ibuf, ibufmax, maxlen);
         }
         break;
 
@@ -2184,21 +2190,21 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // Mono PCM 24/32-bit signed & 32 bit float -> load sample, and normalize it to 16-bit
     case RS_PCM24S:
     case RS_PCM32S:
-        len = pSmp->nLength * 3;
-        if (nFlags == RS_PCM32S) len += pSmp->nLength;
+        len = pSmp->length * 3;
+        if (nFlags == RS_PCM32S) len += pSmp->length;
         if (len > dwMemLength) break;
         if (len > 4*8)
         {
             if(nFlags == RS_PCM24S)
             {
                 char* pSrc = (char*)lpMemFile;
-                char* pDest = (char*)pSmp->pSample;
+                char* pDest = (char*)pSmp->sample_data;
                 CopyWavBuffer<3, 2, WavSigned24To16, MaxFinderSignedInt<3> >(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
             }
             else //RS_PCM32S
             {
                 char* pSrc = (char*)lpMemFile;
-                char* pDest = (char*)pSmp->pSample;
+                char* pDest = (char*)pSmp->sample_data;
                 if(format == 3)
                     CopyWavBuffer<4, 2, WavFloat32To16, MaxFinderFloat32>(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
                 else
@@ -2212,20 +2218,20 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     case RS_STIPCM32S:
         if(format == 3 && nFlags == RS_STIPCM32S) //Microsoft IEEE float
         {
-            len = pSmp->nLength * 6;
-            //pSmp->nLength tells(?) the number of frames there
+            len = pSmp->length * 6;
+            //pSmp->length tells(?) the number of frames there
             //are. One 'frame' of 1 byte(== 8 bit) mono data requires
             //1 byte of space, while one frame of 3 byte(24 bit) 
             //stereo data requires 3*2 = 6 bytes. This is(?)
             //why there is factor 6.
 
-            len += pSmp->nLength * 2;
+            len += pSmp->length * 2;
             //Compared to 24 stereo, 32 bit stereo needs 16 bits(== 2 bytes)
             //more per frame.
 
             if(len > dwMemLength) break;
             char* pSrc = (char*)lpMemFile;
-            char* pDest = (char*)pSmp->pSample;
+            char* pDest = (char*)pSmp->sample_data;
             if (len > 8*8)
             {
                 CopyWavBuffer<4, 2, WavFloat32To16, MaxFinderFloat32>(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
@@ -2233,13 +2239,13 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
         }
         else
         {
-            len = pSmp->nLength * 6;
-            if (nFlags == RS_STIPCM32S) len += pSmp->nLength * 2;
+            len = pSmp->length * 6;
+            if (nFlags == RS_STIPCM32S) len += pSmp->length * 2;
             if (len > dwMemLength) break;
             if (len > 8*8)
             {
                 char* pSrc = (char*)lpMemFile;
-                char* pDest = (char*)pSmp->pSample;
+                char* pDest = (char*)pSmp->sample_data;
                 if(nFlags == RS_STIPCM32S)
                 {
                     CopyWavBuffer<4,2,WavSigned32To16, MaxFinderSignedInt<4> >(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
@@ -2256,10 +2262,10 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
     // 16-bit signed big endian interleaved stereo
     case RS_STIPCM16M:
         {
-            len = pSmp->nLength;
+            len = pSmp->length;
             if (len*4 > dwMemLength) len = dwMemLength >> 2;
             LPCBYTE psrc = (LPCBYTE)lpMemFile;
-            short int *pSample = (short int *)pSmp->pSample;
+            short int *pSample = (short int *)pSmp->sample_data;
             for (UINT j=0; j<len; j++)
             {
                 pSample[j*2] = (signed short)(((UINT)psrc[0] << 8) | (psrc[1]));
@@ -2276,17 +2282,17 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
 
     // Default: 8-bit signed PCM data
     default:
-        len = pSmp->nLength;
-        if (len > dwMemLength) len = pSmp->nLength = dwMemLength;
-        memcpy(pSmp->pSample, lpMemFile, len);
+        len = pSmp->length;
+        if (len > dwMemLength) len = pSmp->length = dwMemLength;
+        memcpy(pSmp->sample_data, lpMemFile, len);
     }
     if (len > dwMemLength)
     {
-        if (pSmp->pSample)
+        if (pSmp->sample_data)
         {
-            pSmp->nLength = 0;
-            FreeSample(pSmp->pSample);
-            pSmp->pSample = nullptr;
+            pSmp->length = 0;
+            FreeSample(pSmp->sample_data);
+            pSmp->sample_data = nullptr;
         }
         return 0;
     }
@@ -2295,22 +2301,22 @@ UINT CSoundFile::ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR
 }
 
 
-void CSoundFile::AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp)
+void CSoundFile::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
 //------------------------------------------------
 {
-    if ((!pSmp->pSample) || (!pSmp->nLength)) return;
-    if (pSmp->nLoopEnd > pSmp->nLength) pSmp->nLoopEnd = pSmp->nLength;
-    if (pSmp->nLoopStart >= pSmp->nLoopEnd)
+    if ((!pSmp->sample_data) || (!pSmp->length)) return;
+    if (pSmp->loop_end > pSmp->length) pSmp->loop_end = pSmp->length;
+    if (pSmp->loop_start >= pSmp->loop_end)
     {
-        pSmp->nLoopStart = pSmp->nLoopEnd = 0;
-        pSmp->uFlags &= ~CHN_LOOP;
+        pSmp->loop_start = pSmp->loop_end = 0;
+        pSmp->flags &= ~CHN_LOOP;
     }
-    UINT len = pSmp->nLength;
-    if (pSmp->uFlags & CHN_16BIT)
+    UINT len = pSmp->length;
+    if (pSmp->flags & CHN_16BIT)
     {
-        short int *pSample = (short int *)pSmp->pSample;
+        short int *pSample = (short int *)pSmp->sample_data;
         // Adjust end of sample
-        if (pSmp->uFlags & CHN_STEREO)
+        if (pSmp->flags & CHN_STEREO)
         {
             pSample[len*2+6] = pSample[len*2+4] = pSample[len*2+2] = pSample[len*2] = pSample[len*2-2];
             pSample[len*2+7] = pSample[len*2+5] = pSample[len*2+3] = pSample[len*2+1] = pSample[len*2-1];
@@ -2318,37 +2324,37 @@ void CSoundFile::AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp)
         {
             pSample[len+4] = pSample[len+3] = pSample[len+2] = pSample[len+1] = pSample[len] = pSample[len-1];
         }
-        if ((pSmp->uFlags & (CHN_LOOP|CHN_PINGPONGLOOP|CHN_STEREO)) == CHN_LOOP)
+        if ((pSmp->flags & (CHN_LOOP|CHN_PINGPONGLOOP|CHN_STEREO)) == CHN_LOOP)
         {
             // Fix bad loops
-            if ((pSmp->nLoopEnd+3 >= pSmp->nLength) || (m_nType & MOD_TYPE_S3M))
+            if ((pSmp->loop_end+3 >= pSmp->length) || (m_nType & MOD_TYPE_S3M))
             {
-                pSample[pSmp->nLoopEnd] = pSample[pSmp->nLoopStart];
-                pSample[pSmp->nLoopEnd+1] = pSample[pSmp->nLoopStart+1];
-                pSample[pSmp->nLoopEnd+2] = pSample[pSmp->nLoopStart+2];
-                pSample[pSmp->nLoopEnd+3] = pSample[pSmp->nLoopStart+3];
-                pSample[pSmp->nLoopEnd+4] = pSample[pSmp->nLoopStart+4];
+                pSample[pSmp->loop_end] = pSample[pSmp->loop_start];
+                pSample[pSmp->loop_end+1] = pSample[pSmp->loop_start+1];
+                pSample[pSmp->loop_end+2] = pSample[pSmp->loop_start+2];
+                pSample[pSmp->loop_end+3] = pSample[pSmp->loop_start+3];
+                pSample[pSmp->loop_end+4] = pSample[pSmp->loop_start+4];
             }
         }
     } else
     {
-        LPSTR pSample = pSmp->pSample;
+        LPSTR pSample = pSmp->sample_data;
 #ifndef FASTSOUNDLIB
         // Crappy samples (except chiptunes) ?
-        if ((pSmp->nLength > 0x100) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M))
-         && (!(pSmp->uFlags & CHN_STEREO)))
+        if ((pSmp->length > 0x100) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M))
+         && (!(pSmp->flags & CHN_STEREO)))
         {
-            int smpend = pSample[pSmp->nLength-1], smpfix = 0, kscan;
-            for (kscan=pSmp->nLength-1; kscan>0; kscan--)
+            int smpend = pSample[pSmp->length-1], smpfix = 0, kscan;
+            for (kscan=pSmp->length-1; kscan>0; kscan--)
             {
                 smpfix = pSample[kscan-1];
                 if (smpfix != smpend) break;
             }
             int delta = smpfix - smpend;
-            if (((!(pSmp->uFlags & CHN_LOOP)) || (kscan > (int)pSmp->nLoopEnd))
+            if (((!(pSmp->flags & CHN_LOOP)) || (kscan > (int)pSmp->loop_end))
              && ((delta < -8) || (delta > 8)))
             {
-                while (kscan<(int)pSmp->nLength)
+                while (kscan<(int)pSmp->length)
                 {
                     if (!(kscan & 7))
                     {
@@ -2362,7 +2368,7 @@ void CSoundFile::AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp)
         }
 #endif
         // Adjust end of sample
-        if (pSmp->uFlags & CHN_STEREO)
+        if (pSmp->flags & CHN_STEREO)
         {
             pSample[len*2+6] = pSample[len*2+4] = pSample[len*2+2] = pSample[len*2] = pSample[len*2-2];
             pSample[len*2+7] = pSample[len*2+5] = pSample[len*2+3] = pSample[len*2+1] = pSample[len*2-1];
@@ -2370,15 +2376,15 @@ void CSoundFile::AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp)
         {
             pSample[len+4] = pSample[len+3] = pSample[len+2] = pSample[len+1] = pSample[len] = pSample[len-1];
         }
-        if ((pSmp->uFlags & (CHN_LOOP|CHN_PINGPONGLOOP|CHN_STEREO)) == CHN_LOOP)
+        if ((pSmp->flags & (CHN_LOOP|CHN_PINGPONGLOOP|CHN_STEREO)) == CHN_LOOP)
         {
-            if ((pSmp->nLoopEnd+3 >= pSmp->nLength) || (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M)))
+            if ((pSmp->loop_end+3 >= pSmp->length) || (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M)))
             {
-                pSample[pSmp->nLoopEnd] = pSample[pSmp->nLoopStart];
-                pSample[pSmp->nLoopEnd+1] = pSample[pSmp->nLoopStart+1];
-                pSample[pSmp->nLoopEnd+2] = pSample[pSmp->nLoopStart+2];
-                pSample[pSmp->nLoopEnd+3] = pSample[pSmp->nLoopStart+3];
-                pSample[pSmp->nLoopEnd+4] = pSample[pSmp->nLoopStart+4];
+                pSample[pSmp->loop_end] = pSample[pSmp->loop_start];
+                pSample[pSmp->loop_end+1] = pSample[pSmp->loop_start+1];
+                pSample[pSmp->loop_end+2] = pSample[pSmp->loop_start+2];
+                pSample[pSmp->loop_end+3] = pSample[pSmp->loop_start+3];
+                pSample[pSmp->loop_end+4] = pSample[pSmp->loop_start+4];
             }
         }
     }
@@ -2444,10 +2450,10 @@ int CSoundFile::FrequencyToTranspose(DWORD freq)
 }
 
 
-void CSoundFile::FrequencyToTranspose(modplug::mixer::MODSAMPLE *psmp)
+void CSoundFile::FrequencyToTranspose(modplug::tracker::modsample_t *psmp)
 //----------------------------------------------------
 {
-    int f2t = FrequencyToTranspose(psmp->nC5Speed);
+    int f2t = FrequencyToTranspose(psmp->c5_samplerate);
     int transp = f2t >> 7;
     int ftune = f2t & 0x7F; //0x7F == 111 1111
     if (ftune > 80)
@@ -2476,9 +2482,9 @@ void CSoundFile::CheckCPUUsage(UINT nCPU)
         while (i >= 8)
         {
             i--;
-            if (Chn[i].nLength)
+            if (Chn[i].length)
             {
-                Chn[i].nLength = Chn[i].nPos = 0;
+                Chn[i].length = Chn[i].sample_position = 0;
                 nCPU -= 2;
                 if (nCPU < 94) break;
             }
@@ -2504,7 +2510,7 @@ bool CSoundFile::IsSampleUsed(SAMPLEINDEX nSample) const
     {
         for (UINT i = 1; i <= GetNumInstruments(); i++) if (Instruments[i])
         {
-            modplug::mixer::MODINSTRUMENT *pIns = Instruments[i];
+            modplug::tracker::modinstrument_t *pIns = Instruments[i];
             for (UINT j = 0; j < CountOf(pIns->Keyboard); j++)
             {
                 if (pIns->Keyboard[j] == nSample) return true;
@@ -2514,7 +2520,7 @@ bool CSoundFile::IsSampleUsed(SAMPLEINDEX nSample) const
     {
         for (UINT i=0; i<Patterns.Size(); i++) if (Patterns[i])
         {
-            const MODCOMMAND *m = Patterns[i];
+            const modplug::tracker::modcommand_t *m = Patterns[i];
             for (UINT j=m_nChannels*Patterns[i].GetNumRows(); j; m++, j--)
             {
                 if (m->instr == nSample && !m->IsPcNote()) return true;
@@ -2531,7 +2537,7 @@ bool CSoundFile::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
     if ((!nInstr) || (nInstr > GetNumInstruments()) || (!Instruments[nInstr])) return false;
     for (UINT i=0; i<Patterns.Size(); i++) if (Patterns[i])
     {
-        const MODCOMMAND *m = Patterns[i];
+        const modplug::tracker::modcommand_t *m = Patterns[i];
         for (UINT j=m_nChannels*Patterns[i].GetNumRows(); j; m++, j--)
         {
             if (m->instr == nInstr && !m->IsPcNote()) return true;
@@ -2556,7 +2562,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
 
     for (PATTERNINDEX nPat = 0; nPat < GetNumPatterns(); nPat++)
     {
-        const MODCOMMAND *p = Patterns[nPat];
+        const modplug::tracker::modcommand_t *p = Patterns[nPat];
         if(p == nullptr)
         {
             continue;
@@ -2569,7 +2575,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
             {
                 if ((p->instr) && (p->instr < MAX_INSTRUMENTS))
                 {
-                    modplug::mixer::MODINSTRUMENT *pIns = Instruments[p->instr];
+                    modplug::tracker::modinstrument_t *pIns = Instruments[p->instr];
                     if (pIns)
                     {
                         SAMPLEINDEX n = pIns->Keyboard[p->note-1];
@@ -2579,7 +2585,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
                 {
                     for (INSTRUMENTINDEX k = GetNumInstruments(); k >= 1; k--)
                     {
-                        modplug::mixer::MODINSTRUMENT *pIns = Instruments[k];
+                        modplug::tracker::modinstrument_t *pIns = Instruments[k];
                         if (pIns)
                         {
                             SAMPLEINDEX n = pIns->Keyboard[p->note-1];
@@ -2592,7 +2598,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
     }
     for (SAMPLEINDEX ichk = GetNumSamples(); ichk >= 1; ichk--)
     {
-        if ((!sampleUsed[ichk]) && (Samples[ichk].pSample)) nExt++;
+        if ((!sampleUsed[ichk]) && (Samples[ichk].sample_data)) nExt++;
     }
 
     return nExt;
@@ -2627,18 +2633,18 @@ bool CSoundFile::DestroySample(SAMPLEINDEX nSample)
 //-------------------------------------------------
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
-    if (!Samples[nSample].pSample) return true;
-    modplug::mixer::MODSAMPLE *pSmp = &Samples[nSample];
-    LPSTR pSample = pSmp->pSample;
-    pSmp->pSample = nullptr;
-    pSmp->nLength = 0;
-    pSmp->uFlags &= ~(CHN_16BIT);
+    if (!Samples[nSample].sample_data) return true;
+    modplug::tracker::modsample_t *pSmp = &Samples[nSample];
+    LPSTR pSample = pSmp->sample_data;
+    pSmp->sample_data = nullptr;
+    pSmp->length = 0;
+    pSmp->flags &= ~(CHN_16BIT);
     for (UINT i=0; i<MAX_CHANNELS; i++)
     {
-        if (Chn[i].pSample == pSample)
+        if (Chn[i].sample_data == pSample)
         {
-            Chn[i].nPos = Chn[i].nLength = 0;
-            Chn[i].pSample = Chn[i].pCurrentSample = NULL;
+            Chn[i].sample_position = Chn[i].length = 0;
+            Chn[i].sample_data = Chn[i].active_sample_data = NULL;
         }
     }
     FreeSample(pSample);
@@ -2651,16 +2657,16 @@ bool CSoundFile::MoveSample(SAMPLEINDEX from, SAMPLEINDEX to)
 //-----------------------------------------------------------
 {
     if (!from || from >= MAX_SAMPLES || !to || to >= MAX_SAMPLES) return false;
-    if (/*!Ins[from].pSample ||*/ Samples[to].pSample) return true;
+    if (/*!Ins[from].sample_data ||*/ Samples[to].sample_data) return true;
 
-    modplug::mixer::MODSAMPLE *pFrom = &Samples[from];
-    modplug::mixer::MODSAMPLE *pTo = &Samples[to];
+    modplug::tracker::modsample_t *pFrom = &Samples[from];
+    modplug::tracker::modsample_t *pTo = &Samples[to];
 
-    memcpy(pTo, pFrom, sizeof(modplug::mixer::MODSAMPLE));
+    memcpy(pTo, pFrom, sizeof(modplug::tracker::modsample_t));
 
-    pFrom->pSample = nullptr;
-    pFrom->nLength = 0;
-    pFrom->uFlags &= ~(CHN_16BIT);
+    pFrom->sample_data = nullptr;
+    pFrom->length = 0;
+    pFrom->flags &= ~(CHN_16BIT);
 
     return true;
 }
@@ -2687,16 +2693,16 @@ void CSoundFile::BuildDefaultInstrument()
 // m_defaultInstrument is currently only used to get default values for extented properties. 
 // In the future we can make better use of this.
     MemsetZero(m_defaultInstrument);
-    m_defaultInstrument.nResampling = SRCMODE_DEFAULT;
-    m_defaultInstrument.nFilterMode = FLTMODE_UNCHANGED;
-    m_defaultInstrument.nPPC = 5*12;
-    m_defaultInstrument.nGlobalVol=64;
-    m_defaultInstrument.nPan = 0x20 << 2;
-    //m_defaultInstrument.nIFC = 0xFF;
-    m_defaultInstrument.PanEnv.nReleaseNode=ENV_RELEASE_NODE_UNSET;
-    m_defaultInstrument.PitchEnv.nReleaseNode=ENV_RELEASE_NODE_UNSET;
-    m_defaultInstrument.VolEnv.nReleaseNode=ENV_RELEASE_NODE_UNSET;
-    m_defaultInstrument.wPitchToTempoLock = 0;
+    m_defaultInstrument.resampling_mode = SRCMODE_DEFAULT;
+    m_defaultInstrument.default_filter_mode = FLTMODE_UNCHANGED;
+    m_defaultInstrument.pitch_pan_center = 5*12;
+    m_defaultInstrument.global_volume=64;
+    m_defaultInstrument.default_pan = 0x20 << 2;
+    //m_defaultInstrument.default_filter_cutoff = 0xFF;
+    m_defaultInstrument.panning_envelope.release_node=ENV_RELEASE_NODE_UNSET;
+    m_defaultInstrument.pitch_envelope.release_node=ENV_RELEASE_NODE_UNSET;
+    m_defaultInstrument.volume_envelope.release_node=ENV_RELEASE_NODE_UNSET;
+    m_defaultInstrument.pitch_to_tempo_lock = 0;
     m_defaultInstrument.pTuning = m_defaultInstrument.s_DefaultTuning;
     m_defaultInstrument.nPluginVelocityHandling = PLUGIN_VELOCITYHANDLING_CHANNEL;
     m_defaultInstrument.nPluginVolumeHandling = CSoundFile::s_DefaultPlugVolumeHandling;
@@ -2773,21 +2779,21 @@ bool CSoundFile::LoadStaticTunings()
         s_pTuningsSharedBuiltIn->SetConstStatus(CTuningCollection::EM_CONST);
     #endif
 
-    modplug::mixer::MODINSTRUMENT::s_DefaultTuning = NULL;
+    modplug::tracker::modinstrument_t::s_DefaultTuning = NULL;
 
     return false;
 }
 
 
 
-void CSoundFile::SetDefaultInstrumentValues(modplug::mixer::MODINSTRUMENT *pIns)
+void CSoundFile::SetDefaultInstrumentValues(modplug::tracker::modinstrument_t *pIns)
 //--------------------------------------------------------------
 {
-    pIns->nResampling = m_defaultInstrument.nResampling;
-    pIns->nFilterMode = m_defaultInstrument.nFilterMode;
-    pIns->PitchEnv.nReleaseNode = m_defaultInstrument.PitchEnv.nReleaseNode;
-    pIns->PanEnv.nReleaseNode = m_defaultInstrument.PanEnv.nReleaseNode;
-    pIns->VolEnv.nReleaseNode = m_defaultInstrument.VolEnv.nReleaseNode;
+    pIns->resampling_mode = m_defaultInstrument.resampling_mode;
+    pIns->default_filter_mode = m_defaultInstrument.default_filter_mode;
+    pIns->pitch_envelope.release_node = m_defaultInstrument.pitch_envelope.release_node;
+    pIns->panning_envelope.release_node = m_defaultInstrument.panning_envelope.release_node;
+    pIns->volume_envelope.release_node = m_defaultInstrument.volume_envelope.release_node;
     pIns->pTuning = m_defaultInstrument.pTuning;
     pIns->nPluginVelocityHandling = m_defaultInstrument.nPluginVelocityHandling;
     pIns->nPluginVolumeHandling = m_defaultInstrument.nPluginVolumeHandling;
@@ -2883,10 +2889,8 @@ void CSoundFile::ChangeModTypeTo(const MODTYPE& newType)
 bool CSoundFile::SetTitle(const char* titleCandidate, size_t strSize)
 //-------------------------------------------------------------------
 {
-    if(strcmp(m_szNames[0], titleCandidate))
-    {
-        memset(m_szNames[0], 0, sizeof(m_szNames[0]));
-        memcpy(m_szNames[0], titleCandidate, min(sizeof(m_szNames[0])-1, strSize));
+    if (song_name.compare(titleCandidate)) {
+        song_name.assign(titleCandidate);
         return true;
     }
     return false;

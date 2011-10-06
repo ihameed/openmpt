@@ -141,7 +141,7 @@ static void TranslateULTCommands(uint8 *pe, uint8 *pp)
 	*pp = p;
 }
 
-static int ReadULTEvent(MODCOMMAND *note, const BYTE *lpStream, DWORD *dwMP, const DWORD dwMemLength)
+static int ReadULTEvent(modplug::tracker::modcommand_t *note, const BYTE *lpStream, DWORD *dwMP, const DWORD dwMemLength)
 //---------------------------------------------------------------------------------------------------
 {
 	#define ASSERT_CAN_READ_ULTENV(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -211,7 +211,7 @@ static int ReadULTEvent(MODCOMMAND *note, const BYTE *lpStream, DWORD *dwMP, con
 	}
 	if (n < 5)
 	{
-		if (CSoundFile::GetEffectWeight((MODCOMMAND::COMMAND)cmd1) > CSoundFile::GetEffectWeight((MODCOMMAND::COMMAND)cmd2))
+		if (CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
 		{
 			std::swap(cmd1, cmd2);
 			std::swap(param1, param2);
@@ -246,7 +246,7 @@ struct PostFixUltCommands
 		isPortaActive.resize(numChannels, false);
 	}
 
-	void operator()(MODCOMMAND& m)
+	void operator()(modplug::tracker::modcommand_t& m)
 	{
 		// Attempt to fix portamentos.
 		// UltraTracker will slide until the destination note is reached or 300 is encountered.
@@ -321,8 +321,7 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 	ult_version -= '0';
 
 	ASSERT_CAN_READ(32);
-	memcpy(m_szNames[0], lpStream + dwMemPos, 32);
-	SetNullTerminator(m_szNames[0]);
+    assign_without_padding(this->song_name, reinterpret_cast<const char *>(lpStream + dwMemPos), 32);
 	dwMemPos += 32;
 
 	m_nType = MOD_TYPE_ULT;
@@ -344,7 +343,7 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 	for(SAMPLEINDEX nSmp = 0; nSmp < m_nSamples; nSmp++)
 	{
 		ULT_SAMPLE ultSmp;
-		MODSAMPLE *pSmp = &(Samples[nSmp + 1]);
+		modsample_t *pSmp = &(Samples[nSmp + 1]);
 		// annoying: v4 added a field before the end of the struct
 		if(ult_version >= 4)
 		{
@@ -370,33 +369,33 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 
 		memcpy(m_szNames[nSmp + 1], ultSmp.name, 32);
 		SetNullTerminator(m_szNames[nSmp + 1]);
-		memcpy(pSmp->filename, ultSmp.filename, 12);
-		SpaceToNullStringFixed<12>(pSmp->filename);
+		memcpy(pSmp->legacy_filename, ultSmp.filename, 12);
+		SpaceToNullStringFixed<12>(pSmp->legacy_filename);
 
 		if(ultSmp.size_end <= ultSmp.size_start)
 			continue;
-		pSmp->nLength = ultSmp.size_end - ultSmp.size_start;
-		pSmp->nLoopStart = ultSmp.loop_start;
-		pSmp->nLoopEnd = min(ultSmp.loop_end, pSmp->nLength);
-		pSmp->nVolume = ultSmp.volume;
-		pSmp->nGlobalVol = 64;
+		pSmp->length = ultSmp.size_end - ultSmp.size_start;
+		pSmp->loop_start = ultSmp.loop_start;
+		pSmp->loop_end = min(ultSmp.loop_end, pSmp->length);
+		pSmp->default_volume = ultSmp.volume;
+		pSmp->global_volume = 64;
 
 		/* mikmod does some weird integer math here, but it didn't really work for me */
-		pSmp->nC5Speed = ultSmp.speed;
+		pSmp->c5_samplerate = ultSmp.speed;
 		if(ultSmp.finetune)
 		{
-			pSmp->nC5Speed = (UINT)(((double)pSmp->nC5Speed) * pow(2.0, (((double)ultSmp.finetune) / (12.0 * 32768))));
+			pSmp->c5_samplerate = (UINT)(((double)pSmp->c5_samplerate) * pow(2.0, (((double)ultSmp.finetune) / (12.0 * 32768))));
 		}
 
 		if(ultSmp.flags & ULT_LOOP)
-			pSmp->uFlags |= CHN_LOOP;
+			pSmp->flags |= CHN_LOOP;
 		if(ultSmp.flags & ULT_PINGPONGLOOP)
-			pSmp->uFlags |= CHN_PINGPONGLOOP;
+			pSmp->flags |= CHN_PINGPONGLOOP;
 		if(ultSmp.flags & ULT_16BIT)
 		{
-			pSmp->uFlags |= CHN_16BIT;
-			pSmp->nLoopStart >>= 1;
-			pSmp->nLoopEnd >>= 1;
+			pSmp->flags |= CHN_16BIT;
+			pSmp->loop_start >>= 1;
+			pSmp->loop_end >>= 1;
 		}
 	}
 
@@ -435,8 +434,8 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 
 	for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
 	{
-		MODCOMMAND evnote;
-		MODCOMMAND *note;
+		modplug::tracker::modcommand_t evnote;
+		modplug::tracker::modcommand_t *note;
 		int repeat;
 		evnote.Clear();
 
@@ -465,7 +464,7 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 
 	for(SAMPLEINDEX nSmp = 0; nSmp < m_nSamples; nSmp++)
 	{
-		dwMemPos += ReadSample(&Samples[nSmp + 1], (Samples[nSmp + 1].uFlags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S, (LPCSTR)(lpStream + dwMemPos), dwMemLength - dwMemPos);
+		dwMemPos += ReadSample(&Samples[nSmp + 1], (Samples[nSmp + 1].flags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S, (LPCSTR)(lpStream + dwMemPos), dwMemLength - dwMemPos);
 	}
 	return true;
 }

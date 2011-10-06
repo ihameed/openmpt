@@ -239,9 +239,9 @@ LRESULT CViewInstrument::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 UINT CViewInstrument::EnvGetTick(int nPoint) const
 //------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	if((nPoint >= 0) && (nPoint < (int)envelope->nNodes))
+	if((nPoint >= 0) && (nPoint < (int)envelope->num_nodes))
 		return envelope->Ticks[nPoint];
 	else
 		return 0;
@@ -251,9 +251,9 @@ UINT CViewInstrument::EnvGetTick(int nPoint) const
 UINT CViewInstrument::EnvGetValue(int nPoint) const
 //-------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	if(nPoint >= 0 && nPoint < (int)envelope->nNodes)
+	if(nPoint >= 0 && nPoint < (int)envelope->num_nodes)
 		return envelope->Values[nPoint];
 	else
 		return 0;
@@ -265,23 +265,23 @@ bool CViewInstrument::EnvSetValue(int nPoint, int nTick, int nValue)
 {
 	if(nPoint < 0) return false;
 
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 
 	bool bOK = false;
 	if (!nPoint) nTick = 0;
-	if (nPoint < (int)envelope->nNodes)
+	if (nPoint < (int)envelope->num_nodes)
 	{
 		if (nTick >= 0)
 		{
 			int mintick = (nPoint) ? envelope->Ticks[nPoint - 1] : 0;
 			int maxtick = envelope->Ticks[nPoint + 1];
-			if (nPoint + 1 == (int)envelope->nNodes) maxtick = ENVELOPE_MAX_LENGTH;
+			if (nPoint + 1 == (int)envelope->num_nodes) maxtick = ENVELOPE_MAX_LENGTH;
 			// Can't have multiple points on same tick
 			if(GetDocument()->GetSoundFile()->IsCompatibleMode(TRK_IMPULSETRACKER|TRK_FASTTRACKER2) && mintick < maxtick - 1)
 			{
 				mintick++;
-				if (nPoint + 1 < (int)envelope->nNodes) maxtick--;
+				if (nPoint + 1 < (int)envelope->num_nodes) maxtick--;
 			}
 			if (nTick < mintick) nTick = mintick;
 			if (nTick > maxtick) nTick = maxtick;
@@ -308,9 +308,9 @@ bool CViewInstrument::EnvSetValue(int nPoint, int nTick, int nValue)
 UINT CViewInstrument::EnvGetNumPoints() const
 //-------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	return envelope->nNodes;
+	return envelope->num_nodes;
 }
 
 
@@ -327,8 +327,8 @@ UINT CViewInstrument::EnvGetLastPoint() const
 bool CViewInstrument::EnvGetFlag(const DWORD dwFlag) const
 //--------------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
-	if(pEnv != nullptr && pEnv->dwFlags & dwFlag) return true;
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
+	if(pEnv != nullptr && pEnv->flags & dwFlag) return true;
 	return false;
 }
 
@@ -336,44 +336,44 @@ bool CViewInstrument::EnvGetFlag(const DWORD dwFlag) const
 UINT CViewInstrument::EnvGetLoopStart() const
 //-------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	return envelope->nLoopStart;
+	return envelope->loop_start;
 }
 
 
 UINT CViewInstrument::EnvGetLoopEnd() const
 //-----------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	return envelope->nLoopEnd;
+	return envelope->loop_end;
 }
 
 
 UINT CViewInstrument::EnvGetSustainStart() const
 //----------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	return envelope->nSustainStart;
+	return envelope->sustain_start;
 }
 
 
 UINT CViewInstrument::EnvGetSustainEnd() const
 //--------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
-	return envelope->nSustainEnd;
+	return envelope->sustain_end;
 }
 
 
 bool CViewInstrument::EnvGetVolEnv() const
 //----------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
-	if (pIns) return (pIns->VolEnv.dwFlags & ENV_ENABLED) ? true : false;
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
+	if (pIns) return (pIns->volume_envelope.flags & ENV_ENABLED) ? true : false;
 	return false;
 }
 
@@ -381,8 +381,8 @@ bool CViewInstrument::EnvGetVolEnv() const
 bool CViewInstrument::EnvGetPanEnv() const
 //----------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
-	if (pIns) return (pIns->PanEnv.dwFlags & ENV_ENABLED) ? true : false;
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
+	if (pIns) return (pIns->panning_envelope.flags & ENV_ENABLED) ? true : false;
 	return false;
 }
 
@@ -390,8 +390,8 @@ bool CViewInstrument::EnvGetPanEnv() const
 bool CViewInstrument::EnvGetPitchEnv() const
 //------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
-	if (pIns) return ((pIns->PitchEnv.dwFlags & (ENV_ENABLED|ENV_FILTER)) == ENV_ENABLED) ? true : false;
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
+	if (pIns) return ((pIns->pitch_envelope.flags & (ENV_ENABLED|ENV_FILTER)) == ENV_ENABLED) ? true : false;
 	return false;
 }
 
@@ -399,8 +399,8 @@ bool CViewInstrument::EnvGetPitchEnv() const
 bool CViewInstrument::EnvGetFilterEnv() const
 //-------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
-	if (pIns) return ((pIns->PitchEnv.dwFlags & (ENV_ENABLED|ENV_FILTER)) == (ENV_ENABLED|ENV_FILTER)) ? true : false;
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
+	if (pIns) return ((pIns->pitch_envelope.flags & (ENV_ENABLED|ENV_FILTER)) == (ENV_ENABLED|ENV_FILTER)) ? true : false;
 	return false;
 }
 
@@ -408,14 +408,14 @@ bool CViewInstrument::EnvGetFilterEnv() const
 bool CViewInstrument::EnvSetLoopStart(int nPoint)
 //-----------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 	if(nPoint < 0 || nPoint > (int)EnvGetLastPoint()) return false;
 
-	if (nPoint != envelope->nLoopStart)
+	if (nPoint != envelope->loop_start)
 	{
-		envelope->nLoopStart = (BYTE)nPoint;
-		if (envelope->nLoopEnd < nPoint) envelope->nLoopEnd = (BYTE)nPoint;
+		envelope->loop_start = (BYTE)nPoint;
+		if (envelope->loop_end < nPoint) envelope->loop_end = (BYTE)nPoint;
 		return true;
 	} else
 	{
@@ -427,14 +427,14 @@ bool CViewInstrument::EnvSetLoopStart(int nPoint)
 bool CViewInstrument::EnvSetLoopEnd(int nPoint)
 //---------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 	if(nPoint < 0 || nPoint > (int)EnvGetLastPoint()) return false;
 
-	if (nPoint != envelope->nLoopEnd)
+	if (nPoint != envelope->loop_end)
 	{
-		envelope->nLoopEnd = (BYTE)nPoint;
-		if (envelope->nLoopStart > nPoint) envelope->nLoopStart = (BYTE)nPoint;
+		envelope->loop_end = (BYTE)nPoint;
+		if (envelope->loop_start > nPoint) envelope->loop_start = (BYTE)nPoint;
 		return true;
 	} else
 	{
@@ -446,17 +446,17 @@ bool CViewInstrument::EnvSetLoopEnd(int nPoint)
 bool CViewInstrument::EnvSetSustainStart(int nPoint)
 //--------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 	if(nPoint < 0 || nPoint > (int)EnvGetLastPoint()) return false;
 
 	// We won't do any security checks here as GetEnvelopePtr() does that for us.
 	CSoundFile *pSndFile = GetDocument()->GetSoundFile();
 
-	if (nPoint != envelope->nSustainStart)
+	if (nPoint != envelope->sustain_start)
 	{
-		envelope->nSustainStart = (BYTE)nPoint;
-		if ((envelope->nSustainEnd < nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->nSustainEnd = (BYTE)nPoint;
+		envelope->sustain_start = (BYTE)nPoint;
+		if ((envelope->sustain_end < nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->sustain_end = (BYTE)nPoint;
 		return true;
 	} else
 	{
@@ -468,17 +468,17 @@ bool CViewInstrument::EnvSetSustainStart(int nPoint)
 bool CViewInstrument::EnvSetSustainEnd(int nPoint)
 //------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 	if(nPoint < 0 || nPoint > (int)EnvGetLastPoint()) return false;
 
 	// We won't do any security checks here as GetEnvelopePtr() does that for us.
 	CSoundFile *pSndFile = GetDocument()->GetSoundFile();
 
-	if (nPoint != envelope->nSustainEnd)
+	if (nPoint != envelope->sustain_end)
 	{
-		envelope->nSustainEnd = (BYTE)nPoint;
-		if ((envelope->nSustainStart > nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->nSustainStart = (BYTE)nPoint;
+		envelope->sustain_end = (BYTE)nPoint;
+		if ((envelope->sustain_start > nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->sustain_start = (BYTE)nPoint;
 		return true;
 	} else
 	{
@@ -490,27 +490,27 @@ bool CViewInstrument::EnvSetSustainEnd(int nPoint)
 bool CViewInstrument::EnvToggleReleaseNode(int nPoint)
 //----------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 	if(nPoint < 1 || nPoint > (int)EnvGetLastPoint()) return false;
 
 	// Don't allow release nodes in IT/XM. GetDocument()/... nullptr check is done in GetEnvelopePtr, so no need to check twice.
 	if(!GetDocument()->GetSoundFile()->GetModSpecifications().hasReleaseNode)
 	{
-		if(envelope->nReleaseNode != ENV_RELEASE_NODE_UNSET)
+		if(envelope->release_node != ENV_RELEASE_NODE_UNSET)
 		{
-			envelope->nReleaseNode = ENV_RELEASE_NODE_UNSET;
+			envelope->release_node = ENV_RELEASE_NODE_UNSET;
 			return true;
 		}
 		return false;
 	}
 
-	if (envelope->nReleaseNode == nPoint)
+	if (envelope->release_node == nPoint)
 	{
-		envelope->nReleaseNode = ENV_RELEASE_NODE_UNSET;
+		envelope->release_node = ENV_RELEASE_NODE_UNSET;
 	} else
 	{
-		envelope->nReleaseNode = static_cast<BYTE>(nPoint);
+		envelope->release_node = static_cast<BYTE>(nPoint);
 	}
 	return true;
 }
@@ -519,20 +519,20 @@ bool CViewInstrument::EnvToggleReleaseNode(int nPoint)
 bool CViewInstrument::EnvSetFlag(const DWORD dwFlag, const bool bEnable) const
 //----------------------------------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return false;
 	if(bEnable)
 	{
-		if(!(envelope->dwFlags & dwFlag))
+		if(!(envelope->flags & dwFlag))
 		{
-			envelope->dwFlags |= dwFlag;
+			envelope->flags |= dwFlag;
 			return true;
 		}
 	} else
 	{	
-		if(envelope->dwFlags & dwFlag)
+		if(envelope->flags & dwFlag)
 		{
-			envelope->dwFlags &= ~dwFlag;
+			envelope->flags &= ~dwFlag;
 			return true;
 		}
 	}
@@ -540,29 +540,29 @@ bool CViewInstrument::EnvSetFlag(const DWORD dwFlag, const bool bEnable) const
 }
 
 
-bool CViewInstrument::EnvToggleEnv(modplug::mixer::INSTRUMENTENVELOPE *pEnv, CSoundFile *pSndFile, modplug::mixer::MODINSTRUMENT *pIns, bool bEnable, BYTE cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags)
+bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, BYTE cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
 	if(pEnv == nullptr) return false;
 
 	if (bEnable)
 	{
-		pEnv->dwFlags |= (ENV_ENABLED|dwExtraFlags);
-		if (!pEnv->nNodes)
+		pEnv->flags |= (ENV_ENABLED|dwExtraFlags);
+		if (!pEnv->num_nodes)
 		{
 			pEnv->Values[0] = pEnv->Values[1] = cDefaultValue;
 			pEnv->Ticks[0] = 0;
 			pEnv->Ticks[1] = 10;
-			pEnv->nNodes = 2;
+			pEnv->num_nodes = 2;
 			InvalidateRect(NULL, FALSE);
 		}
 	} else
 	{
-		pEnv->dwFlags &= ~(ENV_ENABLED|dwExtraFlags);
+		pEnv->flags &= ~(ENV_ENABLED|dwExtraFlags);
 		for(CHANNELINDEX nChn = 0; nChn < MAX_CHANNELS; nChn++)
 		{
-			if(pSndFile->Chn[nChn].pModInstrument == pIns)
-				pSndFile->Chn[nChn].dwFlags &= ~dwChanFlag;
+			if(pSndFile->Chn[nChn].instrument == pIns)
+				pSndFile->Chn[nChn].flags &= ~dwChanFlag;
 		}
 	}
 	return true;
@@ -572,46 +572,46 @@ bool CViewInstrument::EnvToggleEnv(modplug::mixer::INSTRUMENTENVELOPE *pEnv, CSo
 bool CViewInstrument::EnvSetVolEnv(bool bEnable)
 //----------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
 	if(pIns == nullptr) return false;
 	CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
-	return EnvToggleEnv(&pIns->VolEnv, pSndFile, pIns, bEnable, 64, CHN_VOLENV);
+	return EnvToggleEnv(&pIns->volume_envelope, pSndFile, pIns, bEnable, 64, CHN_VOLENV);
 }
 
 
 bool CViewInstrument::EnvSetPanEnv(bool bEnable)
 //----------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
 	if(pIns == nullptr) return false;
 	CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
-	return EnvToggleEnv(&pIns->PanEnv, pSndFile, pIns, bEnable, 32, CHN_PANENV);
+	return EnvToggleEnv(&pIns->panning_envelope, pSndFile, pIns, bEnable, 32, CHN_PANENV);
 }
 
 
 bool CViewInstrument::EnvSetPitchEnv(bool bEnable)
 //------------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
 	if(pIns == nullptr) return false;
 	CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
-	pIns->PitchEnv.dwFlags &= ~ENV_FILTER;
-	return EnvToggleEnv(&pIns->PitchEnv, pSndFile, pIns, bEnable, 32, CHN_PITCHENV);
+	pIns->pitch_envelope.flags &= ~ENV_FILTER;
+	return EnvToggleEnv(&pIns->pitch_envelope, pSndFile, pIns, bEnable, 32, CHN_PITCHENV);
 }
 
 
 bool CViewInstrument::EnvSetFilterEnv(bool bEnable)
 //-------------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
 	if(pIns == nullptr) return false;
 	CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
-	pIns->PitchEnv.dwFlags &= ~ENV_FILTER;
-	return EnvToggleEnv(&pIns->PitchEnv, pSndFile, pIns, bEnable, 64, CHN_PITCHENV, ENV_FILTER);
+	pIns->pitch_envelope.flags &= ~ENV_FILTER;
+	return EnvToggleEnv(&pIns->pitch_envelope, pSndFile, pIns, bEnable, 64, CHN_PITCHENV, ENV_FILTER);
 }
 
 
@@ -968,15 +968,15 @@ void CViewInstrument::OnDraw(CDC *pDC)
 BYTE CViewInstrument::EnvGetReleaseNode()
 //---------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return ENV_RELEASE_NODE_UNSET;
-	return envelope->nReleaseNode;
+	return envelope->release_node;
 }
 
 WORD CViewInstrument::EnvGetReleaseNodeValue()
 //--------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
 	return envelope->Values[EnvGetReleaseNode()];
 }
@@ -984,7 +984,7 @@ WORD CViewInstrument::EnvGetReleaseNodeValue()
 WORD CViewInstrument::EnvGetReleaseNodeTick()
 //-------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 	if(envelope == nullptr) return 0;
 	return envelope->Ticks[EnvGetReleaseNode()];
 }
@@ -996,32 +996,32 @@ bool CViewInstrument::EnvRemovePoint(UINT nPoint)
 	if ((pModDoc) && (nPoint <= EnvGetLastPoint()))
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[m_nInstrument];
+		modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
 		if (pIns)
 		{
-			modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
-			if(envelope == nullptr || envelope->nNodes == 0) return false;
+			modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
+			if(envelope == nullptr || envelope->num_nodes == 0) return false;
 
-			envelope->nNodes--;
-			for (UINT i = nPoint; i < envelope->nNodes; i++)
+			envelope->num_nodes--;
+			for (UINT i = nPoint; i < envelope->num_nodes; i++)
 			{
 				envelope->Ticks[i] = envelope->Ticks[i + 1];
 				envelope->Values[i] = envelope->Values[i + 1];
 			}
-			if (nPoint >= envelope->nNodes) nPoint = envelope->nNodes - 1;
-			if (envelope->nLoopStart > nPoint) envelope->nLoopStart--;
-			if (envelope->nLoopEnd > nPoint) envelope->nLoopEnd--;
-			if (envelope->nSustainStart > nPoint) envelope->nSustainStart--;
-			if (envelope->nSustainEnd > nPoint) envelope->nSustainEnd--;
-			if (envelope->nReleaseNode>nPoint && envelope->nReleaseNode != ENV_RELEASE_NODE_UNSET) envelope->nReleaseNode--;
+			if (nPoint >= envelope->num_nodes) nPoint = envelope->num_nodes - 1;
+			if (envelope->loop_start > nPoint) envelope->loop_start--;
+			if (envelope->loop_end > nPoint) envelope->loop_end--;
+			if (envelope->sustain_start > nPoint) envelope->sustain_start--;
+			if (envelope->sustain_end > nPoint) envelope->sustain_end--;
+			if (envelope->release_node>nPoint && envelope->release_node != ENV_RELEASE_NODE_UNSET) envelope->release_node--;
 			envelope->Ticks[0] = 0;
 
-			if(envelope->nNodes == 1)
+			if(envelope->num_nodes == 1)
 			{
 				// if only one node is left, just disable the envelope completely
-				envelope->nNodes = envelope->nLoopStart = envelope->nLoopEnd = envelope->nSustainStart = envelope->nSustainEnd = 0;
-				envelope->dwFlags = 0;
-				envelope->nReleaseNode = ENV_RELEASE_NODE_UNSET;
+				envelope->num_nodes = envelope->loop_start = envelope->loop_end = envelope->sustain_start = envelope->sustain_end = 0;
+				envelope->flags = 0;
+				envelope->release_node = ENV_RELEASE_NODE_UNSET;
 			}
 
 			SetInstrumentModified();
@@ -1040,14 +1040,14 @@ UINT CViewInstrument::EnvInsertPoint(int nTick, int nValue)
 	if (pModDoc)
 	{
 		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-		modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[m_nInstrument];
+		modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
 		if (pIns)
 		{
 			if(nTick < 0) return 0;
 
 			nValue = CLAMP(nValue, 0, 64);
 
-			modplug::mixer::INSTRUMENTENVELOPE *envelope = GetEnvelopePtr();
+			modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
 			if(envelope == nullptr) return 0;
 			BYTE cDefaultValue;
 
@@ -1060,36 +1060,36 @@ UINT CViewInstrument::EnvInsertPoint(int nTick, int nValue)
 				cDefaultValue = 32;
 				break;
 			case ENV_PITCH:
-				cDefaultValue = (pIns->PitchEnv.dwFlags & ENV_FILTER) ? 64 : 32;
+				cDefaultValue = (pIns->pitch_envelope.flags & ENV_FILTER) ? 64 : 32;
 				break;
 			default:
 				return 0;
 			}
 
-			if (envelope->nNodes < pSndFile->GetModSpecifications().envelopePointsMax)
+			if (envelope->num_nodes < pSndFile->GetModSpecifications().envelopePointsMax)
 			{
-				if (!envelope->nNodes)
+				if (!envelope->num_nodes)
 				{
 					envelope->Ticks[0] = 0;
 					envelope->Values[0] = cDefaultValue;
-					envelope->nNodes = 1;
-					envelope->dwFlags |= ENV_ENABLED;
+					envelope->num_nodes = 1;
+					envelope->flags |= ENV_ENABLED;
 				}
 				UINT i = 0;
-				for (i = 0; i < envelope->nNodes; i++) if (nTick <= envelope->Ticks[i]) break;
-				for (UINT j = envelope->nNodes; j > i; j--)
+				for (i = 0; i < envelope->num_nodes; i++) if (nTick <= envelope->Ticks[i]) break;
+				for (UINT j = envelope->num_nodes; j > i; j--)
 				{
 					envelope->Ticks[j] = envelope->Ticks[j - 1];
 					envelope->Values[j] = envelope->Values[j - 1];
 				}
 				envelope->Ticks[i] = (WORD)nTick;
 				envelope->Values[i] = (BYTE)nValue;
-				envelope->nNodes++;
-				if (envelope->nLoopStart >= i) envelope->nLoopStart++;
-				if (envelope->nLoopEnd >= i) envelope->nLoopEnd++;
-				if (envelope->nSustainStart >= i) envelope->nSustainStart++;
-				if (envelope->nSustainEnd >= i) envelope->nSustainEnd++;
-				if (envelope->nReleaseNode >= i && envelope->nReleaseNode != ENV_RELEASE_NODE_UNSET) envelope->nReleaseNode++;
+				envelope->num_nodes++;
+				if (envelope->loop_start >= i) envelope->loop_start++;
+				if (envelope->loop_end >= i) envelope->loop_end++;
+				if (envelope->sustain_start >= i) envelope->sustain_start++;
+				if (envelope->sustain_end >= i) envelope->sustain_end++;
+				if (envelope->release_node >= i && envelope->release_node != ENV_RELEASE_NODE_UNSET) envelope->release_node++;
 
 				SetInstrumentModified();
 				pModDoc->UpdateAllViews(NULL, (m_nInstrument << HINT_SHIFT_INS) | HINT_ENVELOPE, NULL);
@@ -1405,8 +1405,8 @@ UINT CViewInstrument::OnNcHitTest(CPoint point)
 void CViewInstrument::OnMouseMove(UINT, CPoint pt)
 //------------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if (pIns == nullptr || pEnv == nullptr) return;
 
 	bool bSplitCursor = false;
@@ -1427,7 +1427,7 @@ void CViewInstrument::OnMouseMove(UINT, CPoint pt)
 	if (nTick <= EnvGetReleaseNodeTick() + 1 || EnvGetReleaseNode() == ENV_RELEASE_NODE_UNSET)
 	{
 		// ticks before release node (or no release node)
-		const int displayVal = (m_nEnv != ENV_VOLUME && !(m_nEnv == ENV_PITCH && (pIns->PitchEnv.dwFlags & ENV_FILTER))) ? nVal - 32 : nVal;
+		const int displayVal = (m_nEnv != ENV_VOLUME && !(m_nEnv == ENV_PITCH && (pIns->pitch_envelope.flags & ENV_FILTER))) ? nVal - 32 : nVal;
 		if(m_nEnv != ENV_PANNING)
 			wsprintf(s, "Tick %d, [%d]", nTick, displayVal);
 		else	// panning envelope: display right/center/left chars
@@ -1454,7 +1454,7 @@ void CViewInstrument::OnMouseMove(UINT, CPoint pt)
 			if(m_nDragItem > 1 && CMainFrame::GetMainFrame()->GetInputHandler()->CtrlPressed())
 			{
 				nRelTick = pEnv->Ticks[m_nDragItem - 1] - nRelTick;
-				for(size_t i = m_nDragItem; i < pEnv->nNodes; i++)
+				for(size_t i = m_nDragItem; i < pEnv->num_nodes; i++)
 				{
 					pEnv->Ticks[i] = (WORD)(max(0, (int)pEnv->Ticks[i] + nRelTick));
 				}
@@ -1908,14 +1908,14 @@ void CViewInstrument::PlayNote(UINT note)
 				MODCHANNEL *pChn = &(pSoundFile->Chn[m_nPlayingChannel]); //Get pointer to channel playing last note.
 				if (pChn->pHeader)	//is it valid?
 				{
-					DWORD tempflags = pChn->dwFlags;
-					pChn->dwFlags = 0;
+					DWORD tempflags = pChn->flags;
+					pChn->flags = 0;
 					pModDoc->GetSoundFile()->CheckNNA(m_nPlayingChannel, m_nInstrument, note, FALSE); //if so, apply NNA
-					pChn->dwFlags = tempflags;
+					pChn->flags = tempflags;
 				}
 			}
 		*/
-			modplug::mixer::MODINSTRUMENT *pIns = pModDoc->GetSoundFile()->Instruments[m_nInstrument];
+			modplug::tracker::modinstrument_t *pIns = pModDoc->GetSoundFile()->Instruments[m_nInstrument];
 			if ((!pIns) || (!pIns->Keyboard[note-1] && !pIns->nMixPlug)) return;
 			m_baPlayingNote[note] = true;											//rewbs.instViewNNA
 			m_nPlayingChannel = pModDoc->PlayNote(note, m_nInstrument, 0, FALSE); //rewbs.instViewNNA
@@ -2257,7 +2257,7 @@ void CViewInstrument::OnEnvelopeScalepoints()
 	   pSndFile->Instruments[m_nInstrument])
 	{
 		// "Center" y value of the envelope. For panning and pitch, this is 32, for volume and filter it is 0 (minimum).
-		int nOffset = ((m_nEnv != ENV_VOLUME) && ((GetEnvelopePtr()->dwFlags & ENV_FILTER) == 0)) ? 32 : 0;
+		int nOffset = ((m_nEnv != ENV_VOLUME) && ((GetEnvelopePtr()->flags & ENV_FILTER) == 0)) ? 32 : 0;
 
 		CScaleEnvPointsDlg dlg(this, GetEnvelopePtr(), nOffset);
 		if(dlg.DoModal())
@@ -2288,10 +2288,10 @@ void CViewInstrument::EnvSetZoom(float fNewZoom)
 void CViewInstrument::EnvKbdSelectPrevPoint()
 //-------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr) return;
-	if(m_nDragItem <= 1 || m_nDragItem > pEnv->nNodes)
-		m_nDragItem = pEnv->nNodes;
+	if(m_nDragItem <= 1 || m_nDragItem > pEnv->num_nodes)
+		m_nDragItem = pEnv->num_nodes;
 	else
 		m_nDragItem--;
 	InvalidateRect(NULL, FALSE);
@@ -2301,9 +2301,9 @@ void CViewInstrument::EnvKbdSelectPrevPoint()
 void CViewInstrument::EnvKbdSelectNextPoint()
 //-------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr) return;
-	if(m_nDragItem >= pEnv->nNodes)
+	if(m_nDragItem >= pEnv->num_nodes)
 		m_nDragItem = 1;
 	else
 		m_nDragItem++;
@@ -2314,7 +2314,7 @@ void CViewInstrument::EnvKbdSelectNextPoint()
 void CViewInstrument::EnvKbdMovePointLeft()
 //-----------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(m_nDragItem == 1 || !CanMovePoint(m_nDragItem - 1, -1))
 		return;
@@ -2328,7 +2328,7 @@ void CViewInstrument::EnvKbdMovePointLeft()
 void CViewInstrument::EnvKbdMovePointRight()
 //------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(m_nDragItem == 1 || !CanMovePoint(m_nDragItem - 1, 1))
 		return;
@@ -2342,7 +2342,7 @@ void CViewInstrument::EnvKbdMovePointRight()
 void CViewInstrument::EnvKbdMovePointUp(BYTE stepsize)
 //----------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(pEnv->Values[m_nDragItem - 1] <= ENVELOPE_MAX - stepsize)
 		pEnv->Values[m_nDragItem - 1] += stepsize;
@@ -2357,7 +2357,7 @@ void CViewInstrument::EnvKbdMovePointUp(BYTE stepsize)
 void CViewInstrument::EnvKbdMovePointDown(BYTE stepsize)
 //------------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(pEnv->Values[m_nDragItem - 1] >= ENVELOPE_MIN + stepsize)
 		pEnv->Values[m_nDragItem - 1] -= stepsize;
@@ -2371,13 +2371,13 @@ void CViewInstrument::EnvKbdMovePointDown(BYTE stepsize)
 void CViewInstrument::EnvKbdInsertPoint()
 //---------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr) return;
-	if(!IsDragItemEnvPoint()) m_nDragItem = pEnv->nNodes;
-	WORD newTick = pEnv->Ticks[pEnv->nNodes - 1] + 4;	// if last point is selected: add point after last point
-	BYTE newVal = pEnv->Values[pEnv->nNodes - 1];
+	if(!IsDragItemEnvPoint()) m_nDragItem = pEnv->num_nodes;
+	WORD newTick = pEnv->Ticks[pEnv->num_nodes - 1] + 4;	// if last point is selected: add point after last point
+	BYTE newVal = pEnv->Values[pEnv->num_nodes - 1];
 	// if some other point is selected: interpolate between this and next point (if there's room between them)
-	if(m_nDragItem < pEnv->nNodes && (pEnv->Ticks[m_nDragItem] - pEnv->Ticks[m_nDragItem - 1] > 1))
+	if(m_nDragItem < pEnv->num_nodes && (pEnv->Ticks[m_nDragItem] - pEnv->Ticks[m_nDragItem - 1] > 1))
 	{
 		newTick = (pEnv->Ticks[m_nDragItem - 1] + pEnv->Ticks[m_nDragItem]) / 2;
 		newVal = (pEnv->Values[m_nDragItem - 1] + pEnv->Values[m_nDragItem]) / 2;
@@ -2391,9 +2391,9 @@ void CViewInstrument::EnvKbdInsertPoint()
 void CViewInstrument::EnvKbdRemovePoint()
 //---------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
-	if(pEnv == nullptr || !IsDragItemEnvPoint() || pEnv->nNodes == 0) return;
-	if(m_nDragItem > pEnv->nNodes) m_nDragItem = pEnv->nNodes;
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
+	if(pEnv == nullptr || !IsDragItemEnvPoint() || pEnv->num_nodes == 0) return;
+	if(m_nDragItem > pEnv->num_nodes) m_nDragItem = pEnv->num_nodes;
 	EnvRemovePoint(m_nDragItem - 1);
 }
 
@@ -2401,7 +2401,7 @@ void CViewInstrument::EnvKbdRemovePoint()
 void CViewInstrument::EnvKbdSetLoopStart()
 //----------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(!EnvGetLoop())
 		EnvSetLoopStart(0);
@@ -2413,7 +2413,7 @@ void CViewInstrument::EnvKbdSetLoopStart()
 void CViewInstrument::EnvKbdSetLoopEnd()
 //--------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(!EnvGetLoop())
 	{
@@ -2428,7 +2428,7 @@ void CViewInstrument::EnvKbdSetLoopEnd()
 void CViewInstrument::EnvKbdSetSustainStart()
 //-------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(!EnvGetSustain())
 		EnvSetSustain(true);
@@ -2440,7 +2440,7 @@ void CViewInstrument::EnvKbdSetSustainStart()
 void CViewInstrument::EnvKbdSetSustainEnd()
 //-----------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(!EnvGetSustain())
 	{
@@ -2455,7 +2455,7 @@ void CViewInstrument::EnvKbdSetSustainEnd()
 void CViewInstrument::EnvKbdToggleReleaseNode()
 //---------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
 	if(EnvToggleReleaseNode(m_nDragItem - 1))
 	{
@@ -2467,7 +2467,7 @@ void CViewInstrument::EnvKbdToggleReleaseNode()
 
 
 // Get a pointer to the currently active instrument.
-modplug::mixer::MODINSTRUMENT *CViewInstrument::GetInstrumentPtr() const
+modplug::tracker::modinstrument_t *CViewInstrument::GetInstrumentPtr() const
 //------------------------------------------------------
 {
 	CModDoc *pModDoc = GetDocument();
@@ -2479,26 +2479,26 @@ modplug::mixer::MODINSTRUMENT *CViewInstrument::GetInstrumentPtr() const
 
 // Get a pointer to the currently selected envelope.
 // This function also implicitely validates the moddoc and soundfile pointers.
-modplug::mixer::INSTRUMENTENVELOPE *CViewInstrument::GetEnvelopePtr() const
+modplug::tracker::modenvelope_t *CViewInstrument::GetEnvelopePtr() const
 //---------------------------------------------------------
 {
 	// First do some standard checks...
-	modplug::mixer::MODINSTRUMENT *pIns = GetInstrumentPtr();
+	modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
 	if(pIns == nullptr) return nullptr;
 			
 	// Now for the real thing.
-	modplug::mixer::INSTRUMENTENVELOPE *envelope = nullptr;
+	modplug::tracker::modenvelope_t *envelope = nullptr;
 
 	switch(m_nEnv)
 	{
 	case ENV_VOLUME:
-		envelope = &pIns->VolEnv;
+		envelope = &pIns->volume_envelope;
 		break;
 	case ENV_PANNING:
-		envelope = &pIns->PanEnv;
+		envelope = &pIns->panning_envelope;
 		break;
 	case ENV_PITCH:
-		envelope = &pIns->PitchEnv;
+		envelope = &pIns->pitch_envelope;
 		break;
 	}
 
@@ -2509,7 +2509,7 @@ modplug::mixer::INSTRUMENTENVELOPE *CViewInstrument::GetEnvelopePtr() const
 bool CViewInstrument::CanMovePoint(UINT envPoint, int step)
 //---------------------------------------------------------
 {
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = GetEnvelopePtr();
+	modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
 	if(pEnv == nullptr) return false;
 	
 	// Can't move first point
@@ -2523,12 +2523,12 @@ bool CViewInstrument::CanMovePoint(UINT envPoint, int step)
 		return false;
 	}
 	// Can't move right of next point
-	if((step > 0) && (envPoint < pEnv->nNodes - 1) && (pEnv->Ticks[envPoint + 1] - pEnv->Ticks[envPoint] >= step + GetDocument()->GetSoundFile()->IsCompatibleMode(TRK_IMPULSETRACKER|TRK_FASTTRACKER2) ? 0 : 1))
+	if((step > 0) && (envPoint < pEnv->num_nodes - 1) && (pEnv->Ticks[envPoint + 1] - pEnv->Ticks[envPoint] >= step + GetDocument()->GetSoundFile()->IsCompatibleMode(TRK_IMPULSETRACKER|TRK_FASTTRACKER2) ? 0 : 1))
 	{
 		return false;
 	}
 	// Limit envelope length
-	if((envPoint == pEnv->nNodes - 1) && pEnv->Ticks[envPoint] + step > ENVELOPE_MAX_LENGTH)
+	if((envPoint == pEnv->num_nodes - 1) && pEnv->Ticks[envPoint] + step > ENVELOPE_MAX_LENGTH)
 	{
 		return false;
 	}

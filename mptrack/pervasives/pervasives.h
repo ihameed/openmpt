@@ -29,6 +29,8 @@ DAMAGE.
 #include <cstdarg>
 #include <cstdint>
 
+#include <string>
+
 namespace modplug {
 namespace pervasives {
 
@@ -38,6 +40,9 @@ typedef int32_t int24_t;
 
 void vdebug_log(const char *, va_list);
 void debug_log(const char *, ...); 
+
+void assign_without_padding(::std::string &, const char *, const size_t);
+void copy_with_padding(char *, const size_t, const ::std::string &);
 
 
 }

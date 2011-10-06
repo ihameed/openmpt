@@ -907,7 +907,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, DWORD lHint)
 		{
 			if (nSmp <= pSndFile->m_nSamples)
 			{
-				bool bSamplePresent = (pSndFile->Samples[nSmp].pSample) ? true : false;
+				bool bSamplePresent = (pSndFile->Samples[nSmp].sample_data) ? true : false;
 				int nImage = (bSamplePresent) ? IMAGE_SAMPLES : IMAGE_NOSAMPLE;
 				if(pInfo->bIsSamplePlaying[nSmp - 1] && bSamplePresent) nImage = IMAGE_SAMPLEACTIVE;
 				if(pInfo->pModDoc->IsSampleMuted(nSmp)) nImage = IMAGE_SAMPLEMUTE;
@@ -1561,7 +1561,7 @@ VOID CModTree::FillInstrumentLibrary()
 		SetItemImage(m_hInsLib, IMAGE_FOLDERSONG, IMAGE_FOLDERSONG);
 		for (UINT iIns=1; iIns<=m_SongFile.m_nInstruments; iIns++)
 		{
-			modplug::mixer::MODINSTRUMENT *pIns = m_SongFile.Instruments[iIns];
+			modplug::tracker::modinstrument_t *pIns = m_SongFile.Instruments[iIns];
 			if (pIns)
 			{
 				lstrcpyn(szPath, pIns->name, 32);
@@ -1572,9 +1572,9 @@ VOID CModTree::FillInstrumentLibrary()
 		}
 		for (UINT iSmp=1; iSmp<=m_SongFile.m_nSamples; iSmp++)
 		{
-			modplug::mixer::MODSAMPLE *psmp = &m_SongFile.Samples[iSmp];
+			modplug::tracker::modsample_t *psmp = &m_SongFile.Samples[iSmp];
 			lstrcpyn(szPath, m_SongFile.m_szNames[iSmp], 32);
-			if (psmp->pSample)
+			if (psmp->sample_data)
 			{
 				wsprintf(s, "%3d: %s", iSmp, szPath);
 				ModTreeBuildTVIParam(tvis, s, IMAGE_SAMPLES);
@@ -2170,13 +2170,13 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
 
 	for(CHANNELINDEX nChn = 0; nChn < MAX_CHANNELS; nChn++)
 	{
-		if(pSndFile->Chn[nChn].pCurrentSample != nullptr)
+		if(pSndFile->Chn[nChn].active_sample_data != nullptr)
 		{
 			if(bUpdateSamples)
 			{
 				for(SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
 				{
-					if(pSndFile->Chn[nChn].pModSample == &pSndFile->Samples[nSmp])
+					if(pSndFile->Chn[nChn].sample == &pSndFile->Samples[nSmp])
 					{
 						DocInfo[nDocNdx]->bIsSamplePlaying[nSmp - 1] = true;
 						break;
@@ -2187,7 +2187,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
 			{
 				for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
 				{
-					if(pSndFile->Chn[nChn].pModInstrument == pSndFile->Instruments[nIns])
+					if(pSndFile->Chn[nChn].instrument == pSndFile->Instruments[nIns])
 					{
 						DocInfo[nDocNdx]->bIsInstrPlaying[nIns - 1] = true;
 						break;

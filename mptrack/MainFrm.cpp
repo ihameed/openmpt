@@ -1694,13 +1694,13 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
                 UINT nSmp = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_CHANNELS; k++)
                 {
-                    modplug::mixer::MODCHANNEL *pChn = &m_pSndFile->Chn[k];
+                    modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
                     p->dwPos[k] = 0;
-                    if ((nSmp) && (nSmp <= m_pSndFile->m_nSamples) && (pChn->nLength)
-                     && (pChn->pSample) && (pChn->pSample == m_pSndFile->Samples[nSmp].pSample)
-                     && ((!(pChn->dwFlags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
+                    if ((nSmp) && (nSmp <= m_pSndFile->m_nSamples) && (pChn->length)
+                     && (pChn->sample_data) && (pChn->sample_data == m_pSndFile->Samples[nSmp].sample_data)
+                     && ((!(pChn->flags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
                     {
-                        p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->nPos);
+                        p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->sample_position);
                     }
                 }
             } else
@@ -1709,22 +1709,22 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
                 UINT nIns = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_CHANNELS; k++)
                 {
-                    modplug::mixer::MODCHANNEL *pChn = &m_pSndFile->Chn[k];
+                    modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
                     p->dwPos[k] = 0;
-                    if ((nIns) && (nIns <= m_pSndFile->m_nInstruments) && (pChn->nLength)
-                     && (pChn->pModInstrument) && (pChn->pModInstrument == m_pSndFile->Instruments[nIns])
-                     && ((!(pChn->dwFlags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
+                    if ((nIns) && (nIns <= m_pSndFile->m_nInstruments) && (pChn->length)
+                     && (pChn->instrument) && (pChn->instrument == m_pSndFile->Instruments[nIns])
+                     && ((!(pChn->flags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
                     {
                         if (m_dwNotifyType & MPTNOTIFY_PITCHENV)
                         {
-                            if (pChn->dwFlags & CHN_PITCHENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->PitchEnv.nEnvPosition);
+                            if (pChn->flags & CHN_PITCHENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->pitch_envelope.position);
                         } else
                         if (m_dwNotifyType & MPTNOTIFY_PANENV)
                         {
-                            if (pChn->dwFlags & CHN_PANENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->PanEnv.nEnvPosition);
+                            if (pChn->flags & CHN_PANENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->panning_envelope.position);
                         } else
                         {
-                            if (pChn->dwFlags & CHN_VOLENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->VolEnv.nEnvPosition);
+                            if (pChn->flags & CHN_VOLENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->volume_envelope.position);
                         }
                     }
                 }
@@ -1733,7 +1733,7 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
             {
                 for (UINT k=0; k<MAX_CHANNELS; k++)
                 {
-                    modplug::mixer::MODCHANNEL *pChn = &m_pSndFile->Chn[k];
+                    modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
                     UINT vul = pChn->nLeftVU;
                     UINT vur = pChn->nRightVU;
                     p->dwPos[k] = (vul << 8) | (vur);
@@ -2052,9 +2052,9 @@ BOOL CMainFrame::PauseMod(CModDoc *pModDoc)
         {
             for (UINT i=m_pSndFile->m_nChannels; i<MAX_CHANNELS; i++)
             {
-                if (!(m_pSndFile->Chn[i].nMasterChn))
+                if (!(m_pSndFile->Chn[i].parent_channel))
                 {
-                    m_pSndFile->Chn[i].nPos = m_pSndFile->Chn[i].nPosLo = m_pSndFile->Chn[i].nLength = 0;
+                    m_pSndFile->Chn[i].sample_position = m_pSndFile->Chn[i].fractional_sample_position = m_pSndFile->Chn[i].length = 0;
                 }
             }
         }
@@ -2160,7 +2160,7 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
     if (m_WaveFile.Patterns[0])
     {
         if (!nNote) nNote = NOTE_MIDDLEC;
-        MODCOMMAND *m = m_WaveFile.Patterns[0];
+        modplug::tracker::modcommand_t *m = m_WaveFile.Patterns[0];
         m[0].note = (BYTE)nNote;
         m[0].instr = 1;
         m[1].note = (BYTE)nNote;
@@ -2179,16 +2179,16 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
             }
             if (bOk)
             {
-                if ((m_WaveFile.m_nSamples > 1) || (m_WaveFile.Samples[1].uFlags & CHN_LOOP))
+                if ((m_WaveFile.m_nSamples > 1) || (m_WaveFile.Samples[1].flags & CHN_LOOP))
                 {
-                    MODCOMMAND *m = m_WaveFile.Patterns[0];
+                    modplug::tracker::modcommand_t *m = m_WaveFile.Patterns[0];
                     m[32*4].note = NOTE_KEYOFF;
                     m[32*4+1].note = NOTE_KEYOFF;
                     m[63*4].note = NOTE_NOTECUT;
                     m[63*4+1].note = NOTE_NOTECUT;
                 } else
                 {
-                    MODCOMMAND *m = m_WaveFile.Patterns[1];
+                    modplug::tracker::modcommand_t *m = m_WaveFile.Patterns[1];
                     if (m)
                     {
                         m[63*4].command = CMD_POSITIONJUMP;
@@ -2234,7 +2234,7 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSong, UINT nInstrument, UINT nSample
     if (m_WaveFile.Patterns[0])
     {
         if (!nNote) nNote = 5*12+1;
-        MODCOMMAND *m = m_WaveFile.Patterns[0];
+        modplug::tracker::modcommand_t *m = m_WaveFile.Patterns[0];
         m[0].note = (BYTE)nNote;
         m[0].instr = 1;
         m[1].note = (BYTE)nNote;

@@ -79,7 +79,7 @@ struct ModCommandPos
 // Find/Replace data
 struct FindReplaceStruct
 {
-	MODCOMMAND cmdFind, cmdReplace;			// Find/replace notes/instruments/effects
+	modplug::tracker::modcommand_t cmdFind, cmdReplace;			// Find/replace notes/instruments/effects
 	DWORD dwFindFlags, dwReplaceFlags;		// PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
 	CHANNELINDEX nFindMinChn, nFindMaxChn;	// Find in these channels (if PATSEARCH_CHANNEL is set)
 	signed char cInstrRelChange;			// relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
@@ -123,7 +123,7 @@ protected:
 	UINT m_nLastPlayedChannel; //rewbs.customkeys
 	bool m_bLastNoteEntryBlocked;
 
-	static MODCOMMAND m_cmdOld;				// Quick cursor copy/paste data
+	static modplug::tracker::modcommand_t m_cmdOld;				// Quick cursor copy/paste data
 	static FindReplaceStruct m_findReplace;	// Find/replace data
 
 // -> CODE#0012
@@ -204,7 +204,7 @@ public:
 	void DrawLetter(int x, int y, char letter, int sizex=10, int ofsx=0);
 	void DrawNote(int x, int y, UINT note, CTuning* pTuning = NULL);
 	void DrawInstrument(int x, int y, UINT instr);
-	void DrawVolumeCommand(int x, int y, const MODCOMMAND mc);
+	void DrawVolumeCommand(int x, int y, const modplug::tracker::modcommand_t mc);
 	void DrawChannelVUMeter(HDC hdc, int x, int y, UINT nChn);
 	void UpdateAllVUMeters(MPTNOTIFICATION *pnotify);
 	void DrawDragSel(HDC hdc);
@@ -345,7 +345,7 @@ public:
 private:
 
 	void SetSplitKeyboardSettings();
-	bool HandleSplit(MODCOMMAND* p, int note);
+	bool HandleSplit(modplug::tracker::modcommand_t* p, int note);
 	bool BuildChannelControlCtxMenu(HMENU hMenu);
 	bool BuildPluginCtxMenu(HMENU hMenu, UINT nChn, CSoundFile* pSndFile);
 	bool BuildRecordCtxMenu(HMENU hMenu, UINT nChn, CModDoc* pModDoc);
@@ -396,7 +396,7 @@ private:
 
 	// Returns pointer to modcommand at given position. If the position is not valid, returns pointer
 	// to a dummy command.
-	MODCOMMAND* GetModCommand(CSoundFile& rSf, const ModCommandPos& pos);
+	modplug::tracker::modcommand_t* GetModCommand(CSoundFile& rSf, const ModCommandPos& pos);
 
 	bool IsEditingEnabled() const {return ((m_dwStatus&PATSTATUS_RECORD) != 0);}
 

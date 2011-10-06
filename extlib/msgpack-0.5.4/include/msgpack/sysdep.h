@@ -19,6 +19,8 @@
 #define MSGPACK_SYSDEP_H__
 
 
+//XXXih: vs2010!
+/*
 #ifdef _MSC_VER
 typedef __int8 int8_t;
 typedef unsigned __int8 uint8_t;
@@ -29,10 +31,13 @@ typedef unsigned __int32 uint32_t;
 typedef __int64 int64_t;
 typedef unsigned __int64 uint64_t;
 #else
+*/
 #include <stddef.h>
 #include <stdint.h>
+/*
 #include <stdbool.h>
 #endif
+*/
 
 
 #ifdef _WIN32

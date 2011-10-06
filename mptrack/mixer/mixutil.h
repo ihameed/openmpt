@@ -6,7 +6,7 @@ rudely sepple-ized and jammed into openmpt by xaimus  : - [
 #pragma once
 
 #include <cstddef>
-#include "modchannel.h"
+#include "../tracker/tracker.h"
 
 
 namespace modplug {
@@ -15,7 +15,7 @@ namespace mixer {
 
 void init_mix_buffer(int *, size_t);
 void stereo_fill(int *, size_t, long *, long *);
-void end_channel_ofs(MODCHANNEL *, int *, size_t);
+void end_channel_ofs(modplug::tracker::modchannel_t *, int *, size_t);
 void interleave_front_rear(int *, int *, size_t);
 void mono_from_stereo(int *, size_t);
 

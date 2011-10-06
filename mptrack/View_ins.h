@@ -91,7 +91,7 @@ protected:
 	bool EnvToggleReleaseNode(int nPoint);
 
 	// Set envelope status
-	bool EnvToggleEnv(modplug::mixer::INSTRUMENTENVELOPE *pEnv, CSoundFile *pSndFile, modplug::mixer::MODINSTRUMENT *pIns, bool bEnable, BYTE cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags = 0);
+	bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, BYTE cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags = 0);
 	bool EnvSetVolEnv(bool bEnable);
 	bool EnvSetPanEnv(bool bEnable);
 	bool EnvSetPitchEnv(bool bEnable);
@@ -119,8 +119,8 @@ protected:
 	void UpdateScrollSize();
 	void SetInstrumentModified();
 	BOOL SetCurrentInstrument(INSTRUMENTINDEX nIns, enmEnvelopeTypes m_nEnv = ENV_VOLUME);
-	modplug::mixer::MODINSTRUMENT *GetInstrumentPtr() const;
-	modplug::mixer::INSTRUMENTENVELOPE *GetEnvelopePtr() const;
+	modplug::tracker::modinstrument_t *GetInstrumentPtr() const;
+	modplug::tracker::modenvelope_t *GetEnvelopePtr() const;
 	UINT EnvInsertPoint(int nTick, int nValue);
 	bool EnvRemovePoint(UINT nPoint);
 	int TickToScreen(int nTick) const;

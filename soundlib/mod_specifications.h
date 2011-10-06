@@ -2,7 +2,7 @@
 #define MOD_SPECIFICATIONS_H
 
 #include "Snd_defs.h"
-#include "modcommand.h"						// 
+#include "../mptrack/tracker/tracker.h"
 #include "../mptrack/SoundFilePlayConfig.h" // mixlevel constants.
 
 
@@ -11,17 +11,17 @@ struct CModSpecifications
 //=======================
 {
 	// Return true if format supports given note.
-	bool HasNote(MODCOMMAND::NOTE note) const;
-	bool HasVolCommand(MODCOMMAND::VOLCMD volcmd) const;
-	bool HasCommand(MODCOMMAND::COMMAND cmd) const;
+	bool HasNote(modplug::tracker::modcommand_t::NOTE note) const;
+	bool HasVolCommand(modplug::tracker::modcommand_t::VOLCMD volcmd) const;
+	bool HasCommand(modplug::tracker::modcommand_t::COMMAND cmd) const;
 	// Return corresponding effect letter for this format
-	char GetEffectLetter(MODCOMMAND::COMMAND cmd) const;
-	char GetVolEffectLetter(MODCOMMAND::VOLCMD cmd) const;
+	char GetEffectLetter(modplug::tracker::modcommand_t::COMMAND cmd) const;
+	char GetVolEffectLetter(modplug::tracker::modcommand_t::VOLCMD cmd) const;
 
 	// NOTE: If changing order, update all initializations below.
 	char fileExtension[6];	  // File extension without dot.
-	MODCOMMAND::NOTE noteMin; // Minimum note index (index starts from 1)
-	MODCOMMAND::NOTE noteMax; // Maximum note index (index starts from 1)
+	modplug::tracker::modcommand_t::NOTE noteMin; // Minimum note index (index starts from 1)
+	modplug::tracker::modcommand_t::NOTE noteMax; // Maximum note index (index starts from 1)
 	bool hasNoteCut;		  // True if format has notecut.
 	bool hasNoteOff;		  // True if format has noteoff.
 	bool hasNoteFade;		  // True if format has notefade.

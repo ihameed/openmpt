@@ -30,7 +30,7 @@ namespace msgpack {
 inline float& operator>> (object o, float& v)
 {
 	if(o.type != type::DOUBLE) { throw type_error(); }
-	v = o.via.dec;
+	v = static_cast<float>(o.via.dec);
 	return v;
 }
 

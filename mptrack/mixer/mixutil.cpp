@@ -70,7 +70,7 @@ void stereo_fill(int *buffer, size_t samples, long *profs, long *plofs) {
     *plofs = lofs;
 }
 
-void end_channel_ofs(MODCHANNEL *channel, int *buffer, size_t samples) {
+void end_channel_ofs(modplug::tracker::modchannel_t *channel, int *buffer, size_t samples) {
     int rofs = channel->nROfs;
     int lofs = channel->nLOfs;
 

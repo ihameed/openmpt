@@ -54,7 +54,7 @@ typedef struct _AMFSAMPLE
 extern void Log(LPCSTR, ...);
 #endif
 
-void AMF_Unpack(MODCOMMAND *pPat, const BYTE *pTrack, UINT nRows, UINT nChannels)
+void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const BYTE *pTrack, UINT nRows, UINT nChannels)
 //-------------------------------------------------------------------------------
 {
     UINT lastinstr = 0;
@@ -67,7 +67,7 @@ void AMF_Unpack(MODCOMMAND *pPat, const BYTE *pTrack, UINT nRows, UINT nChannels
         UINT cmd = pTrack[1];
         UINT arg = pTrack[2];
         if (row >= nRows) break;
-        MODCOMMAND *m = pPat + row * nChannels;
+        modplug::tracker::modcommand_t *m = pPat + row * nChannels;
         if (cmd < 0x7F) // note+vol
         {
             m->note = cmd+1;
@@ -199,32 +199,32 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         dwMemPos = 294; // ???
         for (UINT iSmp=0; iSmp<numsamples; iSmp++)
         {
-            MODSAMPLE *psmp = &Samples[iSmp+1];
+            modsample_t *psmp = &Samples[iSmp+1];
             memcpy(m_szNames[iSmp + 1], lpStream+dwMemPos, 22);
             SpaceToNullStringFixed<22>(m_szNames[iSmp + 1]);
             psmp->nFineTune = MOD2XMFineTune(lpStream[dwMemPos+22]);
-            psmp->nVolume = lpStream[dwMemPos+23];
-            psmp->nGlobalVol = 64;
-            if (psmp->nVolume > 0x40) psmp->nVolume = 0x40;
-            psmp->nVolume <<= 2;
-            psmp->nLength = LittleEndian(*((LPDWORD)(lpStream+dwMemPos+25)));
-            psmp->nLoopStart = LittleEndian(*((LPDWORD)(lpStream+dwMemPos+29)));
-            psmp->nLoopEnd = psmp->nLoopStart + LittleEndian(*((LPDWORD)(lpStream+dwMemPos+33)));
-            if (psmp->nLoopEnd <= 2) psmp->nLoopEnd = 0;
-            if ((psmp->nLoopEnd > psmp->nLoopStart) && (psmp->nLoopEnd <= psmp->nLength))
+            psmp->default_volume = lpStream[dwMemPos+23];
+            psmp->global_volume = 64;
+            if (psmp->default_volume > 0x40) psmp->default_volume = 0x40;
+            psmp->default_volume <<= 2;
+            psmp->length = LittleEndian(*((LPDWORD)(lpStream+dwMemPos+25)));
+            psmp->loop_start = LittleEndian(*((LPDWORD)(lpStream+dwMemPos+29)));
+            psmp->loop_end = psmp->loop_start + LittleEndian(*((LPDWORD)(lpStream+dwMemPos+33)));
+            if (psmp->loop_end <= 2) psmp->loop_end = 0;
+            if ((psmp->loop_end > psmp->loop_start) && (psmp->loop_end <= psmp->length))
             {
-                psmp->uFlags = CHN_LOOP;
+                psmp->flags = CHN_LOOP;
             } else
             {
-                psmp->nLoopStart = psmp->nLoopEnd = 0;
+                psmp->loop_start = psmp->loop_end = 0;
             }
-            if ((psmp->nLength) && (iSmp>31)) m_nSamples = iSmp+1;
+            if ((psmp->length) && (iSmp>31)) m_nSamples = iSmp+1;
             dwMemPos += 37;
         }
         for (UINT iPat=0; iPat<numpats; iPat++)
         {
             Patterns.Insert(iPat, 64);
-            MODCOMMAND* p = Patterns[iPat];
+            modplug::tracker::modcommand_t* p = Patterns[iPat];
             if (!p) break;
             const UCHAR *pin = lpStream + dwMemPos;
             for (UINT i=0; i<8*64; i++)
@@ -253,8 +253,8 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         // Read samples
         for (UINT iData=0; iData<m_nSamples; iData++)
         {
-            MODSAMPLE *psmp = &Samples[iData+1];
-            if (psmp->nLength)
+            modsample_t *psmp = &Samples[iData+1];
+            if (psmp->length)
             {
                 if(dwMemPos > dwMemLength) return false;
                 dwMemPos += ReadSample(psmp, RS_PCM8S, (LPCSTR)(lpStream+dwMemPos), dwMemLength - dwMemPos);
@@ -273,8 +273,9 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
      || (!pfh->numsamples) || (pfh->numsamples > MAX_SAMPLES)
      || (pfh->numchannels < 1) || (pfh->numchannels > 32))
         return false;
-    memcpy(m_szNames[0], pfh->title, 31);
-    SpaceToNullStringFixed<31>(m_szNames[0]);
+
+    assign_without_padding(this->song_name, pfh->title, 31);
+
     dwMemPos = sizeof(AMFFILEHEADER);
     m_nType = MOD_TYPE_AMF;
     m_nChannels = pfh->numchannels;
@@ -329,27 +330,27 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
     UINT maxsampleseekpos = 0;
     for (UINT iIns=0; iIns<m_nSamples; iIns++)
     {
-        MODSAMPLE *pSmp = &Samples[iIns+1];
+        modsample_t *pSmp = &Samples[iIns+1];
         AMFSAMPLE *psh = (AMFSAMPLE *)(lpStream + dwMemPos);
 
         dwMemPos += sizeof(AMFSAMPLE);
         memcpy(m_szNames[iIns+1], psh->samplename, 31);
-        memcpy(pSmp->filename, psh->filename, 13);
+        memcpy(pSmp->legacy_filename, psh->filename, 13);
         SpaceToNullStringFixed<31>(m_szNames[iIns + 1]);
-        SpaceToNullStringFixed<13>(pSmp->filename);
-        pSmp->nLength = LittleEndian(psh->length);
-        pSmp->nC5Speed = LittleEndianW(psh->c2spd);
-        pSmp->nGlobalVol = 64;
-        pSmp->nVolume = psh->volume * 4;
+        SpaceToNullStringFixed<13>(pSmp->legacy_filename);
+        pSmp->length = LittleEndian(psh->length);
+        pSmp->c5_samplerate = LittleEndianW(psh->c2spd);
+        pSmp->global_volume = 64;
+        pSmp->default_volume = psh->volume * 4;
         if (pfh->version >= 11)
         {
-            pSmp->nLoopStart = LittleEndian(*(DWORD *)(lpStream+dwMemPos));
-            pSmp->nLoopEnd = LittleEndian(*(DWORD *)(lpStream+dwMemPos+4));
+            pSmp->loop_start = LittleEndian(*(DWORD *)(lpStream+dwMemPos));
+            pSmp->loop_end = LittleEndian(*(DWORD *)(lpStream+dwMemPos+4));
             dwMemPos += 8;
         } else
         {
-            pSmp->nLoopStart = LittleEndianW(*(WORD *)(lpStream+dwMemPos));
-            pSmp->nLoopEnd = pSmp->nLength;
+            pSmp->loop_start = LittleEndianW(*(WORD *)(lpStream+dwMemPos));
+            pSmp->loop_end = pSmp->length;
             dwMemPos += 2;
         }
         sampleseekpos[iIns] = 0;
@@ -358,8 +359,8 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
             sampleseekpos[iIns] = LittleEndian(psh->offset);
             if (LittleEndian(psh->offset) > maxsampleseekpos) 
                 maxsampleseekpos = LittleEndian(psh->offset);
-            if ((pSmp->nLoopEnd > pSmp->nLoopStart + 2)
-             && (pSmp->nLoopEnd <= pSmp->nLength)) pSmp->uFlags |= CHN_LOOP;
+            if ((pSmp->loop_end > pSmp->loop_start + 2)
+             && (pSmp->loop_end <= pSmp->length)) pSmp->flags |= CHN_LOOP;
         }
     }
     // Read Track Mapping Table
@@ -414,7 +415,7 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         if (dwMemPos >= dwMemLength) break;
         for (UINT iSmp=0; iSmp<m_nSamples; iSmp++) if (iSeek == sampleseekpos[iSmp])
         {
-            MODSAMPLE *pSmp = &Samples[iSmp+1];
+            modsample_t *pSmp = &Samples[iSmp+1];
             dwMemPos += ReadSample(pSmp, RS_PCM8U, (LPCSTR)(lpStream+dwMemPos), dwMemLength-dwMemPos);
             break;
         }

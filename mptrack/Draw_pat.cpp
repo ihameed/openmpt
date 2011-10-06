@@ -398,14 +398,14 @@ void CViewPattern::DrawInstrument(int x, int y, UINT instr)
 }
 
 
-void CViewPattern::DrawVolumeCommand(int x, int y, const MODCOMMAND mc)
+void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modcommand_t mc)
 //---------------------------------------------------------------------
 {
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
 
     if(mc.IsPcNote())
     {	//If note is parameter control note, drawing volume command differently.
-        const int val = min(MODCOMMAND::maxColumnValue, mc.GetValueVolCol());
+        const int val = min(modplug::tracker::modcommand_t::maxColumnValue, mc.GetValueVolCol());
 
         m_Dib.TextBlt(x, y, 1, COLUMN_HEIGHT, pfnt->nClrX, pfnt->nClrY);
         m_Dib.TextBlt(x + 1, y, pfnt->nVolCmdWidth, COLUMN_HEIGHT,
@@ -700,7 +700,7 @@ void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern,
 {
     BYTE bColSel[MAX_BASECHANNELS];
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
-    MODCOMMAND m0, *pPattern = pSndFile->Patterns[nPattern];
+    modplug::tracker::modcommand_t m0, *pPattern = pSndFile->Patterns[nPattern];
     CHAR s[256];
     CRect rect;
     int xpaint, ypaint = *pypaint;
@@ -825,14 +825,14 @@ void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern,
         do
         {
             DWORD dwSpeedUpMask;
-            MODCOMMAND *m;
+            modplug::tracker::modcommand_t *m;
             int x, bk_col, tx_col, col_sel, fx_col;
 
             m = (pPattern) ? &pPattern[row*ncols+col] : &m0;
             dwSpeedUpMask = 0;
             if ((bSpeedUp) && (bColSel[col] & 0x40) && (pPattern) && (row))
             {
-                MODCOMMAND *mold = m - ncols;
+                modplug::tracker::modcommand_t *mold = m - ncols;
                 if (m->note == mold->note) dwSpeedUpMask |= 0x01;
                 if ((m->instr == mold->instr) || (m_nDetailLevel < 1)) dwSpeedUpMask |= 0x02;
                 if ( m->IsPcNote() || mold->IsPcNote() )
@@ -944,7 +944,7 @@ void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern,
             {
                 const bool isPCnote = m->IsPcNote();
                 uint16 val = m->GetValueEffectCol();
-                if(val > MODCOMMAND::maxColumnValue) val = MODCOMMAND::maxColumnValue;
+                if(val > modplug::tracker::modcommand_t::maxColumnValue) val = modplug::tracker::modcommand_t::maxColumnValue;
                 fx_col = row_col;
                 if (!isPCnote && (m->command) && (m->command < MAX_EFFECTS) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
                 {
@@ -1464,7 +1464,7 @@ void CViewPattern::UpdateIndicator()
              && (m_dwBeginSel == m_dwEndSel) && (pSndFile->Patterns[m_nPattern])
              && (m_nRow < pSndFile->Patterns[m_nPattern].GetNumRows()) && (nChn < pSndFile->m_nChannels))
             {
-                MODCOMMAND *m = &pSndFile->Patterns[m_nPattern][m_nRow*pSndFile->m_nChannels+nChn];
+                modplug::tracker::modcommand_t *m = &pSndFile->Patterns[m_nPattern][m_nRow*pSndFile->m_nChannels+nChn];
 
                 switch (GetColTypeFromCursor(m_dwCursor))
                 {
@@ -1493,7 +1493,7 @@ void CViewPattern::UpdateIndicator()
                             {
                                 if ((m->instr <= pSndFile->GetNumInstruments()) && (pSndFile->Instruments[m->instr]))
                                 {
-                                    modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[m->instr];
+                                    modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m->instr];
                                     memcpy(sztmp, pIns->name, 32);
                                     sztmp[32] = 0;
                                     if ((m->note) && (m->note <= NOTE_MAX))
@@ -1582,7 +1582,7 @@ void CViewPattern::UpdateXInfoText()
                         (pSndFile->Chn[nChn].nFilterMode == FLTMODE_HIGHPASS) ? "-Hi" : "",
                         pSndFile->Chn[nChn].nResonance,
                         pSndFile->Chn[nChn].nPan,
-                        (pSndFile->Chn[nChn].dwFlags & CHN_SURROUND) ? "-S" : "");
+                        (pSndFile->Chn[nChn].flags & CHN_SURROUND) ? "-S" : "");
 
         pMainFrm->SetXInfoText(xtraInfo);
     }

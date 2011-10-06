@@ -13,7 +13,7 @@ extern BYTE ImpulseTrackerPortaVolCmd[16];
 
 
 // Convert an Exx command (MOD) to Sxx command (S3M)
-void CSoundFile::MODExx2S3MSxx(MODCOMMAND *m)
+void CSoundFile::MODExx2S3MSxx(modplug::tracker::modcommand_t *m)
 //-------------------------------------------
 {
 	if(m->command != CMD_MODCMDEX) return;
@@ -38,7 +38,7 @@ void CSoundFile::MODExx2S3MSxx(MODCOMMAND *m)
 
 
 // Convert an Sxx command (S3M) to Exx command (MOD)
-void CSoundFile::S3MSxx2MODExx(MODCOMMAND *m)
+void CSoundFile::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
 //-------------------------------------------
 {
 	if(m->command != CMD_S3MCMDEX) return;
@@ -61,7 +61,7 @@ void CSoundFile::S3MSxx2MODExx(MODCOMMAND *m)
 
 
 // Convert a mod command from one format to another. 
-void CSoundFile::ConvertCommand(MODCOMMAND *m, MODTYPE nOldType, MODTYPE nNewType)
+void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType)
 //--------------------------------------------------------------------------------
 {
 	// helper variables
@@ -106,7 +106,7 @@ void CSoundFile::ConvertCommand(MODCOMMAND *m, MODTYPE nOldType, MODTYPE nNewTyp
 	{
 		if(m->IsPcNote())
 		{
-			MODCOMMAND::COMMAND newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
+			modplug::tracker::modcommand_t::COMMAND newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
 			if(!GetModSpecifications(nNewType).HasCommand(newcommand))
 			{
 				newcommand = CMD_MIDI;	// assuming that this was CMD_SMOOTHMIDI
@@ -116,7 +116,7 @@ void CSoundFile::ConvertCommand(MODCOMMAND *m, MODTYPE nOldType, MODTYPE nNewTyp
 				newcommand = CMD_NONE;
 			}
 
-			m->param = (BYTE)(min(MODCOMMAND::maxColumnValue, m->GetValueEffectCol()) * 0x7F / MODCOMMAND::maxColumnValue);
+			m->param = (BYTE)(min(modplug::tracker::modcommand_t::maxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modcommand_t::maxColumnValue);
 			m->command = newcommand; // might be removed later
 			m->volcmd = VOLCMD_NONE;
 			m->note = NOTE_NONE;
@@ -619,7 +619,7 @@ void CSoundFile::ConvertCommand(MODCOMMAND *m, MODTYPE nOldType, MODTYPE nNewTyp
 
 // "importance" of every FX command. Table is used for importing from formats with multiple effect colums
 // and is approximately the same as in SchismTracker.
-uint16 CSoundFile::GetEffectWeight(MODCOMMAND::COMMAND cmd)
+uint16 CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd)
 //---------------------------------------------------------
 {
 	switch(cmd)
@@ -688,7 +688,7 @@ bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, BYTE nEffect, 
 	}
 
 	CHANNELINDEX nScanChnMin = nChn, nScanChnMax = nChn;
-	MODCOMMAND *p = Patterns[nPat], *m;
+	modplug::tracker::modcommand_t *p = Patterns[nPat], *m;
 
 	// Scan all channels
 	if(nChn == CHANNELINDEX_INVALID)

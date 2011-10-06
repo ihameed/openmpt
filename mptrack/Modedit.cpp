@@ -174,15 +174,15 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 				first = false;
 			}
 
-			MODCOMMAND *p = m_SndFile.Patterns[nPat];
-			MODCOMMAND *newp = CPattern::AllocatePattern(m_SndFile.Patterns[nPat].GetNumRows(), nRemainingChannels);
+			modplug::tracker::modcommand_t *p = m_SndFile.Patterns[nPat];
+			modplug::tracker::modcommand_t *newp = CPattern::AllocatePattern(m_SndFile.Patterns[nPat].GetNumRows(), nRemainingChannels);
 			if(!newp)
 			{
 				END_CRITICAL();
 				CMainFrame::GetMainFrame()->MessageBox("ERROR: Pattern allocation failed in ReArrangechannels(...)" , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
 				return CHANNELINDEX_INVALID;
 			}
-			MODCOMMAND *tmpsrc = p, *tmpdest = newp;
+			modplug::tracker::modcommand_t *tmpsrc = p, *tmpdest = newp;
 			for(ROWINDEX nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
 			{
 				for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
@@ -190,7 +190,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 					if(newOrder[nChn] < GetNumChannels()) //Case: getting old channel to the new channel order.
 						*tmpdest = tmpsrc[nRow * GetNumChannels() + newOrder[nChn]];
 					else //Case: figure newOrder[k] is not the index of any current channel, so adding a new channel.
-						*tmpdest = MODCOMMAND::Empty();
+						*tmpdest = modplug::tracker::modcommand_t::Empty();
 
 				}
 			}
@@ -199,8 +199,8 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 		}
 	}
 
-	modplug::mixer::MODCHANNEL chns[MAX_BASECHANNELS];		
-	modplug::mixer::MODCHANNELSETTINGS settings[MAX_BASECHANNELS];
+	modplug::tracker::modchannel_t chns[MAX_BASECHANNELS];		
+	modplug::tracker::MODCHANNELSETTINGS settings[MAX_BASECHANNELS];
 	vector<UINT> recordStates(GetNumChannels(), 0);
 	vector<bool> chnMutePendings(GetNumChannels(), false);
 
@@ -238,7 +238,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 	for(CHANNELINDEX nChn = GetNumChannels(); nChn < MAX_BASECHANNELS; nChn++)
 	{
 		m_SndFile.InitChannel(nChn);
-		m_SndFile.Chn[nChn].dwFlags |= CHN_MUTE;
+		m_SndFile.Chn[nChn].flags |= CHN_MUTE;
 	}
 
 	END_CRITICAL();
@@ -302,12 +302,12 @@ struct ConvertInstrumentsToSamplesInPatterns
 		this->pSndFile = pSndFile;
 	}
 
-	void operator()(MODCOMMAND& m)
+	void operator()(modplug::tracker::modcommand_t& m)
 	{
 		if(m.instr)
 		{
-			MODCOMMAND::INSTR instr = m.instr, newinstr = 0;
-			MODCOMMAND::NOTE note = m.note, newnote = note;
+			modplug::tracker::modcommand_t::INSTR instr = m.instr, newinstr = 0;
+			modplug::tracker::modcommand_t::NOTE note = m.note, newnote = note;
 			if((note >= NOTE_MIN) && (note <= NOTE_MAX))
 				note--;
 			else
@@ -315,7 +315,7 @@ struct ConvertInstrumentsToSamplesInPatterns
 
 			if((instr < MAX_INSTRUMENTS) && (pSndFile->Instruments[instr]))
 			{
-				const modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[instr];
+				const modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[instr];
 				newinstr = pIns->Keyboard[note];
 				newnote = pIns->NoteMap[note];
 				if(newinstr >= MAX_SAMPLES) newinstr = 0;
@@ -384,10 +384,10 @@ UINT CModDoc::RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS])
 BOOL CModDoc::AdjustEndOfSample(UINT nSample)
 //-------------------------------------------
 {
-	modplug::mixer::MODSAMPLE *pSmp;
+	modplug::tracker::modsample_t *pSmp;
 	if (nSample >= MAX_SAMPLES) return FALSE;
 	pSmp = &m_SndFile.Samples[nSample];
-	if ((!pSmp->nLength) || (!pSmp->pSample)) return FALSE;
+	if ((!pSmp->length) || (!pSmp->sample_data)) return FALSE;
 
 	ctrlSmp::AdjustEndOfSample(*pSmp, &m_SndFile);
 
@@ -441,7 +441,7 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
 	SAMPLEINDEX i = 1;
 	for(i = 1; i <= m_SndFile.m_nSamples; i++)
 	{
-		if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].pSample == NULL))
+		if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].sample_data == NULL))
 		{
 			if ((!m_SndFile.m_nInstruments) || (!m_SndFile.IsSampleUsed(i)))
 			break;
@@ -454,19 +454,19 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
 		return SAMPLEINDEX_INVALID;
 	}
 	if (!m_SndFile.m_szNames[i][0]) strcpy(m_SndFile.m_szNames[i], "untitled");
-	modplug::mixer::MODSAMPLE *pSmp = &m_SndFile.Samples[i];
-	pSmp->nVolume = 256;
-	pSmp->nGlobalVol = 64;
-	pSmp->nPan = 128;
-	pSmp->nC5Speed = 8363;
+	modplug::tracker::modsample_t *pSmp = &m_SndFile.Samples[i];
+	pSmp->default_volume = 256;
+	pSmp->global_volume = 64;
+	pSmp->default_pan = 128;
+	pSmp->c5_samplerate = 8363;
 	pSmp->RelativeTone = 0;
 	pSmp->nFineTune = 0;
-	pSmp->nVibType = 0;
-	pSmp->nVibSweep = 0;
-	pSmp->nVibDepth = 0;
-	pSmp->nVibRate = 0;
-	pSmp->uFlags &= ~(CHN_PANNING|CHN_SUSTAINLOOP);
-	if (m_SndFile.m_nType == MOD_TYPE_XM) pSmp->uFlags |= CHN_PANNING;
+	pSmp->vibrato_type = 0;
+	pSmp->vibrato_sweep = 0;
+	pSmp->vibrato_depth = 0;
+	pSmp->vibrato_rate = 0;
+	pSmp->flags &= ~(CHN_PANNING|CHN_SUSTAINLOOP);
+	if (m_SndFile.m_nType == MOD_TYPE_XM) pSmp->flags |= CHN_PANNING;
 	if (i > m_SndFile.m_nSamples) m_SndFile.m_nSamples = i;
 	SetModified();
 	return i;
@@ -478,14 +478,14 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
 INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX nDuplicate)
 //----------------------------------------------------------------------------------------
 {
-	modplug::mixer::MODINSTRUMENT *pDup = nullptr;
+	modplug::tracker::modinstrument_t *pDup = nullptr;
 	const INSTRUMENTINDEX nInstrumentMax = m_SndFile.GetModSpecifications().instrumentsMax - 1;
 	if ((m_SndFile.m_nType != MOD_TYPE_XM) && !(m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))) return INSTRUMENTINDEX_INVALID;
 	if ((nDuplicate > 0) && (nDuplicate <= m_SndFile.m_nInstruments))
 	{
 		pDup = m_SndFile.Instruments[nDuplicate];
 	}
-	if ((!m_SndFile.m_nInstruments) && ((m_SndFile.m_nSamples > 1) || (m_SndFile.Samples[1].pSample)))
+	if ((!m_SndFile.m_nInstruments) && ((m_SndFile.m_nSamples > 1) || (m_SndFile.Samples[1].sample_data)))
 	{
 		if (pDup) return INSTRUMENTINDEX_INVALID;
 		UINT n = CMainFrame::GetMainFrame()->MessageBox("Convert existing samples to instruments first?", NULL, MB_YESNOCANCEL|MB_ICONQUESTION);
@@ -495,10 +495,10 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
 			if (nInstruments > nInstrumentMax) nInstruments = nInstrumentMax;
 			for (SAMPLEINDEX smp = 1; smp <= nInstruments; smp++)
 			{
-				m_SndFile.Samples[smp].uFlags &= ~CHN_MUTE;
+				m_SndFile.Samples[smp].flags &= ~CHN_MUTE;
 				if (!m_SndFile.Instruments[smp])
 				{
-					modplug::mixer::MODINSTRUMENT *p = new modplug::mixer::MODINSTRUMENT;
+					modplug::tracker::modinstrument_t *p = new modplug::tracker::modinstrument_t;
 					if (!p)
 					{
 						ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
@@ -531,7 +531,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
 		}
 		newins = ++m_SndFile.m_nInstruments;
 	}
-	modplug::mixer::MODINSTRUMENT *pIns = new modplug::mixer::MODINSTRUMENT;
+	modplug::tracker::modinstrument_t *pIns = new modplug::tracker::modinstrument_t;
 	if (pIns)
 	{
 		SAMPLEINDEX newsmp = 0;
@@ -580,16 +580,16 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
 }
 
 
-void CModDoc::InitializeInstrument(modplug::mixer::MODINSTRUMENT *pIns, UINT nsample)
+void CModDoc::InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT nsample)
 //-------------------------------------------------------------------
 {
 	if(pIns == nullptr)
 		return;
 	MemsetZero(*pIns);
-	pIns->nFadeOut = 256;
-	pIns->nGlobalVol = 64;
-	pIns->nPan = 128;
-	pIns->nPPC = NOTE_MIDDLEC - 1;
+	pIns->fadeout = 256;
+	pIns->global_volume = 64;
+	pIns->default_pan = 128;
+	pIns->pitch_pan_center = NOTE_MIDDLEC - 1;
 	m_SndFile.SetDefaultInstrumentValues(pIns);
 	for (UINT n=0; n<128; n++)
 	{
@@ -647,7 +647,7 @@ bool CModDoc::RemoveSample(SAMPLEINDEX nSmp)
 		m_SndFile.m_szNames[nSmp][0] = 0;
 		while ((m_SndFile.m_nSamples > 1)
 		 && (!m_SndFile.m_szNames[m_SndFile.m_nSamples][0])
-		 && (!m_SndFile.Samples[m_SndFile.m_nSamples].pSample)) m_SndFile.m_nSamples--;
+		 && (!m_SndFile.Samples[m_SndFile.m_nSamples].sample_data)) m_SndFile.m_nSamples--;
 		END_CRITICAL();
 		SetModified();
 		return true;
@@ -778,7 +778,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, DWORD dwBeginSel, DWORD dwEndSe
 			p += strlen(p);
 			for (UINT row=0; row<nrows; row++)
 			{
-				MODCOMMAND *m = m_SndFile.Patterns[nPattern];
+				modplug::tracker::modcommand_t *m = m_SndFile.Patterns[nPattern];
 				if ((row + (dwBeginSel >> 16)) >= m_SndFile.Patterns[nPattern].GetNumRows()) break;
 				m += (row+(dwBeginSel >> 16))*m_SndFile.m_nChannels;
 				m += (colmin >> 3);
@@ -914,7 +914,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPa
 			bool bFirstUndo = true;		// for chaining undos (see overflow paste)
 			MODTYPE origFormat = MOD_TYPE_IT;	// paste format
 			size_t pos, startPos = 0;
-			MODCOMMAND *m = m_SndFile.Patterns[nPattern];
+			modplug::tracker::modcommand_t *m = m_SndFile.Patterns[nPattern];
 
 			const bool doOverflowPaste = (CMainFrame::m_dwPatternSetup & PATTERN_OVERFLOWPASTE) && (pasteMode != pm_pasteflood) && (pasteMode != pm_pushforwardpaste);
 			const bool doITStyleMix = (pasteMode == pm_mixpaste_it);
@@ -991,7 +991,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPa
 						
 						// ITSyle mixpaste requires that we keep a copy of the thing we are about to paste on
 						// so that we can refer back to check if there was anything in e.g. the note column before we pasted.
-						const MODCOMMAND origModCmd = m[col];
+						const modplug::tracker::modcommand_t origModCmd = m[col];
 
 						// push channel data below paste point first.
 						if(pasteMode == pm_pushforwardpaste)
@@ -1194,7 +1194,7 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 	HANDLE hCpy;
 	CHAR s[4096];
-	modplug::mixer::MODINSTRUMENT *pIns;
+	modplug::tracker::modinstrument_t *pIns;
 	DWORD dwMemSize;
 
 	if ((nIns < 1) || (nIns > m_SndFile.m_nInstruments) || (!m_SndFile.Instruments[nIns]) || (!pMainFrm)) return false;
@@ -1202,30 +1202,30 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 	pIns = m_SndFile.Instruments[nIns];
 	if(pIns == nullptr) return false;
 	
-	modplug::mixer::INSTRUMENTENVELOPE *pEnv = nullptr;
+	modplug::tracker::modenvelope_t *pEnv = nullptr;
 
 	switch(nEnv)
 	{
 	case ENV_PANNING:
-		pEnv = &pIns->PanEnv;
+		pEnv = &pIns->panning_envelope;
 		break;
 	case ENV_PITCH:
-		pEnv = &pIns->PitchEnv;
+		pEnv = &pIns->pitch_envelope;
 		break;
 	default:
-		pEnv = &pIns->VolEnv;
+		pEnv = &pIns->volume_envelope;
 		break;
 	}
 
 	// We don't want to copy empty envelopes
-	if(pEnv->nNodes == 0)
+	if(pEnv->num_nodes == 0)
 	{
 		return false;
 	}
 
 	strcpy(s, pszEnvHdr);
-	wsprintf(s + strlen(s), pszEnvFmt, pEnv->nNodes, pEnv->nSustainStart, pEnv->nSustainEnd, pEnv->nLoopStart, pEnv->nLoopEnd, (pEnv->dwFlags & ENV_SUSTAIN) ? 1 : 0, (pEnv->dwFlags & ENV_LOOP) ? 1 : 0, (pEnv->dwFlags & ENV_CARRY) ? 1 : 0);
-	for (UINT i = 0; i < pEnv->nNodes; i++)
+	wsprintf(s + strlen(s), pszEnvFmt, pEnv->num_nodes, pEnv->sustain_start, pEnv->sustain_end, pEnv->loop_start, pEnv->loop_end, (pEnv->flags & ENV_SUSTAIN) ? 1 : 0, (pEnv->flags & ENV_LOOP) ? 1 : 0, (pEnv->flags & ENV_CARRY) ? 1 : 0);
+	for (UINT i = 0; i < pEnv->num_nodes; i++)
 	{
 		if (strlen(s) >= sizeof(s)-32) break;
 		wsprintf(s+strlen(s), "%d,%d\r\n", pEnv->Ticks[i], pEnv->Values[i]);
@@ -1233,7 +1233,7 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 
 	//Writing release node
 	if(strlen(s) < sizeof(s) - 32)
-		wsprintf(s+strlen(s), "%u\r\n", pEnv->nReleaseNode);
+		wsprintf(s+strlen(s), "%u\r\n", pEnv->release_node);
 
 	dwMemSize = strlen(s)+1;
 	if ((pMainFrm->OpenClipboard()) && ((hCpy = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, dwMemSize))!=NULL))
@@ -1266,8 +1266,8 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 	LPCSTR p;
 	if ((hCpy) && ((p = (LPSTR)GlobalLock(hCpy)) != NULL))
 	{
-		modplug::mixer::MODINSTRUMENT *pIns = m_SndFile.Instruments[nIns];
-		modplug::mixer::INSTRUMENTENVELOPE *pEnv = nullptr;
+		modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
+		modplug::tracker::modenvelope_t *pEnv = nullptr;
 
 		UINT susBegin = 0, susEnd = 0, loopBegin = 0, loopEnd = 0, bSus = 0, bLoop = 0, bCarry = 0, nPoints = 0, releaseNode = ENV_RELEASE_NODE_UNSET;
 		DWORD dwMemSize = GlobalSize(hCpy), dwPos = strlen(pszEnvHdr);
@@ -1285,22 +1285,22 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 			switch(nEnv)
 			{
 			case ENV_PANNING:
-				pEnv = &pIns->PanEnv;
+				pEnv = &pIns->panning_envelope;
 				break;
 			case ENV_PITCH:
-				pEnv = &pIns->PitchEnv;
+				pEnv = &pIns->pitch_envelope;
 				break;
 			default:
-				pEnv = &pIns->VolEnv;
+				pEnv = &pIns->volume_envelope;
 				break;
 			}
-			pEnv->nNodes = nPoints;
-			pEnv->nSustainStart = susBegin;
-			pEnv->nSustainEnd = susEnd;
-			pEnv->nLoopStart = loopBegin;
-			pEnv->nLoopEnd = loopEnd;
-			pEnv->nReleaseNode = releaseNode;
-			pEnv->dwFlags = (pEnv->dwFlags & ~(ENV_LOOP|ENV_SUSTAIN|ENV_CARRY)) | (bLoop ? ENV_LOOP : 0) | (bSus ? ENV_SUSTAIN : 0) | (bCarry ? ENV_CARRY: 0) | (nPoints > 0 ? ENV_ENABLED : 0);
+			pEnv->num_nodes = nPoints;
+			pEnv->sustain_start = susBegin;
+			pEnv->sustain_end = susEnd;
+			pEnv->loop_start = loopBegin;
+			pEnv->loop_end = loopEnd;
+			pEnv->release_node = releaseNode;
+			pEnv->flags = (pEnv->flags & ~(ENV_LOOP|ENV_SUSTAIN|ENV_CARRY)) | (bLoop ? ENV_LOOP : 0) | (bSus ? ENV_SUSTAIN : 0) | (bCarry ? ENV_CARRY: 0) | (nPoints > 0 ? ENV_ENABLED : 0);
 
 			int oldn = 0;
 			for (UINT i=0; i<nPoints; i++)
@@ -1326,7 +1326,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 				BYTE r = static_cast<BYTE>(atoi(p + dwPos));
 				if(r == 0 || r >= nPoints || !m_SndFile.GetModSpecifications().hasReleaseNode)
 					r = ENV_RELEASE_NODE_UNSET;
-				pEnv->nReleaseNode = r;
+				pEnv->release_node = r;
 			}
 		}
 		GlobalUnlock(hCpy);
@@ -1371,7 +1371,7 @@ bool CModDoc::IsChannelUnused(CHANNELINDEX nChn) const
 	{
 		if(m_SndFile.Patterns.IsValidPat(nPat))
 		{
-			const MODCOMMAND *p = m_SndFile.Patterns[nPat] + nChn;
+			const modplug::tracker::modcommand_t *p = m_SndFile.Patterns[nPat] + nChn;
 			for(ROWINDEX nRow = m_SndFile.Patterns[nPat].GetNumRows(); nRow > 0; nRow--, p += nChannels)
 			{
 				if(!p->IsEmpty())

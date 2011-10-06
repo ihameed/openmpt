@@ -2,7 +2,7 @@
 #define PATTERN_H
 
 #include <vector>
-#include "modcommand.h"
+#include "tracker/tracker.h"
 #include "Snd_defs.h"
 
 using std::vector;
@@ -10,7 +10,7 @@ using std::vector;
 class CPatternContainer;
 class CSoundFile;
 
-typedef MODCOMMAND* PatternRow;
+typedef modplug::tracker::modcommand_t* PatternRow;
 
 //============
 class CPattern
@@ -20,10 +20,10 @@ class CPattern
 	
 public:
 //BEGIN: OPERATORS
-	//To mimic MODCOMMAND*
-	operator MODCOMMAND*() { return m_ModCommands; }
-	operator const MODCOMMAND*() const { return m_ModCommands; }
-	CPattern& operator=(MODCOMMAND* const p) { m_ModCommands = p; return *this; }
+	//To mimic modplug::tracker::modcommand_t*
+	operator modplug::tracker::modcommand_t*() { return m_ModCommands; }
+	operator const modplug::tracker::modcommand_t*() const { return m_ModCommands; }
+	CPattern& operator=(modplug::tracker::modcommand_t* const p) { m_ModCommands = p; return *this; }
 	CPattern& operator=(const CPattern& pat)
 	{
 		m_ModCommands = pat.m_ModCommands;
@@ -37,8 +37,8 @@ public:
 
 //BEGIN: INTERFACE METHODS
 public:
-	MODCOMMAND* GetpModCommand(const ROWINDEX r, const CHANNELINDEX c) { return &m_ModCommands[r * GetNumChannels() + c]; }
-	const MODCOMMAND* GetpModCommand(const ROWINDEX r, const CHANNELINDEX c) const { return &m_ModCommands[r * GetNumChannels() + c]; }
+	modplug::tracker::modcommand_t* GetpModCommand(const ROWINDEX r, const CHANNELINDEX c) { return &m_ModCommands[r * GetNumChannels() + c]; }
+	const modplug::tracker::modcommand_t* GetpModCommand(const ROWINDEX r, const CHANNELINDEX c) const { return &m_ModCommands[r * GetNumChannels() + c]; }
 	
 	ROWINDEX GetNumRows() const { return m_Rows; }
 	ROWINDEX GetRowsPerBeat() const { return m_RowsPerBeat; }			// pattern-specific rows per beat
@@ -48,7 +48,7 @@ public:
 	// Return true if modcommand can be accessed from given row, false otherwise.
 	bool IsValidRow(const ROWINDEX iRow) const { return (iRow < GetNumRows()); }
 
-	// Return PatternRow object which has operator[] defined so that MODCOMMAND
+	// Return PatternRow object which has operator[] defined so that modplug::tracker::modcommand_t
 	// at (iRow, iChn) can be accessed with GetRow(iRow)[iChn].
 	PatternRow GetRow(const ROWINDEX iRow) { return GetpModCommand(iRow, 0); }
 
@@ -66,7 +66,7 @@ public:
 	CSoundFile& GetSoundFile();
 	const CSoundFile& GetSoundFile() const;
 
-	bool SetData(MODCOMMAND* p, const ROWINDEX rows) { m_ModCommands = p; m_Rows = rows; return false; }
+	bool SetData(modplug::tracker::modcommand_t* p, const ROWINDEX rows) { m_ModCommands = p; m_Rows = rows; return false; }
 
 	// Set pattern signature (rows per beat, rows per measure). Returns true on success.
 	bool SetSignature(const ROWINDEX rowsPerBeat, const ROWINDEX rowsPerMeasure);
@@ -94,13 +94,13 @@ public:
 	//Returns true on error.
 
 	// Static allocation / deallocation helpers
-	static MODCOMMAND* AllocatePattern(ROWINDEX rows, CHANNELINDEX nchns);
-	static void FreePattern(MODCOMMAND *pat);
+	static modplug::tracker::modcommand_t* AllocatePattern(ROWINDEX rows, CHANNELINDEX nchns);
+	static void FreePattern(modplug::tracker::modcommand_t *pat);
 
 //END: INTERFACE METHODS
 
-	typedef MODCOMMAND* iterator;
-	typedef const MODCOMMAND *const_iterator;
+	typedef modplug::tracker::modcommand_t* iterator;
+	typedef const modplug::tracker::modcommand_t *const_iterator;
 
 	iterator Begin() { return m_ModCommands; }
 	const_iterator Begin() const { return m_ModCommands; }
@@ -111,16 +111,16 @@ public:
 	CPattern(CPatternContainer& patCont) : m_ModCommands(0), m_Rows(64), m_rPatternContainer(patCont), m_RowsPerBeat(0), m_RowsPerMeasure(0) {};
 
 protected:
-	MODCOMMAND& GetModCommand(size_t i) { return m_ModCommands[i]; }
+	modplug::tracker::modcommand_t& GetModCommand(size_t i) { return m_ModCommands[i]; }
 	//Returns modcommand from (floor[i/channelCount], i%channelCount) 
 
-	MODCOMMAND& GetModCommand(ROWINDEX r, CHANNELINDEX c) { return m_ModCommands[r*GetNumChannels()+c]; }
-	const MODCOMMAND& GetModCommand(ROWINDEX r, CHANNELINDEX c) const { return m_ModCommands[r*GetNumChannels()+c]; }
+	modplug::tracker::modcommand_t& GetModCommand(ROWINDEX r, CHANNELINDEX c) { return m_ModCommands[r*GetNumChannels()+c]; }
+	const modplug::tracker::modcommand_t& GetModCommand(ROWINDEX r, CHANNELINDEX c) const { return m_ModCommands[r*GetNumChannels()+c]; }
 
 
 //BEGIN: DATA
 protected:
-	MODCOMMAND* m_ModCommands;
+	modplug::tracker::modcommand_t* m_ModCommands;
 	ROWINDEX m_Rows;
 	ROWINDEX m_RowsPerBeat;		// patterns-specific time signature. if != 0, this is implicitely set.
 	ROWINDEX m_RowsPerMeasure;	// dito

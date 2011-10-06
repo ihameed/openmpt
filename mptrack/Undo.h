@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "mixer/modchannel.h"
+#include "tracker/tracker.h"
 
 #define MAX_UNDO_LEVEL 1000	// 1000 undo steps for each undo type!
 
@@ -22,7 +22,7 @@ struct PATTERNUNDOBUFFER
 	ROWINDEX patternsize;
 	CHANNELINDEX firstChannel, numChannels;
 	ROWINDEX firstRow, numRows;
-	MODCOMMAND *pbuffer;
+	modplug::tracker::modcommand_t *pbuffer;
 	bool linkToPrevious;
 };
 
@@ -83,7 +83,7 @@ enum sampleUndoTypes
 
 struct SAMPLEUNDOBUFFER
 {
-	modplug::mixer::MODSAMPLE OldSample;
+	modplug::tracker::modsample_t OldSample;
 	CHAR szOldName[MAX_SAMPLENAME];
 	LPSTR SamplePtr;
 	UINT nChangeStart, nChangeEnd;

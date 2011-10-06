@@ -1360,14 +1360,14 @@ struct PlugIndexModifier
 {
 	PlugIndexModifier(PLUGINDEX nMin, PLUGINDEX nMax, int nDiff) :
 		m_nInstrMin(nMin), m_nInstrMax(nMax), m_nDiff(nDiff) {}
-	void operator()(MODCOMMAND& m)
+	void operator()(modplug::tracker::modcommand_t& m)
 	{
 		if (m.IsInstrPlug() && m.instr >= m_nInstrMin && m.instr <= m_nInstrMax)
-			m.instr = (MODCOMMAND::INSTR)((int)m.instr + m_nDiff);
+			m.instr = (modplug::tracker::modcommand_t::INSTR)((int)m.instr + m_nDiff);
 	}
 	int m_nDiff;
-	MODCOMMAND::INSTR m_nInstrMin;
-	MODCOMMAND::INSTR m_nInstrMax;
+	modplug::tracker::modcommand_t::INSTR m_nInstrMin;
+	modplug::tracker::modcommand_t::INSTR m_nInstrMax;
 };
 
 

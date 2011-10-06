@@ -84,7 +84,7 @@ bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
 		ChnSettings[iChn].dwFlags = 0;
 	}
 	// Setting up speed command
-	MODCOMMAND *pcmd = Patterns[0];
+	modplug::tracker::modcommand_t *pcmd = Patterns[0];
 	pcmd[0].command = CMD_SPEED;
 	pcmd[0].param = (BYTE)m_nDefaultSpeed;
 	pcmd[0].note = 5*12+1;
@@ -95,32 +95,32 @@ bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
 	// Support for Multichannel Wave
 	for (UINT nChn=0; nChn<m_nSamples; nChn++)
 	{
-		MODSAMPLE *pSmp = &Samples[nChn+1];
+		modsample_t *pSmp = &Samples[nChn+1];
 		pcmd[nChn].note = pcmd[0].note;
 		pcmd[nChn].instr = (BYTE)(nChn+1);
-		pSmp->nLength = len;
-		pSmp->nC5Speed = pfmt->freqHz;
-		pSmp->nVolume = 256;
-		pSmp->nPan = 128;
-		pSmp->nGlobalVol = 64;
-		pSmp->uFlags = (WORD)((pfmt->bitspersample >= 16) ? CHN_16BIT : 0);
-		pSmp->uFlags |= CHN_PANNING;
+		pSmp->length = len;
+		pSmp->c5_samplerate = pfmt->freqHz;
+		pSmp->default_volume = 256;
+		pSmp->default_pan = 128;
+		pSmp->global_volume = 64;
+		pSmp->flags = (WORD)((pfmt->bitspersample >= 16) ? CHN_16BIT : 0);
+		pSmp->flags |= CHN_PANNING;
 		if (m_nSamples > 1)
 		{
 			switch(nChn)
 			{
-			case 0:	pSmp->nPan = 0; break;
-			case 1:	pSmp->nPan = 256; break;
-			case 2: pSmp->nPan = (WORD)((m_nSamples == 3) ? 128 : 64); pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
-			case 3: pSmp->nPan = 192; pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
-			default: pSmp->nPan = 128; break;
+			case 0:	pSmp->default_pan = 0; break;
+			case 1:	pSmp->default_pan = 256; break;
+			case 2: pSmp->default_pan = (WORD)((m_nSamples == 3) ? 128 : 64); pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
+			case 3: pSmp->default_pan = 192; pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
+			default: pSmp->default_pan = 128; break;
 			}
 		}
-		if ((pSmp->pSample = AllocateSample(bytelen+8)) == NULL) return true;
+		if ((pSmp->sample_data = AllocateSample(bytelen+8)) == NULL) return true;
 		if (pfmt->bitspersample >= 16)
 		{
 			int slsize = pfmt->bitspersample >> 3;
-			signed short *p = (signed short *)pSmp->pSample;
+			signed short *p = (signed short *)pSmp->sample_data;
 			signed char *psrc = (signed char *)(lpStream+dwMemPos+8+nChn*slsize+slsize-2);
 			for (UINT i=0; i<len; i++)
 			{
@@ -130,7 +130,7 @@ bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
 			p[len+1] = p[len] = p[len-1];
 		} else
 		{
-			signed char *p = (signed char *)pSmp->pSample;
+			signed char *p = (signed char *)pSmp->sample_data;
 			signed char *psrc = (signed char *)(lpStream+dwMemPos+8+nChn);
 			for (UINT i=0; i<len; i++)
 			{

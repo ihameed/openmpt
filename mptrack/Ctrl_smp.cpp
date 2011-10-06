@@ -518,7 +518,7 @@ BOOL CCtrlSamples::GetToolTipText(UINT uId, LPSTR pszText)
         case IDC_COMBO_BASENOTE:
             if ((m_pSndFile) && (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_MOD)) && (m_nSample))
             {
-                modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+                modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
                 UINT nFreqHz = CSoundFile::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
                 wsprintf(pszText, "%ldHz", nFreqHz);
                 return TRUE;
@@ -619,42 +619,42 @@ void CCtrlSamples::UpdateView(DWORD dwHintMask, CObject *pObj)
     // Updating Values
     if (dwHintMask & (HINT_MODTYPE|HINT_SAMPLEINFO))
     {
-        modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+        modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
         CHAR s[128];
         DWORD d;
         
         // Length / Type
-        wsprintf(s, "%d-bit %s, len: %d", pSmp->GetElementarySampleSize() * 8, (pSmp->uFlags & CHN_STEREO) ? "stereo" : "mono", pSmp->nLength);
+        wsprintf(s, "%d-bit %s, len: %d", pSmp->GetElementarySampleSize() * 8, (pSmp->flags & CHN_STEREO) ? "stereo" : "mono", pSmp->length);
         SetDlgItemText(IDC_TEXT5, s);
         // Name
         memcpy(s, m_pSndFile->m_szNames[m_nSample], MAX_SAMPLENAME);
         s[31] = 0;
         SetDlgItemText(IDC_SAMPLE_NAME, s);
         // File Name
-        memcpy(s, pSmp->filename, MAX_SAMPLEFILENAME);
+        memcpy(s, pSmp->legacy_filename, MAX_SAMPLEFILENAME);
         s[21] = 0;
         if (m_pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) s[0] = 0;
         SetDlgItemText(IDC_SAMPLE_FILENAME, s);
         // Volume
-        SetDlgItemInt(IDC_EDIT7, pSmp->nVolume >> 2);
+        SetDlgItemInt(IDC_EDIT7, pSmp->default_volume >> 2);
         // Global Volume
-        SetDlgItemInt(IDC_EDIT8, pSmp->nGlobalVol);
+        SetDlgItemInt(IDC_EDIT8, pSmp->global_volume);
         // Panning
-        CheckDlgButton(IDC_CHECK1, (pSmp->uFlags & CHN_PANNING) ? MF_CHECKED : MF_UNCHECKED);
+        CheckDlgButton(IDC_CHECK1, (pSmp->flags & CHN_PANNING) ? MF_CHECKED : MF_UNCHECKED);
         //rewbs.fix36944
         if (m_pSndFile->m_nType == MOD_TYPE_XM) {
-            SetDlgItemInt(IDC_EDIT9, pSmp->nPan);		//displayed panning with XM is 0-256, just like MPT's internal engine
+            SetDlgItemInt(IDC_EDIT9, pSmp->default_pan);		//displayed panning with XM is 0-256, just like MPT's internal engine
         } else {
-            SetDlgItemInt(IDC_EDIT9, pSmp->nPan>>2);	//displayed panning with anything but XM is 0-64 so we divide by 4
+            SetDlgItemInt(IDC_EDIT9, pSmp->default_pan>>2);	//displayed panning with anything but XM is 0-64 so we divide by 4
         }
         //end rewbs.fix36944
         // FineTune / C-4 Speed / BaseNote
         int transp = 0;
         if (m_pSndFile->m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
         {
-            wsprintf(s, "%lu", pSmp->nC5Speed);
+            wsprintf(s, "%lu", pSmp->c5_samplerate);
             m_EditFineTune.SetWindowText(s);
-            transp = CSoundFile::FrequencyToTranspose(pSmp->nC5Speed) >> 7;
+            transp = CSoundFile::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
         } else
         {
             int ftune = ((int)pSmp->nFineTune);
@@ -669,25 +669,25 @@ void CCtrlSamples::UpdateView(DWORD dwHintMask, CObject *pObj)
         basenote -= BASENOTE_MIN;
         if (basenote != m_CbnBaseNote.GetCurSel()) m_CbnBaseNote.SetCurSel(basenote);
         // AutoVibrato
-        m_ComboAutoVib.SetCurSel(pSmp->nVibType);
-        SetDlgItemInt(IDC_EDIT14, (UINT)pSmp->nVibSweep);
-        SetDlgItemInt(IDC_EDIT15, (UINT)pSmp->nVibDepth);
-        SetDlgItemInt(IDC_EDIT16, (UINT)pSmp->nVibRate);
+        m_ComboAutoVib.SetCurSel(pSmp->vibrato_type);
+        SetDlgItemInt(IDC_EDIT14, (UINT)pSmp->vibrato_sweep);
+        SetDlgItemInt(IDC_EDIT15, (UINT)pSmp->vibrato_depth);
+        SetDlgItemInt(IDC_EDIT16, (UINT)pSmp->vibrato_rate);
         // Loop
         d = 0;
-        if (pSmp->uFlags & CHN_LOOP) d = (pSmp->uFlags & CHN_PINGPONGLOOP) ? 2 : 1;
+        if (pSmp->flags & CHN_LOOP) d = (pSmp->flags & CHN_PINGPONGLOOP) ? 2 : 1;
         m_ComboLoopType.SetCurSel(d);
-        wsprintf(s, "%lu", pSmp->nLoopStart);
+        wsprintf(s, "%lu", pSmp->loop_start);
         m_EditLoopStart.SetWindowText(s);
-        wsprintf(s, "%lu", pSmp->nLoopEnd);
+        wsprintf(s, "%lu", pSmp->loop_end);
         m_EditLoopEnd.SetWindowText(s);
         // Sustain Loop
         d = 0;
-        if (pSmp->uFlags & CHN_SUSTAINLOOP) d = (pSmp->uFlags & CHN_PINGPONGSUSTAIN) ? 2 : 1;
+        if (pSmp->flags & CHN_SUSTAINLOOP) d = (pSmp->flags & CHN_PINGPONGSUSTAIN) ? 2 : 1;
         m_ComboSustainType.SetCurSel(d);
-        wsprintf(s, "%lu", pSmp->nSustainStart);
+        wsprintf(s, "%lu", pSmp->sustain_start);
         m_EditSustainStart.SetWindowText(s);
-        wsprintf(s, "%lu", pSmp->nSustainEnd);
+        wsprintf(s, "%lu", pSmp->sustain_end);
         m_EditSustainEnd.SetWindowText(s);
     }
     if (!m_bInitialized)
@@ -742,15 +742,15 @@ bool CCtrlSamples::OpenSample(LPCSTR lpszFileName)
 
             BeginWaitCursor();
             UINT flags = 0;
-            modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+            modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
             BEGIN_CRITICAL();
             m_pSndFile->DestroySample(m_nSample);
-            pSmp->nLength = len;
-            pSmp->uFlags = RS_PCM8S;
+            pSmp->length = len;
+            pSmp->flags = RS_PCM8S;
 
             if (dlg.GetSampleFormat() & ER_16BIT)
             {
-                pSmp->nLength >>= 1;
+                pSmp->length >>= 1;
                 flags = RS_PCM16S;
             }
             if (dlg.GetSampleFormat() & ER_UNSIGNED)
@@ -760,12 +760,12 @@ bool CCtrlSamples::OpenSample(LPCSTR lpszFileName)
             // Interleaved Stereo Sample
             if (dlg.GetSampleFormat() & ER_STEREO)
             {
-                pSmp->nLength >>= 1;
+                pSmp->length >>= 1;
                 flags |= 0x40|RSF_STEREO;
             }
             LPSTR p16 = (LPSTR)lpFile;
             DWORD l16 = len;
-            if ((pSmp->uFlags & CHN_16BIT) && (len & 1))
+            if ((pSmp->flags & CHN_16BIT) && (len & 1))
             {
                 p16++;
                 l16--;
@@ -774,11 +774,11 @@ bool CCtrlSamples::OpenSample(LPCSTR lpszFileName)
             {
                 bOk = true;
 
-                pSmp->nGlobalVol = 64;
-                pSmp->nVolume = 256;
-                pSmp->nPan = 128;
-                pSmp->filename[0] = 0;
-                if (!pSmp->nC5Speed) pSmp->nC5Speed = 22050;
+                pSmp->global_volume = 64;
+                pSmp->default_volume = 256;
+                pSmp->default_pan = 128;
+                pSmp->legacy_filename[0] = 0;
+                if (!pSmp->c5_samplerate) pSmp->c5_samplerate = 22050;
             } else
             {
                 m_pModDoc->GetSampleUndo()->Undo(m_nSample);
@@ -795,9 +795,9 @@ OpenError:
     EndWaitCursor();
     if (bOk)
     {
-        modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+        modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
         CMainFrame::SetWorkingDirectory(lpszFileName, DIR_SAMPLES, true);
-        if (!pSmp->filename[0])
+        if (!pSmp->legacy_filename[0])
         {
             CHAR szFullFilename[_MAX_PATH];
             _splitpath(lpszFileName, 0, 0, szName, szExt);
@@ -818,12 +818,12 @@ OpenError:
                 if (strlen(szFullFilename) < 9) strcat(szFullFilename, szExt);
             }
             szFullFilename[21] = 0;
-            memcpy(pSmp->filename, szFullFilename, MAX_SAMPLEFILENAME);
+            memcpy(pSmp->legacy_filename, szFullFilename, MAX_SAMPLEFILENAME);
         }
-        if ((m_pSndFile->m_nType & MOD_TYPE_XM) && (!(pSmp->uFlags & CHN_PANNING)))
+        if ((m_pSndFile->m_nType & MOD_TYPE_XM) && (!(pSmp->flags & CHN_PANNING)))
         {
-            pSmp->nPan = 128;
-            pSmp->uFlags |= CHN_PANNING;
+            pSmp->default_pan = 128;
+            pSmp->flags |= CHN_PANNING;
         }
         m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEDATA | HINT_SAMPLEINFO | HINT_SMPNAMES, NULL);
         m_pModDoc->SetModified();
@@ -842,11 +842,11 @@ bool CCtrlSamples::OpenSample(CSoundFile *pSndFile, SAMPLEINDEX nSample)
     m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
     m_pSndFile->DestroySample(m_nSample);
     m_pSndFile->ReadSampleFromSong(m_nSample, pSndFile, nSample);
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
-    if ((m_pSndFile->m_nType & MOD_TYPE_XM) && (!(pSmp->uFlags & CHN_PANNING)))
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
+    if ((m_pSndFile->m_nType & MOD_TYPE_XM) && (!(pSmp->flags & CHN_PANNING)))
     {
-        pSmp->nPan = 128;
-        pSmp->uFlags |= CHN_PANNING;
+        pSmp->default_pan = 128;
+        pSmp->flags |= CHN_PANNING;
     }
     END_CRITICAL();
     m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEDATA | HINT_SAMPLEINFO | HINT_SMPNAMES, NULL);
@@ -911,12 +911,12 @@ void CCtrlSamples::OnSampleNew()
         if(bDuplicate && nOldSmp >= 1 && nOldSmp < MAX_SAMPLES)
         {
             m_pModDoc->GetSampleUndo()->PrepareUndo(smp, sundo_replace);
-            memcpy(&m_pSndFile->Samples[smp], &m_pSndFile->Samples[nOldSmp], sizeof(modplug::mixer::MODSAMPLE));
+            memcpy(&m_pSndFile->Samples[smp], &m_pSndFile->Samples[nOldSmp], sizeof(modplug::tracker::modsample_t));
             strcpy(m_pSndFile->m_szNames[smp], m_pSndFile->m_szNames[nOldSmp]);
             // clone sample.
-            if((m_pSndFile->Samples[smp].pSample = CSoundFile::AllocateSample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
+            if((m_pSndFile->Samples[smp].sample_data = CSoundFile::AllocateSample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
             {
-                memcpy(m_pSndFile->Samples[smp].pSample, m_pSndFile->Samples[nOldSmp].pSample, m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes());
+                memcpy(m_pSndFile->Samples[smp].sample_data, m_pSndFile->Samples[nOldSmp].sample_data, m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes());
             }
         }
 
@@ -991,14 +991,14 @@ void CCtrlSamples::OnSampleSave()
     if(!bBatchSave)
     {
         // save this sample
-        if ((!m_nSample) || (!m_pSndFile->Samples[m_nSample].pSample))
+        if ((!m_nSample) || (!m_pSndFile->Samples[m_nSample].sample_data))
         {
             SwitchToView();
             return;
         }
         if (m_pSndFile->m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
         {
-            strncpy(szFileName, m_pSndFile->Samples[m_nSample].filename, min(CountOf(m_pSndFile->Samples[m_nSample].filename), CountOf(szFileName) - 1));
+            strncpy(szFileName, m_pSndFile->Samples[m_nSample].legacy_filename, min(CountOf(m_pSndFile->Samples[m_nSample].legacy_filename), CountOf(szFileName) - 1));
         } else
         {
             strncpy(szFileName, m_pSndFile->m_szNames[m_nSample], min(CountOf(m_pSndFile->m_szNames[m_nSample]), CountOf(szFileName) - 1));
@@ -1045,7 +1045,7 @@ void CCtrlSamples::OnSampleSave()
 
     for(UINT iSmp = iMinSmp; iSmp <= iMaxSmp; iSmp++)
     {
-        if (m_pSndFile->Samples[iSmp].pSample)
+        if (m_pSndFile->Samples[iSmp].sample_data)
         {
             if(bBatchSave)
             {
@@ -1054,7 +1054,7 @@ void CCtrlSamples::OnSampleSave()
                 sSampleNumber.Format(sNumberFormat, iSmp);
 
                 strcpy(sSampleName, (m_pSndFile->m_szNames[iSmp]) ? m_pSndFile->m_szNames[iSmp] : "untitled");
-                strcpy(sSampleFilename, (m_pSndFile->Samples[iSmp].filename[0]) ? m_pSndFile->Samples[iSmp].filename : m_pSndFile->m_szNames[iSmp]);
+                strcpy(sSampleFilename, (m_pSndFile->Samples[iSmp].legacy_filename[0]) ? m_pSndFile->Samples[iSmp].legacy_filename : m_pSndFile->m_szNames[iSmp]);
                 SanitizeFilename(sSampleName);
                 SanitizeFilename(sSampleFilename);
 
@@ -1134,34 +1134,34 @@ void CCtrlSamples::OnNormalize()
 
     for(SAMPLEINDEX iSmp = iMinSample; iSmp <= iMaxSample; iSmp++)
     {
-        if (m_pSndFile->Samples[iSmp].pSample)
+        if (m_pSndFile->Samples[iSmp].sample_data)
         {
             bool bOk = false;
-            modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[iSmp];
+            modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[iSmp];
         
             if(iMinSample != iMaxSample)
             {
                 //if more than one sample is selected, always amplify the whole sample.
                 iStart = 0;
-                iEnd = pSmp->nLength;
+                iEnd = pSmp->length;
             } else
             {
                 //one sample: correct the boundaries, if needed
-                if (iEnd > pSmp->nLength) iEnd = pSmp->nLength;
+                if (iEnd > pSmp->length) iEnd = pSmp->length;
                 if (iStart > iEnd) iStart = iEnd;
                 if (iStart == iEnd) {
                     iStart = 0;
-                    iEnd = pSmp->nLength;
+                    iEnd = pSmp->length;
                 }
             }
 
             m_pModDoc->GetSampleUndo()->PrepareUndo(iSmp, sundo_update, iStart, iEnd);
 
-            if (pSmp->uFlags & CHN_STEREO) { iStart *= 2; iEnd *= 2; }
+            if (pSmp->flags & CHN_STEREO) { iStart *= 2; iEnd *= 2; }
 
-            if (pSmp->uFlags & CHN_16BIT)
+            if (pSmp->flags & CHN_16BIT)
             {
-                int16 *p = (int16 *)pSmp->pSample;
+                int16 *p = (int16 *)pSmp->sample_data;
                 int max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
@@ -1180,7 +1180,7 @@ void CCtrlSamples::OnNormalize()
                 }
             } else
             {
-                int8 *p = (int8 *)pSmp->pSample;
+                int8 *p = (int8 *)pSmp->sample_data;
                 int max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
@@ -1219,9 +1219,9 @@ void CCtrlSamples::OnNormalize()
 void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
 //-----------------------------------------------------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp;
+    modplug::tracker::modsample_t *pSmp;
     
-    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
+    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
 
     BeginWaitCursor();
     pSmp = &m_pSndFile->Samples[m_nSample];
@@ -1230,12 +1230,12 @@ void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
 
     m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_update, selection.nStart, selection.nEnd);
 
-    if (pSmp->uFlags & CHN_STEREO) { selection.nStart *= 2; selection.nEnd *= 2; }
+    if (pSmp->flags & CHN_STEREO) { selection.nStart *= 2; selection.nEnd *= 2; }
     UINT len = selection.nEnd - selection.nStart;
     if ((bFadeIn) && (bFadeOut)) lAmp *= 4;
-    if (pSmp->uFlags & CHN_16BIT)
+    if (pSmp->flags & CHN_16BIT)
     {
-        signed short *p = ((signed short *)pSmp->pSample) + selection.nStart;
+        signed short *p = ((signed short *)pSmp->sample_data) + selection.nStart;
 
         for (UINT i=0; i<len; i++)
         {
@@ -1248,7 +1248,7 @@ void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
         }
     } else
     {
-        signed char *p = ((signed char *)pSmp->pSample) + selection.nStart;
+        signed char *p = ((signed char *)pSmp->sample_data) + selection.nStart;
 
         for (UINT i=0; i<len; i++)
         {
@@ -1295,13 +1295,13 @@ void CCtrlSamples::OnRemoveDCOffset()
     {
         UINT iStart, iEnd;
 
-        if(m_pSndFile->Samples[iSmp].pSample == nullptr)
+        if(m_pSndFile->Samples[iSmp].sample_data == nullptr)
             continue;
 
         if (iMinSample != iMaxSample)
         {
             iStart = 0;
-            iEnd = m_pSndFile->Samples[iSmp].nLength;
+            iEnd = m_pSndFile->Samples[iSmp].length;
         }
         else
         {
@@ -1368,12 +1368,12 @@ void CCtrlSamples::OnAmplify()
 void CCtrlSamples::OnQuickFade()
 //------------------------------
 {
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
 
     SELECTIONPOINTS sel = GetSelectionPoints();
-    if(sel.bSelected && (sel.nStart == 0 || sel.nEnd == m_pSndFile->Samples[m_nSample].nLength))
+    if(sel.bSelected && (sel.nStart == 0 || sel.nEnd == m_pSndFile->Samples[m_nSample].length))
     {
-        ApplyAmplify(100, (sel.nStart == 0), (sel.nEnd == m_pSndFile->Samples[m_nSample].nLength));
+        ApplyAmplify(100, (sel.nStart == 0), (sel.nEnd == m_pSndFile->Samples[m_nSample].length));
     } else
     {
         // Can't apply quick fade as no appropriate selection has been made, so ask the user to amplify the whole sample instead.
@@ -1391,29 +1391,29 @@ const int gSinc2x16Odd[16] =
 void CCtrlSamples::OnUpsample()
 //-----------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp;
+    modplug::tracker::modsample_t *pSmp;
     DWORD dwStart, dwEnd, dwNewLen;
     UINT smplsize, newsmplsize;
     PVOID pOriginal, pNewSample;
 
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
     BeginWaitCursor();
     pSmp = &m_pSndFile->Samples[m_nSample];
     SELECTIONPOINTS selection = GetSelectionPoints();
 
     dwStart = selection.nStart;
     dwEnd = selection.nEnd;
-    if (dwEnd > pSmp->nLength) dwEnd = pSmp->nLength;
+    if (dwEnd > pSmp->length) dwEnd = pSmp->length;
     if (dwStart >= dwEnd)
     {
         dwStart = 0;
-        dwEnd = pSmp->nLength;
+        dwEnd = pSmp->length;
     }
 
     smplsize = pSmp->GetBytesPerSample();
     newsmplsize = pSmp->GetNumChannels() * 2;	// new sample is always 16-Bit
-    pOriginal = pSmp->pSample;
-    dwNewLen = pSmp->nLength + (dwEnd-dwStart);
+    pOriginal = pSmp->sample_data;
+    dwNewLen = pSmp->length + (dwEnd-dwStart);
     pNewSample = NULL;
     if (dwNewLen+4 <= MAX_SAMPLE_LENGTH) pNewSample = CSoundFile::AllocateSample((dwNewLen+4)*newsmplsize);
     if (pNewSample)
@@ -1424,8 +1424,8 @@ void CCtrlSamples::OnUpsample()
         for (UINT iCh=0; iCh<nCh; iCh++)
         {
             int len = dwEnd-dwStart;
-            int maxndx = pSmp->nLength;
-            if (pSmp->uFlags & CHN_16BIT)
+            int maxndx = pSmp->length;
+            if (pSmp->flags & CHN_16BIT)
             {
                 signed short *psrc = ((signed short *)pOriginal)+iCh;
                 signed short *pdest = ((signed short *)pNewSample)+dwStart*nCh+iCh;
@@ -1469,10 +1469,10 @@ void CCtrlSamples::OnUpsample()
                 }
             }
         }
-        if (pSmp->uFlags & CHN_16BIT)
+        if (pSmp->flags & CHN_16BIT)
         {
             if (dwStart > 0) memcpy(pNewSample, pOriginal, dwStart*smplsize);
-            if (dwEnd < pSmp->nLength) memcpy(((LPSTR)pNewSample)+(dwStart+(dwEnd-dwStart)*2)*smplsize, ((LPSTR)pOriginal)+(dwEnd*smplsize), (pSmp->nLength-dwEnd)*smplsize);
+            if (dwEnd < pSmp->length) memcpy(((LPSTR)pNewSample)+(dwStart+(dwEnd-dwStart)*2)*smplsize, ((LPSTR)pOriginal)+(dwEnd*smplsize), (pSmp->length-dwEnd)*smplsize);
         } else
         {
             if (dwStart > 0)
@@ -1482,44 +1482,44 @@ void CCtrlSamples::OnUpsample()
                     ((signed short *)pNewSample)[i] = (signed short)(((signed char *)pOriginal)[i] << 8);
                 }
             }
-            if (dwEnd < pSmp->nLength)
+            if (dwEnd < pSmp->length)
             {
                 signed short *pdest = ((signed short *)pNewSample) + (dwEnd-dwStart)*nCh;
-                for (UINT i=dwEnd*nCh; i<pSmp->nLength*nCh; i++)
+                for (UINT i=dwEnd*nCh; i<pSmp->length*nCh; i++)
                 {
                     pdest[i] = (signed short)(((signed char *)pOriginal)[i] << 8);
                 }
             }
         }
-        if (pSmp->nLoopStart >= dwEnd) pSmp->nLoopStart += (dwEnd-dwStart); else
-        if (pSmp->nLoopStart > dwStart) pSmp->nLoopStart += (pSmp->nLoopStart - dwStart);
-        if (pSmp->nLoopEnd >= dwEnd) pSmp->nLoopEnd += (dwEnd-dwStart); else
-        if (pSmp->nLoopEnd > dwStart) pSmp->nLoopEnd += (pSmp->nLoopEnd - dwStart);
-        if (pSmp->nSustainStart >= dwEnd) pSmp->nSustainStart += (dwEnd-dwStart); else
-        if (pSmp->nSustainStart > dwStart) pSmp->nSustainStart += (pSmp->nSustainStart - dwStart);
-        if (pSmp->nSustainEnd >= dwEnd) pSmp->nSustainEnd += (dwEnd-dwStart); else
-        if (pSmp->nSustainEnd > dwStart) pSmp->nSustainEnd += (pSmp->nSustainEnd - dwStart);
+        if (pSmp->loop_start >= dwEnd) pSmp->loop_start += (dwEnd-dwStart); else
+        if (pSmp->loop_start > dwStart) pSmp->loop_start += (pSmp->loop_start - dwStart);
+        if (pSmp->loop_end >= dwEnd) pSmp->loop_end += (dwEnd-dwStart); else
+        if (pSmp->loop_end > dwStart) pSmp->loop_end += (pSmp->loop_end - dwStart);
+        if (pSmp->sustain_start >= dwEnd) pSmp->sustain_start += (dwEnd-dwStart); else
+        if (pSmp->sustain_start > dwStart) pSmp->sustain_start += (pSmp->sustain_start - dwStart);
+        if (pSmp->sustain_end >= dwEnd) pSmp->sustain_end += (dwEnd-dwStart); else
+        if (pSmp->sustain_end > dwStart) pSmp->sustain_end += (pSmp->sustain_end - dwStart);
         BEGIN_CRITICAL();
         for (UINT iFix=0; iFix<MAX_CHANNELS; iFix++)
         {
-            if ((PVOID)m_pSndFile->Chn[iFix].pSample == pOriginal)
+            if ((PVOID)m_pSndFile->Chn[iFix].sample_data == pOriginal)
             {
-                m_pSndFile->Chn[iFix].pSample = (LPSTR)pNewSample;
-                m_pSndFile->Chn[iFix].pCurrentSample = (LPSTR)pNewSample;
-                m_pSndFile->Chn[iFix].dwFlags |= CHN_16BIT;
+                m_pSndFile->Chn[iFix].sample_data = (LPSTR)pNewSample;
+                m_pSndFile->Chn[iFix].active_sample_data = (LPSTR)pNewSample;
+                m_pSndFile->Chn[iFix].flags |= CHN_16BIT;
             }
         }
         if (selection.bSelected == false)
         {
             if(!(m_pSndFile->m_nType & MOD_TYPE_MOD))
             {
-                if (pSmp->nC5Speed < 200000) pSmp->nC5Speed *= 2;
+                if (pSmp->c5_samplerate < 200000) pSmp->c5_samplerate *= 2;
                 if (pSmp->RelativeTone < 84) pSmp->RelativeTone += 12;
             }
         }
-        pSmp->uFlags |= CHN_16BIT;
-        pSmp->pSample = (LPSTR)pNewSample;
-        pSmp->nLength = dwNewLen;
+        pSmp->flags |= CHN_16BIT;
+        pSmp->sample_data = (LPSTR)pNewSample;
+        pSmp->length = dwNewLen;
 
         CSoundFile::FreeSample(pOriginal);
         END_CRITICAL();
@@ -1539,28 +1539,28 @@ void CCtrlSamples::OnUpsample()
 void CCtrlSamples::OnDownsample()
 //-------------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp;
+    modplug::tracker::modsample_t *pSmp;
     DWORD dwStart, dwEnd, dwRemove, dwNewLen;
     UINT smplsize;
     PVOID pOriginal, pNewSample;
 
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
     BeginWaitCursor();
     pSmp = &m_pSndFile->Samples[m_nSample];
     SELECTIONPOINTS selection = GetSelectionPoints();
 
     dwStart = selection.nStart;
     dwEnd = selection.nEnd;
-    if (dwEnd > pSmp->nLength) dwEnd = pSmp->nLength;
+    if (dwEnd > pSmp->length) dwEnd = pSmp->length;
     if (dwStart >= dwEnd)
     {
         dwStart = 0;
-        dwEnd = pSmp->nLength;
+        dwEnd = pSmp->length;
     }
     smplsize = pSmp->GetBytesPerSample();
-    pOriginal = pSmp->pSample;
+    pOriginal = pSmp->sample_data;
     dwRemove = (dwEnd-dwStart+1)>>1;
-    dwNewLen = pSmp->nLength - dwRemove;
+    dwNewLen = pSmp->length - dwRemove;
     dwEnd = dwStart+dwRemove*2;
     pNewSample = NULL;
     if ((dwNewLen > 32) && (dwRemove)) pNewSample = CSoundFile::AllocateSample((dwNewLen+4)*smplsize);
@@ -1573,8 +1573,8 @@ void CCtrlSamples::OnDownsample()
         for (UINT iCh=0; iCh<nCh; iCh++)
         {
             int len = dwRemove;
-            int maxndx = pSmp->nLength;
-            if (pSmp->uFlags & CHN_16BIT)
+            int maxndx = pSmp->length;
+            if (pSmp->flags & CHN_16BIT)
             {
                 signed short *psrc = ((signed short *)pOriginal)+iCh;
                 signed short *pdest = ((signed short *)pNewSample)+dwStart*nCh+iCh;
@@ -1617,37 +1617,37 @@ void CCtrlSamples::OnDownsample()
             }
         }
         if (dwStart > 0) memcpy(pNewSample, pOriginal, dwStart*smplsize);
-        if (dwEnd < pSmp->nLength) memcpy(((LPSTR)pNewSample)+(dwStart+dwRemove)*smplsize, ((LPSTR)pOriginal)+((dwStart+dwRemove*2)*smplsize), (pSmp->nLength-dwEnd)*smplsize);
-        if (pSmp->nLoopStart >= dwEnd) pSmp->nLoopStart -= dwRemove; else
-        if (pSmp->nLoopStart > dwStart) pSmp->nLoopStart -= (pSmp->nLoopStart - dwStart)/2;
-        if (pSmp->nLoopEnd >= dwEnd) pSmp->nLoopEnd -= dwRemove; else
-        if (pSmp->nLoopEnd > dwStart) pSmp->nLoopEnd -= (pSmp->nLoopEnd - dwStart)/2;
-        if (pSmp->nLoopEnd > dwNewLen) pSmp->nLoopEnd = dwNewLen;
-        if (pSmp->nSustainStart >= dwEnd) pSmp->nSustainStart -= dwRemove; else
-        if (pSmp->nSustainStart > dwStart) pSmp->nSustainStart -= (pSmp->nSustainStart - dwStart)/2;
-        if (pSmp->nSustainEnd >= dwEnd) pSmp->nSustainEnd -= dwRemove; else
-        if (pSmp->nSustainEnd > dwStart) pSmp->nSustainEnd -= (pSmp->nSustainEnd - dwStart)/2;
-        if (pSmp->nSustainEnd > dwNewLen) pSmp->nSustainEnd = dwNewLen;
+        if (dwEnd < pSmp->length) memcpy(((LPSTR)pNewSample)+(dwStart+dwRemove)*smplsize, ((LPSTR)pOriginal)+((dwStart+dwRemove*2)*smplsize), (pSmp->length-dwEnd)*smplsize);
+        if (pSmp->loop_start >= dwEnd) pSmp->loop_start -= dwRemove; else
+        if (pSmp->loop_start > dwStart) pSmp->loop_start -= (pSmp->loop_start - dwStart)/2;
+        if (pSmp->loop_end >= dwEnd) pSmp->loop_end -= dwRemove; else
+        if (pSmp->loop_end > dwStart) pSmp->loop_end -= (pSmp->loop_end - dwStart)/2;
+        if (pSmp->loop_end > dwNewLen) pSmp->loop_end = dwNewLen;
+        if (pSmp->sustain_start >= dwEnd) pSmp->sustain_start -= dwRemove; else
+        if (pSmp->sustain_start > dwStart) pSmp->sustain_start -= (pSmp->sustain_start - dwStart)/2;
+        if (pSmp->sustain_end >= dwEnd) pSmp->sustain_end -= dwRemove; else
+        if (pSmp->sustain_end > dwStart) pSmp->sustain_end -= (pSmp->sustain_end - dwStart)/2;
+        if (pSmp->sustain_end > dwNewLen) pSmp->sustain_end = dwNewLen;
         BEGIN_CRITICAL();
         for (UINT iFix=0; iFix<MAX_CHANNELS; iFix++)
         {
-            if ((PVOID)m_pSndFile->Chn[iFix].pSample == pOriginal)
+            if ((PVOID)m_pSndFile->Chn[iFix].sample_data == pOriginal)
             {
-                m_pSndFile->Chn[iFix].pSample = (LPSTR)pNewSample;
-                m_pSndFile->Chn[iFix].pCurrentSample = NULL;
-                m_pSndFile->Chn[iFix].nLength = 0;
+                m_pSndFile->Chn[iFix].sample_data = (LPSTR)pNewSample;
+                m_pSndFile->Chn[iFix].active_sample_data = NULL;
+                m_pSndFile->Chn[iFix].length = 0;
             }
         }
         if (selection.bSelected == false)
         {
             if(!(m_pSndFile->m_nType & MOD_TYPE_MOD))
             {
-                if (pSmp->nC5Speed > 2000) pSmp->nC5Speed /= 2;
+                if (pSmp->c5_samplerate > 2000) pSmp->c5_samplerate /= 2;
                 if (pSmp->RelativeTone > -84) pSmp->RelativeTone -= 12;
             }
         }
-        pSmp->nLength = dwNewLen;
-        pSmp->pSample = (LPSTR)pNewSample;
+        pSmp->length = dwNewLen;
+        pSmp->sample_data = (LPSTR)pNewSample;
         CSoundFile::FreeSample(pOriginal);
         END_CRITICAL();
         m_pModDoc->AdjustEndOfSample(m_nSample);
@@ -1712,8 +1712,8 @@ void CCtrlSamples::OnEnableStretchToSize()
 
 void CCtrlSamples::OnEstimateSampleSize()
 {
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return;
 
     //rewbs.timeStretchMods
@@ -1721,14 +1721,14 @@ void CCtrlSamples::OnEstimateSampleSize()
     UpdateData(TRUE);
 
     //Calculate/verify samplerate at C5.
-    long lSampleRate = pSmp->nC5Speed;
+    long lSampleRate = pSmp->c5_samplerate;
     if(m_pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
         lSampleRate = CSoundFile::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
     if(lSampleRate <= 0) 
         lSampleRate = 8363;
 
     //Open dialog
-    CPSRatioCalc dlg(pSmp->nLength, lSampleRate, 
+    CPSRatioCalc dlg(pSmp->length, lSampleRate, 
                      m_pSndFile->m_nMusicSpeed,  m_pSndFile->m_nMusicTempo, 
                      m_pSndFile->m_nDefaultRowsPerBeat, m_pSndFile->m_nTempoMode,
                      m_dTimeStretchRatio, this);
@@ -1746,9 +1746,9 @@ void CCtrlSamples::OnPitchShiftTimeStretch()
     // Error management
     int errorcode = -1;
 
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) goto error;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
-    if(!pSmp || pSmp->nLength == 0) goto error;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) goto error;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
+    if(!pSmp || pSmp->length == 0) goto error;
 
     // Time stretching
     if(IsDlgButtonChecked(IDC_CHECK3))
@@ -1759,10 +1759,10 @@ void CCtrlSamples::OnPitchShiftTimeStretch()
         //Update loop points only if no error occured.
         if(errorcode == 0)
         {
-            pSmp->nLoopStart = (UINT)min(pSmp->nLoopStart * (m_dTimeStretchRatio / 100.0), pSmp->nLength);
-            pSmp->nLoopEnd = (UINT)min(pSmp->nLoopEnd * (m_dTimeStretchRatio/100.0), pSmp->nLength);
-            pSmp->nSustainStart = (UINT)min(pSmp->nSustainStart * (m_dTimeStretchRatio/100.0), pSmp->nLength);
-            pSmp->nSustainEnd = (UINT)min(pSmp->nSustainEnd * (m_dTimeStretchRatio/100.0), pSmp->nLength);
+            pSmp->loop_start = (UINT)min(pSmp->loop_start * (m_dTimeStretchRatio / 100.0), pSmp->length);
+            pSmp->loop_end = (UINT)min(pSmp->loop_end * (m_dTimeStretchRatio/100.0), pSmp->length);
+            pSmp->sustain_start = (UINT)min(pSmp->sustain_start * (m_dTimeStretchRatio/100.0), pSmp->length);
+            pSmp->sustain_end = (UINT)min(pSmp->sustain_end * (m_dTimeStretchRatio/100.0), pSmp->length);
         }
         
     }
@@ -1825,8 +1825,8 @@ int CCtrlSamples::TimeStretch(float ratio)
         }
         
     static HANDLE handleSt = NULL; // Handle to SoundTouch object.
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return -1;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return -1;
 
     const uint32 nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
@@ -1834,7 +1834,7 @@ int CCtrlSamples::TimeStretch(float ratio)
     // SoundTouch(1.3.1) seems to crash with short samples. Don't know what
     // the actual limit or whether it depends on sample rate,
     // but simply set some semiarbitrary threshold here.
-    if(pSmp->nLength < 256)
+    if(pSmp->length < 256)
         return 6;
 
     // Refuse processing when ratio is negative, equal to zero or equal to 1.0
@@ -1889,8 +1889,8 @@ int CCtrlSamples::TimeStretch(float ratio)
 
     // Allocate new sample. Returned sample may not be exactly the size what ratio would suggest
     // so allocate a bit more(1.03*).
-    const DWORD nNewSampleLength = (DWORD)(1.03 * ratio * (double)pSmp->nLength);
-    //const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->nLength);
+    const DWORD nNewSampleLength = (DWORD)(1.03 * ratio * (double)pSmp->length);
+    //const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->length);
     PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
@@ -1962,14 +1962,14 @@ int CCtrlSamples::TimeStretch(float ratio)
     UINT nLengthCounter = 0;
 
     // Process sample in steps.
-    while(pos < pSmp->nLength)
+    while(pos < pSmp->length)
     {
         // Current chunk size limit test
-        if(len >= pSmp->nLength - pos) len = pSmp->nLength - pos;
+        if(len >= pSmp->length - pos) len = pSmp->length - pos;
 
         // Show progress bar using process button painting & text label
         CHAR progress[16];
-        float percent = 100.0f * (pos + len) / pSmp->nLength;
+        float percent = 100.0f * (pos + len) / pSmp->length;
         progressBarRECT.right = processButtonRect.left + (int)percent * (processButtonRect.right - processButtonRect.left) / 100;
         wsprintf(progress,"%d%%",(UINT)percent);
 
@@ -1982,7 +1982,7 @@ int CCtrlSamples::TimeStretch(float ratio)
         ::GdiFlush();
 
         // Send sampledata for processing.
-        soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->pSample + pos * smpsize * nChn), len);
+        soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->sample_data + pos * smpsize * nChn), len);
 
         // Receive some processed samples (it's not guaranteed that there is any available).
         nLengthCounter += soundtouch_receiveSamples(handleSt, reinterpret_cast<int16*>(pNewSample) + nChn * nLengthCounter, nNewSampleLength - nLengthCounter);
@@ -2071,8 +2071,8 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 //----------------------------------------
 {
     static CElastiqueProIf *handleSt = NULL; // Handle to SoundTouch object.
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return -1;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return -1;
 
     const uint32 nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
@@ -2080,7 +2080,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     // SoundTouch(1.3.1) seems to crash with short samples. Don't know what
     // the actual limit or whether it depends on sample rate,
     // but simply set some semiarbitrary threshold here.
-    if(pSmp->nLength < 256)
+    if(pSmp->length < 256)
         return 6;
 
     // Refuse processing when ratio is negative, equal to zero or equal to 1.0
@@ -2127,8 +2127,8 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 
     // Allocate new sample. Returned sample may not be exactly the size what ratio would suggest
     // so allocate a bit more(1.03*).
-    const DWORD nNewSampleLength = (DWORD)(2.03 * ratio * (double)pSmp->nLength);
-    //const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->nLength);
+    const DWORD nNewSampleLength = (DWORD)(2.03 * ratio * (double)pSmp->length);
+    //const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->length);
     PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
@@ -2177,17 +2177,17 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     
     
     // Process sample in steps.
-    while(pos < pSmp->nLength)
+    while(pos < pSmp->length)
     {
         len  = handleSt->GetFramesNeeded();
         int full_len = len;
         // Current chunk size limit test
-        if(len >= pSmp->nLength - pos) 
-                len = pSmp->nLength - pos;
+        if(len >= pSmp->length - pos) 
+                len = pSmp->length - pos;
 
         // Show progress bar using process button painting & text label
         CHAR progress[16];
-        float percent = 100.0f * (pos + len) / pSmp->nLength;
+        float percent = 100.0f * (pos + len) / pSmp->length;
         progressBarRECT.right = processButtonRect.left + (int)percent * (processButtonRect.right - processButtonRect.left) / 100;
         wsprintf(progress,"%d%%",(UINT)percent);
 
@@ -2207,7 +2207,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
             }
             outChannels[ch] = new float[512];
             for(UINT s=0;s<len;s++) {
-                inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16*>(pSmp->pSample) + (pos + s)*nChn + ch);
+                inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16*>(pSmp->sample_data) + (pos + s)*nChn + ch);
             }
         }
         
@@ -2221,7 +2221,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
             delete[] outChannels[ch];
         }		
         
-        //soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->pSample + pos * smpsize * nChn), len);
+        //soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->sample_data + pos * smpsize * nChn), len);
 
         // Receive some processed samples (it's not guaranteed that there is any available).
         nLengthCounter += 512;
@@ -2280,12 +2280,12 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 int CCtrlSamples::PitchShift(float pitch)
 //---------------------------------------
 {
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return -1;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
     if(pitch < 0.5f) return 1 + (1<<8);
     if(pitch > 2.0f) return 1 + (2<<8);
 
     // Get sample struct pointer
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return 2;
 
     // Get number of channels & sample size
@@ -2352,10 +2352,10 @@ int CCtrlSamples::PitchShift(float pitch)
 
         // Process sample buffer using MAX_BUFFER_LENGTH (max) sized chunk steps (in order to allow
         // the processing of BIG samples...)
-        while(pos < pSmp->nLength){
+        while(pos < pSmp->length){
 
             // Current chunk size limit test
-            if(pos + len >= pSmp->nLength) len = pSmp->nLength - pos;
+            if(pos + len >= pSmp->length) len = pSmp->length - pos;
 
             // TRICK : output buffer offset management
             // as the pitch-shifter adds  some blank signal in head of output  buffer (matching FFT
@@ -2366,14 +2366,14 @@ int CCtrlSamples::PitchShift(float pitch)
             // FFT data  computed during the previous  steps resulting in a  correct and consistent
             // signal output).
             bool bufstart = ( pos == 0 );
-            bool bufend   = ( pos + MAX_BUFFER_LENGTH >= pSmp->nLength );
+            bool bufend   = ( pos + MAX_BUFFER_LENGTH >= pSmp->length );
             UINT startoffset = ( bufstart ? fft : 0 );
             UINT inneroffset = ( bufstart ? 0 : fft );
             UINT finaloffset = ( bufend   ? fft : 0 );
 
             // Show progress bar using process button painting & text label
             CHAR progress[16];
-            float percent = (float)i * 50.0f + (100.0f / nChn) * (pos + len) / pSmp->nLength;
+            float percent = (float)i * 50.0f + (100.0f / nChn) * (pos + len) / pSmp->length;
             progressBarRECT.right = processButtonRect.left + (int)percent * (processButtonRect.right - processButtonRect.left) / 100;
             wsprintf(progress,"%d%%",(UINT)percent);
 
@@ -2392,7 +2392,7 @@ int CCtrlSamples::PitchShift(float pitch)
             }
 
             // Convert current channel's data chunk to float
-            BYTE * ptr = (BYTE *)pSmp->pSample + pos * smpsize * nChn + i * smpsize;
+            BYTE * ptr = (BYTE *)pSmp->sample_data + pos * smpsize * nChn + i * smpsize;
 
             for(UINT j = 0 ; j < len ; j++){
                 switch(smpsize){
@@ -2413,7 +2413,7 @@ int CCtrlSamples::PitchShift(float pitch)
             smbPitchShift(pitch, len + finaloffset, fft, ovs, (float)lSampleRate, buffer, outbuf, false);
 
             // Restore pitched-shifted float sample into original sample buffer
-            ptr = (BYTE *)pSmp->pSample + (pos - inneroffset) * smpsize * nChn + i * smpsize;
+            ptr = (BYTE *)pSmp->sample_data + (pos - inneroffset) * smpsize * nChn + i * smpsize;
 
             for(UINT j = startoffset ; j < len + finaloffset ; j++){
                 // Just perform a little bit of clipping...
@@ -2457,7 +2457,7 @@ int CCtrlSamples::PitchShift(float pitch)
 void CCtrlSamples::OnReverse()
 //----------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
 
     SELECTIONPOINTS selection = GetSelectionPoints();
 
@@ -2478,7 +2478,7 @@ void CCtrlSamples::OnReverse()
 void CCtrlSamples::OnInvert()
 //---------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
 
     SELECTIONPOINTS selection = GetSelectionPoints();
 
@@ -2499,9 +2499,9 @@ void CCtrlSamples::OnInvert()
 void CCtrlSamples::OnSignUnSign()
 //-------------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp;
+    modplug::tracker::modsample_t *pSmp;
     
-    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
+    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
 
     if(m_pModDoc->IsNotePlaying(0, m_nSample, 0) == TRUE)
         MsgBoxHidable(ConfirmSignUnsignWhenPlaying);
@@ -2527,9 +2527,9 @@ void CCtrlSamples::OnSignUnSign()
 void CCtrlSamples::OnSilence()
 //----------------------------
 {
-    modplug::mixer::MODSAMPLE *pSmp;
+    modplug::tracker::modsample_t *pSmp;
     
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].pSample)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
     BeginWaitCursor();
     SELECTIONPOINTS selection = GetSelectionPoints();
 
@@ -2540,16 +2540,16 @@ void CCtrlSamples::OnSilence()
         m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_update, selection.nStart, selection.nEnd);
 
         int len = selection.nEnd - selection.nStart;
-        if (pSmp->uFlags & CHN_STEREO)
+        if (pSmp->flags & CHN_STEREO)
         {
-            int smplsize = (pSmp->uFlags & CHN_16BIT) ? 4 : 2;
-            signed char *p = ((signed char *)pSmp->pSample) + selection.nStart * smplsize;
+            int smplsize = (pSmp->flags & CHN_16BIT) ? 4 : 2;
+            signed char *p = ((signed char *)pSmp->sample_data) + selection.nStart * smplsize;
             memset(p, 0, len*smplsize);
         } else
-            if (pSmp->uFlags & CHN_16BIT)
+            if (pSmp->flags & CHN_16BIT)
             {
-                short int *p = ((short int *)pSmp->pSample) + selection.nStart;
-                int dest = (selection.nEnd < pSmp->nLength) ? p[len-1] : 0;
+                short int *p = ((short int *)pSmp->sample_data) + selection.nStart;
+                int dest = (selection.nEnd < pSmp->length) ? p[len-1] : 0;
                 int base = (selection.nStart) ? p[0] : 0;
                 int delta = dest - base;
                 for (int i=0; i<len; i++)
@@ -2559,8 +2559,8 @@ void CCtrlSamples::OnSilence()
                 }
             } else
             {
-                signed char *p = ((signed char *)pSmp->pSample) + selection.nStart;
-                int dest = (selection.nEnd < pSmp->nLength) ? p[len-1] : 0;
+                signed char *p = ((signed char *)pSmp->sample_data) + selection.nStart;
+                int dest = (selection.nEnd < pSmp->length) ? p[len-1] : 0;
                 int base = (selection.nStart) ? p[0] : 0;
                 int delta = dest - base;
                 for (int i=0; i<len; i++)
@@ -2635,9 +2635,9 @@ void CCtrlSamples::OnFileNameChanged()
     m_EditFileName.GetWindowText(s, sizeof(s));
     s[21] = 0;
     for (UINT i=strlen(s); i<22; i++) s[i] = 0;
-    if (strncmp(s, m_pSndFile->Samples[m_nSample].filename, MAX_SAMPLEFILENAME))
+    if (strncmp(s, m_pSndFile->Samples[m_nSample].legacy_filename, MAX_SAMPLEFILENAME))
     {
-        memcpy(m_pSndFile->Samples[m_nSample].filename, s, MAX_SAMPLEFILENAME);
+        memcpy(m_pSndFile->Samples[m_nSample].legacy_filename, s, MAX_SAMPLEFILENAME);
         m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEINFO, this);
         if (m_pSndFile->m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT)) m_pModDoc->SetModified();
     }
@@ -2652,9 +2652,9 @@ void CCtrlSamples::OnVolumeChanged()
     if (nVol < 0) nVol = 0;
     if (nVol > 64) nVol = 64;
     nVol <<= 2;
-    if (nVol != m_pSndFile->Samples[m_nSample].nVolume)
+    if (nVol != m_pSndFile->Samples[m_nSample].default_volume)
     {
-        m_pSndFile->Samples[m_nSample].nVolume = (WORD)nVol;
+        m_pSndFile->Samples[m_nSample].default_volume = (WORD)nVol;
         m_pModDoc->SetModified();
     }
 }
@@ -2667,9 +2667,9 @@ void CCtrlSamples::OnGlobalVolChanged()
     int nVol = GetDlgItemInt(IDC_EDIT8);
     if (nVol < 0) nVol = 0;
     if (nVol > 64) nVol = 64;
-    if (nVol != m_pSndFile->Samples[m_nSample].nGlobalVol)
+    if (nVol != m_pSndFile->Samples[m_nSample].global_volume)
     {
-        m_pSndFile->Samples[m_nSample].nGlobalVol = (WORD)nVol;
+        m_pSndFile->Samples[m_nSample].global_volume = (WORD)nVol;
         m_pModDoc->SetModified();
     }
 }
@@ -2686,16 +2686,16 @@ void CCtrlSamples::OnSetPanningChanged()
     }
     if (b)
     {
-        if (!(m_pSndFile->Samples[m_nSample].uFlags & CHN_PANNING))
+        if (!(m_pSndFile->Samples[m_nSample].flags & CHN_PANNING))
         {
-            m_pSndFile->Samples[m_nSample].uFlags |= CHN_PANNING;
+            m_pSndFile->Samples[m_nSample].flags |= CHN_PANNING;
             m_pModDoc->SetModified();
         }
     } else
     {
-        if (m_pSndFile->Samples[m_nSample].uFlags & CHN_PANNING)
+        if (m_pSndFile->Samples[m_nSample].flags & CHN_PANNING)
         {
-            m_pSndFile->Samples[m_nSample].uFlags &= ~CHN_PANNING;
+            m_pSndFile->Samples[m_nSample].flags &= ~CHN_PANNING;
             m_pModDoc->SetModified();
         }
     }
@@ -2716,9 +2716,9 @@ void CCtrlSamples::OnPanningChanged()
         nPan = nPan << 2;			// so we x4 to get MPT's internal 0-256 range.
     }
     //end rewbs.fix36944
-    if (nPan != m_pSndFile->Samples[m_nSample].nPan)
+    if (nPan != m_pSndFile->Samples[m_nSample].default_pan)
     {
-        m_pSndFile->Samples[m_nSample].nPan = (WORD)nPan;
+        m_pSndFile->Samples[m_nSample].default_pan = (WORD)nPan;
         if (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) m_pModDoc->SetModified();
     }
 }
@@ -2731,9 +2731,9 @@ void CCtrlSamples::OnFineTuneChanged()
     int n = GetDlgItemInt(IDC_EDIT5);
     if (m_pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_S3M|MOD_TYPE_MPT))
     {
-        if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].nC5Speed))
+        if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].c5_samplerate))
         {
-            m_pSndFile->Samples[m_nSample].nC5Speed = n;
+            m_pSndFile->Samples[m_nSample].c5_samplerate = n;
             int transp = CSoundFile::FrequencyToTranspose(n) >> 7;
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
@@ -2768,12 +2768,12 @@ void CCtrlSamples::OnBaseNoteChanged()
     int n = (NOTE_MIDDLEC - 1) - (m_CbnBaseNote.GetCurSel() + BASENOTE_MIN);
     if (m_pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_S3M|MOD_TYPE_MPT))
     {
-        LONG ft = CSoundFile::FrequencyToTranspose(m_pSndFile->Samples[m_nSample].nC5Speed) & 0x7f;
+        LONG ft = CSoundFile::FrequencyToTranspose(m_pSndFile->Samples[m_nSample].c5_samplerate) & 0x7f;
         n = CSoundFile::TransposeToFrequency(n, ft);
-        if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].nC5Speed))
+        if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].c5_samplerate))
         {
             CHAR s[32];
-            m_pSndFile->Samples[m_nSample].nC5Speed = n;
+            m_pSndFile->Samples[m_nSample].c5_samplerate = n;
             wsprintf(s, "%lu", n);
             LockControls();
             m_EditFineTune.SetWindowText(s);
@@ -2796,7 +2796,7 @@ void CCtrlSamples::OnVibTypeChanged()
 {
     if (IsLocked()) return;
     int n = m_ComboAutoVib.GetCurSel();
-    if (n >= 0) m_pSndFile->Samples[m_nSample].nVibType = (BYTE)n;
+    if (n >= 0) m_pSndFile->Samples[m_nSample].vibrato_type = (BYTE)n;
     m_pModDoc->SetModified();
 }
 
@@ -2809,7 +2809,7 @@ void CCtrlSamples::OnVibDepthChanged()
     m_SpinVibDepth.GetRange(lmin, lmax);
     int n = GetDlgItemInt(IDC_EDIT15);
     if ((n >= lmin) && (n <= lmax)) {
-        m_pSndFile->Samples[m_nSample].nVibDepth = (BYTE)n;
+        m_pSndFile->Samples[m_nSample].vibrato_depth = (BYTE)n;
         m_pModDoc->SetModified();
     }
 }
@@ -2823,7 +2823,7 @@ void CCtrlSamples::OnVibSweepChanged()
     m_SpinVibSweep.GetRange(lmin, lmax);
     int n = GetDlgItemInt(IDC_EDIT14);
     if ((n >= lmin) && (n <= lmax)) {
-        m_pSndFile->Samples[m_nSample].nVibSweep = (BYTE)n;
+        m_pSndFile->Samples[m_nSample].vibrato_sweep = (BYTE)n;
         m_pModDoc->SetModified();
     }
 }
@@ -2837,7 +2837,7 @@ void CCtrlSamples::OnVibRateChanged()
     m_SpinVibRate.GetRange(lmin, lmax);
     int n = GetDlgItemInt(IDC_EDIT16);
     if ((n >= lmin) && (n <= lmax)) {
-        m_pSndFile->Samples[m_nSample].nVibRate = (BYTE)n;
+        m_pSndFile->Samples[m_nSample].vibrato_rate = (BYTE)n;
         m_pModDoc->SetModified();
     }
 }
@@ -2848,32 +2848,32 @@ void CCtrlSamples::OnLoopTypeChanged()
 {
     if ((IsLocked()) || (!m_pSndFile)) return;
     int n = m_ComboLoopType.GetCurSel();
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
-    bool wasDisabled = (pSmp->uFlags & CHN_LOOP) == 0;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
+    bool wasDisabled = (pSmp->flags & CHN_LOOP) == 0;
     switch(n)
     {
     case 0:	// Off
-        pSmp->uFlags &= ~(CHN_LOOP|CHN_PINGPONGLOOP|CHN_PINGPONGFLAG);
+        pSmp->flags &= ~(CHN_LOOP|CHN_PINGPONGLOOP|CHN_PINGPONGFLAG);
         break;
     case 1:	// On
-        pSmp->uFlags &= ~CHN_PINGPONGLOOP;
-        pSmp->uFlags |= CHN_LOOP;
+        pSmp->flags &= ~CHN_PINGPONGLOOP;
+        pSmp->flags |= CHN_LOOP;
         break;
     case 2:	// PingPong
-        pSmp->uFlags |= CHN_LOOP|CHN_PINGPONGLOOP;
+        pSmp->flags |= CHN_LOOP|CHN_PINGPONGLOOP;
         break;
     }
     // set loop points if theren't any
-    if(wasDisabled && ((pSmp->uFlags & CHN_LOOP) != 0) && (pSmp->nLoopStart == pSmp->nLoopEnd) && (pSmp->nLoopStart == 0))
+    if(wasDisabled && ((pSmp->flags & CHN_LOOP) != 0) && (pSmp->loop_start == pSmp->loop_end) && (pSmp->loop_start == 0))
     {
         SELECTIONPOINTS selection = GetSelectionPoints();
         if(selection.bSelected)
         {
-            pSmp->nLoopStart = selection.nStart;
-            pSmp->nLoopEnd = selection.nEnd;
+            pSmp->loop_start = selection.nStart;
+            pSmp->loop_end = selection.nEnd;
         } else
         {
-            pSmp->nLoopEnd = pSmp->nLength;
+            pSmp->loop_end = pSmp->length;
         }
         m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEDATA | HINT_SAMPLEINFO, NULL);
     }
@@ -2886,12 +2886,12 @@ void CCtrlSamples::OnLoopStartChanged()
 //--------------------------------------
 {
     if ((IsLocked()) || (!m_pSndFile)) return;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     LONG n = GetDlgItemInt(IDC_EDIT1);
-    if ((n >= 0) && (n < (LONG)pSmp->nLength) && ((n < (LONG)pSmp->nLoopEnd) || (!(pSmp->uFlags & CHN_LOOP))))
+    if ((n >= 0) && (n < (LONG)pSmp->length) && ((n < (LONG)pSmp->loop_end) || (!(pSmp->flags & CHN_LOOP))))
     {
-        pSmp->nLoopStart = n;
-        if(pSmp->uFlags & CHN_LOOP) 
+        pSmp->loop_start = n;
+        if(pSmp->flags & CHN_LOOP) 
         {
             /* only update sample buffer if the loop is actually enabled
               (resets sound without any reason otherwise) - http://forum.openmpt.org/index.php?topic=1874.0 */
@@ -2907,12 +2907,12 @@ void CCtrlSamples::OnLoopEndChanged()
 //------------------------------------
 {
     if ((IsLocked()) || (!m_pSndFile)) return;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     LONG n = GetDlgItemInt(IDC_EDIT2);
-    if ((n >= 0) && (n <= (LONG)pSmp->nLength) && ((n > (LONG)pSmp->nLoopStart) || (!(pSmp->uFlags & CHN_LOOP))))
+    if ((n >= 0) && (n <= (LONG)pSmp->length) && ((n > (LONG)pSmp->loop_start) || (!(pSmp->flags & CHN_LOOP))))
     {
-        pSmp->nLoopEnd = n;
-        if(pSmp->uFlags & CHN_LOOP)
+        pSmp->loop_end = n;
+        if(pSmp->flags & CHN_LOOP)
         {
             /* only update sample buffer if the loop is actually enabled
               (resets sound without any reason otherwise) - http://forum.openmpt.org/index.php?topic=1874.0 */
@@ -2929,32 +2929,32 @@ void CCtrlSamples::OnSustainTypeChanged()
 {
     if ((IsLocked()) || (!m_pSndFile)) return;
     int n = m_ComboSustainType.GetCurSel();
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
-    bool wasDisabled = (pSmp->uFlags & CHN_SUSTAINLOOP) == 0;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
+    bool wasDisabled = (pSmp->flags & CHN_SUSTAINLOOP) == 0;
     switch(n)
     {
     case 0:	// Off
-        pSmp->uFlags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN|CHN_PINGPONGFLAG);
+        pSmp->flags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN|CHN_PINGPONGFLAG);
         break;
     case 1:	// On
-        pSmp->uFlags &= ~CHN_PINGPONGSUSTAIN;
-        pSmp->uFlags |= CHN_SUSTAINLOOP;
+        pSmp->flags &= ~CHN_PINGPONGSUSTAIN;
+        pSmp->flags |= CHN_SUSTAINLOOP;
         break;
     case 2:	// PingPong
-        pSmp->uFlags |= CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN;
+        pSmp->flags |= CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN;
         break;
     }
     // set sustain loop points if theren't any
-    if(wasDisabled && ((pSmp->uFlags & CHN_SUSTAINLOOP) != 0) && (pSmp->nSustainStart == pSmp->nSustainEnd) && (pSmp->nSustainStart == 0))
+    if(wasDisabled && ((pSmp->flags & CHN_SUSTAINLOOP) != 0) && (pSmp->sustain_start == pSmp->sustain_end) && (pSmp->sustain_start == 0))
     {
         SELECTIONPOINTS selection = GetSelectionPoints();
         if(selection.bSelected)
         {
-            pSmp->nSustainStart = selection.nStart;
-            pSmp->nSustainEnd = selection.nEnd;
+            pSmp->sustain_start = selection.nStart;
+            pSmp->sustain_end = selection.nEnd;
         } else
         {
-            pSmp->nSustainEnd = pSmp->nLength;
+            pSmp->sustain_end = pSmp->length;
         }
         m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEDATA | HINT_SAMPLEINFO, NULL);
     }
@@ -2966,12 +2966,12 @@ void CCtrlSamples::OnSustainStartChanged()
 //----------------------------------------
 {
     if ((IsLocked()) || (!m_pSndFile)) return;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     LONG n = GetDlgItemInt(IDC_EDIT3);
-    if ((n >= 0) && (n <= (LONG)pSmp->nLength)
-     && ((n < (LONG)pSmp->nSustainEnd) || (!(pSmp->uFlags & CHN_SUSTAINLOOP))))
+    if ((n >= 0) && (n <= (LONG)pSmp->length)
+     && ((n < (LONG)pSmp->sustain_end) || (!(pSmp->flags & CHN_SUSTAINLOOP))))
     {
-        pSmp->nSustainStart = n;
+        pSmp->sustain_start = n;
         m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEDATA, this);
         m_pModDoc->SetModified();
     }
@@ -2982,12 +2982,12 @@ void CCtrlSamples::OnSustainEndChanged()
 //--------------------------------------
 {
     if ((IsLocked()) || (!m_pSndFile)) return;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     LONG n = GetDlgItemInt(IDC_EDIT4);
-    if ((n >= 0) && (n <= (LONG)pSmp->nLength)
-     && ((n > (LONG)pSmp->nSustainStart) || (!(pSmp->uFlags & CHN_SUSTAINLOOP))))
+    if ((n >= 0) && (n <= (LONG)pSmp->length)
+     && ((n > (LONG)pSmp->sustain_start) || (!(pSmp->flags & CHN_SUSTAINLOOP))))
     {
-        pSmp->nSustainEnd = n;
+        pSmp->sustain_end = n;
         m_pModDoc->UpdateAllViews(NULL, (m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEDATA, this);
         m_pModDoc->SetModified();
     }
@@ -3048,57 +3048,57 @@ void CCtrlSamples::OnVScroll(UINT nCode, UINT, CScrollBar *)
     CHAR s[256];
     if ((IsLocked()) || (!m_pSndFile)) return;
     UINT nsample = m_nSample, pinc = 1;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[nsample];
-    LPSTR pSample = pSmp->pSample;
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[nsample];
+    LPSTR pSample = pSmp->sample_data;
     short int pos;
     bool bRedraw = false;
     
     LockControls();
-    if ((!pSmp->nLength) || (!pSample)) goto NoSample;
-    if (pSmp->uFlags & CHN_16BIT)
+    if ((!pSmp->length) || (!pSample)) goto NoSample;
+    if (pSmp->flags & CHN_16BIT)
     {
         pSample++;
         pinc *= 2;
     }
-    if (pSmp->uFlags & CHN_STEREO) pinc *= 2;
+    if (pSmp->flags & CHN_STEREO) pinc *= 2;
     // Loop Start
     if ((pos = (short int)m_SpinLoopStart.GetPos()) != 0)
     {
         bool bOk = false;
-        LPSTR p = pSample+pSmp->nLoopStart*pinc;
-        int find0 = (int)pSample[pSmp->nLoopEnd*pinc-pinc];
-        int find1 = (int)pSample[pSmp->nLoopEnd*pinc];
+        LPSTR p = pSample+pSmp->loop_start*pinc;
+        int find0 = (int)pSample[pSmp->loop_end*pinc-pinc];
+        int find1 = (int)pSample[pSmp->loop_end*pinc];
         // Find Next LoopStart Point
         if (pos > 0)
         {
-            for (UINT i=pSmp->nLoopStart+1; i+16<pSmp->nLoopEnd; i++)
+            for (UINT i=pSmp->loop_start+1; i+16<pSmp->loop_end; i++)
             {
                 p += pinc;
-                bOk = (pSmp->uFlags & CHN_PINGPONGLOOP) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGLOOP) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nLoopStart = i;
+                    pSmp->loop_start = i;
                     break;
                 }
             }
         } else
         // Find Prev LoopStart Point
         {
-            for (UINT i=pSmp->nLoopStart; i; )
+            for (UINT i=pSmp->loop_start; i; )
             {
                 i--;
                 p -= pinc;
-                bOk = (pSmp->uFlags & CHN_PINGPONGLOOP) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGLOOP) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nLoopStart = i;
+                    pSmp->loop_start = i;
                     break;
                 }
             }
         }
         if (bOk)
         {
-            wsprintf(s, "%u", pSmp->nLoopStart);
+            wsprintf(s, "%u", pSmp->loop_start);
             m_EditLoopStart.SetWindowText(s);
             m_pModDoc->AdjustEndOfSample(m_nSample);
             bRedraw = true;
@@ -3107,42 +3107,42 @@ void CCtrlSamples::OnVScroll(UINT nCode, UINT, CScrollBar *)
     }
     // Loop End
     pos = (short int)m_SpinLoopEnd.GetPos();
-    if ((pos) && (pSmp->nLoopEnd))
+    if ((pos) && (pSmp->loop_end))
     {
         bool bOk = false;
-        LPSTR p = pSample+pSmp->nLoopEnd*pinc;
-        int find0 = (int)pSample[pSmp->nLoopStart*pinc];
-        int find1 = (int)pSample[pSmp->nLoopStart*pinc+pinc];
+        LPSTR p = pSample+pSmp->loop_end*pinc;
+        int find0 = (int)pSample[pSmp->loop_start*pinc];
+        int find1 = (int)pSample[pSmp->loop_start*pinc+pinc];
         // Find Next LoopEnd Point
         if (pos > 0)
         {
-            for (UINT i=pSmp->nLoopEnd+1; i<=pSmp->nLength; i++, p+=pinc)
+            for (UINT i=pSmp->loop_end+1; i<=pSmp->length; i++, p+=pinc)
             {
-                bOk = (pSmp->uFlags & CHN_PINGPONGLOOP) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGLOOP) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nLoopEnd = i;
+                    pSmp->loop_end = i;
                     break;
                 }
             }
         } else
         // Find Prev LoopEnd Point
         {
-            for (UINT i=pSmp->nLoopEnd; i>pSmp->nLoopStart+16; )
+            for (UINT i=pSmp->loop_end; i>pSmp->loop_start+16; )
             {
                 i--;
                 p -= pinc;
-                bOk = (pSmp->uFlags & CHN_PINGPONGLOOP) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGLOOP) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nLoopEnd = i;
+                    pSmp->loop_end = i;
                     break;
                 }
             }
         }
         if (bOk)
         {
-            wsprintf(s, "%u", pSmp->nLoopEnd);
+            wsprintf(s, "%u", pSmp->loop_end);
             m_EditLoopEnd.SetWindowText(s);
             m_pModDoc->AdjustEndOfSample(m_nSample);
             bRedraw = true;
@@ -3151,43 +3151,43 @@ void CCtrlSamples::OnVScroll(UINT nCode, UINT, CScrollBar *)
     }
     // Sustain Loop Start
     pos = (short int)m_SpinSustainStart.GetPos();
-    if ((pos) && (pSmp->nSustainEnd))
+    if ((pos) && (pSmp->sustain_end))
     {
         bool bOk = false;
-        LPSTR p = pSample+pSmp->nSustainStart*pinc;
-        int find0 = (int)pSample[pSmp->nSustainEnd*pinc-pinc];
-        int find1 = (int)pSample[pSmp->nSustainEnd*pinc];
+        LPSTR p = pSample+pSmp->sustain_start*pinc;
+        int find0 = (int)pSample[pSmp->sustain_end*pinc-pinc];
+        int find1 = (int)pSample[pSmp->sustain_end*pinc];
         // Find Next Sustain LoopStart Point
         if (pos > 0)
         {
-            for (UINT i=pSmp->nSustainStart+1; i+16<pSmp->nSustainEnd; i++)
+            for (UINT i=pSmp->sustain_start+1; i+16<pSmp->sustain_end; i++)
             {
                 p += pinc;
-                bOk = (pSmp->uFlags & CHN_PINGPONGSUSTAIN) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGSUSTAIN) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nSustainStart = i;
+                    pSmp->sustain_start = i;
                     break;
                 }
             }
         } else
         // Find Prev Sustain LoopStart Point
         {
-            for (UINT i=pSmp->nSustainStart; i; )
+            for (UINT i=pSmp->sustain_start; i; )
             {
                 i--;
                 p -= pinc;
-                bOk = (pSmp->uFlags & CHN_PINGPONGSUSTAIN) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGSUSTAIN) ? MPT_BidiStartCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nSustainStart = i;
+                    pSmp->sustain_start = i;
                     break;
                 }
             }
         }
         if (bOk)
         {
-            wsprintf(s, "%u", pSmp->nSustainStart);
+            wsprintf(s, "%u", pSmp->sustain_start);
             m_EditSustainStart.SetWindowText(s);
             bRedraw = true;
         }
@@ -3198,39 +3198,39 @@ void CCtrlSamples::OnVScroll(UINT nCode, UINT, CScrollBar *)
     if (pos)
     {
         bool bOk = false;
-        LPSTR p = pSample+pSmp->nSustainEnd*pinc;
-        int find0 = (int)pSample[pSmp->nSustainStart*pinc];
-        int find1 = (int)pSample[pSmp->nSustainStart*pinc+pinc];
+        LPSTR p = pSample+pSmp->sustain_end*pinc;
+        int find0 = (int)pSample[pSmp->sustain_start*pinc];
+        int find1 = (int)pSample[pSmp->sustain_start*pinc+pinc];
         // Find Next LoopEnd Point
         if (pos > 0)
         {
-            for (UINT i=pSmp->nSustainEnd+1; i+1<pSmp->nLength; i++, p+=pinc)
+            for (UINT i=pSmp->sustain_end+1; i+1<pSmp->length; i++, p+=pinc)
             {
-                bOk = (pSmp->uFlags & CHN_PINGPONGSUSTAIN) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGSUSTAIN) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nSustainEnd = i;
+                    pSmp->sustain_end = i;
                     break;
                 }
             }
         } else
         // Find Prev LoopEnd Point
         {
-            for (UINT i=pSmp->nSustainEnd; i>pSmp->nSustainStart+16; )
+            for (UINT i=pSmp->sustain_end; i>pSmp->sustain_start+16; )
             {
                 i--;
                 p -= pinc;
-                bOk = (pSmp->uFlags & CHN_PINGPONGSUSTAIN) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
+                bOk = (pSmp->flags & CHN_PINGPONGSUSTAIN) ? MPT_BidiEndCheck(p[0], p[pinc], p[pinc*2]) : MPT_LoopCheck(find0, find1, p[0], p[pinc]);
                 if (bOk)
                 {
-                    pSmp->nSustainEnd = i;
+                    pSmp->sustain_end = i;
                     break;
                 }
             }
         }
         if (bOk)
         {
-            wsprintf(s, "%u", pSmp->nSustainEnd);
+            wsprintf(s, "%u", pSmp->sustain_end);
             m_EditSustainEnd.SetWindowText(s);
             bRedraw = true;
         }
@@ -3242,18 +3242,18 @@ NoSample:
     {
         if (m_pSndFile->m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
         {
-            UINT d = pSmp->nC5Speed;
+            UINT d = pSmp->c5_samplerate;
             if (d < 1) d = 8363;
             if(d < m_nFinetuneStep) d = m_nFinetuneStep;
             d += (pos * m_nFinetuneStep);
-            pSmp->nC5Speed = CLAMP(d, 1, 9999999); // 9999999 is max. in Impulse Tracker
-            int transp = CSoundFile::FrequencyToTranspose(pSmp->nC5Speed) >> 7;
+            pSmp->c5_samplerate = CLAMP(d, 1, 9999999); // 9999999 is max. in Impulse Tracker
+            int transp = CSoundFile::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
             if (basenote >= BASENOTE_MAX) basenote = BASENOTE_MAX-1;
             basenote -= BASENOTE_MIN;
             if (basenote != m_CbnBaseNote.GetCurSel()) m_CbnBaseNote.SetCurSel(basenote);
-            wsprintf(s, "%lu", pSmp->nC5Speed);
+            wsprintf(s, "%lu", pSmp->c5_samplerate);
             m_EditFineTune.SetWindowText(s);
         } else
         {
@@ -3338,19 +3338,19 @@ SELECTIONPOINTS CCtrlSamples::GetSelectionPoints()
 {
     SELECTIONPOINTS points;
     SAMPLEVIEWSTATE viewstate;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
 
     memset(&viewstate, 0, sizeof(viewstate));
     SendViewMessage(VIEWMSG_SAVESTATE, (LPARAM)&viewstate);
     points.nStart = viewstate.dwBeginSel;
     points.nEnd = viewstate.dwEndSel;
-    if(points.nEnd > pSmp->nLength) points.nEnd = pSmp->nLength;
+    if(points.nEnd > pSmp->length) points.nEnd = pSmp->length;
     if(points.nStart > points.nEnd) points.nStart = points.nEnd;
     points.bSelected = true;
     if(points.nStart >= points.nEnd)
     {
         points.nStart = 0;
-        points.nEnd = pSmp->nLength;
+        points.nEnd = pSmp->length;
         points.bSelected = false;
     }
     return points;
@@ -3361,8 +3361,8 @@ SELECTIONPOINTS CCtrlSamples::GetSelectionPoints()
 void CCtrlSamples::SetSelectionPoints(UINT nStart, UINT nEnd)
 //-----------------------------------------------------------
 {
-    nStart = CLAMP(nStart, 0, m_pSndFile->Samples[m_nSample].nLength);
-    nEnd = CLAMP(nEnd, 0, m_pSndFile->Samples[m_nSample].nLength);
+    nStart = CLAMP(nStart, 0, m_pSndFile->Samples[m_nSample].length);
+    nEnd = CLAMP(nEnd, 0, m_pSndFile->Samples[m_nSample].length);
 
     SAMPLEVIEWSTATE viewstate;
     memset(&viewstate, 0, sizeof(viewstate));
@@ -3376,33 +3376,33 @@ void CCtrlSamples::SetSelectionPoints(UINT nStart, UINT nEnd)
 
 // Crossfade loop to create smooth loop transitions
 #define DEFAULT_XFADE_LENGTH 16384 //4096
-#define LimitXFadeLength(x)	min(min(x, pSmp->nLoopEnd - pSmp->nLoopStart), pSmp->nLoopEnd / 2)
+#define LimitXFadeLength(x)	min(min(x, pSmp->loop_end - pSmp->loop_start), pSmp->loop_end / 2)
 
 void CCtrlSamples::OnXFade()
 //--------------------------
 {
     static UINT nFadeLength = DEFAULT_XFADE_LENGTH;
-    modplug::mixer::MODSAMPLE *pSmp = &m_pSndFile->Samples[m_nSample];
+    modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
 
-    if(pSmp->pSample == nullptr) return;
-    if(pSmp->nLoopEnd <= pSmp->nLoopStart || pSmp->nLoopEnd > pSmp->nLength) return;
+    if(pSmp->sample_data == nullptr) return;
+    if(pSmp->loop_end <= pSmp->loop_start || pSmp->loop_end > pSmp->length) return;
     // Case 1: The loop start is preceeded by > XFADE_LENGTH samples. Nothing has to be adjusted.
     // Case 2: The actual loop is shorter than XFADE_LENGTH samples.
     // Case 3: There is not enough sample material before the loop start. Move the loop start.
     nFadeLength = LimitXFadeLength(nFadeLength);
 
-    CSampleXFadeDlg dlg(this, nFadeLength, LimitXFadeLength(GetDocument()->GetSoundFile()->Samples[m_nSample].nLength));
+    CSampleXFadeDlg dlg(this, nFadeLength, LimitXFadeLength(GetDocument()->GetSoundFile()->Samples[m_nSample].length));
     if(dlg.DoModal() == IDOK)
     {
         nFadeLength = dlg.m_nSamples;
 
         if(nFadeLength < 4) return;
 
-        m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_update, pSmp->nLoopEnd - nFadeLength, pSmp->nLoopEnd);
+        m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_update, pSmp->loop_end - nFadeLength, pSmp->loop_end);
         // If we want to fade nFadeLength bytes, we need as much sample material before the loop point. nFadeLength has been adjusted above.
-        if(pSmp->nLoopStart < nFadeLength)
+        if(pSmp->loop_start < nFadeLength)
         {
-            pSmp->nLoopStart = nFadeLength;
+            pSmp->loop_start = nFadeLength;
         }
 
         if(ctrlSmp::XFadeSample(pSmp, nFadeLength, m_pSndFile))

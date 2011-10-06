@@ -1,5 +1,5 @@
 /*
- * MODINSTRUMENT related functions.
+ * modinstrument_t related functions.
  */
 
 #ifndef MODSMP_CTRL_H
@@ -22,30 +22,30 @@ enum ResetFlag
 // Insert silence to given location.
 // Note: Is currently implemented only for inserting silence to the beginning and to the end of the sample.
 // Return: Length of the new sample.
-SmpLength InsertSilence(modplug::mixer::MODSAMPLE& smp, const SmpLength nSilenceLength, const SmpLength nStartFrom, CSoundFile* pSndFile);
+SmpLength InsertSilence(modplug::tracker::modsample_t& smp, const SmpLength nSilenceLength, const SmpLength nStartFrom, CSoundFile* pSndFile);
 
 // Change sample size. 
 // Note: If resized sample is bigger, silence will be added to the sample's tail.
 // Return: Length of the new sample.
-SmpLength ResizeSample(modplug::mixer::MODSAMPLE& smp, const SmpLength nNewLength, CSoundFile* pSndFile);
+SmpLength ResizeSample(modplug::tracker::modsample_t& smp, const SmpLength nNewLength, CSoundFile* pSndFile);
 
 // Replaces sample in 'smp' with given sample and frees the old sample.
 // If valid CSoundFile pointer is given, the sample will be replaced also from the sounds channels.
-void ReplaceSample(modplug::mixer::MODSAMPLE& smp, const LPSTR pNewSample,  const SmpLength nNewLength, CSoundFile* pSndFile);
+void ReplaceSample(modplug::tracker::modsample_t& smp, const LPSTR pNewSample,  const SmpLength nNewLength, CSoundFile* pSndFile);
 
-bool AdjustEndOfSample(modplug::mixer::MODSAMPLE& smp, CSoundFile* pSndFile = 0);
+bool AdjustEndOfSample(modplug::tracker::modsample_t& smp, CSoundFile* pSndFile = 0);
 
 // Returns the number of bytes allocated(at least) for sample data.
 // Note: Currently the return value is based on the sample length and the actual 
 //       allocation may be more than what this function returns.
-inline SmpLength GetSampleCapacity(modplug::mixer::MODSAMPLE& smp) {return smp.GetSampleSizeInBytes();}
+inline SmpLength GetSampleCapacity(modplug::tracker::modsample_t& smp) {return smp.GetSampleSizeInBytes();}
 
 // Resets samples.
 void ResetSamples(CSoundFile& rSndFile, ResetFlag resetflag);
 
 // Remove DC offset and normalize.
 // Return: If DC offset was removed, returns original offset value, zero otherwise.
-float RemoveDCOffset(modplug::mixer::MODSAMPLE& smp,
+float RemoveDCOffset(modplug::tracker::modsample_t& smp,
 					 SmpLength iStart,		// Start position (for partial DC offset removal).
 					 SmpLength iEnd,		// End position (for partial DC offset removal).
 					 const MODTYPE modtype,	// Used to determine whether to adjust global or default volume
@@ -54,19 +54,19 @@ float RemoveDCOffset(modplug::mixer::MODSAMPLE& smp,
 					 CSoundFile* const pSndFile); // Passed to AdjustEndOfSample.
 
 // Reverse sample data
-bool ReverseSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile);
+bool ReverseSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile);
 
 // Virtually unsign sample data
-bool UnsignSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile);
+bool UnsignSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile);
 
 // Invert sample data (flip by 180 degrees)
-bool InvertSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile);
+bool InvertSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, CSoundFile *pSndFile);
 
 // Crossfade sample data to create smooth loops
-bool XFadeSample(modplug::mixer::MODSAMPLE *pSmp, SmpLength iFadeLength, CSoundFile *pSndFile);
+bool XFadeSample(modplug::tracker::modsample_t *pSmp, SmpLength iFadeLength, CSoundFile *pSndFile);
 
 // Convert a sample with any number of channels to mono
-bool ConvertToMono(modplug::mixer::MODSAMPLE *pSmp, CSoundFile *pSndFile);
+bool ConvertToMono(modplug::tracker::modsample_t *pSmp, CSoundFile *pSndFile);
 
 } // Namespace ctrlSmp
 
@@ -74,7 +74,7 @@ namespace ctrlChn
 {
 
 // Replaces sample from sound channels by given sample.
-void ReplaceSample( modplug::mixer::MODCHANNEL (&Chn)[MAX_CHANNELS],
+void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_CHANNELS],
 					LPCSTR pOldSample,
 					LPSTR pNewSample,
 					const ctrlSmp::SmpLength nNewLength,

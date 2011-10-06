@@ -244,7 +244,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 				UINT nCol = 0;
 				for (UINT iCol=0; iCol<SMPLIST_COLUMNS; iCol++)
 				{
-					modplug::mixer::MODSAMPLE *pSmp = &pSndFile->Samples[iSmp+1];
+					modplug::tracker::modsample_t *pSmp = &pSndFile->Samples[iSmp+1];
 					s[0] = 0;
 					switch(iCol)
 					{
@@ -255,7 +255,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 						wsprintf(s, "%02d", iSmp+1);
 						break;
 					case SMPLIST_SIZE:
-						if (pSmp->nLength)
+						if (pSmp->length)
 						{
 							if(pSmp->GetSampleSizeInBytes() >= 1024)
 								wsprintf(s, "%d KB", pSmp->GetSampleSizeInBytes() >> 10);
@@ -264,7 +264,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 						}
 						break;
 					case SMPLIST_TYPE:
-						if (pSmp->nLength)
+						if (pSmp->length)
 						{
 							wsprintf(s, "%d Bit", pSmp->GetElementarySampleSize() << 3);
 						}
@@ -275,7 +275,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 							UINT k = 0;
 							for (UINT i=0; i<pSndFile->m_nInstruments; i++) if (pSndFile->Instruments[i+1])
 							{
-								modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[i+1];
+								modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[i+1];
 								for (UINT j=0; j<NOTE_MAX; j++)
 								{
 									if ((UINT)pIns->Keyboard[j] == (iSmp+1))
@@ -296,17 +296,17 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 						}
 						break;
 					case SMPLIST_MIDDLEC:
-						if (pSmp->nLength)
+						if (pSmp->length)
 						{
 							wsprintf(s, "%d Hz", 
 								pSndFile->GetFreqFromPeriod(
-									pSndFile->GetPeriodFromNote(NOTE_MIDDLEC + pSmp->RelativeTone, pSmp->nFineTune, pSmp->nC5Speed),
-									pSmp->nC5Speed));
+									pSndFile->GetPeriodFromNote(NOTE_MIDDLEC + pSmp->RelativeTone, pSmp->nFineTune, pSmp->c5_samplerate),
+									pSmp->c5_samplerate));
 						}
 						break;
 					case SMPLIST_FILENAME:
-						memcpy(s, pSmp->filename, sizeof(pSmp->filename));
-						s[sizeof(pSmp->filename)] = 0;
+						memcpy(s, pSmp->legacy_filename, sizeof(pSmp->legacy_filename));
+						s[sizeof(pSmp->legacy_filename)] = 0;
 						break;
 					}
 					lvi.mask = LVIF_TEXT;
@@ -350,7 +350,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 				UINT nCol = 0;
 				for (UINT iCol=0; iCol<INSLIST_COLUMNS; iCol++)
 				{
-					modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[iIns+1];
+					modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[iIns+1];
 					s[0] = 0;
 					switch(iCol)
 					{
@@ -388,9 +388,9 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
 					case INSLIST_ENVELOPES:
 						if (pIns)
 						{
-							if (pIns->VolEnv.dwFlags & ENV_ENABLED) strcat(s, "Vol");
-							if (pIns->PanEnv.dwFlags & ENV_ENABLED) { if (s[0]) strcat(s, ", "); strcat(s, "Pan"); }
-							if (pIns->PitchEnv.dwFlags & ENV_ENABLED) { if (s[0]) strcat(s, ", "); strcat(s, (pIns->PitchEnv.dwFlags & ENV_FILTER) ? "Filter" : "Pitch"); }
+							if (pIns->volume_envelope.flags & ENV_ENABLED) strcat(s, "Vol");
+							if (pIns->panning_envelope.flags & ENV_ENABLED) { if (s[0]) strcat(s, ", "); strcat(s, "Pan"); }
+							if (pIns->pitch_envelope.flags & ENV_ENABLED) { if (s[0]) strcat(s, ", "); strcat(s, (pIns->pitch_envelope.flags & ENV_FILTER) ? "Filter" : "Pitch"); }
 						}
 						break;
 					case INSLIST_FILENAME:
@@ -515,7 +515,7 @@ VOID CViewComments::OnEndLabelEdit(LPNMHDR pnmhdr, LRESULT *)
 		{
 			if ((iItem < pSndFile->m_nInstruments) && (pSndFile->Instruments[iItem + 1]))
 			{
-				modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[iItem+1];
+				modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[iItem+1];
 				memcpy(pIns->name, s, sizeof(pIns->name));
 				SetNullTerminator(pIns->name);
 				pModDoc->UpdateAllViews(this, ((iItem + 1) << HINT_SHIFT_INS) | (HINT_INSNAMES|HINT_INSTRUMENT), this);

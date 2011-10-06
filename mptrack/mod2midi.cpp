@@ -137,19 +137,19 @@ CModToMidi::CModToMidi(LPCSTR pszPathName, CSoundFile *pSndFile, CWnd *pWndParen
 	MemsetZero(m_InstrMap);
 	for (UINT nIns=1; nIns<=m_pSndFile->m_nInstruments; nIns++)
 	{
-		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[nIns];
-		if ((pIns) && (pIns->nMidiChannel <= 16))
+		modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[nIns];
+		if ((pIns) && (pIns->midi_channel <= 16))
 		{
-			m_InstrMap[nIns].nChannel = pIns->nMidiChannel;
+			m_InstrMap[nIns].nChannel = pIns->midi_channel;
 			if (m_InstrMap[nIns].nChannel == 10)
 			{
-				if ((pIns->nMidiProgram > 20) && (pIns->nMidiProgram < 120))
-					m_InstrMap[nIns].nProgram = pIns->nMidiProgram;
+				if ((pIns->midi_program > 20) && (pIns->midi_program < 120))
+					m_InstrMap[nIns].nProgram = pIns->midi_program;
 				else
 					m_InstrMap[nIns].nProgram = (pIns->NoteMap[60]-1) & 0x7f;
 			} else
 			{
-				m_InstrMap[nIns].nProgram = pIns->nMidiProgram & 0x7f;
+				m_InstrMap[nIns].nProgram = pIns->midi_program & 0x7f;
 			}
 		}
 	}
@@ -170,7 +170,7 @@ BOOL CModToMidi::OnInitDialog()
 	{
 		for(INSTRUMENTINDEX nIns = 1; nIns <= m_pSndFile->m_nInstruments; nIns++)
 		{
-			modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[nIns];
+			modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[nIns];
 			if ((pIns) && (m_pSndFile->IsInstrumentUsed(nIns)))
 			{
 				memset(s, 0, sizeof(s));
@@ -183,7 +183,7 @@ BOOL CModToMidi::OnInitDialog()
 	{
 		for(SAMPLEINDEX nSmp = 1; nSmp <= m_pSndFile->m_nSamples; nSmp++)
 		{
-			if ((m_pSndFile->Samples[nSmp].pSample)
+			if ((m_pSndFile->Samples[nSmp].sample_data)
 			 && (m_pSndFile->IsSampleUsed(nSmp)))
 			{
 				memset(s, 0, sizeof(s));
@@ -325,10 +325,10 @@ VOID CModToMidi::OnOK()
 {
 	for (UINT i=1; i<=m_pSndFile->m_nInstruments; i++)
 	{
-		modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[i];
+		modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[i];
 		if (pIns)
 		{
-			pIns->nMidiProgram = m_InstrMap[i].nProgram;
+			pIns->midi_program = m_InstrMap[i].nProgram;
 		}
 	}
 	CDialog::OnOK();
@@ -434,7 +434,7 @@ BOOL CModToMidi::DoConvert()
 		for (UINT nChn=0; nChn<chnCount; nChn++)
 		{
 			PDYNMIDITRACK pTrk = &Tracks[nChn];
-			MODCOMMAND *m = m_pSndFile->Patterns[nPat].GetpModCommand(nRow, nChn);
+			modplug::tracker::modcommand_t *m = m_pSndFile->Patterns[nPat].GetpModCommand(nRow, nChn);
 			UINT delta_time = nClock - pTrk->nLastEventClock;
 			UINT len = 0;
 
@@ -487,11 +487,11 @@ BOOL CModToMidi::DoConvert()
 						{
 							if ((nsmp < MAX_INSTRUMENTS) && (m_pSndFile->Instruments[nsmp]))
 							{
-								modplug::mixer::MODINSTRUMENT *pIns = m_pSndFile->Instruments[nsmp];
+								modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[nsmp];
 								nsmp = pIns->Keyboard[note];
 							} else nsmp = 0;
 						}
-						if ((nsmp) && (nsmp < MAX_SAMPLES)) vol = m_pSndFile->Samples[nsmp].nVolume;
+						if ((nsmp) && (nsmp < MAX_SAMPLES)) vol = m_pSndFile->Samples[nsmp].default_volume;
 						if (m->volcmd == VOLCMD_VOLUME) vol = m->vol*4;
 						if (m->command == CMD_VOLUME) vol = m->param*4;
 						vol = LinearToDLSMidiVolume(vol<<8);

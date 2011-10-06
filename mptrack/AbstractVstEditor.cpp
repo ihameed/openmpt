@@ -772,13 +772,13 @@ bool CAbstractVstEditor::CreateInstrument()
 		return false;
 	}
 
-	modplug::mixer::MODINSTRUMENT *pIns = pSndFile->Instruments[nIns];
+	modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[nIns];
 	m_nInstrument = nIns;
 
 	_snprintf(pIns->name, CountOf(pIns->name) - 1, _T("%d: %s"), m_pVstPlugin->GetSlot() + 1, pSndFile->m_MixPlugins[m_pVstPlugin->GetSlot()].Info.szName);
 	strncpy(pIns->filename, pSndFile->m_MixPlugins[m_pVstPlugin->GetSlot()].Info.szLibraryName, CountOf(pIns->filename) - 1);
 	pIns->nMixPlug = (PLUGINDEX)m_pVstPlugin->GetSlot() + 1;
-	pIns->nMidiChannel = 1;
+	pIns->midi_channel = 1;
 	// People will forget to change this anyway, so the following lines can lead to some bad surprises after re-opening the module.
 	//pIns->wMidiBank = (WORD)((m_pVstPlugin->GetCurrentProgram() >> 7) + 1);
 	//pIns->nMidiProgram = (BYTE)((m_pVstPlugin->GetCurrentProgram() & 0x7F) + 1);

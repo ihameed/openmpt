@@ -18,7 +18,7 @@ extern WORD ProTrackerPeriodTable[6*12];
 //////////////////////////////////////////////////////////
 // ProTracker / NoiseTracker MOD/NST file support
 
-void CSoundFile::ConvertModCommand(MODCOMMAND *m) const
+void CSoundFile::ConvertModCommand(modplug::tracker::modcommand_t *m) const
 //-----------------------------------------------------
 {
 	UINT command = m->command, param = m->param;
@@ -65,7 +65,7 @@ void CSoundFile::ConvertModCommand(MODCOMMAND *m) const
 }
 
 
-WORD CSoundFile::ModSaveCommand(const MODCOMMAND *m, const bool bXM, const bool bCompatibilityExport) const
+WORD CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport) const
 //---------------------------------------------------------------------------------------------------------
 {
 	UINT command = m->command, param = m->param;
@@ -234,7 +234,7 @@ struct FixMODPatterns
 		this->bPanning = bPanning;
 	}
 
-	void operator()(MODCOMMAND& m)
+	void operator()(modplug::tracker::modcommand_t& m)
 	{
 		// Fix VBlank MODs
 		if(m.command == CMD_TEMPO && this->bVBlank)
@@ -296,50 +296,50 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
 	for	(UINT i=1; i<=m_nSamples; i++)
 	{
 		PMODSAMPLEHEADER pms = (PMODSAMPLEHEADER)(lpStream+dwMemPos);
-		MODSAMPLE *psmp = &Samples[i];
+		modsample_t *psmp = &Samples[i];
 		UINT loopstart, looplen;
 
 		memcpy(m_szNames[i], pms->name, 22);
 		SpaceToNullStringFixed<22>(m_szNames[i]);
-		psmp->uFlags = 0;
-		psmp->nLength = BigEndianW(pms->length)*2;
-		dwTotalSampleLen += psmp->nLength;
+		psmp->flags = 0;
+		psmp->length = BigEndianW(pms->length)*2;
+		dwTotalSampleLen += psmp->length;
 		psmp->nFineTune = MOD2XMFineTune(pms->finetune & 0x0F);
-		psmp->nVolume = 4*pms->volume;
-		if (psmp->nVolume > 256) { psmp->nVolume = 256; nErr++; }
-		psmp->nGlobalVol = 64;
-		psmp->nPan = 128;
+		psmp->default_volume = 4*pms->volume;
+		if (psmp->default_volume > 256) { psmp->default_volume = 256; nErr++; }
+		psmp->global_volume = 64;
+		psmp->default_pan = 128;
 		loopstart = BigEndianW(pms->loopstart)*2;
 		looplen = BigEndianW(pms->looplen)*2;
 		// Fix loops
-		if ((looplen > 2) && (loopstart+looplen > psmp->nLength)
-		 && (loopstart/2+looplen <= psmp->nLength))
+		if ((looplen > 2) && (loopstart+looplen > psmp->length)
+		 && (loopstart/2+looplen <= psmp->length))
 		{
 			loopstart /= 2;
 		}
-		psmp->nLoopStart = loopstart;
-		psmp->nLoopEnd = loopstart + looplen;
-		if (psmp->nLength < 4) psmp->nLength = 0;
-		if (psmp->nLength)
+		psmp->loop_start = loopstart;
+		psmp->loop_end = loopstart + looplen;
+		if (psmp->length < 4) psmp->length = 0;
+		if (psmp->length)
 		{
 			UINT derr = 0;
-			if (psmp->nLoopStart >= psmp->nLength) { psmp->nLoopStart = psmp->nLength-1; derr|=1; }
-			if (psmp->nLoopEnd > psmp->nLength) { psmp->nLoopEnd = psmp->nLength; derr |= 1; }
-			if (psmp->nLoopStart > psmp->nLoopEnd) derr |= 1;
-			if ((psmp->nLoopStart > psmp->nLoopEnd) || (psmp->nLoopEnd < 4)
-			 || (psmp->nLoopEnd - psmp->nLoopStart < 4))
+			if (psmp->loop_start >= psmp->length) { psmp->loop_start = psmp->length-1; derr|=1; }
+			if (psmp->loop_end > psmp->length) { psmp->loop_end = psmp->length; derr |= 1; }
+			if (psmp->loop_start > psmp->loop_end) derr |= 1;
+			if ((psmp->loop_start > psmp->loop_end) || (psmp->loop_end < 4)
+			 || (psmp->loop_end - psmp->loop_start < 4))
 			{
-				psmp->nLoopStart = 0;
-				psmp->nLoopEnd = 0;
+				psmp->loop_start = 0;
+				psmp->loop_end = 0;
 			}
 			// Fix for most likely broken sample loops. This fixes super_sufm_-_new_life.mod which has a long sample which is looped from 0 to 4.
-			if(psmp->nLoopEnd <= 8 && psmp->nLoopStart == 0 && psmp->nLength > psmp->nLoopEnd)
+			if(psmp->loop_end <= 8 && psmp->loop_start == 0 && psmp->length > psmp->loop_end)
 			{
-				psmp->nLoopEnd = 0;
+				psmp->loop_end = 0;
 			}
-			if (psmp->nLoopEnd > psmp->nLoopStart)
+			if (psmp->loop_end > psmp->loop_start)
 			{
-				psmp->uFlags |= CHN_LOOP;
+				psmp->flags |= CHN_LOOP;
 			}
 		}
 		dwMemPos += sizeof(MODSAMPLEHEADER);
@@ -416,8 +416,7 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
 	m_nDefaultTempo = 125;
 	m_nMinPeriod = 14 << 2;
 	m_nMaxPeriod = 3424 << 2;
-	memcpy(m_szNames[0], lpStream, 20);
-	SpaceToNullStringFixed<20>(m_szNames[0]);
+    assign_without_padding(this->song_name, reinterpret_cast<const char *>(lpStream), 20);
 	// Setup channel pan positions and volume
 	SetupMODPanning();
 
@@ -433,7 +432,7 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
 		{
 			if (dwMemPos + nMaxChn * 256 > dwMemLength) break;
 
-			MODCOMMAND *m;
+			modplug::tracker::modcommand_t *m;
 			if(bFLT8)
 			{
 				if((ipat & 1) == 0)
@@ -449,7 +448,7 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
 			}
 
 			size_t instrWithoutNoteCount = 0;	// For detecting PT1x mode
-			vector<MODCOMMAND::INSTR> lastInstrument(m_nChannels, 0);
+			vector<modplug::tracker::modcommand_t::INSTR> lastInstrument(m_nChannels, 0);
 
 			const BYTE *p = lpStream + dwMemPos;
 
@@ -500,7 +499,7 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
 
 	// Reading samples
 	bool bSamplesPresent = false;
-	for (UINT ismp = 1; ismp <= m_nSamples; ismp++) if (Samples[ismp].nLength)
+	for (UINT ismp = 1; ismp <= m_nSamples; ismp++) if (Samples[ismp].length)
 	{
 		LPSTR p = (LPSTR)(lpStream + dwMemPos);
 		UINT flags = 0;
@@ -586,9 +585,9 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
 	// Writing instrument definition
 	for (UINT iins=1; iins<=31; iins++)
 	{
-		MODSAMPLE *pSmp = &Samples[insmap[iins]];
+		modsample_t *pSmp = &Samples[insmap[iins]];
 		memcpy(bTab, m_szNames[iins],22);
-		inslen[iins] = pSmp->nLength;
+		inslen[iins] = pSmp->length;
 		// if the sample size is odd, we have to add a padding byte, as all sample sizes in MODs are even.
 		if(inslen[iins] & 1)
 			inslen[iins]++;
@@ -598,12 +597,12 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
 		if (pSmp->RelativeTone < 0) bTab[24] = 0x08; else
 		if (pSmp->RelativeTone > 0) bTab[24] = 0x07; else
 		bTab[24] = (BYTE)XM2MODFineTune(pSmp->nFineTune);
-		bTab[25] = pSmp->nVolume >> 2;
+		bTab[25] = pSmp->default_volume >> 2;
 		UINT repstart = 0, replen = 2;
-		if(pSmp->uFlags & CHN_LOOP)
+		if(pSmp->flags & CHN_LOOP)
 		{
-			repstart = pSmp->nLoopStart;
-			replen = pSmp->nLoopEnd - pSmp->nLoopStart;
+			repstart = pSmp->loop_start;
+			replen = pSmp->loop_end - pSmp->loop_start;
 		}
 		bTab[26] = repstart >> 9;
 		bTab[27] = repstart >> 1;
@@ -646,7 +645,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
 		BYTE s[64*4];
 		if (Patterns[ipat])					//if pattern exists
 		{
-			MODCOMMAND *m = Patterns[ipat];
+			modplug::tracker::modcommand_t *m = Patterns[ipat];
 			for (UINT i=0; i<64; i++) {				//for all rows 
 				if (i < Patterns[ipat].GetNumRows()) {			//if row exists
 					LPBYTE p=s;
@@ -703,17 +702,17 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
 	// Writing instruments
 	for (UINT ismpd = 1; ismpd <= 31; ismpd++) if (inslen[ismpd])
 	{
-		MODSAMPLE *pSmp = &Samples[insmap[ismpd]];
+		modsample_t *pSmp = &Samples[insmap[ismpd]];
 		if(bCompatibilityExport == true) // first two bytes have to be 0 due to PT's one-shot loop ("no loop")
 		{
 			int iOverwriteLen = 2 * pSmp->GetBytesPerSample();
-			memset(pSmp->pSample, 0, min(iOverwriteLen, pSmp->GetSampleSizeInBytes()));
+			memset(pSmp->sample_data, 0, min(iOverwriteLen, pSmp->GetSampleSizeInBytes()));
 		}
 		UINT flags = RS_PCM8S;
 #ifndef NO_PACKING
-		if (!(pSmp->uFlags & (CHN_16BIT|CHN_STEREO)))
+		if (!(pSmp->flags & (CHN_16BIT|CHN_STEREO)))
 		{
-			if ((nPacking) && (CanPackSample(pSmp->pSample, inslen[ismpd], nPacking)))
+			if ((nPacking) && (CanPackSample(pSmp->sample_data, inslen[ismpd], nPacking)))
 			{
 				fwrite("ADPCM", 1, 5, f);
 				flags = RS_ADPCM4;
@@ -722,7 +721,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
 #endif
 		WriteSample(f, pSmp, flags, inslen[ismpd]);
 		// write padding byte if the sample size is odd.
-		if((pSmp->nLength & 1) && !nPacking)
+		if((pSmp->length & 1) && !nPacking)
 		{
 			int8 padding = 0;
 			fwrite(&padding, 1, 1, f);

@@ -279,7 +279,7 @@ void CCtrlPatterns::UpdateView(DWORD dwHintMask, CObject *pObj)
 			m_CbnInstrument.ResetContent();
 			m_CbnInstrument.SetItemData(m_CbnInstrument.AddString(" No Instrument"), 0);
 			const INSTRUMENTINDEX nSplitIns = m_pModDoc->GetSplitKeyboardSettings()->splitInstrument;
-			const MODCOMMAND::NOTE noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
+			const modplug::tracker::modcommand_t::NOTE noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
 			const CString sSplitInsName = m_pModDoc->GetPatternViewInstrumentName(nSplitIns, true, false);
 			if (m_pSndFile->m_nInstruments)
 			{
@@ -305,8 +305,8 @@ void CCtrlPatterns::UpdateView(DWORD dwHintMask, CObject *pObj)
 			} else
 			{
 				UINT nmax = m_pSndFile->m_nSamples;
-				while ((nmax > 1) && (m_pSndFile->Samples[nmax].pSample == NULL) && (!m_pSndFile->m_szNames[nmax][0])) nmax--;
-				for (UINT i=1; i<=nmax; i++) if ((m_pSndFile->m_szNames[i][0]) || (m_pSndFile->Samples[i].pSample))
+				while ((nmax > 1) && (m_pSndFile->Samples[nmax].sample_data == NULL) && (!m_pSndFile->m_szNames[nmax][0])) nmax--;
+				for (UINT i=1; i<=nmax; i++) if ((m_pSndFile->m_szNames[i][0]) || (m_pSndFile->Samples[i].sample_data))
 				{
 					if (m_pModDoc->GetSplitKeyboardSettings()->IsSplitActive() && nSplitIns < ARRAYELEMCOUNT(m_pSndFile->m_szNames))
 						wsprintf(s, szSplitFormat, nSplitIns, GetNoteStr(noteSplit), i, m_pSndFile->m_szNames[nSplitIns], m_pSndFile->m_szNames[i]);
@@ -843,12 +843,12 @@ void CCtrlPatterns::OnPatternDuplicate()
 						pSndFile->Patterns[nNewPat].SetSignature(pSndFile->Patterns[nCurPat].GetRowsPerBeat(), pSndFile->Patterns[nCurPat].GetRowsPerMeasure());
 					}
 					// copy pattern data
-					MODCOMMAND *pSrc = pSndFile->Patterns[nCurPat];
-					MODCOMMAND *pDest = pSndFile->Patterns[nNewPat];
+					modplug::tracker::modcommand_t *pSrc = pSndFile->Patterns[nCurPat];
+					modplug::tracker::modcommand_t *pDest = pSndFile->Patterns[nNewPat];
 					UINT n = pSndFile->Patterns[nCurPat].GetNumRows();
 					if (pSndFile->Patterns[nNewPat].GetNumRows() < n) n = pSndFile->Patterns[nNewPat].GetNumRows();
 					n *= pSndFile->m_nChannels;
-					if (n) memcpy(pDest, pSrc, n * sizeof(MODCOMMAND));
+					if (n) memcpy(pDest, pSrc, n * sizeof(modplug::tracker::modcommand_t));
 					bSuccess = true;
 					pReplaceIndex[nCurPat] = nNewPat; // mark as duplicated
 				}

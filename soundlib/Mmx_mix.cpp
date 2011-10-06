@@ -118,10 +118,10 @@ DWORD CSoundFile::InitSysInfo()
 
 #ifdef _DEBUG
     // Must be aligned on 32 bytes for best performance
-    if (sizeof(modplug::mixer::MODCHANNEL) & 0x1F)
+    if (sizeof(modplug::tracker::modchannel_t) & 0x1F)
     {
         CHAR s[64];
-        wsprintf(s, "modplug::mixer::MODCHANNEL not aligned: sizeof(modplug::mixer::MODCHANNEL) = %d", sizeof(modplug::mixer::MODCHANNEL));
+        wsprintf(s, "modplug::tracker::modchannel_t not aligned: sizeof(modplug::tracker::modchannel_t) = %d", sizeof(modplug::tracker::modchannel_t));
         ::MessageBox(NULL, s, NULL, MB_OK|MB_ICONEXCLAMATION); //disabled by rewbs
     }
     DWORD dwFastSinc = (DWORD)(LPVOID)gFastSinc;

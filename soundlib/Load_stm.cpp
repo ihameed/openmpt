@@ -26,7 +26,7 @@ typedef struct tagSTMNOTE
 // Raw STM sampleinfo struct:
 typedef struct tagSTMSAMPLE
 {
-	CHAR filename[14];	// Can't have long comments - just filename comments :)
+	CHAR filename[14];	// Can't have long comments - just legacy_filename comments :)
 	WORD reserved;		// ISA in memory when in ST 2
 	WORD length;		// Sample length
 	WORD loopbeg;		// Loop start point
@@ -69,8 +69,7 @@ bool CSoundFile::ReadSTM(const BYTE *lpStream, const DWORD dwMemLength)
 	if ((phdr->filetype != 2) || (phdr->unused != 0x1A)
 	 || ((_strnicmp(phdr->trackername, "!SCREAM!", 8))
 	  && (_strnicmp(phdr->trackername, "BMOD2STM", 8)))) return false;
-	memcpy(m_szNames[0], phdr->songname, 20);
-	SpaceToNullStringFixed<20>(m_szNames[0]);
+    assign_without_padding(this->song_name, phdr->songname, 20);
 	// Read STM header
 	m_nType = MOD_TYPE_STM;
 	m_nSamples = 31;
@@ -94,24 +93,24 @@ bool CSoundFile::ReadSTM(const BYTE *lpStream, const DWORD dwMemLength)
 	// Reading samples
 	for (UINT nIns=0; nIns<31; nIns++)
 	{
-		MODSAMPLE *pIns = &Samples[nIns+1];
+		modsample_t *pIns = &Samples[nIns+1];
 		STMSAMPLE *pStm = &phdr->sample[nIns];  // STM sample data
-		memcpy(pIns->filename, pStm->filename, 13);
+		memcpy(pIns->legacy_filename, pStm->filename, 13);
 		memcpy(m_szNames[nIns+1], pStm->filename, 12);
-		SpaceToNullStringFixed<12>(pIns->filename);
+		SpaceToNullStringFixed<12>(pIns->legacy_filename);
 		SpaceToNullStringFixed<12>(m_szNames[nIns + 1]);
-		pIns->nC5Speed = LittleEndianW(pStm->c2spd);
-		pIns->nGlobalVol = 64;
-		pIns->nVolume = pStm->volume << 2;
-		if (pIns->nVolume > 256) pIns->nVolume = 256;
-		pIns->nLength = LittleEndianW(pStm->length);
-		if ((pIns->nLength < 4) || (!pIns->nVolume)) pIns->nLength = 0;
-		pIns->nLoopStart = LittleEndianW(pStm->loopbeg);
-		pIns->nLoopEnd = LittleEndianW(pStm->loopend);
-		if ((pIns->nLoopEnd > pIns->nLoopStart) && (pIns->nLoopEnd != 0xFFFF))
+		pIns->c5_samplerate = LittleEndianW(pStm->c2spd);
+		pIns->global_volume = 64;
+		pIns->default_volume = pStm->volume << 2;
+		if (pIns->default_volume > 256) pIns->default_volume = 256;
+		pIns->length = LittleEndianW(pStm->length);
+		if ((pIns->length < 4) || (!pIns->default_volume)) pIns->length = 0;
+		pIns->loop_start = LittleEndianW(pStm->loopbeg);
+		pIns->loop_end = LittleEndianW(pStm->loopend);
+		if ((pIns->loop_end > pIns->loop_start) && (pIns->loop_end != 0xFFFF))
 		{
-			pIns->uFlags |= CHN_LOOP;
-			pIns->nLoopEnd = min(pIns->nLoopEnd, pIns->nLength);
+			pIns->flags |= CHN_LOOP;
+			pIns->loop_end = min(pIns->loop_end, pIns->length);
 		}
 	}
 	dwMemPos = sizeof(STMHEADER);
@@ -122,7 +121,7 @@ bool CSoundFile::ReadSTM(const BYTE *lpStream, const DWORD dwMemLength)
 		if (dwMemPos + 64*4*4 > dwMemLength) return true;
 		if(Patterns.Insert(nPat, 64))
 			return true;
-		MODCOMMAND *m = Patterns[nPat];
+		modplug::tracker::modcommand_t *m = Patterns[nPat];
 		STMNOTE *p = (STMNOTE *)(lpStream + dwMemPos);
 		for (UINT n=0; n<64*4; n++, p++, m++)
 		{
@@ -179,12 +178,12 @@ bool CSoundFile::ReadSTM(const BYTE *lpStream, const DWORD dwMemLength)
 	// Reading Samples
 	for (UINT nSmp=1; nSmp<=31; nSmp++)
 	{
-		MODSAMPLE *pIns = &Samples[nSmp];
+		modsample_t *pIns = &Samples[nSmp];
 		dwMemPos = (dwMemPos + 15) & (~15);
-		if (pIns->nLength)
+		if (pIns->length)
 		{
 			UINT nPos = ((UINT)phdr->sample[nSmp-1].reserved) << 4;
-			if ((nPos >= sizeof(STMHEADER)) && (nPos <= dwMemLength) && (pIns->nLength <= dwMemLength-nPos)) dwMemPos = nPos;
+			if ((nPos >= sizeof(STMHEADER)) && (nPos <= dwMemLength) && (pIns->length <= dwMemLength-nPos)) dwMemPos = nPos;
 			if (dwMemPos < dwMemLength)
 			{
 				dwMemPos += ReadSample(pIns, RS_PCM8S, (LPSTR)(lpStream+dwMemPos),dwMemLength-dwMemPos);

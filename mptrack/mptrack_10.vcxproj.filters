@@ -145,6 +145,7 @@
       <Filter>mixgraph</Filter>
     </ClCompile>
     <ClCompile Include="mixgraph\mixer.cpp" />
+    <ClCompile Include="serializers\wao.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PatternRandomizer.h" />
@@ -186,7 +187,6 @@
     <ClInclude Include="mod2midi.h" />
     <ClInclude Include="mod2wave.h" />
     <ClInclude Include="..\soundlib\mod_specifications.h" />
-    <ClInclude Include="..\soundlib\modcommand.h" />
     <ClInclude Include="ModConvert.h" />
     <ClInclude Include="moddoc.h" />
     <ClInclude Include="..\soundlib\ModSequence.h" />
@@ -258,7 +258,9 @@
       <Filter>mixgraph</Filter>
     </ClInclude>
     <ClInclude Include="mixgraph\mixer.h" />
-    <ClInclude Include="mixer\modchannel.h" />
+    <ClInclude Include="serializers\wao.h" />
+    <ClInclude Include="tracker\tracker.h" />
+    <ClInclude Include="tracker\modcommand.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />
@@ -288,6 +290,7 @@
     <None Include="res\defaultKeybindings.mkb" />
     <None Include="mptrack.reg" />
     <None Include="VTune\mptrack.vpj" />
+    <None Include="..\extlib\msgpack-0.5.4\msgpack_vc8.vcproj" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="mixer">

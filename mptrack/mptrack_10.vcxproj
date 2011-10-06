@@ -64,7 +64,6 @@
     <ClCompile>
       <AdditionalOptions>/EHsc /Zc:auto %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;ENABLE_MMX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -85,6 +84,8 @@
       <CompileAs>Default</CompileAs>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
+      <AdditionalIncludeDirectories>..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\msgpack-0.5.4\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -124,7 +125,7 @@
       <AdditionalOptions>/EHsc /O2 /Zc:auto %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\msgpack-0.5.4\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENABLE_MMX;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -146,6 +147,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -172,6 +174,12 @@
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\msgpack-0.5.4\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractVstEditor.cpp" />
@@ -252,6 +260,7 @@
     <ClCompile Include="..\Soundlib\snddev.cpp" />
     <ClCompile Include="..\soundlib\Sndfile.cpp" />
     <ClCompile Include="..\soundlib\Sndmix.cpp" />
+    <ClCompile Include="serializers\wao.cpp" />
     <ClCompile Include="SoundFilePlayConfig.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -316,7 +325,6 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mixer\modchannel.h" />
     <ClInclude Include="mixgraph\mixer.h" />
     <ClInclude Include="mixgraph\source_vertex.h" />
     <ClInclude Include="mixgraph\constants.h" />
@@ -363,7 +371,6 @@
     <ClInclude Include="mod2midi.h" />
     <ClInclude Include="mod2wave.h" />
     <ClInclude Include="..\soundlib\mod_specifications.h" />
-    <ClInclude Include="..\soundlib\modcommand.h" />
     <ClInclude Include="ModConvert.h" />
     <ClInclude Include="moddoc.h" />
     <ClInclude Include="..\soundlib\ModSequence.h" />
@@ -389,9 +396,12 @@
     <ClInclude Include="..\Soundlib\snddev.h" />
     <ClInclude Include="..\Soundlib\snddevx.h" />
     <ClInclude Include="..\Soundlib\Sndfile.h" />
+    <ClInclude Include="serializers\wao.h" />
     <ClInclude Include="SoundFilePlayConfig.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="tagging.h" />
+    <ClInclude Include="tracker\modcommand.h" />
+    <ClInclude Include="tracker\tracker.h" />
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="Undo.h" />
     <ClInclude Include="UpdateCheck.h" />
@@ -416,6 +426,7 @@
     <ClInclude Include="..\soundlib\Loaders.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\extlib\msgpack-0.5.4\msgpack_vc8.vcproj" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\colors.bmp" />
     <None Include="res\dragging.cur" />
@@ -442,6 +453,14 @@
     <None Include="VTune\mptrack.vpj" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj">
+      <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
     <ProjectReference Include="..\soundtouch\soundtouch_10.vcxproj">
       <Project>{cf3c2ca5-5d45-4635-bba4-c1f435e10896}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

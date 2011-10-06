@@ -382,7 +382,7 @@ void AddPluginParameternamesToCombobox(CComboBox& CBox, SNDMIXPLUGIN& plugarray)
 void AddPluginParameternamesToCombobox(CComboBox& CBox, CVstPlugin& plug);
 
 // Append note names in range [noteStart, noteEnd] to given combobox. Index starts from 0.
-void AppendNotesToControl(CComboBox& combobox, const MODCOMMAND::NOTE noteStart, const MODCOMMAND::NOTE noteEnd);
+void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modcommand_t::NOTE noteStart, const modplug::tracker::modcommand_t::NOTE noteEnd);
 
 // Append note names to combobox. If pSndFile != nullprt, appends only notes that are 
 // available in the module type. If nInstr is given, instrument specific note names are used instead of
@@ -390,7 +390,7 @@ void AppendNotesToControl(CComboBox& combobox, const MODCOMMAND::NOTE noteStart,
 void AppendNotesToControlEx(CComboBox& combobox, const CSoundFile* const pSndFile = nullptr, const INSTRUMENTINDEX nInstr = MAX_INSTRUMENTS);
 
 // Returns note name(such as "C-5") of given note. Regular notes are in range [1,MAX_NOTE].
-LPCTSTR GetNoteStr(const MODCOMMAND::NOTE);
+LPCTSTR GetNoteStr(const modplug::tracker::modcommand_t::NOTE);
 
 ///////////////////////////////////////////////////
 // Tables

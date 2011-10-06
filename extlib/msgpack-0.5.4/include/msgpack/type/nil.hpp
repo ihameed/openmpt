@@ -42,7 +42,7 @@ inline packer<Stream>& operator<< (packer<Stream>& o, const type::nil& v)
 	return o;
 }
 
-inline void operator<< (object& o, type::nil v)
+inline void operator<< (object& o, type::nil)
 {
 	o.type = type::NIL;
 }

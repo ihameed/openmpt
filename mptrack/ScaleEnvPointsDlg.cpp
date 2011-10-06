@@ -42,7 +42,7 @@ void CScaleEnvPointsDlg::OnOK()
 
 	if(m_fFactorX > 0 && m_fFactorX != 1)
 	{
-		for(UINT i = 0; i < m_pEnv->nNodes; i++)
+		for(UINT i = 0; i < m_pEnv->num_nodes; i++)
 		{
 			m_pEnv->Ticks[i] = static_cast<WORD>(m_fFactorX * m_pEnv->Ticks[i]);
 
@@ -54,7 +54,7 @@ void CScaleEnvPointsDlg::OnOK()
 
 	if(m_fFactorY != 1)
 	{
-		for(UINT i = 0; i < m_pEnv->nNodes; i++)
+		for(UINT i = 0; i < m_pEnv->num_nodes; i++)
 		{
 			m_pEnv->Values[i] = CLAMP(static_cast<BYTE>((m_fFactorY * ((int)m_pEnv->Values[i] - m_nCenter)) + m_nCenter), ENVELOPE_MIN, ENVELOPE_MAX);
 		}

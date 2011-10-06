@@ -12040,7 +12040,7 @@ const packer<Stream>& operator<< (
 
 inline void operator<< (
 		object::with_zone& o,
-		const type::tuple<>& v) {
+		const type::tuple<>&) {
 	o.type = type::ARRAY;
 	o.via.array.ptr = NULL;
 	o.via.array.size = 0;

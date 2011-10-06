@@ -19,8 +19,8 @@
 #include "Snd_defs.h"
 #include "Endianness.h"
 
-#include "../mptrack/mixer/modchannel.h"
-#include "mixgraph/core.h"
+#include "../mptrack/tracker/tracker.h"
+#include "../mptrack/mixgraph/core.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
@@ -34,13 +34,13 @@ typedef intptr_t VstIntPtr;
 
 
 
-//modplug::mixer::MODINSTRUMENT;
+//modplug::tracker::modinstrument_t;
 
 // -----------------------------------------------------------------------------------------
-// MODULAR modplug::mixer::MODINSTRUMENT FIELD ACCESS : body content at the (near) top of Sndfile.cpp !!!
+// MODULAR modplug::tracker::modinstrument_t FIELD ACCESS : body content at the (near) top of Sndfile.cpp !!!
 // -----------------------------------------------------------------------------------------
-extern void WriteInstrumentHeaderStruct(modplug::mixer::MODINSTRUMENT * input, FILE * file);
-extern BYTE * GetInstrumentHeaderFieldPointer(modplug::mixer::MODINSTRUMENT * input, __int32 fcode, __int16 fsize);
+extern void WriteInstrumentHeaderStruct(modplug::tracker::modinstrument_t * input, FILE * file);
+extern BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize);
 
 // -! NEW_FEATURE#0027
 
@@ -344,8 +344,8 @@ public: //Get 'controllers'
     const CMIDIMapper& GetMIDIMapper() const {return m_MIDIMapper;}
 
 private: //Effect functions
-    void PortamentoMPT(modplug::mixer::MODCHANNEL*, int);
-    void PortamentoFineMPT(modplug::mixer::MODCHANNEL*, int);
+    void PortamentoMPT(modplug::tracker::modchannel_t*, int);
+    void PortamentoFineMPT(modplug::tracker::modchannel_t*, int);
 
 private: //Misc private methods.
     static void SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type);
@@ -418,14 +418,18 @@ public:	// for Editing
     UINT m_nMaxOrderPosition;
     LPSTR m_lpszSongComments;
     UINT ChnMix[MAX_CHANNELS];							// Channels to be mixed
-    modplug::mixer::MODCHANNEL Chn[MAX_CHANNELS];						// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
-    modplug::mixer::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];	// Initial channels settings
+    modplug::tracker::modchannel_t Chn[MAX_CHANNELS];						// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
+    modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];	// Initial channels settings
     CPatternContainer Patterns;							// Patterns
     ModSequenceSet Order;								// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
-    modplug::mixer::MODSAMPLE Samples[MAX_SAMPLES];						// Sample Headers
-    modplug::mixer::MODINSTRUMENT *Instruments[MAX_INSTRUMENTS];		// Instrument Headers
-    modplug::mixer::MODINSTRUMENT m_defaultInstrument;					// Currently only used to get default values for extented properties. 
+
+    modplug::tracker::modsample_t Samples[MAX_SAMPLES];						// Sample Headers
+    modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];		// Instrument Headers
+    modplug::tracker::modinstrument_t m_defaultInstrument;					// Currently only used to get default values for extented properties. 
+
     CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];		// Song and sample names
+    std::string song_name;
+
     MODMIDICFG m_MidiCfg;								// Midi macro config table
     SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];			// Mix plugins
     SNDMIXSONGEQ m_SongEQ;								// Default song EQ preset
@@ -481,8 +485,8 @@ public:
     void DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);		//rewbs.playSongFromCursor
     void SetCurrentPos(UINT nPos);
     void SetCurrentOrder(ORDERINDEX nOrder);
-    void GetTitle(LPSTR s) const { lstrcpyn(s,m_szNames[0],32); }
-    LPCSTR GetTitle() const { return m_szNames[0]; }
+    void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
+    LPCSTR GetTitle() const { return song_name.c_str(); }
     LPCTSTR GetSampleName(UINT nSample) const;
     CString GetInstrumentName(UINT nInstr) const;
     UINT GetMusicSpeed() const { return m_nMusicSpeed; }
@@ -544,7 +548,7 @@ public:
 
     // Save Functions
 #ifndef MODPLUG_NO_FILESAVE
-    UINT WriteSample(FILE *f, modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, UINT nMaxLen=0);
+    UINT WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen=0);
     bool SaveXM(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
     bool SaveS3M(LPCSTR lpszFileName, UINT nPacking=0);
     bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
@@ -552,8 +556,8 @@ public:
     bool SaveCompatIT(LPCSTR lpszFileName);
     bool SaveITProject(LPCSTR lpszFileName); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
     UINT SaveMixPlugins(FILE *f=NULL, BOOL bUpdate=TRUE);
-    void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::mixer::MODINSTRUMENT* instruments[], UINT nInstruments);
-    void SaveExtendedInstrumentProperties(modplug::mixer::MODINSTRUMENT *instruments[], UINT nInstruments, FILE* f);
+    void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::tracker::modinstrument_t* instruments[], UINT nInstruments);
+    void SaveExtendedInstrumentProperties(modplug::tracker::modinstrument_t *instruments[], UINT nInstruments, FILE* f);
     void SaveExtendedSongProperties(FILE* f);
     void LoadExtendedSongProperties(const MODTYPE modtype, LPCBYTE ptr, const LPCBYTE startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
 #endif // MODPLUG_NO_FILESAVE
@@ -566,14 +570,14 @@ public:
     // MOD Convert function
     MODTYPE GetBestSaveFormat() const;
     MODTYPE GetSaveFormats() const;
-    void ConvertModCommand(MODCOMMAND *) const;
-    void S3MConvert(MODCOMMAND *m, bool bIT) const;
+    void ConvertModCommand(modplug::tracker::modcommand_t *) const;
+    void S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const;
     void S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport = false) const;
-    WORD ModSaveCommand(const MODCOMMAND *m, const bool bXM, const bool bCompatibilityExport = false) const;
+    WORD ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
     
-    static void ConvertCommand(MODCOMMAND *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete MODCOMMAND item from one format to another
-    static void MODExx2S3MSxx(MODCOMMAND *m); // Convert Exx to Sxx
-    static void S3MSxx2MODExx(MODCOMMAND *m); // Convert Sxx to Exx
+    static void ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
+    static void MODExx2S3MSxx(modplug::tracker::modcommand_t *m); // Convert Exx to Sxx
+    static void S3MSxx2MODExx(modplug::tracker::modcommand_t *m); // Convert Sxx to Exx
     void SetupMODPanning(bool bForceSetup = false); // Setup LRRL panning, max channel volume
 
 public:
@@ -586,7 +590,7 @@ public:
     UINT ReadPattern(LPVOID lpBuffer, UINT cbBuffer);
     UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, CSoundFile *, DWORD *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
-    UINT GetResamplingFlag(const modplug::mixer::MODCHANNEL *pChannel);
+    UINT GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel);
     BOOL FadeSong(UINT msec);
     BOOL GlobalFadeSong(UINT msec);
     UINT GetTotalTickCount() const { return m_nTotalCount; }
@@ -644,7 +648,7 @@ public:
     UINT GetNNAChannel(UINT nChn) const;
     void CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut);
     void NoteChange(UINT nChn, int note, bool bPorta = false, bool bResetEnv = true, bool bManual = false);
-    void InstrumentChange(modplug::mixer::MODCHANNEL *pChn, UINT instr, bool bPorta = false, bool bUpdVol = true, bool bResetEnv = true);
+    void InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT instr, bool bPorta = false, bool bUpdVol = true, bool bResetEnv = true);
 
     // Channel Effects
     void KeyOff(UINT nChn);
@@ -654,36 +658,36 @@ public:
 
 private:
     // Channel Effects
-    void PortamentoUp(modplug::mixer::MODCHANNEL *pChn, UINT param, const bool fineAsRegular = false);
-    void PortamentoDown(modplug::mixer::MODCHANNEL *pChn, UINT param, const bool fineAsRegular = false);
-    void MidiPortamento(modplug::mixer::MODCHANNEL *pChn, int param);
-    void FinePortamentoUp(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void FinePortamentoDown(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void ExtraFinePortamentoUp(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void ExtraFinePortamentoDown(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void NoteSlide(modplug::mixer::MODCHANNEL *pChn, UINT param, int sign);
-    void TonePortamento(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void Vibrato(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void FineVibrato(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void VolumeSlide(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void PanningSlide(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void ChannelVolSlide(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void FineVolumeUp(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void FineVolumeDown(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void Tremolo(modplug::mixer::MODCHANNEL *pChn, UINT param);
-    void Panbrello(modplug::mixer::MODCHANNEL *pChn, UINT param);
+    void PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param, const bool fineAsRegular = false);
+    void PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param, const bool fineAsRegular = false);
+    void MidiPortamento(modplug::tracker::modchannel_t *pChn, int param);
+    void FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param);
+    void FinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param);
+    void ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param);
+    void ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param);
+    void NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int sign);
+    void TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param);
+    void Vibrato(modplug::tracker::modchannel_t *pChn, UINT param);
+    void FineVibrato(modplug::tracker::modchannel_t *pChn, UINT param);
+    void VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT param);
+    void PanningSlide(modplug::tracker::modchannel_t *pChn, UINT param);
+    void ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT param);
+    void FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT param);
+    void FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT param);
+    void Tremolo(modplug::tracker::modchannel_t *pChn, UINT param);
+    void Panbrello(modplug::tracker::modchannel_t *pChn, UINT param);
     void RetrigNote(UINT nChn, int param, UINT offset=0);  //rewbs.volOffset: added last param
     void SampleOffset(UINT nChn, UINT param, bool bPorta);	//rewbs.volOffset: moved offset code to own method
     void NoteCut(UINT nChn, UINT nTick);
-    int PatternLoop(modplug::mixer::MODCHANNEL *, UINT param);
+    int PatternLoop(modplug::tracker::modchannel_t *, UINT param);
     void ExtendedMODCommands(UINT nChn, UINT param);
     void ExtendedS3MCommands(UINT nChn, UINT param);
-    void ExtendedChannelEffect(modplug::mixer::MODCHANNEL *, UINT param);
-    inline void InvertLoop(modplug::mixer::MODCHANNEL* pChn);
+    void ExtendedChannelEffect(modplug::tracker::modchannel_t *, UINT param);
+    inline void InvertLoop(modplug::tracker::modchannel_t* pChn);
     void ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro, UINT param = 0);
-    void SetupChannelFilter(modplug::mixer::MODCHANNEL *pChn, bool bReset, int flt_modifier = 256) const;
+    void SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool bReset, int flt_modifier = 256) const;
     // Low-Level effect processing
-    void DoFreqSlide(modplug::mixer::MODCHANNEL *pChn, LONG nFreqSlide);
+    void DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSlide);
     void GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide);
     DWORD IsSongFinished(UINT nOrder, UINT nRow) const;
     void UpdateTimeSignature();
@@ -697,7 +701,7 @@ public:
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
     UINT PackSample(int &sample, int next);
     bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *result=NULL);
-    UINT ReadSample(modplug::mixer::MODSAMPLE *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const WORD format = 1);
+    UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const WORD format = 1);
     bool DestroySample(SAMPLEINDEX nSample);
 
 // -> CODE#0020
@@ -715,7 +719,7 @@ public:
     bool RemoveInstrumentSamples(INSTRUMENTINDEX nInstr);
     SAMPLEINDEX DetectUnusedSamples(vector<bool> &sampleUsed) const;
     SAMPLEINDEX RemoveSelectedSamples(const vector<bool> &keepSamples);
-    void AdjustSampleLoop(modplug::mixer::MODSAMPLE *pSmp);
+    void AdjustSampleLoop(modplug::tracker::modsample_t *pSmp);
     // Samples file I/O
     bool ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
     bool ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD *pdwWSMPOffset=NULL);
@@ -749,18 +753,18 @@ public:
     UINT GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const;
     UINT GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac=0) const;
     // Misc functions
-    modplug::mixer::MODSAMPLE *GetSample(UINT n) { return Samples+n; }
+    modplug::tracker::modsample_t *GetSample(UINT n) { return Samples+n; }
     void ResetMidiCfg();
     void SanitizeMacros();
     UINT MapMidiInstrument(DWORD dwProgram, UINT nChannel, UINT nNote);
-    long ITInstrToMPT(const void *p, modplug::mixer::MODINSTRUMENT *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
+    long ITInstrToMPT(const void *p, modplug::tracker::modinstrument_t *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
     UINT LoadMixPlugins(const void *pData, UINT nLen);
 //	PSNDMIXPLUGIN GetSndPlugMixPlug(IMixPlugin *pPlugin); //rewbs.plugDocAware
 #ifndef NO_FILTER
     DWORD CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
 #endif
 #ifdef MODPLUG_TRACKER
-    VOID ProcessMidiOut(UINT nChn, modplug::mixer::MODCHANNEL *pChn);		//rewbs.VSTdelay : added arg.
+    VOID ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn);		//rewbs.VSTdelay : added arg.
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
@@ -768,7 +772,7 @@ public:
 public:
     static DWORD TransposeToFrequency(int transp, int ftune=0);
     static int FrequencyToTranspose(DWORD freq);
-    static void FrequencyToTranspose(modplug::mixer::MODSAMPLE *psmp);
+    static void FrequencyToTranspose(modplug::tracker::modsample_t *psmp);
 
     // System-Dependant functions
 public:
@@ -809,14 +813,14 @@ protected:
     UINT GetRawSongMessage(LPSTR s, UINT cbsize, UINT linesize=32);
 
 public:
-    int GetVolEnvValueFromPosition(int position, modplug::mixer::MODINSTRUMENT* pIns) const;
-    void ResetChannelEnvelopes(modplug::mixer::MODCHANNEL *pChn);
-    void ResetChannelEnvelope(modplug::mixer::MODCHANNEL_ENVINFO &env);
-    void SetDefaultInstrumentValues(modplug::mixer::MODINSTRUMENT *pIns);
+    int GetVolEnvValueFromPosition(int position, modplug::tracker::modinstrument_t* pIns) const;
+    void ResetChannelEnvelopes(modplug::tracker::modchannel_t *pChn);
+    void ResetChannelEnvelope(modplug::tracker::modenvstate_t &env);
+    void SetDefaultInstrumentValues(modplug::tracker::modinstrument_t *pIns);
 private:
     UINT  __cdecl GetChannelPlugin(UINT nChan, bool respectMutes) const;
     UINT  __cdecl GetActiveInstrumentPlugin(UINT nChan, bool respectMutes) const;
-    UINT GetBestMidiChan(const modplug::mixer::MODCHANNEL *pChn) const;
+    UINT GetBestMidiChan(const modplug::tracker::modchannel_t *pChn) const;
 
     void HandlePatternTransitionEvents();
     void BuildDefaultInstrument();
@@ -836,7 +840,7 @@ private:
 public:
     // "importance" of every FX command. Table is used for importing from formats with multiple effect columns
     // and is approximately the same as in SchismTracker.
-    static uint16 CSoundFile::GetEffectWeight(MODCOMMAND::COMMAND cmd);
+    static uint16 CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8 *e, uint8 *p, bool bForce);
 
@@ -848,14 +852,14 @@ public:
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())
 
 
-inline uint32 modplug::mixer::MODSAMPLE::GetSampleRate(const MODTYPE type) const
+inline uint32 modplug::tracker::modsample_t::GetSampleRate(const MODTYPE type) const
 //--------------------------------------------------------------
 {
     uint32 nRate;
     if(type & (MOD_TYPE_MOD|MOD_TYPE_XM))
         nRate = CSoundFile::TransposeToFrequency(RelativeTone, nFineTune);
     else
-        nRate = nC5Speed;
+        nRate = c5_samplerate;
     return (nRate > 0) ? nRate : 8363;
 }
 
@@ -916,16 +920,16 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16 size)
 
 // Read instrument property with 'code' and 'size' from 'ptr' to instrument 'pIns'.
 // Note: (ptr, size) pair must be valid (e.g. can read 'size' bytes from 'ptr')
-void ReadInstrumentExtensionField(modplug::mixer::MODINSTRUMENT* pIns, LPCBYTE& ptr, const int32 code, const int16 size);
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16 size);
 
 // Read instrument property with 'code' from 'pData' to instrument 'pIns'.
-void ReadExtendedInstrumentProperty(modplug::mixer::MODINSTRUMENT* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd);
+void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd);
 
 // Read extended instrument properties from 'pDataStart' to instrument 'pIns'.
-void ReadExtendedInstrumentProperties(modplug::mixer::MODINSTRUMENT* pIns, const LPCBYTE pDataStart, const size_t nMemLength);
+void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const LPCBYTE pDataStart, const size_t nMemLength);
 
 // Convert instrument flags which were read from 'dF..' extension to proper internal representation.
-void ConvertReadExtendedFlags(modplug::mixer::MODINSTRUMENT* pIns);
+void ConvertReadExtendedFlags(modplug::tracker::modinstrument_t* pIns);
 
 
 #endif
