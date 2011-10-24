@@ -29,14 +29,14 @@ typedef struct _GDMHEADER
     uint32_t ID2;						// ID: 'GMFS'
     uint8_t  FormMajorVer;			// Format major version
     uint8_t  FormMinorVer;			// Format minor version
-    uint16 TrackID;					// Composing Tracker ID code (00 = 2GDM)
+    uint16_t TrackID;					// Composing Tracker ID code (00 = 2GDM)
     uint8_t  TrackMajorVer;			// Tracker's major version
     uint8_t  TrackMinorVer;			// Tracker's minor version
     uint8_t  PanMap[32];				// 0-Left to 15-Right, 255-N/U
     uint8_t  MastVol;					// Range: 0...64
     uint8_t  Tempo;					// Initial music tempo (6)
     uint8_t  BPM;						// Initial music BPM (125)
-    uint16 FormOrigin;				// Original format ID:
+    uint16_t FormOrigin;				// Original format ID:
         // 1-MOD, 2-MTM, 3-S3M, 4-669, 5-FAR, 6-ULT, 7-STM, 8-MED
         // (versions of 2GDM prior to v1.15 won't set this correctly)
 
@@ -50,9 +50,9 @@ typedef struct _GDMHEADER
     uint32_t MTOffset;				// Offset of song message
     uint32_t MTLength;
     uint32_t SSOffset;				// Offset of scrolly script (huh?)
-    uint16 SSLength;
+    uint16_t SSLength;
     uint32_t TGOffset;				// Offset of text graphic (huh?)
-    uint16 TGLength;
+    uint16_t TGLength;
 } GDMHEADER, *PGDMHEADER;
 
 typedef struct _GDMSAMPLEHEADER
@@ -64,7 +64,7 @@ typedef struct _GDMSAMPLEHEADER
     uint32_t LoopBegin;		// loop start in samples
     uint32_t LoopEnd;			// loop end in samples
     uint8_t  Flags;			// misc. flags
-    uint16 C4Hertz;			// frequency
+    uint16_t C4Hertz;			// frequency
     uint8_t  Volume;			// default volume
     uint8_t  Pan;				// default pan
 } GDMSAMPLEHEADER, *PGDMSAMPLEHEADER;
@@ -251,7 +251,7 @@ bool CSoundFile::ReadGDM(const LPCBYTE lpStream, const DWORD dwMemLength)
     {
         
         if(iPatternsOffset + 2 > dwMemLength) break;
-        uint16 iPatternLength = LittleEndianW(*(uint16 *)(lpStream + iPatternsOffset)); // pattern length including the two "length" bytes
+        uint16_t iPatternLength = LittleEndianW(*(uint16_t *)(lpStream + iPatternsOffset)); // pattern length including the two "length" bytes
         if(iPatternLength > dwMemLength || iPatternsOffset > dwMemLength - iPatternLength) break;
 
         if(Patterns.Insert(iPat, 64)) 

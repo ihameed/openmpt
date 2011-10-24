@@ -619,7 +619,7 @@ void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldT
 
 // "importance" of every FX command. Table is used for importing from formats with multiple effect colums
 // and is approximately the same as in SchismTracker.
-uint16 CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd)
+uint16_t CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd)
 //---------------------------------------------------------
 {
 	switch(cmd)

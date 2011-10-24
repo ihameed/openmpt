@@ -2852,7 +2852,7 @@ void CSoundFile::SetModSpecsPointer(const CModSpecifications*& pModSpecs, const 
     }
 }
 
-uint16 CSoundFile::GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const
+uint16_t CSoundFile::GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const
 //-----------------------------------------------------------------------------------
 {
     const MODTYPE combined = oldtype | newtype;

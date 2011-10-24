@@ -119,7 +119,7 @@ bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
     if (dwMemPos >= dwMemLength) return true;
 
     // byteswap pattern data.
-    for(uint16 psfix = 0; psfix < 256; psfix++)
+    for(uint16_t psfix = 0; psfix < 256; psfix++)
     {
         pmh2->patsiz[psfix] = LittleEndianW( pmh2->patsiz[psfix] ) ;
     }

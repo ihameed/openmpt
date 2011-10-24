@@ -25,8 +25,8 @@
 #define str_LoadingIncompatibleVersion	TEXT("The file informed that it is incompatible with this version of OpenMPT. Loading was terminated.\n")
 #define str_LoadingMoreRecentVersion	TEXT("The loaded file was made with a more recent OpenMPT version and this version may not be able to load all the features or play the file correctly.\n")
 
-const uint16 verMptFileVer = 0x891;
-const uint16 verMptFileVerLoadLimit = 0x1000; // If cwtv-field is greater or equal to this value,
+const uint16_t verMptFileVer = 0x891;
+const uint16_t verMptFileVerLoadLimit = 0x1000; // If cwtv-field is greater or equal to this value,
                                               // the MPTM file will not be loaded.
 
 /*
@@ -38,7 +38,7 @@ MPTM version history for cwtv-field in "IT" header (only for MPTM files!):
 0x88D(1.17.02.49) -> 0x88E(1.17.02.50): Changed ID to that of IT and undone the orderlist change done in
                        0x88A->0x88B. Now extended orderlist is saved as extension.
 0x88C(1.17.02.48) -> 0x88D(1.17.02.49): Some tuning related changes - that part fails to read on older versions.
-0x88B -> 0x88C: Changed type in which tuning number is printed to file: size_t -> uint16.
+0x88B -> 0x88C: Changed type in which tuning number is printed to file: size_t -> uint16_t.
 0x88A -> 0x88B: Changed order-to-pattern-index table type from BYTE-array to vector<UINT>.
 */
 
@@ -72,7 +72,7 @@ void WriteTuningMap(ostream& oStrm, const CSoundFile& sf)
         //T1 1 T2 2 1 1 1 2 2 2
 
         //Creating the tuning address <-> tuning id number map.
-        typedef map<CTuning*, uint16> TNTS_MAP;
+        typedef map<CTuning*, uint16_t> TNTS_MAP;
         typedef TNTS_MAP::iterator TNTS_MAP_ITER;
         TNTS_MAP tNameToShort_Map;
         
@@ -89,7 +89,7 @@ void WriteTuningMap(ostream& oStrm, const CSoundFile& sf)
 
         //...and write the map with tuning names replacing
         //the addresses.
-        const uint16 tuningMapSize = static_cast<uint16>(tNameToShort_Map.size());
+        const uint16_t tuningMapSize = static_cast<uint16_t>(tNameToShort_Map.size());
         oStrm.write(reinterpret_cast<const char*>(&tuningMapSize), sizeof(tuningMapSize));
         for(TNTS_MAP_ITER iter = tNameToShort_Map.begin(); iter != tNameToShort_Map.end(); iter++)
         {
@@ -98,7 +98,7 @@ void WriteTuningMap(ostream& oStrm, const CSoundFile& sf)
             else //Case: Using original IT tuning.
                 StringToBinaryStream<uint8_t>(oStrm, "->MPT_ORIGINAL_IT<-");
 
-            srlztn::Binarywrite<uint16>(oStrm, iter->second);
+            srlztn::Binarywrite<uint16_t>(oStrm, iter->second);
         }
 
         //Writing tuning data for instruments.
@@ -119,10 +119,10 @@ void WriteTuningMap(ostream& oStrm, const CSoundFile& sf)
 }
 
 template<class TUNNUMTYPE, class STRSIZETYPE>
-static bool ReadTuningMap(istream& iStrm, map<uint16, string>& shortToTNameMap, const size_t maxNum = 500)
+static bool ReadTuningMap(istream& iStrm, map<uint16_t, string>& shortToTNameMap, const size_t maxNum = 500)
 //--------------------------------------------------------------------------------------------------------
 {
-    typedef map<uint16, string> MAP;
+    typedef map<uint16_t, string> MAP;
     typedef MAP::iterator MAP_ITER;
     TUNNUMTYPE numTuning = 0;
     iStrm.read(reinterpret_cast<char*>(&numTuning), sizeof(numTuning));
@@ -132,7 +132,7 @@ static bool ReadTuningMap(istream& iStrm, map<uint16, string>& shortToTNameMap, 
     for(size_t i = 0; i<numTuning; i++)
     {
         string temp;
-        uint16 ui;
+        uint16_t ui;
         if(StringFromBinaryStream<STRSIZETYPE>(iStrm, temp, 255))
             return true;
 
@@ -151,13 +151,13 @@ void ReadTuningMap(istream& iStrm, CSoundFile& csf, const size_t = 0)
     typedef map<WORD, string> MAP;
     typedef MAP::iterator MAP_ITER;
     MAP shortToTNameMap;
-    ReadTuningMap<uint16, uint8_t>(iStrm, shortToTNameMap);
+    ReadTuningMap<uint16_t, uint8_t>(iStrm, shortToTNameMap);
 
     //Read & set tunings for instruments
     std::list<string> notFoundTunings;
     for(UINT i = 1; i<=csf.GetNumInstruments(); i++)
     {
-        uint16 ui;
+        uint16_t ui;
         iStrm.read(reinterpret_cast<char*>(&ui), sizeof(ui));
         MAP_ITER iter = shortToTNameMap.find(ui);
         if(csf.Instruments[i] && iter != shortToTNameMap.end())
@@ -742,7 +742,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
     // the first parapointer, we assume that it's actually no history data.
     if (dwMemPos + 2 < dwMemLength && (pifh->special & 0x02))
     {
-        const size_t nflt = LittleEndianW(*((uint16*)(lpStream + dwMemPos)));
+        const size_t nflt = LittleEndianW(*((uint16_t*)(lpStream + dwMemPos)));
         dwMemPos += 2;
 
         if (nflt * 8 <= dwMemLength - dwMemPos && dwMemPos + nflt * 8 <= minptr)
@@ -794,7 +794,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
     // at all, but still writes the two edit history length bytes (zeroes)...
     else if(dwMemPos + 2 < dwMemLength && pifh->highlight_major == 0 && pifh->highlight_minor == 0 && pifh->cmwt == 0x0214 && pifh->cwtv == 0x0214 && pifh->reserved == 0 && (pifh->special & (0x02|0x04)) == 0)
     {
-        const size_t nflt = LittleEndianW(*((uint16*)(lpStream + dwMemPos)));
+        const size_t nflt = LittleEndianW(*((uint16_t*)(lpStream + dwMemPos)));
         if(nflt == 0)
         {
             dwMemPos += 2;
@@ -1241,7 +1241,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
     {
         //START - mpt specific:
         //Using member cwtv on pifh as the version number.
-        const uint16 version = pifh->cwtv;
+        const uint16_t version = pifh->cwtv;
         if(version > 0x889)
         {
             const char* const cpcMPTStart = reinterpret_cast<const char*>(lpStream + mptStartPos);
@@ -1297,7 +1297,7 @@ DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
     const size_t num = 0;
 #endif // MODPLUG_TRACKER
 
-    uint16 fnum = min(num, uint16_max);	// Number of entries that are actually going to be written
+    uint16_t fnum = min(num, uint16_max);	// Number of entries that are actually going to be written
     const size_t bytes_written = 2 + fnum * 8;	// Number of bytes that are actually going to be written
     
     if(f == nullptr)

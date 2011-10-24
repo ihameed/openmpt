@@ -179,13 +179,13 @@ void WriteModPatterns(std::ostream& oStrm, const CPatternContainer& patc)
 	srlztn::Ssb ssb(oStrm);
 	ssb.BeginWrite(FileIdPatterns, MptVersion::num);
 	const PATTERNINDEX nPatterns = patc.Size();
-	uint16 nCount = 0;
-	for(uint16 i = 0; i < nPatterns; i++) if (patc[i])
+	uint16_t nCount = 0;
+	for(uint16_t i = 0; i < nPatterns; i++) if (patc[i])
 	{
 		ssb.WriteItem(patc[i], &i, sizeof(i), &WriteModPattern);
 		nCount = i + 1;
 	}
-	ssb.WriteItem<uint16>(nCount, "num"); // Index of last pattern + 1.
+	ssb.WriteItem<uint16_t>(nCount, "num"); // Index of last pattern + 1.
 	ssb.FinishWrite();
 }
 
@@ -198,13 +198,13 @@ void ReadModPatterns(std::istream& iStrm, CPatternContainer& patc, const size_t)
 	if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
 		return;
 	PATTERNINDEX nPatterns = patc.Size();
-	uint16 nCount = uint16_max;
+	uint16_t nCount = uint16_max;
 	if (ssb.ReadItem(nCount, "num") != srlztn::Ssb::EntryNotFound)
 		nPatterns = nCount;
 	LimitMax(nPatterns, ModSpecs::mptm.patternsMax);
 	if (nPatterns > patc.Size())
 		patc.ResizeArray(nPatterns);	
-	for(uint16 i = 0; i < nPatterns; i++)
+	for(uint16_t i = 0; i < nPatterns; i++)
 	{
 		ssb.ReadItem(patc[i], &i, sizeof(i), &ReadModPattern);
 	}

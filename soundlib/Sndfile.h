@@ -305,8 +305,8 @@ public: //Misc
     // If updateVars is true, the state of various playback variables will be updated according to the playback position.
     double GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars);
 
-    uint16 GetModFlags() const {return m_ModFlags;}
-    void SetModFlags(const uint16 v) {m_ModFlags = v;}
+    uint16_t GetModFlags() const {return m_ModFlags;}
+    void SetModFlags(const uint16_t v) {m_ModFlags = v;}
     bool GetModFlag(BYTE i) const {return ((m_ModFlags & (1<<i)) != 0);}
     void SetModFlag(BYTE i, bool val) {if(i < 8*sizeof(m_ModFlags)) {m_ModFlags = (val) ? m_ModFlags |= (1 << i) : m_ModFlags &= ~(1 << i);}}
 
@@ -349,14 +349,14 @@ private: //Effect functions
 
 private: //Misc private methods.
     static void SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type);
-    uint16 GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const;
+    uint16_t GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const;
 
 private: //'Controllers'
     CPlaybackEventer m_PlaybackEventer;
     CMIDIMapper m_MIDIMapper;
 
 private: //Misc data
-    uint16 m_ModFlags;
+    uint16_t m_ModFlags;
     const CModSpecifications* m_pModSpecs;
     bool m_bITBidiMode;	// Process bidi loops like Impulse Tracker (see Fastmix.cpp for an explanation)
 
@@ -840,7 +840,7 @@ private:
 public:
     // "importance" of every FX command. Table is used for importing from formats with multiple effect columns
     // and is approximately the same as in SchismTracker.
-    static uint16 CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
+    static uint16_t CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce);
 

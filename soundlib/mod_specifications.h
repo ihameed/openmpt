@@ -33,11 +33,11 @@ struct CModSpecifications
 	TEMPO tempoMax;
 	ROWINDEX patternRowsMin;
 	ROWINDEX patternRowsMax;
-	uint16 modNameLengthMax;		// Meaning 'usable letters', possible null character is not included.
-	uint16 sampleNameLengthMax;		// Dito
-	uint16 sampleFilenameLengthMax;	// Dito
-	uint16 instrNameLengthMax;		// Dito
-	uint16 instrFilenameLengthMax;	// Dito
+	uint16_t modNameLengthMax;		// Meaning 'usable letters', possible null character is not included.
+	uint16_t sampleNameLengthMax;		// Dito
+	uint16_t sampleFilenameLengthMax;	// Dito
+	uint16_t instrNameLengthMax;		// Dito
+	uint16_t instrFilenameLengthMax;	// Dito
 	SAMPLEINDEX samplesMax;
 	INSTRUMENTINDEX instrumentsMax;
 	BYTE defaultMixLevels;

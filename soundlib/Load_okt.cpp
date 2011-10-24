@@ -34,10 +34,10 @@ struct OKT_SAMPLE
 {
 	char   name[20];
 	uint32_t length;		// length in bytes
-	uint16 loopstart;	// *2 for real value
-	uint16 looplen;		// dito
-	uint16 volume;		// default volume
-	uint16 type;		// 7-/8-bit sample
+	uint16_t loopstart;	// *2 for real value
+	uint16_t looplen;		// dito
+	uint16_t volume;		// default volume
+	uint16_t type;		// 7-/8-bit sample
 };
 
 STATIC_ASSERT(sizeof(OKT_SAMPLE) == 32);
@@ -104,7 +104,7 @@ void Read_OKT_Pattern(const BYTE *lpStream, const DWORD dwMemLength, const PATTE
 	DWORD dwMemPos = 0;
 
 	ASSERT_CAN_READ_OKTPAT(2);
-	ROWINDEX nRows = CLAMP(BigEndianW(*(uint16 *)(lpStream + dwMemPos)), 1, MAX_PATTERN_ROWS);
+	ROWINDEX nRows = CLAMP(BigEndianW(*(uint16_t *)(lpStream + dwMemPos)), 1, MAX_PATTERN_ROWS);
 	dwMemPos += 2;
 
 	if(pSndFile->Patterns.Insert(nPat, nRows))
@@ -326,7 +326,7 @@ bool CSoundFile::ReadOKT(const BYTE *lpStream, const DWORD dwMemLength)
 			// read default speed
 			{
 				ASSERT_CAN_READ(2);
-				uint16 defspeed = BigEndianW(*((uint16 *)(lpStream + dwMemPos)));
+				uint16_t defspeed = BigEndianW(*((uint16_t *)(lpStream + dwMemPos)));
 				m_nDefaultSpeed = CLAMP(defspeed, 1, 255);
 			}
 			break;
@@ -338,7 +338,7 @@ bool CSoundFile::ReadOKT(const BYTE *lpStream, const DWORD dwMemLength)
 		case OKTCHUNKID_PLEN:
 			// read number of valid orders
 			ASSERT_CAN_READ(2);
-			nOrders = BigEndianW(*((uint16 *)(lpStream + dwMemPos)));
+			nOrders = BigEndianW(*((uint16_t *)(lpStream + dwMemPos)));
 			break;
 
 		case OKTCHUNKID_PATT:

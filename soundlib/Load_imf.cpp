@@ -26,10 +26,10 @@ struct IMFCHANNEL
 struct IMFHEADER
 {
     char title[32];				// Songname (ASCIIZ-String, max. 31 chars)
-    uint16 ordnum;				// Number of orders saved
-    uint16 patnum;				// Number of patterns saved
-    uint16 insnum;				// Number of instruments saved
-    uint16 flags;				// Module flags (&1 => linear)
+    uint16_t ordnum;				// Number of orders saved
+    uint16_t patnum;				// Number of patterns saved
+    uint16_t insnum;				// Number of instruments saved
+    uint16_t flags;				// Module flags (&1 => linear)
     uint8_t unused1[8];
     uint8_t tempo;				// Default tempo (Axx, 1..255)
     uint8_t bpm;					// Default beats per minute (BPM) (Txx, 32..255)
@@ -60,8 +60,8 @@ struct IMFENVELOPE
 
 struct IMFENVNODES
 {
-    uint16 tick;
-    uint16 value;
+    uint16_t tick;
+    uint16_t value;
 };
 
 struct IMFINSTRUMENT
@@ -71,8 +71,8 @@ struct IMFINSTRUMENT
     uint8_t unused[8];
     IMFENVNODES nodes[3][16];
     IMFENVELOPE env[3];
-    uint16 fadeout;		// Fadeout rate (0...0FFFH)
-    uint16 smpnum;		// Number of samples in instrument
+    uint16_t fadeout;		// Fadeout rate (0...0FFFH)
+    uint16_t smpnum;		// Number of samples in instrument
     char ii10[4];		// 'II10'
 };
 
@@ -89,7 +89,7 @@ struct IMFSAMPLE
     uint8_t unused2[14];
     uint8_t flags;		// Sample flags
     uint8_t unused3[5];
-    uint16 ems;			// Reserved for internal usage
+    uint16_t ems;			// Reserved for internal usage
     uint32_t dram;		// Reserved for internal usage
     char is10[4];		// 'IS10'
 };
@@ -257,7 +257,7 @@ static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINS
 
     for(UINT n = 0; n < env->num_nodes; n++)
     {
-        uint16 nTick, nValue;
+        uint16_t nTick, nValue;
         nTick = LittleEndianW(imfins->nodes[e][n].tick);
         nValue = LittleEndianW(imfins->nodes[e][n].value) >> shift;
         env->Ticks[n] = (WORD)max(min, nTick);
@@ -354,15 +354,15 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
     // read patterns
     for(PATTERNINDEX nPat = 0; nPat < hdr.patnum; nPat++)
     {
-        uint16 length, nrows;
+        uint16_t length, nrows;
         BYTE mask, channel;
         int row;
         unsigned int lostfx = 0;
         modplug::tracker::modcommand_t *row_data, *note, junk_note;
 
         ASSERT_CAN_READ(4);
-        length = LittleEndianW(*((uint16 *)(lpStream + dwMemPos)));
-        nrows = LittleEndianW(*((uint16 *)(lpStream + dwMemPos + 2)));
+        length = LittleEndianW(*((uint16_t *)(lpStream + dwMemPos)));
+        nrows = LittleEndianW(*((uint16_t *)(lpStream + dwMemPos + 2)));
         dwMemPos += 4;
 
         if(Patterns.Insert(nPat, nrows))

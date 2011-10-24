@@ -205,7 +205,7 @@ void CMIDIMapper::Serialize(FILE* f) const
 	//Bytes: 1 Flags, 2 key, 1 plugindex, 1,2,4,8 plug/etc.
 	for(const_iterator citer = Begin(); citer != End(); citer++)
 	{
-		uint16 temp16 = (citer->GetChnEvent() << 1) + (citer->GetController() << 9);
+		uint16_t temp16 = (citer->GetChnEvent() << 1) + (citer->GetController() << 9);
 		if(citer->GetAnyChannel()) temp16 |= 1;
 		uint32_t temp32 = citer->GetParamIndex();
 
@@ -241,7 +241,7 @@ bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
 	while(ptr + 5 <= endptr)
 	{
 		uint8_t i8 = 0;
-		uint16 i16 = 0;
+		uint16_t i16 = 0;
 		uint32_t i32 = 0;
 		memcpy(&i8, ptr, 1); ptr++;
 		BYTE psize = 0;

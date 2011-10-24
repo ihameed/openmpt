@@ -75,15 +75,15 @@ struct DMF_IFFCHUNK
 // Order list
 struct DMFCHUNK_SEQUENCE
 {
-    uint16 loopStart;
-    uint16 loopEnd;
+    uint16_t loopStart;
+    uint16_t loopEnd;
     // order list follows here ...
 };
 
 // Pattern header (global)
 struct DMFCHUNK_PATTERNS
 {
-    uint16 numPatterns;	// 1..1024 patterns
+    uint16_t numPatterns;	// 1..1024 patterns
     uint8_t  numTracks;	// 1..32 channels
 };
 
@@ -92,7 +92,7 @@ struct DMFCHUNK_PATTERNHEADER
 {
     uint8_t  numTracks;	// 1..32 channels
     uint8_t  beat;		// [hi|lo] -> hi = rows per beat, lo = reserved
-    uint16 numRows;
+    uint16_t numRows;
     uint32_t patternLength;
     // patttern data follows here ...
 };
@@ -103,7 +103,7 @@ struct DMFCHUNK_SAMPLEHEADER
     uint32_t length;
     uint32_t loopStart;
     uint32_t loopEnd;
-    uint16 c3freq;		// 1000..45000hz
+    uint16_t c3freq;		// 1000..45000hz
     uint8_t  volume;		// 0 = ignore
     uint8_t  flags;
 };
@@ -111,7 +111,7 @@ struct DMFCHUNK_SAMPLEHEADER
 // Sample header tail (between head and tail, there might be the library name of the sample, depending on the DMF version)
 struct DMFCHUNK_SAMPLEHEADERTAIL
 {
-    uint16 filler;
+    uint16_t filler;
     uint32_t crc32;
 };
 
@@ -891,7 +891,7 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
 
                 for(ORDERINDEX i = 0; i < numOrders; i++, dwMemPos += 2)
                 {
-                    uint16 orderItem = *(uint16 *)(lpStream + dwMemPos);
+                    uint16_t orderItem = *(uint16_t *)(lpStream + dwMemPos);
                     Order[i] = (PATTERNINDEX)LittleEndianW(orderItem);
                 }
             }

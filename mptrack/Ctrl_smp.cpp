@@ -396,7 +396,7 @@ void CCtrlSamples::OnActivatePage(LPARAM lParam)
     }
     SetCurrentSample((lParam > 0) ? ((SAMPLEINDEX)lParam) : m_nSample);
 
-    m_nFinetuneStep = (uint16)GetPrivateProfileInt("Sample Editor", "FinetuneStep", 25, theApp.GetConfigFileName());
+    m_nFinetuneStep = (uint16_t)GetPrivateProfileInt("Sample Editor", "FinetuneStep", 25, theApp.GetConfigFileName());
 
     // Initial Update
     if (!m_bInitialized) UpdateView((m_nSample << HINT_SHIFT_SMP) | HINT_SAMPLEINFO | HINT_MODTYPE, NULL);

@@ -70,7 +70,7 @@ struct PSMOLDSAMPLEHEADER // Regular sample header
     uint32_t sampleID;		// INS0...INS9 (only last digit of sample ID, i.e. sample 1 and sample 11 are equal)
     char   sampleName[33];
     uint8_t  unknown1[6];		// 00 00 00 00 00 FF
-    uint16 sampleNumber;
+    uint16_t sampleNumber;
     uint32_t sampleLength;
     uint32_t loopStart;
     uint32_t loopEnd;			// FF FF FF FF = end of sample
@@ -78,7 +78,7 @@ struct PSMOLDSAMPLEHEADER // Regular sample header
     uint8_t  defaulPan;		// unused?
     uint8_t  defaultVolume;
     uint32_t unknown4;
-    uint16 C5Freq;
+    uint16_t C5Freq;
     uint8_t  unknown5[21];	// 00 ... 00
 };
 
@@ -89,15 +89,15 @@ struct PSMNEWSAMPLEHEADER // Sinaria sample header (and possibly other games)
     char   sampleID[8];		// INS0...INS99999
     char   sampleName[33];
     uint8_t  unknown1[6];		// 00 00 00 00 00 FF
-    uint16 sampleNumber;
+    uint16_t sampleNumber;
     uint32_t sampleLength;
     uint32_t loopStart;
     uint32_t loopEnd;
-    uint16 unknown3;
+    uint16_t unknown3;
     uint8_t  defaultPan;		// unused?
     uint8_t  defaultVolume;
     uint32_t unknown4;
-    uint16 C5Freq;
+    uint16_t C5Freq;
     char   unknown5[16];	// 00 ... 00
 };
 #pragma pack()
@@ -251,11 +251,11 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                         {
                             if(subChunkSize < 9) return false;
                             // First two bytes = Number of chunks that follow
-                            //uint16 nTotalChunks = LittleEndian(*(uint16 *)(lpStream + dwChunkPos));
+                            //uint16_t nTotalChunks = LittleEndian(*(uint16_t *)(lpStream + dwChunkPos));
 
                             // Now, the interesting part begins!
                             DWORD dwSettingsOffset = dwChunkPos + 2;
-                            uint16 nChunkCount = 0, nFirstOrderChunk = uint16_max;
+                            uint16_t nChunkCount = 0, nFirstOrderChunk = uint16_max;
 
                             // "Sub sub sub chunks" (grrrr, silly format)
                             while(dwSettingsOffset - dwChunkPos + 1 < subChunkSize)
@@ -300,7 +300,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
                                 case 0x04: // Restart position
                                     {
-                                        uint16 nRestartChunk = LittleEndian(*(uint16 *)(lpStream + dwSettingsOffset + 1));
+                                        uint16_t nRestartChunk = LittleEndian(*(uint16_t *)(lpStream + dwSettingsOffset + 1));
                                         ORDERINDEX nRestartPosition = 0;
                                         if(nRestartChunk >= nFirstOrderChunk) nRestartPosition = (ORDERINDEX)(nRestartChunk - nFirstOrderChunk);
                                         subsong.restartPos += nRestartPosition;
@@ -521,7 +521,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
         if(orderOffsets[nOrd] == nullptr) continue;
         uint32_t dwPatternOffset = orderOffsets[nOrd];
         if(dwPatternOffset + 2 > dwMemLength) return false;
-        uint16 patternSize = LittleEndianW(*(uint16 *)(lpStream + dwPatternOffset));
+        uint16_t patternSize = LittleEndianW(*(uint16_t *)(lpStream + dwPatternOffset));
         dwPatternOffset += 2;
 
         if(Patterns.Insert(nPat, patternSize))
@@ -534,7 +534,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
         for(int nRow = 0; nRow < patternSize; nRow++)
         {
             if(dwPatternOffset + 2 > dwMemLength) return false;
-            uint16 rowSize = LittleEndianW(*(uint16 *)(lpStream + dwPatternOffset));
+            uint16_t rowSize = LittleEndianW(*(uint16_t *)(lpStream + dwPatternOffset));
             
             uint32_t dwRowOffset = dwPatternOffset + 2;
 
@@ -825,12 +825,12 @@ struct PSM16HEADER
     uint8_t  songSpeed;		//
     uint8_t  songTempo;		// 32 ... 255
     uint8_t  masterVolume;	// 0 ... 255
-    uint16 songLength;		// 0 ... 255 (number of patterns to play in the song)
-    uint16 songOrders;		// 0 ... 255 (same as previous value as no subsongs are present)
-    uint16 numPatterns;		// 1 ... 255
-    uint16 numSamples;		// 1 ... 255
-    uint16 numChannelsPlay;	// 0 ... 32 (max. number of channels to play)
-    uint16 numChannelsReal;	// 0 ... 32 (max. number of channels to process)
+    uint16_t songLength;		// 0 ... 255 (number of patterns to play in the song)
+    uint16_t songOrders;		// 0 ... 255 (same as previous value as no subsongs are present)
+    uint16_t numPatterns;		// 1 ... 255
+    uint16_t numSamples;		// 1 ... 255
+    uint16_t numChannelsPlay;	// 0 ... 32 (max. number of channels to play)
+    uint16_t numChannelsReal;	// 0 ... 32 (max. number of channels to process)
     uint32_t orderOffset;
     uint32_t panOffset;
     uint32_t patOffset;
@@ -846,19 +846,19 @@ struct PSM16SMPHEADER
     uint8_t name[24];		// dito
     uint32_t offset;		// in file
     uint32_t memoffset;	// not used
-    uint16 sampleNumber;// 1 ... 255
+    uint16_t sampleNumber;// 1 ... 255
     uint8_t  flags;		// sample flag bitfield
     uint32_t length;		// in bytes
     uint32_t loopStart;	// in samples?
     uint32_t loopEnd;		// in samples?
     int8   finetune;	// 0 ... 15 (useless? also, why is this almost always 70?)
     uint8_t  volume;		// default volume
-    uint16 c2freq;
+    uint16_t c2freq;
 };
 
 struct PSM16PATHEADER
 {
-    uint16 size;		// includes header bytes
+    uint16_t size;		// includes header bytes
     uint8_t  numRows;		// 1 ... 64
     uint8_t  numChans;	// 1 ... 31
 };

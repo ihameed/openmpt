@@ -88,7 +88,7 @@ struct AMFFCHUNK_MAIN
 // AMFF instrument envelope point
 struct AMFFINST_ENVPOINT
 {
-    uint16 tick;
+    uint16_t tick;
     uint8_t  pointval;	// 0...64
 };
 
@@ -101,9 +101,9 @@ struct AMFFCHUNK_INSTRUMENT
     uint8_t  numsamples;
     uint8_t  samplemap[120];
     uint8_t  autovib_type;
-    uint16 autovib_sweep;
-    uint16 autovib_depth;
-    uint16 autovib_rate;
+    uint16_t autovib_sweep;
+    uint16_t autovib_depth;
+    uint16_t autovib_rate;
     uint8_t  envflags;			// high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
     uint8_t  envnumpoints;		// high nibble = pan env length, low nibble = vol env length
     uint8_t  envsustainpoints;	// you guessed it... high nibble = pan env sustain point, low nibble = vol env sustain point
@@ -111,7 +111,7 @@ struct AMFFCHUNK_INSTRUMENT
     uint8_t  envloopends;			// same here.
     AMFFINST_ENVPOINT volenv[10];
     AMFFINST_ENVPOINT panenv[10];
-    uint16 fadeout;
+    uint16_t fadeout;
 };
 
 // AMFF sample header
@@ -122,7 +122,7 @@ struct AMFFCHUNK_SAMPLE
     char   name[28];
     uint8_t  pan;
     uint8_t  volume;
-    uint16 flags;
+    uint16_t flags;
     uint32_t length;
     uint32_t loopstart;
     uint32_t loopend;
@@ -134,20 +134,20 @@ struct AMFFCHUNK_SAMPLE
 // AM instrument envelope point
 struct AMINST_ENVPOINT
 {
-    uint16 tick;
-    uint16 pointval;
+    uint16_t tick;
+    uint16_t pointval;
 };
 
 // AM instrument envelope
 struct AMINST_ENVELOPE
 {
-    uint16 flags;
+    uint16_t flags;
     uint8_t  numpoints;	// actually, it's num. points - 1, and 0xFF if there is no envelope
     uint8_t  suslooppoint;
     uint8_t  loopstart;
     uint8_t  loopend;
     AMINST_ENVPOINT values[10];
-    uint16 fadeout;		// why is this here? it's only needed for the volume envelope...
+    uint16_t fadeout;		// why is this here? it's only needed for the volume envelope...
 };
 
 // AM instrument header
@@ -158,14 +158,14 @@ struct AMCHUNK_INSTRUMENT
     char   name[32];
     uint8_t  samplemap[128];
     uint8_t  autovib_type;
-    uint16 autovib_sweep;
-    uint16 autovib_depth;
-    uint16 autovib_rate;
+    uint16_t autovib_sweep;
+    uint16_t autovib_depth;
+    uint16_t autovib_rate;
     uint8_t  unknown2[7];
     AMINST_ENVELOPE volenv;
     AMINST_ENVELOPE pitchenv;
     AMINST_ENVELOPE panenv;
-    uint16 numsamples;
+    uint16_t numsamples;
 };
 
 // AM sample header
@@ -175,10 +175,10 @@ struct AMCHUNK_SAMPLE
     uint32_t chunksize;	// header + sample size
     uint32_t headsize;	// header size
     char   name[32];
-    uint16 pan;
-    uint16 volume;
-    uint16 flags;
-    uint16 unkown;		// 0x0000 / 0x0080?
+    uint16_t pan;
+    uint16_t volume;
+    uint16_t flags;
+    uint16_t unkown;		// 0x0000 / 0x0080?
     uint32_t length;
     uint32_t loopstart;
     uint32_t loopend;
@@ -397,7 +397,7 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
     if(pAMEnv->numpoints == 0xFF || pAMEnv->numpoints == 0x00)
         return;
 
-    uint16 flags = LittleEndianW(pAMEnv->flags);
+    uint16_t flags = LittleEndianW(pAMEnv->flags);
     pMPTEnv->flags = (flags & AMENV_ENABLED) ? ENV_ENABLED : 0;
     if(flags & AMENV_SUSTAIN) pMPTEnv->flags |= ENV_SUSTAIN;
     if(flags & AMENV_LOOP) pMPTEnv->flags |= ENV_LOOP;
@@ -422,7 +422,7 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
         else if(pMPTEnv->Ticks[i] < pMPTEnv->Ticks[i - 1])
             pMPTEnv->Ticks[i] = pMPTEnv->Ticks[i - 1] + 1;
 
-        const uint16 val = LittleEndianW(pAMEnv->values[i].pointval);
+        const uint16_t val = LittleEndianW(pAMEnv->values[i].pointval);
         switch(env)
         {
         case ENV_VOLUME:	// 0....32767
@@ -617,7 +617,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
                     Samples[nSmp].vibrato_rate = (BYTE)(LittleEndianW(instheader->autovib_rate) >> 4);
                     Samples[nSmp].vibrato_depth = (BYTE)(LittleEndianW(instheader->autovib_depth) >> 2);
 
-                    const uint16 flags = LittleEndianW(smpchunk->flags);
+                    const uint16_t flags = LittleEndianW(smpchunk->flags);
                     if(flags & AMSMP_16BIT)
                         Samples[nSmp].flags |= CHN_16BIT;
                     if(flags & AMSMP_LOOP)
@@ -744,7 +744,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
                     Samples[nSmp].vibrato_rate = (BYTE)(LittleEndianW(instheader->autovib_rate) >> 4);
                     Samples[nSmp].vibrato_depth = (BYTE)(LittleEndianW(instheader->autovib_depth) >> 2);
 
-                    const uint16 flags = LittleEndianW(smpchunk->flags);
+                    const uint16_t flags = LittleEndianW(smpchunk->flags);
                     if(flags & AMSMP_16BIT)
                         Samples[nSmp].flags |= CHN_16BIT;
                     if(flags & AMSMP_LOOP)

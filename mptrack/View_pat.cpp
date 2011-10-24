@@ -2385,7 +2385,7 @@ void CViewPattern::Interpolate(PatternColumns type)
         const modplug::tracker::modcommand_t destCmd = *pSndFile->Patterns[m_nPattern].GetpModCommand(row1, nchn);
 
         modplug::tracker::modcommand_t::NOTE PCnote = 0;
-        uint16 PCinst = 0, PCparam = 0;
+        uint16_t PCinst = 0, PCparam = 0;
 
         switch(type)
         {
@@ -2469,7 +2469,7 @@ void CViewPattern::Interpolate(PatternColumns type)
                     if(doPCinterpolation)
                     {	// With PC/PCs notes, copy PCs note and plug index to all rows where
                         // effect interpolation is done if no PC note with non-zero instrument is there.
-                        const uint16 val = static_cast<uint16>(vsrc + ((vdest - vsrc) * (int)i + verr) / distance);
+                        const uint16_t val = static_cast<uint16_t>(vsrc + ((vdest - vsrc) * (int)i + verr) / distance);
                         if (pcmd->IsPcNote() == false || pcmd->instr == 0)
                         {
                             pcmd->note = PCnote;
@@ -3159,7 +3159,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
         {
             pModDoc->GetPatternUndo()->PrepareUndo(nPattern, nChn, nRow, 1, 1);
 
-            pRow->Set(NOTE_PCS, plugSlot + 1, paramIndex, static_cast<uint16>(pPlug->GetParameter(paramIndex) * modplug::tracker::modcommand_t::maxColumnValue));
+            pRow->Set(NOTE_PCS, plugSlot + 1, paramIndex, static_cast<uint16_t>(pPlug->GetParameter(paramIndex) * modplug::tracker::modcommand_t::maxColumnValue));
             InvalidateRow(nRow);
         }
     } else if(pSndFile->GetModSpecifications().HasCommand(CMD_SMOOTHMIDI))
@@ -3290,7 +3290,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
         ModCommandPos editpos = GetEditPos(*pSndFile, bLiveRecord);
         modplug::tracker::modcommand_t* p = GetModCommand(*pSndFile, editpos);
         pModDoc->GetPatternUndo()->PrepareUndo(editpos.nPat, editpos.nChn, editpos.nRow, editpos.nChn, editpos.nRow);
-        p->Set(NOTE_PCS, mappedIndex, static_cast<uint16>(paramIndex), static_cast<uint16>((paramValue * modplug::tracker::modcommand_t::maxColumnValue)/127));
+        p->Set(NOTE_PCS, mappedIndex, static_cast<uint16_t>(paramIndex), static_cast<uint16_t>((paramValue * modplug::tracker::modcommand_t::maxColumnValue)/127));
         if(bLiveRecord == false)
             InvalidateRow(editpos.nRow);
         pMainFrm->ThreadSafeSetModified(pModDoc);
@@ -3882,7 +3882,7 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
     { \
         if((v >= 0) && (v <= 9)) \
         {	\
-            uint16 val = p->Get##method##(); \
+            uint16_t val = p->Get##method##(); \
             /* Move existing digits to left, drop out leftmost digit and */ \
             /* push new digit to the least meaning digit. */ \
             val = (val % 100) * 10 + v; \
@@ -5377,7 +5377,7 @@ bool CViewPattern::BuildPCNoteCtxMenu(HMENU hMenu, CInputHandler* ih, CSoundFile
             AppendMenu(hMenu, MF_POPUP, (UINT)paramChangeMenu, "Change Plugin Parameter\t");
 
             char sname[64];
-            uint16 nThisParam = mSelStart->GetValueVolCol();
+            uint16_t nThisParam = mSelStart->GetValueVolCol();
             UINT nParams = plug->GetNumParameters();
             for (UINT i = 0; i < nParams; i++)
             {

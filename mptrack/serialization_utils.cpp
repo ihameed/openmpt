@@ -50,13 +50,13 @@ uint8_t GetByteReq1234(const uint32_t num)
 }
 
 
-void WriteAdaptive12(OutStream& oStrm, const uint16 num)
+void WriteAdaptive12(OutStream& oStrm, const uint16_t num)
 //------------------------------------------------------
 {
 	if(num >> 7 == 0)
-		Binarywrite<uint16>(oStrm, num << 1, 1);
+		Binarywrite<uint16_t>(oStrm, num << 1, 1);
 	else
-		Binarywrite<uint16>(oStrm, (num << 1) | 1);
+		Binarywrite<uint16_t>(oStrm, (num << 1) | 1);
 }
 
 
@@ -73,8 +73,8 @@ void WriteAdaptive1234(OutStream& oStrm, const uint32_t num)
 void WriteAdaptive12String(OutStream& oStrm, const std::string& str)
 //------------------------------------------------------------------
 {
-	uint16 s = static_cast<uint16>(str.size());
-	LimitMax(s, uint16(uint16_max / 2));
+	uint16_t s = static_cast<uint16_t>(str.size());
+	LimitMax(s, uint16_t(uint16_max / 2));
 	WriteAdaptive12(oStrm, s);
 	oStrm.write(str.c_str(), s);
 }
@@ -99,10 +99,10 @@ void WriteAdaptive1248(OutStream& oStrm, const uint64& num)
 }
 
 
-void ReadAdaptive12(InStream& iStrm, uint16& val)
+void ReadAdaptive12(InStream& iStrm, uint16_t& val)
 //-----------------------------------------------
 {
-	Binaryread<uint16>(iStrm, val, 1);
+	Binaryread<uint16_t>(iStrm, val, 1);
 	if(val & 1) iStrm.read(reinterpret_cast<char*>(&val) + 1, 1);
 	val >>= 1;
 }
@@ -343,7 +343,7 @@ void Ssb::WriteMapItem( const void* pId,
 			{ AddWriteNote(SNW_CHANGING_IDSIZE_WITH_FIXED_IDSIZESETTING); return; }
 
 		if (m_nIdbytes == IdSizeVariable) //Variablesize ID?
-			WriteAdaptive12(m_MapStream, static_cast<uint16>(nIdSize));
+			WriteAdaptive12(m_MapStream, static_cast<uint16_t>(nIdSize));
 
 		if(nIdSize > 0)
 			m_MapStream.write(reinterpret_cast<const char*>(pId), static_cast<Streamsize>(nIdSize));
@@ -372,7 +372,7 @@ void Ssb::ReserveMapSize(uint32_t nSize)
 }
 
 
-void Ssb::SetIdSize(uint16 nSize)
+void Ssb::SetIdSize(uint16_t nSize)
 //-------------------------------
 {
 	if (nSize == IdSizeVariable || nSize > IdSizeMaxFixedSize)
@@ -505,7 +505,7 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersi
 
 	//Entrycount. Reserve two bytes(max uint16_max / 4 entries), actual value is written after writing data.
 	m_posEntrycount = oStrm.tellp();
-	Binarywrite<uint16>(oStrm, 0);
+	Binarywrite<uint16_t>(oStrm, 0);
 
 	SetFlag(RwfRwHasMap, (m_nIdbytes != 0 || GetFlag(RwfWMapStartPosEntry) || GetFlag(RwfWMapSizeEntry) || GetFlag(RwfWMapDescEntry)));
 
@@ -691,7 +691,7 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersio
 
 	if (Testbit(flagbyte, 2)) // Object description?
 	{
-		uint16 size = 0;
+		uint16_t size = 0;
 		ReadAdaptive12(iStrm, size);
 		iStrm.ignore(size * (GetFlag(RwfRTwoBytesDescChar)) ? 2 : 1);
 	}
@@ -749,7 +749,7 @@ void Ssb::CacheMap()
 				{ AddReadNote(SNR_BADSTREAM_AT_MAP_READ); return; }
 
 			// Read ID.
-			uint16 nIdsize = m_nIdbytes;
+			uint16_t nIdsize = m_nIdbytes;
 			if(nIdsize == IdSizeVariable) //Variablesize ID
 				ReadAdaptive12(iStrm, nIdsize);
 			const size_t nOldEnd = m_Idarray.size();
@@ -790,7 +790,7 @@ void Ssb::CacheMap()
 
 			if(GetFlag(RwfRMapHasDesc)) //Map has entrydescriptions?
 			{
-				uint16 size = 0;
+				uint16_t size = 0;
 				ReadAdaptive12(iStrm, size);
 				if(GetFlag(RwfRTwoBytesDescChar))
 					iStrm.ignore(size * 2);

@@ -21,7 +21,7 @@ class CTuningCollection //To contain tuning objects.
 public:
 
 //BEGIN TYPEDEFS
-	typedef uint16 EDITMASK;
+	typedef uint16_t EDITMASK;
 	//If changing this, see whether serialization should be 
 	//modified as well.
 
@@ -29,7 +29,7 @@ public:
 	typedef TUNINGVECTOR::iterator TITER; //Tuning ITERator.
 	typedef TUNINGVECTOR::const_iterator CTITER;
 
-	typedef uint16 SERIALIZATION_VERSION;
+	typedef uint16_t SERIALIZATION_VERSION;
 
 	typedef bool SERIALIZATION_RETURN_TYPE;
 

@@ -30,7 +30,7 @@ protected:
 	uint32_t m_nSequenceMs;
 	uint32_t m_nSeekWindowMs;
 	uint32_t m_nOverlapMs;
-	uint16 m_nFinetuneStep; // Increment finetune by x when using spin control. Default = 25
+	uint16_t m_nFinetuneStep; // Increment finetune by x when using spin control. Default = 25
 	enum {nDefaultStretchChunkSize = 8192};
 	UINT m_nPreviousRawFormat;
 

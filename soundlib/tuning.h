@@ -4,7 +4,7 @@
 #include "tuningbase.h"
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-	typedef CTuningBase<int16, uint16, float32, int32, uint32_t> CTuning;
+	typedef CTuningBase<int16, uint16_t, float32, int32, uint32_t> CTuning;
 	//If changing RATIOTYPE, serialization methods may need modifications.
 #else
 	typedef CTuningBase CTuning;

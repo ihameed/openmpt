@@ -24,11 +24,11 @@ namespace CTuningS11n
 	struct RatioWriter
 	//================
 	{
-		RatioWriter(uint16 nWriteCount = s_nDefaultWriteCount) : m_nWriteCount(nWriteCount) {}
+		RatioWriter(uint16_t nWriteCount = s_nDefaultWriteCount) : m_nWriteCount(nWriteCount) {}
 
 		void operator()(srlztn::OutStream& oStrm, const std::vector<float>& v);
-		uint16 m_nWriteCount;
-		static const uint16 s_nDefaultWriteCount = (uint16_max >> 2);
+		uint16_t m_nWriteCount;
+		static const uint16_t s_nDefaultWriteCount = (uint16_max >> 2);
 	};
 };
 
@@ -484,14 +484,14 @@ CTuningRTI* CTuningRTI::DeserializeOLD(istream& inStrm)
 	}
 
 	//Ratiotable
-	if(VectorFromBinaryStream<RATIOTYPE, uint16>(inStrm, pT->m_RatioTable))
+	if(VectorFromBinaryStream<RATIOTYPE, uint16_t>(inStrm, pT->m_RatioTable))
 	{
 		delete pT;
 		return 0;
 	}
 
 	//Fineratios
-	if(VectorFromBinaryStream<RATIOTYPE, uint16>(inStrm, pT->m_RatioTableFine))
+	if(VectorFromBinaryStream<RATIOTYPE, uint16_t>(inStrm, pT->m_RatioTableFine))
 	{
 		delete pT;
 		return 0;

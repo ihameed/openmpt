@@ -96,10 +96,10 @@ void CEffectVis::OnPaint()
 	
 }
 
-uint16 CEffectVis::GetParam(UINT row)
+uint16_t CEffectVis::GetParam(UINT row)
 {	
 	modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
-	uint16 paramValue = 0;
+	uint16_t paramValue = 0;
 
 	if (pcmd)
 	{
@@ -130,7 +130,7 @@ void CEffectVis::SetParamFromY(UINT row, long y)
 	int offset = row*m_pSndFile->m_nChannels + m_nChan;
 	if (IsPcNote(row))
 	{
-		uint16 param = ScreenYToPCParam(y);
+		uint16_t param = ScreenYToPCParam(y);
 		BEGIN_CRITICAL();
 		pcmd[offset].SetValueEffectCol(param);
 		END_CRITICAL();
@@ -192,12 +192,12 @@ int CEffectVis::RowToScreenY(UINT row)
 		modplug::tracker::modcommand_t cmd = pcmd[row*m_pSndFile->m_nChannels + m_nChan];
 		if (cmd.IsPcNote()) 
 		{
-			uint16 paramValue = cmd.GetValueEffectCol();
+			uint16_t paramValue = cmd.GetValueEffectCol();
 			screenY = PCParamToScreenY(paramValue);
 		}
 		else
 		{
-			uint16 paramValue = cmd.param;
+			uint16_t paramValue = cmd.param;
 			screenY = FXParamToScreenY(paramValue);
 		}
 	}
@@ -205,14 +205,14 @@ int CEffectVis::RowToScreenY(UINT row)
 	return screenY;
 }
 
-int CEffectVis::FXParamToScreenY(uint16 param)
+int CEffectVis::FXParamToScreenY(uint16_t param)
 {
 	if ((param >= 0x00) || (param <= 0xFF))
 		return (int) (m_rcDraw.bottom - param*m_pixelsPerFXParam + 0.5);
 	return -1;
 }
 
-int CEffectVis::PCParamToScreenY(uint16 param)
+int CEffectVis::PCParamToScreenY(uint16_t param)
 {
 	if ((param >= 0x00) || (param <= modplug::tracker::modcommand_t::maxColumnValue))
 		return (int) (m_rcDraw.bottom - param*m_pixelsPerPCParam + 0.5);
@@ -230,7 +230,7 @@ BYTE CEffectVis::ScreenYToFXParam(int y)
 	return (BYTE)((m_rcDraw.bottom-y)/m_pixelsPerFXParam+0.5);
 }
 
-uint16 CEffectVis::ScreenYToPCParam(int y)
+uint16_t CEffectVis::ScreenYToPCParam(int y)
 {
 	if (y<=PCParamToScreenY(modplug::tracker::modcommand_t::maxColumnValue))
 		return modplug::tracker::modcommand_t::maxColumnValue;
@@ -238,7 +238,7 @@ uint16 CEffectVis::ScreenYToPCParam(int y)
 	if (y>=PCParamToScreenY(0x00))
 		return 0x00;
 
-	return (uint16)((m_rcDraw.bottom-y)/m_pixelsPerPCParam+0.5);
+	return (uint16_t)((m_rcDraw.bottom-y)/m_pixelsPerPCParam+0.5);
 }
 
 UINT CEffectVis::ScreenXToRow(int x)
@@ -720,7 +720,7 @@ void CEffectVis::OnMouseMove(UINT nFlags, CPoint point)
 	//update status bar
 	CHAR status[256];
 	CHAR effectName[128];
-	uint16 paramValue;
+	uint16_t paramValue;
 
 
 	if (IsPcNote(row)) 

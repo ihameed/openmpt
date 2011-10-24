@@ -943,7 +943,7 @@ void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern,
             if (m_nDetailLevel > 2)
             {
                 const bool isPCnote = m->IsPcNote();
-                uint16 val = m->GetValueEffectCol();
+                uint16_t val = m->GetValueEffectCol();
                 if(val > modplug::tracker::modcommand_t::maxColumnValue) val = modplug::tracker::modcommand_t::maxColumnValue;
                 fx_col = row_col;
                 if (!isPCnote && (m->command) && (m->command < MAX_EFFECTS) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))

@@ -28,14 +28,14 @@ namespace srlztn {class Ssb;};
 
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16, class TUNOTEINDEXTYPE = uint16, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32_t> 
+	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32_t> 
 	#define TEMPLATEDEC template<class A, class B, class C, class D, class E>
 	#define TYPENAME typename
 	#define CTUNINGBASE CTuningBase<A, B, C, D, E>
 #else
 	#define CLASSTEMPLATEDEC
 	typedef int16 TNOTEINDEXTYPE;
-	typedef uint16 TUNOTEINDEXTYPE;
+	typedef uint16_t TUNOTEINDEXTYPE;
 	typedef float32 TRATIOTYPE;
 	typedef int32 TSTEPINDEXTYPE;
 	typedef uint32_t TUSTEPINDEXTYPE;
@@ -77,9 +77,9 @@ public:
 	//Validity Range PAIR.
 	typedef std::pair<NOTEINDEXTYPE, NOTEINDEXTYPE> VRPAIR;
 
-	typedef uint16 EDITMASK;
+	typedef uint16_t EDITMASK;
 
-	typedef uint16 TUNINGTYPE;
+	typedef uint16_t TUNINGTYPE;
 
 	typedef std::string NOTESTR;
 	typedef std::map<NOTEINDEXTYPE, NOTESTR> NOTENAMEMAP;

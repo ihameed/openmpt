@@ -319,7 +319,7 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         Order[iOrd] = iOrd;
         if (pfh->version >= 14)
         {
-            patternLength[iOrd] = LittleEndianW(*(uint16 *)(lpStream+dwMemPos));
+            patternLength[iOrd] = LittleEndianW(*(uint16_t *)(lpStream+dwMemPos));
             dwMemPos += 2;
         }
         ptracks[iOrd] = (USHORT *)(lpStream+dwMemPos);

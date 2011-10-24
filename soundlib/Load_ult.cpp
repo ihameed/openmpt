@@ -27,7 +27,7 @@ struct ULT_SAMPLE
 	uint32_t size_end;
 	uint8_t  volume;		// 0-255, apparently prior to 1.4 this was logarithmic?
 	uint8_t  flags;		// above
-	uint16 speed;		// only exists for 1.4+
+	uint16_t speed;		// only exists for 1.4+
 	int16  finetune;
 };
 STATIC_ASSERT(sizeof(ULT_SAMPLE) >= 64);

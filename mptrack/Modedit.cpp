@@ -827,7 +827,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, DWORD dwBeginSel, DWORD dwEndSe
 					{
 						if(m->IsPcNote())
 						{
-							const uint16 val = m->GetValueVolCol();
+							const uint16_t val = m->GetValueVolCol();
 							p[6] = GetDigit<2>(val);
 							p[7] = GetDigit<1>(val);
 							p[8] = GetDigit<0>(val);
@@ -852,7 +852,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, DWORD dwBeginSel, DWORD dwEndSe
 					{
 						if(m->IsPcNote())
 						{
-							const uint16 val = m->GetValueEffectCol();
+							const uint16_t val = m->GetValueEffectCol();
 							p[9] = GetDigit<2>(val);
 							p[10] = GetDigit<1>(val);
 							p[11] = GetDigit<0>(val);
@@ -1050,7 +1050,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPa
 									char val[4];
 									memcpy(val, s+5, 3);
 									val[3] = 0;
-									m[col].SetValueVolCol(ConvertStrTo<uint16>(val));
+									m[col].SetValueVolCol(ConvertStrTo<uint16_t>(val));
 								}
 								else
 								{
@@ -1075,7 +1075,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPa
 								char val[4];
 								memcpy(val, s+8, 3);
 								val[3] = 0;
-								m[col].SetValueEffectCol(ConvertStrTo<uint16>(val));
+								m[col].SetValueEffectCol(ConvertStrTo<uint16_t>(val));
 							}
 						}
 						else

@@ -564,8 +564,8 @@ DWORD ModSequence::Deserialize(const BYTE* const src, const DWORD memLength)
 //--------------------------------------------------------------------------
 {
 	if(memLength < 2 + 4) return 0;
-	uint16 version = 0;
-	uint16 s = 0;
+	uint16_t version = 0;
+	uint16_t s = 0;
 	DWORD memPos = 0;
 	memcpy(&version, src, sizeof(version));
 	memPos += sizeof(version);
@@ -575,7 +575,7 @@ DWORD ModSequence::Deserialize(const BYTE* const src, const DWORD memLength)
 	if(s > 65000) return true;
 	if(memLength < memPos+s*4) return memPos;
 
-	const uint16 nOriginalSize = s;
+	const uint16_t nOriginalSize = s;
 	LimitMax(s, ModSpecs::mptm.ordersMax);
 
 	resize(max(s, MAX_ORDERS));
@@ -604,7 +604,7 @@ size_t ModSequence::WriteToByteArray(BYTE* dest, const UINT numOfBytes, const UI
 }
 
 
-size_t ModSequence::WriteAsByte(FILE* f, const uint16 count)
+size_t ModSequence::WriteAsByte(FILE* f, const uint16_t count)
 //----------------------------------------------------------
 {
 	if(GetLength() < count) resize(count);
@@ -645,8 +645,8 @@ bool ModSequence::ReadAsByte(const BYTE* pFrom, const int howMany, const int mem
 void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 //-----------------------------------------------------------------------------
 {
-	uint16 size;
-	srlztn::Binaryread<uint16>(iStrm, size);
+	uint16_t size;
+	srlztn::Binaryread<uint16_t>(iStrm, size);
 	if(size > ModSpecs::mptm.ordersMax)
 	{
 		// Hack: Show message here if trying to load longer sequence than what is supported.
@@ -660,8 +660,8 @@ void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 
 	for(size_t i = 0; i < size; i++)
 	{
-		uint16 temp;
-		srlztn::Binaryread<uint16>(iStrm, temp);
+		uint16_t temp;
+		srlztn::Binaryread<uint16_t>(iStrm, temp);
 		seq[i] = temp;
 	}
 }
@@ -670,13 +670,13 @@ void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 void WriteModSequenceOld(std::ostream& oStrm, const ModSequenceSet& seq)
 //-------------------------------------------------------------------------
 {
-	const uint16 size = seq.GetLength();
-	srlztn::Binarywrite<uint16>(oStrm, size);
+	const uint16_t size = seq.GetLength();
+	srlztn::Binarywrite<uint16_t>(oStrm, size);
 	const ModSequenceSet::const_iterator endIter = seq.end();
 	for(ModSequenceSet::const_iterator citer = seq.begin(); citer != endIter; citer++)
 	{
-		const uint16 temp = static_cast<uint16>(*citer);
-		srlztn::Binarywrite<uint16>(oStrm, temp);
+		const uint16_t temp = static_cast<uint16_t>(*citer);
+		srlztn::Binarywrite<uint16_t>(oStrm, temp);
 	}
 }
 
@@ -687,9 +687,9 @@ void WriteModSequence(std::ostream& oStrm, const ModSequence& seq)
 	srlztn::Ssb ssb(oStrm);
 	ssb.BeginWrite(FileIdSequence, MptVersion::num);
 	ssb.WriteItem((LPCSTR)seq.m_sName, "n");
-	const uint16 nLength = seq.GetLengthTailTrimmed();
-	ssb.WriteItem<uint16>(nLength, "l");
-	ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16>(nLength));
+	const uint16_t nLength = seq.GetLengthTailTrimmed();
+	ssb.WriteItem<uint16_t>(nLength, "l");
+	ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16_t>(nLength));
 	ssb.FinishWrite();
 }
 
@@ -704,11 +704,11 @@ void ReadModSequence(std::istream& iStrm, ModSequence& seq, const size_t)
 	std::string str;
 	ssb.ReadItem(str, "n");
 	seq.m_sName = str.c_str();
-	uint16 nSize = MAX_ORDERS;
-	ssb.ReadItem<uint16>(nSize, "l");
+	uint16_t nSize = MAX_ORDERS;
+	ssb.ReadItem<uint16_t>(nSize, "l");
 	LimitMax(nSize, ModSpecs::mptm.ordersMax);
 	seq.resize(max(nSize, ModSequenceSet::s_nCacheSize));
-	ssb.ReadItem(seq.m_pArray, "a", 1, srlztn::ArrayReader<uint16>(nSize));
+	ssb.ReadItem(seq.m_pArray, "a", 1, srlztn::ArrayReader<uint16_t>(nSize));
 }
 
 

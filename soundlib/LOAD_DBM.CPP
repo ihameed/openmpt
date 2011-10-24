@@ -186,7 +186,7 @@ bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
 {
     const DBMFILEHEADER *pfh = (DBMFILEHEADER *)lpStream;
     DWORD dwMemPos;
-    uint16 nOrders, nSamples, nInstruments, nPatterns;
+    uint16_t nOrders, nSamples, nInstruments, nPatterns;
     
     if ((!lpStream) || (dwMemLength <= sizeof(DBMFILEHEADER)) || (!pfh->channels)
      || (pfh->dbm_id != DBM_FILE_MAGIC) || (!pfh->songs) || (pfh->song_id != DBM_ID_SONG)

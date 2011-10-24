@@ -33,10 +33,10 @@ typedef struct tagMTMHEADER
     char   id[3];			// MTM file marker
     uint8_t  version;			// Tracker version
     char   songname[20];	// ASCIIZ songname
-    uint16 numtracks;		// number of tracks saved
+    uint16_t numtracks;		// number of tracks saved
     uint8_t  lastpattern;		// last pattern number saved
     uint8_t  lastorder;		// last order number to play (songlength-1)
-    uint16 commentsize;		// length of comment field
+    uint16_t commentsize;		// length of comment field
     uint8_t  numsamples;		// number of samples saved
     uint8_t  attribute;		// attribute byte (unused)
     uint8_t  beatspertrack;	// numbers of rows in every pattern

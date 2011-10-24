@@ -93,7 +93,7 @@ struct ReadEntry
 	uintptr_t nIdpos;	// Index of id start in ID array.
 	RposType rposStart;	// Entry start position.
 	DataSize nSize;		// Entry size.
-	uint16 nIdLength;	// Length of id.
+	uint16_t nIdLength;	// Length of id.
 };
 
 
@@ -141,7 +141,7 @@ public:
 	~Ssb() {delete m_pSubEntry;}
 
 	// Sets map ID size in writing.
-	void SetIdSize(uint16 idSize);
+	void SetIdSize(uint16_t idSize);
 
 	// Write header
 	void BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersion);
@@ -297,7 +297,7 @@ private:
 	RposType m_rposEndofHdrData;		// Read: rpos of end of header data.
 	NumType m_nReadEntrycount;			// Read: Number of entries.
 
-	uint16 m_nIdbytes;					// Read/Write: Tells map ID entry size in bytes. If size is variable, value is IdSizeVariable.
+	uint16_t m_nIdbytes;					// Read/Write: Tells map ID entry size in bytes. If size is variable, value is IdSizeVariable.
 	NumType m_nCounter;					// Read/write: Keeps count of entries written/read.
 	NumType m_nNextReadHint;			// Read: Hint where to start looking for the next read entry.
 	std::bitset<RwfNumFlags> m_Flags;	// Read/write: Various flags.

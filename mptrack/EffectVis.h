@@ -76,14 +76,14 @@ public:
 	void Update();
 	int RowToScreenX(UINT row);
 	int RowToScreenY(UINT row);
-	int PCParamToScreenY(uint16 param);
-	int FXParamToScreenY(uint16 param);
-	uint16 GetParam(UINT row);
+	int PCParamToScreenY(uint16_t param);
+	int FXParamToScreenY(uint16_t param);
+	uint16_t GetParam(UINT row);
 	BYTE GetCommand(UINT row);
 	void SetParamFromY(UINT row, long y);
 	void SetCommand(UINT row, BYTE cmd);
 	BYTE ScreenYToFXParam(int y);
-	uint16 ScreenYToPCParam(int y);
+	uint16_t ScreenYToPCParam(int y);
 	UINT ScreenXToRow(int x);
 	void SetPlayCursor(UINT nPat, UINT nRow);
 	bool IsPcNote(int row);

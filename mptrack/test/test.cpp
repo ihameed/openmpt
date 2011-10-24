@@ -163,7 +163,7 @@ void TestTypes()
 
 	VERIFY_EQUAL(int16_min, (std::numeric_limits<int16>::min)());
 	VERIFY_EQUAL(int16_max, (std::numeric_limits<int16>::max)());
-	VERIFY_EQUAL(uint16_max, (std::numeric_limits<uint16>::max)());
+	VERIFY_EQUAL(uint16_max, (std::numeric_limits<uint16_t>::max)());
 
 	VERIFY_EQUAL(int32_min, (std::numeric_limits<int32>::min)());
 	VERIFY_EQUAL(int32_max, (std::numeric_limits<int32>::max)());
@@ -467,8 +467,8 @@ void GenerateCommands(CPattern& pat, const double dProbPcs, const double dProbPc
 				i->note = NOTE_PC;
 
 			i->instr = Rand<BYTE>(0, MAX_MIXPLUGINS);
-			i->SetValueVolCol(Rand<uint16>(0, modplug::tracker::modcommand_t::maxColumnValue));
-			i->SetValueEffectCol(Rand<uint16>(0, modplug::tracker::modcommand_t::maxColumnValue));
+			i->SetValueVolCol(Rand<uint16_t>(0, modplug::tracker::modcommand_t::maxColumnValue));
+			i->SetValueEffectCol(Rand<uint16_t>(0, modplug::tracker::modcommand_t::maxColumnValue));
 		}
 		else
 			i->Clear();

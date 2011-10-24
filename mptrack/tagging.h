@@ -70,7 +70,7 @@ typedef struct _TAGID3v2FRAME
 {
 	uint32_t frameid;
 	uint32_t size;
-	uint16 flags;
+	uint16_t flags;
 	// Total: 10 bytes
 } TAGID3v2FRAME;
 

@@ -64,9 +64,9 @@ bool CGzipArchive::ExtractFile()
 	// Extra block present? (ignore)
 	if(pHeader->flags & GZ_FEXTRA)
 	{
-		ASSERT_CAN_READ(sizeof(uint16));
-		uint16 xlen = LittleEndianW(*((uint16 *)m_lpStream + dwMemPos));
-		dwMemPos += sizeof(uint16);
+		ASSERT_CAN_READ(sizeof(uint16_t));
+		uint16_t xlen = LittleEndianW(*((uint16_t *)m_lpStream + dwMemPos));
+		dwMemPos += sizeof(uint16_t);
 		// We skip this.
 		ASSERT_CAN_READ(xlen);
 		dwMemPos += xlen;
@@ -93,10 +93,10 @@ bool CGzipArchive::ExtractFile()
 	// CRC16 present?
 	if(pHeader->flags & GZ_FHCRC)
 	{
-		ASSERT_CAN_READ(sizeof(uint16));
-		uint16 crc16_h = LittleEndianW(*((uint16 *)m_lpStream + dwMemPos));
-		uint16 crc16_f = (uint16)(crc32(0, m_lpStream, dwMemPos) & 0xFFFF);
-		dwMemPos += sizeof(uint16);
+		ASSERT_CAN_READ(sizeof(uint16_t));
+		uint16_t crc16_h = LittleEndianW(*((uint16_t *)m_lpStream + dwMemPos));
+		uint16_t crc16_f = (uint16_t)(crc32(0, m_lpStream, dwMemPos) & 0xFFFF);
+		dwMemPos += sizeof(uint16_t);
 		if(crc16_h != crc16_f)
 			return false;
 	}

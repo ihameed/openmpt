@@ -82,7 +82,7 @@ public:
 	ModSequence& operator=(const ModSequence& seq);
 
 	// Read/write.
-	size_t WriteAsByte(FILE* f, const uint16 count);
+	size_t WriteAsByte(FILE* f, const uint16_t count);
 	size_t WriteToByteArray(BYTE* dest, const UINT numOfBytes, const UINT destSize);
 	bool ReadAsByte(const BYTE* pFrom, const int howMany, const int memLength);
 
