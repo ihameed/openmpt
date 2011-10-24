@@ -113,7 +113,7 @@ BOOL CAddSilenceDlg::OnInitDialog()
 	CSpinButtonCtrl *spin = (CSpinButtonCtrl *)GetDlgItem(IDC_SPIN_ADDSILENCE);
 	if (spin)
 	{
-		spin->SetRange(0, int16_max);
+		spin->SetRange(0, INT16_MAX);
 		spin->SetPos(m_nSamples);
 	}
 

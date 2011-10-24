@@ -34,8 +34,8 @@ inline T ConvertStrTo(LPCSTR psz)
 }
 
 template<> inline uint32_t ConvertStrTo(LPCSTR psz) {return strtoul(psz, nullptr, 10);}
-template<> inline int64 ConvertStrTo(LPCSTR psz) {return _strtoi64(psz, nullptr, 10);}
-template<> inline uint64 ConvertStrTo(LPCSTR psz) {return _strtoui64(psz, nullptr, 10);}
+template<> inline int64_t ConvertStrTo(LPCSTR psz) {return _strtoi64(psz, nullptr, 10);}
+template<> inline uint64_t ConvertStrTo(LPCSTR psz) {return _strtoui64(psz, nullptr, 10);}
 
 // Sets last character to null in given char array.
 // Size of the array must be known at compile time.

@@ -1180,7 +1180,7 @@ void CCtrlSamples::OnNormalize()
                 }
             } else
             {
-                int8 *p = (int8 *)pSmp->sample_data;
+                int8_t *p = (int8_t *)pSmp->sample_data;
                 int max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
@@ -1193,7 +1193,7 @@ void CCtrlSamples::OnNormalize()
                     for (UINT j = iStart; j < iEnd; j++)
                     {
                         int l = (((int)p[j]) << 7) / max;
-                        p[j] = (int8)l;
+                        p[j] = (int8_t)l;
                     }
                     bModified = bOk = true;
                 }

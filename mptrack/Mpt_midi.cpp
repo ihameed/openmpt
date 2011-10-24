@@ -191,8 +191,8 @@ size_t CMIDIMapper::GetSerializationSize() const
 	size_t s = 0;
 	for(const_iterator citer = Begin(); citer != End(); citer++)
 	{
-		if(citer->GetParamIndex() <= uint8_max) {s += 5; continue;}
-		if(citer->GetParamIndex() <= uint16_max) {s += 6; continue;}
+		if(citer->GetParamIndex() <= UINT8_MAX) {s += 5; continue;}
+		if(citer->GetParamIndex() <= UINT16_MAX) {s += 6; continue;}
 		s += 8;
 	}
 	return s;
@@ -217,9 +217,9 @@ void CMIDIMapper::Serialize(FILE* f) const
 		//bits 6-7: Size: 5, 6, 8, 12
 
 		BYTE parambytes = 4;
-		if(temp32 <= uint16_max)
+		if(temp32 <= UINT16_MAX)
 		{
-			if(temp32 <= uint8_max) parambytes = 1;
+			if(temp32 <= UINT8_MAX) parambytes = 1;
 			else {parambytes = 2; temp8 |= (1 << 6);}
 		}
 		else temp8 |= (2 << 6);

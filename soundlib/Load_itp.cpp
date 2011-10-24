@@ -73,7 +73,7 @@ bool CSoundFile::ReadITProject(LPCBYTE lpStream, const DWORD dwMemLength)
     ASSERT_CAN_READ(4);
     memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
     dwMemPos += sizeof(DWORD);
-    if(id > uint16_max) return false;
+    if(id > UINT16_MAX) return false;
 
     // allocate and copy comment string
     ASSERT_CAN_READ(id);

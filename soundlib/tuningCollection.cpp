@@ -188,7 +188,7 @@ bool CTuningCollection::DeserializeOLD(istream& inStrm, bool& loadingSuccessful)
 	//s_SerializationBeginMarker = 0x54435348;  //ascii of TCSH
 	//s_SerializationEndMarker = 0x54435346; //ascii of TCSF(TuningCollectionSerialisationFooter) in hex.
 
-	int32 beginMarker, endMarker, version;
+	int32_t beginMarker, endMarker, version;
 
 	loadingSuccessful = false;
 

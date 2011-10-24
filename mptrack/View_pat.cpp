@@ -3278,12 +3278,12 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 
 
     // Handle MIDI mapping.
-    uint8_t mappedIndex = uint8_max, paramValue = uint8_max;
+    uint8_t mappedIndex = UINT8_MAX, paramValue = UINT8_MAX;
     uint32_t paramIndex = 0;
     const bool bCaptured = pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue); 
 
     // Write parameter control commands if needed.
-    if (paramValue != uint8_max && IsEditingEnabled() && pSndFile->GetType() == MOD_TYPE_MPT)
+    if (paramValue != UINT8_MAX && IsEditingEnabled() && pSndFile->GetType() == MOD_TYPE_MPT)
     {
         // Note: There's no undo for these modifications.
         const bool bLiveRecord = IsLiveRecord(*pModDoc, *pSndFile);
@@ -3330,7 +3330,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 
             // Checking whether to record MIDI controller change as MIDI macro change.
             // Don't write this if command was already written by MIDI mapping.
-            if((paramValue == uint8_max || pSndFile->GetType() != MOD_TYPE_MPT) && IsEditingEnabled() && (CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIMACROCONTROL))
+            if((paramValue == UINT8_MAX || pSndFile->GetType() != MOD_TYPE_MPT) && IsEditingEnabled() && (CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIMACROCONTROL))
             {  
                 // Note: There's no undo for these modifications.
                 const bool bLiveRecord = IsLiveRecord(*pModDoc, *pSndFile);

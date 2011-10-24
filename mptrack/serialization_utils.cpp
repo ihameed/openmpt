@@ -30,7 +30,7 @@ bool IsPrintableId(const void* pvId, const size_t nLength)
 }
 
 
-uint8_t GetByteReq1248(const uint64 size)
+uint8_t GetByteReq1248(const uint64_t size)
 //-------------------------------------
 {
 	if((size >> 6) == 0) return 1;
@@ -74,7 +74,7 @@ void WriteAdaptive12String(OutStream& oStrm, const std::string& str)
 //------------------------------------------------------------------
 {
 	uint16_t s = static_cast<uint16_t>(str.size());
-	LimitMax(s, uint16_t(uint16_max / 2));
+	LimitMax(s, uint16_t(UINT16_MAX / 2));
 	WriteAdaptive12(oStrm, s);
 	oStrm.write(str.c_str(), s);
 }
@@ -90,12 +90,12 @@ uint8_t Log2(const uint8_t& val)
 	else return 3;
 }
 
-void WriteAdaptive1248(OutStream& oStrm, const uint64& num)
+void WriteAdaptive1248(OutStream& oStrm, const uint64_t& num)
 //---------------------------------------------------------
 {
 	const uint8_t bc = GetByteReq1248(num);
-	const uint64 sizeInstruction = (num << 2) | Log2(bc);
-	Binarywrite<uint64>(oStrm, sizeInstruction, bc);
+	const uint64_t sizeInstruction = (num << 2) | Log2(bc);
+	Binarywrite<uint64_t>(oStrm, sizeInstruction, bc);
 }
 
 
@@ -122,10 +122,10 @@ const uint8_t pow2xTable[] = {1, 2, 4, 8, 16, 32, 64, 128};
 // Returns 2^n. n must be within {0,...,7}.
 inline uint8_t Pow2xSmall(const uint8_t& exp) {ASSERT(exp <= 7); return pow2xTable[exp];}
 
-void ReadAdaptive1248(InStream& iStrm, uint64& val)
+void ReadAdaptive1248(InStream& iStrm, uint64_t& val)
 //-------------------------------------------------
 {
-	Binaryread<uint64>(iStrm, val, 1);
+	Binaryread<uint64_t>(iStrm, val, 1);
 	const uint8_t bc = Pow2xSmall(static_cast<uint8_t>(val & 3));
 	if(bc > 1) iStrm.read(reinterpret_cast<char*>(&val)+1, bc-1);
 	val >>= 2;
@@ -135,7 +135,7 @@ void ReadAdaptive1248(InStream& iStrm, uint64& val)
 void WriteItemString(OutStream& oStrm, const char* const pStr, const size_t nSize)
 //--------------------------------------------------------------------------------
 {
-	uint32_t id = (std::min)(nSize, (uint32_max >> 4)) << 4;
+	uint32_t id = (std::min)(nSize, (UINT32_MAX >> 4)) << 4;
 	id |= 12; // 12 == 1100b
 	Binarywrite<uint32_t>(oStrm, id);
 	id >>= 4;
@@ -176,7 +176,7 @@ String IdToString(const void* const pvId, const size_t nLength)
 		std::copy(pId, pId + nLength, std::back_inserter<String>(str));
 	else if (nLength <= 4) // Interpret ID as integer value.
 	{
-		int32 val = 0;
+		int32_t val = 0;
 		memcpy(&val, pId, nLength);
 		char buf[36];
 		_itoa(val, buf, 10);
@@ -186,8 +186,8 @@ String IdToString(const void* const pvId, const size_t nLength)
 }
 
 const char Ssb::s_EntryID[3] = {'2','2','8'};
-int32 Ssb::s_DefaultReadLogMask = SNT_DEFAULT_MASK;
-int32 Ssb::s_DefaultWriteLogMask = SNT_DEFAULT_MASK;
+int32_t Ssb::s_DefaultReadLogMask = SNT_DEFAULT_MASK;
+int32_t Ssb::s_DefaultWriteLogMask = SNT_DEFAULT_MASK;
 Ssb::fpLogFunc_t Ssb::s_DefaultLogFunc = nullptr;
 
 const TCHAR tstrWriteHeader[] = TEXT("Write header with ID = %s\n");
@@ -416,7 +416,7 @@ void Ssb::IncrementWriteCounter()
 //-------------------------------
 {
 	m_nCounter++;
-	if (m_nCounter >= (uint16_max >> 2))
+	if (m_nCounter >= (UINT16_MAX >> 2))
 	{
 		FinishWrite();
 		AddWriteNote(SNW_MAX_WRITE_COUNT_REACHED);
@@ -436,7 +436,7 @@ void Ssb::ReleaseWriteSubEntry(const void* pId, const size_t nIdLength)
 }
 
 
-void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersion)
+void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64_t& nVersion)
 //---------------------------------------------------------------------------------
 {
 	OutStream& oStrm = *m_pOstrm;
@@ -503,7 +503,7 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersi
 	if(Testbit(flags, 1)) // Fixedsize entries?
 		WriteAdaptive1234(oStrm, m_nFixedEntrySize);
 
-	//Entrycount. Reserve two bytes(max uint16_max / 4 entries), actual value is written after writing data.
+	//Entrycount. Reserve two bytes(max UINT16_MAX / 4 entries), actual value is written after writing data.
 	m_posEntrycount = oStrm.tellp();
 	Binarywrite<uint16_t>(oStrm, 0);
 
@@ -511,7 +511,7 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersi
 
 	m_posMapPosField = oStrm.tellp();
 	if (GetFlag(RwfRwHasMap)) //Mapping begin pos(reserve space - actual value is written after writing data)
-		Binarywrite<uint64>(oStrm, 0);
+		Binarywrite<uint64_t>(oStrm, 0);
 }
 
 
@@ -543,7 +543,7 @@ void Ssb::OnWroteItem(const void* pId, const size_t nIdSize, const Postype& posB
 {
 	RposType nEntrySize = m_pOstrm->tellp() - posBeforeWrite;
 
-	if(GetFlag(RwfRMapHasSize) && nEntrySize > (uint64_max >> 2))
+	if(GetFlag(RwfRMapHasSize) && nEntrySize > (UINT64_MAX >> 2))
 		{ AddWriteNote(SNW_DATASIZETYPE_OVERFLOW); return; }
 
 	// Handle fixed size entries:
@@ -586,7 +586,7 @@ void Ssb::CompareId(InStream& iStrm, const void* pId, const size_t nIdlength)
 }
 
 
-void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersion)
+void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64_t& nVersion)
 //---------------------------------------------------------------------------------
 {
 	InStream& iStrm = *m_pIstrm;
@@ -648,7 +648,7 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersio
 		iStrm.ignore( (tempU8 == HeaderId_FlagByte) ? headerdatasize - 2 : headerdatasize - 1);
 	}
 
-	uint64 tempU64 = 0;
+	uint64_t tempU64 = 0;
 
 	// Read version numeric if available.
 	if (Testbit(header, 4))
@@ -764,7 +764,7 @@ void Ssb::CacheMap()
 			// Read position.
 			if(GetFlag(RwfRMapHasStartpos))
 			{
-				uint64 tempU64;
+				uint64_t tempU64;
 				ReadAdaptive1248(iStrm, tempU64);
 				if(tempU64 > Offtype_max)
 					{ AddReadNote(SNR_INSUFFICIENT_STREAM_OFFTYPE); return; }
@@ -776,7 +776,7 @@ void Ssb::CacheMap()
 				mapData[i].nSize = m_nFixedEntrySize;
 			else if(GetFlag(RwfRMapHasSize)) // Map has datasize field.
 			{
-				uint64 tempU64;
+				uint64_t tempU64;
 				ReadAdaptive1248(iStrm, tempU64);
 				if(tempU64 > Offtype_max)
 					{ AddReadNote(SNR_INSUFFICIENT_STREAM_OFFTYPE); return; }
@@ -879,8 +879,8 @@ void Ssb::FinishWrite()
 	if (GetFlag(RwfRwHasMap))
 	{	// Write map start position.
 		oStrm.seekp(m_posMapPosField);
-		const uint64 rposMap = m_posMapStart - m_posStart;
-		Binarywrite<uint64>(oStrm, rposMap << 2 | 3);
+		const uint64_t rposMap = m_posMapStart - m_posStart;
+		Binarywrite<uint64_t>(oStrm, rposMap << 2 | 3);
 	}
 
 	// Seek to end.

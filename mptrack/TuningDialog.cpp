@@ -1541,11 +1541,11 @@ CTuningDialog::EnSclImport CTuningDialog::ImportScl(std::istream& iStrm, LPCTSTR
         else if (*pNonDigit == '/') // Reading ratios
         { 
             *pNonDigit = 0; // Replace '/' with null.
-            int64 nNum = ConvertStrTo<int64>(psz);
+            int64_t nNum = ConvertStrTo<int64_t>(psz);
             psz = pNonDigit + 1;
-            int64 nDenom = ConvertStrTo<int64>(psz);
+            int64_t nDenom = ConvertStrTo<int64_t>(psz);
 
-            if (nNum > int32_max || nDenom > int32_max)
+            if (nNum > INT32_MAX || nDenom > INT32_MAX)
                 return enSclImportFailTooLargeNumDenomIntegers;
             if (nDenom == 0)
                 return enSclImportFailZeroDenominator;
@@ -1553,7 +1553,7 @@ CTuningDialog::EnSclImport CTuningDialog::ImportScl(std::istream& iStrm, LPCTSTR
             fRatios.push_back(static_cast<CTuningRTI::RATIOTYPE>((SclFloat)nNum / (SclFloat)nDenom));
         }
         else // Plain numbers.
-			fRatios.push_back(static_cast<CTuningRTI::RATIOTYPE>(ConvertStrTo<int32>(psz)));
+			fRatios.push_back(static_cast<CTuningRTI::RATIOTYPE>(ConvertStrTo<int32_t>(psz)));
     }
 
     if (nNotes != fRatios.size())

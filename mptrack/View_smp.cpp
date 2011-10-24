@@ -650,8 +650,8 @@ void CViewSample::DrawSampleData2(HDC hdc, int ymed, int cx, int cy, int len, in
 	int yrange = cy/2;
 	signed char *psample = (signed char *)pSampleData;
 	//int y0 = 0, xmax, posincr, posfrac, poshi;
-	int32 y0 = 0, xmax, poshi;
-	uint64 posincr, posfrac;
+	int32_t y0 = 0, xmax, poshi;
+	uint64_t posincr, posfrac;
 
 	if (len <= 0) return;
 	smplsize = (uFlags & CHN_16BIT) ? 2 : 1;
@@ -668,12 +668,12 @@ void CViewSample::DrawSampleData2(HDC hdc, int ymed, int cx, int cy, int len, in
 	{
 		xmax = len>>(m_nZoom-1);
 		if (xmax > cx) xmax = cx;
-		posincr = (uint64(1) << (m_nZoom-1+16));
+		posincr = (uint64_t(1) << (m_nZoom-1+16));
 	} else
 	{
 		xmax = cx;
 		//posincr = _muldiv(len, 0x10000, cx);
-		posincr = uint64(len) * uint64(0x10000) / uint64(cx);
+		posincr = uint64_t(len) * uint64_t(0x10000) / uint64_t(cx);
 	}
 	::MoveToEx(hdc, 0, ymed, NULL);
 	posfrac = 0;
@@ -682,10 +682,10 @@ void CViewSample::DrawSampleData2(HDC hdc, int ymed, int cx, int cy, int len, in
 	{
 		//int smin, smax, scanlen;
 		int smin, smax;
-		int32 scanlen;
+		int32_t scanlen;
 
 		posfrac += posincr;
-		scanlen = static_cast<int32>((posfrac+0xffff) >> 16);
+		scanlen = static_cast<int32_t>((posfrac+0xffff) >> 16);
 		if (poshi >= len) poshi = len-1;
 		if (poshi+scanlen > len) scanlen = len-poshi;
 		if (scanlen < 1) scanlen = 1;
@@ -751,7 +751,7 @@ void CViewSample::DrawSampleData2(HDC hdc, int ymed, int cx, int cy, int len, in
 		::LineTo(hdc, x, smin);
 		oldsmin = smin;
 		oldsmax = smax;
-		poshi += static_cast<int32>(posfrac>>16);
+		poshi += static_cast<int32_t>(posfrac>>16);
 		posfrac &= 0xffff;
 	}
 }
@@ -1359,7 +1359,7 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
 				if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 2)
 					SetSampleData<int16_t, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
 				else if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 1)
-					SetSampleData<int8, uint8_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
+					SetSampleData<int8_t, uint8_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
 				
 				ctrlSmp::AdjustEndOfSample(pSndFile->Samples[m_nSample], pSndFile);
 
@@ -1415,7 +1415,7 @@ void CViewSample::OnLButtonDown(UINT, CPoint point)
 		if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 2)
 			SetInitialDrawPoint<int16_t, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point);
 		else if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 1)
-			SetInitialDrawPoint<int8, uint8_t>(pSndFile->Samples[m_nSample].sample_data, point);
+			SetInitialDrawPoint<int8_t, uint8_t>(pSndFile->Samples[m_nSample].sample_data, point);
 
 		InvalidateSample();
 		pModDoc->SetModified();
@@ -2137,7 +2137,7 @@ void CViewSample::PlayNote(UINT note, const uint32_t nStartPos)
 			if (loopend - loopstart < (UINT)(4 << m_nZoom))
 				loopend = loopstart = 0; // selection is too small -> no loop
 
-			if(nStartPos != uint32_max)
+			if(nStartPos != UINT32_MAX)
 				pModDoc->PlayNote(note, 0, m_nSample, FALSE, -1, loopstart, loopend, -1, nStartPos);
 			else
 				pModDoc->PlayNote(note, 0, m_nSample, FALSE, -1, loopstart, loopend);

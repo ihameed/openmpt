@@ -1977,7 +1977,7 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t siz
 }
 
 
-void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16_t size)
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32_t code, const int16_t size)
 //------------------------------------------------------------------------------------------------------------
 {
     // get field's address in instrument's header
@@ -1992,7 +1992,7 @@ void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBY
 }
 
 
-void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd)
+void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32_t code, LPCBYTE& pData, const LPCBYTE pEnd)
 //---------------------------------------------------------------------------------------------------------------
 {
     if(pEnd < pData || uintptr_t(pEnd - pData) < 2)
@@ -2018,7 +2018,7 @@ void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, c
     LPCBYTE pData = pDataStart;
     const LPCBYTE pEnd = pDataStart + nMemLength;
 
-    int32 code;
+    int32_t code;
     memcpy(&code, pData, sizeof(code));
 
     // Seek for supported extended settings header

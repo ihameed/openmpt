@@ -157,21 +157,21 @@ void TestVersion()
 void TestTypes()
 //--------------
 {
-	VERIFY_EQUAL(int8_min, (std::numeric_limits<int8>::min)());
-	VERIFY_EQUAL(int8_max, (std::numeric_limits<int8>::max)());
-	VERIFY_EQUAL(uint8_max, (std::numeric_limits<uint8_t>::max)());
+	VERIFY_EQUAL(INT8_MIN, (std::numeric_limits<int8_t>::min)());
+	VERIFY_EQUAL(INT8_MAX, (std::numeric_limits<int8_t>::max)());
+	VERIFY_EQUAL(UINT8_MAX, (std::numeric_limits<uint8_t>::max)());
 
-	VERIFY_EQUAL(int16_min, (std::numeric_limits<int16_t>::min)());
-	VERIFY_EQUAL(int16_max, (std::numeric_limits<int16_t>::max)());
-	VERIFY_EQUAL(uint16_max, (std::numeric_limits<uint16_t>::max)());
+	VERIFY_EQUAL(INT16_MIN, (std::numeric_limits<int16_t>::min)());
+	VERIFY_EQUAL(INT16_MAX, (std::numeric_limits<int16_t>::max)());
+	VERIFY_EQUAL(UINT16_MAX, (std::numeric_limits<uint16_t>::max)());
 
-	VERIFY_EQUAL(int32_min, (std::numeric_limits<int32>::min)());
-	VERIFY_EQUAL(int32_max, (std::numeric_limits<int32>::max)());
-	VERIFY_EQUAL(uint32_max, (std::numeric_limits<uint32_t>::max)());
+	VERIFY_EQUAL(INT32_MIN, (std::numeric_limits<int32_t>::min)());
+	VERIFY_EQUAL(INT32_MAX, (std::numeric_limits<int32_t>::max)());
+	VERIFY_EQUAL(UINT32_MAX, (std::numeric_limits<uint32_t>::max)());
 
-	VERIFY_EQUAL(int64_min, (std::numeric_limits<int64>::min)());
-	VERIFY_EQUAL(int64_max, (std::numeric_limits<int64>::max)());
-	VERIFY_EQUAL(uint64_max, (std::numeric_limits<uint64>::max)());
+	VERIFY_EQUAL(INT64_MIN, (std::numeric_limits<int64_t>::min)());
+	VERIFY_EQUAL(INT64_MAX, (std::numeric_limits<int64_t>::max)());
+	VERIFY_EQUAL(UINT64_MAX, (std::numeric_limits<uint64_t>::max)());
 
 	VERIFY_EQUAL(ROWINDEX_MAX, (std::numeric_limits<ROWINDEX>::max)());
 	VERIFY_EQUAL(ORDERINDEX_MAX, (std::numeric_limits<ORDERINDEX>::max)());
@@ -185,16 +185,16 @@ void TestMisc()
 //-------------
 {
 	VERIFY_EQUAL(ConvertStrTo<uint32_t>("586"), 586);
-	VERIFY_EQUAL(ConvertStrTo<uint32_t>("2147483647"), int32_max);
-	VERIFY_EQUAL(ConvertStrTo<uint32_t>("4294967295"), uint32_max);
+	VERIFY_EQUAL(ConvertStrTo<uint32_t>("2147483647"), INT32_MAX);
+	VERIFY_EQUAL(ConvertStrTo<uint32_t>("4294967295"), UINT32_MAX);
 
-	VERIFY_EQUAL(ConvertStrTo<int64>("-9223372036854775808"), int64_min);
-	VERIFY_EQUAL(ConvertStrTo<int64>("-159"), -159);
-	VERIFY_EQUAL(ConvertStrTo<int64>("9223372036854775807"), int64_max);
+	VERIFY_EQUAL(ConvertStrTo<int64_t>("-9223372036854775808"), INT64_MIN);
+	VERIFY_EQUAL(ConvertStrTo<int64_t>("-159"), -159);
+	VERIFY_EQUAL(ConvertStrTo<int64_t>("9223372036854775807"), INT64_MAX);
 
-	VERIFY_EQUAL(ConvertStrTo<uint64>("85059"), 85059);
-	VERIFY_EQUAL(ConvertStrTo<uint64>("9223372036854775807"), int64_max);
-	VERIFY_EQUAL(ConvertStrTo<uint64>("18446744073709551615"), uint64_max);
+	VERIFY_EQUAL(ConvertStrTo<uint64_t>("85059"), 85059);
+	VERIFY_EQUAL(ConvertStrTo<uint64_t>("9223372036854775807"), INT64_MAX);
+	VERIFY_EQUAL(ConvertStrTo<uint64_t>("18446744073709551615"), UINT64_MAX);
 
 	VERIFY_EQUAL(ConvertStrTo<float>("-87.0"), -87.0);
 	VERIFY_EQUAL(ConvertStrTo<double>("-0.5e-6"), -0.5e-6);

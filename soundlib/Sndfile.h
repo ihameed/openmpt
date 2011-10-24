@@ -27,7 +27,7 @@
 #define VST_FORCE_DEPRECATED 0
 #include <aeffect.h>			// VST
 #else
-typedef int32 VstInt32;
+typedef int32_t VstInt32;
 typedef intptr_t VstIntPtr;
 #endif
 
@@ -920,10 +920,10 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t siz
 
 // Read instrument property with 'code' and 'size' from 'ptr' to instrument 'pIns'.
 // Note: (ptr, size) pair must be valid (e.g. can read 'size' bytes from 'ptr')
-void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16_t size);
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32_t code, const int16_t size);
 
 // Read instrument property with 'code' from 'pData' to instrument 'pIns'.
-void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd);
+void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32_t code, LPCBYTE& pData, const LPCBYTE pEnd);
 
 // Read extended instrument properties from 'pDataStart' to instrument 'pIns'.
 void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const LPCBYTE pDataStart, const size_t nMemLength);

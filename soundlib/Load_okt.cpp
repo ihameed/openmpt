@@ -121,7 +121,7 @@ void Read_OKT_Pattern(const BYTE *lpStream, const DWORD dwMemLength, const PATTE
 			ASSERT_CAN_READ_OKTPAT(4);
 			m->note = lpStream[dwMemPos++];
 			m->instr = lpStream[dwMemPos++];
-			int8 fxcmd = lpStream[dwMemPos++];
+			int8_t fxcmd = lpStream[dwMemPos++];
 			m->param = lpStream[dwMemPos++];
 
 			if(m->note > 0 && m->note <= 36)

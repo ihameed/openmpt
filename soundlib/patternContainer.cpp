@@ -198,7 +198,7 @@ void ReadModPatterns(std::istream& iStrm, CPatternContainer& patc, const size_t)
 	if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
 		return;
 	PATTERNINDEX nPatterns = patc.Size();
-	uint16_t nCount = uint16_max;
+	uint16_t nCount = UINT16_MAX;
 	if (ssb.ReadItem(nCount, "num") != srlztn::Ssb::EntryNotFound)
 		nPatterns = nCount;
 	LimitMax(nPatterns, ModSpecs::mptm.patternsMax);

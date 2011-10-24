@@ -182,7 +182,7 @@ bool AdjustEndOfSample(modplug::tracker::modsample_t& smp, CSoundFile* pSndFile)
 	if (pSmp->GetElementarySampleSize() == 2)
 		AdjustEndOfSampleImpl<int16_t>(*pSmp);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		AdjustEndOfSampleImpl<int8>(*pSmp);
+		AdjustEndOfSampleImpl<int8_t>(*pSmp);
 
 	// Update channels with new loop values
 	if(pSndFile != nullptr)
@@ -262,7 +262,7 @@ namespace
 		double dMax, dMin, dOffset;
 	};
 
-	// Returns maximum sample amplitude for given sample type (int8/int16_t).
+	// Returns maximum sample amplitude for given sample type (int8_t/int16_t).
 	template <class T>
 	double GetMaxAmplitude() {return 1.0 + (std::numeric_limits<T>::max)();}
 
@@ -335,14 +335,14 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
 	iStart *= pSmp->GetNumChannels();
 	iEnd *= pSmp->GetNumChannels();
 
-	const double dMaxAmplitude = (pSmp->GetElementarySampleSize() == 2) ? GetMaxAmplitude<int16_t>() : GetMaxAmplitude<int8>();
+	const double dMaxAmplitude = (pSmp->GetElementarySampleSize() == 2) ? GetMaxAmplitude<int16_t>() : GetMaxAmplitude<int8_t>();
 
 	// step 1: Calculate offset.
 	OffsetData oData = {0,0,0};
 	if(pSmp->GetElementarySampleSize() == 2)
 		oData = CalculateOffset(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		oData = CalculateOffset(reinterpret_cast<int8*>(pSmp->sample_data) + iStart, iEnd - iStart);
+		oData = CalculateOffset(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 
 	double dMin = oData.dMin, dMax = oData.dMax, dOffset = oData.dOffset;
 	
@@ -363,7 +363,7 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
 	if(pSmp->GetElementarySampleSize() == 2)
 		RemoveOffsetAndNormalize( reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart, dOffset, dAmplify);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		RemoveOffsetAndNormalize( reinterpret_cast<int8*>(pSmp->sample_data) + iStart, iEnd - iStart, dOffset, dAmplify);
+		RemoveOffsetAndNormalize( reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart, dOffset, dAmplify);
 	
 	// step 3: adjust global vol (if available)
 	if((modtype & (MOD_TYPE_IT | MOD_TYPE_MPT)) && (iStart == 0) && (iEnd == pSmp->length * pSmp->GetNumChannels()))
@@ -410,13 +410,13 @@ bool ReverseSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLen
 	if(iEnd - iStart < 2) return false;
 
 	if(pSmp->GetBytesPerSample() == 8)		// unused (yet)
-		ReverseSampleImpl(reinterpret_cast<int64*>(pSmp->sample_data) + iStart, iEnd - iStart);
+		ReverseSampleImpl(reinterpret_cast<int64_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else if(pSmp->GetBytesPerSample() == 4)	// 16 bit stereo
-		ReverseSampleImpl(reinterpret_cast<int32*>(pSmp->sample_data) + iStart, iEnd - iStart);
+		ReverseSampleImpl(reinterpret_cast<int32_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else if(pSmp->GetBytesPerSample() == 2)	// 16 bit mono / 8 bit stereo
 		ReverseSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else if(pSmp->GetBytesPerSample() == 1)	// 8 bit mono
-		ReverseSampleImpl(reinterpret_cast<int8*>(pSmp->sample_data) + iStart, iEnd - iStart);
+		ReverseSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else
 		return false;
 
@@ -451,7 +451,7 @@ bool UnsignSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLeng
 	if(pSmp->GetElementarySampleSize() == 2)
 		UnsignSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		UnsignSampleImpl(reinterpret_cast<int8*>(pSmp->sample_data) + iStart, iEnd - iStart);
+		UnsignSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else
 		return false;
 
@@ -485,7 +485,7 @@ bool InvertSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLeng
 	if(pSmp->GetElementarySampleSize() == 2)
 		InvertSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		InvertSampleImpl(reinterpret_cast<int8*>(pSmp->sample_data) + iStart, iEnd - iStart);
+		InvertSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
 	else
 		return false;
 
@@ -522,7 +522,7 @@ bool XFadeSample(modplug::tracker::modsample_t *pSmp, SmpLength iFadeLength, CSo
 	if(pSmp->GetElementarySampleSize() == 2)
 		XFadeSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart, iFadeLength);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		XFadeSampleImpl(reinterpret_cast<int8*>(pSmp->sample_data) + iStart, iEnd - iStart, iFadeLength);
+		XFadeSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart, iFadeLength);
 	else
 		return false;
 
@@ -553,7 +553,7 @@ bool ConvertToMono(modplug::tracker::modsample_t *pSmp, CSoundFile *pSndFile)
 	if(pSmp->GetElementarySampleSize() == 2)
 		ConvertStereoToMonoImpl(reinterpret_cast<int16_t*>(pSmp->sample_data), pSmp->length);
 	else if(pSmp->GetElementarySampleSize() == 1)
-		ConvertStereoToMonoImpl(reinterpret_cast<int8*>(pSmp->sample_data), pSmp->length);
+		ConvertStereoToMonoImpl(reinterpret_cast<int8_t*>(pSmp->sample_data), pSmp->length);
 	else
 		return false;
 

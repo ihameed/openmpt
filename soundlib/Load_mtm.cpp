@@ -22,7 +22,7 @@ typedef struct tagMTMSAMPLE
     uint32_t length;
     uint32_t reppos;
     uint32_t repend;
-    int8   finetune;
+    int8_t   finetune;
     uint8_t  volume;
     uint8_t  attribute;
 } MTMSAMPLE;

@@ -729,7 +729,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     if(len > s.size() - x) /*Buffer running out? Make it larger.*/ \
         s.resize(s.size() + 10*1024, 0); \
     \
-    if((len > uint16_max - (UINT)x) && GetpModDoc()) /*Reaching the limits of file format?*/ \
+    if((len > UINT16_MAX - (UINT)x) && GetpModDoc()) /*Reaching the limits of file format?*/ \
     { \
         CString str; str.Format("%s (%s %u)\n", str_tooMuchPatternData, str_pattern, i); \
         GetpModDoc()->AddToLog(str); \

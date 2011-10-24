@@ -23,7 +23,7 @@ public:
 	bool m_bFadeIn, m_bFadeOut;
 
 public:
-	CAmpDlg(CWnd *parent, int16_t nFactor=100, int16_t nFactorMin = int16_min, int16_t nFactorMax = int16_max);
+	CAmpDlg(CWnd *parent, int16_t nFactor=100, int16_t nFactorMin = INT16_MIN, int16_t nFactorMax = INT16_MAX);
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
 };

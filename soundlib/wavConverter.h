@@ -18,12 +18,12 @@ double MaxFinderSignedInt(const char* const buffer, const size_t bs)
 	uint32_t max = 0;
 	for(size_t i = 0; i <= bs-INBYTES; i += INBYTES)
 	{
-		int32 temp = 0;
+		int32_t temp = 0;
 		memcpy((char*)(&temp)+(4-INBYTES), buffer + i, INBYTES);
 		if(temp < 0) temp = -temp;
 		if(temp < 0)
 		{
-			max = static_cast<uint32_t>(int32_min);
+			max = static_cast<uint32_t>(INT32_MIN);
 			max >>= 8*(4-INBYTES);
 			break; //This is the max possible value so no need to look for bigger one.
 		}
@@ -55,18 +55,18 @@ inline double MaxFinderFloat32(const char* const buffer, const size_t bs)
 inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const double max)
 //--------------------------------------------------------------------------------
 {
-	int32 val = 0;
+	int32_t val = 0;
 	memcpy((char*)(&val)+1, inBuffer, 3);
 	//Reading 24 bit data to three last bytes in 32 bit int.
 
 	bool negative = (val < 0) ? true : false;
 	if(negative) val = -val;
-	double absval = (val < 0) ? -int32_min : val;
+	double absval = (val < 0) ? -INT32_MIN : val;
 
 	absval /= 256;
 
 	const double NC = (negative) ? 32768 : 32767; //Normalisation Constant
-	absval = static_cast<int32>((absval/max)*NC);
+	absval = static_cast<int32_t>((absval/max)*NC);
 
 	ASSERT(absval - 32768 <= 0);
 
@@ -90,7 +90,7 @@ inline void WavSigned32To16(const char* const inBuffer, char* outBuffer, double 
 //----------------------------------------------------------------------
 {
 	int16_t& out = *reinterpret_cast<int16_t*>(outBuffer);
-	double temp = *reinterpret_cast<const int32*>(inBuffer);
+	double temp = *reinterpret_cast<const int32_t*>(inBuffer);
 	const double NC = (temp < 0) ? 32768 : 32767;
 	out = static_cast<int16_t>(temp / max * NC);
 }

@@ -1297,7 +1297,7 @@ DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
     const size_t num = 0;
 #endif // MODPLUG_TRACKER
 
-    uint16_t fnum = min(num, uint16_max);	// Number of entries that are actually going to be written
+    uint16_t fnum = min(num, UINT16_MAX);	// Number of entries that are actually going to be written
     const size_t bytes_written = 2 + fnum * 8;	// Number of bytes that are actually going to be written
     
     if(f == nullptr)
@@ -1309,7 +1309,7 @@ DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
 
 #ifdef MODPLUG_TRACKER
     // Write history data
-    const size_t start = (num > uint16_max) ? num - uint16_max : 0;
+    const size_t start = (num > UINT16_MAX) ? num - UINT16_MAX : 0;
     for(size_t n = start; n < num; n++)
     {
         tm loadDate;
@@ -1825,7 +1825,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                 }
             }
             buf[len++] = 0;
-            if(patinfo[0] > uint16_max - len)
+            if(patinfo[0] > UINT16_MAX - len)
             {
 #ifdef MODPLUG_TRACKER
                 if(GetpModDoc())
@@ -3121,7 +3121,7 @@ void CSoundFile::SaveExtendedSongProperties(FILE* f)
     if(GetMIDIMapper().GetCount() > 0)
     {
         const size_t objectsize = GetMIDIMapper().GetSerializationSize();
-        if(objectsize > size_t(int16_max))
+        if(objectsize > size_t(INT16_MAX))
         {
 #ifdef MODPLUG_TRACKER
             if(GetpModDoc())
@@ -3150,7 +3150,7 @@ LPCBYTE CSoundFile::LoadExtendedInstrumentProperties(const LPCBYTE pStart,
     if( pStart == NULL || pEnd <= pStart || uintptr_t(pEnd - pStart) < 4)
         return NULL;
 
-    int32 code = 0;
+    int32_t code = 0;
     int16_t size = 0;
     LPCBYTE ptr = pStart;
 
@@ -3163,7 +3163,7 @@ LPCBYTE CSoundFile::LoadExtendedInstrumentProperties(const LPCBYTE pStart,
     if(pInterpretMptMade != NULL)
         *pInterpretMptMade = true;
 
-    ptr += sizeof(int32);							// jump extension header code
+    ptr += sizeof(int32_t);							// jump extension header code
     while( ptr < pEnd && uintptr_t(pEnd-ptr) >= 4) //Loop 'till beginning of end of file/mpt specific looking for inst. extensions
     { 
         memcpy(&code, ptr, sizeof(code));	// read field code
@@ -3204,7 +3204,7 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
 
     const LPCBYTE pEnd = lpStream + searchlimit;
 
-    int32 code = 0;
+    int32_t code = 0;
     int16_t size = 0;
     
     memcpy(&code, ptr, sizeof(code));
@@ -3228,8 +3228,8 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
     ptr += sizeof(code); // jump extension header code
     while( uintptr_t(ptr - lpStream) <= searchlimit-6 ) //Loop until given limit.
     { 
-        code = (*((int32 *)ptr));			// read field code
-        ptr += sizeof(int32);				// jump field code
+        code = (*((int32_t *)ptr));			// read field code
+        ptr += sizeof(int32_t);				// jump field code
         size = (*((int16_t *)ptr));			// read field size
         ptr += sizeof(int16_t);				// jump field size
 

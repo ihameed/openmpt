@@ -1570,7 +1570,7 @@ BOOL CEditHistoryDlg::OnInitDialog()
 		return TRUE;
 
 	CString s;
-	uint64 totalTime = 0;
+	uint64_t totalTime = 0;
 	const size_t num = m_pModDoc->GetFileHistory()->size();
 	
 	for(size_t n = 0; n < num; n++)
@@ -1596,7 +1596,7 @@ BOOL CEditHistoryDlg::OnInitDialog()
 	s = "";
 	if(totalTime)
 	{
-		totalTime = (uint64)((double)(totalTime) / HISTORY_TIMER_PRECISION);
+		totalTime = (uint64_t)((double)(totalTime) / HISTORY_TIMER_PRECISION);
 
 		s.Format(_T("Total edit time: %lluh %02llum %02llus (%u session%s)"), totalTime / 3600, (totalTime / 60) % 60, totalTime % 60, num, (num != 1) ? _T("s") : _T(""));
 		SetDlgItemText(IDC_TOTAL_EDIT_TIME, s);

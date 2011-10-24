@@ -285,7 +285,7 @@ WRITE_MPTHEADER_sized_member(	fadeout, UINT			, FO..							)
     //WRITE_MPTHEADER_sized_member(	dwFlags					, DWORD			, dF..							)
     const DWORD dwFlags = CreateExtensionFlags(*input);
     fcode = 'dF..';
-    fwrite(&fcode, 1, sizeof(int32), file);
+    fwrite(&fcode, 1, sizeof(int32_t), file);
     fsize = sizeof(dwFlags);
     fwrite(&fsize, 1, sizeof(int16_t), file);
     fwrite(&dwFlags, 1, fsize, file);
@@ -1681,7 +1681,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
             int s_ofs = (nFlags == RS_STPCM8U) ? 0x80 : 0;
             for (UINT iCh=0; iCh<2; iCh++)
             {
-                int8 *p = ((int8 *)pSample) + iCh;
+                int8_t *p = ((int8_t *)pSample) + iCh;
                 int s_old = 0;
 
                 bufcount = 0;
@@ -1691,11 +1691,11 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
                     p += 2;
                     if (nFlags == RS_STPCM8D)
                     {
-                        buffer[bufcount++] = (int8)(s_new - s_old);
+                        buffer[bufcount++] = (int8_t)(s_new - s_old);
                         s_old = s_new;
                     } else
                     {
-                        buffer[bufcount++] = (int8)(s_new + s_ofs);
+                        buffer[bufcount++] = (int8_t)(s_new + s_ofs);
                     }
                     if (bufcount >= sizeof(buffer))
                     {
@@ -1776,13 +1776,13 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
         len = nLen;
         bufcount = 0;
         {
-            int8 *p = (int8 *)pSample;
+            int8_t *p = (int8_t *)pSample;
             int sinc = (pSmp->flags & CHN_16BIT) ? 2 : 1;
             int s_old = 0, s_ofs = (nFlags == RS_PCM8U) ? 0x80 : 0;
             if (pSmp->flags & CHN_16BIT) p++;
             for (UINT j=0; j<len; j++)
             {
-                int s_new = (int8)(*p);
+                int s_new = (int8_t)(*p);
                 p += sinc;
                 if (pSmp->flags & CHN_STEREO)
                 {
@@ -1791,11 +1791,11 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
                 }
                 if (nFlags == RS_PCM8D)
                 {
-                    buffer[bufcount++] = (int8)(s_new - s_old);
+                    buffer[bufcount++] = (int8_t)(s_new - s_old);
                     s_old = s_new;
                 } else
                 {
-                    buffer[bufcount++] = (int8)(s_new + s_ofs);
+                    buffer[bufcount++] = (int8_t)(s_new + s_ofs);
                 }
                 if (bufcount >= sizeof(buffer))
                 {
@@ -2462,8 +2462,8 @@ void CSoundFile::FrequencyToTranspose(modplug::tracker::modsample_t *psmp)
         ftune -= 128;
     }
     Limit(transp, -127, 127);
-    psmp->RelativeTone = static_cast<int8>(transp);
-    psmp->nFineTune = static_cast<int8>(ftune);
+    psmp->RelativeTone = static_cast<int8_t>(transp);
+    psmp->nFineTune = static_cast<int8_t>(ftune);
 }
 
 
@@ -2863,7 +2863,7 @@ uint16_t CSoundFile::GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype
 
     // IT <-> MPT conversion.
     if(combined == (MOD_TYPE_IT|MOD_TYPE_MPT))
-        return uint16_max;
+        return UINT16_MAX;
 
     return (1 << MSF_COMPATIBLE_PLAY);
 }

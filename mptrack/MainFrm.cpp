@@ -160,7 +160,7 @@ int CMainFrame::gnPlugWindowWidth = 370;
 int CMainFrame::gnPlugWindowHeight = 332;
 DWORD CMainFrame::gnPlugWindowLast = 0;
 
-uint32_t CMainFrame::gnMsgBoxVisiblityFlags = uint32_max;
+uint32_t CMainFrame::gnMsgBoxVisiblityFlags = UINT32_MAX;
 
 CRITICAL_SECTION CMainFrame::m_csAudio;
 HANDLE CMainFrame::m_hPlayThread = NULL;
@@ -413,7 +413,7 @@ void CMainFrame::LoadIniSettings()
     gnPlugWindowWidth = GetPrivateProfileInt("Display", "PlugSelectWindowWidth", 370, iniFile);
     gnPlugWindowHeight = GetPrivateProfileInt("Display", "PlugSelectWindowHeight", 332, iniFile);
     gnPlugWindowLast = GetPrivateProfileDWord("Display", "PlugSelectWindowLast", 0, iniFile);
-    gnMsgBoxVisiblityFlags = GetPrivateProfileDWord("Display", "MsgBoxVisibilityFlags", uint32_max, iniFile);
+    gnMsgBoxVisiblityFlags = GetPrivateProfileDWord("Display", "MsgBoxVisibilityFlags", UINT32_MAX, iniFile);
 
     // Internet Update
     {

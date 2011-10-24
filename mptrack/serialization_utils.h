@@ -73,16 +73,16 @@ enum
 };
 
 bool IsPrintableId(const void* pvId, const size_t nLength); // Return true if given id is printable, false otherwise. 
-void ReadAdaptive1248(InStream& iStrm, uint64& val);
-void WriteAdaptive1248(OutStream& oStrm, const uint64& val);
+void ReadAdaptive1248(InStream& iStrm, uint64_t& val);
+void WriteAdaptive1248(OutStream& oStrm, const uint64_t& val);
 
 enum
 {
-	IdSizeVariable = uint16_max,
-	IdSizeMaxFixedSize = (uint8_max >> 1)
+	IdSizeVariable = UINT16_MAX,
+	IdSizeMaxFixedSize = (UINT8_MAX >> 1)
 };
 
-typedef int32 SsbStatus;
+typedef int32_t SsbStatus;
 
 
 struct ReadEntry
@@ -144,12 +144,12 @@ public:
 	void SetIdSize(uint16_t idSize);
 
 	// Write header
-	void BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersion);
-	void BeginWrite(const LPCSTR pszId, const uint64& nVersion) {BeginWrite(pszId, strlen(pszId), nVersion);}
+	void BeginWrite(const void* pId, const size_t nIdSize, const uint64_t& nVersion);
+	void BeginWrite(const LPCSTR pszId, const uint64_t& nVersion) {BeginWrite(pszId, strlen(pszId), nVersion);}
 	
 	// Call this to begin reading: must be called before other read functions.
-	void BeginRead(const void* pId, const size_t nLength, const uint64& nVersion);
-	void BeginRead(const LPCSTR pszId, const uint64& nVersion) {return BeginRead(pszId, strlen(pszId), nVersion);}
+	void BeginRead(const void* pId, const size_t nLength, const uint64_t& nVersion);
+	void BeginRead(const LPCSTR pszId, const uint64_t& nVersion) {return BeginRead(pszId, strlen(pszId), nVersion);}
 
 	// Reserves space for map to current position. Call after BeginWrite and before writing any entries.
 	void ReserveMapSize(uint32_t nSize);
@@ -191,7 +191,7 @@ public:
 	// When reading, returns the number of entries read not including unrecognized entries.
 	NumType GetCounter() const {return m_nCounter;}
 
-	uint64 GetReadVersion() {return m_nReadVersion;}
+	uint64_t GetReadVersion() {return m_nReadVersion;}
 
 	// Read item using default read implementation.
 	template <class T>
@@ -289,7 +289,7 @@ private:
 
 	Postype m_posStart;					// Read/write: Stream position at the beginning of object.
 	std::vector<ReadEntry> mapData;		// Read: Contains map information.
-	uint64 m_nReadVersion;				// Read: Version is placed here when reading.
+	uint64_t m_nReadVersion;				// Read: Version is placed here when reading.
 	NumType m_nMaxReadEntryCount;		// Read: Limits the number of entries allowed to be read.
 	RposType m_rposMapBegin;			// Read: If map exists, rpos of map begin, else m_rposEndofHdrData.
 	Postype m_posMapEnd;				// Read: If map exists, map end position, else pos of end of hdrData.
@@ -314,11 +314,11 @@ private:
 	static const uint8_t HeaderId_FlagByte = 0;
 public:
 	static const uint8_t s_DefaultFlagbyte = 0;
-	static int32 s_DefaultReadLogMask;
-	static int32 s_DefaultWriteLogMask;
+	static int32_t s_DefaultReadLogMask;
+	static int32_t s_DefaultWriteLogMask;
 	static fpLogFunc_t s_DefaultLogFunc;
 	static const char s_EntryID[3];
-	static const int32 s_DefaultFlags = (1 << RwfWMapStartPosEntry) +
+	static const int32_t s_DefaultFlags = (1 << RwfWMapStartPosEntry) +
 										 (1 << RwfWMapSizeEntry) + (1 << RwfWVersionNum) +
 										 (1 << RwfRPartialIdMatch);
 };

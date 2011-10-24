@@ -114,8 +114,8 @@ protected:
 };
 
 
-inline PATTERNINDEX ModSequence::GetInvalidPatIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ?  uint16_max : 0xFF;}
-inline PATTERNINDEX ModSequence::GetIgnoreIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ? uint16_max - 1 : 0xFE;}
+inline PATTERNINDEX ModSequence::GetInvalidPatIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ?  UINT16_MAX : 0xFF;}
+inline PATTERNINDEX ModSequence::GetIgnoreIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ? UINT16_MAX - 1 : 0xFE;}
 
 
 //=======================================

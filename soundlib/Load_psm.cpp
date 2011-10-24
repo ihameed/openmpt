@@ -255,7 +255,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
                             // Now, the interesting part begins!
                             DWORD dwSettingsOffset = dwChunkPos + 2;
-                            uint16_t nChunkCount = 0, nFirstOrderChunk = uint16_max;
+                            uint16_t nChunkCount = 0, nFirstOrderChunk = UINT16_MAX;
 
                             // "Sub sub sub chunks" (grrrr, silly format)
                             while(dwSettingsOffset - dwChunkPos + 1 < subChunkSize)
@@ -294,7 +294,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                                         }
                                     }
                                     // decide whether this is the first order chunk or not (for finding out the correct restart position)
-                                    if(nFirstOrderChunk == uint16_max) nFirstOrderChunk = nChunkCount;
+                                    if(nFirstOrderChunk == UINT16_MAX) nFirstOrderChunk = nChunkCount;
                                     dwSettingsOffset += 5 + (bNewFormat ? 4 : 0);
                                     break;
 
@@ -851,7 +851,7 @@ struct PSM16SMPHEADER
     uint32_t length;		// in bytes
     uint32_t loopStart;	// in samples?
     uint32_t loopEnd;		// in samples?
-    int8   finetune;	// 0 ... 15 (useless? also, why is this almost always 70?)
+    int8_t   finetune;	// 0 ... 15 (useless? also, why is this almost always 70?)
     uint8_t  volume;		// default volume
     uint16_t c2freq;
 };

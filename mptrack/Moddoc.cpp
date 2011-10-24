@@ -966,7 +966,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         }
 
         // Handle custom start position
-        if(nStartPos != uint32_max && pChn->sample)
+        if(nStartPos != UINT32_MAX && pChn->sample)
         {
             pChn->sample_position = nStartPos;
             // If start position is after loop end, set loop end to sample end so that the sample starts 
@@ -2979,7 +2979,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
                         break;
                     case 0x50: // set finetune
                         {
-                            int8 nFinetune = (param & 0x0F) << 4;
+                            int8_t nFinetune = (param & 0x0F) << 4;
                             if(m_SndFile.GetType() & MOD_TYPE_XM) nFinetune += 128;
                             wsprintf(s, "%d", nFinetune);
                         }

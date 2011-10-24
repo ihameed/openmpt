@@ -28,7 +28,7 @@ namespace CTuningS11n
 
 		void operator()(srlztn::OutStream& oStrm, const std::vector<float>& v);
 		uint16_t m_nWriteCount;
-		static const uint16_t s_nDefaultWriteCount = (uint16_max >> 2);
+		static const uint16_t s_nDefaultWriteCount = (UINT16_MAX >> 2);
 	};
 };
 
@@ -593,7 +593,7 @@ void RatioWriter::operator()(srlztn::OutStream& oStrm, const std::vector<float>&
 void ReadNoteMap(srlztn::InStream& iStrm, CTuningBase::NOTENAMEMAP& m, const size_t)
 //----------------------------------------------------------------------------------
 {
-	uint64 val;
+	uint64_t val;
 	srlztn::ReadAdaptive1248(iStrm, val);
 	LimitMax(val, 256); // Read 256 at max.
 	for(size_t i = 0; i < val; i++)
@@ -610,7 +610,7 @@ void ReadNoteMap(srlztn::InStream& iStrm, CTuningBase::NOTENAMEMAP& m, const siz
 void ReadRatioTable(srlztn::InStream& iStrm, vector<CTuningRTI::RATIOTYPE>& v, const size_t)
 //------------------------------------------------------------------------------------------
 {
-	uint64 val;
+	uint64_t val;
 	srlztn::ReadAdaptive1248(iStrm, val);
 	v.resize( static_cast<size_t>(min(val, 256))); // Read 256 vals at max.
 	for(size_t i = 0; i < v.size(); i++)
@@ -621,7 +621,7 @@ void ReadRatioTable(srlztn::InStream& iStrm, vector<CTuningRTI::RATIOTYPE>& v, c
 void ReadStr(srlztn::InStream& iStrm, std::string& str, const size_t)
 //-------------------------------------------------------------------
 {
-	uint64 val;
+	uint64_t val;
 	srlztn::ReadAdaptive1248(iStrm, val);
 	size_t nSize = (val > 255) ? 255 : static_cast<size_t>(val); // Read 255 characters at max.
 	str.resize(nSize);

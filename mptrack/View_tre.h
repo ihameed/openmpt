@@ -115,7 +115,7 @@ protected:
 	CModTree *m_pDataTree;
 	DWORD m_dwStatus;
 	HWND m_hDropWnd;
-	uint64 m_qwItemDrag;
+	uint64_t m_qwItemDrag;
 	BOOL m_bShowAllFiles;
 	UINT m_nDocNdx, m_nDragDocNdx;
 	HTREEITEM m_hItemDrag, m_hItemDrop;
@@ -141,9 +141,9 @@ public:
 	VOID RefreshInstrumentLibrary();
 	VOID EmptyInstrumentLibrary();
 	VOID FillInstrumentLibrary();
-	uint64 GetModItem(HTREEITEM hItem);
-	inline uint32_t GetModItemType(const uint64 modItem) {return static_cast<uint32_t>(modItem & 0xFFFF);};	// return "item type" part of mod item variable ( & 0xFFFF )
-	inline uint32_t GetModItemID(const uint64 modItem) {return static_cast<uint32_t>(modItem >> 16);};		// return "item ID" part of mod item variable ( >> 16 )
+	uint64_t GetModItem(HTREEITEM hItem);
+	inline uint32_t GetModItemType(const uint64_t modItem) {return static_cast<uint32_t>(modItem & 0xFFFF);};	// return "item type" part of mod item variable ( & 0xFFFF )
+	inline uint32_t GetModItemID(const uint64_t modItem) {return static_cast<uint32_t>(modItem >> 16);};		// return "item ID" part of mod item variable ( >> 16 )
 	BOOL SetMidiInstrument(UINT nIns, LPCTSTR lpszFileName);
 	BOOL SetMidiPercussion(UINT nPerc, LPCTSTR lpszFileName);
 	BOOL ExecuteItem(HTREEITEM hItem);

@@ -28,7 +28,7 @@ namespace srlztn {class Ssb;};
 
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16_t, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32_t> 
+	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16_t, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32_t, class TUSTEPINDEXTYPE = uint32_t> 
 	#define TEMPLATEDEC template<class A, class B, class C, class D, class E>
 	#define TYPENAME typename
 	#define CTUNINGBASE CTuningBase<A, B, C, D, E>
@@ -37,7 +37,7 @@ namespace srlztn {class Ssb;};
 	typedef int16_t TNOTEINDEXTYPE;
 	typedef uint16_t TUNOTEINDEXTYPE;
 	typedef float32 TRATIOTYPE;
-	typedef int32 TSTEPINDEXTYPE;
+	typedef int32_t TSTEPINDEXTYPE;
 	typedef uint32_t TUSTEPINDEXTYPE;
 	#define TYPENAME
 	#define TEMPLATEDEC
@@ -283,7 +283,7 @@ protected:
 		m_TuningName(name),
 		m_TuningType(TT_GENERAL), //Unspecific tuning by default.
 		m_FineStepCount(0),
-		m_EditMask(uint16_max) //All bits to true - allow all by default.
+		m_EditMask(UINT16_MAX) //All bits to true - allow all by default.
 		{}
 private:
 	CTuningBase(CTuningBase&) {}

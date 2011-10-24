@@ -970,7 +970,7 @@ void CDoAcmConvert::OnButton1()
     LPBYTE pcmBuffer = nullptr, dstBuffer = nullptr;	// Render and conversion buffers
     UINT retval = IDCANCEL, pos, n;
     DWORD dwDstBufSize, pcmBufSize, data_ofs;
-    uint64 ullMaxSamples, ullSamples;
+    uint64_t ullMaxSamples, ullSamples;
     int oldrepeat;
     bool bPrepared = false, bFinished = false;
     FILE *f;
@@ -1058,16 +1058,16 @@ void CDoAcmConvert::OnButton1()
     // Setting up file limits and progress range
     if ((!m_dwFileLimit) || (m_dwFileLimit > 512000)) m_dwFileLimit = 512000;
     m_dwFileLimit <<= 10;
-    ullMaxSamples = uint64_max; //60*60*wfxSrc.nSamplesPerSec; // 1 hour
+    ullMaxSamples = UINT64_MAX; //60*60*wfxSrc.nSamplesPerSec; // 1 hour
     if (m_dwSongLimit)
     {
-        uint64 l = m_dwSongLimit * wfxSrc.nSamplesPerSec;
+        uint64_t l = m_dwSongLimit * wfxSrc.nSamplesPerSec;
         if (l < ullMaxSamples) ullMaxSamples = l;
     }
 
     // calculate maximum samples
-    uint64 max = ullMaxSamples;
-    uint64 l = dwSongTime * wfxSrc.nSamplesPerSec;
+    uint64_t max = ullMaxSamples;
+    uint64_t l = dwSongTime * wfxSrc.nSamplesPerSec;
     if (l < max) max = l;
     if (progress != NULL)
     {
