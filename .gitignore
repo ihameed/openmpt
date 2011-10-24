@@ -46,3 +46,7 @@ x86/
 
 
 plan
+
+UpgradeLog*.XML
+_UpgradeReport_*
+test.saved.mptm
