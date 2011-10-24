@@ -368,10 +368,10 @@ void ReadModPattern(std::istream& iStrm, CPattern& pat, const size_t)
 }
 
 
-uint8 CreateDiffMask(modplug::tracker::modcommand_t chnMC, modplug::tracker::modcommand_t newMC)
+uint8_t CreateDiffMask(modplug::tracker::modcommand_t chnMC, modplug::tracker::modcommand_t newMC)
 //------------------------------------------------------
 {
-	uint8 mask = 0;
+	uint8_t mask = 0;
 	if(chnMC.note != newMC.note)
 		mask |= noteBit;
 	if(chnMC.instr != newMC.instr)
@@ -410,26 +410,26 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
 			// For now this means only NOTE_PC and NOTE_PCS.
 			if(!m.IsPcNote())
 				continue;
-			uint8 diffmask = CreateDiffMask(lastChnMC[c], m);
-			uint8 chval = static_cast<uint8>(c+1);
+			uint8_t diffmask = CreateDiffMask(lastChnMC[c], m);
+			uint8_t chval = static_cast<uint8_t>(c+1);
 			if(diffmask != 0)
 				chval |= IT_bitmask_patternChanEnabled_c;
 
-			Binarywrite<uint8>(oStrm, chval);
+			Binarywrite<uint8_t>(oStrm, chval);
 				
 			if(diffmask)
 			{
 				lastChnMC[c] = m;
-				Binarywrite<uint8>(oStrm, diffmask);
-				if(diffmask & noteBit) Binarywrite<uint8>(oStrm, m.note);
-				if(diffmask & instrBit) Binarywrite<uint8>(oStrm, m.instr);
-				if(diffmask & volcmdBit) Binarywrite<uint8>(oStrm, m.volcmd);
-				if(diffmask & volBit) Binarywrite<uint8>(oStrm, m.vol);
-				if(diffmask & commandBit) Binarywrite<uint8>(oStrm, m.command);
-				if(diffmask & effectParamBit) Binarywrite<uint8>(oStrm, m.param);
+				Binarywrite<uint8_t>(oStrm, diffmask);
+				if(diffmask & noteBit) Binarywrite<uint8_t>(oStrm, m.note);
+				if(diffmask & instrBit) Binarywrite<uint8_t>(oStrm, m.instr);
+				if(diffmask & volcmdBit) Binarywrite<uint8_t>(oStrm, m.volcmd);
+				if(diffmask & volBit) Binarywrite<uint8_t>(oStrm, m.vol);
+				if(diffmask & commandBit) Binarywrite<uint8_t>(oStrm, m.command);
+				if(diffmask & effectParamBit) Binarywrite<uint8_t>(oStrm, m.param);
 			}
 		}
-		Binarywrite<uint8>(oStrm, 0); // Write end of row marker.
+		Binarywrite<uint8_t>(oStrm, 0); // Write end of row marker.
 	}
 }
 
@@ -437,7 +437,7 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
 #define READITEM(itembit,id)		\
 if(diffmask & itembit)				\
 {									\
-	Binaryread<uint8>(iStrm, temp);	\
+	Binaryread<uint8_t>(iStrm, temp);	\
 	if(ch < chns)					\
 		lastChnMC[ch].id = temp;	\
 }									\
@@ -459,8 +459,8 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
 	ROWINDEX row = 0;
 	while(row < rows && iStrm.good())
 	{
-		uint8 t = 0;
-		Binaryread<uint8>(iStrm, t);
+		uint8_t t = 0;
+		Binaryread<uint8_t>(iStrm, t);
 		if(t == 0)
 		{
 			row++;
@@ -471,10 +471,10 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
 		if(ch > 0)
 			ch--;
 
-		uint8 diffmask = 0;
+		uint8_t diffmask = 0;
 		if((t & IT_bitmask_patternChanEnabled_c) != 0)
-			Binaryread<uint8>(iStrm, diffmask);
-		uint8 temp = 0;
+			Binaryread<uint8_t>(iStrm, diffmask);
+		uint8_t temp = 0;
 
 		modplug::tracker::modcommand_t dummy;
 		modplug::tracker::modcommand_t& m = (ch < chns) ? *pat.GetpModCommand(row, ch) : dummy;
@@ -488,8 +488,8 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
 		if(diffmask & extraData)
 		{
 			//Ignore additional data.
-			uint8 temp;
-			Binaryread<uint8>(iStrm, temp);
+			uint8_t temp;
+			Binaryread<uint8_t>(iStrm, temp);
 			iStrm.ignore(temp);
 		}
 	}

@@ -10,6 +10,8 @@
 #ifndef SND_DEF_H
 #define SND_DEF_H
 
+#include <cstdint>
+
 #ifndef LPCBYTE
 typedef const BYTE * LPCBYTE;
 #endif
@@ -26,7 +28,7 @@ typedef uint16 ORDERINDEX;
 typedef uint16 PATTERNINDEX;
     const PATTERNINDEX PATTERNINDEX_MAX	= uint16_max;
     const PATTERNINDEX PATTERNINDEX_INVALID	= PATTERNINDEX_MAX;
-typedef uint8  PLUGINDEX;
+typedef uint8_t  PLUGINDEX;
 typedef uint16 TEMPO;
 typedef uint16 SAMPLEINDEX;
     const SAMPLEINDEX SAMPLEINDEX_MAX	= uint16_max;
@@ -34,7 +36,7 @@ typedef uint16 SAMPLEINDEX;
 typedef uint16 INSTRUMENTINDEX;
     const INSTRUMENTINDEX INSTRUMENTINDEX_MAX	= uint16_max;
     const INSTRUMENTINDEX INSTRUMENTINDEX_INVALID	= INSTRUMENTINDEX_MAX;
-typedef uint8 SEQUENCEINDEX;
+typedef uint8_t SEQUENCEINDEX;
     const SEQUENCEINDEX SEQUENCEINDEX_MAX	= uint8_max;
     const SEQUENCEINDEX SEQUENCEINDEX_INVALID	= SEQUENCEINDEX_MAX;
 typedef uint32_t MODTYPE;

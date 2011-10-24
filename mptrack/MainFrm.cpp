@@ -520,7 +520,7 @@ void CMainFrame::LoadIniSettings()
     gnAutoChordWaitTime = GetPrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", 60, iniFile);	
     COrderList::s_nDefaultMargins = static_cast<BYTE>(GetPrivateProfileInt("Pattern Editor", "DefaultSequenceMargins", 2, iniFile));
     gbShowHackControls = (0 != GetPrivateProfileDWord("Misc", "ShowHackControls", 0, iniFile));
-    CSoundFile::s_DefaultPlugVolumeHandling = static_cast<uint8>(GetPrivateProfileInt("Misc", "DefaultPlugVolumeHandling", PLUGIN_VOLUMEHANDLING_IGNORE, iniFile));
+    CSoundFile::s_DefaultPlugVolumeHandling = static_cast<uint8_t>(GetPrivateProfileInt("Misc", "DefaultPlugVolumeHandling", PLUGIN_VOLUMEHANDLING_IGNORE, iniFile));
     if(CSoundFile::s_DefaultPlugVolumeHandling > 2) CSoundFile::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
 
     m_nSampleUndoMaxBuffer = GetPrivateProfileLong("Sample Editor" , "UndoBufferSize", m_nSampleUndoMaxBuffer >> 20, iniFile);

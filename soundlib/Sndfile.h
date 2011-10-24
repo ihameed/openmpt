@@ -379,7 +379,7 @@ public:	// Static Members
     static UINT gnCPUUsage;
     static LPSNDMIXHOOKPROC sound_mix_callback;
     static PMIXPLUGINCREATEPROC gpMixPluginCreateProc;
-    static uint8 s_DefaultPlugVolumeHandling;
+    static uint8_t s_DefaultPlugVolumeHandling;
 
 
 public:	// for Editing
@@ -842,7 +842,7 @@ public:
     // and is approximately the same as in SchismTracker.
     static uint16 CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
     // try to convert a an effect into a volume column effect.
-    static bool ConvertVolEffect(uint8 *e, uint8 *p, bool bForce);
+    static bool ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce);
 
 public:
     //XXXih:   <:(

@@ -25,8 +25,8 @@ struct ULT_SAMPLE
 	uint32_t loop_end;
 	uint32_t size_start;
 	uint32_t size_end;
-	uint8  volume;		// 0-255, apparently prior to 1.4 this was logarithmic?
-	uint8  flags;		// above
+	uint8_t  volume;		// 0-255, apparently prior to 1.4 this was logarithmic?
+	uint8_t  flags;		// above
 	uint16 speed;		// only exists for 1.4+
 	int16  finetune;
 };
@@ -44,7 +44,7 @@ The logarithmic volume scale used in older format versions here, or pretty
 much anywhere for that matter. I don't even think Ultra Tracker tries to
 convert them. */
 
-static const uint8 ult_efftrans[] =
+static const uint8_t ult_efftrans[] =
 {
 	CMD_ARPEGGIO,
 	CMD_PORTAMENTOUP,
@@ -64,11 +64,11 @@ static const uint8 ult_efftrans[] =
 	CMD_SPEED,
 };
 
-static void TranslateULTCommands(uint8 *pe, uint8 *pp)
+static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
 //----------------------------------------------------
 {
-	uint8 e = *pe & 0x0F;
-	uint8 p = *pp;
+	uint8_t e = *pe & 0x0F;
+	uint8_t p = *pp;
 
 	*pe = ult_efftrans[e];
 
@@ -147,9 +147,9 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const BYTE *lpStre
 	#define ASSERT_CAN_READ_ULTENV(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
 
 	DWORD dwMemPos = *dwMP;
-	uint8 b, repeat = 1;
-	uint8 cmd1, cmd2;	// 1 = vol col, 2 = fx col in the original schismtracker code
-	uint8 param1, param2;
+	uint8_t b, repeat = 1;
+	uint8_t cmd1, cmd2;	// 1 = vol col, 2 = fx col in the original schismtracker code
+	uint8_t param1, param2;
 
 	ASSERT_CAN_READ_ULTENV(1)
 	b = lpStream[dwMemPos++];
@@ -175,15 +175,15 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const BYTE *lpStre
 	{
 		uint32_t off = ((param1 << 8) | param2) >> 6;
 		cmd1 = CMD_NONE;
-		param1 = (uint8)min(off, 0xFF);
+		param1 = (uint8_t)min(off, 0xFF);
 	} else if(cmd1 == CMD_OFFSET)
 	{
 		uint32_t off = param1 * 4;
-		param1 = (uint8)min(off, 0xFF);
+		param1 = (uint8_t)min(off, 0xFF);
 	} else if(cmd2 == CMD_OFFSET)
 	{
 		uint32_t off = param2 * 4;
-		param2 = (uint8)min(off, 0xFF);
+		param2 = (uint8_t)min(off, 0xFF);
 	} else if(cmd1 == cmd2)
 	{
 		// don't try to figure out how ultratracker does this, it's quite random
@@ -308,7 +308,7 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
 	DWORD dwMemPos = 0;
-	uint8 ult_version;
+	uint8_t ult_version;
 
 	// Tracker ID
 	ASSERT_CAN_READ(15);
@@ -329,7 +329,7 @@ bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
 	SetModFlag(MSF_COMPATIBLE_PLAY, true);
 
 	ASSERT_CAN_READ(1);
-	uint8 nNumLines = (uint8)lpStream[dwMemPos++];
+	uint8_t nNumLines = (uint8_t)lpStream[dwMemPos++];
 	ASSERT_CAN_READ((DWORD)(nNumLines * 32));
 	// read "nNumLines" lines, each containing 32 characters.
 	ReadFixedLineLengthMessage(lpStream + dwMemPos, nNumLines * 32, 32, 0);

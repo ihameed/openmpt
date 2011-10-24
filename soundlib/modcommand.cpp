@@ -832,7 +832,7 @@ bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, BYTE nEffect, 
 // Some commands can only be converted by losing some precision.
 // If moving the command into the volume column is more important than accuracy, use bForce = true.
 // (Code translated from SchismTracker and mainly supposed to be used with loaders ported from this tracker)
-bool CSoundFile::ConvertVolEffect(uint8 *e, uint8 *p, bool bForce)
+bool CSoundFile::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
 //----------------------------------------------------------------
 {
 	switch (*e)
@@ -865,7 +865,7 @@ bool CSoundFile::ConvertVolEffect(uint8 *e, uint8 *p, bool bForce)
 			*p = 9;
 			return true;
 		}
-		for (uint8 n = 0; n < 10; n++)
+		for (uint8_t n = 0; n < 10; n++)
 		{
 			if (bForce
 				? (*p <= ImpulseTrackerPortaVolCmd[n])

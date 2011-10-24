@@ -106,7 +106,7 @@ static modplug::tracker::modcommand_t::COMMAND dbm_efftrans[23] =
 };
 
 
-void ConvertDBMEffect(uint8 &command, uint8 &param)
+void ConvertDBMEffect(uint8_t &command, uint8_t &param)
 //-------------------------------------------------
 {
     if(command < CountOf(dbm_efftrans))
@@ -356,7 +356,7 @@ bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
                                 {
                                     if (b & 0x01)
                                     {
-                                        uint8 note = pkdata[i++];
+                                        uint8_t note = pkdata[i++];
 
                                         if (note == 0x1F) note = NOTE_KEYOFF; else
                                         if ((note) && (note < 0xFE))
@@ -368,8 +368,8 @@ bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
                                     if (b & 0x02) m[ch].instr = pkdata[i++];
                                     if (b & 0x3C)
                                     {
-                                        uint8 cmd1 = CMD_NONE, cmd2 = CMD_NONE;
-                                        uint8 param1 = 0, param2 = 0;
+                                        uint8_t cmd1 = CMD_NONE, cmd2 = CMD_NONE;
+                                        uint8_t param1 = 0, param2 = 0;
                                         if (b & 0x04) cmd2 = pkdata[i++];
                                         if (b & 0x08) param2 = pkdata[i++];
                                         if (b & 0x10) cmd1 = pkdata[i++];

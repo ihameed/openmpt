@@ -311,9 +311,9 @@ private:
 	OstrStream m_MapStream;				// Write: Map stream.
 
 private:
-	static const uint8 HeaderId_FlagByte = 0;
+	static const uint8_t HeaderId_FlagByte = 0;
 public:
-	static const uint8 s_DefaultFlagbyte = 0;
+	static const uint8_t s_DefaultFlagbyte = 0;
 	static int32 s_DefaultReadLogMask;
 	static int32 s_DefaultWriteLogMask;
 	static fpLogFunc_t s_DefaultLogFunc;

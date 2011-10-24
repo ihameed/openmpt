@@ -30,7 +30,7 @@ const TYPENAME CTUNINGBASE::SERIALIZATION_VERSION CTUNINGBASE::s_SerializationVe
 Version history:
 	4->5: Lots of changes, finestep interpretation revamp, fileformat revamp.
 	3->4: Changed sizetypes in serialisation from size_t(uint32_t) to
-			smaller types (uint8, USTEPTYPE) (March 2007)
+			smaller types (uint8_t, USTEPTYPE) (March 2007)
 */
 
 
@@ -431,7 +431,7 @@ bool CTUNINGBASE::DeserializeOLD(istream& inStrm)
 	if(version != 4) return SERIALIZATION_FAILURE;
 
 	//Tuning name
-	if(StringFromBinaryStream<uint8>(inStrm, m_TuningName))
+	if(StringFromBinaryStream<uint8_t>(inStrm, m_TuningName))
 		return SERIALIZATION_FAILURE;
 
 	//Const mask
@@ -452,7 +452,7 @@ bool CTUNINGBASE::DeserializeOLD(istream& inStrm)
 		NOTEINDEXTYPE n;
 		string str;
 		inStrm.read(reinterpret_cast<char*>(&n), sizeof(n));
-		if(StringFromBinaryStream<uint8>(inStrm, str))
+		if(StringFromBinaryStream<uint8_t>(inStrm, str))
 			return SERIALIZATION_FAILURE;
 		m_NoteNameMap[n] = str;
 	}

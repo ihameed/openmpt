@@ -17,10 +17,10 @@
 struct IMFCHANNEL
 {
     char name[12];	// Channel name (ASCIIZ-String, max 11 chars)
-    uint8 chorus;	// Default chorus
-    uint8 reverb;	// Default reverb
-    uint8 panning;	// Pan positions 00-FF
-    uint8 status;	// Channel status: 0 = enabled, 1 = mute, 2 = disabled (ignore effects!)
+    uint8_t chorus;	// Default chorus
+    uint8_t reverb;	// Default reverb
+    uint8_t panning;	// Pan positions 00-FF
+    uint8_t status;	// Channel status: 0 = enabled, 1 = mute, 2 = disabled (ignore effects!)
 };
 
 struct IMFHEADER
@@ -30,15 +30,15 @@ struct IMFHEADER
     uint16 patnum;				// Number of patterns saved
     uint16 insnum;				// Number of instruments saved
     uint16 flags;				// Module flags (&1 => linear)
-    uint8 unused1[8];
-    uint8 tempo;				// Default tempo (Axx, 1..255)
-    uint8 bpm;					// Default beats per minute (BPM) (Txx, 32..255)
-    uint8 master;				// Default mastervolume (Vxx, 0..64)
-    uint8 amp;					// Amplification factor (mixing volume, 4..127)
-    uint8 unused2[8];
+    uint8_t unused1[8];
+    uint8_t tempo;				// Default tempo (Axx, 1..255)
+    uint8_t bpm;					// Default beats per minute (BPM) (Txx, 32..255)
+    uint8_t master;				// Default mastervolume (Vxx, 0..64)
+    uint8_t amp;					// Amplification factor (mixing volume, 4..127)
+    uint8_t unused2[8];
     char im10[4];				// 'IM10'
     IMFCHANNEL channels[32];	// Channel settings
-    uint8 orderlist[256];		// Order list (0xff = +++; blank out anything beyond ordnum)
+    uint8_t orderlist[256];		// Order list (0xff = +++; blank out anything beyond ordnum)
 };
 
 enum
@@ -50,12 +50,12 @@ enum
 
 struct IMFENVELOPE
 {
-    uint8 points;		// Number of envelope points
-    uint8 sustain;		// Envelope sustain point
-    uint8 loop_start;	// Envelope loop start point
-    uint8 loop_end;		// Envelope loop end point
-    uint8 flags;		// Envelope flags
-    uint8 unused[3];
+    uint8_t points;		// Number of envelope points
+    uint8_t sustain;		// Envelope sustain point
+    uint8_t loop_start;	// Envelope loop start point
+    uint8_t loop_end;		// Envelope loop end point
+    uint8_t flags;		// Envelope flags
+    uint8_t unused[3];
 };
 
 struct IMFENVNODES
@@ -67,8 +67,8 @@ struct IMFENVNODES
 struct IMFINSTRUMENT
 {
     char name[32];		// Inst. name (ASCIIZ-String, max. 31 chars)
-    uint8 map[120];		// Multisample settings
-    uint8 unused[8];
+    uint8_t map[120];		// Multisample settings
+    uint8_t unused[8];
     IMFENVNODES nodes[3][16];
     IMFENVELOPE env[3];
     uint16 fadeout;		// Fadeout rate (0...0FFFH)
@@ -79,16 +79,16 @@ struct IMFINSTRUMENT
 struct IMFSAMPLE
 {
     char filename[13];	// Sample legacy_filename (12345678.ABC) */
-    uint8 unused1[3];
+    uint8_t unused1[3];
     uint32_t length;		// Length
     uint32_t loop_start;	// Loop start
     uint32_t loop_end;	// Loop end
     uint32_t C5Speed;		// Samplerate
-    uint8 volume;		// Default volume (0...64)
-    uint8 panning;		// Default pan (0...255)
-    uint8 unused2[14];
-    uint8 flags;		// Sample flags
-    uint8 unused3[5];
+    uint8_t volume;		// Default volume (0...64)
+    uint8_t panning;		// Default pan (0...255)
+    uint8_t unused2[14];
+    uint8_t flags;		// Sample flags
+    uint8_t unused3[5];
     uint16 ems;			// Reserved for internal usage
     uint32_t dram;		// Reserved for internal usage
     char is10[4];		// 'IS10'
@@ -148,7 +148,7 @@ static BYTE imf_efftrans[] =
 static void import_imf_effect(modplug::tracker::modcommand_t *note)
 //---------------------------------------------
 {
-    uint8 n;
+    uint8_t n;
     // fix some of them
     switch (note->command)
     {
@@ -422,14 +422,14 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
             }
             if((mask & 0xc0) == 0xc0)
             {
-                uint8 e1c, e1d, e2c, e2d;
+                uint8_t e1c, e1d, e2c, e2d;
 
                 // read both effects and figure out what to do with them
                 ASSERT_CAN_READ(4);
-                e1c = *((uint8 *)(lpStream + dwMemPos));
-                e1d = *((uint8 *)(lpStream + dwMemPos + 1));
-                e2c = *((uint8 *)(lpStream + dwMemPos + 2));
-                e2d = *((uint8 *)(lpStream + dwMemPos + 3));
+                e1c = *((uint8_t *)(lpStream + dwMemPos));
+                e1d = *((uint8_t *)(lpStream + dwMemPos + 1));
+                e2c = *((uint8_t *)(lpStream + dwMemPos + 2));
+                e2d = *((uint8_t *)(lpStream + dwMemPos + 3));
                 dwMemPos += 4;
 
                 if (e1c == 0xc)

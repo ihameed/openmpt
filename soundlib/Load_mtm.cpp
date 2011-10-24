@@ -23,25 +23,25 @@ typedef struct tagMTMSAMPLE
     uint32_t reppos;
     uint32_t repend;
     int8   finetune;
-    uint8  volume;
-    uint8  attribute;
+    uint8_t  volume;
+    uint8_t  attribute;
 } MTMSAMPLE;
 
 
 typedef struct tagMTMHEADER
 {
     char   id[3];			// MTM file marker
-    uint8  version;			// Tracker version
+    uint8_t  version;			// Tracker version
     char   songname[20];	// ASCIIZ songname
     uint16 numtracks;		// number of tracks saved
-    uint8  lastpattern;		// last pattern number saved
-    uint8  lastorder;		// last order number to play (songlength-1)
+    uint8_t  lastpattern;		// last pattern number saved
+    uint8_t  lastorder;		// last order number to play (songlength-1)
     uint16 commentsize;		// length of comment field
-    uint8  numsamples;		// number of samples saved
-    uint8  attribute;		// attribute byte (unused)
-    uint8  beatspertrack;	// numbers of rows in every pattern
-    uint8  numchannels;		// number of channels used
-    uint8  panpos[32];		// channel pan positions
+    uint8_t  numsamples;		// number of samples saved
+    uint8_t  attribute;		// attribute byte (unused)
+    uint8_t  beatspertrack;	// numbers of rows in every pattern
+    uint8_t  numchannels;		// number of channels used
+    uint8_t  panpos[32];		// channel pan positions
 } MTMHEADER;
 
 
@@ -122,8 +122,8 @@ bool CSoundFile::ReadMTM(LPCBYTE lpStream, DWORD dwMemLength)
             {
                 if (p[0] & 0xFC) m->note = (p[0] >> 2) + 37;
                 m->instr = ((p[0] & 0x03) << 4) | (p[1] >> 4);
-                uint8 cmd = p[1] & 0x0F;
-                uint8 param = p[2];
+                uint8_t cmd = p[1] & 0x0F;
+                uint8_t param = p[2];
                 if (cmd == 0x0A)
                 {
                     if (param & 0xF0) param &= 0xF0; else param &= 0x0F;

@@ -1863,8 +1863,8 @@ int CCtrlSamples::TimeStretch(float ratio)
     }
 
     // Get number of channels & sample size
-    uint8 smpsize = pSmp->GetElementarySampleSize();
-    const uint8 nChn = pSmp->GetNumChannels();
+    uint8_t smpsize = pSmp->GetElementarySampleSize();
+    const uint8_t nChn = pSmp->GetNumChannels();
 
     // Stretching is implemented only for 16-bit samples.
     if(smpsize != 2)
@@ -2091,7 +2091,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     if(pitch < 0.5f) return 2 + (1<<8);
     if(pitch > 2.0f) return 2 + (2<<8);
 
-    const uint8 nChn = pSmp->GetNumChannels();
+    const uint8_t nChn = pSmp->GetNumChannels();
     
     if (handleSt == NULL)
     {
@@ -2112,7 +2112,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     }
 
     // Get number of channels & sample size
-    uint8 smpsize = pSmp->GetElementarySampleSize();
+    uint8_t smpsize = pSmp->GetElementarySampleSize();
 
     // Stretching is implemented only for 16-bit samples.
     if(smpsize != 2)

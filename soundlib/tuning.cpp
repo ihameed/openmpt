@@ -601,7 +601,7 @@ void ReadNoteMap(srlztn::InStream& iStrm, CTuningBase::NOTENAMEMAP& m, const siz
 		int16 key;
 		srlztn::Binaryread<int16>(iStrm, key);
 		std::string str;
-		StringFromBinaryStream<uint8>(iStrm, str);
+		StringFromBinaryStream<uint8_t>(iStrm, str);
 		m[key] = str;
 	}
 }
@@ -639,7 +639,7 @@ void WriteNoteMap(srlztn::OutStream& oStrm, const CTUNINGBASE::NOTENAMEMAP& m)
 	for(; iter != end; iter++)
 	{
 		srlztn::Binarywrite<int16>(oStrm, iter->first);
-		StringToBinaryStream<uint8>(oStrm, iter->second);
+		StringToBinaryStream<uint8_t>(oStrm, iter->second);
 	}
 }
 

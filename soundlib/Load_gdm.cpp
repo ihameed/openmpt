@@ -27,26 +27,26 @@ typedef struct _GDMHEADER
     char   SongMusician[32];		// Name of music's composer
     char   DOSEOF[3];				// 13, 10, 26
     uint32_t ID2;						// ID: 'GMFS'
-    uint8  FormMajorVer;			// Format major version
-    uint8  FormMinorVer;			// Format minor version
+    uint8_t  FormMajorVer;			// Format major version
+    uint8_t  FormMinorVer;			// Format minor version
     uint16 TrackID;					// Composing Tracker ID code (00 = 2GDM)
-    uint8  TrackMajorVer;			// Tracker's major version
-    uint8  TrackMinorVer;			// Tracker's minor version
-    uint8  PanMap[32];				// 0-Left to 15-Right, 255-N/U
-    uint8  MastVol;					// Range: 0...64
-    uint8  Tempo;					// Initial music tempo (6)
-    uint8  BPM;						// Initial music BPM (125)
+    uint8_t  TrackMajorVer;			// Tracker's major version
+    uint8_t  TrackMinorVer;			// Tracker's minor version
+    uint8_t  PanMap[32];				// 0-Left to 15-Right, 255-N/U
+    uint8_t  MastVol;					// Range: 0...64
+    uint8_t  Tempo;					// Initial music tempo (6)
+    uint8_t  BPM;						// Initial music BPM (125)
     uint16 FormOrigin;				// Original format ID:
         // 1-MOD, 2-MTM, 3-S3M, 4-669, 5-FAR, 6-ULT, 7-STM, 8-MED
         // (versions of 2GDM prior to v1.15 won't set this correctly)
 
     uint32_t OrdOffset;
-    uint8  NOO;						// Number of orders in module - 1
+    uint8_t  NOO;						// Number of orders in module - 1
     uint32_t PatOffset;
-    uint8  NOP;						// Number of patterns in module - 1
+    uint8_t  NOP;						// Number of patterns in module - 1
     uint32_t SamHeadOffset;
     uint32_t SamOffset;
-    uint8  NOS;						// Number of samples in module - 1
+    uint8_t  NOS;						// Number of samples in module - 1
     uint32_t MTOffset;				// Offset of song message
     uint32_t MTLength;
     uint32_t SSOffset;				// Offset of scrolly script (huh?)
@@ -59,14 +59,14 @@ typedef struct _GDMSAMPLEHEADER
 {
     char   SamName[32];		// sample's name
     char   FileName[12];	// sample's legacy_filename
-    uint8  EmsHandle;		// useless
+    uint8_t  EmsHandle;		// useless
     uint32_t Length;			// length in bytes
     uint32_t LoopBegin;		// loop start in samples
     uint32_t LoopEnd;			// loop end in samples
-    uint8  Flags;			// misc. flags
+    uint8_t  Flags;			// misc. flags
     uint16 C4Hertz;			// frequency
-    uint8  Volume;			// default volume
-    uint8  Pan;				// default pan
+    uint8_t  Volume;			// default volume
+    uint8_t  Pan;				// default pan
 } GDMSAMPLEHEADER, *PGDMSAMPLEHEADER;
 
 #pragma pack()

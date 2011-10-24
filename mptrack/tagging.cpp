@@ -127,7 +127,7 @@ void CFileTagging::WriteWaveTags(WAVEDATAHEADER *wdh, WAVEFILEHEADER *wfh, FILE 
 	WAVEFILEHEADER list;
 	WAVEDATAHEADER chunk;
 	DWORD info_ofs, end_ofs;
-	const uint8 zero = 0;
+	const uint8_t zero = 0;
 
 	struct
 	{

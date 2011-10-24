@@ -7,9 +7,9 @@ namespace srlztn
 {
 
 // Indexing starts from 0.
-inline bool Testbit(uint8 val, uint8 bitindex) {return ((val & (1 << bitindex)) != 0);}
+inline bool Testbit(uint8_t val, uint8_t bitindex) {return ((val & (1 << bitindex)) != 0);}
 
-inline void Setbit(uint8& val, uint8 bitindex, bool newval)
+inline void Setbit(uint8_t& val, uint8_t bitindex, bool newval)
 //----------------------------------------------------------
 {
 	if(newval) val |= (1 << bitindex);
@@ -30,7 +30,7 @@ bool IsPrintableId(const void* pvId, const size_t nLength)
 }
 
 
-uint8 GetByteReq1248(const uint64 size)
+uint8_t GetByteReq1248(const uint64 size)
 //-------------------------------------
 {
 	if((size >> 6) == 0) return 1;
@@ -40,7 +40,7 @@ uint8 GetByteReq1248(const uint64 size)
 }
 
 
-uint8 GetByteReq1234(const uint32_t num)
+uint8_t GetByteReq1234(const uint32_t num)
 //------------------------------------
 {
 	if((num >> 6) == 0) return 1;
@@ -63,7 +63,7 @@ void WriteAdaptive12(OutStream& oStrm, const uint16 num)
 void WriteAdaptive1234(OutStream& oStrm, const uint32_t num)
 //--------------------------------------------------------
 {
-	const uint8 bc = GetByteReq1234(num);
+	const uint8_t bc = GetByteReq1234(num);
 	const uint32_t sizeInstruction = (num << 2) | (bc - 1);
 	Binarywrite<uint32_t>(oStrm, sizeInstruction, bc);
 }
@@ -81,7 +81,7 @@ void WriteAdaptive12String(OutStream& oStrm, const std::string& str)
 
 
 // Works only for arguments 1,2,4,8
-uint8 Log2(const uint8& val)
+uint8_t Log2(const uint8_t& val)
 //--------------------------
 {
 	if(val == 1) return 0;
@@ -93,7 +93,7 @@ uint8 Log2(const uint8& val)
 void WriteAdaptive1248(OutStream& oStrm, const uint64& num)
 //---------------------------------------------------------
 {
-	const uint8 bc = GetByteReq1248(num);
+	const uint8_t bc = GetByteReq1248(num);
 	const uint64 sizeInstruction = (num << 2) | Log2(bc);
 	Binarywrite<uint64>(oStrm, sizeInstruction, bc);
 }
@@ -112,21 +112,21 @@ void ReadAdaptive1234(InStream& iStrm, uint32_t& val)
 //-------------------------------------------------
 {
 	Binaryread<uint32_t>(iStrm, val, 1);
-	const uint8 bc = 1 + static_cast<uint8>(val & 3);
+	const uint8_t bc = 1 + static_cast<uint8_t>(val & 3);
 	if(bc > 1) iStrm.read(reinterpret_cast<char*>(&val)+1, bc-1);
 	val >>= 2;
 }
 
-const uint8 pow2xTable[] = {1, 2, 4, 8, 16, 32, 64, 128};
+const uint8_t pow2xTable[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 // Returns 2^n. n must be within {0,...,7}.
-inline uint8 Pow2xSmall(const uint8& exp) {ASSERT(exp <= 7); return pow2xTable[exp];}
+inline uint8_t Pow2xSmall(const uint8_t& exp) {ASSERT(exp <= 7); return pow2xTable[exp];}
 
 void ReadAdaptive1248(InStream& iStrm, uint64& val)
 //-------------------------------------------------
 {
 	Binaryread<uint64>(iStrm, val, 1);
-	const uint8 bc = Pow2xSmall(static_cast<uint8>(val & 3));
+	const uint8_t bc = Pow2xSmall(static_cast<uint8_t>(val & 3));
 	if(bc > 1) iStrm.read(reinterpret_cast<char*>(&val)+1, bc-1);
 	val >>= 2;
 }
@@ -151,7 +151,7 @@ void ReadItemString(InStream& iStrm, std::string& str, const DataSize)
 	// bits 2,3: Bytes in size indicator, 1,2,3,4
 	uint32_t id = 0;
 	Binaryread(iStrm, id, 1);
-	const uint8 nSizeBytes = (id & 12) >> 2; // 12 == 1100b
+	const uint8_t nSizeBytes = (id & 12) >> 2; // 12 == 1100b
 	if (nSizeBytes > 0)
 		iStrm.read(reinterpret_cast<char*>(&id) + 1, min(3, nSizeBytes));
 	// Limit to 1 MB.
@@ -456,13 +456,13 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersi
 
 	// Object ID.
 	{
-		uint8 idsize = static_cast<uint8>(nIdSize);
-		Binarywrite<uint8>(oStrm, idsize);
+		uint8_t idsize = static_cast<uint8_t>(nIdSize);
+		Binarywrite<uint8_t>(oStrm, idsize);
 		if(idsize > 0) oStrm.write(reinterpret_cast<const char*>(pId), nIdSize);
 	}
 
 	// Form header.
-	uint8 header = 0;
+	uint8_t header = 0;
 
 	SetFlag(RwfWMapStartPosEntry, GetFlag(RwfWMapStartPosEntry) && m_nFixedEntrySize == 0);
 	SetFlag(RwfWMapSizeEntry, GetFlag(RwfWMapSizeEntry) && m_nFixedEntrySize == 0);
@@ -474,19 +474,19 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersi
 	Setbit(header, 7, GetFlag(RwfWMapDescEntry));		//7   : Entrydescriptions in map?
 
 	// Write header
-	Binarywrite<uint8>(oStrm, header);
+	Binarywrite<uint8_t>(oStrm, header);
 
 	// Additional options.
-	uint8 tempU8 = 0;
+	uint8_t tempU8 = 0;
 	Setbit(tempU8, 0, (m_nIdbytes == IdSizeVariable) || (m_nIdbytes == 3) || (m_nIdbytes > 4));
 	Setbit(tempU8, 1, m_nFixedEntrySize != 0);
 	
-	const uint8 flags = tempU8;
+	const uint8_t flags = tempU8;
 	if(flags != s_DefaultFlagbyte)
 	{
 		WriteAdaptive1234(oStrm, 2); //Headersize - now it is 2.
-        Binarywrite<uint8>(oStrm, HeaderId_FlagByte);
-		Binarywrite<uint8>(oStrm, flags);
+        Binarywrite<uint8_t>(oStrm, HeaderId_FlagByte);
+		Binarywrite<uint8_t>(oStrm, flags);
 	}
 	else
 		WriteAdaptive1234(oStrm, 0);
@@ -496,8 +496,8 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64& nVersi
 
 	if(Testbit(flags, 0)) // Custom IDbytecount?
 	{
-		uint8 n = (m_nIdbytes == IdSizeVariable) ? 1 : static_cast<uint8>((m_nIdbytes << 1));
-		Binarywrite<uint8>(oStrm, n);
+		uint8_t n = (m_nIdbytes == IdSizeVariable) ? 1 : static_cast<uint8_t>((m_nIdbytes << 1));
+		Binarywrite<uint8_t>(oStrm, n);
 	}
 
 	if(Testbit(flags, 1)) // Fixedsize entries?
@@ -570,8 +570,8 @@ void Ssb::OnWroteItem(const void* pId, const size_t nIdSize, const Postype& posB
 void Ssb::CompareId(InStream& iStrm, const void* pId, const size_t nIdlength)
 //---------------------------------------------------------------------------
 {
-	uint8 tempU8 = 0;
-	Binaryread<uint8>(iStrm, tempU8);
+	uint8_t tempU8 = 0;
+	Binaryread<uint8_t>(iStrm, tempU8);
 	char buffer[256];
 	if(tempU8)
 		iStrm.read(buffer, tempU8);
@@ -625,9 +625,9 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersio
 		m_fpLogFunc(strIdMatch);
 	
 	// Header
-	uint8 tempU8;
-	Binaryread<uint8>(iStrm, tempU8);
-	const uint8 header = tempU8;
+	uint8_t tempU8;
+	Binaryread<uint8_t>(iStrm, tempU8);
+	const uint8_t header = tempU8;
 	m_nIdbytes = ((header & 3) == 3) ? 4 : (header & 3);
 	if (Testbit(header, 6))
 		SetFlag(RwfRTwoBytesDescChar, true);
@@ -638,12 +638,12 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersio
 	const uint32_t headerdatasize = tempU32;
 
 	// If headerdatasize != 0, read known headerdata and ignore rest.
-	uint8 flagbyte = s_DefaultFlagbyte;
+	uint8_t flagbyte = s_DefaultFlagbyte;
 	if(headerdatasize >= 2)
 	{
-		Binaryread<uint8>(iStrm, tempU8);
+		Binaryread<uint8_t>(iStrm, tempU8);
 		if(tempU8 == HeaderId_FlagByte)
-			Binaryread<uint8>(iStrm, flagbyte);
+			Binaryread<uint8_t>(iStrm, flagbyte);
 
 		iStrm.ignore( (tempU8 == HeaderId_FlagByte) ? headerdatasize - 2 : headerdatasize - 1);
 	}
@@ -661,13 +661,13 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersio
 
 	if (Testbit(header, 5))
 	{
-        Binaryread<uint8>(iStrm, tempU8);
+        Binaryread<uint8_t>(iStrm, tempU8);
 		iStrm.ignore(tempU8);
 	}
 
 	if(Testbit(flagbyte, 0)) // Custom ID?
 	{
-		Binaryread<uint8>(iStrm, tempU8);
+		Binaryread<uint8_t>(iStrm, tempU8);
 		if ((tempU8 & 1) != 0)
 			m_nIdbytes = IdSizeVariable;
 		else

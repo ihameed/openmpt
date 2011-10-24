@@ -79,7 +79,7 @@ private:
 	bool m_CaptureMIDI; //When true, MIDI data should not be processed beyond this directive
 	bool m_AllowPatternEdit; //When true, the mapping can be used for modifying pattern.
 	bool m_AnyChannel;
-	uint8 m_ChnEvent; //0-3 channel, 4-7 event
+	uint8_t m_ChnEvent; //0-3 channel, 4-7 event
 	BYTE m_MIDIByte1;
 	BYTE m_PluginIndex;
 	uint32_t m_Parameter;

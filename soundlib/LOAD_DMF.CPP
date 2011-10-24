@@ -57,13 +57,13 @@
 struct DMFHEADER
 {
     uint32_t signature;		// "DDMF"
-    uint8  version;			// 1 - 7 are beta versions, 8 is the official thing, 10 is xtracker32
+    uint8_t  version;			// 1 - 7 are beta versions, 8 is the official thing, 10 is xtracker32
     char   tracker[8];		// "XTRACKER"
     char   songname[30];
     char   composer[20];
-    uint8  creationDay;
-    uint8  creationMonth;
-    uint8  creationYear;
+    uint8_t  creationDay;
+    uint8_t  creationMonth;
+    uint8_t  creationYear;
 };
 
 struct DMF_IFFCHUNK
@@ -84,14 +84,14 @@ struct DMFCHUNK_SEQUENCE
 struct DMFCHUNK_PATTERNS
 {
     uint16 numPatterns;	// 1..1024 patterns
-    uint8  numTracks;	// 1..32 channels
+    uint8_t  numTracks;	// 1..32 channels
 };
 
 // Pattern header (for each pattern)
 struct DMFCHUNK_PATTERNHEADER
 {
-    uint8  numTracks;	// 1..32 channels
-    uint8  beat;		// [hi|lo] -> hi = rows per beat, lo = reserved
+    uint8_t  numTracks;	// 1..32 channels
+    uint8_t  beat;		// [hi|lo] -> hi = rows per beat, lo = reserved
     uint16 numRows;
     uint32_t patternLength;
     // patttern data follows here ...
@@ -104,8 +104,8 @@ struct DMFCHUNK_SAMPLEHEADER
     uint32_t loopStart;
     uint32_t loopEnd;
     uint16 c3freq;		// 1000..45000hz
-    uint8  volume;		// 0 = ignore
-    uint8  flags;
+    uint8_t  volume;		// 0 = ignore
+    uint8_t  flags;
 };
 
 // Sample header tail (between head and tail, there might be the library name of the sample, depending on the DMF version)
@@ -120,11 +120,11 @@ struct DMFCHUNK_SAMPLEHEADERTAIL
 // Pattern translation memory
 struct DMF_PATTERNSETTINGS
 {
-    uint8 beat;								// Rows per beat
-    uint8 tempoTicks;						// Tick mode param
-    uint8 tempoBPM;							// BPM mode param
+    uint8_t beat;								// Rows per beat
+    uint8_t tempoTicks;						// Tick mode param
+    uint8_t tempoBPM;							// BPM mode param
     bool realBPMmode;						// true = BPM mode
-    uint8 internalTicks;					// Ticks per row in final pattern
+    uint8_t internalTicks;					// Ticks per row in final pattern
     vector<bool> playDir;					// Sample play direction of each channel... false = forward (default)
     vector<modplug::tracker::modcommand_t::NOTE> noteBuffer;	// Note buffer
     vector<modplug::tracker::modcommand_t::NOTE> lastNote;		// Last played note on channel
@@ -132,7 +132,7 @@ struct DMF_PATTERNSETTINGS
 
 
 // Convert portamento value (not very accurate due to X-Tracker's higher granularity, to say the least)
-uint8 DMFporta2MPT(uint8 val, const uint8 internalTicks, const bool hasFine)
+uint8_t DMFporta2MPT(uint8_t val, const uint8_t internalTicks, const bool hasFine)
 //--------------------------------------------------------------------------
 {
     if(val == 0)
@@ -145,7 +145,7 @@ uint8 DMFporta2MPT(uint8 val, const uint8 internalTicks, const bool hasFine)
 
 
 // Convert portamento / volume slide value (not very accurate due to X-Tracker's higher granularity, to say the least)
-uint8 DMFslide2MPT(uint8 val, const uint8 internalTicks, const bool up)
+uint8_t DMFslide2MPT(uint8_t val, const uint8_t internalTicks, const bool up)
 //---------------------------------------------------------------------
 {
     val = max(1, val / 4);
@@ -162,11 +162,11 @@ uint8 DMFslide2MPT(uint8 val, const uint8 internalTicks, const bool up)
 
 
 // Calculate tremor on/off param
-uint8 DMFtremor2MPT(uint8 val, const uint8 internalTicks)
+uint8_t DMFtremor2MPT(uint8_t val, const uint8_t internalTicks)
 //-------------------------------------------------------
 {
-    uint8 ontime = (val >> 4);
-    uint8 offtime = (val & 0x0F);
+    uint8_t ontime = (val >> 4);
+    uint8_t offtime = (val & 0x0F);
     ontime = CLAMP(ontime * internalTicks / 15, 1, 15);
     offtime = CLAMP(offtime * internalTicks / 15, 1, 15);
     return (ontime << 4) | offtime;
@@ -174,23 +174,23 @@ uint8 DMFtremor2MPT(uint8 val, const uint8 internalTicks)
 
 
 // Calculate delay parameter for note cuts / delays
-uint8 DMFdelay2MPT(uint8 val, const uint8 internalTicks)
+uint8_t DMFdelay2MPT(uint8_t val, const uint8_t internalTicks)
 //------------------------------------------------------
 {
     int newval = (int)val * (int)internalTicks / 255;
     Limit(newval, 0, 15);
-    return (uint8)newval;
+    return (uint8_t)newval;
 }
 
 
 // Convert vibrato-style command parameters
-uint8 DMFvibrato2MPT(uint8 val, const uint8 internalTicks)
+uint8_t DMFvibrato2MPT(uint8_t val, const uint8_t internalTicks)
 //--------------------------------------------------------
 {
     // MPT: 1 vibrato period == 64 ticks... we have internalTicks ticks per row.
     // X-Tracker: Period length specified in rows!
     const int periodInTicks = max(1, (val >> 4)) * internalTicks;
-    const uint8 matchingPeriod = (uint8)CLAMP((128 / periodInTicks), 1, 15);
+    const uint8_t matchingPeriod = (uint8_t)CLAMP((128 / periodInTicks), 1, 15);
     return (matchingPeriod << 4) | max(1, (val & 0x0F));
 }
 
@@ -226,10 +226,10 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
     // Initialize tempo stuff
     settings.beat = (patHead->beat >> 4);
     bool tempoChange = settings.realBPMmode;
-    uint8 writeDelay = 0;
+    uint8_t writeDelay = 0;
 
     // Counters for channel packing (including global track)
-    vector<uint8> channelCounter(numChannels + 1, 0);
+    vector<uint8_t> channelCounter(numChannels + 1, 0);
 
     for(ROWINDEX nRow = 0; nRow < numRows; nRow++)
     {
@@ -237,7 +237,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
         if(channelCounter[0] == 0)
         {
             ASSERT_CAN_READ_PATTERN(1);
-            uint8 globalInfo = lpStream[dwMemPos++];
+            uint8_t globalInfo = lpStream[dwMemPos++];
             // 0x80: Packing counter (if not present, counter stays at 0)
             if((globalInfo & DMFPAT_GLOBPACK) != 0)
             {
@@ -247,7 +247,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
 
             globalInfo &= DMFPAT_GLOBMASK;
             
-            uint8 globalData = 0;
+            uint8_t globalData = 0;
             if(globalInfo != 0)
             {
                 ASSERT_CAN_READ_PATTERN(1);
@@ -294,7 +294,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
             case 6:		// Slide Speed Up
                 if(globalData > 0)
                 {
-                    uint8 &tempoData = (settings.realBPMmode) ? settings.tempoBPM : settings.tempoTicks;
+                    uint8_t &tempoData = (settings.realBPMmode) ? settings.tempoBPM : settings.tempoTicks;
                     if(tempoData < 256 - globalData)
                     {
                         tempoData += globalData;
@@ -308,7 +308,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
             case 7:		// Slide Speed Down
                 if(globalData > 0)
                 {
-                    uint8 &tempoData = (settings.realBPMmode) ? settings.tempoBPM : settings.tempoTicks;
+                    uint8_t &tempoData = (settings.realBPMmode) ? settings.tempoBPM : settings.tempoTicks;
                     if(tempoData > 1 + globalData)
                     {
                         tempoData -= globalData;
@@ -354,7 +354,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
                     }
                 }
                 Limit(tempo, 32, 255);
-                settings.internalTicks = (uint8)speed;
+                settings.internalTicks = (uint8_t)speed;
             } else
             {
                 tempoChange = false;
@@ -369,7 +369,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
             if(channelCounter[nChn] == 0)
             {
                 ASSERT_CAN_READ_PATTERN(1);
-                const uint8 channelInfo = lpStream[dwMemPos++];
+                const uint8_t channelInfo = lpStream[dwMemPos++];
                 ////////////////////////////////////////////////////////////////
                 // 0x80: Packing counter (if not present, counter stays at 0)
                 if((channelInfo & DMFPAT_COUNTER) != 0)
@@ -425,8 +425,8 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
                     settings.playDir[nChn] = false;
                 }
 
-                uint8 effect1 = CMD_NONE, effect2 = CMD_NONE, effect3 = CMD_NONE;
-                uint8 effectParam1 = 0, effectParam2 = 0, effectParam3 = 0;
+                uint8_t effect1 = CMD_NONE, effect2 = CMD_NONE, effect3 = CMD_NONE;
+                uint8_t effectParam1 = 0, effectParam2 = 0, effectParam3 = 0;
 
                 ////////////////////////////////////////////////////////////////
                 // 0x10: Volume
@@ -727,7 +727,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
         }
         if(writeDelay & 0x0F)
         {
-            const uint8 param = (writeDelay & 0x0F) * settings.internalTicks / 15;
+            const uint8_t param = (writeDelay & 0x0F) * settings.internalTicks / 15;
             pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0x60 | CLAMP(param, 1, 15), false, CHANNELINDEX_INVALID, true, weIgnore);
         }
         writeDelay = 0;
@@ -740,7 +740,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
 }
 
 
-DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const LPCBYTE lpStream, const DWORD dwMemLength, const bool isV8, uint8 &sampleFlags, CSoundFile *pSndFile)
+DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const LPCBYTE lpStream, const DWORD dwMemLength, const bool isV8, uint8_t &sampleFlags, CSoundFile *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_SAMPLE(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -844,7 +844,7 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
     }
 #endif // MODPLUG_TRACKER
 
-    vector<uint8> sampleFlags;
+    vector<uint8_t> sampleFlags;
     vector<DWORD> patternOffset;
     vector<DWORD> patternLength;
 
@@ -1032,12 +1032,12 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
 typedef struct DMF_HNODE
 {
     int16 left, right;
-    uint8 value;
+    uint8_t value;
 } DMF_HNODE;
 
 typedef struct DMF_HTREE
 {
-    uint8 *ibuf, *ibufmax;
+    uint8_t *ibuf, *ibufmax;
     uint32_t bitbuf;
     int bitnum;
     int lastnode, nodecount;
@@ -1049,7 +1049,7 @@ typedef struct DMF_HTREE
 BYTE DMFReadBits(DMF_HTREE *tree, UINT nbits)
 //-------------------------------------------
 {
-    uint8 x = 0, bitv = 1;
+    uint8_t x = 0, bitv = 1;
     while (nbits--)
     {
         if (tree->bitnum)
@@ -1074,7 +1074,7 @@ BYTE DMFReadBits(DMF_HTREE *tree, UINT nbits)
 void DMFNewNode(DMF_HTREE *tree)
 //------------------------------
 {
-    uint8 isleft, isright;
+    uint8_t isleft, isright;
     int actnode;
 
     actnode = tree->nodecount;
@@ -1106,12 +1106,12 @@ void DMFNewNode(DMF_HTREE *tree)
 }
 
 
-int DMFUnpack(LPBYTE psample, uint8 *ibuf, uint8 *ibufmax, UINT maxlen)
+int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen)
 //---------------------------------------------------------------------
 {
     DMF_HTREE tree;
     int actnode;
-    uint8 value, sign, delta = 0;
+    uint8_t value, sign, delta = 0;
     
     MemsetZero(tree);
     tree.ibuf = ibuf;

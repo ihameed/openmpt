@@ -209,7 +209,7 @@ void CMIDIMapper::Serialize(FILE* f) const
 		if(citer->GetAnyChannel()) temp16 |= 1;
 		uint32_t temp32 = citer->GetParamIndex();
 
-		uint8 temp8 = citer->IsActive(); //bit 0
+		uint8_t temp8 = citer->IsActive(); //bit 0
 		if(citer->GetCaptureMIDI()) temp8 |= (1 << 1); //bit 1
 		//bits 2-4: Mapping type: 0 for plug param control.
         //bit 5: 
@@ -240,7 +240,7 @@ bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
 	const BYTE* endptr = ptr + size;
 	while(ptr + 5 <= endptr)
 	{
-		uint8 i8 = 0;
+		uint8_t i8 = 0;
 		uint16 i16 = 0;
 		uint32_t i32 = 0;
 		memcpy(&i8, ptr, 1); ptr++;

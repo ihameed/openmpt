@@ -3278,7 +3278,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 
 
     // Handle MIDI mapping.
-    uint8 mappedIndex = uint8_max, paramValue = uint8_max;
+    uint8_t mappedIndex = uint8_max, paramValue = uint8_max;
     uint32_t paramIndex = 0;
     const bool bCaptured = pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue); 
 

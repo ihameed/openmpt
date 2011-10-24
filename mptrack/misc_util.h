@@ -1,6 +1,7 @@
 #ifndef MISC_UTIL_H
 #define MISC_UTIL_H
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 #include <limits>

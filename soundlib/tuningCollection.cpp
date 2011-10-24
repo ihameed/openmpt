@@ -8,7 +8,7 @@
 Version history:
 	2->3: Serialization revamp(August 2007)
 	1->2: Sizetypes of string serialisation from size_t(uint32_t)
-		  to uint8. (March 2007)
+		  to uint8_t. (March 2007)
 */
 
 /*
@@ -209,7 +209,7 @@ bool CTuningCollection::DeserializeOLD(istream& inStrm, bool& loadingSuccessful)
 	}
 	else
 	{
-        if(StringFromBinaryStream<uint8>(inStrm, m_Name))
+        if(StringFromBinaryStream<uint8_t>(inStrm, m_Name))
 			return false;
 	}
 

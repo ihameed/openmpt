@@ -59,9 +59,9 @@ static LPCSTR gpszGenreNames[NUM_GENRES] =
 
 typedef struct _TAGID3v2HEADER
 {
-	uint8 signature[3];
-	uint8 version[2];
-	uint8 flags;
+	uint8_t signature[3];
+	uint8_t version[2];
+	uint8_t flags;
 	uint32_t size;
 	// Total: 10 bytes
 } TAGID3v2HEADER;

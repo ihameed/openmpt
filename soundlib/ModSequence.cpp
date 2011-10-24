@@ -717,11 +717,11 @@ void WriteModSequences(std::ostream& oStrm, const ModSequenceSet& seq)
 {
 	srlztn::Ssb ssb(oStrm);
 	ssb.BeginWrite(FileIdSequences, MptVersion::num);
-	const uint8 nSeqs = seq.GetNumSequences();
-	const uint8 nCurrent = seq.GetCurrentSequenceIndex();
+	const uint8_t nSeqs = seq.GetNumSequences();
+	const uint8_t nCurrent = seq.GetCurrentSequenceIndex();
 	ssb.WriteItem(nSeqs, "n");
 	ssb.WriteItem(nCurrent, "c");
-	for(uint8 i = 0; i < nSeqs; i++)
+	for(uint8_t i = 0; i < nSeqs; i++)
 	{
 		if (i == seq.GetCurrentSequenceIndex())
 			ssb.WriteItem(seq, &i, sizeof(i), &WriteModSequence);
@@ -739,8 +739,8 @@ void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 	ssb.BeginRead(FileIdSequences, MptVersion::num);
 	if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
 		return;
-	uint8 nSeqs;
-	uint8 nCurrent;
+	uint8_t nSeqs;
+	uint8_t nCurrent;
 	ssb.ReadItem(nSeqs, "n");
 	if (nSeqs == 0)
 		return;
@@ -749,7 +749,7 @@ void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 	if (seq.GetNumSequences() < nSeqs)
 		seq.m_Sequences.resize(nSeqs, ModSequence(*seq.m_pSndFile, seq.s_nCacheSize));
 
-	for(uint8 i = 0; i < nSeqs; i++)
+	for(uint8_t i = 0; i < nSeqs; i++)
 		ssb.ReadItem(seq.m_Sequences[i], &i, sizeof(i), &ReadModSequence);
 	seq.m_nCurrentSeq = (nCurrent < seq.GetNumSequences()) ? nCurrent : 0;
 	seq.CopyStorageToCache();

@@ -77,38 +77,38 @@ struct AMFF_RIFFCHUNK
 struct AMFFCHUNK_MAIN
 {
     char   songname[64];
-    uint8  flags;
-    uint8  channels;
-    uint8  speed;
-    uint8  tempo;
+    uint8_t  flags;
+    uint8_t  channels;
+    uint8_t  speed;
+    uint8_t  tempo;
     uint32_t unknown;		// 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
-    uint8  globalvolume;
+    uint8_t  globalvolume;
 };
 
 // AMFF instrument envelope point
 struct AMFFINST_ENVPOINT
 {
     uint16 tick;
-    uint8  pointval;	// 0...64
+    uint8_t  pointval;	// 0...64
 };
 
 // AMFF instrument header
 struct AMFFCHUNK_INSTRUMENT
 {
-    uint8  unknown;				// 0x00
-    uint8  index;				// actual instrument number
+    uint8_t  unknown;				// 0x00
+    uint8_t  index;				// actual instrument number
     char   name[28];
-    uint8  numsamples;
-    uint8  samplemap[120];
-    uint8  autovib_type;
+    uint8_t  numsamples;
+    uint8_t  samplemap[120];
+    uint8_t  autovib_type;
     uint16 autovib_sweep;
     uint16 autovib_depth;
     uint16 autovib_rate;
-    uint8  envflags;			// high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
-    uint8  envnumpoints;		// high nibble = pan env length, low nibble = vol env length
-    uint8  envsustainpoints;	// you guessed it... high nibble = pan env sustain point, low nibble = vol env sustain point
-    uint8  envloopstarts;		// i guess you know the pattern now.
-    uint8  envloopends;			// same here.
+    uint8_t  envflags;			// high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
+    uint8_t  envnumpoints;		// high nibble = pan env length, low nibble = vol env length
+    uint8_t  envsustainpoints;	// you guessed it... high nibble = pan env sustain point, low nibble = vol env sustain point
+    uint8_t  envloopstarts;		// i guess you know the pattern now.
+    uint8_t  envloopends;			// same here.
     AMFFINST_ENVPOINT volenv[10];
     AMFFINST_ENVPOINT panenv[10];
     uint16 fadeout;
@@ -120,8 +120,8 @@ struct AMFFCHUNK_SAMPLE
     uint32_t signature;	// "SAMP"
     uint32_t chunksize;	// header + sample size
     char   name[28];
-    uint8  pan;
-    uint8  volume;
+    uint8_t  pan;
+    uint8_t  volume;
     uint16 flags;
     uint32_t length;
     uint32_t loopstart;
@@ -142,10 +142,10 @@ struct AMINST_ENVPOINT
 struct AMINST_ENVELOPE
 {
     uint16 flags;
-    uint8  numpoints;	// actually, it's num. points - 1, and 0xFF if there is no envelope
-    uint8  suslooppoint;
-    uint8  loopstart;
-    uint8  loopend;
+    uint8_t  numpoints;	// actually, it's num. points - 1, and 0xFF if there is no envelope
+    uint8_t  suslooppoint;
+    uint8_t  loopstart;
+    uint8_t  loopend;
     AMINST_ENVPOINT values[10];
     uint16 fadeout;		// why is this here? it's only needed for the volume envelope...
 };
@@ -153,15 +153,15 @@ struct AMINST_ENVELOPE
 // AM instrument header
 struct AMCHUNK_INSTRUMENT
 {
-    uint8  unknown1;	// 0x00
-    uint8  index;		// actual instrument number
+    uint8_t  unknown1;	// 0x00
+    uint8_t  index;		// actual instrument number
     char   name[32];
-    uint8  samplemap[128];
-    uint8  autovib_type;
+    uint8_t  samplemap[128];
+    uint8_t  autovib_type;
     uint16 autovib_sweep;
     uint16 autovib_depth;
     uint16 autovib_rate;
-    uint8  unknown2[7];
+    uint8_t  unknown2[7];
     AMINST_ENVELOPE volenv;
     AMINST_ENVELOPE pitchenv;
     AMINST_ENVELOPE panenv;
@@ -190,7 +190,7 @@ struct AMCHUNK_SAMPLE
 
 // And here are some nice lookup tables!
 
-static uint8 riffam_efftrans[] =
+static uint8_t riffam_efftrans[] =
 {
     CMD_ARPEGGIO, CMD_PORTAMENTOUP, CMD_PORTAMENTODOWN, CMD_TONEPORTAMENTO,
     CMD_VIBRATO, CMD_TONEPORTAVOL, CMD_VIBRATOVOL, CMD_TREMOLO,
@@ -202,7 +202,7 @@ static uint8 riffam_efftrans[] =
 };
 
 
-static uint8 riffam_autovibtrans[] = 
+static uint8_t riffam_autovibtrans[] = 
 {
     VIB_SINE, VIB_SQUARE, VIB_RAMP_UP, VIB_RAMP_DOWN, VIB_RANDOM,
 };
@@ -236,7 +236,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const LPCBYTE lpStream, co
     while((nRow < nRows) && (dwMemPos < dwMemLength))
     {
         ASSERT_CAN_READ(1);
-        const uint8 flags = lpStream[dwMemPos];
+        const uint8_t flags = lpStream[dwMemPos];
         dwMemPos++;
         if (flags == 0)
         {
@@ -351,7 +351,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const LPCBYTE lpStream, co
 
 
 // Convert envelope data from a RIFF AMFF module (old format) to MPT envelope data.
-void Convert_RIFF_AMFF_Envelope(const uint8 flags, const uint8 numpoints, const uint8 sustainpoint, const uint8 loopstart, const uint8 loopend, const AMFFINST_ENVPOINT *envelope, modplug::tracker::modenvelope_t *pMPTEnv)
+void Convert_RIFF_AMFF_Envelope(const uint8_t flags, const uint8_t numpoints, const uint8_t sustainpoint, const uint8_t loopstart, const uint8_t loopend, const AMFFINST_ENVPOINT *envelope, modplug::tracker::modenvelope_t *pMPTEnv)
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(envelope == nullptr || pMPTEnv == nullptr)

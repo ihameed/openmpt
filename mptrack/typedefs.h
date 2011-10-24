@@ -22,7 +22,7 @@ typedef __int16 int16;
 typedef __int32 int32;
 typedef __int64 int64;
 
-typedef unsigned __int8 uint8;
+typedef unsigned __int8 uint8_t;
 typedef unsigned __int16 uint16;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64;
@@ -37,7 +37,7 @@ const int16 int16_max   = 32767;
 const int32 int32_max   = 2147483647;
 const int64 int64_max   = 9223372036854775807;
 
-const uint8 uint8_max   = 255;
+const uint8_t uint8_max   = 255;
 const uint16 uint16_max = 65535;
 const uint32_t uint32_max = 4294967295;
 const uint64 uint64_max = 18446744073709551615;
@@ -54,7 +54,7 @@ typedef float float32;
 
 			#define SPECIALIZE_TRIVIAL_ASSIGN(type) template <> struct has_trivial_assign<type> {static const bool value = true;}
 			SPECIALIZE_TRIVIAL_ASSIGN(int8);
-			SPECIALIZE_TRIVIAL_ASSIGN(uint8);
+			SPECIALIZE_TRIVIAL_ASSIGN(uint8_t);
 			SPECIALIZE_TRIVIAL_ASSIGN(int16);
 			SPECIALIZE_TRIVIAL_ASSIGN(uint16);
 			SPECIALIZE_TRIVIAL_ASSIGN(int32);

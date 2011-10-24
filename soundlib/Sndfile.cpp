@@ -71,7 +71,7 @@ extern BOOL MMCMP_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength);
 // External decompressors
 extern void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char packcharacter);
 extern WORD MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
-extern int DMFUnpack(LPBYTE psample, uint8 *ibuf, uint8 *ibufmax, UINT maxlen);
+extern int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen);
 extern DWORD ITReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
 extern void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
 extern void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
@@ -446,7 +446,7 @@ CTuning* modplug::tracker::modinstrument_t::s_DefaultTuning = 0;
 
 CTuningCollection* CSoundFile::s_pTuningsSharedBuiltIn(0);
 CTuningCollection* CSoundFile::s_pTuningsSharedLocal(0);
-uint8 CSoundFile::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
+uint8_t CSoundFile::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
 
 #pragma warning(disable : 4355) // "'this' : used in base member initializer list"
 CSoundFile::CSoundFile() :
@@ -1760,7 +1760,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
         bufcount = 0;
         for (UINT j=0; j<len; j++)
         {
-            *((uint8 *)(&buffer[bufcount])) = *((uint8 *)(&pSample[j])) + 0x80;
+            *((uint8_t *)(&buffer[bufcount])) = *((uint8_t *)(&pSample[j])) + 0x80;
             bufcount++;
             if (bufcount >= sizeof(buffer))
             {
@@ -2181,7 +2181,7 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
         {
             UINT maxlen = pSmp->length;
             if (pSmp->flags & CHN_16BIT) maxlen <<= 1;
-            uint8 *ibuf = (uint8 *)lpMemFile, *ibufmax = (uint8 *)(lpMemFile + dwMemLength);
+            uint8_t *ibuf = (uint8_t *)lpMemFile, *ibufmax = (uint8_t *)(lpMemFile + dwMemLength);
             len = DMFUnpack((LPBYTE)pSmp->sample_data, ibuf, ibufmax, maxlen);
         }
         break;
