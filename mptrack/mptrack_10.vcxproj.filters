@@ -146,6 +146,83 @@
     </ClCompile>
     <ClCompile Include="mixgraph\mixer.cpp" />
     <ClCompile Include="serializers\wao.cpp" />
+    <ClCompile Include="gui\mixgraph_view.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_arc.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_warp_magnifier.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_arrowhead.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_bezier_arc.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_bspline.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_curves.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_embedded_raster_fonts.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_gsv_text.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_image_filters.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_aa_basics.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_profile_aa.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_rounded_rect.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_sqrt_tables.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_affine.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_double_path.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_single_path.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_bspline.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_segmentator.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_contour.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_dash.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_markers_term.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_smooth_poly1.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_stroke.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polygon.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polyline.cpp">
+      <Filter>agg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\extlib\agg-2.4\font_win32_tt\agg_font_win32_tt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PatternRandomizer.h" />
@@ -259,8 +336,14 @@
     </ClInclude>
     <ClInclude Include="mixgraph\mixer.h" />
     <ClInclude Include="serializers\wao.h" />
-    <ClInclude Include="tracker\tracker.h" />
-    <ClInclude Include="tracker\modcommand.h" />
+    <ClInclude Include="tracker\modcommand.h">
+      <Filter>tracker</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\tracker.h">
+      <Filter>tracker</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\mixgraph_view.h" />
+    <ClInclude Include="gui\widget.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />
@@ -301,6 +384,12 @@
     </Filter>
     <Filter Include="mixgraph">
       <UniqueIdentifier>{3339e9b4-f7e6-4584-9585-d530a2b17205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tracker">
+      <UniqueIdentifier>{8965bbf4-8430-4d43-81b0-d86bb8d0be4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="agg">
+      <UniqueIdentifier>{655f80f1-0bdb-42e0-94de-2724a2b4ffed}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

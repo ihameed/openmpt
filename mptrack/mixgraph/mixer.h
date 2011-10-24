@@ -60,11 +60,13 @@ inline sample_t convert_sample(const int8_t *derp, int idx) {
 
 template <typename buf_t>
 inline void resample_and_mix_no_interpolation(sample_t &left, sample_t &right, modplug::tracker::modchannel_t *source, buf_t in_sample, int smp_pos, int fixedpt_pos) {
-    int pos = smp_pos + (fixedpt_pos >> 16);
+    int pos = smp_pos;
     if (source->flags & CHN_STEREO) {
-        left  = convert_sample(in_sample, pos * 2);
-        right = convert_sample(in_sample, (pos * 2) + 1);
+        pos += (fixedpt_pos >> 16) * 2;
+        left  = convert_sample(in_sample, pos);
+        right = convert_sample(in_sample, pos + 1);
     } else {
+        pos += (fixedpt_pos >> 16);
         left  = convert_sample(in_sample, pos);
         right = left;
     }
@@ -72,7 +74,7 @@ inline void resample_and_mix_no_interpolation(sample_t &left, sample_t &right, m
 
 template <typename buf_t>
 inline void resample_and_mix_windowed_sinc(sample_t &left, sample_t &right, modplug::tracker::modchannel_t *source, buf_t in_sample, int smp_pos, int fixedpt_pos) {
-    int pos = smp_pos + (fixedpt_pos >> 16);
+    int pos = smp_pos;
     int fir_idx = (fixedpt_pos & 0xfff0) >> 1;
     //fir_idx = fir_idx << 3;
     //fir_idx = fir_idx << 1; //log_2(FIR_TAPS / 8);
@@ -85,13 +87,15 @@ inline void resample_and_mix_windowed_sinc(sample_t &left, sample_t &right, modp
     //const double *fir_table = downsample_sinc_table + fir_idx;
 
     if (source->flags & CHN_STEREO) {
+        pos += (fixedpt_pos >> 16) * 2;
         for (size_t tap = 0; tap < FIR_TAPS; ++tap) {
-            left  += fir_table[tap] * convert_sample(in_sample, (pos + tap - FIR_CENTER) * 2);
-            right += fir_table[tap] * convert_sample(in_sample, (pos + tap - FIR_CENTER) * 2 + 1);
+            left  += fir_table[tap] * convert_sample(in_sample, tap - FIR_CENTER + pos);
+            right += fir_table[tap] * convert_sample(in_sample, tap - FIR_CENTER + pos + 1);
         }
     } else {
+        pos += (fixedpt_pos >> 16);
         for (size_t tap = 0; tap < FIR_TAPS; ++tap) {
-            left += fir_table[tap] * convert_sample(in_sample, pos + tap - FIR_CENTER);
+            left += fir_table[tap] * convert_sample(in_sample, tap - FIR_CENTER + pos);
         }
         right = left;
     }
@@ -123,8 +127,8 @@ inline void hurfa(sample_t *left, sample_t *right, modplug::tracker::modchannel_
 
     int fixedpt_pos = source->fractional_sample_position;
     for (size_t idx = 0; idx < length; ++idx) {
-        double left_smp = 0;
-        double right_smp = 0;
+        sample_t left_smp = 0;
+        sample_t right_smp = 0;
         if (fir_resampler) {
             resample_and_mix_windowed_sinc(left_smp, right_smp, source, in_sample, pos, fixedpt_pos);
         } else {

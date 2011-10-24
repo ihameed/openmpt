@@ -84,7 +84,7 @@
       <CompileAs>Default</CompileAs>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
-      <AdditionalIncludeDirectories>..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\msgpack-0.5.4\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\klib;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -108,6 +108,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
+      <Profile>true</Profile>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -125,7 +126,7 @@
       <AdditionalOptions>/EHsc /O2 /Zc:auto %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\msgpack-0.5.4\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\klib;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENABLE_MMX;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -177,11 +178,37 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\msgpack-0.5.4\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\klib;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\unlha;..\unzip;..\unrar;..\soundlib;..\include;..\xsoundlib;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\extlib\agg-2.4\font_win32_tt\agg_font_win32_tt.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_arc.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_arrowhead.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_bezier_arc.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_bspline.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_curves.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_embedded_raster_fonts.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_gsv_text.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_image_filters.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_aa_basics.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_profile_aa.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_rounded_rect.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_sqrt_tables.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_affine.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_double_path.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_single_path.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_warp_magnifier.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_bspline.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_contour.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_dash.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_markers_term.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_smooth_poly1.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_stroke.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polygon.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polyline.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_segmentator.cpp" />
     <ClCompile Include="AbstractVstEditor.cpp" />
     <ClCompile Include="ArrayUtils.cpp" />
     <ClCompile Include="AutoSaver.cpp" />
@@ -205,6 +232,7 @@
     <ClCompile Include="..\soundlib\Fastmix.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
+    <ClCompile Include="gui\mixgraph_view.cpp" />
     <ClCompile Include="mixgraph\core.cpp" />
     <ClCompile Include="mixgraph\mixer.cpp" />
     <ClCompile Include="mixgraph\vertex.cpp" />
@@ -325,6 +353,8 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gui\mixgraph_view.h" />
+    <ClInclude Include="gui\widget.h" />
     <ClInclude Include="mixgraph\mixer.h" />
     <ClInclude Include="mixgraph\source_vertex.h" />
     <ClInclude Include="mixgraph\constants.h" />

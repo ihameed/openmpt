@@ -37,8 +37,9 @@ namespace modplug {
 namespace mixgraph {
 
 
+typedef std::pair<id_t, vertex *> vertex_item_t;
 typedef std::map<id_t, vertex *> vertex_map_t;
-typedef std::map<id_t, arrow>  arrow_map_t;
+//typedef std::map<id_t, arrow *> arrow_map_t;
 
 class core {
 public:
@@ -67,7 +68,7 @@ public:
     
     modplug::mixgraph::vertex *channel_vertices[MAX_CHANNELS];
     vertex_map_t _vertices;
-    arrow_map_t  _arrows;
+    std::map<id_t, arrow *> _arrows;
     modplug::mixgraph::vertex *_master_sink;
 };
 

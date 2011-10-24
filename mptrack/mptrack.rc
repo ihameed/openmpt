@@ -1603,6 +1603,13 @@ BEGIN
     LTEXT           "around current",IDC_STATIC,156,84,49,8
 END
 
+IDD_DIALOG4 DIALOGEX 0, 0, 561, 390
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1656,6 +1663,10 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 156
         BOTTOMMARGIN, 94
+    END
+
+    IDD_CONTROL_GLOBALS, DIALOG
+    BEGIN
     END
 
     IDD_CONTROL_COMMENTS, DIALOG
@@ -1736,6 +1747,10 @@ BEGIN
         BOTTOMMARGIN, 65
     END
 
+    IDD_SETUP_EQ, DIALOG
+    BEGIN
+    END
+
     IDD_OPTIONS_AUTHOR, DIALOG
     BEGIN
         BOTTOMMARGIN, 150
@@ -1781,6 +1796,10 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 274
         BOTTOMMARGIN, 198
+    END
+
+    IDD_TREEVIEW, DIALOG
+    BEGIN
     END
 
     IDD_MOD2MIDI, DIALOG
@@ -1888,6 +1907,14 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 229
         BOTTOMMARGIN, 169
+    END
+
+    IDD_DIALOG4, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 554
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 383
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -2044,6 +2071,7 @@ BEGIN
         MENUITEM "&MIDI Mapping...",            ID_VIEW_MIDIMAPPING
         MENUITEM "Edit &History...",            ID_VIEW_EDITHISTORY
         MENUITEM "Find MPT Hacks in Song",      ID_VIEW_MPTHACKS
+        MENUITEM "Test Graph Editor",           ID_VIEW_TESTGRAPHEDITOR
     END
     POPUP "&Window"
     BEGIN

@@ -39,6 +39,7 @@ namespace mixgraph {
 
 class arrow;
 
+
 class vertex {
 public:
     vertex() : id(ID_INVALID) { };

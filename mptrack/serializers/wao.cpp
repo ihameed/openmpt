@@ -179,7 +179,7 @@ bool write_wao(CPatternContainer &pattern_list, CSoundFile &kitchen_sink) {
     WDL_FileWrite outfile("D:\\myhompis.wao");
     outfile.Write(buf.c_str(), buf.size());
     outfile.SyncOutput(true);
-    
+
     return false;
 }
 

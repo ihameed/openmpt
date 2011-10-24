@@ -29,6 +29,7 @@ DAMAGE.
 #include <cstdarg>
 #include <cstdint>
 
+#include <algorithm>
 #include <string>
 
 namespace modplug {
@@ -44,6 +45,17 @@ void debug_log(const char *, ...);
 void assign_without_padding(::std::string &, const char *, const size_t);
 void copy_with_padding(char *, const size_t, const ::std::string &);
 
+template <typename container_type, typename function_type>
+function_type for_each(container_type &container, function_type &f) {
+    std::for_each(container.begin(), container.end(), f);
+    return f;
+}
+
+template <typename container_type, typename function_type>
+function_type for_each_rev(container_type &container, function_type &f) {
+    std::for_each(container.rbegin(), container.rend(), f);
+    return f;
+}
 
 }
 }

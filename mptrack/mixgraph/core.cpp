@@ -82,20 +82,20 @@ bool _vtx_remove_link(arrow *link) {
     return true;
 }
 
-template <typename Has_Id>
-Has_Id *id_map_get(std::map<id_t, Has_Id> &map, const id_t key) {
+template <typename has_id_t>
+has_id_t *id_map_get(std::map<id_t, has_id_t> &map, const id_t key) {
     auto ret = map.find(key);
     return (ret != map.end()) ? (&ret->second) : nullptr;
 }
 
-template <typename Has_Id>
-Has_Id *id_map_put(std::map<id_t, Has_Id> &map, const id_t key, const Has_Id &value) {
-    auto ret = map.insert(std::pair<id_t, Has_Id>(key, value));
+template <typename has_id_t>
+has_id_t *id_map_put(std::map<id_t, has_id_t> &map, const id_t key, const has_id_t &value) {
+    auto ret = map.insert(std::pair<id_t, has_id_t>(key, value));
     return &((*ret.first).second);
 }
 
-template <typename Has_Id>
-bool id_map_del(std::map<id_t, Has_Id> &map, const id_t key) {
+template <typename has_id_t>
+bool id_map_del(std::map<id_t, has_id_t> &map, const id_t key) {
     return map.erase(key) == 1;
 }
 
@@ -111,9 +111,10 @@ core::core() : _largest_id(1) {
 
     for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
         char my_nuts[256];
-        sprintf(my_nuts, "channel %d", idx);
+        sprintf(my_nuts, "channel %d", idx + 1);
 
         modplug::mixgraph::vertex *jenkmaster = new source_vertex(new_id(), std::string(my_nuts));
+        jenkmaster->_output_channels = 2;
         id_map_put(_vertices, jenkmaster->id, jenkmaster);
         channel_vertices[idx] = jenkmaster;
 
@@ -127,6 +128,7 @@ core::core() : _largest_id(1) {
 core::~core() {
     //the power of sepples
     std::for_each(_vertices.begin(), _vertices.end(), [](std::pair<id_t, modplug::mixgraph::vertex *> item) { delete item.second; });
+    std::for_each(_arrows.begin(), _arrows.end(), [](std::pair<id_t, modplug::mixgraph::arrow *> item) { delete item.second; });
     for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
         channel_vertices[idx] = nullptr;
     }
@@ -150,7 +152,8 @@ id_t core::link_vertices(id_t head_id, size_t head_channel, id_t tail_id, size_t
     auto *tail = vertex(tail_id);
     if (!head || !tail) return ID_INVALID;
     id_t id = new_id();
-    arrow *link = id_map_put(_arrows, id, arrow(id, head, head_channel, tail, tail_channel));
+    auto *link = new arrow(id, head, head_channel, tail, tail_channel);
+    id_map_put(_arrows, id, link);
     if (!_vtx_add_link(link)) {
         id_map_del(_arrows, id);
         return ID_INVALID;
@@ -161,7 +164,15 @@ id_t core::link_vertices(id_t head_id, size_t head_channel, id_t tail_id, size_t
 }
 
 bool core::unlink_vertices(id_t arrow_id) {
-    return _vtx_remove_link(id_map_get(_arrows, arrow_id));
+    auto arrow = id_map_get(_arrows, arrow_id);
+    if (arrow == nullptr) return false;
+
+    auto link = *arrow;
+    _vtx_remove_link(link);
+
+    id_map_del(_arrows, arrow_id);
+    delete arrow;
+    return true;
 }
 
 id_t add_channel() {

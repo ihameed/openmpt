@@ -26,6 +26,9 @@
 #include ".\mptrack.h"
 //end  rewbs.memLeak
 
+
+#include "gui/mixgraph_view.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -602,6 +605,8 @@ CTrackApp::CTrackApp()
     strcpy(m_MidiCfg.szMidiGlb[MIDIOUT_PROGRAM], "Cc p");
     strcpy(m_MidiCfg.szMidiSFXExt[0], "F0F000z");
     CModDoc::CreateZxxFromType(m_MidiCfg.szMidiZXXExt, zxx_reso4Bit);
+
+    modplug::gui::mixgraph_view_register();
 }
 
 /////////////////////////////////////////////////////////////////////////////
