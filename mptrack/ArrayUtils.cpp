@@ -6,21 +6,21 @@ template <class Type>
 static void CArrayUtils<Type>::Merge(CArray<Type,Type>& Dest, CArray<Type,Type>& Src)
 //----------------------------------------------------------------------------------
 {
-	Dest.Append(Src);
-	RemoveDuplicates(Dest);
+    Dest.Append(Src);
+    RemoveDuplicates(Dest);
 }
 
 template <class Type>
 static void CArrayUtils<Type>::RemoveDuplicates(CArray<Type,Type>& Src)
 //-------------------------------------------------------
 {
-	Sort(Src, true);
-	
-	for (int i=0; i<Src.GetSize(); ++i) {
-		if(Src[i]==Src[i+1]) {
-			Src.RemoveAt(i);
-		}
-	} 
+    Sort(Src, true);
+    
+    for (int i=0; i<Src.GetSize(); ++i) {
+    	if(Src[i]==Src[i+1]) {
+    		Src.RemoveAt(i);
+    	}
+    } 
 }
 
 template <class Type>

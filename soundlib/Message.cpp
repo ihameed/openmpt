@@ -22,16 +22,16 @@
 bool CSoundFile::AllocateMessage(size_t length)
 //---------------------------------------------
 {
-	FreeMessage();
-	m_lpszSongComments = new char[length + 1];	// + 1 for trailing null
-	if(m_lpszSongComments == nullptr)
-	{
-		return false;
-	} else
-	{
-		memset(m_lpszSongComments, 0, length + 1);
-		return true;
-	}
+    FreeMessage();
+    m_lpszSongComments = new char[length + 1];	// + 1 for trailing null
+    if(m_lpszSongComments == nullptr)
+    {
+    	return false;
+    } else
+    {
+    	memset(m_lpszSongComments, 0, length + 1);
+    	return true;
+    }
 }
 
 
@@ -39,11 +39,11 @@ bool CSoundFile::AllocateMessage(size_t length)
 void CSoundFile::FreeMessage()
 //----------------------------
 {
-	if(m_lpszSongComments)
-	{
-		delete[] m_lpszSongComments;
-		m_lpszSongComments = nullptr;
-	}
+    if(m_lpszSongComments)
+    {
+    	delete[] m_lpszSongComments;
+    	m_lpszSongComments = nullptr;
+    }
 }
 
 
@@ -56,84 +56,84 @@ void CSoundFile::FreeMessage()
 bool CSoundFile::ReadMessage(const BYTE *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &))
 //----------------------------------------------------------------------------------------------------------------------------
 {
-	char c;
+    char c;
 
-	// Simple line-ending detection algorithm. VERY simple.
-	if(lineEnding == leAutodetect)
-	{
-		char cprev = 0;
-		size_t nCR = 0, nLF = 0, nCRLF = 0;
-		// find CRs, LFs and CRLFs
-		for(size_t i = 0; i < length; i++)
-		{
-			c = data[i];
-			if(pTextConverter != nullptr)
-				pTextConverter(c);
+    // Simple line-ending detection algorithm. VERY simple.
+    if(lineEnding == leAutodetect)
+    {
+    	char cprev = 0;
+    	size_t nCR = 0, nLF = 0, nCRLF = 0;
+    	// find CRs, LFs and CRLFs
+    	for(size_t i = 0; i < length; i++)
+    	{
+    		c = data[i];
+    		if(pTextConverter != nullptr)
+    			pTextConverter(c);
 
-			if(c == '\r') nCR++;
-			else if(c == '\n') nLF++;
+    		if(c == '\r') nCR++;
+    		else if(c == '\n') nLF++;
 
-			if(i && cprev == '\r' && c == '\n') nCRLF++;
-			cprev = c;
-		}
-		// evaluate findings
-		if(nCR == nLF && nCR == nCRLF)
-			lineEnding = leCRLF;
-		else if(nCR && !nLF)
-			lineEnding = leCR;
-		else if(!nCR && nLF)
-			lineEnding = leLF;
-		else
-			lineEnding = leMixed;
-	}
+    		if(i && cprev == '\r' && c == '\n') nCRLF++;
+    		cprev = c;
+    	}
+    	// evaluate findings
+    	if(nCR == nLF && nCR == nCRLF)
+    		lineEnding = leCRLF;
+    	else if(nCR && !nLF)
+    		lineEnding = leCR;
+    	else if(!nCR && nLF)
+    		lineEnding = leLF;
+    	else
+    		lineEnding = leMixed;
+    }
 
-	size_t final_length = 0;
-	// calculate the final amount of characters to be allocated.
-	for(size_t i = 0; i < length; i++)
-	{
-		c = data[i];
-		if(pTextConverter != nullptr)
-			pTextConverter(c);
+    size_t final_length = 0;
+    // calculate the final amount of characters to be allocated.
+    for(size_t i = 0; i < length; i++)
+    {
+    	c = data[i];
+    	if(pTextConverter != nullptr)
+    		pTextConverter(c);
 
-		if(c != '\n' || lineEnding != leCRLF)
-			final_length++;
-	}
+    	if(c != '\n' || lineEnding != leCRLF)
+    		final_length++;
+    }
 
-	if(!AllocateMessage(final_length))
-		return false;
+    if(!AllocateMessage(final_length))
+    	return false;
 
-	size_t cpos = 0;
-	for(size_t i = 0; i < length; i++, cpos++)
-	{
-		c = data[i];
-		if(pTextConverter != nullptr)
-			pTextConverter(c);
+    size_t cpos = 0;
+    for(size_t i = 0; i < length; i++, cpos++)
+    {
+    	c = data[i];
+    	if(pTextConverter != nullptr)
+    		pTextConverter(c);
 
-		switch(c)
-		{
-		case '\r':
-			if(lineEnding != leLF)
-				m_lpszSongComments[cpos] = '\r';
-			else
-				m_lpszSongComments[cpos] = ' ';
-			if(lineEnding == leCRLF) i++;	// skip the LF
-			break;
-		case '\n':
-			if(lineEnding != leCR && lineEnding != leCRLF)
-				m_lpszSongComments[cpos] = '\r';
-			else
-				m_lpszSongComments[cpos] = ' ';
-			break;
-		case '\0':
-			m_lpszSongComments[cpos] = ' ';
-			break;
-		default:
-			m_lpszSongComments[cpos] = c;
-			break;
-		}
-	}
+    	switch(c)
+    	{
+    	case '\r':
+    		if(lineEnding != leLF)
+    			m_lpszSongComments[cpos] = '\r';
+    		else
+    			m_lpszSongComments[cpos] = ' ';
+    		if(lineEnding == leCRLF) i++;	// skip the LF
+    		break;
+    	case '\n':
+    		if(lineEnding != leCR && lineEnding != leCRLF)
+    			m_lpszSongComments[cpos] = '\r';
+    		else
+    			m_lpszSongComments[cpos] = ' ';
+    		break;
+    	case '\0':
+    		m_lpszSongComments[cpos] = ' ';
+    		break;
+    	default:
+    		m_lpszSongComments[cpos] = c;
+    		break;
+    	}
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -147,37 +147,37 @@ bool CSoundFile::ReadMessage(const BYTE *data, const size_t length, enmLineEndin
 bool CSoundFile::ReadFixedLineLengthMessage(const BYTE *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &))
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	if(lineLength == 0)
-		return false;
+    if(lineLength == 0)
+    	return false;
 
-	const size_t num_lines = (length / (lineLength + lineEndingLength));
-	const size_t final_length = num_lines * (lineLength + 1);
-	if(!AllocateMessage(final_length))
-		return false;
+    const size_t num_lines = (length / (lineLength + lineEndingLength));
+    const size_t final_length = num_lines * (lineLength + 1);
+    if(!AllocateMessage(final_length))
+    	return false;
 
-	for(size_t line = 0, fpos = 0, cpos = 0; line < num_lines; line++, fpos += (lineLength + lineEndingLength), cpos += (lineLength + 1))
-	{
-		memcpy(m_lpszSongComments + cpos, data + fpos, min(lineLength, length - fpos));
-		m_lpszSongComments[cpos + lineLength] = '\r';
+    for(size_t line = 0, fpos = 0, cpos = 0; line < num_lines; line++, fpos += (lineLength + lineEndingLength), cpos += (lineLength + 1))
+    {
+    	memcpy(m_lpszSongComments + cpos, data + fpos, min(lineLength, length - fpos));
+    	m_lpszSongComments[cpos + lineLength] = '\r';
 
-		// fix weird chars
-		for(size_t lpos = 0; lpos < lineLength; lpos++)
-		{
-			// Pre-process text
-			if(pTextConverter != nullptr) pTextConverter(m_lpszSongComments[cpos + lpos]);
+    	// fix weird chars
+    	for(size_t lpos = 0; lpos < lineLength; lpos++)
+    	{
+    		// Pre-process text
+    		if(pTextConverter != nullptr) pTextConverter(m_lpszSongComments[cpos + lpos]);
 
-			switch(m_lpszSongComments[cpos + lpos])
-			{
-			case '\0':
-			case '\n':
-			case '\r':
-				m_lpszSongComments[cpos + lpos] = ' ';
-				break;
-			}
-			
-		}
-	}
-	return true;
+    		switch(m_lpszSongComments[cpos + lpos])
+    		{
+    		case '\0':
+    		case '\n':
+    		case '\r':
+    			m_lpszSongComments[cpos + lpos] = ' ';
+    			break;
+    		}
+    		
+    	}
+    }
+    return true;
 }
 
 
@@ -185,21 +185,21 @@ bool CSoundFile::ReadFixedLineLengthMessage(const BYTE *data, const size_t lengt
 UINT CSoundFile::GetSongMessage(LPSTR s, UINT len, UINT linesize)
 //---------------------------------------------------------------
 {
-	LPCSTR p = m_lpszSongComments;
-	if (!p) return 0;
-	UINT i = 2, ln=0;
-	if ((len) && (s)) s[0] = '\r';
-	if ((len > 1) && (s)) s[1] = '\n';
-	while ((*p)	&& (i+2 < len))
-	{
-		BYTE c = (BYTE)*p++;
-		if ((c == 0x0D) || ((c == ' ') && (ln >= linesize)))
-		{ if (s) { s[i++] = '\r'; s[i++] = '\n'; } else i+= 2; ln=0; }
-		else
-			if (c >= 0x20) { if (s) s[i++] = c; else i++; ln++; }
-	}
-	if (s) s[i] = 0;
-	return i;
+    LPCSTR p = m_lpszSongComments;
+    if (!p) return 0;
+    UINT i = 2, ln=0;
+    if ((len) && (s)) s[0] = '\r';
+    if ((len > 1) && (s)) s[1] = '\n';
+    while ((*p)	&& (i+2 < len))
+    {
+    	BYTE c = (BYTE)*p++;
+    	if ((c == 0x0D) || ((c == ' ') && (ln >= linesize)))
+    	{ if (s) { s[i++] = '\r'; s[i++] = '\n'; } else i+= 2; ln=0; }
+    	else
+    		if (c >= 0x20) { if (s) s[i++] = c; else i++; ln++; }
+    }
+    if (s) s[i] = 0;
+    return i;
 }
 
 
@@ -207,47 +207,47 @@ UINT CSoundFile::GetSongMessage(LPSTR s, UINT len, UINT linesize)
 UINT CSoundFile::GetRawSongMessage(LPSTR s, UINT len, UINT linesize)
 //------------------------------------------------------------------
 {
-	LPCSTR p = m_lpszSongComments;
-	if (!p) return 0;
-	UINT i = 0, ln=0;
-	while ((*p)	&& (i < len-1))
-	{
-		BYTE c = (BYTE)*p++;
-		if ((c == 0x0D)	|| (c == 0x0A))
-		{
-			if (ln) 
-			{
-				while (ln < linesize) { if (s) s[i] = ' '; i++; ln++; }
-				ln = 0;
-			}
-		} else
-			if ((c == ' ') && (!ln))
-			{
-				UINT k=0;
-				while ((p[k]) && (p[k] >= ' '))	k++;
-				if (k <= linesize)
-				{
-					if (s) s[i] = ' ';
-					i++;
-					ln++;
-				}
-			} else
-			{
-				if (s) s[i] = c;
-				i++;
-				ln++;
-				if (ln == linesize) ln = 0;
-			}
-	}
-	if (ln)
-	{
-		while ((ln < linesize) && (i < len))
-		{
-			if (s) s[i] = ' ';
-			i++;
-			ln++;
-		}
-	}
-	if (s) s[i] = 0;
-	return i;
+    LPCSTR p = m_lpszSongComments;
+    if (!p) return 0;
+    UINT i = 0, ln=0;
+    while ((*p)	&& (i < len-1))
+    {
+    	BYTE c = (BYTE)*p++;
+    	if ((c == 0x0D)	|| (c == 0x0A))
+    	{
+    		if (ln) 
+    		{
+    			while (ln < linesize) { if (s) s[i] = ' '; i++; ln++; }
+    			ln = 0;
+    		}
+    	} else
+    		if ((c == ' ') && (!ln))
+    		{
+    			UINT k=0;
+    			while ((p[k]) && (p[k] >= ' '))	k++;
+    			if (k <= linesize)
+    			{
+    				if (s) s[i] = ' ';
+    				i++;
+    				ln++;
+    			}
+    		} else
+    		{
+    			if (s) s[i] = c;
+    			i++;
+    			ln++;
+    			if (ln == linesize) ln = 0;
+    		}
+    }
+    if (ln)
+    {
+    	while ((ln < linesize) && (i < len))
+    	{
+    		if (s) s[i] = ' ';
+    		i++;
+    		ln++;
+    	}
+    }
+    if (s) s[i] = 0;
+    return i;
 }

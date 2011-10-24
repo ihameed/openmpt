@@ -4,7 +4,7 @@
  * Copied to OpenMPT from libmodplug.
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>
- *			OpenMPT dev(s)	(miscellaneous modifications)
+ *    		OpenMPT dev(s)	(miscellaneous modifications)
  * Notes  : Extreme was renamed to Velvet Development at some point,
  *          and thus they also renamed their tracker from
  *          "Extreme's Tracker" to "Velvet Studio".
@@ -25,8 +25,8 @@
 
 typedef struct AMSFILEHEADER
 {
-    char szHeader[7];	// "Extreme"
-    BYTE verlo, verhi;	// 0x??,0x01
+    char szHeader[7];    // "Extreme"
+    BYTE verlo, verhi;    // 0x??,0x01
     BYTE chncfg;
     BYTE samples;
     WORD patterns;
@@ -41,8 +41,8 @@ typedef struct AMSSAMPLEHEADER
     DWORD loopstart;
     DWORD loopend;
     BYTE finetune_and_pan;
-    WORD samplerate;	// C-2 = 8363
-    BYTE volume;		// 0-127
+    WORD samplerate;    // C-2 = 8363
+    BYTE volume;    	// 0-127
     BYTE infobyte;
 } AMSSAMPLEHEADER;
 
@@ -149,9 +149,9 @@ bool CSoundFile::ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength)
     {
         if (dwMemPos + 1 >= dwMemLength) return true;
         tmp = lpStream[dwMemPos++];
-        tmp2 = min(tmp, MAX_PATTERNNAME - 1);		// not counting null char
+        tmp2 = min(tmp, MAX_PATTERNNAME - 1);    	// not counting null char
         if (dwMemPos + tmp >= dwMemLength) return true;
-        Patterns.Insert(pNam, 64);	// Create pattern now, so that the name won't be overwritten later.
+        Patterns.Insert(pNam, 64);    // Create pattern now, so that the name won't be overwritten later.
         if(tmp2)
         {
             Patterns[pNam].SetName((char *)(lpStream + dwMemPos), tmp2 + 1);
@@ -239,17 +239,17 @@ bool CSoundFile::ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength)
                                 UINT param = b2;
                                 switch(param & 0xF0)
                                 {
-                                case 0x00:	if (param & 0x08) { param &= 0x07; param |= 0x90; } else {command=param=0;} break;
-                                case 0x10:	command = CMD_PORTAMENTOUP; param |= 0xF0; break;
-                                case 0x20:	command = CMD_PORTAMENTODOWN; param |= 0xF0; break;
-                                case 0x30:	param = (param & 0x0F) | 0x10; break;
-                                case 0x40:	param = (param & 0x0F) | 0x30; break;
-                                case 0x50:	param = (param & 0x0F) | 0x20; break;
-                                case 0x60:	param = (param & 0x0F) | 0xB0; break;
-                                case 0x70:	param = (param & 0x0F) | 0x40; break;
-                                case 0x90:	command = CMD_RETRIG; param &= 0x0F; break;
-                                case 0xA0:	if (param & 0x0F) { command = CMD_VOLUMESLIDE; param = (param << 4) | 0x0F; } else command=param=0; break;
-                                case 0xB0:	if (param & 0x0F) { command = CMD_VOLUMESLIDE; param |= 0xF0; } else command=param=0; break;
+                                case 0x00:    if (param & 0x08) { param &= 0x07; param |= 0x90; } else {command=param=0;} break;
+                                case 0x10:    command = CMD_PORTAMENTOUP; param |= 0xF0; break;
+                                case 0x20:    command = CMD_PORTAMENTODOWN; param |= 0xF0; break;
+                                case 0x30:    param = (param & 0x0F) | 0x10; break;
+                                case 0x40:    param = (param & 0x0F) | 0x30; break;
+                                case 0x50:    param = (param & 0x0F) | 0x20; break;
+                                case 0x60:    param = (param & 0x0F) | 0xB0; break;
+                                case 0x70:    param = (param & 0x0F) | 0x40; break;
+                                case 0x90:    command = CMD_RETRIG; param &= 0x0F; break;
+                                case 0xA0:    if (param & 0x0F) { command = CMD_VOLUMESLIDE; param = (param << 4) | 0x0F; } else command=param=0; break;
+                                case 0xB0:    if (param & 0x0F) { command = CMD_VOLUMESLIDE; param |= 0xF0; } else command=param=0; break;
                                 }
                                 m[ch].command = command;
                                 m[ch].param = param;
@@ -295,11 +295,11 @@ bool CSoundFile::ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength)
 
 typedef struct AMS2FILEHEADER
 {
-    DWORD dwHdr1;		// AMShdr
+    DWORD dwHdr1;    	// AMShdr
     WORD wHdr2;
-    BYTE b1A;			// 0x1A
-    BYTE titlelen;		// 30-bytes max
-    CHAR szTitle[30];	// [titlelen]
+    BYTE b1A;    		// 0x1A
+    BYTE titlelen;    	// 30-bytes max
+    CHAR szTitle[30];    // [titlelen]
 } AMS2FILEHEADER;
 
 typedef struct AMS2SONGHEADER

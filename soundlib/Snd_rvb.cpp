@@ -4,8 +4,8 @@
 #include "../mptrack/mixer/mixutil.h"
 #include "snd_rvb.h"
 
-#pragma warning(disable:4725)	// Pentium fdiv bug
-#pragma warning(disable:4731)	// ebp modified
+#pragma warning(disable:4725)    // Pentium fdiv bug
+#pragma warning(disable:4731)    // ebp modified
 
 extern int MixReverbBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 extern int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
@@ -52,35 +52,35 @@ typedef struct _SNDMIX_RVBPRESET
 
 static SNDMIX_RVBPRESET gRvbPresets[NUM_REVERBTYPES] =
 {
-    {{ SNDMIX_REVERB_PRESET_PLATE },			"GM Plate"},
-    {{ SNDMIX_REVERB_PRESET_SMALLROOM },		"GM Small Room"},
-    {{ SNDMIX_REVERB_PRESET_MEDIUMROOM },		"GM Medium Room"},
-    {{ SNDMIX_REVERB_PRESET_LARGEROOM },		"GM Large Room"},
-    {{ SNDMIX_REVERB_PRESET_MEDIUMHALL },		"GM Medium Hall"},
-    {{ SNDMIX_REVERB_PRESET_LARGEHALL },		"GM Large Hall"},
-    {{ SNDMIX_REVERB_PRESET_GENERIC },			"Generic"},
-    {{ SNDMIX_REVERB_PRESET_PADDEDCELL },		"Padded Cell"},
-    {{ SNDMIX_REVERB_PRESET_ROOM },				"Room"},
-    {{ SNDMIX_REVERB_PRESET_BATHROOM },			"Bathroom"},
-    {{ SNDMIX_REVERB_PRESET_LIVINGROOM },		"Living Room"},
-    {{ SNDMIX_REVERB_PRESET_STONEROOM },		"Stone Room"},
-    {{ SNDMIX_REVERB_PRESET_AUDITORIUM },		"Auditorium"},
-    {{ SNDMIX_REVERB_PRESET_CONCERTHALL },		"Concert Hall"},
-    {{ SNDMIX_REVERB_PRESET_CAVE },				"Cave"},
-    {{ SNDMIX_REVERB_PRESET_ARENA },			"Arena"},
-    {{ SNDMIX_REVERB_PRESET_HANGAR },			"Hangar"},
-    {{ SNDMIX_REVERB_PRESET_CARPETEDHALLWAY },	"Carpeted Hallway"},
-    {{ SNDMIX_REVERB_PRESET_HALLWAY },			"Hallway"},
-    {{ SNDMIX_REVERB_PRESET_STONECORRIDOR },	"Stone Corridor"},
-    {{ SNDMIX_REVERB_PRESET_ALLEY },			"Alley"},
-    {{ SNDMIX_REVERB_PRESET_FOREST },			"Forest"},
-    {{ SNDMIX_REVERB_PRESET_CITY },				"City"},
-    {{ SNDMIX_REVERB_PRESET_MOUNTAINS },		"Mountains"},
-    {{ SNDMIX_REVERB_PRESET_QUARRY },			"Quarry"},
-    {{ SNDMIX_REVERB_PRESET_PLAIN },			"Plain"},
-    {{ SNDMIX_REVERB_PRESET_PARKINGLOT },		"Parking Lot"},
-    {{ SNDMIX_REVERB_PRESET_SEWERPIPE },		"Sewer Pipe"},
-    {{ SNDMIX_REVERB_PRESET_UNDERWATER },		"Underwater"},
+    {{ SNDMIX_REVERB_PRESET_PLATE },    		"GM Plate"},
+    {{ SNDMIX_REVERB_PRESET_SMALLROOM },    	"GM Small Room"},
+    {{ SNDMIX_REVERB_PRESET_MEDIUMROOM },    	"GM Medium Room"},
+    {{ SNDMIX_REVERB_PRESET_LARGEROOM },    	"GM Large Room"},
+    {{ SNDMIX_REVERB_PRESET_MEDIUMHALL },    	"GM Medium Hall"},
+    {{ SNDMIX_REVERB_PRESET_LARGEHALL },    	"GM Large Hall"},
+    {{ SNDMIX_REVERB_PRESET_GENERIC },    		"Generic"},
+    {{ SNDMIX_REVERB_PRESET_PADDEDCELL },    	"Padded Cell"},
+    {{ SNDMIX_REVERB_PRESET_ROOM },    			"Room"},
+    {{ SNDMIX_REVERB_PRESET_BATHROOM },    		"Bathroom"},
+    {{ SNDMIX_REVERB_PRESET_LIVINGROOM },    	"Living Room"},
+    {{ SNDMIX_REVERB_PRESET_STONEROOM },    	"Stone Room"},
+    {{ SNDMIX_REVERB_PRESET_AUDITORIUM },    	"Auditorium"},
+    {{ SNDMIX_REVERB_PRESET_CONCERTHALL },    	"Concert Hall"},
+    {{ SNDMIX_REVERB_PRESET_CAVE },    			"Cave"},
+    {{ SNDMIX_REVERB_PRESET_ARENA },    		"Arena"},
+    {{ SNDMIX_REVERB_PRESET_HANGAR },    		"Hangar"},
+    {{ SNDMIX_REVERB_PRESET_CARPETEDHALLWAY },    "Carpeted Hallway"},
+    {{ SNDMIX_REVERB_PRESET_HALLWAY },    		"Hallway"},
+    {{ SNDMIX_REVERB_PRESET_STONECORRIDOR },    "Stone Corridor"},
+    {{ SNDMIX_REVERB_PRESET_ALLEY },    		"Alley"},
+    {{ SNDMIX_REVERB_PRESET_FOREST },    		"Forest"},
+    {{ SNDMIX_REVERB_PRESET_CITY },    			"City"},
+    {{ SNDMIX_REVERB_PRESET_MOUNTAINS },    	"Mountains"},
+    {{ SNDMIX_REVERB_PRESET_QUARRY },    		"Quarry"},
+    {{ SNDMIX_REVERB_PRESET_PLAIN },    		"Plain"},
+    {{ SNDMIX_REVERB_PRESET_PARKINGLOT },    	"Parking Lot"},
+    {{ SNDMIX_REVERB_PRESET_SEWERPIPE },    	"Sewer Pipe"},
+    {{ SNDMIX_REVERB_PRESET_UNDERWATER },    	"Underwater"},
 };
 
 LPCSTR GetReverbPresetName(UINT nPreset)
@@ -102,9 +102,9 @@ typedef struct _REFLECTIONPRESET
 const REFLECTIONPRESET gReflectionsPreset[ENVIRONMENT_NUMREFLECTIONS] =
 {
     // %Delay, ll,    rr,   lr,    rl
-    {0,    9830,   6554,	  0,     0},
-    {10,   6554,  13107,	  0,     0},
-    {24,  -9830,  13107,	  0,     0},
+    {0,    9830,   6554,      0,     0},
+    {10,   6554,  13107,      0,     0},
+    {24,  -9830,  13107,      0,     0},
     {36,  13107,  -6554,      0,     0},
     {54,  16384,  16384,  -1638, -1638},
     {61, -13107,   8192,   -328,  -328},
@@ -368,10 +368,10 @@ VOID ProcessReverb(UINT nSamples)
     g_RefDelay.ReflectionsGain[1] = (SHORT)lMasterGain;
     lMasterGain = ((g_LateReverb.lMasterGain * CSoundFile::m_nReverbDepth) >> 4);
     if (lMasterGain > 0x10000) lMasterGain = 0x10000;
-    g_LateReverb.RvbOutGains[0] = (SHORT)((lMasterGain+0x7f) >> 3);	// l->l
-    g_LateReverb.RvbOutGains[1] = (SHORT)((lMasterGain+0xff) >> 4);	// r->l
-    g_LateReverb.RvbOutGains[2] = (SHORT)((lMasterGain+0xff) >> 4);	// l->r
-    g_LateReverb.RvbOutGains[3] = (SHORT)((lMasterGain+0x7f) >> 3);	// r->r
+    g_LateReverb.RvbOutGains[0] = (SHORT)((lMasterGain+0x7f) >> 3);    // l->l
+    g_LateReverb.RvbOutGains[1] = (SHORT)((lMasterGain+0xff) >> 4);    // r->l
+    g_LateReverb.RvbOutGains[2] = (SHORT)((lMasterGain+0xff) >> 4);    // l->r
+    g_LateReverb.RvbOutGains[3] = (SHORT)((lMasterGain+0x7f) >> 3);    // r->r
     // Process Dry/Wet Mix
     LONG lMaxRvbGain = (g_RefDelay.lMasterGain > g_LateReverb.lMasterGain) ? g_RefDelay.lMasterGain : g_LateReverb.lMasterGain;
     if (lMaxRvbGain > 32768) lMaxRvbGain = 32768;
@@ -562,30 +562,30 @@ VOID X86_ReverbProcessPostFiltering2x(const int *pRvb, int *pDry, UINT nSamples)
 }
 
 
-#define DCR_AMOUNT		9
+#define DCR_AMOUNT    	9
 
 // Stereo Add + DC removal
 VOID MMX_ReverbProcessPostFiltering1x(const int *pRvb, int *pDry, UINT nSamples)
 //------------------------------------------------------------------------------
 {
     _asm {
-    movq mm4, gnDCRRvb_Y1	// mm4 = [ y1r | y1l ]
-    movq mm1, gnDCRRvb_X1	// mm5 = [ x1r | x1l ]
+    movq mm4, gnDCRRvb_Y1    // mm4 = [ y1r | y1l ]
+    movq mm1, gnDCRRvb_X1    // mm5 = [ x1r | x1l ]
     mov ebx, pDry
     mov ecx, pRvb
     mov edx, nSamples
 stereodcr:
-    movq mm5, qword ptr [ecx]	// mm0 = [ xr | xl ]
-    movq mm3, qword ptr [ebx]	// mm3 = dry mix
+    movq mm5, qword ptr [ecx]    // mm0 = [ xr | xl ]
+    movq mm3, qword ptr [ebx]    // mm3 = dry mix
     add ecx, 8
-    psubd mm1, mm5				// mm1 = x(n-1) - x(n)
+    psubd mm1, mm5    			// mm1 = x(n-1) - x(n)
     add ebx, 8
     movq mm0, mm1
     psrad mm0, DCR_AMOUNT+1
     psubd mm0, mm1
     paddd mm4, mm0
     dec edx
-    paddd mm3, mm4				// add with dry mix
+    paddd mm3, mm4    			// add with dry mix
     movq mm0, mm4
     psrad mm0, DCR_AMOUNT
     movq mm1, mm5
@@ -603,14 +603,14 @@ VOID MMX_ReverbDCRemoval(int *pBuffer, UINT nSamples)
 //---------------------------------------------------
 {
     _asm {
-    movq mm4, gnDCRRvb_Y1	// mm4 = [ y1r | y1l ]
-    movq mm1, gnDCRRvb_X1	// mm5 = [ x1r | x1l ]
+    movq mm4, gnDCRRvb_Y1    // mm4 = [ y1r | y1l ]
+    movq mm1, gnDCRRvb_X1    // mm5 = [ x1r | x1l ]
     mov ecx, pBuffer
     mov edx, nSamples
 stereodcr:
-    movq mm5, qword ptr [ecx]	// mm0 = [ xr | xl ]
+    movq mm5, qword ptr [ecx]    // mm0 = [ xr | xl ]
     add ecx, 8
-    psubd mm1, mm5				// mm1 = x(n-1) - x(n)
+    psubd mm1, mm5    			// mm1 = x(n-1) - x(n)
     movq mm0, mm1
     psrad mm0, DCR_AMOUNT+1
     psubd mm0, mm1
@@ -654,28 +654,28 @@ VOID MMX_ProcessPreDelay(PSWRVBREFDELAY pPreDelay, const int *pIn, UINT nSamples
     lea eax, [eax+SWRVBREFDELAY.PreDifBuffer]
     dec ebx
 rvbloop:
-    movq mm0, qword ptr [ecx]	// mm0 = 16-bit unsaturated reverb input [  r  |  l  ]
+    movq mm0, qword ptr [ecx]    // mm0 = 16-bit unsaturated reverb input [  r  |  l  ]
     inc ebx
     add ecx, 8
-    packssdw mm0, mm0	// mm0 = [ r | l | r | l ]
+    packssdw mm0, mm0    // mm0 = [ r | l | r | l ]
     and ebx, SNDMIX_REFLECTIONS_DELAY_MASK
     // Low-pass
     psubsw mm7, mm0
     pmulhw mm7, mm6
-    movd mm5, dword ptr [eax+edx*4]	// mm5 = [ 0 | 0 |rd |ld ] XD(n-D)
+    movd mm5, dword ptr [eax+edx*4]    // mm5 = [ 0 | 0 |rd |ld ] XD(n-D)
     paddsw mm7, mm7
     paddsw mm7, mm0
     // Pre-Diffusion
-    movq mm0, mm7					// mm0 = [ ? | ? | r | l ] X(n)
+    movq mm0, mm7    				// mm0 = [ ? | ? | r | l ] X(n)
     inc edx
     movq mm3, mm5
     and edx, SNDMIX_PREDIFFUSION_DELAY_MASK
-    pmulhw mm3, mm4					// mm3 = k.Xd(n-D)
+    pmulhw mm3, mm4    				// mm3 = k.Xd(n-D)
     movq mm2, mm4
     dec esi
-    psubsw mm0, mm3					// mm0 = X(n) - k.Xd(n-D) = Xd(n)
-    pmulhw mm2, mm0					// mm2 = k.Xd(n)
-    paddsw mm2, mm5					// mm2 = Xd(n-D) + k.Xd(n)
+    psubsw mm0, mm3    				// mm0 = X(n) - k.Xd(n-D) = Xd(n)
+    pmulhw mm2, mm0    				// mm2 = k.Xd(n)
+    paddsw mm2, mm5    				// mm2 = Xd(n-D) + k.Xd(n)
     movd dword ptr [eax+edx*4], mm0
     movd dword ptr [edi+ebx*4], mm2
     jnz rvbloop
@@ -691,12 +691,12 @@ rvbloop:
 //
 // ProcessReflections:
 // First stage:
-//	- process 4 reflections, output to pRefOut
-//	- output results to pRefOut
+//    - process 4 reflections, output to pRefOut
+//    - output results to pRefOut
 // Second stage:
-//	- process another 3 reflections
-//	- sum with pRefOut
-//	- apply reflections master gain and accumulate in the given output
+//    - process another 3 reflections
+//    - sum with pRefOut
+//    - apply reflections master gain and accumulate in the given output
 //
 
 typedef struct _DUMMYREFARRAY
@@ -781,7 +781,7 @@ refloop1:
     movd mm7, dword ptr [edi+SWRVBREFDELAY.ReflectionsGain]
     pxor mm0, mm0
     push eax
-    punpcklwd mm7, mm0	// mm7 = [ 0 |g_r| 0 |g_l]
+    punpcklwd mm7, mm0    // mm7 = [ 0 |g_r| 0 |g_l]
     mov eax, dword ptr [edi+SWRVBREFDELAY.nDelayPos]
     lea edi, [edi+SWRVBREFDELAY.Reflections]
     mov ebx, eax
@@ -796,12 +796,12 @@ refloop1:
     and ecx, SNDMIX_REFLECTIONS_DELAY_MASK
     and ebx, SNDMIX_REFLECTIONS_DELAY_MASK
     and eax, SNDMIX_REFLECTIONS_DELAY_MASK
-    psrad mm7, 3	// For 28-bit final output: 16+15-3 = 28
+    psrad mm7, 3    // For 28-bit final output: 16+15-3 = 28
 refloop2:
     movd mm2, dword ptr [esi+ecx*4]
     movd mm1, dword ptr [esi+ebx*4]
     movd mm0, dword ptr [esi+eax*4]
-    movd mm3, dword ptr [edi]			// mm3 = output of previous reflections
+    movd mm3, dword ptr [edi]    		// mm3 = output of previous reflections
     punpckldq mm2, mm2
     inc ecx
     pmaddwd mm2, mm6
@@ -821,11 +821,11 @@ refloop2:
     packssdw mm0, mm0
     paddsw mm0, mm3
     add edx, 8
-    movd dword ptr [edi-4], mm0		// late reverb stereo input
+    movd dword ptr [edi-4], mm0    	// late reverb stereo input
     punpcklwd mm0, mm0
-    pmaddwd mm0, mm7				// Apply reflections gain
+    pmaddwd mm0, mm7    			// Apply reflections gain
     dec ebp
-    movq qword ptr [edx-8], mm0		// At this, point, this is the only output of the reverb
+    movq qword ptr [edx-8], mm0    	// At this, point, this is the only output of the reverb
     jnz refloop2
     pop ebp
     emms
@@ -863,34 +863,34 @@ rvbloop:
     punpckldq mm0, mm0
     and ecx, RVBDLY_MASK
     punpckldq mm1, mm2
-    psraw mm0, 2			// mm0 = stereo input
+    psraw mm0, 2    		// mm0 = stereo input
     psubsw mm7, mm1
     movzx eax, word ptr [ebx+SWLATEREVERB.Diffusion1+ecx*4+2]
     pmulhw mm7, mm6
     add ecx, RVBDIF1R_LEN - RVBDIF1L_LEN
     add esi, 4
     paddsw mm7, mm7
-    paddsw mm7, mm1		// mm7 = low-passed decay
+    paddsw mm7, mm1    	// mm7 = low-passed decay
     movq mm1, qword ptr [ebx+SWLATEREVERB.nDecayDC]
     and ecx, RVBDLY_MASK
     shl eax, 16
-    pmaddwd mm1, mm7	// apply decay gain
+    pmaddwd mm1, mm7    // apply decay gain
     movzx edx, word ptr [ebx+SWLATEREVERB.Diffusion1+ecx*4]
     add ecx, RVBDIF1L_LEN
-    psrad mm1, 15		// mm1 = decay [  r  |  l  ]
+    psrad mm1, 15    	// mm1 = decay [  r  |  l  ]
     and ecx, RVBDLY_MASK
     packssdw mm1, mm1
     or eax, edx
-    paddsw mm1, mm0		// mm1 = input + decay		[ r | l | r | l ]
-    movd mm2, eax		// mm2 = diffusion1 history	[ 0 | 0 | rd| ld] Xd(n-D)
-    pmulhw mm2, mm5		// mm2 = k.Xd(n-D)
-    movq mm4, mm1		// mm4 = reverb output
+    paddsw mm1, mm0    	// mm1 = input + decay		[ r | l | r | l ]
+    movd mm2, eax    	// mm2 = diffusion1 history	[ 0 | 0 | rd| ld] Xd(n-D)
+    pmulhw mm2, mm5    	// mm2 = k.Xd(n-D)
+    movq mm4, mm1    	// mm4 = reverb output
     movq mm0, mm5
-    psubsw mm1, mm2		// mm1 = X(n) - k.Xd(n-D) = Xd(n)
+    psubsw mm1, mm2    	// mm1 = X(n) - k.Xd(n-D) = Xd(n)
     movd mm2, eax
-    pmulhw mm0, mm1		// mm0 = k.Xd(n)
+    pmulhw mm0, mm1    	// mm0 = k.Xd(n)
     movd dword ptr [ebx+SWLATEREVERB.Diffusion1+ecx*4], mm1
-    paddsw mm0, mm2		// mm0 = Xd(n-D) + k.Xd(n)
+    paddsw mm0, mm2    	// mm0 = Xd(n-D) + k.Xd(n)
     mov eax, ecx
     // Insert the diffusion output in the reverb delay line
     movd dword ptr [ebx+SWLATEREVERB.Delay1+ecx*4], mm0
@@ -899,7 +899,7 @@ rvbloop:
     punpckldq mm0, mm0
     and ecx, RVBDLY_MASK
     and eax, RVBDLY_MASK
-    paddsw mm4, mm0		// accumulate with reverb output
+    paddsw mm4, mm0    	// accumulate with reverb output
     // Input to second diffuser
     movd mm0, dword ptr [ebx+SWLATEREVERB.Delay1+ecx*4]
     movd mm1, dword ptr [ebx+SWLATEREVERB.Delay1+eax*4]
@@ -913,24 +913,24 @@ rvbloop:
     and ecx, RVBDLY_MASK
     psrad mm1, 15
     movzx edx, word ptr [ebx+SWLATEREVERB.Diffusion2+ecx*4]
-    packssdw mm1, mm1	// mm1 = 2nd diffuser input [ r | l | r | l ]
+    packssdw mm1, mm1    // mm1 = 2nd diffuser input [ r | l | r | l ]
     shl eax, 16
-    psubsw mm4, mm1		// accumulate with reverb output
+    psubsw mm4, mm1    	// accumulate with reverb output
     or eax, edx
     add ecx, RVBDIF2L_LEN
-    movd mm2, eax		// mm2 = diffusion2 history
+    movd mm2, eax    	// mm2 = diffusion2 history
     and ecx, RVBDLY_MASK
-    pmulhw mm2, mm5		// mm2 = k.Xd(n-D)
+    pmulhw mm2, mm5    	// mm2 = k.Xd(n-D)
     movq mm0, mm5
-    psubsw mm1, mm2		// mm1 = X(n) - k.Xd(n-D) = Xd(n)
+    psubsw mm1, mm2    	// mm1 = X(n) - k.Xd(n-D) = Xd(n)
     movd mm2, eax
-    pmulhw mm0, mm1		// mm0 = k.Xd(n)
+    pmulhw mm0, mm1    	// mm0 = k.Xd(n)
     movd dword ptr [ebx+SWLATEREVERB.Diffusion2+ecx*4], mm1
     movq mm1, qword ptr [edi]
-    paddsw mm0, mm2		// mm0 = Xd(n-D) + k.Xd(n)
-    paddsw mm4, mm0		// accumulate with reverb output
+    paddsw mm0, mm2    	// mm0 = Xd(n-D) + k.Xd(n)
+    paddsw mm4, mm0    	// accumulate with reverb output
     movd dword ptr [ebx+SWLATEREVERB.Delay2+ecx*4], mm0
-    pmaddwd mm4, mm3	// mm4 = [   r   |   l   ]
+    pmaddwd mm4, mm3    // mm4 = [   r   |   l   ]
     inc ecx
     add edi, 8
     and ecx, RVBDLY_MASK
@@ -978,21 +978,21 @@ LONG OnePoleLowPassCoef(LONG scale, FLOAT g, FLOAT F_c, FLOAT F_s)
     fld1
     fld cosw
     fsubp ST(1), ST(0)
-    fmulp ST(1), ST(0)	// 2g*(1 cos(w))
+    fmulp ST(1), ST(0)    // 2g*(1 cos(w))
     fld g
     fmul ST(0), ST(0)
     fld1
     fld cosw
     fmul ST(0), ST(0)
     fsubp ST(1), ST(0)
-    fmulp ST(1), ST(0)	// g*g*((1-cos w)^2)
+    fmulp ST(1), ST(0)    // g*g*((1-cos w)^2)
     fsubp ST(1), ST(0)
     fsqrt
     fld g
     fmul cosw
     faddp ST(1), ST(0)
     fld1
-    fsubrp ST(1), ST(0)	// (1-gcos(w)-sqrt(2g(1-cos w) - g2(1-(cos w)^2)))
+    fsubrp ST(1), ST(0)    // (1-gcos(w)-sqrt(2g(1-cos w) - g2(1-(cos w)^2)))
     fld scale_over_1mg
     fmulp ST(1), ST(0)
     fistp result
@@ -1010,19 +1010,19 @@ LONG mBToLinear(LONG scale, LONG value_mB)
     if (!value_mB) return scale;
     if (value_mB <= -10000) return 0;
     _asm {
-    fild value_mB		// Load dB value
-    fld _factor			// Load the log2(10)/(20*65536) factor
-    fmulp ST(1), ST(0)	// ST(0) = value_dB/(20*65536)
-    fist result			// Store integer exponent
-    fisub result		// ST(0) = -1 <= (value_dB*log2(10)/(65536*20)) <= 1
-    f2xm1				// ST(0) = 2^(value_dB*log2(10)/(65536*20))-1
-    fild result			// load integer exponent
-    fild scale			// Load scale factor
-    fscale				// ST(0) = scale * 2^ST(1)
-    fstp ST(1)			// Remove the integer from the stack
-    fmul ST(1), ST(0)	// multiply with fractional part
-    faddp ST(1), ST(0)	// add 1*scale*integer_part
-    fistp result		// Convert to integer
+    fild value_mB    	// Load dB value
+    fld _factor    		// Load the log2(10)/(20*65536) factor
+    fmulp ST(1), ST(0)    // ST(0) = value_dB/(20*65536)
+    fist result    		// Store integer exponent
+    fisub result    	// ST(0) = -1 <= (value_dB*log2(10)/(65536*20)) <= 1
+    f2xm1    			// ST(0) = 2^(value_dB*log2(10)/(65536*20))-1
+    fild result    		// load integer exponent
+    fild scale    		// Load scale factor
+    fscale    			// ST(0) = scale * 2^ST(1)
+    fstp ST(1)    		// Remove the integer from the stack
+    fmul ST(1), ST(0)    // multiply with fractional part
+    faddp ST(1), ST(0)    // add 1*scale*integer_part
+    fistp result    	// Convert to integer
     }
     return result;
 }
@@ -1038,19 +1038,19 @@ FLOAT mBToLinear(LONG value_mB)
     if (!value_mB) return 1;
     if (value_mB <= -100000) return 0;
     _asm {
-    fild value_mB		// Load dB value
-    fld _factor			// Load the log2(10)/(20*65536) factor
-    fmulp ST(1), ST(0)	// ST(0) = value_dB/(20*65536)
-    fist result			// Store integer exponent
-    fisub result		// ST(0) = -1 <= (value_dB*log2(10)/(65536*20)) <= 1
-    f2xm1				// ST(0) = 2^(value_dB*log2(10)/(65536*20))-1
-    fild result			// load integer exponent
-    fld1				// Load scale factor
-    fscale				// ST(0) = scale * 2^ST(1)
-    fstp ST(1)			// Remove the integer from the stack
-    fmul ST(1), ST(0)	// multiply with fractional part
-    faddp ST(1), ST(0)	// add 1*scale*integer_part
-    fstp fresult		// Convert to integer
+    fild value_mB    	// Load dB value
+    fld _factor    		// Load the log2(10)/(20*65536) factor
+    fmulp ST(1), ST(0)    // ST(0) = value_dB/(20*65536)
+    fist result    		// Store integer exponent
+    fisub result    	// ST(0) = -1 <= (value_dB*log2(10)/(65536*20)) <= 1
+    f2xm1    			// ST(0) = 2^(value_dB*log2(10)/(65536*20))-1
+    fild result    		// load integer exponent
+    fld1    			// Load scale factor
+    fscale    			// ST(0) = scale * 2^ST(1)
+    fstp ST(1)    		// Remove the integer from the stack
+    fmul ST(1), ST(0)    // multiply with fractional part
+    faddp ST(1), ST(0)    // add 1*scale*integer_part
+    fstp fresult    	// Convert to integer
     }
     return fresult;
 }
@@ -1065,19 +1065,19 @@ static float pow(float a, float b)
     long tmpint;
     float result;
     _asm {
-    fld b				// Load b
-    fld a				// Load a
-    fyl2x				// ST(0) = b.log2(a)
-    fist tmpint			// Store integer exponent
-    fisub tmpint		// ST(0) = -1 <= (b*log2(a)) <= 1
-    f2xm1				// ST(0) = 2^(x)-1
-    fild tmpint			// load integer exponent
-    fld1				// Load 1
-    fscale				// ST(0) = 2^ST(1)
-    fstp ST(1)			// Remove the integer from the stack
-    fmul ST(1), ST(0)	// multiply with fractional part
-    faddp ST(1), ST(0)	// add integer_part
-    fstp result			// Store the result
+    fld b    			// Load b
+    fld a    			// Load a
+    fyl2x    			// ST(0) = b.log2(a)
+    fist tmpint    		// Store integer exponent
+    fisub tmpint    	// ST(0) = -1 <= (b*log2(a)) <= 1
+    f2xm1    			// ST(0) = 2^(x)-1
+    fild tmpint    		// load integer exponent
+    fld1    			// Load 1
+    fscale    			// ST(0) = 2^ST(1)
+    fstp ST(1)    		// Remove the integer from the stack
+    fmul ST(1), ST(0)    // multiply with fractional part
+    faddp ST(1), ST(0)    // add integer_part
+    fstp result    		// Store the result
     }
     return result;
 }

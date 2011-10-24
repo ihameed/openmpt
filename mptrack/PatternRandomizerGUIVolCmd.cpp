@@ -10,7 +10,7 @@
 
 IMPLEMENT_DYNAMIC(CPatternRandomizerGUIVolCmd, CDialog)
 CPatternRandomizerGUIVolCmd::CPatternRandomizerGUIVolCmd(CWnd* pParent /*=NULL*/)
-	: CDialog(CPatternRandomizerGUIVolCmd::IDD, pParent)
+    : CDialog(CPatternRandomizerGUIVolCmd::IDD, pParent)
 {
 }
 
@@ -20,7 +20,7 @@ CPatternRandomizerGUIVolCmd::~CPatternRandomizerGUIVolCmd()
 
 void CPatternRandomizerGUIVolCmd::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+    CDialog::DoDataExchange(pDX);
 }
 
 

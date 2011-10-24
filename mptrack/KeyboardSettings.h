@@ -3,10 +3,10 @@
 class CKeyboardSettings
 {
 public:
-	CKeyboardSettings(CInputHandler *ih);
+    CKeyboardSettings(CInputHandler *ih);
     ~CKeyboardSettings(void);
-	static void LoadDefaults(CInputHandler *inputHandler);
-	static int AsciiToScancode(char ch);
+    static void LoadDefaults(CInputHandler *inputHandler);
+    static int AsciiToScancode(char ch);
 
-	CInputHandler *pInputHandler;
+    CInputHandler *pInputHandler;
 };

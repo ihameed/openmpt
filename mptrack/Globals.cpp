@@ -26,7 +26,7 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CModControlDlg, CDialog)
     //{{AFX_MSG_MAP(CModControlDlg)
     ON_WM_SIZE()
-    ON_MESSAGE(WM_MOD_UNLOCKCONTROLS,		OnUnlockControls)
+    ON_MESSAGE(WM_MOD_UNLOCKCONTROLS,    	OnUnlockControls)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnToolTipText)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipText)
     //}}AFX_MSG_MAP
@@ -96,7 +96,7 @@ LRESULT CModControlDlg::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
 LRESULT CModControlDlg::SendViewMessage(UINT uMsg, LPARAM lParam) const
 //---------------------------------------------------------------------
 {
-    if (m_hWndView)	return ::SendMessage(m_hWndView, WM_MOD_VIEWMSG, uMsg, lParam);
+    if (m_hWndView)    return ::SendMessage(m_hWndView, WM_MOD_VIEWMSG, uMsg, lParam);
     return 0;
 }
 
@@ -104,7 +104,7 @@ LRESULT CModControlDlg::SendViewMessage(UINT uMsg, LPARAM lParam) const
 BOOL CModControlDlg::PostViewMessage(UINT uMsg, LPARAM lParam) const
 //------------------------------------------------------------------
 {
-    if (m_hWndView)	return ::PostMessage(m_hWndView, WM_MOD_VIEWMSG, uMsg, lParam);
+    if (m_hWndView)    return ::PostMessage(m_hWndView, WM_MOD_VIEWMSG, uMsg, lParam);
     return FALSE;
 }
 
@@ -183,18 +183,18 @@ BEGIN_MESSAGE_MAP(CModControlView, CView)
     ON_WM_SIZE()
     ON_WM_DESTROY()
     ON_WM_ERASEBKGND()
-    ON_NOTIFY(TCN_SELCHANGE, IDC_TABCTRL1,	OnTabSelchange)
-    ON_MESSAGE(WM_MOD_ACTIVATEVIEW,			OnActivateModView)
-    ON_MESSAGE(WM_MOD_CTRLMSG,				OnModCtrlMsg)
-    ON_MESSAGE(WM_MOD_GETTOOLTIPTEXT,		OnGetToolTipText)
-    ON_COMMAND(ID_EDIT_CUT,					OnEditCut)
-    ON_COMMAND(ID_EDIT_COPY,				OnEditCopy)
-    ON_COMMAND(ID_EDIT_PASTE,				OnEditPaste)
-    ON_COMMAND(ID_EDIT_MIXPASTE,			OnEditMixPaste)
-    ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,	OnEditMixPasteITStyle)
-    ON_COMMAND(ID_EDIT_FIND,				OnEditFind)
-    ON_COMMAND(ID_EDIT_FINDNEXT,			OnEditFindNext)
-    ON_COMMAND(ID_CONTROLTAB,				OnSwitchToView)
+    ON_NOTIFY(TCN_SELCHANGE, IDC_TABCTRL1,    OnTabSelchange)
+    ON_MESSAGE(WM_MOD_ACTIVATEVIEW,    		OnActivateModView)
+    ON_MESSAGE(WM_MOD_CTRLMSG,    			OnModCtrlMsg)
+    ON_MESSAGE(WM_MOD_GETTOOLTIPTEXT,    	OnGetToolTipText)
+    ON_COMMAND(ID_EDIT_CUT,    				OnEditCut)
+    ON_COMMAND(ID_EDIT_COPY,    			OnEditCopy)
+    ON_COMMAND(ID_EDIT_PASTE,    			OnEditPaste)
+    ON_COMMAND(ID_EDIT_MIXPASTE,    		OnEditMixPaste)
+    ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,    OnEditMixPasteITStyle)
+    ON_COMMAND(ID_EDIT_FIND,    			OnEditFind)
+    ON_COMMAND(ID_EDIT_FINDNEXT,    		OnEditFindNext)
+    ON_COMMAND(ID_CONTROLTAB,    			OnSwitchToView)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -353,7 +353,7 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
         {
         //rewbs.graph
             //XXXih: bluh?
-/*		case IDD_CONTROL_GRAPH:
+/*    	case IDD_CONTROL_GRAPH:
             pDlg = new CCtrlGraph();
             break;
             */
@@ -393,7 +393,7 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
     pMainFrm->SetInfoText("");
     pMainFrm->SetXInfoText(""); //rewbs.xinfo
     pDlg->ShowWindow(SW_SHOW);
-    ((CChildFrame *)GetParentFrame())->SetSplitterHeight(*(pDlg->GetSplitPosRef()));	//rewbs.varWindowSize	
+    ((CChildFrame *)GetParentFrame())->SetSplitterHeight(*(pDlg->GetSplitPosRef()));    //rewbs.varWindowSize	
     if (m_hWndMDI) ::PostMessage(m_hWndMDI, WM_MOD_CHANGEVIEWCLASS, (WPARAM)lParam, (LPARAM)pDlg);
     return TRUE;
 }
@@ -548,9 +548,9 @@ BEGIN_MESSAGE_MAP(CModScrollView, CScrollView)
     //{{AFX_MSG_MAP(CModScrollView)
     ON_WM_DESTROY()
     ON_WM_MOUSEWHEEL()
-    ON_MESSAGE(WM_MOD_VIEWMSG,			OnReceiveModViewMsg)
-    ON_MESSAGE(WM_MOD_DRAGONDROPPING,	OnDragonDropping)
-    ON_MESSAGE(WM_MOD_UPDATEPOSITION,	OnUpdatePosition)
+    ON_MESSAGE(WM_MOD_VIEWMSG,    		OnReceiveModViewMsg)
+    ON_MESSAGE(WM_MOD_DRAGONDROPPING,    OnDragonDropping)
+    ON_MESSAGE(WM_MOD_UPDATEPOSITION,    OnUpdatePosition)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -558,7 +558,7 @@ END_MESSAGE_MAP()
 LRESULT CModScrollView::SendCtrlMessage(UINT uMsg, LPARAM lParam) const
 //---------------------------------------------------------------------
 {
-    if (m_hWndCtrl)	return ::SendMessage(m_hWndCtrl, WM_MOD_CTRLMSG, uMsg, lParam);
+    if (m_hWndCtrl)    return ::SendMessage(m_hWndCtrl, WM_MOD_CTRLMSG, uMsg, lParam);
     return 0;
 }
 
@@ -566,7 +566,7 @@ LRESULT CModScrollView::SendCtrlMessage(UINT uMsg, LPARAM lParam) const
 BOOL CModScrollView::PostCtrlMessage(UINT uMsg, LPARAM lParam) const
 //------------------------------------------------------------------
 {
-    if (m_hWndCtrl)	return ::PostMessage(m_hWndCtrl, WM_MOD_CTRLMSG, uMsg, lParam);
+    if (m_hWndCtrl)    return ::PostMessage(m_hWndCtrl, WM_MOD_CTRLMSG, uMsg, lParam);
     return FALSE;
 }
 
@@ -657,10 +657,10 @@ LRESULT CModScrollView::OnUpdatePosition(WPARAM, LPARAM lParam)
 
 
 ////////////////////////////////////////////////////////////////////////////
-// 	CModControlBar
+//     CModControlBar
 
 BEGIN_MESSAGE_MAP(CModControlBar, CToolBarCtrl)
-    ON_MESSAGE(WM_HELPHITTEST,	OnHelpHitTest)
+    ON_MESSAGE(WM_HELPHITTEST,    OnHelpHitTest)
 END_MESSAGE_MAP()
 
 

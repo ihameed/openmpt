@@ -10,21 +10,21 @@
 
 CPatternRandomizer::CPatternRandomizer(CViewPattern* viewPat)
 {
-	m_pViewPattern = viewPat;
-	m_pRandomizerGUI = new CPatternRandomizerGUI(this, (CWnd*) m_pViewPattern);
+    m_pViewPattern = viewPat;
+    m_pRandomizerGUI = new CPatternRandomizerGUI(this, (CWnd*) m_pViewPattern);
 }
 
 CPatternRandomizer::~CPatternRandomizer(void)
 {
-	delete m_pRandomizerGUI;
+    delete m_pRandomizerGUI;
 }
 
 bool CPatternRandomizer::showGUI()
 {
-	return m_pRandomizerGUI->openEditor();
+    return m_pRandomizerGUI->openEditor();
 }
 
 bool CPatternRandomizer::isGUIVisible()
 {
-	return m_pRandomizerGUI->isVisible();
+    return m_pRandomizerGUI->isVisible();
 }

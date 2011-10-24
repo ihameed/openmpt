@@ -19,8 +19,8 @@
 #include "../mptrack/version.h"
 
 
-#define ITP_VERSION 0x00000102	// v1.02
-#define ITP_FILE_ID 0x2e697470	// .itp ASCII
+#define ITP_VERSION 0x00000102    // v1.02
+#define ITP_FILE_ID 0x2e697470    // .itp ASCII
 
 
 bool CSoundFile::ReadITProject(LPCBYTE lpStream, const DWORD dwMemLength)
@@ -395,7 +395,7 @@ bool CSoundFile::ReadITProject(LPCBYTE lpStream, const DWORD dwMemLength)
 
         ReadInstrumentFromFile(i+1, lpFile, len);
         f.Unlock();
-        f.Close();	
+        f.Close();    
     }
 
     // Extra info data
@@ -420,18 +420,18 @@ bool CSoundFile::ReadITProject(LPCBYTE lpStream, const DWORD dwMemLength)
         while( uintptr_t(ptr - lpStream) <= dwMemLength - 4 && i <= m_nInstruments )
         {
 
-            fcode = (*((__int32 *)ptr));			// read field code
+            fcode = (*((__int32 *)ptr));    		// read field code
 
             switch( fcode )
             {
-            case 'MPTS': goto mpts; //:)		// reached end of instrument headers 
+            case 'MPTS': goto mpts; //:)    	// reached end of instrument headers 
             case 'SEP@': case 'MPTX':
-                ptr += sizeof(__int32);			// jump code
-                i++;							// switch to next instrument
+                ptr += sizeof(__int32);    		// jump code
+                i++;    						// switch to next instrument
                 break;
 
             default:
-                ptr += sizeof(__int32);			// jump field code
+                ptr += sizeof(__int32);    		// jump field code
                 ReadExtendedInstrumentProperty(Instruments[i], fcode, ptr, lpStream + dwMemLength);
                 break;
             }

@@ -50,55 +50,55 @@
 
 struct PSMNEWHEADER
 {
-    uint32_t formatID;			// "PSM " (new format)
-    uint32_t fileSize;			// Filesize - 12
-    uint32_t fileInfoID;			// "FILE" Start of file info
+    uint32_t formatID;    		// "PSM " (new format)
+    uint32_t fileSize;    		// Filesize - 12
+    uint32_t fileInfoID;    		// "FILE" Start of file info
 };
 
 struct PSMSONGHEADER
 {
-    char  songType[9];		// Mostly "MAINSONG " (But not in Extreme Pinball!)
-    uint8_t compression;		// 1 - uncompressed
-    uint8_t numChannels;		// Number of channels, usually 4
+    char  songType[9];    	// Mostly "MAINSONG " (But not in Extreme Pinball!)
+    uint8_t compression;    	// 1 - uncompressed
+    uint8_t numChannels;    	// Number of channels, usually 4
 
 };
 
 struct PSMOLDSAMPLEHEADER // Regular sample header
 {
     uint8_t  flags;
-    char   fileName[8];		// Filename of the original module (without extension)
-    uint32_t sampleID;		// INS0...INS9 (only last digit of sample ID, i.e. sample 1 and sample 11 are equal)
+    char   fileName[8];    	// Filename of the original module (without extension)
+    uint32_t sampleID;    	// INS0...INS9 (only last digit of sample ID, i.e. sample 1 and sample 11 are equal)
     char   sampleName[33];
-    uint8_t  unknown1[6];		// 00 00 00 00 00 FF
+    uint8_t  unknown1[6];    	// 00 00 00 00 00 FF
     uint16_t sampleNumber;
     uint32_t sampleLength;
     uint32_t loopStart;
-    uint32_t loopEnd;			// FF FF FF FF = end of sample
+    uint32_t loopEnd;    		// FF FF FF FF = end of sample
     uint8_t  unknown3;
-    uint8_t  defaulPan;		// unused?
+    uint8_t  defaulPan;    	// unused?
     uint8_t  defaultVolume;
     uint32_t unknown4;
     uint16_t C5Freq;
-    uint8_t  unknown5[21];	// 00 ... 00
+    uint8_t  unknown5[21];    // 00 ... 00
 };
 
 struct PSMNEWSAMPLEHEADER // Sinaria sample header (and possibly other games)
 {
     uint8_t  flags;
-    char   fileName[8];		// Filename of the original module (without extension)
-    char   sampleID[8];		// INS0...INS99999
+    char   fileName[8];    	// Filename of the original module (without extension)
+    char   sampleID[8];    	// INS0...INS99999
     char   sampleName[33];
-    uint8_t  unknown1[6];		// 00 00 00 00 00 FF
+    uint8_t  unknown1[6];    	// 00 00 00 00 00 FF
     uint16_t sampleNumber;
     uint32_t sampleLength;
     uint32_t loopStart;
     uint32_t loopEnd;
     uint16_t unknown3;
-    uint8_t  defaultPan;		// unused?
+    uint8_t  defaultPan;    	// unused?
     uint8_t  defaultVolume;
     uint32_t unknown4;
     uint16_t C5Freq;
-    char   unknown5[16];	// 00 ... 00
+    char   unknown5[16];    // 00 ... 00
 };
 #pragma pack()
 
@@ -160,10 +160,10 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
     m_nVSTiVolume = m_nSamplePreAmp = 48; // not supported in this format, so use a good default value
 
     // pattern offset and identifier
-    PATTERNINDEX numPatterns = 0;	// used for setting up the orderlist - final pattern count
-    vector<uint32_t> patternOffsets;	// pattern offsets (sorted as they occour in the file)
-    vector<uint32_t> patternIDs;		// pattern IDs (sorted as they occour in the file)
-    vector<uint32_t> orderOffsets;	// combine the upper two vectors to get the offsets for each order item
+    PATTERNINDEX numPatterns = 0;    // used for setting up the orderlist - final pattern count
+    vector<uint32_t> patternOffsets;    // pattern offsets (sorted as they occour in the file)
+    vector<uint32_t> patternIDs;    	// pattern IDs (sorted as they occour in the file)
+    vector<uint32_t> orderOffsets;    // combine the upper two vectors to get the offsets for each order item
     patternOffsets.clear();
     patternIDs.clear();
     orderOffsets.clear();
@@ -628,7 +628,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                     case 0x0E: // portamento down
                         command = CMD_PORTAMENTODOWN;
                         param = convert_psm_porta(param, bNewFormat);
-                        break;					
+                        break;    				
                     case 0x0F: // tone portamento
                         command = CMD_TONEPORTAMENTO;
                         if(!bNewFormat) param >>= 2;
@@ -644,7 +644,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                     case 0x12: // tone portamento + volslide down
                         command = CMD_TONEPORTAVOL;
                         param = (param >> 4) & 0x0F;
-                        break;						
+                        break;    					
 
                     // Vibrato
                     case 0x15: // vibrato
@@ -660,7 +660,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                         break;
                     case 0x18: // vibrato + volslide down
                         command = CMD_VIBRATOVOL;
-                        break;					
+                        break;    				
 
                     // Tremolo
                     case 0x1F: // tremolo
@@ -816,51 +816,51 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
 struct PSM16HEADER
 {
-    uint32_t formatID;		// "PSM�" (PSM16)
-    char   songName[59];	// Song title, padded with nulls
-    uint8_t  lineEnd;			// $1A
-    uint8_t  songType;		// Song Type bitfield
-    uint8_t  formatVersion;	// $10
+    uint32_t formatID;    	// "PSM�" (PSM16)
+    char   songName[59];    // Song title, padded with nulls
+    uint8_t  lineEnd;    		// $1A
+    uint8_t  songType;    	// Song Type bitfield
+    uint8_t  formatVersion;    // $10
     uint8_t  patternVersion;  // 0 or 1
-    uint8_t  songSpeed;		//
-    uint8_t  songTempo;		// 32 ... 255
-    uint8_t  masterVolume;	// 0 ... 255
-    uint16_t songLength;		// 0 ... 255 (number of patterns to play in the song)
-    uint16_t songOrders;		// 0 ... 255 (same as previous value as no subsongs are present)
-    uint16_t numPatterns;		// 1 ... 255
-    uint16_t numSamples;		// 1 ... 255
-    uint16_t numChannelsPlay;	// 0 ... 32 (max. number of channels to play)
-    uint16_t numChannelsReal;	// 0 ... 32 (max. number of channels to process)
+    uint8_t  songSpeed;    	//
+    uint8_t  songTempo;    	// 32 ... 255
+    uint8_t  masterVolume;    // 0 ... 255
+    uint16_t songLength;    	// 0 ... 255 (number of patterns to play in the song)
+    uint16_t songOrders;    	// 0 ... 255 (same as previous value as no subsongs are present)
+    uint16_t numPatterns;    	// 1 ... 255
+    uint16_t numSamples;    	// 1 ... 255
+    uint16_t numChannelsPlay;    // 0 ... 32 (max. number of channels to play)
+    uint16_t numChannelsReal;    // 0 ... 32 (max. number of channels to process)
     uint32_t orderOffset;
     uint32_t panOffset;
     uint32_t patOffset;
     uint32_t smpOffset;
     uint32_t commentsOffset;
-    uint32_t patSize;			// Size of all patterns
+    uint32_t patSize;    		// Size of all patterns
     uint8_t  filler[40];
 };
 
 struct PSM16SMPHEADER
 {
-    uint8_t filename[13];	// null-terminated
-    uint8_t name[24];		// dito
-    uint32_t offset;		// in file
-    uint32_t memoffset;	// not used
+    uint8_t filename[13];    // null-terminated
+    uint8_t name[24];    	// dito
+    uint32_t offset;    	// in file
+    uint32_t memoffset;    // not used
     uint16_t sampleNumber;// 1 ... 255
-    uint8_t  flags;		// sample flag bitfield
-    uint32_t length;		// in bytes
-    uint32_t loopStart;	// in samples?
-    uint32_t loopEnd;		// in samples?
-    int8_t   finetune;	// 0 ... 15 (useless? also, why is this almost always 70?)
-    uint8_t  volume;		// default volume
+    uint8_t  flags;    	// sample flag bitfield
+    uint32_t length;    	// in bytes
+    uint32_t loopStart;    // in samples?
+    uint32_t loopEnd;    	// in samples?
+    int8_t   finetune;    // 0 ... 15 (useless? also, why is this almost always 70?)
+    uint8_t  volume;    	// default volume
     uint16_t c2freq;
 };
 
 struct PSM16PATHEADER
 {
-    uint16_t size;		// includes header bytes
-    uint8_t  numRows;		// 1 ... 64
-    uint8_t  numChans;	// 1 ... 31
+    uint16_t size;    	// includes header bytes
+    uint8_t  numRows;    	// 1 ... 64
+    uint8_t  numChans;    // 1 ... 31
 };
 
 #pragma pack()
@@ -1126,7 +1126,7 @@ bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
                         break;
                     case 0x2A: // note cut
                         command = CMD_S3MCMDEX;
-                        if(param == 0)	// in S3M mode, SC0 is ignored, so we convert it to a note cut.
+                        if(param == 0)    // in S3M mode, SC0 is ignored, so we convert it to a note cut.
                         {
                             if(row_data->note == NOTE_NONE)
                             {

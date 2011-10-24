@@ -42,8 +42,8 @@
 #include "ModConvert.h"
 
 
-#define CHANGEMODTYPE_WARNING(x)	warnings.set(x);
-#define CHANGEMODTYPE_CHECK(x, s)	if(warnings[x]) AddToLog(_T(s));
+#define CHANGEMODTYPE_WARNING(x)    warnings.set(x);
+#define CHANGEMODTYPE_CHECK(x, s)    if(warnings[x]) AddToLog(_T(s));
 
 
 // Trim envelopes and remove release nodes.
@@ -180,7 +180,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             cEffectMemory[i].resize(MAX_EFFECTS, 0);
         }
 
-        bool addBreak = false;	// When converting to XM, avoid the E60 bug.
+        bool addBreak = false;    // When converting to XM, avoid the E60 bug.
         CHANNELINDEX nChannel = m_SndFile.m_nChannels - 1;
 
         for (UINT len = m_SndFile.Patterns[nPat].GetNumRows() * m_SndFile.m_nChannels; len; m++, len--)
@@ -221,7 +221,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
                         m->param = cEffectMemory[nChannel][m->command];
                     else
                         cEffectMemory[nChannel][m->command] = m->param;
-                    break;				
+                    break;    			
 
                 }
             }
@@ -514,7 +514,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
 
     //rewbs.customKeys: update effect key commands
     CInputHandler *ih = CMainFrame::GetMainFrame()->GetInputHandler();
-    if	(newTypeIsMOD_XM)
+    if    (newTypeIsMOD_XM)
         ih->SetXMEffects();
     else
         ih->SetITEffects();

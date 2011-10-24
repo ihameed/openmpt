@@ -41,12 +41,12 @@ void CHyperEdit::SetDefaultCursor()
         strWndDir += _T("\\winhlp32.exe");
 
         // This retrieves cursor #106 from winhlp32.exe, which is a hand pointer
-		HMODULE hModule = LoadLibrary(strWndDir);
+    	HMODULE hModule = LoadLibrary(strWndDir);
 
         if(hModule){
             HCURSOR hHandCursor = ::LoadCursor(hModule, MAKEINTRESOURCE(106));
             
-			if(hHandCursor)
+    		if(hHandCursor)
                 m_hHandCursor = CopyCursor(hHandCursor);
         }
 

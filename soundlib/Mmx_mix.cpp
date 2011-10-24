@@ -32,11 +32,11 @@ extern short int gKaiserSinc[];
 extern short int gDownsample13x[];
 extern short int gDownsample2x[];
 
-#define PROCSUPPORT_CPUID	0x01
-#define PROCSUPPORT_MMX		0x02
-#define PROCSUPPORT_MMXEX	0x04
-#define PROCSUPPORT_3DNOW	0x08
-#define PROCSUPPORT_SSE		0x10
+#define PROCSUPPORT_CPUID    0x01
+#define PROCSUPPORT_MMX    	0x02
+#define PROCSUPPORT_MMXEX    0x04
+#define PROCSUPPORT_3DNOW    0x08
+#define PROCSUPPORT_SSE    	0x10
 
 
 #pragma warning (disable:4100)
@@ -73,15 +73,15 @@ static unsigned int QueryProcessorExtensions()
             pop     eax                 // Get new EFLAGS in EAX
             xor     eax, ecx            // Can we toggle ID bit?
             jz      Done                // Jump if no, Processor is older than a Pentium so CPU_ID is not supported
-            mov		fProcessorExtensions, PROCSUPPORT_CPUID
+            mov    	fProcessorExtensions, PROCSUPPORT_CPUID
             mov     eax, 1              // Set EAX to tell the CPUID instruction what to return
-            push	ebx
+            push    ebx
             cpuid                       // Get family/model/stepping/features
-            pop		ebx
+            pop    	ebx
             test    edx, 0x00800000L    // Check if mmx technology available
             jz      Done                // Jump if no
             // Tests have passed, this machine supports the Intel MultiMedia Instruction Set!
-            or		fProcessorExtensions, PROCSUPPORT_MMX
+            or    	fProcessorExtensions, PROCSUPPORT_MMX
             // Check for SSE: PROCSUPPORT_SSE
             test    edx, 0x02000000L    // check if SSE is present (bit 25)
             jz      nosse               // done if no
@@ -98,10 +98,10 @@ static unsigned int QueryProcessorExtensions()
             cpuid // CPU_ID
             test edx, 0x80000000
             jz Done
-            or      fProcessorExtensions, PROCSUPPORT_3DNOW	// 3DNow! supported
+            or      fProcessorExtensions, PROCSUPPORT_3DNOW    // 3DNow! supported
             test edx, (1<<22) // Bit 22: AMD MMX extensions
             jz Done
-            or      fProcessorExtensions, PROCSUPPORT_MMXEX	// MMX extensions supported
+            or      fProcessorExtensions, PROCSUPPORT_MMXEX    // MMX extensions supported
         }
 Done:
         bMMXChecked = true;

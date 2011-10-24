@@ -4,28 +4,28 @@
  * Copied to OpenMPT from libmodplug.
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>
- *			OpenMPT dev(s)	(miscellaneous modifications)
+ *    		OpenMPT dev(s)	(miscellaneous modifications)
 */
 
 ////////////////////////////////////////
-// Farandole (FAR) module loader	  //
+// Farandole (FAR) module loader      //
 ////////////////////////////////////////
 #include "stdafx.h"
 #include "Loaders.h"
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
-#define FARFILEMAGIC	0xFE524146	// "FAR"
+#define FARFILEMAGIC    0xFE524146	// "FAR"
 
 #pragma pack(1)
 
 typedef struct FARHEADER1
 {
-    DWORD id;				// file magic FAR=
-    CHAR songname[40];		// songname
-    CHAR magic2[3];			// 13,10,26
-    WORD headerlen;			// remaining length of header in bytes
-    BYTE version;			// 0xD1
+    DWORD id;    			// file magic FAR=
+    CHAR songname[40];    	// songname
+    CHAR magic2[3];    		// 13,10,26
+    WORD headerlen;    		// remaining length of header in bytes
+    BYTE version;    		// 0xD1
     BYTE onoff[16];
     BYTE edit1[9];
     BYTE speed;
@@ -101,7 +101,7 @@ bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
     {
         UINT szLen = pmh1->stlen;
         if (szLen > dwMemLength - dwMemPos) szLen = dwMemLength - dwMemPos;
-        ReadFixedLineLengthMessage(lpStream + dwMemPos, szLen, 132, 0);	// 132 characters per line... wow. :)
+        ReadFixedLineLengthMessage(lpStream + dwMemPos, szLen, 132, 0);    // 132 characters per line... wow. :)
         dwMemPos += pmh1->stlen;
     }
     // Reading orders
@@ -114,7 +114,7 @@ bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
 
     Order.ReadAsByte(pmh2->orders, pmh2->snglen, sizeof(pmh2->orders));
     m_nRestartPos = pmh2->loopto;
-    // Reading Patterns	
+    // Reading Patterns    
     dwMemPos += headerlen - (869 + pmh1->stlen);
     if (dwMemPos >= dwMemLength) return true;
 
@@ -224,7 +224,7 @@ bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
                 m->param = eff & 0x0F;
                 break;
             default:
-                if ((patbrk) &&	(patbrk+1 == (len >> 6)) && (patbrk+1 != rows-1))
+                if ((patbrk) &&    (patbrk+1 == (len >> 6)) && (patbrk+1 != rows-1))
                 {
                     m->command = CMD_PATTERNBREAK;
                     patbrk = 0;

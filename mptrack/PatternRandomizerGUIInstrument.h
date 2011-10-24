@@ -5,19 +5,19 @@
 
 class CPatternRandomizerGUIInstrument : public CDialog
 {
-	DECLARE_DYNAMIC(CPatternRandomizerGUIInstrument)
+    DECLARE_DYNAMIC(CPatternRandomizerGUIInstrument)
 
 public:
-	CPatternRandomizerGUIInstrument(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CPatternRandomizerGUIInstrument();
+    CPatternRandomizerGUIInstrument(CWnd* pParent = NULL);   // standard constructor
+    virtual ~CPatternRandomizerGUIInstrument();
 
 // Dialog Data
-	enum { IDD = IDD_PATTERNRANDOMIZER_INSTRUMENT };
+    enum { IDD = IDD_PATTERNRANDOMIZER_INSTRUMENT };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClicked65535();
+    afx_msg void OnBnClicked65535();
 };

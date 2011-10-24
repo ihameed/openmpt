@@ -5,7 +5,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *			OpenMPT dev(s)	(miscellaneous modifications)
+ *    		OpenMPT dev(s)	(miscellaneous modifications)
 */
 
 //////////////////////////////////////////////
@@ -20,44 +20,44 @@
 
 typedef struct PTMFILEHEADER
 {
-    CHAR songname[28];		// name of song, asciiz string
-    CHAR eof;				// 26
-    BYTE version_lo;		// 03 version of file, currently 0203h
-    BYTE version_hi;		// 02
-    BYTE reserved1;			// reserved, set to 0
-    WORD norders;			// number of orders (0..256)
-    WORD nsamples;			// number of instruments (1..255)
-    WORD npatterns;			// number of patterns (1..128)
-    WORD nchannels;			// number of channels (voices) used (1..32)
-    WORD fileflags;			// set to 0
-    WORD reserved2;			// reserved, set to 0
-    DWORD ptmf_id;			// song identification, 'PTMF' or 0x464d5450
-    BYTE reserved3[16];		// reserved, set to 0
-    BYTE chnpan[32];		// channel panning settings, 0..15, 0 = left, 7 = middle, 15 = right
-    BYTE orders[256];		// order list, valid entries 0..nOrders-1
-    WORD patseg[128];		// pattern offsets (*16)
+    CHAR songname[28];    	// name of song, asciiz string
+    CHAR eof;    			// 26
+    BYTE version_lo;    	// 03 version of file, currently 0203h
+    BYTE version_hi;    	// 02
+    BYTE reserved1;    		// reserved, set to 0
+    WORD norders;    		// number of orders (0..256)
+    WORD nsamples;    		// number of instruments (1..255)
+    WORD npatterns;    		// number of patterns (1..128)
+    WORD nchannels;    		// number of channels (voices) used (1..32)
+    WORD fileflags;    		// set to 0
+    WORD reserved2;    		// reserved, set to 0
+    DWORD ptmf_id;    		// song identification, 'PTMF' or 0x464d5450
+    BYTE reserved3[16];    	// reserved, set to 0
+    BYTE chnpan[32];    	// channel panning settings, 0..15, 0 = left, 7 = middle, 15 = right
+    BYTE orders[256];    	// order list, valid entries 0..nOrders-1
+    WORD patseg[128];    	// pattern offsets (*16)
 } PTMFILEHEADER, *LPPTMFILEHEADER;
 
-#define SIZEOF_PTMFILEHEADER	608
+#define SIZEOF_PTMFILEHEADER    608
 
 
 typedef struct PTMSAMPLE
 {
-    BYTE sampletype;		// sample type (bit array)
-    CHAR filename[12];		// name of external sample file
-    BYTE volume;			// default volume
-    WORD nC4Spd;			// C4 speed
-    WORD sampleseg;			// sample segment (used internally)
-    WORD fileofs[2];		// offset of sample data
-    WORD length[2];			// sample size (in bytes)
-    WORD loopbeg[2];		// start of loop
-    WORD loopend[2];		// end of loop
+    BYTE sampletype;    	// sample type (bit array)
+    CHAR filename[12];    	// name of external sample file
+    BYTE volume;    		// default volume
+    WORD nC4Spd;    		// C4 speed
+    WORD sampleseg;    		// sample segment (used internally)
+    WORD fileofs[2];    	// offset of sample data
+    WORD length[2];    		// sample size (in bytes)
+    WORD loopbeg[2];    	// start of loop
+    WORD loopend[2];    	// end of loop
     WORD gusdata[8];
-    char  samplename[28];	// name of sample, asciiz
-    DWORD ptms_id;			// sample identification, 'PTMS' or 0x534d5450
+    char  samplename[28];    // name of sample, asciiz
+    DWORD ptms_id;    		// sample identification, 'PTMS' or 0x534d5450
 } PTMSAMPLE;
 
-#define SIZEOF_PTMSAMPLE	80
+#define SIZEOF_PTMSAMPLE    80
 
 #pragma pack()
 

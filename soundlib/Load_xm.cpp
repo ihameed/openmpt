@@ -3,7 +3,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *			OpenMPT dev(s)	(miscellaneous modifications)
+ *    		OpenMPT dev(s)	(miscellaneous modifications)
 */
 
 #include "stdafx.h"
@@ -16,23 +16,23 @@
 
 #pragma warning(disable:4244) //conversion from 'type1' to 'type2', possible loss of data
 
-#define str_tooMuchPatternData	(GetStrI18N((_TEXT("Warning: File format limit was reached. Some pattern data may not get written to file."))))
-#define str_pattern				(GetStrI18N((_TEXT("pattern"))))
+#define str_tooMuchPatternData    (GetStrI18N((_TEXT("Warning: File format limit was reached. Some pattern data may not get written to file."))))
+#define str_pattern    			(GetStrI18N((_TEXT("pattern"))))
 
 
 #pragma pack(1)
 typedef struct tagXMFILEHEADER
 {
-    WORD xmversion;		// current: 0x0104
-    DWORD size;			// header size
-    WORD orders;		// number of orders
-    WORD restartpos;	// restart position
-    WORD channels;		// number of channels
-    WORD patterns;		// number of patterns
-    WORD instruments;	// number of instruments
-    WORD flags;			// song flags
-    WORD speed;			// default speed
-    WORD tempo;			// default tempo
+    WORD xmversion;    	// current: 0x0104
+    DWORD size;    		// header size
+    WORD orders;    	// number of orders
+    WORD restartpos;    // restart position
+    WORD channels;    	// number of channels
+    WORD patterns;    	// number of patterns
+    WORD instruments;    // number of instruments
+    WORD flags;    		// song flags
+    WORD speed;    		// default speed
+    WORD tempo;    		// default tempo
 } XMFILEHEADER;
 
 
@@ -57,11 +57,11 @@ typedef struct tagXMSAMPLEHEADER
     BYTE vibtype, vibsweep, vibdepth, vibrate;
     WORD volfade;
     // midi extensions (not read by MPT)
-    BYTE midienabled;		// 0/1
-    BYTE midichannel;		// 0...15
-    WORD midiprogram;		// 0...127
-    WORD pitchwheelrange;	// 0...36 (halftones)
-    BYTE mutecomputer;		// 0/1
+    BYTE midienabled;    	// 0/1
+    BYTE midichannel;    	// 0...15
+    WORD midiprogram;    	// 0...127
+    WORD pitchwheelrange;    // 0...36 (halftones)
+    BYTE mutecomputer;    	// 0/1
     BYTE reserved1[15];
 } XMSAMPLEHEADER;
 
@@ -192,25 +192,25 @@ DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XM
                         switch(v)
                         {
                         // 60-6F: Volume Slide Down
-                        case 0x60:	p->volcmd = VOLCMD_VOLSLIDEDOWN; break;
+                        case 0x60:    p->volcmd = VOLCMD_VOLSLIDEDOWN; break;
                         // 70-7F: Volume Slide Up:
-                        case 0x70:	p->volcmd = VOLCMD_VOLSLIDEUP; break;
+                        case 0x70:    p->volcmd = VOLCMD_VOLSLIDEUP; break;
                         // 80-8F: Fine Volume Slide Down
-                        case 0x80:	p->volcmd = VOLCMD_FINEVOLDOWN; break;
+                        case 0x80:    p->volcmd = VOLCMD_FINEVOLDOWN; break;
                         // 90-9F: Fine Volume Slide Up
-                        case 0x90:	p->volcmd = VOLCMD_FINEVOLUP; break;
+                        case 0x90:    p->volcmd = VOLCMD_FINEVOLUP; break;
                         // A0-AF: Set Vibrato Speed
-                        case 0xA0:	p->volcmd = VOLCMD_VIBRATOSPEED; break;
+                        case 0xA0:    p->volcmd = VOLCMD_VIBRATOSPEED; break;
                         // B0-BF: Vibrato
-                        case 0xB0:	p->volcmd = VOLCMD_VIBRATODEPTH; break;
+                        case 0xB0:    p->volcmd = VOLCMD_VIBRATODEPTH; break;
                         // C0-CF: Set Panning
-                        case 0xC0:	p->volcmd = VOLCMD_PANNING; p->vol = (vol << 2) + 2; break;
+                        case 0xC0:    p->volcmd = VOLCMD_PANNING; p->vol = (vol << 2) + 2; break;
                         // D0-DF: Panning Slide Left
-                        case 0xD0:	p->volcmd = VOLCMD_PANSLIDELEFT; break;
+                        case 0xD0:    p->volcmd = VOLCMD_PANSLIDELEFT; break;
                         // E0-EF: Panning Slide Right
-                        case 0xE0:	p->volcmd = VOLCMD_PANSLIDERIGHT; break;
+                        case 0xE0:    p->volcmd = VOLCMD_PANSLIDERIGHT; break;
                         // F0-FF: Tone Portamento
-                        case 0xF0:	p->volcmd = VOLCMD_TONEPORTAMENTO; break;
+                        case 0xF0:    p->volcmd = VOLCMD_TONEPORTAMENTO; break;
                         }
                     }
                     p++;
@@ -502,7 +502,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
             xmss.samplen = LittleEndian(xmss.samplen);
             xmss.loopstart = LittleEndian(xmss.loopstart);
             xmss.looplen = LittleEndian(xmss.looplen);
-            dwMemPos += sizeof(XMSAMPLESTRUCT);	// was: dwMemPos += xmsh.shsize; (this fixes IFULOVE.XM)
+            dwMemPos += sizeof(XMSAMPLESTRUCT);    // was: dwMemPos += xmsh.shsize; (this fixes IFULOVE.XM)
             flags[ins] = (xmss.type & 0x10) ? RS_PCM16D : RS_PCM8D;
             if (xmss.type & 0x20) flags[ins] = (xmss.type & 0x10) ? RS_STPCM16D : RS_STPCM8D;
             samplesize[ins] = xmss.samplen;
@@ -557,7 +557,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
             memcpy(pSmp->legacy_filename, xmss.name, 22);
             SpaceToNullStringFixed<21>(pSmp->legacy_filename);
 
-            if ((xmss.type & 3) == 3)	// MPT 1.09 and maybe newer / older versions set both flags for bidi loops
+            if ((xmss.type & 3) == 3)    // MPT 1.09 and maybe newer / older versions set both flags for bidi loops
                 bProbablyMPT109 = true;
         }
 #if 0
@@ -617,7 +617,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
             memcpy(&m_MidiCfg, lpStream + dwMemPos, len);
             SanitizeMacros();
             m_dwSongFlags |= SONG_EMBEDMIDICFG;
-            dwMemPos += len;	//rewbs.fix36946
+            dwMemPos += len;    //rewbs.fix36946
         }
         bMadeWithModPlug = true;
     }
@@ -667,7 +667,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
     // Check various things to find out whether this has been made with MPT.
     // Null chars in names -> most likely made with MPT, which disguises as FT2
     if (!memcmp((LPCSTR)lpStream + 0x26, "FastTracker v2.00   ", 20) && bProbablyMadeWithModPlug && !bIsFT2) bMadeWithModPlug = true;
-    if (memcmp((LPCSTR)lpStream + 0x26, "FastTracker v2.00   ", 20)) bMadeWithModPlug = false;	// this could happen f.e. with (early?) versions of Sk@le
+    if (memcmp((LPCSTR)lpStream + 0x26, "FastTracker v2.00   ", 20)) bMadeWithModPlug = false;    // this could happen f.e. with (early?) versions of Sk@le
     if (!memcmp((LPCSTR)lpStream + 0x26, "FastTracker v 2.00  ", 20))
     {
         // Early MPT 1.0 alpha/beta versions
@@ -713,14 +713,14 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
         SetModFlag(MSF_MIDICC_BUGEMULATION, true);
 
     if(bInterpretOpenMPTMade && m_dwLastSavedWithVersion == 0)
-        m_dwLastSavedWithVersion = MAKE_VERSION_NUMERIC(1, 17, 01, 00);	// early versions of OpenMPT had no version indication.
+        m_dwLastSavedWithVersion = MAKE_VERSION_NUMERIC(1, 17, 01, 00);    // early versions of OpenMPT had no version indication.
 
     return true;
 }
 
 
 #ifndef MODPLUG_NO_FILESAVE
-#include "../mptrack/Moddoc.h"	// for logging errors
+#include "../mptrack/Moddoc.h"    // for logging errors
 
 bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatibilityExport)
 //------------------------------------------------------------------------------------------
@@ -845,17 +845,17 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
             {
                 switch(p->volcmd)
                 {
-                case VOLCMD_VOLUME:			vol = 0x10 + p->vol; break;
-                case VOLCMD_VOLSLIDEDOWN:	vol = 0x60 + (p->vol & 0x0F); break;
-                case VOLCMD_VOLSLIDEUP:		vol = 0x70 + (p->vol & 0x0F); break;
-                case VOLCMD_FINEVOLDOWN:	vol = 0x80 + (p->vol & 0x0F); break;
-                case VOLCMD_FINEVOLUP:		vol = 0x90 + (p->vol & 0x0F); break;
-                case VOLCMD_VIBRATOSPEED:	vol = 0xA0 + (p->vol & 0x0F); break;
-                case VOLCMD_VIBRATODEPTH:	vol = 0xB0 + (p->vol & 0x0F); break;
-                case VOLCMD_PANNING:		vol = 0xC0 + (p->vol >> 2); if (vol > 0xCF) vol = 0xCF; break;
-                case VOLCMD_PANSLIDELEFT:	vol = 0xD0 + (p->vol & 0x0F); break;
-                case VOLCMD_PANSLIDERIGHT:	vol = 0xE0 + (p->vol & 0x0F); break;
-                case VOLCMD_TONEPORTAMENTO:	vol = 0xF0 + (p->vol & 0x0F); break;
+                case VOLCMD_VOLUME:    		vol = 0x10 + p->vol; break;
+                case VOLCMD_VOLSLIDEDOWN:    vol = 0x60 + (p->vol & 0x0F); break;
+                case VOLCMD_VOLSLIDEUP:    	vol = 0x70 + (p->vol & 0x0F); break;
+                case VOLCMD_FINEVOLDOWN:    vol = 0x80 + (p->vol & 0x0F); break;
+                case VOLCMD_FINEVOLUP:    	vol = 0x90 + (p->vol & 0x0F); break;
+                case VOLCMD_VIBRATOSPEED:    vol = 0xA0 + (p->vol & 0x0F); break;
+                case VOLCMD_VIBRATODEPTH:    vol = 0xB0 + (p->vol & 0x0F); break;
+                case VOLCMD_PANNING:    	vol = 0xC0 + (p->vol >> 2); if (vol > 0xCF) vol = 0xCF; break;
+                case VOLCMD_PANSLIDELEFT:    vol = 0xD0 + (p->vol & 0x0F); break;
+                case VOLCMD_PANSLIDERIGHT:    vol = 0xE0 + (p->vol & 0x0F); break;
+                case VOLCMD_TONEPORTAMENTO:    vol = 0xF0 + (p->vol & 0x0F); break;
                 }
                 // Those values are ignored in FT2. Don't save them, also to avoid possible problems with other trackers (or MPT itself)
                 if(bCompatibilityExport && p->vol == 0)
@@ -995,7 +995,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
                     }
                     
                     if ((xmih.samples >= 32) || (xmih.samples >= 16 && bCompatibilityExport)) break;
-                    xmsh.snum[j] = k;	//record sample table offset in instrument's note map
+                    xmsh.snum[j] = k;    //record sample table offset in instrument's note map
                 }
             }
         } else

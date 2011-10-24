@@ -7,10 +7,10 @@
 
 typedef struct _MT2FILEHEADER
 {
-    DWORD dwMT20;	// 0x3032544D "MT20"
+    DWORD dwMT20;    // 0x3032544D "MT20"
     DWORD dwSpecial;
     WORD wVersion;
-    CHAR szTrackerName[32];	// "MadTracker 2.0"
+    CHAR szTrackerName[32];    // "MadTracker 2.0"
     CHAR szSongName[64];
     WORD nOrders;
     WORD wRestart;
@@ -33,7 +33,7 @@ typedef struct _MT2PATTERN
 
 typedef struct _MT2COMMAND
 {
-    BYTE note;	// 0=nothing, 97=note off
+    BYTE note;    // 0=nothing, 97=note off
     BYTE instr;
     BYTE vol;
     BYTE pan;
@@ -116,7 +116,7 @@ typedef struct _MT2SAMPLE
 typedef struct _MT2GROUP
 {
     BYTE nSmpNo;
-    BYTE nVolume;	// 0-128
+    BYTE nVolume;    // 0-128
     BYTE nFinePitch;
     BYTE Reserved[5];
 } MT2GROUP;
@@ -465,7 +465,7 @@ bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
                 #endif
 
                     switch(iEnv)
-                    {					
+                    {    				
                     case 0: // Volume Envelope
                         pEnv = &pIns->volume_envelope;
                         break;

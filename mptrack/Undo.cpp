@@ -24,10 +24,10 @@
 void CPatternUndo::ClearUndo()
 //----------------------------
 {
-	while(UndoBuffer.size() > 0)
-	{
-		DeleteUndoStep(0);
-	}
+    while(UndoBuffer.size() > 0)
+    {
+    	DeleteUndoStep(0);
+    }
 }
 
 
@@ -42,52 +42,52 @@ void CPatternUndo::ClearUndo()
 bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWINDEX firstRow, CHANNELINDEX numChns, ROWINDEX numRows, bool linkToPrevious)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 {
-	if(m_pModDoc == nullptr) return false;
-	CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
-	if(pSndFile == nullptr) return false;
+    if(m_pModDoc == nullptr) return false;
+    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    if(pSndFile == nullptr) return false;
 
-	PATTERNUNDOBUFFER sUndo;
-	modplug::tracker::modcommand_t *pUndoData, *pPattern;
-	ROWINDEX nRows;
+    PATTERNUNDOBUFFER sUndo;
+    modplug::tracker::modcommand_t *pUndoData, *pPattern;
+    ROWINDEX nRows;
 
-	if (!pSndFile->Patterns.IsValidPat(pattern)) return false;
-	nRows = pSndFile->Patterns[pattern].GetNumRows();
-	pPattern = pSndFile->Patterns[pattern];
-	if ((firstRow >= nRows) || (numChns < 1) || (numRows < 1) || (firstChn >= pSndFile->GetNumChannels())) return false;
-	if (firstRow + numRows >= nRows) numRows = nRows - firstRow;
-	if (firstChn + numChns >= pSndFile->GetNumChannels()) numChns = pSndFile->GetNumChannels() - firstChn;
+    if (!pSndFile->Patterns.IsValidPat(pattern)) return false;
+    nRows = pSndFile->Patterns[pattern].GetNumRows();
+    pPattern = pSndFile->Patterns[pattern];
+    if ((firstRow >= nRows) || (numChns < 1) || (numRows < 1) || (firstChn >= pSndFile->GetNumChannels())) return false;
+    if (firstRow + numRows >= nRows) numRows = nRows - firstRow;
+    if (firstChn + numChns >= pSndFile->GetNumChannels()) numChns = pSndFile->GetNumChannels() - firstChn;
 
-	pUndoData = new modplug::tracker::modcommand_t[numChns * numRows];
-	if (!pUndoData) return false;
+    pUndoData = new modplug::tracker::modcommand_t[numChns * numRows];
+    if (!pUndoData) return false;
 
-	const bool bUpdate = !CanUndo(); // update undo status?
+    const bool bUpdate = !CanUndo(); // update undo status?
 
-	// Remove an undo step if there are too many.
-	while(UndoBuffer.size() >= MAX_UNDO_LEVEL)
-	{
-		DeleteUndoStep(0);
-	}
+    // Remove an undo step if there are too many.
+    while(UndoBuffer.size() >= MAX_UNDO_LEVEL)
+    {
+    	DeleteUndoStep(0);
+    }
 
-	sUndo.pattern = pattern;
-	sUndo.patternsize = pSndFile->Patterns[pattern].GetNumRows();
-	sUndo.firstChannel = firstChn;
-	sUndo.firstRow = firstRow;
-	sUndo.numChannels = numChns;
-	sUndo.numRows = numRows;
-	sUndo.pbuffer = pUndoData;
-	sUndo.linkToPrevious = linkToPrevious;
-	pPattern += firstChn + firstRow * pSndFile->GetNumChannels();
-	for(ROWINDEX iy = 0; iy < numRows; iy++)
-	{
-		memcpy(pUndoData, pPattern, numChns * sizeof(modplug::tracker::modcommand_t));
-		pUndoData += numChns;
-		pPattern += pSndFile->GetNumChannels();
-	}
+    sUndo.pattern = pattern;
+    sUndo.patternsize = pSndFile->Patterns[pattern].GetNumRows();
+    sUndo.firstChannel = firstChn;
+    sUndo.firstRow = firstRow;
+    sUndo.numChannels = numChns;
+    sUndo.numRows = numRows;
+    sUndo.pbuffer = pUndoData;
+    sUndo.linkToPrevious = linkToPrevious;
+    pPattern += firstChn + firstRow * pSndFile->GetNumChannels();
+    for(ROWINDEX iy = 0; iy < numRows; iy++)
+    {
+    	memcpy(pUndoData, pPattern, numChns * sizeof(modplug::tracker::modcommand_t));
+    	pUndoData += numChns;
+    	pPattern += pSndFile->GetNumChannels();
+    }
 
-	UndoBuffer.push_back(sUndo);
+    UndoBuffer.push_back(sUndo);
 
-	if (bUpdate) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
-	return true;
+    if (bUpdate) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
+    return true;
 }
 
 
@@ -95,7 +95,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
 PATTERNINDEX CPatternUndo::Undo()
 //-------------------------------
 {
-	return Undo(false);
+    return Undo(false);
 }
 
 
@@ -104,69 +104,69 @@ PATTERNINDEX CPatternUndo::Undo()
 PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
 //------------------------------------------------------
 {
-	if(m_pModDoc == nullptr) return PATTERNINDEX_INVALID;
-	CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
-	if(pSndFile == nullptr) return PATTERNINDEX_INVALID;
+    if(m_pModDoc == nullptr) return PATTERNINDEX_INVALID;
+    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    if(pSndFile == nullptr) return PATTERNINDEX_INVALID;
 
-	modplug::tracker::modcommand_t *pUndoData, *pPattern;
-	PATTERNINDEX nPattern;
-	ROWINDEX nRows;
-	bool linkToPrevious = false;
+    modplug::tracker::modcommand_t *pUndoData, *pPattern;
+    PATTERNINDEX nPattern;
+    ROWINDEX nRows;
+    bool linkToPrevious = false;
 
-	if (CanUndo() == false) return PATTERNINDEX_INVALID;
+    if (CanUndo() == false) return PATTERNINDEX_INVALID;
 
-	// If the most recent undo step is invalid, trash it.
-	while(UndoBuffer.back().pattern >= pSndFile->Patterns.Size())
-	{
-		RemoveLastUndoStep();
-		// The command which was connect to this command is no more valid, so don't search for the next command.
-		if(linkedFromPrevious)
-			return PATTERNINDEX_INVALID;
-	}
+    // If the most recent undo step is invalid, trash it.
+    while(UndoBuffer.back().pattern >= pSndFile->Patterns.Size())
+    {
+    	RemoveLastUndoStep();
+    	// The command which was connect to this command is no more valid, so don't search for the next command.
+    	if(linkedFromPrevious)
+    		return PATTERNINDEX_INVALID;
+    }
 
-	// Select most recent undo slot
-	const PATTERNUNDOBUFFER *pUndo = &UndoBuffer.back();
+    // Select most recent undo slot
+    const PATTERNUNDOBUFFER *pUndo = &UndoBuffer.back();
 
-	nPattern = pUndo->pattern;
-	nRows = pUndo->patternsize;
-	if(pUndo->firstChannel + pUndo->numChannels <= pSndFile->GetNumChannels())
-	{
-		if((!pSndFile->Patterns[nPattern]) || (pSndFile->Patterns[nPattern].GetNumRows() < nRows))
-		{
-			modplug::tracker::modcommand_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
-			modplug::tracker::modcommand_t *oldPattern = pSndFile->Patterns[nPattern];
-			if (!newPattern) return PATTERNINDEX_INVALID;
-			const ROWINDEX nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
-			pSndFile->Patterns[nPattern].SetData(newPattern, nRows);
-			if(oldPattern)
-			{
-				memcpy(newPattern, oldPattern, pSndFile->GetNumChannels() * nOldRowCount * sizeof(modplug::tracker::modcommand_t));
-				CPattern::FreePattern(oldPattern);
-			}
-		}
-		linkToPrevious = pUndo->linkToPrevious;
-		pUndoData = pUndo->pbuffer;
-		pPattern = pSndFile->Patterns[nPattern];
-		if (!pSndFile->Patterns[nPattern]) return PATTERNINDEX_INVALID;
-		pPattern += pUndo->firstChannel + (pUndo->firstRow * pSndFile->GetNumChannels());
-		for(ROWINDEX iy = 0; iy < pUndo->numRows; iy++)
-		{
-			memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modplug::tracker::modcommand_t));
-			pPattern += pSndFile->GetNumChannels();
-			pUndoData += pUndo->numChannels;
-		}
-	}		
+    nPattern = pUndo->pattern;
+    nRows = pUndo->patternsize;
+    if(pUndo->firstChannel + pUndo->numChannels <= pSndFile->GetNumChannels())
+    {
+    	if((!pSndFile->Patterns[nPattern]) || (pSndFile->Patterns[nPattern].GetNumRows() < nRows))
+    	{
+    		modplug::tracker::modcommand_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
+    		modplug::tracker::modcommand_t *oldPattern = pSndFile->Patterns[nPattern];
+    		if (!newPattern) return PATTERNINDEX_INVALID;
+    		const ROWINDEX nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
+    		pSndFile->Patterns[nPattern].SetData(newPattern, nRows);
+    		if(oldPattern)
+    		{
+    			memcpy(newPattern, oldPattern, pSndFile->GetNumChannels() * nOldRowCount * sizeof(modplug::tracker::modcommand_t));
+    			CPattern::FreePattern(oldPattern);
+    		}
+    	}
+    	linkToPrevious = pUndo->linkToPrevious;
+    	pUndoData = pUndo->pbuffer;
+    	pPattern = pSndFile->Patterns[nPattern];
+    	if (!pSndFile->Patterns[nPattern]) return PATTERNINDEX_INVALID;
+    	pPattern += pUndo->firstChannel + (pUndo->firstRow * pSndFile->GetNumChannels());
+    	for(ROWINDEX iy = 0; iy < pUndo->numRows; iy++)
+    	{
+    		memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modplug::tracker::modcommand_t));
+    		pPattern += pSndFile->GetNumChannels();
+    		pUndoData += pUndo->numChannels;
+    	}
+    }		
 
-	RemoveLastUndoStep();
+    RemoveLastUndoStep();
 
-	if (CanUndo() == false) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
-	if(linkToPrevious)
-	{
-		return Undo(true);		
-	} else
-	{
-		return nPattern;
-	}
+    if (CanUndo() == false) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
+    if(linkToPrevious)
+    {
+    	return Undo(true);		
+    } else
+    {
+    	return nPattern;
+    }
 }
 
 
@@ -174,7 +174,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
 bool CPatternUndo::CanUndo()
 //--------------------------
 {
-	return (UndoBuffer.size() > 0) ? true : false;
+    return (UndoBuffer.size() > 0) ? true : false;
 }
 
 
@@ -182,9 +182,9 @@ bool CPatternUndo::CanUndo()
 void CPatternUndo::DeleteUndoStep(UINT nStep)
 //-------------------------------------------
 {
-	if(nStep >= UndoBuffer.size()) return;
-	if (UndoBuffer[nStep].pbuffer) delete[] UndoBuffer[nStep].pbuffer;
-	UndoBuffer.erase(UndoBuffer.begin() + nStep);
+    if(nStep >= UndoBuffer.size()) return;
+    if (UndoBuffer[nStep].pbuffer) delete[] UndoBuffer[nStep].pbuffer;
+    UndoBuffer.erase(UndoBuffer.begin() + nStep);
 }
 
 
@@ -192,8 +192,8 @@ void CPatternUndo::DeleteUndoStep(UINT nStep)
 void CPatternUndo::RemoveLastUndoStep()
 //-------------------------------------
 {
-	if(CanUndo() == false) return;
-	DeleteUndoStep(UndoBuffer.size() - 1);
+    if(CanUndo() == false) return;
+    DeleteUndoStep(UndoBuffer.size() - 1);
 }
 
 
@@ -205,11 +205,11 @@ void CPatternUndo::RemoveLastUndoStep()
 void CSampleUndo::ClearUndo()
 //---------------------------
 {
-	for(SAMPLEINDEX nSmp = 1; nSmp <= MAX_SAMPLES; nSmp++)
-	{
-		ClearUndo(nSmp);
-	}
-	UndoBuffer.clear();
+    for(SAMPLEINDEX nSmp = 1; nSmp <= MAX_SAMPLES; nSmp++)
+    {
+    	ClearUndo(nSmp);
+    }
+    UndoBuffer.clear();
 }
 
 
@@ -217,12 +217,12 @@ void CSampleUndo::ClearUndo()
 void CSampleUndo::ClearUndo(const SAMPLEINDEX nSmp)
 //-------------------------------------------------
 {
-	if(!SampleBufferExists(nSmp, false)) return;
+    if(!SampleBufferExists(nSmp, false)) return;
 
-	while(UndoBuffer[nSmp - 1].size() > 0)
-	{
-		DeleteUndoStep(nSmp, 0);
-	}
+    while(UndoBuffer[nSmp - 1].size() > 0)
+    {
+    	DeleteUndoStep(nSmp, 0);
+    }
 }
 
 
@@ -231,84 +231,84 @@ void CSampleUndo::ClearUndo(const SAMPLEINDEX nSmp)
 // That way, a lot of RAM can be saved, because some actions don't even require an undo sample buffer.
 bool CSampleUndo::PrepareUndo(const SAMPLEINDEX nSmp, sampleUndoTypes nChangeType, UINT nChangeStart, UINT nChangeEnd)
 //--------------------------------------------------------------------------------------------------------------------
-{	
-	if(m_pModDoc == nullptr || !SampleBufferExists(nSmp)) return false;
+{    
+    if(m_pModDoc == nullptr || !SampleBufferExists(nSmp)) return false;
 
-	CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
-	if(pSndFile == nullptr) return false;
-	
-	// Remove an undo step if there are too many.
-	while(UndoBuffer[nSmp - 1].size() >= MAX_UNDO_LEVEL)
-	{
-		DeleteUndoStep(nSmp, 0);
-	}
-	
-	// Restrict amount of memory that's being used
-	RestrictBufferSize();
+    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    if(pSndFile == nullptr) return false;
+    
+    // Remove an undo step if there are too many.
+    while(UndoBuffer[nSmp - 1].size() >= MAX_UNDO_LEVEL)
+    {
+    	DeleteUndoStep(nSmp, 0);
+    }
+    
+    // Restrict amount of memory that's being used
+    RestrictBufferSize();
 
-	// Create new undo slot
-	SAMPLEUNDOBUFFER sUndo;
+    // Create new undo slot
+    SAMPLEUNDOBUFFER sUndo;
 
-	// Save old sample header
-	memcpy(&sUndo.OldSample, &pSndFile->Samples[nSmp], sizeof(modplug::tracker::modsample_t));
-	memcpy(sUndo.szOldName, pSndFile->m_szNames[nSmp], sizeof(sUndo.szOldName));
-	sUndo.nChangeType = nChangeType;
+    // Save old sample header
+    memcpy(&sUndo.OldSample, &pSndFile->Samples[nSmp], sizeof(modplug::tracker::modsample_t));
+    memcpy(sUndo.szOldName, pSndFile->m_szNames[nSmp], sizeof(sUndo.szOldName));
+    sUndo.nChangeType = nChangeType;
 
-	if(nChangeType == sundo_replace)
-	{
-		// ensure that size information is correct here.
-		nChangeStart = 0;
-		nChangeEnd = pSndFile->Samples[nSmp].length;
-	} else if(nChangeType == sundo_none)
-	{
-		// we do nothing...
-		nChangeStart = nChangeEnd = 0;
-	}
+    if(nChangeType == sundo_replace)
+    {
+    	// ensure that size information is correct here.
+    	nChangeStart = 0;
+    	nChangeEnd = pSndFile->Samples[nSmp].length;
+    } else if(nChangeType == sundo_none)
+    {
+    	// we do nothing...
+    	nChangeStart = nChangeEnd = 0;
+    }
 
-	sUndo.nChangeStart = nChangeStart;
-	sUndo.nChangeEnd = nChangeEnd;
-	sUndo.SamplePtr = nullptr;
+    sUndo.nChangeStart = nChangeStart;
+    sUndo.nChangeEnd = nChangeEnd;
+    sUndo.SamplePtr = nullptr;
 
-	switch(nChangeType)
-	{
-	case sundo_none:	// we are done, no sample changes here.
-	case sundo_invert:	// no action necessary, since those effects can be applied again to be undone.
-	case sundo_reverse:	// dito
-	case sundo_unsign:	// dito
-	case sundo_insert:	// no action necessary, we already have stored the variables that are necessary.
-		break;
+    switch(nChangeType)
+    {
+    case sundo_none:	// we are done, no sample changes here.
+    case sundo_invert:	// no action necessary, since those effects can be applied again to be undone.
+    case sundo_reverse:	// dito
+    case sundo_unsign:	// dito
+    case sundo_insert:	// no action necessary, we already have stored the variables that are necessary.
+    	break;
 
-	case sundo_update:
-	case sundo_delete:
-	case sundo_replace:
-		{
-			UINT nBytesPerSample = pSndFile->Samples[nSmp].GetBytesPerSample();
-			UINT nChangeLen = nChangeEnd - nChangeStart;
+    case sundo_update:
+    case sundo_delete:
+    case sundo_replace:
+    	{
+    		UINT nBytesPerSample = pSndFile->Samples[nSmp].GetBytesPerSample();
+    		UINT nChangeLen = nChangeEnd - nChangeStart;
 
-			sUndo.SamplePtr = pSndFile->AllocateSample(nChangeLen * nBytesPerSample + 4 * nBytesPerSample);
-			if(sUndo.SamplePtr == nullptr) return false;
-			memcpy(sUndo.SamplePtr, pSndFile->Samples[nSmp].sample_data + nChangeStart * nBytesPerSample, nChangeLen * nBytesPerSample);
+    		sUndo.SamplePtr = pSndFile->AllocateSample(nChangeLen * nBytesPerSample + 4 * nBytesPerSample);
+    		if(sUndo.SamplePtr == nullptr) return false;
+    		memcpy(sUndo.SamplePtr, pSndFile->Samples[nSmp].sample_data + nChangeStart * nBytesPerSample, nChangeLen * nBytesPerSample);
 
 #ifdef DEBUG
-			char s[64];
-			const UINT nSize = (GetUndoBufferCapacity() + nChangeLen * nBytesPerSample) >> 10;
-			wsprintf(s, "Sample undo buffer size is now %u.%u MB\n", nSize >> 10, (nSize & 1023) * 100 / 1024);
-			Log(s);
+    		char s[64];
+    		const UINT nSize = (GetUndoBufferCapacity() + nChangeLen * nBytesPerSample) >> 10;
+    		wsprintf(s, "Sample undo buffer size is now %u.%u MB\n", nSize >> 10, (nSize & 1023) * 100 / 1024);
+    		Log(s);
 #endif
 
-		}
-		break;
+    	}
+    	break;
 
-	default:
-		ASSERT(false); // whoops, what's this? someone forgot to implement it, some code is obviously missing here!
-		return false;
-	}
+    default:
+    	ASSERT(false); // whoops, what's this? someone forgot to implement it, some code is obviously missing here!
+    	return false;
+    }
 
-	UndoBuffer[nSmp - 1].push_back(sUndo);
+    UndoBuffer[nSmp - 1].push_back(sUndo);
 
-	m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
+    m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
 
-	return true;
+    return true;
 }
 
 
@@ -316,91 +316,91 @@ bool CSampleUndo::PrepareUndo(const SAMPLEINDEX nSmp, sampleUndoTypes nChangeTyp
 bool CSampleUndo::Undo(const SAMPLEINDEX nSmp)
 //--------------------------------------------
 {
-	if(m_pModDoc == nullptr || CanUndo(nSmp) == false) return false;
+    if(m_pModDoc == nullptr || CanUndo(nSmp) == false) return false;
 
-	CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
-	if(pSndFile == nullptr) return false;
+    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    if(pSndFile == nullptr) return false;
 
-	// Select most recent undo slot
-	SAMPLEUNDOBUFFER *pUndo = &UndoBuffer[nSmp - 1].back();
+    // Select most recent undo slot
+    SAMPLEUNDOBUFFER *pUndo = &UndoBuffer[nSmp - 1].back();
 
-	LPSTR pCurrentSample = pSndFile->Samples[nSmp].sample_data;
-	LPSTR pNewSample = nullptr;	// a new sample is possibly going to be allocated, depending on what's going to be undone.
+    LPSTR pCurrentSample = pSndFile->Samples[nSmp].sample_data;
+    LPSTR pNewSample = nullptr;	// a new sample is possibly going to be allocated, depending on what's going to be undone.
 
-	UINT nBytesPerSample = pUndo->OldSample.GetBytesPerSample();
-	UINT nChangeLen = pUndo->nChangeEnd - pUndo->nChangeStart;
+    UINT nBytesPerSample = pUndo->OldSample.GetBytesPerSample();
+    UINT nChangeLen = pUndo->nChangeEnd - pUndo->nChangeStart;
 
-	switch(pUndo->nChangeType)
-	{
-	case sundo_none:
-		break;
+    switch(pUndo->nChangeType)
+    {
+    case sundo_none:
+    	break;
 
-	case sundo_invert:
-		// invert again
-		ctrlSmp::InvertSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
-		break;
+    case sundo_invert:
+    	// invert again
+    	ctrlSmp::InvertSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
+    	break;
 
-	case sundo_reverse:
-		// reverse again
-		ctrlSmp::ReverseSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
-		break;
+    case sundo_reverse:
+    	// reverse again
+    	ctrlSmp::ReverseSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
+    	break;
 
-	case sundo_unsign:
-		// unsign again
-		ctrlSmp::UnsignSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
-		break;
+    case sundo_unsign:
+    	// unsign again
+    	ctrlSmp::UnsignSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
+    	break;
 
-	case sundo_insert:
-		// delete inserted data
-		ASSERT(nChangeLen == pSndFile->Samples[nSmp].length - pUndo->OldSample.length);
-		memcpy(pCurrentSample + pUndo->nChangeStart * nBytesPerSample, pCurrentSample + pUndo->nChangeEnd * nBytesPerSample, (pSndFile->Samples[nSmp].length - pUndo->nChangeEnd) * nBytesPerSample);
-		// also clean the sample end
-		memset(pCurrentSample + pUndo->OldSample.length * nBytesPerSample, 0, (pSndFile->Samples[nSmp].length - pUndo->OldSample.length) * nBytesPerSample);
-		break;
+    case sundo_insert:
+    	// delete inserted data
+    	ASSERT(nChangeLen == pSndFile->Samples[nSmp].length - pUndo->OldSample.length);
+    	memcpy(pCurrentSample + pUndo->nChangeStart * nBytesPerSample, pCurrentSample + pUndo->nChangeEnd * nBytesPerSample, (pSndFile->Samples[nSmp].length - pUndo->nChangeEnd) * nBytesPerSample);
+    	// also clean the sample end
+    	memset(pCurrentSample + pUndo->OldSample.length * nBytesPerSample, 0, (pSndFile->Samples[nSmp].length - pUndo->OldSample.length) * nBytesPerSample);
+    	break;
 
-	case sundo_update:
-		// simply replace what has been updated.
-		if(pSndFile->Samples[nSmp].length < pUndo->nChangeEnd) return false;
-		memcpy(pCurrentSample + pUndo->nChangeStart * nBytesPerSample, pUndo->SamplePtr, nChangeLen * nBytesPerSample);
-		break;
+    case sundo_update:
+    	// simply replace what has been updated.
+    	if(pSndFile->Samples[nSmp].length < pUndo->nChangeEnd) return false;
+    	memcpy(pCurrentSample + pUndo->nChangeStart * nBytesPerSample, pUndo->SamplePtr, nChangeLen * nBytesPerSample);
+    	break;
 
-	case sundo_delete:
-		// insert deleted data
-		pNewSample = pSndFile->AllocateSample(pUndo->OldSample.GetSampleSizeInBytes() + 4 * nBytesPerSample);
-		if(pNewSample == nullptr) return false;
-		memcpy(pNewSample, pCurrentSample, pUndo->nChangeStart * nBytesPerSample);
-		memcpy(pNewSample + pUndo->nChangeStart * nBytesPerSample, pUndo->SamplePtr, nChangeLen * nBytesPerSample);
-		memcpy(pNewSample + pUndo->nChangeEnd * nBytesPerSample, pCurrentSample + pUndo->nChangeStart * nBytesPerSample, (pUndo->OldSample.length - pUndo->nChangeEnd) * nBytesPerSample);
-		break;
+    case sundo_delete:
+    	// insert deleted data
+    	pNewSample = pSndFile->AllocateSample(pUndo->OldSample.GetSampleSizeInBytes() + 4 * nBytesPerSample);
+    	if(pNewSample == nullptr) return false;
+    	memcpy(pNewSample, pCurrentSample, pUndo->nChangeStart * nBytesPerSample);
+    	memcpy(pNewSample + pUndo->nChangeStart * nBytesPerSample, pUndo->SamplePtr, nChangeLen * nBytesPerSample);
+    	memcpy(pNewSample + pUndo->nChangeEnd * nBytesPerSample, pCurrentSample + pUndo->nChangeStart * nBytesPerSample, (pUndo->OldSample.length - pUndo->nChangeEnd) * nBytesPerSample);
+    	break;
 
-	case sundo_replace:
-		// simply exchange sample pointer
-		pNewSample = pUndo->SamplePtr;
-		pUndo->SamplePtr = nullptr; // prevent sample from being deleted
-		break;
+    case sundo_replace:
+    	// simply exchange sample pointer
+    	pNewSample = pUndo->SamplePtr;
+    	pUndo->SamplePtr = nullptr; // prevent sample from being deleted
+    	break;
 
-	default:
-		ASSERT(false); // whoops, what's this? someone forgot to implement it, some code is obviously missing here!
-		return false;
-	}
+    default:
+    	ASSERT(false); // whoops, what's this? someone forgot to implement it, some code is obviously missing here!
+    	return false;
+    }
 
-	// Restore old sample header
-	memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(modplug::tracker::modsample_t));
-	pSndFile->Samples[nSmp].sample_data = pCurrentSample; // select the "correct" old sample
-	memcpy(pSndFile->m_szNames[nSmp], pUndo->szOldName, sizeof(pUndo->szOldName));
+    // Restore old sample header
+    memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(modplug::tracker::modsample_t));
+    pSndFile->Samples[nSmp].sample_data = pCurrentSample; // select the "correct" old sample
+    memcpy(pSndFile->m_szNames[nSmp], pUndo->szOldName, sizeof(pUndo->szOldName));
 
-	if(pNewSample != nullptr)
-	{
-		ctrlSmp::ReplaceSample(pSndFile->Samples[nSmp], pNewSample, pUndo->OldSample.length, pSndFile);
-	}
-	ctrlSmp::AdjustEndOfSample(pSndFile->Samples[nSmp], pSndFile);
+    if(pNewSample != nullptr)
+    {
+    	ctrlSmp::ReplaceSample(pSndFile->Samples[nSmp], pNewSample, pUndo->OldSample.length, pSndFile);
+    }
+    ctrlSmp::AdjustEndOfSample(pSndFile->Samples[nSmp], pSndFile);
 
-	RemoveLastUndoStep(nSmp);
+    RemoveLastUndoStep(nSmp);
 
-	if (CanUndo(nSmp) == false) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
-	m_pModDoc->SetModified();
+    if (CanUndo(nSmp) == false) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
+    m_pModDoc->SetModified();
 
-	return true;
+    return true;
 }
 
 
@@ -408,8 +408,8 @@ bool CSampleUndo::Undo(const SAMPLEINDEX nSmp)
 bool CSampleUndo::CanUndo(const SAMPLEINDEX nSmp)
 //-----------------------------------------------
 {
-	if(!SampleBufferExists(nSmp, false) || UndoBuffer[nSmp - 1].size() == 0) return false;
-	return true;
+    if(!SampleBufferExists(nSmp, false) || UndoBuffer[nSmp - 1].size() == 0) return false;
+    return true;
 }
 
 
@@ -417,9 +417,9 @@ bool CSampleUndo::CanUndo(const SAMPLEINDEX nSmp)
 void CSampleUndo::DeleteUndoStep(const SAMPLEINDEX nSmp, const UINT nStep)
 //------------------------------------------------------------------------
 {
-	if(!SampleBufferExists(nSmp, false) || nStep >= UndoBuffer[nSmp - 1].size()) return;
-	CSoundFile::FreeSample(UndoBuffer[nSmp - 1][nStep].SamplePtr);
-	UndoBuffer[nSmp - 1].erase(UndoBuffer[nSmp - 1].begin() + nStep);
+    if(!SampleBufferExists(nSmp, false) || nStep >= UndoBuffer[nSmp - 1].size()) return;
+    CSoundFile::FreeSample(UndoBuffer[nSmp - 1][nStep].SamplePtr);
+    UndoBuffer[nSmp - 1].erase(UndoBuffer[nSmp - 1].begin() + nStep);
 }
 
 
@@ -427,8 +427,8 @@ void CSampleUndo::DeleteUndoStep(const SAMPLEINDEX nSmp, const UINT nStep)
 void CSampleUndo::RemoveLastUndoStep(const SAMPLEINDEX nSmp)
 //----------------------------------------------------------
 {
-	if(CanUndo(nSmp) == false) return;
-	DeleteUndoStep(nSmp, UndoBuffer[nSmp - 1].size() - 1);
+    if(CanUndo(nSmp) == false) return;
+    DeleteUndoStep(nSmp, UndoBuffer[nSmp - 1].size() - 1);
 }
 
 
@@ -437,19 +437,19 @@ void CSampleUndo::RemoveLastUndoStep(const SAMPLEINDEX nSmp)
 void CSampleUndo::RestrictBufferSize()
 //------------------------------------
 {
-	UINT nCapacity = GetUndoBufferCapacity();
-	while(nCapacity > CMainFrame::m_nSampleUndoMaxBuffer)
-	{
-		for(SAMPLEINDEX nSmp = 1; nSmp <= UndoBuffer.size(); nSmp++)
-		{
-			if(UndoBuffer[nSmp - 1][0].SamplePtr != nullptr)
-			{
-				nCapacity -= (UndoBuffer[nSmp - 1][0].nChangeEnd - UndoBuffer[nSmp - 1][0].nChangeStart) * UndoBuffer[nSmp - 1][0].OldSample.GetBytesPerSample();
-				DeleteUndoStep(nSmp, 0);
-			}
-			if(nCapacity <= CMainFrame::m_nSampleUndoMaxBuffer) return;
-		}
-	}
+    UINT nCapacity = GetUndoBufferCapacity();
+    while(nCapacity > CMainFrame::m_nSampleUndoMaxBuffer)
+    {
+    	for(SAMPLEINDEX nSmp = 1; nSmp <= UndoBuffer.size(); nSmp++)
+    	{
+    		if(UndoBuffer[nSmp - 1][0].SamplePtr != nullptr)
+    		{
+    			nCapacity -= (UndoBuffer[nSmp - 1][0].nChangeEnd - UndoBuffer[nSmp - 1][0].nChangeStart) * UndoBuffer[nSmp - 1][0].OldSample.GetBytesPerSample();
+    			DeleteUndoStep(nSmp, 0);
+    		}
+    		if(nCapacity <= CMainFrame::m_nSampleUndoMaxBuffer) return;
+    	}
+    }
 }
 
 
@@ -457,19 +457,19 @@ void CSampleUndo::RestrictBufferSize()
 UINT CSampleUndo::GetUndoBufferCapacity()
 //---------------------------------------
 {
-	UINT nSum = 0;
-	for(size_t nSmp = 0; nSmp < UndoBuffer.size(); nSmp++)
-	{
-		for(size_t nStep = 0; nStep < UndoBuffer[nSmp].size(); nStep++)
-		{
-			if(UndoBuffer[nSmp][nStep].SamplePtr != nullptr)
-			{
-				nSum += (UndoBuffer[nSmp][nStep].nChangeEnd - UndoBuffer[nSmp][nStep].nChangeStart)
-					* UndoBuffer[nSmp][nStep].OldSample.GetBytesPerSample();
-			}
-		}
-	}
-	return nSum;
+    UINT nSum = 0;
+    for(size_t nSmp = 0; nSmp < UndoBuffer.size(); nSmp++)
+    {
+    	for(size_t nStep = 0; nStep < UndoBuffer[nSmp].size(); nStep++)
+    	{
+    		if(UndoBuffer[nSmp][nStep].SamplePtr != nullptr)
+    		{
+    			nSum += (UndoBuffer[nSmp][nStep].nChangeEnd - UndoBuffer[nSmp][nStep].nChangeStart)
+    				* UndoBuffer[nSmp][nStep].OldSample.GetBytesPerSample();
+    		}
+    	}
+    }
+    return nSum;
 }
 
 
@@ -477,15 +477,15 @@ UINT CSampleUndo::GetUndoBufferCapacity()
 bool CSampleUndo::SampleBufferExists(const SAMPLEINDEX nSmp, bool bForceCreation)
 //-------------------------------------------------------------------------------
 {
-	if(nSmp == 0 || nSmp > MAX_SAMPLES) return false;
+    if(nSmp == 0 || nSmp > MAX_SAMPLES) return false;
 
-	// Sample slot exists already
-	if(nSmp <= UndoBuffer.size()) return true;
+    // Sample slot exists already
+    if(nSmp <= UndoBuffer.size()) return true;
 
-	// Sample slot doesn't exist, don't create it.
-	if(bForceCreation == false) return false;
+    // Sample slot doesn't exist, don't create it.
+    if(bForceCreation == false) return false;
 
-	// Sample slot doesn't exist, so create it.
-	UndoBuffer.resize(nSmp);
-	return true;
+    // Sample slot doesn't exist, so create it.
+    UndoBuffer.resize(nSmp);
+    return true;
 }

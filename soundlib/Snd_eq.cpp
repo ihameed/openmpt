@@ -19,9 +19,9 @@
 #include "../mptrack/mixgraph/constants.h"
 #include "../mptrack/mixer/mixutil.h"
 
-#define EQ_BANDWIDTH	2.0
-#define EQ_ZERO			0.000001
-#define REAL			float
+#define EQ_BANDWIDTH    2.0
+#define EQ_ZERO    		0.000001
+#define REAL    		float
 
 extern REAL MixFloatBuffer[];
 
@@ -80,59 +80,59 @@ static EQBANDSTRUCT gEQ[MAX_EQ_BANDS*2] =
 
 #pragma warning(disable:4100)
 
-#define PBS_A0	DWORD PTR [eax]
-#define PBS_A1	DWORD PTR [eax+4]
-#define PBS_A2	DWORD PTR [eax+8]
-#define PBS_B1	DWORD PTR [eax+12]
-#define PBS_B2	DWORD PTR [eax+16]
-#define PBS_X1	DWORD PTR [eax+20]
-#define PBS_X2	DWORD PTR [eax+24]
-#define PBS_Y1	DWORD PTR [eax+28]
-#define PBS_Y2	DWORD PTR [eax+32]
+#define PBS_A0    DWORD PTR [eax]
+#define PBS_A1    DWORD PTR [eax+4]
+#define PBS_A2    DWORD PTR [eax+8]
+#define PBS_B1    DWORD PTR [eax+12]
+#define PBS_B2    DWORD PTR [eax+16]
+#define PBS_X1    DWORD PTR [eax+20]
+#define PBS_X2    DWORD PTR [eax+24]
+#define PBS_Y1    DWORD PTR [eax+28]
+#define PBS_Y2    DWORD PTR [eax+32]
 
 void __cdecl EQFilter(EQBANDSTRUCT *pbs, REAL *pbuffer, UINT nCount)
 //------------------------------------------------------------------
 {
     _asm {
-    mov eax, pbs		// eax = pbs
-    mov edx, nCount		// edx = nCount
-    mov ecx, pbuffer	// ecx = pbuffer
-    fld		PBS_Y2		// ST(3)=y2
-    fld		PBS_Y1		// ST(2)=y1
-    fld		PBS_X2		// ST(1)=x2
-    fld		PBS_X1		// ST(0)=x1
+    mov eax, pbs    	// eax = pbs
+    mov edx, nCount    	// edx = nCount
+    mov ecx, pbuffer    // ecx = pbuffer
+    fld    	PBS_Y2		// ST(3)=y2
+    fld    	PBS_Y1		// ST(2)=y1
+    fld    	PBS_X2		// ST(1)=x2
+    fld    	PBS_X1		// ST(0)=x1
 EQ_Loop:
-    fld		DWORD PTR [ecx]		// ST(0):x ST(1):x1 ST(2):x2 ST(3):y1 ST(4):y2
-    fld		PBS_A0				// ST(0):a0 ST(1):x ST(2):x1 ST(3):x2 ST(4):y1 ST(5):y2
-    fmul	ST(0), ST(1)		// ST(0):a0*x
-    fld		PBS_A1				// ST(0):a1 ST(1):a0*x ST(2):x ST(3):x1 ST(4):x2 ST(5):y1 ST(6):y2
-    fmul	ST(0), ST(3)		// ST(0):a1*x1
-    add		ecx, 4
+    fld    	DWORD PTR [ecx]		// ST(0):x ST(1):x1 ST(2):x2 ST(3):y1 ST(4):y2
+    fld    	PBS_A0				// ST(0):a0 ST(1):x ST(2):x1 ST(3):x2 ST(4):y1 ST(5):y2
+    fmul    ST(0), ST(1)		// ST(0):a0*x
+    fld    	PBS_A1				// ST(0):a1 ST(1):a0*x ST(2):x ST(3):x1 ST(4):x2 ST(5):y1 ST(6):y2
+    fmul    ST(0), ST(3)		// ST(0):a1*x1
+    add    	ecx, 4
 
-    faddp	ST(1), ST(0)
-    fld		PBS_A2
-    fmul	ST(0), ST(4)
-    faddp	ST(1), ST(0)
-    fld		PBS_B1
-    fmul	ST(0), ST(5)
-    faddp	ST(1), ST(0)
-    fld		PBS_B2
-    fmul	ST(0), ST(6)
+    faddp    ST(1), ST(0)
+    fld    	PBS_A2
+    fmul    ST(0), ST(4)
+    faddp    ST(1), ST(0)
+    fld    	PBS_B1
+    fmul    ST(0), ST(5)
+    faddp    ST(1), ST(0)
+    fld    	PBS_B2
+    fmul    ST(0), ST(6)
     sub     edx, 1
-    faddp	ST(1), ST(0)
-    fst		DWORD PTR [ecx-4]		// *pbuffer = a0*x+a1*x1+a2*x2+b1*y1+b2*y2
+    faddp    ST(1), ST(0)
+    fst    	DWORD PTR [ecx-4]		// *pbuffer = a0*x+a1*x1+a2*x2+b1*y1+b2*y2
     // Here, ST(0)=y ST(1)=x ST(2)=x1 ST(3)=x2 ST(4)=y1 ST(5)=y2
-    fxch	ST(4)	// y1=y
-    fstp	ST(5)	// y2=y1
+    fxch    ST(4)	// y1=y
+    fstp    ST(5)	// y2=y1
     // Here, ST(0)=x ST(1)=x1 ST(2)=x2 ST(3)=y1 ST(4)=y2
-    fxch	ST(1)	// x1=x
-    fstp	ST(2)	// x2=x1
-    jnz		EQ_Loop
+    fxch    ST(1)	// x1=x
+    fstp    ST(2)	// x2=x1
+    jnz    	EQ_Loop
     // Store x1,y1,x2,y2 and pop FPU stack
-    fstp	PBS_X1
-    fstp	PBS_X2
-    fstp	PBS_Y1
-    fstp	PBS_Y2
+    fstp    PBS_X1
+    fstp    PBS_X2
+    fstp    PBS_Y1
+    fstp    PBS_Y2
     }
 }
 
@@ -156,8 +156,8 @@ void AMD_StereoEQ(EQBANDSTRUCT *pbl, EQBANDSTRUCT *pbr, REAL *pbuffer, UINT nCou
     movd mm1, [edx+EQBANDSTRUCT.a1]
     punpckldq mm7, mm0
     punpckldq mm6, mm1
-    movq [edi], mm7						// [edi] = a0
-    movq [edi+8], mm6					// [edi+8] = a1
+    movq [edi], mm7    					// [edi] = a0
+    movq [edi+8], mm6    				// [edi+8] = a1
     movd mm5, [eax+EQBANDSTRUCT.a2]
     movd mm0, [edx+EQBANDSTRUCT.a2]
     movd mm4, [eax+EQBANDSTRUCT.b1]
@@ -167,39 +167,39 @@ void AMD_StereoEQ(EQBANDSTRUCT *pbl, EQBANDSTRUCT *pbr, REAL *pbuffer, UINT nCou
     punpckldq mm5, mm0
     punpckldq mm4, mm1
     punpckldq mm3, mm2
-    movq [edi+16], mm5					// [edi+16] = a2
-    movq [edi+24], mm4					// [edi+24] = b1
-    movq [edi+32], mm3					// [edi+32] = b2
+    movq [edi+16], mm5    				// [edi+16] = a2
+    movq [edi+24], mm4    				// [edi+24] = b1
+    movq [edi+32], mm3    				// [edi+32] = b2
     movd mm4, [eax+EQBANDSTRUCT.x1]
     movd mm0, [edx+EQBANDSTRUCT.x1]
     movd mm5, [eax+EQBANDSTRUCT.x2]
     movd mm1, [edx+EQBANDSTRUCT.x2]
-    punpckldq mm4, mm0					// mm4 = x1
-    punpckldq mm5, mm1					// mm5 = x2
+    punpckldq mm4, mm0    				// mm4 = x1
+    punpckldq mm5, mm1    				// mm5 = x2
     movd mm6, [eax+EQBANDSTRUCT.y1]
     movd mm2, [edx+EQBANDSTRUCT.y1]
     movd mm7, [eax+EQBANDSTRUCT.y2]
     movd mm3, [edx+EQBANDSTRUCT.y2]
-    punpckldq mm6, mm2					// mm6 = y1
-    punpckldq mm7, mm3					// mm7 = y2
+    punpckldq mm6, mm2    				// mm6 = y1
+    punpckldq mm7, mm3    				// mm7 = y2
 mainloop:
     movq mm0, [ebx]
     movq mm3, [edi+8]
     add ebx, 8
     movq mm1, [edi+16]
-    pfmul mm3, mm4						// x1 * a1
+    pfmul mm3, mm4    					// x1 * a1
     movq mm2, [edi+32]
-    pfmul mm1, mm5						// x2 * a2
-    movq mm5, mm4						// x2 = x1
-    pfmul mm2, mm7						// y2 * b2
-    movq mm7, mm6						// y2 = y1
-    pfmul mm6, [edi+24]					// y1 * b1
-    movq mm4, mm0						// x1 = x
-    pfmul mm0, [edi]					// x * a0
-    pfadd mm6, mm1						// x2*a2 + y1*b1
-    pfadd mm6, mm2						// x2*a2 + y1*b1 + y2*b2
-    pfadd mm6, mm3						// x1*a1 + x2*a2 + y1*b1 + y2*b2
-    pfadd mm6, mm0						// x*a0 + x1*a1 + x2*a2 + y1*b1 + y2*b2
+    pfmul mm1, mm5    					// x2 * a2
+    movq mm5, mm4    					// x2 = x1
+    pfmul mm2, mm7    					// y2 * b2
+    movq mm7, mm6    					// y2 = y1
+    pfmul mm6, [edi+24]    				// y1 * b1
+    movq mm4, mm0    					// x1 = x
+    pfmul mm0, [edi]    				// x * a0
+    pfadd mm6, mm1    					// x2*a2 + y1*b1
+    pfadd mm6, mm2    					// x2*a2 + y1*b1 + y2*b2
+    pfadd mm6, mm3    					// x1*a1 + x2*a2 + y1*b1 + y2*b2
+    pfadd mm6, mm0    					// x*a0 + x1*a1 + x2*a2 + y1*b1 + y2*b2
     dec ecx
     movq [ebx-8], mm6
     jnz mainloop
@@ -245,53 +245,53 @@ doeq:
     movss xmm7, [eax+EQBANDSTRUCT.a2]
     movss xmm4, [eax+EQBANDSTRUCT.x1]
     movss xmm5, [eax+EQBANDSTRUCT.x2]
-    movlhps xmm6, xmm7		// xmm6 = [  0 | a2 |  0 | a1 ]
-    movlhps xmm4, xmm5		// xmm4 = [  0 | x2 |  0 | x1 ]
+    movlhps xmm6, xmm7    	// xmm6 = [  0 | a2 |  0 | a1 ]
+    movlhps xmm4, xmm5    	// xmm4 = [  0 | x2 |  0 | x1 ]
     movss xmm2, [edx+EQBANDSTRUCT.a1]
     movss xmm3, [edx+EQBANDSTRUCT.a2]
     movss xmm0, [edx+EQBANDSTRUCT.x1]
     movss xmm1, [edx+EQBANDSTRUCT.x2]
-    movlhps xmm2, xmm3		// xmm2 = [ 0 | a'2 | 0 | a'1 ]
-    movlhps xmm0, xmm1		// xmm0 = [ 0 | x'2 | 0 | x'1 ]
-    shufps xmm6, xmm2, 0x88	// xmm6 = [ a'2 | a'1 | a2 | a1 ]
+    movlhps xmm2, xmm3    	// xmm2 = [ 0 | a'2 | 0 | a'1 ]
+    movlhps xmm0, xmm1    	// xmm0 = [ 0 | x'2 | 0 | x'1 ]
+    shufps xmm6, xmm2, 0x88    // xmm6 = [ a'2 | a'1 | a2 | a1 ]
     shufps xmm4, xmm0, 0x88 // xmm4 = [ x'2 | x'1 | x2 | x1 ]
-    shufps xmm6, xmm6, 0xD8	// xmm6 = [ a'2 | a2 | a'1 | a1 ]
-    shufps xmm4, xmm4, 0xD8	// xmm4 = [ x'2 | x2 | x'1 | x1 ]
+    shufps xmm6, xmm6, 0xD8    // xmm6 = [ a'2 | a2 | a'1 | a1 ]
+    shufps xmm4, xmm4, 0xD8    // xmm4 = [ x'2 | x2 | x'1 | x1 ]
     movss xmm7, [eax+EQBANDSTRUCT.b1]
     movss xmm0, [eax+EQBANDSTRUCT.b2]
     movss xmm2, [edx+EQBANDSTRUCT.b1]
     movss xmm1, [edx+EQBANDSTRUCT.b2]
-    movlhps xmm7, xmm0		// xmm7 = [ 0 |  b2 | 0 |  b1 ]
-    movlhps xmm2, xmm1		// xmm2 = [  0 | b'2 |  0 | b'1 ]
-    shufps xmm7, xmm2, 0x88	// xmm7 = [ b'2 | b'1 | b2 | b1 ]
+    movlhps xmm7, xmm0    	// xmm7 = [ 0 |  b2 | 0 |  b1 ]
+    movlhps xmm2, xmm1    	// xmm2 = [  0 | b'2 |  0 | b'1 ]
+    shufps xmm7, xmm2, 0x88    // xmm7 = [ b'2 | b'1 | b2 | b1 ]
     shufps xmm7, xmm7, 0xD8 // xmm7 = [ b'2 | b2 | b'1 | b1 ]
     movss xmm5, [eax+EQBANDSTRUCT.y1]
     movss xmm1, [eax+EQBANDSTRUCT.y2]
     movss xmm3, [edx+EQBANDSTRUCT.y1]
     movss xmm0, [edx+EQBANDSTRUCT.y2]
-    movlhps xmm5, xmm1		// xmm5 = [  0 |  y2 |  0 |  y1 ]
-    movlhps xmm3, xmm0		// xmm3 = [  0 | y'2 |  0 | y'1 ]
+    movlhps xmm5, xmm1    	// xmm5 = [  0 |  y2 |  0 |  y1 ]
+    movlhps xmm3, xmm0    	// xmm3 = [  0 | y'2 |  0 | y'1 ]
     shufps xmm5, xmm3, 0x88 // xmm5 = [ y'2 | y'1 | y2 | y1 ]
     shufps xmm5, xmm5, 0xD8 // xmm5 = [ y'2 |  y2 | y'1 |  y1 ]
     movss xmm3, [eax+EQBANDSTRUCT.a0]
     movss xmm2, [edx+EQBANDSTRUCT.a0]
     shufps xmm3, xmm2, 0x88
-    shufps xmm3, xmm3, 0xD8	// xmm3 = [  0 |  0 | a'0 | a0 ]
+    shufps xmm3, xmm3, 0xD8    // xmm3 = [  0 |  0 | a'0 | a0 ]
 mainloop:
     movlps xmm0, qword ptr [ebx]
     add ebx, 8
-    movaps xmm1, xmm5		// xmm1 = [ y2r | y2l | y1r | y1l ]
-    mulps xmm1, xmm7		// xmm1 = [b2r*y2r|b2l*y2l|b1r*y1r|b1l*y1l]
-    movaps xmm2, xmm4		// xmm2 = [ x2r | x2l | x1r | x1l ]
-    mulps xmm2, xmm6		// xmm6 = [a2r*x2r|a2l*x2l|a1r*x1r|a1l*x1l]
+    movaps xmm1, xmm5    	// xmm1 = [ y2r | y2l | y1r | y1l ]
+    mulps xmm1, xmm7    	// xmm1 = [b2r*y2r|b2l*y2l|b1r*y1r|b1l*y1l]
+    movaps xmm2, xmm4    	// xmm2 = [ x2r | x2l | x1r | x1l ]
+    mulps xmm2, xmm6    	// xmm6 = [a2r*x2r|a2l*x2l|a1r*x1r|a1l*x1l]
     shufps xmm4, xmm0, 0x44 // xmm4 = [  xr |  xl | x1r | x1l ]
-    mulps xmm0, xmm3		// xmm0 = [   0 |   0 |a0r*xr|a0l*xl]
+    mulps xmm0, xmm3    	// xmm0 = [   0 |   0 |a0r*xr|a0l*xl]
     shufps xmm4, xmm4, 0x4E // xmm4 = [ x1r | x1l |  xr |  xl ]
-    addps xmm1, xmm2		// xmm1 = [b2r*y2r+a2r*x2r|b2l*y2l+a2l*x2l|b1r*y1r+a1r*x1r|b1l*y1l+a1l*x1l]
-    addps xmm1, xmm0		// xmm1 = [b2r*y2r+a2r*x2r|b2l*y2l+a2l*x2l|b1r*y1r+a1r*x1r+a0r*xr|b1l*y1l+a1l*x1l+a0l*xl]
+    addps xmm1, xmm2    	// xmm1 = [b2r*y2r+a2r*x2r|b2l*y2l+a2l*x2l|b1r*y1r+a1r*x1r|b1l*y1l+a1l*x1l]
+    addps xmm1, xmm0    	// xmm1 = [b2r*y2r+a2r*x2r|b2l*y2l+a2l*x2l|b1r*y1r+a1r*x1r+a0r*xr|b1l*y1l+a1l*x1l+a0l*xl]
     sub ecx, 1
     movhlps xmm0, xmm1
-    addps xmm0, xmm1		// xmm0 = [  ? |  ? | yr(n) | yl(n) ]
+    addps xmm0, xmm1    	// xmm0 = [  ? |  ? | yr(n) | yl(n) ]
     movlps [ebx-8], xmm0
     shufps xmm0, xmm5, 0x44
     movaps xmm5, xmm0
@@ -400,7 +400,7 @@ void CSoundFile::EQStereo(int *pbuffer, UINT nCount)
     } else
 #endif // ENABLE_AMD
 
-    {	
+    {    
         modplug::mixer::stereo_mix_to_float(pbuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, nCount, m_pConfig->getIntToFloat());
         
         for (UINT bl=0; bl<MAX_EQ_BANDS; bl++)
@@ -434,7 +434,7 @@ void CSoundFile::InitializeEQ(BOOL bReset)
         // k = tan(PI*f);
         k = f * 3.141592654f;
         k = k + k*f;
-//		if (k > (REAL)0.707) k = (REAL)0.707;
+//    	if (k > (REAL)0.707) k = (REAL)0.707;
         k2 = k*k;
         v0 = gEQ[band].Gain;
         v1 = 1;

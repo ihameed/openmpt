@@ -1,5 +1,5 @@
 //********************************************************************************************
-//*	HYPEREDIT.H - Control interface and trivial implementation                               *
+//*    HYPEREDIT.H - Control interface and trivial implementation                               *
 //*                                                                                          *
 //* This module contains interface code and some typedefs and application defines            *
 //*                                                                                          *
@@ -9,12 +9,12 @@
 //* Website: www.pcspectra.com                                                               *
 //*                                                                                          *
 //* Notes:                                                                                   *
-//* ======																					 *
+//* ======    																				 *
 //* Search module for 'PROGRAMMERS NOTE'                                                     *
 //*                                                                                          *
-//* History:						                                                         *
-//*	========																				 *
-//* Mon.dd.yy - None so far     														     *
+//* History:    					                                                         *
+//*    ========																				 *
+//* Mon.dd.yy - None so far         													     *
 //********************************************************************************************
 
 #ifndef AFX_HYPEREDIT_H__28F52ED8_8811_436F_821B_EB02D02A1F88__INCLUDED_
@@ -44,8 +44,8 @@ using namespace std;
 // 
 
 struct _TOKEN_OFFSET{
-	WORD iStart;   //
-	WORD iLength;
+    WORD iStart;   //
+    WORD iLength;
 }; typedef vector<_TOKEN_OFFSET> OFFSETS;
 
 // CHyperEdit control interface
@@ -53,65 +53,65 @@ struct _TOKEN_OFFSET{
 class CHyperEdit : public CEdit
 {
 public:
-	CHyperEdit();
-	virtual ~CHyperEdit();
+    CHyperEdit();
+    virtual ~CHyperEdit();
 
-	COLORREF GetNormalColor() const { return m_clrNormal; }
-	COLORREF GetHoverColor() const { return m_clrHover; }
+    COLORREF GetNormalColor() const { return m_clrNormal; }
+    COLORREF GetHoverColor() const { return m_clrHover; }
 
-	void SetLinkColors(COLORREF clrNormal, COLORREF clrHover){ m_clrNormal=clrNormal; m_clrHover=clrHover; }
+    void SetLinkColors(COLORREF clrNormal, COLORREF clrHover){ m_clrNormal=clrNormal; m_clrHover=clrHover; }
 
-	// Used with a TIMER to display tooltips (Maybe the webpage TITLE???)
-	CString IsHyperlink(CPoint& pt) const;
+    // Used with a TIMER to display tooltips (Maybe the webpage TITLE???)
+    CString IsHyperlink(CPoint& pt) const;
 protected:
-	virtual BOOL IsWordHyper(const CString& csToken) const;
+    virtual BOOL IsWordHyper(const CString& csToken) const;
 
-	inline BOOL IsWhiteSpace(const CString& csBuff, int iIndex) const;
-	
-	//{{AFX_VIRTUAL(CHyperEdit)
-	virtual void PreSubclassWindow();
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	//}}AFX_VIRTUAL
+    inline BOOL IsWhiteSpace(const CString& csBuff, int iIndex) const;
+    
+    //{{AFX_VIRTUAL(CHyperEdit)
+    virtual void PreSubclassWindow();
+    virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+    //}}AFX_VIRTUAL
 
-	afx_msg void OnSelChange(){ DrawHyperlinks(); }
+    afx_msg void OnSelChange(){ DrawHyperlinks(); }
 
-	//{{AFX_MSG(CHyperEdit)
-	afx_msg void OnChange(){ DrawHyperlinks(); }
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar){ CEdit::OnHScroll(nSBCode, nPos, pScrollBar); DrawHyperlinks(); }
-	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar){ CEdit::OnVScroll(nSBCode, nPos, pScrollBar); DrawHyperlinks(); }
-	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnDestroy(){ CEdit::OnDestroy(); KillTimer(m_nTimer); }
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	//}}AFX_MSG
+    //{{AFX_MSG(CHyperEdit)
+    afx_msg void OnChange(){ DrawHyperlinks(); }
+    afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar){ CEdit::OnHScroll(nSBCode, nPos, pScrollBar); DrawHyperlinks(); }
+    afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar){ CEdit::OnVScroll(nSBCode, nPos, pScrollBar); DrawHyperlinks(); }
+    afx_msg void OnTimer(UINT nIDEvent);
+    afx_msg void OnDestroy(){ CEdit::OnDestroy(); KillTimer(m_nTimer); }
+    afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+    afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+    //}}AFX_MSG
 private:
-	// Located in HyperEdit2.cpp
-	void DrawHyperlinks();
-	void BuildOffsetList(int iCharStart, int iCharFinish);
+    // Located in HyperEdit2.cpp
+    void DrawHyperlinks();
+    void BuildOffsetList(int iCharStart, int iCharFinish);
 
-	// Functions borrowed from Chris Maunder's article
-	void SetDefaultCursor();
+    // Functions borrowed from Chris Maunder's article
+    void SetDefaultCursor();
     HINSTANCE GotoURL(LPCTSTR url, int showcmd);
     void ReportError(int nError);
     LONG GetRegKey(HKEY key, LPCTSTR subkey, LPTSTR retdata);
 
 private:
-	UINT m_nTimer;		 
-	UINT m_nLineHeight;
-	bool m_bHoveringHyperText;
+    UINT m_nTimer;		 
+    UINT m_nLineHeight;
+    bool m_bHoveringHyperText;
 
-	CFont m_oFont; 		 
+    CFont m_oFont; 		 
 
-	CString m_csLocation; // URL or file to be opened when mouse is released
+    CString m_csLocation; // URL or file to be opened when mouse is released
 
-	HCURSOR m_hHandCursor; 
+    HCURSOR m_hHandCursor; 
 
-	OFFSETS m_linkOffsets; // Character offsets for each hyperlink located
+    OFFSETS m_linkOffsets; // Character offsets for each hyperlink located
 
-	COLORREF m_clrNormal, m_clrHover;
+    COLORREF m_clrNormal, m_clrHover;
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 //{{AFX_INSERT_LOCATION}}
 #endif // !defined(AFX_HYPEREDIT_H__28F52ED8_8811_436F_821B_EB02D02A1F88__INCLUDED_)

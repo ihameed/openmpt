@@ -7,91 +7,91 @@
 //
 
 // Length-1 (in samples) of the reflections delay buffer: 32K, 371ms@22kHz
-#define SNDMIX_REFLECTIONS_DELAY_MASK	0x1fff
-#define SNDMIX_PREDIFFUSION_DELAY_MASK	0x7f	// 128 samples
-#define SNDMIX_REVERB_DELAY_MASK		0xfff	// 4K samples (92ms @ 44kHz)
+#define SNDMIX_REFLECTIONS_DELAY_MASK    0x1fff
+#define SNDMIX_PREDIFFUSION_DELAY_MASK    0x7f	// 128 samples
+#define SNDMIX_REVERB_DELAY_MASK    	0xfff	// 4K samples (92ms @ 44kHz)
 
 typedef struct _SWRVBREFLECTION
 {
-	ULONG Delay, DelayDest;
-	SHORT Gains[4];	// g_ll, g_rl, g_lr, g_rr
+    ULONG Delay, DelayDest;
+    SHORT Gains[4];	// g_ll, g_rl, g_lr, g_rr
 } SWRVBREFLECTION, *PSWRVBREFLECTION;
 
 typedef struct _SWRVBREFDELAY
 {
-	ULONG nDelayPos, nPreDifPos, nRefOutPos;
-	LONG lMasterGain;			// reflections linear master gain
-	SHORT nCoeffs[2];			// room low-pass coefficients
-	SHORT History[2];			// room low-pass history
-	SHORT nPreDifCoeffs[2];		// prediffusion coefficients
-	SHORT ReflectionsGain[2];	// master reflections gain
-	SWRVBREFLECTION Reflections[8];	// Up to 8 SW Reflections
-	short int RefDelayBuffer[(SNDMIX_REFLECTIONS_DELAY_MASK+1)*2]; // reflections delay buffer
-	short int PreDifBuffer[(SNDMIX_PREDIFFUSION_DELAY_MASK+1)*2]; // pre-diffusion
-	short int RefOut[(SNDMIX_REVERB_DELAY_MASK+1)*2]; // stereo output of reflections
+    ULONG nDelayPos, nPreDifPos, nRefOutPos;
+    LONG lMasterGain;			// reflections linear master gain
+    SHORT nCoeffs[2];			// room low-pass coefficients
+    SHORT History[2];			// room low-pass history
+    SHORT nPreDifCoeffs[2];		// prediffusion coefficients
+    SHORT ReflectionsGain[2];	// master reflections gain
+    SWRVBREFLECTION Reflections[8];	// Up to 8 SW Reflections
+    short int RefDelayBuffer[(SNDMIX_REFLECTIONS_DELAY_MASK+1)*2]; // reflections delay buffer
+    short int PreDifBuffer[(SNDMIX_PREDIFFUSION_DELAY_MASK+1)*2]; // pre-diffusion
+    short int RefOut[(SNDMIX_REVERB_DELAY_MASK+1)*2]; // stereo output of reflections
 } SWRVBREFDELAY, *PSWRVBREFDELAY;
 
 
 // Late reverberation
 // Tank diffusers lengths
-#define RVBDIF1L_LEN		(149*2)	// 6.8ms
-#define RVBDIF1R_LEN		(223*2)	// 10.1ms
-#define RVBDIF2L_LEN		(421*2)	// 19.1ms
-#define RVBDIF2R_LEN		(647*2)	// 29.3ms
+#define RVBDIF1L_LEN    	(149*2)	// 6.8ms
+#define RVBDIF1R_LEN    	(223*2)	// 10.1ms
+#define RVBDIF2L_LEN    	(421*2)	// 19.1ms
+#define RVBDIF2R_LEN    	(647*2)	// 29.3ms
 // Tank delay lines lengths
-#define RVBDLY1L_LEN		(683*2)	// 30.9ms
-#define RVBDLY1R_LEN	    (811*2) // 36.7ms
-#define RVBDLY2L_LEN		(773*2)	// 35.1ms
-#define RVBDLY2R_LEN	    (1013*2) // 45.9ms
+#define RVBDLY1L_LEN    	(683*2)	// 30.9ms
+#define RVBDLY1R_LEN        (811*2) // 36.7ms
+#define RVBDLY2L_LEN    	(773*2)	// 35.1ms
+#define RVBDLY2R_LEN        (1013*2) // 45.9ms
 // Tank delay lines mask
-#define RVBDLY_MASK			2047
+#define RVBDLY_MASK    		2047
 
 // Min/Max reflections delay
-#define RVBMINREFDELAY		96		// 96 samples
-#define RVBMAXREFDELAY		7500	// 7500 samples
+#define RVBMINREFDELAY    	96		// 96 samples
+#define RVBMAXREFDELAY    	7500	// 7500 samples
 // Min/Max reverb delay
-#define RVBMINRVBDELAY		128		// 256 samples (11.6ms @ 22kHz)
-#define RVBMAXRVBDELAY		3800	// 1900 samples (86ms @ 24kHz)
+#define RVBMINRVBDELAY    	128		// 256 samples (11.6ms @ 22kHz)
+#define RVBMAXRVBDELAY    	3800	// 1900 samples (86ms @ 24kHz)
 
 typedef struct _SWLATEREVERB
 {
-	ULONG nReverbDelay;			// Reverb delay (in samples)
-	ULONG nDelayPos;			// Delay line position
-	SHORT nDifCoeffs[4];		// Reverb diffusion
-	SHORT nDecayDC[4];			// Reverb DC decay
-	SHORT nDecayLP[4];			// Reverb HF decay
-	SHORT LPHistory[4];			// Low-pass history
-	SHORT Dif2InGains[4];		// 2nd diffuser input gains
-	SHORT RvbOutGains[4];		// 4x2 Reverb output gains
-	LONG lMasterGain;			// late reverb master gain
-	LONG lDummyAlign;
-	// Tank Delay lines
-	short int Diffusion1[(RVBDLY_MASK+1)*2];	// {dif1_l, dif1_r}
-	short int Diffusion2[(RVBDLY_MASK+1)*2];	// {dif2_l, dif2_r}
-	short int Delay1[(RVBDLY_MASK+1)*2];		// {dly1_l, dly1_r}
-	short int Delay2[(RVBDLY_MASK+1)*2];		// {dly2_l, dly2_r}
+    ULONG nReverbDelay;			// Reverb delay (in samples)
+    ULONG nDelayPos;			// Delay line position
+    SHORT nDifCoeffs[4];		// Reverb diffusion
+    SHORT nDecayDC[4];			// Reverb DC decay
+    SHORT nDecayLP[4];			// Reverb HF decay
+    SHORT LPHistory[4];			// Low-pass history
+    SHORT Dif2InGains[4];		// 2nd diffuser input gains
+    SHORT RvbOutGains[4];		// 4x2 Reverb output gains
+    LONG lMasterGain;			// late reverb master gain
+    LONG lDummyAlign;
+    // Tank Delay lines
+    short int Diffusion1[(RVBDLY_MASK+1)*2];	// {dif1_l, dif1_r}
+    short int Diffusion2[(RVBDLY_MASK+1)*2];	// {dif2_l, dif2_r}
+    short int Delay1[(RVBDLY_MASK+1)*2];		// {dly1_l, dly1_r}
+    short int Delay2[(RVBDLY_MASK+1)*2];		// {dly2_l, dly2_r}
 } SWLATEREVERB, *PSWLATEREVERB;
 
-#define ENVIRONMENT_NUMREFLECTIONS		8
+#define ENVIRONMENT_NUMREFLECTIONS    	8
 
 typedef struct _ENVIRONMENTREFLECTION
 {
-	SHORT GainLL, GainRR, GainLR, GainRL;	// +/- 32K scale
-	ULONG Delay;							// In samples
+    SHORT GainLL, GainRR, GainLR, GainRL;	// +/- 32K scale
+    ULONG Delay;							// In samples
 } ENVIRONMENTREFLECTION, *PENVIRONMENTREFLECTION;
 
 typedef struct _ENVIRONMENTREVERB
 {
-	LONG ReverbLevel;		// Late reverb gain (mB)
-	LONG ReflectionsLevel;	// Master reflections gain (mB)
-	LONG RoomHF;			// Room gain HF (mB)
-	ULONG ReverbDecay;		// Reverb tank decay (0-7fff scale)
-	LONG PreDiffusion;		// Reverb pre-diffusion amount (+/- 32K scale)
-	LONG TankDiffusion;		// Reverb tank diffusion (+/- 32K scale)
-	ULONG ReverbDelay;		// Reverb delay (in samples)
-	FLOAT flReverbDamping;	// HF tank gain [0.0, 1.0]
-	LONG ReverbDecaySamples;// Reverb decay time (in samples)
-	ENVIRONMENTREFLECTION Reflections[ENVIRONMENT_NUMREFLECTIONS];
+    LONG ReverbLevel;		// Late reverb gain (mB)
+    LONG ReflectionsLevel;	// Master reflections gain (mB)
+    LONG RoomHF;			// Room gain HF (mB)
+    ULONG ReverbDecay;		// Reverb tank decay (0-7fff scale)
+    LONG PreDiffusion;		// Reverb pre-diffusion amount (+/- 32K scale)
+    LONG TankDiffusion;		// Reverb tank diffusion (+/- 32K scale)
+    ULONG ReverbDelay;		// Reverb delay (in samples)
+    FLOAT flReverbDamping;	// HF tank gain [0.0, 1.0]
+    LONG ReverbDecaySamples;// Reverb decay time (in samples)
+    ENVIRONMENTREFLECTION Reflections[ENVIRONMENT_NUMREFLECTIONS];
 } ENVIRONMENTREVERB, *PENVIRONMENTREVERB;
 
 

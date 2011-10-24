@@ -15,12 +15,12 @@
 
 
 // Bass Expansion
-#define DEFAULT_XBASS_RANGE		14	// (x+2)*20 Hz (320Hz)
-#define DEFAULT_XBASS_DEPTH		6	// 1+(3>>(x-4)) (+6dB)
+#define DEFAULT_XBASS_RANGE    	14	// (x+2)*20 Hz (320Hz)
+#define DEFAULT_XBASS_DEPTH    	6	// 1+(3>>(x-4)) (+6dB)
 
 // Buffer Sizes
-#define XBASSBUFFERSIZE			64		// 2 ms at 50KHz
-#define SURROUNDBUFFERSIZE		2048	// 50ms @ 48kHz
+#define XBASSBUFFERSIZE    		64		// 2 ms at 50KHz
+#define SURROUNDBUFFERSIZE    	2048	// 50ms @ 48kHz
 
 
 // DSP Effects: PUBLIC members
@@ -108,7 +108,7 @@ __inline float sinMPT(float x)
 }
 
 
-#define PI	3.14159265358979323f
+#define PI    3.14159265358979323f
 inline FLOAT Sgn(FLOAT x) { return (x >= 0) ? 1.0f : -1.0f; }
 VOID ShelfEQ(LONG scale,
              LONG *outA1, LONG *outB0, LONG *outB1,
@@ -125,7 +125,7 @@ VOID ShelfEQ(LONG scale,
     fldpi
     fmulp ST(1), ST(0)
     fild F_s
-    fdivp ST(1), ST(0)			
+    fdivp ST(1), ST(0)    		
     fstp wT
     // gain^2
     fld gainDC
@@ -146,7 +146,7 @@ VOID ShelfEQ(LONG scale,
     if (quad != 0)
     {
         FLOAT lambda = (gainPI2 - gainDC2) / quad;
-    //	alpha  = (FLOAT)(lambda - Sgn(lambda)*sqrtMPT(lambda*lambda - 1.0f));
+    //    alpha  = (FLOAT)(lambda - Sgn(lambda)*sqrtMPT(lambda*lambda - 1.0f));
     alpha  = (FLOAT)(lambda - Sgn(lambda)*sqrt(lambda*lambda - 1.0f));
     }
  
@@ -419,7 +419,7 @@ void CSoundFile::ProcessMonoDSP(int count)
 // DC Removal
 //
 
-#define DCR_AMOUNT		9
+#define DCR_AMOUNT    	9
 
 VOID MPPASMCALL X86_StereoDCRemoval(int *pBuffer, UINT nSamples)
 {
@@ -526,11 +526,11 @@ BOOL CSoundFile::SetXBassParameters(UINT nDepth, UINT nRange)
     if (nDepth > 100) nDepth = 100;
     UINT gain = nDepth / 20;
     if (gain > 4) gain = 4;
-    m_nXBassDepth = 8 - gain;	// filter attenuation 1/256 .. 1/16
+    m_nXBassDepth = 8 - gain;    // filter attenuation 1/256 .. 1/16
     UINT range = nRange / 5;
     if (range > 5) range -= 5; else range = 0;
     if (nRange > 16) nRange = 16;
-    m_nXBassRange = 21 - range;	// filter average on 0.5-1.6ms
+    m_nXBassRange = 21 - range;    // filter average on 0.5-1.6ms
     return TRUE;
 }
 

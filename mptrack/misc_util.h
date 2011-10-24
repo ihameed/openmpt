@@ -6,7 +6,7 @@
 #include <string>
 #include <limits>
 #if _HAS_TR1
-	#include <type_traits>
+    #include <type_traits>
 #endif
 
 //Convert object(typically number) to string
@@ -14,9 +14,9 @@ template<class T>
 inline std::string Stringify(const T& x)
 //--------------------------
 {
-	std::ostringstream o;
-	if(!(o << x)) return "FAILURE";
-	else return o.str();
+    std::ostringstream o;
+    if(!(o << x)) return "FAILURE";
+    else return o.str();
 }
 
 //Convert string to number.
@@ -24,13 +24,13 @@ template<class T>
 inline T ConvertStrTo(LPCSTR psz)
 //-------------------------------
 {
-	#if _HAS_TR1
-		static_assert(std::tr1::is_const<T>::value == false && std::tr1::is_volatile<T>::value == false, "Const and volatile types are not handled correctly.");
-	#endif
-	if(std::numeric_limits<T>::is_integer)
-		return static_cast<T>(atoi(psz));
-	else
-		return static_cast<T>(atof(psz));
+    #if _HAS_TR1
+    	static_assert(std::tr1::is_const<T>::value == false && std::tr1::is_volatile<T>::value == false, "Const and volatile types are not handled correctly.");
+    #endif
+    if(std::numeric_limits<T>::is_integer)
+    	return static_cast<T>(atoi(psz));
+    else
+    	return static_cast<T>(atof(psz));
 }
 
 template<> inline uint32_t ConvertStrTo(LPCSTR psz) {return strtoul(psz, nullptr, 10);}
@@ -43,8 +43,8 @@ template <size_t size>
 inline void SetNullTerminator(char (&buffer)[size])
 //-------------------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	buffer[size-1] = 0;
+    STATIC_ASSERT(size > 0);
+    buffer[size-1] = 0;
 }
 
 
@@ -52,11 +52,11 @@ inline void SetNullTerminator(char (&buffer)[size])
 template <class T>
 inline void MemsetZero(T& a)
 {
-	#if _HAS_TR1
-		static_assert(std::tr1::is_pointer<T>::value == false, "Won't memset pointers.");
-		static_assert(std::tr1::is_pod<T>::value == true, "Won't memset non-pods.");
-	#endif
-	memset(&a, 0, sizeof(T));
+    #if _HAS_TR1
+    	static_assert(std::tr1::is_pointer<T>::value == false, "Won't memset pointers.");
+    	static_assert(std::tr1::is_pod<T>::value == true, "Won't memset non-pods.");
+    #endif
+    memset(&a, 0, sizeof(T));
 }
 
 
@@ -67,9 +67,9 @@ template<class T, class C>
 inline void Limit(T& val, const C lowerLimit, const C upperLimit)
 //---------------------------------------------------------------
 {
-	if(lowerLimit > upperLimit) return;
-	if(val < lowerLimit) val = lowerLimit;
-	else if(val > upperLimit) val = upperLimit;
+    if(lowerLimit > upperLimit) return;
+    if(val < lowerLimit) val = lowerLimit;
+    else if(val > upperLimit) val = upperLimit;
 }
 
 
@@ -78,8 +78,8 @@ template<class T, class C>
 inline void LimitMax(T& val, const C upperLimit)
 //----------------------------------------------
 {
-	if(val > upperLimit)
-		val = upperLimit;
+    if(val > upperLimit)
+    	val = upperLimit;
 }
 
 
@@ -94,22 +94,22 @@ CString GetErrorMessage(DWORD nErrorCode);
 
 namespace utilImpl
 {
-	template <bool bMemcpy>
-	struct ArrayCopyImpl {};
+    template <bool bMemcpy>
+    struct ArrayCopyImpl {};
 
-	template <>
-	struct ArrayCopyImpl<true>
-	{
-		template <class T>
-		static void Do(T* pDst, const T* pSrc, const size_t n) {memcpy(pDst, pSrc, sizeof(T) * n);}
-	};
+    template <>
+    struct ArrayCopyImpl<true>
+    {
+    	template <class T>
+    	static void Do(T* pDst, const T* pSrc, const size_t n) {memcpy(pDst, pSrc, sizeof(T) * n);}
+    };
 
-	template <>
-	struct ArrayCopyImpl<false>
-	{
-		template <class T>
-		static void Do(T* pDst, const T* pSrc, const size_t n) {std::copy(pSrc, pSrc + n, pDst);}
-	};
+    template <>
+    struct ArrayCopyImpl<false>
+    {
+    	template <class T>
+    	static void Do(T* pDst, const T* pSrc, const size_t n) {std::copy(pSrc, pSrc + n, pDst);}
+    };
 } // namespace utilImpl
 
 
@@ -119,7 +119,7 @@ template <class T>
 void ArrayCopy(T* pDst, const T* pSrc, const size_t n)
 //----------------------------------------------------
 {
-	utilImpl::ArrayCopyImpl<std::tr1::has_trivial_assign<T>::value>::Do(pDst, pSrc, n);
+    utilImpl::ArrayCopyImpl<std::tr1::has_trivial_assign<T>::value>::Do(pDst, pSrc, n);
 }
 
 
@@ -128,25 +128,25 @@ template <size_t size>
 void SanitizeFilename(char (&buffer)[size])
 //-----------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	for(size_t i = 0; i < size; i++)
-	{
-		if(	buffer[i] == '\\' ||
-			buffer[i] == '\"' ||
-			buffer[i] == '/'  ||
-			buffer[i] == ':'  ||
-			buffer[i] == '?'  ||
-			buffer[i] == '<'  ||
-			buffer[i] == '>'  ||
-			buffer[i] == '*')
-		{
-			for(size_t j = i + 1; j < size; j++)
-			{
-				buffer[j - 1] = buffer[j];
-			}
-			buffer[size - 1] = 0;
-		}
-	}
+    STATIC_ASSERT(size > 0);
+    for(size_t i = 0; i < size; i++)
+    {
+    	if(	buffer[i] == '\\' ||
+    		buffer[i] == '\"' ||
+    		buffer[i] == '/'  ||
+    		buffer[i] == ':'  ||
+    		buffer[i] == '?'  ||
+    		buffer[i] == '<'  ||
+    		buffer[i] == '>'  ||
+    		buffer[i] == '*')
+    	{
+    		for(size_t j = i + 1; j < size; j++)
+    		{
+    			buffer[j - 1] = buffer[j];
+    		}
+    		buffer[size - 1] = 0;
+    	}
+    }
 }
 
 
@@ -155,12 +155,12 @@ template <size_t size>
 void NullToSpaceString(char (&buffer)[size])
 //------------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	size_t pos = size;
-	while (pos-- > 0)
-		if (buffer[pos] == 0)
-			buffer[pos] = 32;
-	buffer[size - 1] = 0;
+    STATIC_ASSERT(size > 0);
+    size_t pos = size;
+    while (pos-- > 0)
+    	if (buffer[pos] == 0)
+    		buffer[pos] = 32;
+    buffer[size - 1] = 0;
 }
 
 
@@ -169,18 +169,18 @@ template <size_t size>
 void SpaceToNullString(char (&buffer)[size])
 //------------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	// First, remove any Nulls
-	NullToSpaceString(buffer);
-	size_t pos = size;
-	while (pos-- > 0)
-	{
-		if (buffer[pos] == 32)
-			buffer[pos] = 0;
-		else if(buffer[pos] != 0)
-			break;
-	}
-	buffer[size - 1] = 0;
+    STATIC_ASSERT(size > 0);
+    // First, remove any Nulls
+    NullToSpaceString(buffer);
+    size_t pos = size;
+    while (pos-- > 0)
+    {
+    	if (buffer[pos] == 32)
+    		buffer[pos] = 0;
+    	else if(buffer[pos] != 0)
+    		break;
+    }
+    buffer[size - 1] = 0;
 }
 
 
@@ -189,18 +189,18 @@ template <size_t size>
 void FixNullString(char (&buffer)[size])
 //--------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	size_t pos = 0;
-	// Find the first null char.
-	while(buffer[pos] != '\0' && pos < size)
-	{
-		pos++;
-	}
-	// Remove everything after the null char.
-	while(pos < size)
-	{
-		buffer[pos++] = '\0';
-	}
+    STATIC_ASSERT(size > 0);
+    size_t pos = 0;
+    // Find the first null char.
+    while(buffer[pos] != '\0' && pos < size)
+    {
+    	pos++;
+    }
+    // Remove everything after the null char.
+    while(pos < size)
+    {
+    	buffer[pos++] = '\0';
+    }
 }
 
 
@@ -211,15 +211,15 @@ template <size_t length, size_t size>
 void SpaceToNullStringFixed(char (&buffer)[size])
 //------------------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	STATIC_ASSERT(length < size);
-	// Remove Nulls in string
-	SpaceToNullString(buffer);
-	// Overwrite trailing chars
-	for(size_t pos = length; pos < size; pos++)
-	{
-		buffer[pos] = 0;
-	}
+    STATIC_ASSERT(size > 0);
+    STATIC_ASSERT(length < size);
+    // Remove Nulls in string
+    SpaceToNullString(buffer);
+    // Overwrite trailing chars
+    for(size_t pos = length; pos < size; pos++)
+    {
+    	buffer[pos] = 0;
+    }
 }
 
 
@@ -230,34 +230,34 @@ template <size_t size>
 void SpaceToNullStringFixed(char (&buffer)[size], size_t length)
 //--------------------------------------------------------------
 {
-	STATIC_ASSERT(size > 0);
-	ASSERT(length < size);
-	// Remove Nulls in string
-	SpaceToNullString(buffer);
-	// Overwrite trailing chars
-	for(size_t pos = length; pos < size; pos++)
-	{
-		buffer[pos] = 0;
-	}
+    STATIC_ASSERT(size > 0);
+    ASSERT(length < size);
+    // Remove Nulls in string
+    SpaceToNullString(buffer);
+    // Overwrite trailing chars
+    for(size_t pos = length; pos < size; pos++)
+    {
+    	buffer[pos] = 0;
+    }
 }
 
 namespace Util
 {
-	// Like std::max, but avoids conflict with max-macro.
-	template <class T> inline const T& Max(const T& a, const T& b) {return (std::max)(a, b);}
+    // Like std::max, but avoids conflict with max-macro.
+    template <class T> inline const T& Max(const T& a, const T& b) {return (std::max)(a, b);}
 
-	// Returns maximum value of given integer type.
-	template <class T> inline T MaxValueOfType(const T&) {static_assert(std::numeric_limits<T>::is_integer == true, "Only interger types are allowed."); return (std::numeric_limits<T>::max)();}
+    // Returns maximum value of given integer type.
+    template <class T> inline T MaxValueOfType(const T&) {static_assert(std::numeric_limits<T>::is_integer == true, "Only interger types are allowed."); return (std::numeric_limits<T>::max)();}
 
-	
+    
 };
 
 namespace Util { namespace sdTime
 {
-	// Returns string containing date and time ended with newline.
-	std::basic_string<TCHAR> GetDateTimeStr();
+    // Returns string containing date and time ended with newline.
+    std::basic_string<TCHAR> GetDateTimeStr();
 
-	time_t MakeGmTime(tm& timeUtc);
+    time_t MakeGmTime(tm& timeUtc);
 
 }}; // namespace Util::sdTime
 

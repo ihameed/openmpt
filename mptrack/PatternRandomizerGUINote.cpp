@@ -10,7 +10,7 @@
 
 IMPLEMENT_DYNAMIC(CPatternRandomizerGUINote, CDialog)
 CPatternRandomizerGUINote::CPatternRandomizerGUINote(CWnd* pParent /*=NULL*/)
-	: CDialog(CPatternRandomizerGUINote::IDD, pParent)
+    : CDialog(CPatternRandomizerGUINote::IDD, pParent)
 {
 }
 
@@ -20,7 +20,7 @@ CPatternRandomizerGUINote::~CPatternRandomizerGUINote()
 
 void CPatternRandomizerGUINote::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+    CDialog::DoDataExchange(pDX);
 }
 
 

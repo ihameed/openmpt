@@ -2,12 +2,12 @@
 #define _TEST_H
 
 #ifdef DEBUG
-	#define ENABLE_TESTS
+    #define ENABLE_TESTS
 #endif
 
 namespace MptTest
 {
-	void DoTests();
+    void DoTests();
 };
 
 #endif // _TEST_H

@@ -24,8 +24,8 @@
 extern void Log(LPCSTR, ...);
 #endif
 
-#define MIDI_DRUMCHANNEL	10
-#define MIDI_MAXTRACKS		64
+#define MIDI_DRUMCHANNEL    10
+#define MIDI_MAXTRACKS    	64
 
 UINT gnMidiImportSpeed = 3;
 UINT gnMidiPatternLen = 128;
@@ -34,50 +34,50 @@ UINT gnMidiPatternLen = 128;
 
 typedef struct MIDIFILEHEADER
 {
-    DWORD id;		// "MThd" = 0x6468544D
-    DWORD len;		// 6
-    WORD w1;		// 1?
-    WORD wTrks;		// 2?
-    WORD wDivision;	// F0
+    DWORD id;    	// "MThd" = 0x6468544D
+    DWORD len;    	// 6
+    WORD w1;    	// 1?
+    WORD wTrks;    	// 2?
+    WORD wDivision;    // F0
 } MIDIFILEHEADER;
 
 
 typedef struct MIDITRACKHEADER
 {
-    DWORD id;	// "MTrk" = 0x6B72544D
+    DWORD id;    // "MTrk" = 0x6B72544D
     DWORD len;
 } MIDITRACKHEADER;
 
 //////////////////////////////////////////////////////////////////////
 // Midi Loader Internal Structures
 
-#define CHNSTATE_NOTEOFFPENDING		0x0001
+#define CHNSTATE_NOTEOFFPENDING    	0x0001
 
 // MOD Channel State description (current volume, panning, etc...)
 typedef struct MODCHANNELSTATE
 {
-    DWORD flags;	// Channel Flags
+    DWORD flags;    // Channel Flags
     WORD idlecount;
-    WORD pitchsrc, pitchdest;	// Pitch Bend (current position/new position)
-    BYTE parent;	// Midi Channel parent
-    BYTE pan;		// Channel Panning			0-255
-    BYTE note;		// Note On # (0=available)
+    WORD pitchsrc, pitchdest;    // Pitch Bend (current position/new position)
+    BYTE parent;    // Midi Channel parent
+    BYTE pan;    	// Channel Panning			0-255
+    BYTE note;    	// Note On # (0=available)
 } MODCHANNELSTATE;
 
 // MIDI Channel State (Midi Channels 0-15)
 typedef struct MIDICHANNELSTATE
 {
-    DWORD flags;		// Channel Flags
-    WORD pitchbend;		// Pitch Bend Amount (14-bits unsigned)
-    BYTE note_on[128];	// If note=on -> MOD channel # + 1 (0 if note=off)
-    BYTE program;		// Channel Midi Program
-    WORD bank;			// 0-16383
+    DWORD flags;    	// Channel Flags
+    WORD pitchbend;    	// Pitch Bend Amount (14-bits unsigned)
+    BYTE note_on[128];    // If note=on -> MOD channel # + 1 (0 if note=off)
+    BYTE program;    	// Channel Midi Program
+    WORD bank;    		// 0-16383
     // -- Controllers --------- function ---------- CC# --- range  --- init (midi) ---
-    BYTE pan;			// Channel Panning			CC10	[0-255]		128 (64)
-    BYTE expression;	// Channel Expression		CC11	0-128		128	(127)
-    BYTE volume;		// Channel Volume			CC7		0-128		80	(100)
-    BYTE modulation;	// Modulation				CC1		0-127		0
-    BYTE pitchbendrange;// Pitch Bend Range								64
+    BYTE pan;    		// Channel Panning			CC10	[0-255]		128 (64)
+    BYTE expression;    // Channel Expression		CC11	0-128		128	(127)
+    BYTE volume;    	// Channel Volume			CC7		0-128		80	(100)
+    BYTE modulation;    // Modulation				CC1		0-127		0
+    BYTE pitchbendrange;// Pitch Bend Range    							64
 } MIDICHANNELSTATE;
 
 typedef struct MIDITRACK
@@ -331,8 +331,8 @@ extern const LPCSTR szMidiPercussionNames[61] =
 
 const WORD kMidiChannelPriority[16] =
 {
-    0xFFFE, 0xFFFC, 0xFFF8, 0xFFF0,	0xFFE0, 0xFFC0, 0xFF80, 0xFF00,
-    0xFE00, 0xFDFF, 0xF800, 0xF000,	0xE000, 0xC000, 0x8000, 0x0000,
+    0xFFFE, 0xFFFC, 0xFFF8, 0xFFF0,    0xFFE0, 0xFFC0, 0xFF80, 0xFF00,
+    0xFE00, 0xFDFF, 0xF800, 0xF000,    0xE000, 0xC000, 0x8000, 0x0000,
 };
 
 
@@ -476,13 +476,13 @@ UINT CSoundFile::MapMidiInstrument(DWORD dwBankProgram, UINT nChannel, UINT nNot
 
 /////////////////////////////////////////////////////////////////
 // Loader Status
-#define MIDIGLOBAL_SONGENDED		0x0001
-#define MIDIGLOBAL_FROZEN			0x0002
-#define MIDIGLOBAL_UPDATETEMPO		0x0004
-#define MIDIGLOBAL_UPDATEMASTERVOL	0x0008
+#define MIDIGLOBAL_SONGENDED    	0x0001
+#define MIDIGLOBAL_FROZEN    		0x0002
+#define MIDIGLOBAL_UPDATETEMPO    	0x0004
+#define MIDIGLOBAL_UPDATEMASTERVOL    0x0008
 // Midi Globals
-#define MIDIGLOBAL_GMSYSTEMON		0x0100
-#define MIDIGLOBAL_XGSYSTEMON		0x0200
+#define MIDIGLOBAL_GMSYSTEMON    	0x0100
+#define MIDIGLOBAL_XGSYSTEMON    	0x0200
 
 
 bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
@@ -611,11 +611,11 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
     // Initializing midi channels state
     for (UINT imidi=0; imidi<16; imidi++)
     {
-        midichstate[imidi].pan = 128;			// middle
-        midichstate[imidi].expression = 128;	// no attenuation
-        midichstate[imidi].volume = 80;			// GM specs defaults to 100
-        midichstate[imidi].pitchbend = 0x2000;	// Pitch Bend Amount
-        midichstate[imidi].pitchbendrange = 64;	// Pitch Bend Range: +/- 2 semitones
+        midichstate[imidi].pan = 128;    		// middle
+        midichstate[imidi].expression = 128;    // no attenuation
+        midichstate[imidi].volume = 80;    		// GM specs defaults to 100
+        midichstate[imidi].pitchbend = 0x2000;    // Pitch Bend Amount
+        midichstate[imidi].pitchbendrange = 64;    // Pitch Bend Range: +/- 2 semitones
     }
     ////////////////////////////////////////////////////////////////////////////
     // Main Midi Sequencer Loop
@@ -813,9 +813,9 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                     switch(midist)
                     {
                     //////////////////////////////////
-                    // Note Off:	80.note.velocity
+                    // Note Off:    80.note.velocity
                     case 0x80:
-                    // Note On:		90.note.velocity
+                    // Note On:    	90.note.velocity
                     case 0x90:
                         note = ptrk->ptracks[0] & 0x7F;
                         velocity = (midist == 0x90) ? (ptrk->ptracks[1] & 0x7F) : 0;
@@ -1177,7 +1177,7 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                     if ((chnstate[ichn].note) && (chnstate[ichn].idlecount >= 50))
                     {
                         chnstate[ichn].note = 0;
-                        m[ichn].note = 0xFF;	// only if not drum channel ?
+                        m[ichn].note = 0xFF;    // only if not drum channel ?
                     } else
                     if (chnstate[ichn].idlecount >= 500) // 20secs of inactivity
                     {

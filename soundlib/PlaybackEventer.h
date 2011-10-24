@@ -10,16 +10,16 @@ class CPlaybackEventer
 //====================
 {
 public:
-	CPlaybackEventer(CSoundFile& sndf) : m_rSndFile(sndf) {}
-	~CPlaybackEventer();
+    CPlaybackEventer(CSoundFile& sndf) : m_rSndFile(sndf) {}
+    ~CPlaybackEventer();
 
-	//SetPatternEvent(const PATTERNINDEX pattern, const ROWINDEX row, const CHANNELINDEX column);
+    //SetPatternEvent(const PATTERNINDEX pattern, const ROWINDEX row, const CHANNELINDEX column);
 
-	void PatternTranstionChnSolo(const CHANNELINDEX chnIndex);
-	void PatternTransitionChnUnmuteAll();
+    void PatternTranstionChnSolo(const CHANNELINDEX chnIndex);
+    void PatternTransitionChnUnmuteAll();
 
 private:
-	CSoundFile& m_rSndFile;
+    CSoundFile& m_rSndFile;
 };
 
 #endif

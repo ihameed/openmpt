@@ -30,18 +30,18 @@ typedef struct tagMTMSAMPLE
 
 typedef struct tagMTMHEADER
 {
-    char   id[3];			// MTM file marker
-    uint8_t  version;			// Tracker version
-    char   songname[20];	// ASCIIZ songname
-    uint16_t numtracks;		// number of tracks saved
-    uint8_t  lastpattern;		// last pattern number saved
-    uint8_t  lastorder;		// last order number to play (songlength-1)
-    uint16_t commentsize;		// length of comment field
-    uint8_t  numsamples;		// number of samples saved
-    uint8_t  attribute;		// attribute byte (unused)
-    uint8_t  beatspertrack;	// numbers of rows in every pattern
-    uint8_t  numchannels;		// number of channels used
-    uint8_t  panpos[32];		// channel pan positions
+    char   id[3];    		// MTM file marker
+    uint8_t  version;    		// Tracker version
+    char   songname[20];    // ASCIIZ songname
+    uint16_t numtracks;    	// number of tracks saved
+    uint8_t  lastpattern;    	// last pattern number saved
+    uint8_t  lastorder;    	// last order number to play (songlength-1)
+    uint16_t commentsize;    	// length of comment field
+    uint8_t  numsamples;    	// number of samples saved
+    uint8_t  attribute;    	// attribute byte (unused)
+    uint8_t  beatspertrack;    // numbers of rows in every pattern
+    uint8_t  numchannels;    	// number of channels used
+    uint8_t  panpos[32];    	// channel pan positions
 } MTMHEADER;
 
 
@@ -68,7 +68,7 @@ bool CSoundFile::ReadMTM(LPCBYTE lpStream, DWORD dwMemLength)
     m_nSamples = pmh->numsamples;
     m_nChannels = pmh->numchannels;
     // Reading instruments
-    for	(SAMPLEINDEX i = 1; i <= m_nSamples; i++)
+    for    (SAMPLEINDEX i = 1; i <= m_nSamples; i++)
     {
         MTMSAMPLE *pms = (MTMSAMPLE *)(lpStream + dwMemPos);
         memcpy(m_szNames[i], pms->samplename, 22);

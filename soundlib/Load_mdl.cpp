@@ -18,7 +18,7 @@
 
 typedef struct MDLSONGHEADER
 {
-    DWORD id;	// "DMDL" = 0x4C444D44
+    DWORD id;    // "DMDL" = 0x4C444D44
     BYTE version;
 } MDLSONGHEADER;
 
@@ -40,7 +40,7 @@ typedef struct MDLINFOBLOCK
 typedef struct MDLPATTERNDATA
 {
     BYTE channels;
-    BYTE lastrow;	// nrows = lastrow+1
+    BYTE lastrow;    // nrows = lastrow+1
     CHAR name[16];
     WORD data[1];
 } MDLPATTERNDATA;
@@ -52,34 +52,34 @@ void ConvertMDLCommand(modplug::tracker::modcommand_t *m, UINT eff, UINT data)
     UINT command = 0, param = data;
     switch(eff)
     {
-    case 0x01:	command = CMD_PORTAMENTOUP; break;
-    case 0x02:	command = CMD_PORTAMENTODOWN; break;
-    case 0x03:	command = CMD_TONEPORTAMENTO; break;
-    case 0x04:	command = CMD_VIBRATO; break;
-    case 0x05:	command = CMD_ARPEGGIO; break;
-    case 0x07:	command = (param < 0x20) ? CMD_SPEED : CMD_TEMPO; break;
-    case 0x08:	command = CMD_PANNING8; param <<= 1; break;
-    case 0x0B:	command = CMD_POSITIONJUMP; break;
-    case 0x0C:	command = CMD_GLOBALVOLUME; break;
-    case 0x0D:	command = CMD_PATTERNBREAK; param = (data & 0x0F) + (data>>4)*10; break;
+    case 0x01:    command = CMD_PORTAMENTOUP; break;
+    case 0x02:    command = CMD_PORTAMENTODOWN; break;
+    case 0x03:    command = CMD_TONEPORTAMENTO; break;
+    case 0x04:    command = CMD_VIBRATO; break;
+    case 0x05:    command = CMD_ARPEGGIO; break;
+    case 0x07:    command = (param < 0x20) ? CMD_SPEED : CMD_TEMPO; break;
+    case 0x08:    command = CMD_PANNING8; param <<= 1; break;
+    case 0x0B:    command = CMD_POSITIONJUMP; break;
+    case 0x0C:    command = CMD_GLOBALVOLUME; break;
+    case 0x0D:    command = CMD_PATTERNBREAK; param = (data & 0x0F) + (data>>4)*10; break;
     case 0x0E:
         command = CMD_S3MCMDEX;
         switch(data & 0xF0)
         {
-        case 0x00:	command = 0; break; // What is E0x in MDL (there is a bunch) ?
-        case 0x10:	if (param & 0x0F) { param |= 0xF0; command = CMD_PANNINGSLIDE; } else command = 0; break;
-        case 0x20:	if (param & 0x0F) { param = (param << 4) | 0x0F; command = CMD_PANNINGSLIDE; } else command = 0; break;
-        case 0x30:	param = (data & 0x0F) | 0x10; break; // glissando
-        case 0x40:	param = (data & 0x0F) | 0x30; break; // vibrato waveform
-        case 0x60:	param = (data & 0x0F) | 0xB0; break;
-        case 0x70:	param = (data & 0x0F) | 0x40; break; // tremolo waveform
-        case 0x90:	command = CMD_RETRIG; param &= 0x0F; break;
-        case 0xA0:	param = (data & 0x0F) << 4; command = CMD_GLOBALVOLSLIDE; break;
-        case 0xB0:	param = data & 0x0F; command = CMD_GLOBALVOLSLIDE; break;
-        case 0xF0:	param = ((data >> 8) & 0x0F) | 0xA0; break;
+        case 0x00:    command = 0; break; // What is E0x in MDL (there is a bunch) ?
+        case 0x10:    if (param & 0x0F) { param |= 0xF0; command = CMD_PANNINGSLIDE; } else command = 0; break;
+        case 0x20:    if (param & 0x0F) { param = (param << 4) | 0x0F; command = CMD_PANNINGSLIDE; } else command = 0; break;
+        case 0x30:    param = (data & 0x0F) | 0x10; break; // glissando
+        case 0x40:    param = (data & 0x0F) | 0x30; break; // vibrato waveform
+        case 0x60:    param = (data & 0x0F) | 0xB0; break;
+        case 0x70:    param = (data & 0x0F) | 0x40; break; // tremolo waveform
+        case 0x90:    command = CMD_RETRIG; param &= 0x0F; break;
+        case 0xA0:    param = (data & 0x0F) << 4; command = CMD_GLOBALVOLSLIDE; break;
+        case 0xB0:    param = data & 0x0F; command = CMD_GLOBALVOLSLIDE; break;
+        case 0xF0:    param = ((data >> 8) & 0x0F) | 0xA0; break;
         }
         break;
-    case 0x0F:	command = CMD_SPEED; break;
+    case 0x0F:    command = CMD_SPEED; break;
     case 0x10:
         if ((param & 0xF0) != 0xE0) {
             command = CMD_VOLUMESLIDE;
@@ -104,10 +104,10 @@ void ConvertMDLCommand(modplug::tracker::modcommand_t *m, UINT eff, UINT data)
         }
         break;
 
-    case 0x30:	command = CMD_RETRIG; break;
-    case 0x40:	command = CMD_TREMOLO; break;
-    case 0x50:	command = CMD_TREMOR; break;
-    case 0xEF:	if (param > 0xFF) param = 0xFF; command = CMD_OFFSET; break;
+    case 0x30:    command = CMD_RETRIG; break;
+    case 0x40:    command = CMD_TREMOLO; break;
+    case 0x50:    command = CMD_TREMOR; break;
+    case 0xEF:    if (param > 0xFF) param = 0xFF; command = CMD_OFFSET; break;
     }
     if (command)
     {
@@ -414,7 +414,7 @@ bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
 
                         // taken from load_xm.cpp - seems to fix wakingup.mdl
                         if (!(pIns->volume_envelope.flags & ENV_ENABLED) && !pIns->fadeout)
-                            pIns->fadeout = 8192;		
+                            pIns->fadeout = 8192;    	
                     }
                 }
                 dwPos += 34 + 14*lpStream[dwPos+1];

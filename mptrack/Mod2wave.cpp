@@ -14,9 +14,9 @@ extern LPCSTR gszChnCfgNames[3];
 // this converts a buffer of 32-bit integer sample data to 32 bit floating point
 static void __cdecl M2W_32ToFloat(void *pBuffer, long nCount)
 {
-//	const float _ki2f = 1.0f / (FLOAT)(ULONG)(0x80000000); //olivier 
+//    const float _ki2f = 1.0f / (FLOAT)(ULONG)(0x80000000); //olivier 
     const float _ki2f = 1.0f / (FLOAT)(ULONG)(0x7fffffff); //ericus' 32bit fix
-//	const float _ki2f = 1.0f / (FLOAT)(ULONG)(0x7ffffff);  //robin
+//    const float _ki2f = 1.0f / (FLOAT)(ULONG)(0x7ffffff);  //robin
     _asm {
     mov esi, pBuffer
     mov ecx, nCount
@@ -50,14 +50,14 @@ loopdone:
 // CWaveConvert - setup for converting a wave file
 
 BEGIN_MESSAGE_MAP(CWaveConvert, CDialog)
-    ON_COMMAND(IDC_CHECK1,			OnCheck1)
-    ON_COMMAND(IDC_CHECK2,			OnCheck2)
-    ON_COMMAND(IDC_CHECK4,			OnCheckChannelMode)
-    ON_COMMAND(IDC_CHECK6,			OnCheckInstrMode)
-    ON_COMMAND(IDC_RADIO1,			UpdateDialog)
-    ON_COMMAND(IDC_RADIO2,			UpdateDialog)
+    ON_COMMAND(IDC_CHECK1,    		OnCheck1)
+    ON_COMMAND(IDC_CHECK2,    		OnCheck2)
+    ON_COMMAND(IDC_CHECK4,    		OnCheckChannelMode)
+    ON_COMMAND(IDC_CHECK6,    		OnCheckInstrMode)
+    ON_COMMAND(IDC_RADIO1,    		UpdateDialog)
+    ON_COMMAND(IDC_RADIO2,    		UpdateDialog)
     ON_COMMAND(IDC_PLAYEROPTIONS,   OnPlayerOptions) //rewbs.resamplerConf
-    ON_CBN_SELCHANGE(IDC_COMBO2,	OnFormatChanged)
+    ON_CBN_SELCHANGE(IDC_COMBO2,    OnFormatChanged)
 END_MESSAGE_MAP()
 
 
@@ -95,10 +95,10 @@ void CWaveConvert::DoDataExchange(CDataExchange *pDX)
 //---------------------------------------------------
 {
     CDialog::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_COMBO1,	m_CbnSampleRate);
-    DDX_Control(pDX, IDC_COMBO2,	m_CbnSampleFormat);
-    DDX_Control(pDX, IDC_EDIT3,		m_EditMinOrder);
-    DDX_Control(pDX, IDC_EDIT4,		m_EditMaxOrder);
+    DDX_Control(pDX, IDC_COMBO1,    m_CbnSampleRate);
+    DDX_Control(pDX, IDC_COMBO2,    m_CbnSampleFormat);
+    DDX_Control(pDX, IDC_EDIT3,    	m_EditMinOrder);
+    DDX_Control(pDX, IDC_EDIT4,    	m_EditMaxOrder);
 }
 
 
@@ -110,8 +110,8 @@ BOOL CWaveConvert::OnInitDialog()
     CDialog::OnInitDialog();
     CheckRadioButton(IDC_RADIO1, IDC_RADIO2, m_bSelectPlay ? IDC_RADIO2 : IDC_RADIO1);
 
-    CheckDlgButton(IDC_CHECK3, MF_CHECKED);		// HQ resampling
-    CheckDlgButton(IDC_CHECK5, MF_UNCHECKED);	// rewbs.NoNormalize
+    CheckDlgButton(IDC_CHECK3, MF_CHECKED);    	// HQ resampling
+    CheckDlgButton(IDC_CHECK5, MF_UNCHECKED);    // rewbs.NoNormalize
 
 // -> CODE#0024
 // -> DESC="wav export update"
@@ -132,15 +132,15 @@ BOOL CWaveConvert::OnInitDialog()
     }
 // -> CODE#0024
 // -> DESC="wav export update"
-//	for (UINT j=0; j<3*3; j++)
+//    for (UINT j=0; j<3*3; j++)
     for (UINT j=0; j<3*4; j++)
 // -! NEW_FEATURE#0024
     {
 // -> CODE#0024
 // -> DESC="wav export update"
-//		UINT n = 3*3-1-j;
-//		UINT nBits = 8 << (n % 3);
-//		UINT nChannels = 1 << (n/3);
+//    	UINT n = 3*3-1-j;
+//    	UINT nBits = 8 << (n % 3);
+//    	UINT nChannels = 1 << (n/3);
         UINT n = 3*4-1-j;
         UINT nBits = 8 * (1 + n % 4);
         UINT nChannels = 1 << (n/4);
@@ -149,7 +149,7 @@ BOOL CWaveConvert::OnInitDialog()
         {
 // -> CODE#0024
 // -> DESC="wav export update"
-//			wsprintf(s, "%s, %d Bit", gszChnCfgNames[j/3], nBits);
+//    		wsprintf(s, "%s, %d Bit", gszChnCfgNames[j/3], nBits);
             wsprintf(s, "%s, %d-Bit", gszChnCfgNames[n/4], nBits);
 // -! NEW_FEATURE#0024
             UINT ndx = m_CbnSampleFormat.AddString(s);
@@ -172,7 +172,7 @@ void CWaveConvert::OnFormatChanged()
     UINT nBits = dwFormat & 0xFF;
 // -> CODE#0024
 // -> DESC="wav export update"
-//	::EnableWindow( ::GetDlgItem(m_hWnd, IDC_CHECK5), (nBits <= 16) ? TRUE : FALSE );
+//    ::EnableWindow( ::GetDlgItem(m_hWnd, IDC_CHECK5), (nBits <= 16) ? TRUE : FALSE );
     ::EnableWindow( ::GetDlgItem(m_hWnd, IDC_CHECK5), (nBits <= 24) ? TRUE : FALSE );
 // -! NEW_FEATURE#0024
 }
@@ -287,7 +287,7 @@ void CWaveConvert::OnOK()
 
 // -> CODE#0024
 // -> DESC="wav export update"
-//	if ((WaveFormat.Format.wBitsPerSample != 8) && (WaveFormat.Format.wBitsPerSample != 32)) WaveFormat.Format.wBitsPerSample = 16;
+//    if ((WaveFormat.Format.wBitsPerSample != 8) && (WaveFormat.Format.wBitsPerSample != 32)) WaveFormat.Format.wBitsPerSample = 16;
     if ((WaveFormat.Format.wBitsPerSample != 8) && (WaveFormat.Format.wBitsPerSample != 24) && (WaveFormat.Format.wBitsPerSample != 32)) WaveFormat.Format.wBitsPerSample = 16;
 // -! NEW_FEATURE#0024
 
@@ -308,11 +308,11 @@ void CWaveConvert::OnOK()
         WaveFormat.Samples.wValidBitsPerSample = WaveFormat.Format.wBitsPerSample;
         switch(WaveFormat.Format.nChannels)
         {
-        case 1:		WaveFormat.dwChannelMask = 0x0004; break; // FRONT_CENTER
-        case 2:		WaveFormat.dwChannelMask = 0x0003; break; // FRONT_LEFT | FRONT_RIGHT
-        case 3:		WaveFormat.dwChannelMask = 0x0103; break; // FRONT_LEFT|FRONT_RIGHT|BACK_CENTER
-        case 4:		WaveFormat.dwChannelMask = 0x0033; break; // FRONT_LEFT|FRONT_RIGHT|BACK_LEFT|BACK_RIGHT
-        default:	WaveFormat.dwChannelMask = 0; break;
+        case 1:    	WaveFormat.dwChannelMask = 0x0004; break; // FRONT_CENTER
+        case 2:    	WaveFormat.dwChannelMask = 0x0003; break; // FRONT_LEFT | FRONT_RIGHT
+        case 3:    	WaveFormat.dwChannelMask = 0x0103; break; // FRONT_LEFT|FRONT_RIGHT|BACK_CENTER
+        case 4:    	WaveFormat.dwChannelMask = 0x0033; break; // FRONT_LEFT|FRONT_RIGHT|BACK_LEFT|BACK_RIGHT
+        default:    WaveFormat.dwChannelMask = 0; break;
         }
         WaveFormat.SubFormat = guid_MEDIASUBTYPE_PCM;
     }
@@ -324,9 +324,9 @@ void CWaveConvert::OnOK()
 // CLayer3Convert: Converting to MPEG Layer 3
 
 BEGIN_MESSAGE_MAP(CLayer3Convert, CDialog)
-    ON_COMMAND(IDC_CHECK1,			OnCheck1)
-    ON_COMMAND(IDC_CHECK2,			OnCheck2)
-    ON_CBN_SELCHANGE(IDC_COMBO2,	UpdateDialog)
+    ON_COMMAND(IDC_CHECK1,    		OnCheck1)
+    ON_COMMAND(IDC_CHECK2,    		OnCheck2)
+    ON_CBN_SELCHANGE(IDC_COMBO2,    UpdateDialog)
 END_MESSAGE_MAP()
 
 
@@ -335,13 +335,13 @@ void CLayer3Convert::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(COptionsPlayer)
-    DDX_Control(pDX, IDC_COMBO1,		m_CbnFormat);
-    DDX_Control(pDX, IDC_COMBO2,		m_CbnDriver);
-    DDX_Control(pDX, IDC_COMBO3,		m_CbnGenre);
-    DDX_Control(pDX, IDC_EDIT3,			m_EditAuthor);
-    DDX_Control(pDX, IDC_EDIT4,			m_EditURL);
-    DDX_Control(pDX, IDC_EDIT5,			m_EditAlbum);
-    DDX_Control(pDX, IDC_EDIT6,			m_EditYear);
+    DDX_Control(pDX, IDC_COMBO1,    	m_CbnFormat);
+    DDX_Control(pDX, IDC_COMBO2,    	m_CbnDriver);
+    DDX_Control(pDX, IDC_COMBO3,    	m_CbnGenre);
+    DDX_Control(pDX, IDC_EDIT3,    		m_EditAuthor);
+    DDX_Control(pDX, IDC_EDIT4,    		m_EditURL);
+    DDX_Control(pDX, IDC_EDIT5,    		m_EditAlbum);
+    DDX_Control(pDX, IDC_EDIT6,    		m_EditYear);
     //}}AFX_DATA_MAP
 }
 
@@ -478,7 +478,7 @@ BOOL CLayer3Convert::FormatEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, DW
      && (pafd->pwfx->nSamplesPerSec >= 11025)
 // -> CODE#0024
 // -> DESC="wav export update"
-//	 && (pafd->pwfx->nSamplesPerSec <= 48000)
+//     && (pafd->pwfx->nSamplesPerSec <= 48000)
 // -! NEW_FEATURE#0024
      && (pafd->pwfx->nChannels >= 1)
      && (pafd->pwfx->nChannels <= 2)
@@ -591,7 +591,7 @@ void CLayer3Convert::OnOK()
 // CDoWaveConvert: save a mod as a wave file
 
 BEGIN_MESSAGE_MAP(CDoWaveConvert, CDialog)
-    ON_COMMAND(IDC_BUTTON1,	OnButton1)
+    ON_COMMAND(IDC_BUTTON1,    OnButton1)
 END_MESSAGE_MAP()
 
 
@@ -605,8 +605,8 @@ BOOL CDoWaveConvert::OnInitDialog()
 
 // -> CODE#0024
 // -> DESC="wav export update"
-//#define WAVECONVERTBUFSIZE	2048
-#define WAVECONVERTBUFSIZE	modplug::mixgraph::MIX_BUFFER_SIZE //Going over modplug::mixgraph::MIX_BUFFER_SIZE can kill VSTPlugs 
+//#define WAVECONVERTBUFSIZE    2048
+#define WAVECONVERTBUFSIZE    modplug::mixgraph::MIX_BUFFER_SIZE //Going over modplug::mixgraph::MIX_BUFFER_SIZE can kill VSTPlugs 
 // -! NEW_FEATURE#0024
 
 
@@ -642,7 +642,7 @@ void CDoWaveConvert::OnButton1()
     CSoundFile::gnChannels = m_pWaveFormat->nChannels;
 // -> CODE#0024
 // -> DESC="wav export update"
-//	if ((m_bNormalize) && (m_pWaveFormat->wBitsPerSample <= 16))
+//    if ((m_bNormalize) && (m_pWaveFormat->wBitsPerSample <= 16))
     if ((m_bNormalize) && (m_pWaveFormat->wBitsPerSample <= 24))
 // -! NEW_FEATURE#0024
     {
@@ -713,7 +713,7 @@ void CDoWaveConvert::OnButton1()
     // For giving away some processing time every now and then
     DWORD dwSleepTime = dwStartTime;
 
-    CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);	//rewbs.VSTTimeInfo
+    CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     for (UINT n = 0; ; n++)
     {
         UINT lRead = m_pSndFile->ReadPattern(buffer, sizeof(buffer));
@@ -731,7 +731,7 @@ void CDoWaveConvert::OnButton1()
             iter->processed = true;
         }
 
-/*		if (m_bGivePlugsIdleTime) {
+/*    	if (m_bGivePlugsIdleTime) {
             LARGE_INTEGER startTime, endTime, duration,Freq;
             QueryPerformanceFrequency(&Freq);
             long samplesprocessed = sizeof(buffer)/(m_pWaveFormat->nChannels * m_pWaveFormat->wBitsPerSample / 8);
@@ -823,7 +823,7 @@ void CDoWaveConvert::OnButton1()
             break;
         }
     }
-    CMainFrame::GetMainFrame()->StopRenderer(m_pSndFile);	//rewbs.VSTTimeInfo
+    CMainFrame::GetMainFrame()->StopRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     if (m_bNormalize)
     {
         DWORD dwLength = datahdr.length;
@@ -882,8 +882,8 @@ void CDoWaveConvert::OnButton1()
             cuepoint.cp_id = LittleEndian(num);
             cuepoint.cp_pos = LittleEndian((DWORD)iter->offset);
             cuepoint.cp_chunkid = LittleEndian(IFFID_data);
-            cuepoint.cp_chunkstart = 0;		// we use no Wave List Chunk (wavl) as we have only one data block, so this should be 0.
-            cuepoint.cp_blockstart = 0;		// dito
+            cuepoint.cp_chunkstart = 0;    	// we use no Wave List Chunk (wavl) as we have only one data block, so this should be 0.
+            cuepoint.cp_blockstart = 0;    	// dito
             cuepoint.cp_offset = LittleEndian((DWORD)iter->offset);
             fwrite(&cuepoint, 1, sizeof(WAVCUEPOINT), f);
         }
@@ -921,7 +921,7 @@ void CDoWaveConvert::OnButton1()
 // CDoAcmConvert: save a mod as a compressed file
 
 BEGIN_MESSAGE_MAP(CDoAcmConvert, CDialog)
-    ON_COMMAND(IDC_BUTTON1,	OnButton1)
+    ON_COMMAND(IDC_BUTTON1,    OnButton1)
 END_MESSAGE_MAP()
 
 
@@ -967,7 +967,7 @@ void CDoAcmConvert::OnButton1()
     HACMSTREAM hAStream = nullptr;
     HWND progress;
     MSG msg;
-    LPBYTE pcmBuffer = nullptr, dstBuffer = nullptr;	// Render and conversion buffers
+    LPBYTE pcmBuffer = nullptr, dstBuffer = nullptr;    // Render and conversion buffers
     UINT retval = IDCANCEL, pos, n;
     DWORD dwDstBufSize, pcmBufSize, data_ofs;
     uint64_t ullMaxSamples, ullSamples;
@@ -1047,7 +1047,7 @@ void CDoAcmConvert::OnButton1()
     const DWORD dwSongTime = m_pSndFile->GetSongTime();
     CSoundFile::gdwMixingFreq = wfxSrc.nSamplesPerSec;
     CSoundFile::gnBitsPerSample = 16;
-//	CSoundFile::SetResamplingMode(SRCMODE_POLYPHASE); //rewbs.resamplerConf - we don't want this anymore.
+//    CSoundFile::SetResamplingMode(SRCMODE_POLYPHASE); //rewbs.resamplerConf - we don't want this anymore.
     CSoundFile::gnChannels = wfxSrc.nChannels;
     m_pSndFile->SetRepeatCount(0);
     m_pSndFile->ResetChannels();
@@ -1082,7 +1082,7 @@ void CDoAcmConvert::OnButton1()
     pcmBufSize = WAVECONVERTBUFSIZE;
 
     // Writing File
-    CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);	//rewbs.VSTTimeInfo
+    CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     for (n=0; ; n++)
     {
         UINT lRead = 0;
@@ -1139,7 +1139,7 @@ void CDoAcmConvert::OnButton1()
         }
         if (m_bAbort) break;
     }
-    CMainFrame::GetMainFrame()->StopRenderer(m_pSndFile);	//rewbs.VSTTimeInfo
+    CMainFrame::GetMainFrame()->StopRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     // Done
     CSoundFile::gdwSoundSetup = oldsndcfg;
     CSoundFile::gdwSoundSetup &= ~(SNDMIX_DIRECTTODISK|SNDMIX_NOBACKWARDJUMPS);

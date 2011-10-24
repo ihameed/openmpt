@@ -18,31 +18,31 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bit Mask for updating view (hints of what changed)
-#define HINT_MODTYPE		0x00001
-#define HINT_MODCOMMENTS	0x00002
-#define HINT_MODGENERAL		0x00004
-#define HINT_MODSEQUENCE	0x00008
-#define HINT_MODCHANNELS	0x00010
-#define HINT_PATTERNDATA	0x00020
-#define HINT_PATTERNROW		0x00040
-#define HINT_PATNAMES		0x00080
-#define HINT_MPTOPTIONS		0x00100
-#define HINT_MPTSETUP		0x00200
-#define HINT_SAMPLEINFO		0x00400
-#define HINT_SAMPLEDATA		0x00800
-#define HINT_INSTRUMENT		0x01000
-#define HINT_ENVELOPE		0x02000
-#define HINT_SMPNAMES		0x04000
-#define HINT_INSNAMES		0x08000
-#define HINT_UNDO			0x10000
-#define HINT_MIXPLUGINS		0x20000
-#define HINT_SPEEDCHANGE	0x40000	//rewbs.envRowGrid
-#define HINT_SEQNAMES		0x80000
-#define HINT_MAXHINTFLAG	HINT_SEQNAMES
+#define HINT_MODTYPE    	0x00001
+#define HINT_MODCOMMENTS    0x00002
+#define HINT_MODGENERAL    	0x00004
+#define HINT_MODSEQUENCE    0x00008
+#define HINT_MODCHANNELS    0x00010
+#define HINT_PATTERNDATA    0x00020
+#define HINT_PATTERNROW    	0x00040
+#define HINT_PATNAMES    	0x00080
+#define HINT_MPTOPTIONS    	0x00100
+#define HINT_MPTSETUP    	0x00200
+#define HINT_SAMPLEINFO    	0x00400
+#define HINT_SAMPLEDATA    	0x00800
+#define HINT_INSTRUMENT    	0x01000
+#define HINT_ENVELOPE    	0x02000
+#define HINT_SMPNAMES    	0x04000
+#define HINT_INSNAMES    	0x08000
+#define HINT_UNDO    		0x10000
+#define HINT_MIXPLUGINS    	0x20000
+#define HINT_SPEEDCHANGE    0x40000	//rewbs.envRowGrid
+#define HINT_SEQNAMES    	0x80000
+#define HINT_MAXHINTFLAG    HINT_SEQNAMES
 //Bits 0-19 are reserved.
-#define HINT_MASK_FLAGS		(2*HINT_MAXHINTFLAG - 1) //When applied to hint parameter, should give the flag part.
-#define HINT_MASK_ITEM		(~HINT_MASK_FLAGS) //To nullify update hintbits from hint parameter.
-#define HintFlagPart(x)		((x) & HINT_MASK_FLAGS)
+#define HINT_MASK_FLAGS    	(2*HINT_MAXHINTFLAG - 1) //When applied to hint parameter, should give the flag part.
+#define HINT_MASK_ITEM    	(~HINT_MASK_FLAGS) //To nullify update hintbits from hint parameter.
+#define HintFlagPart(x)    	((x) & HINT_MASK_FLAGS)
 
 //If fails, hint flagbits|itembits does not enable all bits; 
 //might be worthwhile to check the reason.
@@ -66,20 +66,20 @@ STATIC_ASSERT( (HINT_MASK_ITEM & HINT_MASK_FLAGS) == 0 );
 //Updateview hints can, in addition to the actual hints, contain
 //addition data such as pattern or instrument index. The
 //values below define the number of bits used for these.
-#define HINT_BITS_PATTERN	12
-#define HINT_BITS_ROWS		10
-#define HINT_BITS_SAMPLE	12
-#define HINT_BITS_INST		8
-#define HINT_BITS_CHNTAB	8
-#define HINT_BITS_SEQUENCE	6
+#define HINT_BITS_PATTERN    12
+#define HINT_BITS_ROWS    	10
+#define HINT_BITS_SAMPLE    12
+#define HINT_BITS_INST    	8
+#define HINT_BITS_CHNTAB    8
+#define HINT_BITS_SEQUENCE    6
 
 //Defines bit shift values used for setting/retrieving the additional hint data to/from hint parameter.
-#define HINT_SHIFT_PAT		(32 - HINT_BITS_PATTERN)
-#define HINT_SHIFT_ROW		(32 - HINT_BITS_ROWS)
-#define HINT_SHIFT_SMP		(32 - HINT_BITS_SAMPLE)
-#define HINT_SHIFT_INS		(32 - HINT_BITS_INST)
-#define HINT_SHIFT_CHNTAB	(32 - HINT_BITS_CHNTAB)
-#define HINT_SHIFT_SEQUENCE	(32 - HINT_BITS_SEQUENCE)
+#define HINT_SHIFT_PAT    	(32 - HINT_BITS_PATTERN)
+#define HINT_SHIFT_ROW    	(32 - HINT_BITS_ROWS)
+#define HINT_SHIFT_SMP    	(32 - HINT_BITS_SAMPLE)
+#define HINT_SHIFT_INS    	(32 - HINT_BITS_INST)
+#define HINT_SHIFT_CHNTAB    (32 - HINT_BITS_CHNTAB)
+#define HINT_SHIFT_SEQUENCE    (32 - HINT_BITS_SEQUENCE)
 
 //Check that hint bit counts are not too large given the number of hint flags.
 STATIC_ASSERT( ((-1 << HINT_SHIFT_PAT) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_PAT) ); 
@@ -109,11 +109,11 @@ enum enmParameteredMacroType
 enum enmFixedMacroType
 {
     zxx_custom = 0,
-    zxx_reso4Bit,		// Type 1 - Z80 - Z8F controls resonance
-    zxx_reso7Bit,		// Type 2 - Z80 - ZFF controls resonance
-    zxx_cutoff,			// Type 3 - Z80 - ZFF controls cutoff
-    zxx_mode,			// Type 4 - Z80 - ZFF controls filter mode
-    zxx_resomode,		// Type 5 - Z80 - Z9F controls resonance + filter mode
+    zxx_reso4Bit,    	// Type 1 - Z80 - Z8F controls resonance
+    zxx_reso7Bit,    	// Type 2 - Z80 - ZFF controls resonance
+    zxx_cutoff,    		// Type 3 - Z80 - ZFF controls cutoff
+    zxx_mode,    		// Type 4 - Z80 - ZFF controls filter mode
+    zxx_resomode,    	// Type 5 - Z80 - Z9F controls resonance + filter mode
 
     zxx_max
 };
@@ -133,7 +133,7 @@ enum enmPatternPasteModes
 /////////////////////////////////////////////////////////////////////////
 // File edit history
 
-#define HISTORY_TIMER_PRECISION	18.2f
+#define HISTORY_TIMER_PRECISION    18.2f
 
 //================
 struct FileHistory
@@ -158,8 +158,8 @@ struct SplitKeyboardSettings
     modplug::tracker::modcommand_t::NOTE splitNote;
     modplug::tracker::modcommand_t::INSTR splitInstrument;
     modplug::tracker::modcommand_t::VOL splitVolume;
-    int octaveModifier;	// determines by how many octaves the notes should be transposed up or down
-    bool octaveLink;	// apply octaveModifier
+    int octaveModifier;    // determines by how many octaves the notes should be transposed up or down
+    bool octaveLink;    // apply octaveModifier
 };
 
 enum LogEventType
@@ -193,12 +193,12 @@ protected:
 
     CPatternUndo m_PatternUndo;
     CSampleUndo m_SampleUndo;
-    SplitKeyboardSettings m_SplitKeyboardSettings;	// this is maybe not the best place to keep them, but it should do the job
-    vector<FileHistory> m_FileHistory;	// File edit history
+    SplitKeyboardSettings m_SplitKeyboardSettings;    // this is maybe not the best place to keep them, but it should do the job
+    vector<FileHistory> m_FileHistory;    // File edit history
     time_t m_creationTime;
 
 public:
-    std::bitset<MAX_INSTRUMENTS> m_bsInstrumentModified;	// which instruments have been modified? (for ITP functionality)
+    std::bitset<MAX_INSTRUMENTS> m_bsInstrumentModified;    // which instruments have been modified? (for ITP functionality)
 
 protected: // create from serialization only
     CModDoc();
@@ -342,8 +342,8 @@ public:
     LRESULT ActivateView(UINT nIdView, DWORD dwParam);
     void UpdateAllViews(CView *pSender, LPARAM lHint=0L, CObject *pHint=NULL);
     HWND GetEditPosition(ROWINDEX &row, PATTERNINDEX &pat, ORDERINDEX &ord); //rewbs.customKeys
-    LRESULT OnCustomKeyMsg(WPARAM, LPARAM);				   //rewbs.customKeys
-    void TogglePluginEditor(UINT m_nCurrentPlugin);		   //rewbs.patPlugNames
+    LRESULT OnCustomKeyMsg(WPARAM, LPARAM);    			   //rewbs.customKeys
+    void TogglePluginEditor(UINT m_nCurrentPlugin);    	   //rewbs.patPlugNames
     void RecordParamChange(int slot, long param);
     void LearnMacro(int macro, long param);
     void SetElapsedTime(ORDERINDEX nOrd, ROWINDEX nRow);
@@ -423,7 +423,7 @@ public:
     afx_msg void OnEditSamples();
     afx_msg void OnEditInstruments();
     afx_msg void OnEditComments();
-    afx_msg void OnEditGraph();	//rewbs.Graph
+    afx_msg void OnEditGraph();    //rewbs.Graph
     afx_msg void OnInsertPattern();
     afx_msg void OnInsertSample();
     afx_msg void OnInsertInstrument();

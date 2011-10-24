@@ -36,19 +36,19 @@
 #define AMCHUNKID_AS__ 0x20205341
 
 // Header flags
-#define AMHEAD_LINEAR	0x01
+#define AMHEAD_LINEAR    0x01
 
 // Envelope flags
-#define AMENV_ENABLED	0x01
-#define AMENV_SUSTAIN	0x02
-#define AMENV_LOOP		0x04
+#define AMENV_ENABLED    0x01
+#define AMENV_SUSTAIN    0x02
+#define AMENV_LOOP    	0x04
 
 // Sample flags
-#define AMSMP_16BIT		0x04
-#define AMSMP_LOOP		0x08
-#define AMSMP_PINGPONG	0x10
-#define AMSMP_PANNING	0x20
-#define AMSMP_EXISTS	0x80
+#define AMSMP_16BIT    	0x04
+#define AMSMP_LOOP    	0x08
+#define AMSMP_PINGPONG    0x10
+#define AMSMP_PANNING    0x20
+#define AMSMP_EXISTS    0x80
 // some flags are still missing... what is f.e. 0x8000?
 
 
@@ -57,20 +57,20 @@
 // header for compressed j2b files
 struct J2BHEADER
 {
-    uint32_t signature;		// MUSE
-    uint32_t deadbeaf;		// 0xDEADBEAF (AM) or 0xDEADBABE (AMFF)
-    uint32_t j2blength;		// complete filesize
-    uint32_t crc32;			// checksum of the compressed data block
-    uint32_t packed_length;	// length of the compressed data block
-    uint32_t unpacked_length;	// length of the decompressed module
+    uint32_t signature;    	// MUSE
+    uint32_t deadbeaf;    	// 0xDEADBEAF (AM) or 0xDEADBABE (AMFF)
+    uint32_t j2blength;    	// complete filesize
+    uint32_t crc32;    		// checksum of the compressed data block
+    uint32_t packed_length;    // length of the compressed data block
+    uint32_t unpacked_length;    // length of the decompressed module
 };
 
 // am(ff) stuff
 
 struct AMFF_RIFFCHUNK
 {
-    uint32_t signature;	// "RIFF"
-    uint32_t chunksize;	// chunk size without header
+    uint32_t signature;    // "RIFF"
+    uint32_t chunksize;    // chunk size without header
 };
 
 // this header is used for both AM's "INIT" as well as AMFF's "MAIN" chunk
@@ -81,7 +81,7 @@ struct AMFFCHUNK_MAIN
     uint8_t  channels;
     uint8_t  speed;
     uint8_t  tempo;
-    uint32_t unknown;		// 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
+    uint32_t unknown;    	// 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
     uint8_t  globalvolume;
 };
 
@@ -89,14 +89,14 @@ struct AMFFCHUNK_MAIN
 struct AMFFINST_ENVPOINT
 {
     uint16_t tick;
-    uint8_t  pointval;	// 0...64
+    uint8_t  pointval;    // 0...64
 };
 
 // AMFF instrument header
 struct AMFFCHUNK_INSTRUMENT
 {
-    uint8_t  unknown;				// 0x00
-    uint8_t  index;				// actual instrument number
+    uint8_t  unknown;    			// 0x00
+    uint8_t  index;    			// actual instrument number
     char   name[28];
     uint8_t  numsamples;
     uint8_t  samplemap[120];
@@ -104,11 +104,11 @@ struct AMFFCHUNK_INSTRUMENT
     uint16_t autovib_sweep;
     uint16_t autovib_depth;
     uint16_t autovib_rate;
-    uint8_t  envflags;			// high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
-    uint8_t  envnumpoints;		// high nibble = pan env length, low nibble = vol env length
-    uint8_t  envsustainpoints;	// you guessed it... high nibble = pan env sustain point, low nibble = vol env sustain point
-    uint8_t  envloopstarts;		// i guess you know the pattern now.
-    uint8_t  envloopends;			// same here.
+    uint8_t  envflags;    		// high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
+    uint8_t  envnumpoints;    	// high nibble = pan env length, low nibble = vol env length
+    uint8_t  envsustainpoints;    // you guessed it... high nibble = pan env sustain point, low nibble = vol env sustain point
+    uint8_t  envloopstarts;    	// i guess you know the pattern now.
+    uint8_t  envloopends;    		// same here.
     AMFFINST_ENVPOINT volenv[10];
     AMFFINST_ENVPOINT panenv[10];
     uint16_t fadeout;
@@ -117,8 +117,8 @@ struct AMFFCHUNK_INSTRUMENT
 // AMFF sample header
 struct AMFFCHUNK_SAMPLE
 {
-    uint32_t signature;	// "SAMP"
-    uint32_t chunksize;	// header + sample size
+    uint32_t signature;    // "SAMP"
+    uint32_t chunksize;    // header + sample size
     char   name[28];
     uint8_t  pan;
     uint8_t  volume;
@@ -142,19 +142,19 @@ struct AMINST_ENVPOINT
 struct AMINST_ENVELOPE
 {
     uint16_t flags;
-    uint8_t  numpoints;	// actually, it's num. points - 1, and 0xFF if there is no envelope
+    uint8_t  numpoints;    // actually, it's num. points - 1, and 0xFF if there is no envelope
     uint8_t  suslooppoint;
     uint8_t  loopstart;
     uint8_t  loopend;
     AMINST_ENVPOINT values[10];
-    uint16_t fadeout;		// why is this here? it's only needed for the volume envelope...
+    uint16_t fadeout;    	// why is this here? it's only needed for the volume envelope...
 };
 
 // AM instrument header
 struct AMCHUNK_INSTRUMENT
 {
-    uint8_t  unknown1;	// 0x00
-    uint8_t  index;		// actual instrument number
+    uint8_t  unknown1;    // 0x00
+    uint8_t  index;    	// actual instrument number
     char   name[32];
     uint8_t  samplemap[128];
     uint8_t  autovib_type;
@@ -171,14 +171,14 @@ struct AMCHUNK_INSTRUMENT
 // AM sample header
 struct AMCHUNK_SAMPLE
 {
-    uint32_t signature;	// "SAMP"
-    uint32_t chunksize;	// header + sample size
-    uint32_t headsize;	// header size
+    uint32_t signature;    // "SAMP"
+    uint32_t chunksize;    // header + sample size
+    uint32_t headsize;    // header size
     char   name[32];
     uint16_t pan;
     uint16_t volume;
     uint16_t flags;
-    uint16_t unkown;		// 0x0000 / 0x0080?
+    uint16_t unkown;    	// 0x0000 / 0x0080?
     uint32_t length;
     uint32_t loopstart;
     uint32_t loopend;
@@ -328,7 +328,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const LPCBYTE lpStream, co
                 m->instr = lpStream[dwMemPos];
                 m->note = lpStream[dwMemPos + 1];
                 if(m->note == 0x80) m->note = NOTE_KEYOFF;
-                else if(m->note > 0x80) m->note = NOTE_FADE;	// I guess the support for IT "note fade" notes was not intended in mod2j2b, but hey, it works! :-D
+                else if(m->note > 0x80) m->note = NOTE_FADE;    // I guess the support for IT "note fade" notes was not intended in mod2j2b, but hey, it works! :-D
                 dwMemPos += 2;
             }
 
@@ -362,7 +362,7 @@ void Convert_RIFF_AMFF_Envelope(const uint8_t flags, const uint8_t numpoints, co
     if(flags & AMENV_LOOP) pMPTEnv->flags |= ENV_LOOP;
 
     pMPTEnv->release_node = ENV_RELEASE_NODE_UNSET;
-    pMPTEnv->num_nodes = min(numpoints, 10);	// the buggy mod2j2b converter will actually NOT limit this to 10 points if the envelope is longer.
+    pMPTEnv->num_nodes = min(numpoints, 10);    // the buggy mod2j2b converter will actually NOT limit this to 10 points if the envelope is longer.
 
     pMPTEnv->sustain_start = pMPTEnv->sustain_end = sustainpoint;
     if(pMPTEnv->sustain_start > pMPTEnv->num_nodes)
@@ -425,13 +425,13 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
         const uint16_t val = LittleEndianW(pAMEnv->values[i].pointval);
         switch(env)
         {
-        case ENV_VOLUME:	// 0....32767
+        case ENV_VOLUME:    // 0....32767
             pMPTEnv->Values[i] = (BYTE)((val + 1) >> 9);
             break;
-        case ENV_PITCH:		// -4096....4096
+        case ENV_PITCH:    	// -4096....4096
             pMPTEnv->Values[i] = (BYTE)((((int16_t)val) + 0x1001) >> 7);
             break;
-        case ENV_PANNING:	// -32768...32767
+        case ENV_PANNING:    // -32768...32767
             pMPTEnv->Values[i] = (BYTE)((((int16_t)val) + 0x8001) >> 10);
             break;
         }

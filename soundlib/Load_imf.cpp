@@ -1,7 +1,7 @@
 /*
  * Purpose: Load IMF (Imago Orpheus) modules
  * Authors: Storlek (Original author - http://schismtracker.org/)
- *			Johannes Schultz (OpenMPT Port, tweaks)
+ *    		Johannes Schultz (OpenMPT Port, tweaks)
  *
  * Thanks to Storlek for allowing me to use this code!
  */
@@ -16,29 +16,29 @@
 
 struct IMFCHANNEL
 {
-    char name[12];	// Channel name (ASCIIZ-String, max 11 chars)
-    uint8_t chorus;	// Default chorus
-    uint8_t reverb;	// Default reverb
-    uint8_t panning;	// Pan positions 00-FF
-    uint8_t status;	// Channel status: 0 = enabled, 1 = mute, 2 = disabled (ignore effects!)
+    char name[12];    // Channel name (ASCIIZ-String, max 11 chars)
+    uint8_t chorus;    // Default chorus
+    uint8_t reverb;    // Default reverb
+    uint8_t panning;    // Pan positions 00-FF
+    uint8_t status;    // Channel status: 0 = enabled, 1 = mute, 2 = disabled (ignore effects!)
 };
 
 struct IMFHEADER
 {
-    char title[32];				// Songname (ASCIIZ-String, max. 31 chars)
-    uint16_t ordnum;				// Number of orders saved
-    uint16_t patnum;				// Number of patterns saved
-    uint16_t insnum;				// Number of instruments saved
-    uint16_t flags;				// Module flags (&1 => linear)
+    char title[32];    			// Songname (ASCIIZ-String, max. 31 chars)
+    uint16_t ordnum;    			// Number of orders saved
+    uint16_t patnum;    			// Number of patterns saved
+    uint16_t insnum;    			// Number of instruments saved
+    uint16_t flags;    			// Module flags (&1 => linear)
     uint8_t unused1[8];
-    uint8_t tempo;				// Default tempo (Axx, 1..255)
-    uint8_t bpm;					// Default beats per minute (BPM) (Txx, 32..255)
-    uint8_t master;				// Default mastervolume (Vxx, 0..64)
-    uint8_t amp;					// Amplification factor (mixing volume, 4..127)
+    uint8_t tempo;    			// Default tempo (Axx, 1..255)
+    uint8_t bpm;    				// Default beats per minute (BPM) (Txx, 32..255)
+    uint8_t master;    			// Default mastervolume (Vxx, 0..64)
+    uint8_t amp;    				// Amplification factor (mixing volume, 4..127)
     uint8_t unused2[8];
-    char im10[4];				// 'IM10'
-    IMFCHANNEL channels[32];	// Channel settings
-    uint8_t orderlist[256];		// Order list (0xff = +++; blank out anything beyond ordnum)
+    char im10[4];    			// 'IM10'
+    IMFCHANNEL channels[32];    // Channel settings
+    uint8_t orderlist[256];    	// Order list (0xff = +++; blank out anything beyond ordnum)
 };
 
 enum
@@ -50,11 +50,11 @@ enum
 
 struct IMFENVELOPE
 {
-    uint8_t points;		// Number of envelope points
-    uint8_t sustain;		// Envelope sustain point
-    uint8_t loop_start;	// Envelope loop start point
-    uint8_t loop_end;		// Envelope loop end point
-    uint8_t flags;		// Envelope flags
+    uint8_t points;    	// Number of envelope points
+    uint8_t sustain;    	// Envelope sustain point
+    uint8_t loop_start;    // Envelope loop start point
+    uint8_t loop_end;    	// Envelope loop end point
+    uint8_t flags;    	// Envelope flags
     uint8_t unused[3];
 };
 
@@ -66,71 +66,71 @@ struct IMFENVNODES
 
 struct IMFINSTRUMENT
 {
-    char name[32];		// Inst. name (ASCIIZ-String, max. 31 chars)
-    uint8_t map[120];		// Multisample settings
+    char name[32];    	// Inst. name (ASCIIZ-String, max. 31 chars)
+    uint8_t map[120];    	// Multisample settings
     uint8_t unused[8];
     IMFENVNODES nodes[3][16];
     IMFENVELOPE env[3];
-    uint16_t fadeout;		// Fadeout rate (0...0FFFH)
-    uint16_t smpnum;		// Number of samples in instrument
-    char ii10[4];		// 'II10'
+    uint16_t fadeout;    	// Fadeout rate (0...0FFFH)
+    uint16_t smpnum;    	// Number of samples in instrument
+    char ii10[4];    	// 'II10'
 };
 
 struct IMFSAMPLE
 {
-    char filename[13];	// Sample legacy_filename (12345678.ABC) */
+    char filename[13];    // Sample legacy_filename (12345678.ABC) */
     uint8_t unused1[3];
-    uint32_t length;		// Length
-    uint32_t loop_start;	// Loop start
-    uint32_t loop_end;	// Loop end
-    uint32_t C5Speed;		// Samplerate
-    uint8_t volume;		// Default volume (0...64)
-    uint8_t panning;		// Default pan (0...255)
+    uint32_t length;    	// Length
+    uint32_t loop_start;    // Loop start
+    uint32_t loop_end;    // Loop end
+    uint32_t C5Speed;    	// Samplerate
+    uint8_t volume;    	// Default volume (0...64)
+    uint8_t panning;    	// Default pan (0...255)
     uint8_t unused2[14];
-    uint8_t flags;		// Sample flags
+    uint8_t flags;    	// Sample flags
     uint8_t unused3[5];
-    uint16_t ems;			// Reserved for internal usage
-    uint32_t dram;		// Reserved for internal usage
-    char is10[4];		// 'IS10'
+    uint16_t ems;    		// Reserved for internal usage
+    uint32_t dram;    	// Reserved for internal usage
+    char is10[4];    	// 'IS10'
 };
 #pragma pack()
 
 static BYTE imf_efftrans[] =
 {
     CMD_NONE,
-    CMD_SPEED,			// 0x01 1xx Set Tempo
-    CMD_TEMPO,			// 0x02 2xx Set BPM
+    CMD_SPEED,    		// 0x01 1xx Set Tempo
+    CMD_TEMPO,    		// 0x02 2xx Set BPM
     CMD_TONEPORTAMENTO, // 0x03 3xx Tone Portamento
-    CMD_TONEPORTAVOL,	// 0x04 4xy Tone Portamento + Volume Slide
-    CMD_VIBRATO,		// 0x05 5xy Vibrato
-    CMD_VIBRATOVOL,		// 0x06 6xy Vibrato + Volume Slide
-    CMD_FINEVIBRATO,	// 0x07 7xy Fine Vibrato
-    CMD_TREMOLO,		// 0x08 8xy Tremolo
-    CMD_ARPEGGIO,		// 0x09 9xy Arpeggio
-    CMD_PANNING8,		// 0x0A Axx Set Pan Position
-    CMD_PANNINGSLIDE,	// 0x0B Bxy Pan Slide
-    CMD_VOLUME,			// 0x0C Cxx Set Volume
-    CMD_VOLUMESLIDE,	// 0x0D Dxy Volume Slide
-    CMD_VOLUMESLIDE,	// 0x0E Exy Fine Volume Slide
-    CMD_S3MCMDEX,		// 0x0F Fxx Set Finetune
-    CMD_NOTESLIDEUP,	// 0x10 Gxy Note Slide Up
-    CMD_NOTESLIDEDOWN,	// 0x11 Hxy Note Slide Down
-    CMD_PORTAMENTOUP,	// 0x12 Ixx Slide Up
-    CMD_PORTAMENTODOWN,	// 0x13 Jxx Slide Down
-    CMD_PORTAMENTOUP,	// 0x14 Kxx Fine Slide Up
-    CMD_PORTAMENTODOWN,	// 0x15 Lxx Fine Slide Down
-    CMD_MIDI,			// 0x16 Mxx Set Filter Cutoff - XXX
-    CMD_NONE,			// 0x17 Nxy Filter Slide + Resonance - XXX
-    CMD_OFFSET,			// 0x18 Oxx Set Sample Offset
-    CMD_NONE,			// 0x19 Pxx Set Fine Sample Offset - XXX
-    CMD_KEYOFF,			// 0x1A Qxx Key Off
-    CMD_RETRIG,			// 0x1B Rxy Retrig
-    CMD_TREMOR,			// 0x1C Sxy Tremor
-    CMD_POSITIONJUMP,	// 0x1D Txx Position Jump
-    CMD_PATTERNBREAK,	// 0x1E Uxx Pattern Break
-    CMD_GLOBALVOLUME,	// 0x1F Vxx Set Mastervolume
-    CMD_GLOBALVOLSLIDE,	// 0x20 Wxy Mastervolume Slide
-    CMD_S3MCMDEX,		// 0x21 Xxx Extended Effect
+    CMD_TONEPORTAVOL,    // 0x04 4xy Tone Portamento + Volume Slide
+    CMD_VIBRATO,    	// 0x05 5xy Vibrato
+    CMD_VIBRATOVOL,    	// 0x06 6xy Vibrato + Volume Slide
+    CMD_FINEVIBRATO,    // 0x07 7xy Fine Vibrato
+    CMD_TREMOLO,    	// 0x08 8xy Tremolo
+    CMD_ARPEGGIO,    	// 0x09 9xy Arpeggio
+    CMD_PANNING8,    	// 0x0A Axx Set Pan Position
+    CMD_PANNINGSLIDE,    // 0x0B Bxy Pan Slide
+    CMD_VOLUME,    		// 0x0C Cxx Set Volume
+    CMD_VOLUMESLIDE,    // 0x0D Dxy Volume Slide
+    CMD_VOLUMESLIDE,    // 0x0E Exy Fine Volume Slide
+    CMD_S3MCMDEX,    	// 0x0F Fxx Set Finetune
+    CMD_NOTESLIDEUP,    // 0x10 Gxy Note Slide Up
+    CMD_NOTESLIDEDOWN,    // 0x11 Hxy Note Slide Down
+    CMD_PORTAMENTOUP,    // 0x12 Ixx Slide Up
+    CMD_PORTAMENTODOWN,    // 0x13 Jxx Slide Down
+    CMD_PORTAMENTOUP,    // 0x14 Kxx Fine Slide Up
+    CMD_PORTAMENTODOWN,    // 0x15 Lxx Fine Slide Down
+    CMD_MIDI,    		// 0x16 Mxx Set Filter Cutoff - XXX
+    CMD_NONE,    		// 0x17 Nxy Filter Slide + Resonance - XXX
+    CMD_OFFSET,    		// 0x18 Oxx Set Sample Offset
+    CMD_NONE,    		// 0x19 Pxx Set Fine Sample Offset - XXX
+    CMD_KEYOFF,    		// 0x1A Qxx Key Off
+    CMD_RETRIG,    		// 0x1B Rxy Retrig
+    CMD_TREMOR,    		// 0x1C Sxy Tremor
+    CMD_POSITIONJUMP,    // 0x1D Txx Position Jump
+    CMD_PATTERNBREAK,    // 0x1E Uxx Pattern Break
+    CMD_GLOBALVOLUME,    // 0x1F Vxx Set Mastervolume
+    CMD_GLOBALVOLSLIDE,    // 0x20 Wxy Mastervolume Slide
+    CMD_S3MCMDEX,    	// 0x21 Xxx Extended Effect
                             // X1x Set Filter
                             // X3x Glissando
                             // X5x Vibrato Waveform
@@ -141,8 +141,8 @@ static BYTE imf_efftrans[] =
                             // XDx Note Delay
                             // XEx Ignore Envelope
                             // XFx Invert Loop
-    CMD_NONE,			// 0x22 Yxx Chorus - XXX
-    CMD_NONE,			// 0x23 Zxx Reverb - XXX
+    CMD_NONE,    		// 0x22 Yxx Chorus - XXX
+    CMD_NONE,    		// 0x23 Zxx Reverb - XXX
 };
 
 static void import_imf_effect(modplug::tracker::modcommand_t *note)
@@ -494,7 +494,7 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
 
         // Orpheus does not check this!
         //if(memcmp(imfins.ii10, "II10", 4) != 0)
-        //	return false;
+        //    return false;
         
         pIns = new modinstrument_t;
         if(!pIns)

@@ -5,7 +5,7 @@
 #include "dlg_misc.h"
 #include "globals.h"
 #include "view_pat.h"
-#include "EffectVis.h"		//rewbs.fxvis
+#include "EffectVis.h"    	//rewbs.fxvis
 #include "ChannelManagerDlg.h"
 #include "../soundlib/tuningbase.h"
 #include <string>
@@ -13,34 +13,34 @@
 using std::string;
 
 // Headers
-#define ROWHDR_WIDTH		32	// Row header
-#define COLHDR_HEIGHT		16	// Column header
-#define COLUMN_HEIGHT		13
-#define	VUMETERS_HEIGHT		13	// Height of vu-meters
-#define	PLUGNAME_HEIGHT		16	// Height of vu-meters
-#define VUMETERS_BMPWIDTH		32
-#define VUMETERS_BMPHEIGHT		10
-#define VUMETERS_MEDWIDTH		24
-#define VUMETERS_LOWIDTH		16
+#define ROWHDR_WIDTH    	32	// Row header
+#define COLHDR_HEIGHT    	16	// Column header
+#define COLUMN_HEIGHT    	13
+#define    VUMETERS_HEIGHT		13	// Height of vu-meters
+#define    PLUGNAME_HEIGHT		16	// Height of vu-meters
+#define VUMETERS_BMPWIDTH    	32
+#define VUMETERS_BMPHEIGHT    	10
+#define VUMETERS_MEDWIDTH    	24
+#define VUMETERS_LOWIDTH    	16
 
 
 typedef struct PATTERNFONT
 {
-    int nWidth, nHeight;		// Column Width & Height, including 4-pixels border
-    int nClrX, nClrY;			// Clear (empty note) location
-    int nSpaceX, nSpaceY;		// White location (must be big enough)
-    UINT nEltWidths[5];			// Elements Sizes
-    int nNumX, nNumY;			// Vertically-oriented numbers 0x00-0x0F
-    int nNum10X, nNum10Y;		// Numbers 10-19
-    int nAlphaAM_X,nAlphaAM_Y;	// Letters A-M +#
-    int nAlphaNZ_X,nAlphaNZ_Y;	// Letters N-Z +?
-    int nNoteX, nNoteY;			// Notes ..., C-, C#, ...
-    int nNoteWidth;				// NoteWidth
-    int nOctaveWidth;			// Octave Width
-    int nVolX, nVolY;			// Volume Column Effects
-    int nVolCmdWidth;			// Width of volume effect
-    int nVolHiWidth;			// Width of first character in volume parameter
-    int nCmdOfs;				// XOffset (-xxx) around the command letter
+    int nWidth, nHeight;    	// Column Width & Height, including 4-pixels border
+    int nClrX, nClrY;    		// Clear (empty note) location
+    int nSpaceX, nSpaceY;    	// White location (must be big enough)
+    UINT nEltWidths[5];    		// Elements Sizes
+    int nNumX, nNumY;    		// Vertically-oriented numbers 0x00-0x0F
+    int nNum10X, nNum10Y;    	// Numbers 10-19
+    int nAlphaAM_X,nAlphaAM_Y;    // Letters A-M +#
+    int nAlphaNZ_X,nAlphaNZ_Y;    // Letters N-Z +?
+    int nNoteX, nNoteY;    		// Notes ..., C-, C#, ...
+    int nNoteWidth;    			// NoteWidth
+    int nOctaveWidth;    		// Octave Width
+    int nVolX, nVolY;    		// Volume Column Effects
+    int nVolCmdWidth;    		// Width of volume effect
+    int nVolHiWidth;    		// Width of first character in volume parameter
+    int nCmdOfs;    			// XOffset (-xxx) around the command letter
     int nParamHiWidth;
     int nInstrOfs, nInstr10Ofs, nInstrHiWidth;
 } PATTERNFONT;
@@ -53,20 +53,20 @@ typedef const PATTERNFONT * PCPATTERNFONT;
 // Medium Font (Default)
 const PATTERNFONT gDefaultPatternFont = 
 {
-    92,13,	// Column Width & Height
-    0,0,	// Clear location
-    130,8,	// Space Location.
-    {20, 20, 24, 9, 15},		// Element Widths
-    20,13,	// Numbers 0-F (hex)
-    30,13,	// Numbers 10-19 (dec)
-    64,26,	// A-M#
-    78,26,	// N-Z?										// MEDIUM FONT !!!
+    92,13,    // Column Width & Height
+    0,0,    // Clear location
+    130,8,    // Space Location.
+    {20, 20, 24, 9, 15},    	// Element Widths
+    20,13,    // Numbers 0-F (hex)
+    30,13,    // Numbers 10-19 (dec)
+    64,26,    // A-M#
+    78,26,    // N-Z?										// MEDIUM FONT !!!
     0, 0,
-    12,8,	// Note & Octave Width
-    42,13,	// Volume Column Effects
+    12,8,    // Note & Octave Width
+    42,13,    // Volume Column Effects
     8,8,
     -1,
-    8,		// 8+7 = 15
+    8,    	// 8+7 = 15
     -3, -1, 12,
 };
 
@@ -76,21 +76,21 @@ const PATTERNFONT gDefaultPatternFont =
 
 const PATTERNFONT gSmallPatternFont = 
 {
-    70,11,	// Column Width & Height
-    92,0,	// Clear location
-    130,8,	// Space Location.
-    {16, 14, 18, 7, 11},		// Element Widths
-    108,13,	// Numbers 0-F (hex)
-    120,13,	// Numbers 10-19 (dec)
-    142,26,	// A-M#
-    150,26,	// N-Z?										// SMALL FONT !!!
-    92, 0,	// Notes
-    10,6,	// Note & Octave Width
-    132,13,	// Volume Column Effects
+    70,11,    // Column Width & Height
+    92,0,    // Clear location
+    130,8,    // Space Location.
+    {16, 14, 18, 7, 11},    	// Element Widths
+    108,13,    // Numbers 0-F (hex)
+    120,13,    // Numbers 10-19 (dec)
+    142,26,    // A-M#
+    150,26,    // N-Z?										// SMALL FONT !!!
+    92, 0,    // Notes
+    10,6,    // Note & Octave Width
+    132,13,    // Volume Column Effects
     6,5,
     -1,
-    6,		// 8+7 = 15
-    -3,	1, 9,	// InstrOfs + nInstrHiWidth
+    6,    	// 8+7 = 15
+    -3,    1, 9,	// InstrOfs + nInstrHiWidth
 };
 
 // NOTE: See also CViewPattern::DrawNote() when changing stuff here
@@ -196,7 +196,7 @@ void CViewPattern::UpdateView(DWORD dwHintMask, CObject *)
     {
 // -> CODE#0008
 // -> DESC"#define to set pattern max size (number of rows) limit (now set to 1024 instead of 256)"
-//		InvalidateRow(dwHintMask >> 24);
+//    	InvalidateRow(dwHintMask >> 24);
         InvalidateRow(dwHintMask >> HINT_SHIFT_ROW);
 // -! BEHAVIOUR_CHANGE#0008
     }
@@ -404,7 +404,7 @@ void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modco
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
 
     if(mc.IsPcNote())
-    {	//If note is parameter control note, drawing volume command differently.
+    {    //If note is parameter control note, drawing volume command differently.
         const int val = min(modplug::tracker::modcommand_t::maxColumnValue, mc.GetValueVolCol());
 
         m_Dib.TextBlt(x, y, 1, COLUMN_HEIGHT, pfnt->nClrX, pfnt->nClrY);
@@ -481,7 +481,7 @@ void CViewPattern::OnDraw(CDC *pDC)
 // -> CODE#0012
 // -> DESC="midi keyboard split"
                 const char *pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]? "[Channel %d]" : "Channel %d";
-//				const char *pszfmt = pModDoc->IsChannelRecord(ncolhdr) ? "Channel %d " : "Channel %d";
+//    			const char *pszfmt = pModDoc->IsChannelRecord(ncolhdr) ? "Channel %d " : "Channel %d";
 // -! NEW_FEATURE#0012
                 if ((pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) && ((BYTE)pSndFile->ChnSettings[ncolhdr].szName[0] >= ' '))
                     pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]?"%d: [%s]":"%d: %s";
@@ -490,10 +490,10 @@ void CViewPattern::OnDraw(CDC *pDC)
                 wsprintf(s, pszfmt, ncolhdr+1, pSndFile->ChnSettings[ncolhdr].szName);
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-//				DrawButtonRect(hdc, &rect, s,
-//					(pSndFile->ChnSettings[ncolhdr].dwFlags & CHN_MUTE) ? TRUE : FALSE,
-//					((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_CHNHEADER) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE, DT_CENTER);
-//				rect.bottom = rect.top + COLHDR_HEIGHT;
+//    			DrawButtonRect(hdc, &rect, s,
+//    				(pSndFile->ChnSettings[ncolhdr].dwFlags & CHN_MUTE) ? TRUE : FALSE,
+//    				((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_CHNHEADER) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE, DT_CENTER);
+//    			rect.bottom = rect.top + COLHDR_HEIGHT;
                 DrawButtonRect(hdc, &rect, s,
                     (pSndFile->ChnSettings[ncolhdr].dwFlags & CHN_MUTE) ? TRUE : FALSE,
                     ((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_CHNHEADER) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE,
@@ -518,12 +518,12 @@ void CViewPattern::OnDraw(CDC *pDC)
 
                 CRect insRect;
                 insRect.SetRect(xpaint, ypaint, xpaint+nColumnWidth / 8 + 3, ypaint + 16);
-//				if (MultiRecordMask[ncolhdr>>3] & (1 << (ncolhdr&7)))
+//    			if (MultiRecordMask[ncolhdr>>3] & (1 << (ncolhdr&7)))
                 if (pModDoc->IsChannelRecord1(ncolhdr))
                 {
-//					rect.DeflateRect(1, 1);
-//					InvertRect(hdc, &rect);
-//					rect.InflateRect(1, 1);
+//    				rect.DeflateRect(1, 1);
+//    				InvertRect(hdc, &rect);
+//    				rect.InflateRect(1, 1);
                     FrameRect(hdc,&rect,CMainFrame::brushGray);
                     InvertRect(hdc, &rect);
                     s[0] = '1';
@@ -694,7 +694,7 @@ void CViewPattern::OnDraw(CDC *pDC)
 }
 
 
-void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern, BOOL bSelEnable,
+void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPattern, BOOL bSelEnable,
                         BOOL bPlaying, UINT yofs, UINT nrows, UINT xofs, CRect &rcClient, int *pypaint)
 //-----------------------------------------------------------------------------------------------------
 {
@@ -841,7 +841,7 @@ void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern,
                     {
                         if(m->GetValueVolCol() == mold->GetValueVolCol() || (m_nDetailLevel < 2)) dwSpeedUpMask |= 0x04;
                         if(m->GetValueEffectCol() == mold->GetValueEffectCol() || (m_nDetailLevel < 3)) dwSpeedUpMask |= 0x18;
-                    }		
+                    }    	
                 }
                 else
                 {
@@ -973,7 +973,7 @@ void CViewPattern::DrawPatternData(HDC hdc,	CSoundFile *pSndFile, UINT nPattern,
                         if (m->command)
                         {
                             UINT command = m->command & 0x3F;
-                            int n =	(pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) ? gszModCommands[command] : gszS3mCommands[command];
+                            int n =    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) ? gszModCommands[command] : gszS3mCommands[command];
                             ASSERT(n > ' ');
                             //if (n <= ' ') n = '?';
                             DrawLetter(xbmp+x, 0, (char)n, pfnt->nEltWidths[3], pfnt->nCmdOfs);
@@ -1553,7 +1553,7 @@ void CViewPattern::UpdateIndicator()
                 }
             }
             pMainFrm->SetInfoText(s);
-            UpdateXInfoText();		//rewbs.xinfo
+            UpdateXInfoText();    	//rewbs.xinfo
         }
     }
 

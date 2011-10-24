@@ -15,7 +15,7 @@
 CFileTagging::CFileTagging()
 //--------------------------
 {
-	encoder = "OpenMPT " MPT_VERSION_STR;
+    encoder = "OpenMPT " MPT_VERSION_STR;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,60 +27,60 @@ CFileTagging::CFileTagging()
 uint32_t CFileTagging::intToSynchsafe(uint32_t iIn)
 //---------------------------------------------
 {
-	uint32_t iOut = 0, iSteps = 0;
-	do
-	{
-		iOut |= (iIn & 0x7F) << iSteps;
-		iSteps += 8;
-	} while(iIn >>= 7);
-	return BigEndian(iOut);
+    uint32_t iOut = 0, iSteps = 0;
+    do
+    {
+    	iOut |= (iIn & 0x7F) << iSteps;
+    	iSteps += 8;
+    } while(iIn >>= 7);
+    return BigEndian(iOut);
 }
 
 // Write Tags
 void CFileTagging::WriteID3v2Tags(FILE *f)
 //----------------------------------------
 {
-	if(!f) return;
-	
-	TAGID3v2HEADER tHeader;
-	UINT fOffset = ftell(f);
+    if(!f) return;
+    
+    TAGID3v2HEADER tHeader;
+    UINT fOffset = ftell(f);
 
-	totalID3v2Size = 0;
+    totalID3v2Size = 0;
 
-	// Correct header will be written later (tag size missing)
-	tHeader.signature[0] = 'I';
-	tHeader.signature[1] = 'D';
-	tHeader.signature[2] = '3';
-	tHeader.version[0] = 0x04; // Version 2.4.0
-	tHeader.version[1] = 0x00; // Dito
-	tHeader.flags = 0x00; // No flags
-	fwrite(&tHeader, 1, sizeof(tHeader), f);
+    // Correct header will be written later (tag size missing)
+    tHeader.signature[0] = 'I';
+    tHeader.signature[1] = 'D';
+    tHeader.signature[2] = '3';
+    tHeader.version[0] = 0x04; // Version 2.4.0
+    tHeader.version[1] = 0x00; // Dito
+    tHeader.flags = 0x00; // No flags
+    fwrite(&tHeader, 1, sizeof(tHeader), f);
 
-	// Write TIT2 (Title), TCOM / TPE1 (Composer), TALB (Album), TCON (Genre), TYER / TDRC (Date), WXXX (URL), TENC (Encoder), COMM (Comment)
-	WriteID3v2Frame("TIT2", title, f);
-	WriteID3v2Frame("TPE1", artist, f);
-	WriteID3v2Frame("TCOM", artist, f);
-	WriteID3v2Frame("TALB", album, f);
-	WriteID3v2Frame("TCON", genre, f);
-	//WriteID3v2Frame("TYER", year, f);		// Deprecated
-	WriteID3v2Frame("TDRC", year, f);
-	WriteID3v2Frame("TBPM", bpm, f);
-	WriteID3v2Frame("WXXX", url, f);
-	WriteID3v2Frame("TENC", encoder, f);
-	WriteID3v2Frame("COMM", comments, f);
+    // Write TIT2 (Title), TCOM / TPE1 (Composer), TALB (Album), TCON (Genre), TYER / TDRC (Date), WXXX (URL), TENC (Encoder), COMM (Comment)
+    WriteID3v2Frame("TIT2", title, f);
+    WriteID3v2Frame("TPE1", artist, f);
+    WriteID3v2Frame("TCOM", artist, f);
+    WriteID3v2Frame("TALB", album, f);
+    WriteID3v2Frame("TCON", genre, f);
+    //WriteID3v2Frame("TYER", year, f);		// Deprecated
+    WriteID3v2Frame("TDRC", year, f);
+    WriteID3v2Frame("TBPM", bpm, f);
+    WriteID3v2Frame("WXXX", url, f);
+    WriteID3v2Frame("TENC", encoder, f);
+    WriteID3v2Frame("COMM", comments, f);
 
-	// Write Padding
-	for(size_t i = 0; i < ID3v2_PADDING; i++)
-	{
-		fputc(0, f);
-	}
-	totalID3v2Size += ID3v2_PADDING;
+    // Write Padding
+    for(size_t i = 0; i < ID3v2_PADDING; i++)
+    {
+    	fputc(0, f);
+    }
+    totalID3v2Size += ID3v2_PADDING;
 
-	// Write correct header (update tag size)
-	tHeader.size = intToSynchsafe(totalID3v2Size);
-	fseek(f, fOffset, SEEK_SET);
-	fwrite(&tHeader, 1, sizeof(tHeader), f);
-	fseek(f, totalID3v2Size, SEEK_CUR);
+    // Write correct header (update tag size)
+    tHeader.size = intToSynchsafe(totalID3v2Size);
+    fseek(f, fOffset, SEEK_SET);
+    fwrite(&tHeader, 1, sizeof(tHeader), f);
+    fseek(f, totalID3v2Size, SEEK_CUR);
 
 }
 
@@ -88,31 +88,31 @@ void CFileTagging::WriteID3v2Tags(FILE *f)
 void CFileTagging::WriteID3v2Frame(char cFrameID[4], string sFramecontent, FILE *f)
 //---------------------------------------------------------------------------------
 {
-	if(!cFrameID[0] || sFramecontent.empty() || !f) return;
+    if(!cFrameID[0] || sFramecontent.empty() || !f) return;
 
-	if(!memcmp(cFrameID, "COMM", 4))
-	{
-		// English language for comments - no description following (hence the text ending nullchar(s))
-		// For language IDs, see http://en.wikipedia.org/wiki/ISO-639-2
-		sFramecontent = "eng" + (ID3v2_TEXTENDING + sFramecontent);
-	}
-	if(!memcmp(cFrameID, "WXXX", 4))
-	{
-		// User-defined URL field (we have no description for the URL, so we leave it out)
-		sFramecontent = ID3v2_TEXTENDING + sFramecontent;
-	}
-	sFramecontent = ID3v2_CHARSET + sFramecontent;
-	sFramecontent += ID3v2_TEXTENDING;
+    if(!memcmp(cFrameID, "COMM", 4))
+    {
+    	// English language for comments - no description following (hence the text ending nullchar(s))
+    	// For language IDs, see http://en.wikipedia.org/wiki/ISO-639-2
+    	sFramecontent = "eng" + (ID3v2_TEXTENDING + sFramecontent);
+    }
+    if(!memcmp(cFrameID, "WXXX", 4))
+    {
+    	// User-defined URL field (we have no description for the URL, so we leave it out)
+    	sFramecontent = ID3v2_TEXTENDING + sFramecontent;
+    }
+    sFramecontent = ID3v2_CHARSET + sFramecontent;
+    sFramecontent += ID3v2_TEXTENDING;
 
-	TAGID3v2FRAME tFrame;
+    TAGID3v2FRAME tFrame;
 
-	memcpy(&tFrame.frameid, cFrameID, 4); // ID
-	tFrame.size = intToSynchsafe(sFramecontent.size()); // Text size
-	tFrame.flags = 0x0000; // No flags
-	fwrite(&tFrame, 1, sizeof(tFrame), f);
-	fwrite(sFramecontent.c_str(), 1, sFramecontent.size(), f);
+    memcpy(&tFrame.frameid, cFrameID, 4); // ID
+    tFrame.size = intToSynchsafe(sFramecontent.size()); // Text size
+    tFrame.flags = 0x0000; // No flags
+    fwrite(&tFrame, 1, sizeof(tFrame), f);
+    fwrite(sFramecontent.c_str(), 1, sFramecontent.size(), f);
 
-	totalID3v2Size += (sizeof(tFrame) + sFramecontent.size());
+    totalID3v2Size += (sizeof(tFrame) + sFramecontent.size());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,73 +122,73 @@ void CFileTagging::WriteID3v2Frame(char cFrameID[4], string sFramecontent, FILE 
 void CFileTagging::WriteWaveTags(WAVEDATAHEADER *wdh, WAVEFILEHEADER *wfh, FILE *f)
 //---------------------------------------------------------------------------------
 {
-	if(!f || !wdh || !wfh) return;
-	
-	WAVEFILEHEADER list;
-	WAVEDATAHEADER chunk;
-	DWORD info_ofs, end_ofs;
-	const uint8_t zero = 0;
+    if(!f || !wdh || !wfh) return;
+    
+    WAVEFILEHEADER list;
+    WAVEDATAHEADER chunk;
+    DWORD info_ofs, end_ofs;
+    const uint8_t zero = 0;
 
-	struct
-	{
-		DWORD id;
-		string *data;
-	} chunks[] =
-	{
-		{ IFFID_ICMT, &comments },
-		{ IFFID_INAM, &title },
-		{ IFFID_IART, &artist },
-		{ IFFID_IPRD, &album },
-		{ IFFID_ICOP, &url },
-		{ IFFID_IGNR, &genre },
-		{ IFFID_ISFT, &encoder },
-		{ IFFID_ICRD, &year },
-	};
+    struct
+    {
+    	DWORD id;
+    	string *data;
+    } chunks[] =
+    {
+    	{ IFFID_ICMT, &comments },
+    	{ IFFID_INAM, &title },
+    	{ IFFID_IART, &artist },
+    	{ IFFID_IPRD, &album },
+    	{ IFFID_ICOP, &url },
+    	{ IFFID_IGNR, &genre },
+    	{ IFFID_ISFT, &encoder },
+    	{ IFFID_ICRD, &year },
+    };
 
-	info_ofs = ftell(f);
-	if (info_ofs & 1)
-	{
-		wdh->length++;
-		fwrite(&zero, 1, 1, f);
-		info_ofs++;
-	}
-	list.id_RIFF = IFFID_LIST;
-	list.id_WAVE = IFFID_INFO;
-	list.filesize = 4;
-	fwrite(&list, 1, sizeof(list), f);
+    info_ofs = ftell(f);
+    if (info_ofs & 1)
+    {
+    	wdh->length++;
+    	fwrite(&zero, 1, 1, f);
+    	info_ofs++;
+    }
+    list.id_RIFF = IFFID_LIST;
+    list.id_WAVE = IFFID_INFO;
+    list.filesize = 4;
+    fwrite(&list, 1, sizeof(list), f);
 
-	for(size_t iCmt = 0; iCmt < CountOf(chunks); iCmt++)
-	{
-		if(chunks[iCmt].data->empty())
-		{
-			continue;
-		}
+    for(size_t iCmt = 0; iCmt < CountOf(chunks); iCmt++)
+    {
+    	if(chunks[iCmt].data->empty())
+    	{
+    		continue;
+    	}
 
-		string data = *chunks[iCmt].data;
-		// Special case: Expand year to full date
-		if(chunks[iCmt].id == IFFID_ICRD)
-		{
-			data += "-01-01";
-		}
+    	string data = *chunks[iCmt].data;
+    	// Special case: Expand year to full date
+    	if(chunks[iCmt].id == IFFID_ICRD)
+    	{
+    		data += "-01-01";
+    	}
 
-		chunk.id_data = chunks[iCmt].id;
-		chunk.length = data.length() + 1;
+    	chunk.id_data = chunks[iCmt].id;
+    	chunk.length = data.length() + 1;
 
-		fwrite(&chunk, 1, sizeof(chunk), f);
-		fwrite(data.c_str(), 1, chunk.length, f);
-		list.filesize += chunk.length + sizeof(chunk);
+    	fwrite(&chunk, 1, sizeof(chunk), f);
+    	fwrite(data.c_str(), 1, chunk.length, f);
+    	list.filesize += chunk.length + sizeof(chunk);
 
-		// Chunks must be even-sized
-		if(chunk.length & 1)
-		{
-			fwrite(&zero, 1, 1, f);
-			list.filesize++;
-		}
-	}
-	// Update INFO size
-	end_ofs = ftell(f);
-	fseek(f, info_ofs, SEEK_SET);
-	fwrite(&list, 1, sizeof(list), f);
-	fseek(f, end_ofs, SEEK_SET);
-	wfh->filesize += list.filesize + 8;
+    	// Chunks must be even-sized
+    	if(chunk.length & 1)
+    	{
+    		fwrite(&zero, 1, 1, f);
+    		list.filesize++;
+    	}
+    }
+    // Update INFO size
+    end_ofs = ftell(f);
+    fseek(f, info_ofs, SEEK_SET);
+    fwrite(&list, 1, sizeof(list), f);
+    fseek(f, end_ofs, SEEK_SET);
+    wfh->filesize += list.filesize + 8;
 }

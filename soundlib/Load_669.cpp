@@ -5,7 +5,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *			OpenMPT dev(s)	(miscellaneous modifications)
+ *    		OpenMPT dev(s)	(miscellaneous modifications)
 */
 
 ////////////////////////////////////////////////////////////
@@ -19,10 +19,10 @@
 
 typedef struct tagFILEHEADER669
 {
-    WORD sig;				// 'if' or 'JN'
-    char songmessage[108];	// Song Message
-    BYTE samples;			// number of samples (1-64)
-    BYTE patterns;			// number of patterns (1-128)
+    WORD sig;    			// 'if' or 'JN'
+    char songmessage[108];    // Song Message
+    BYTE samples;    		// number of samples (1-64)
+    BYTE patterns;    		// number of patterns (1-128)
     BYTE restartpos;
     BYTE orders[128];
     BYTE tempolist[128];
@@ -33,7 +33,7 @@ typedef struct tagFILEHEADER669
 typedef struct tagSAMPLE669
 {
     BYTE filename[13];
-    BYTE length[4];	// when will somebody think about DWORD align ???
+    BYTE length[4];    // when will somebody think about DWORD align ???
     BYTE loopstart[4];
     BYTE loopend[4];
 } SAMPLE669;
@@ -147,17 +147,17 @@ bool CSoundFile::Read669(const BYTE *lpStream, const DWORD dwMemLength)
                     UINT param = p[2] & 0x0F;
                     switch(command)
                     {
-                    case 0x00:	command = CMD_PORTAMENTOUP; break;
-                    case 0x01:	command = CMD_PORTAMENTODOWN; break;
-                    case 0x02:	command = CMD_TONEPORTAMENTO; break;
-                    case 0x03:	command = CMD_MODCMDEX; param |= 0x50; break;
-                    case 0x04:	command = CMD_VIBRATO; param |= 0x40; break;
-                    case 0x05:	if (param) command = CMD_SPEED; else command = 0; param += 2; break;
-                    case 0x06:	if (param == 0) { command = CMD_PANNINGSLIDE; param = 0xFE; } else
+                    case 0x00:    command = CMD_PORTAMENTOUP; break;
+                    case 0x01:    command = CMD_PORTAMENTODOWN; break;
+                    case 0x02:    command = CMD_TONEPORTAMENTO; break;
+                    case 0x03:    command = CMD_MODCMDEX; param |= 0x50; break;
+                    case 0x04:    command = CMD_VIBRATO; param |= 0x40; break;
+                    case 0x05:    if (param) command = CMD_SPEED; else command = 0; param += 2; break;
+                    case 0x06:    if (param == 0) { command = CMD_PANNINGSLIDE; param = 0xFE; } else
                                 if (param == 1) { command = CMD_PANNINGSLIDE; param = 0xEF; } else
                                 command = 0;
                                 break;
-                    default:	command = 0;
+                    default:    command = 0;
                     }
                     if (command)
                     {

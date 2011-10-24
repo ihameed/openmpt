@@ -36,8 +36,8 @@ struct modsample_t {
 
     uint16_t flags;
 
-    signed char RelativeTone;			// Relative note to middle c (for MOD/XM)
-    signed char nFineTune;				// Finetune period (for MOD/XM)
+    signed char RelativeTone;    		// Relative note to middle c (for MOD/XM)
+    signed char nFineTune;    			// Finetune period (for MOD/XM)
 
     uint8_t vibrato_type;
     uint8_t vibrato_sweep;
@@ -62,8 +62,8 @@ struct modsample_t {
 struct modenvelope_t {
     uint32_t flags;
 
-    uint16_t Ticks[MAX_ENVPOINTS];	// envelope point position (x axis)
-    uint8_t Values[MAX_ENVPOINTS];	// envelope point value (y axis)
+    uint16_t Ticks[MAX_ENVPOINTS];    // envelope point position (x axis)
+    uint8_t Values[MAX_ENVPOINTS];    // envelope point value (y axis)
 
     uint32_t num_nodes;
 
@@ -86,8 +86,8 @@ struct modinstrument_t {
     modenvelope_t panning_envelope;
     modenvelope_t pitch_envelope;
 
-    uint8_t NoteMap[128];	// Note mapping, f.e. C-5 => D-5.
-    uint16_t Keyboard[128];	// Sample mapping, f.e. C-5 => Sample 1
+    uint8_t NoteMap[128];    // Note mapping, f.e. C-5 => D-5.
+    uint16_t Keyboard[128];    // Sample mapping, f.e. C-5 => Sample 1
 
     uint8_t new_note_action;
     uint8_t duplicate_check_type;
@@ -107,17 +107,17 @@ struct modinstrument_t {
     signed char pitch_pan_separation;
     unsigned char pitch_pan_center;
 
-    char name[32];		// Note: not guaranteed to be null-terminated.
+    char name[32];    	// Note: not guaranteed to be null-terminated.
     char legacy_filename[32];
 
-    PLUGINDEX nMixPlug;				// Plugin assigned to this instrument
+    PLUGINDEX nMixPlug;    			// Plugin assigned to this instrument
 
     modplug::mixgraph::id_t graph_insert;
 
     uint16_t volume_ramp_up;
     uint16_t volume_ramp_down;
 
-    uint32_t resampling_mode;				// Resampling mode
+    uint32_t resampling_mode;    			// Resampling mode
 
     uint8_t random_cutoff_weight;
     uint8_t random_resonance_weight;
@@ -125,13 +125,13 @@ struct modinstrument_t {
 
     uint16_t pitch_to_tempo_lock;
 
-    uint8_t nPluginVelocityHandling;	// How to deal with plugin velocity
-    uint8_t nPluginVolumeHandling;		// How to deal with plugin volume
+    uint8_t nPluginVelocityHandling;    // How to deal with plugin velocity
+    uint8_t nPluginVolumeHandling;    	// How to deal with plugin volume
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // WHEN adding new members here, ALSO update Sndfile.cpp (instructions near the top of this file)!
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    CTuning* pTuning;				// sample tuning assigned to this instrument
+    CTuning* pTuning;    			// sample tuning assigned to this instrument
     static CTuning* s_DefaultTuning;
 
     void SetTuning(CTuning* pT)
@@ -222,10 +222,10 @@ __declspec(align(32)) struct modchannel_t {
     uint8_t nActiveMacro, nFilterMode;
     uint8_t nEFxSpeed, nEFxDelay; // memory for Invert Loop (EFx, .MOD only)
 
-    uint16_t m_RowPlugParam;			//NOTE_PCs memory.
+    uint16_t m_RowPlugParam;    		//NOTE_PCs memory.
     float m_nPlugParamValueStep;  //rewbs.smoothVST 
     float m_nPlugInitialParamValue; //rewbs.smoothVST
-    PLUGINDEX m_RowPlug;			//NOTE_PCs memory.
+    PLUGINDEX m_RowPlug;    		//NOTE_PCs memory.
     
     void ClearRowCmd() {nRowNote = NOTE_NONE; nRowInstr = 0; nRowVolCmd = VOLCMD_NONE; nRowVolume = 0; nRowCommand = CMD_NONE; nRowParam = 0;}
 
@@ -249,10 +249,10 @@ __declspec(align(32)) struct modchannel_t {
     //<----
 };
 
-#define CHNRESET_CHNSETTINGS	1 //  1 b 
-#define CHNRESET_SETPOS_BASIC	2 // 10 b
-#define	CHNRESET_SETPOS_FULL	7 //111 b
-#define CHNRESET_TOTAL			255 //11111111b
+#define CHNRESET_CHNSETTINGS    1 //  1 b 
+#define CHNRESET_SETPOS_BASIC    2 // 10 b
+#define    CHNRESET_SETPOS_FULL	7 //111 b
+#define CHNRESET_TOTAL    		255 //11111111b
 
 
 struct MODCHANNELSETTINGS

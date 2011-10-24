@@ -22,8 +22,8 @@ BOOL PP20_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength);
 
 typedef struct MMCMPFILEHEADER
 {
-    DWORD id_ziRC;	// "ziRC"
-    DWORD id_ONia;	// "ONia"
+    DWORD id_ziRC;    // "ziRC"
+    DWORD id_ONia;    // "ONia"
     WORD hdrsize;
 } MMCMPFILEHEADER, *LPMMCMPFILEHEADER;
 
@@ -54,12 +54,12 @@ typedef struct MMCMPSUBBLOCK
     DWORD unpk_size;
 } MMCMPSUBBLOCK, *LPMMCMPSUBBLOCK;
 
-#define MMCMP_COMP		0x0001
-#define MMCMP_DELTA		0x0002
-#define MMCMP_16BIT		0x0004
-#define MMCMP_STEREO	0x0100
-#define MMCMP_ABS16		0x0200
-#define MMCMP_ENDIAN	0x0400
+#define MMCMP_COMP    	0x0001
+#define MMCMP_DELTA    	0x0002
+#define MMCMP_16BIT    	0x0004
+#define MMCMP_STEREO    0x0100
+#define MMCMP_ABS16    	0x0200
+#define MMCMP_ENDIAN    0x0400
 
 typedef struct MMCMPBITBUFFER
 {
@@ -90,7 +90,7 @@ DWORD MMCMPBITBUFFER::GetBits(UINT nBits)
 
 const DWORD MMCMP8BitCommands[8] =
 {
-    0x01, 0x03,	0x07, 0x0F,	0x1E, 0x3C,	0x78, 0xF8
+    0x01, 0x03,    0x07, 0x0F,	0x1E, 0x3C,	0x78, 0xF8
 };
 
 const UINT MMCMP8BitFetch[8] =
@@ -100,7 +100,7 @@ const UINT MMCMP8BitFetch[8] =
 
 const DWORD MMCMP16BitCommands[16] =
 {
-    0x01, 0x03,	0x07, 0x0F,	0x1E, 0x3C,	0x78, 0xF0,
+    0x01, 0x03,    0x07, 0x0F,	0x1E, 0x3C,	0x78, 0xF0,
     0x1F0, 0x3F0, 0x7F0, 0xFF0, 0x1FF0, 0x3FF0, 0x7FF0, 0xFFF0
 };
 
@@ -406,7 +406,7 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
             d6 = 8;
             goto l734;
   
-        l6dc:	
+        l6dc:    
             if (bfextu(src,d0,1)) goto l726;
             d0 += 1;
             if (! bfextu(src,d0,1)) goto l75a;
@@ -415,21 +415,21 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
             d6 = 2;
             goto l708;
 
-        l6f6:	
+        l6f6:    
             d0 += 1;
             if (!bfextu(src,d0,1)) goto l706;
             d6 = bfextu(src,d0,3);
             d0 += 3;
             goto l70a;
   
-        l706:	
+        l706:    
             d6 = 3;
-        l708:	
+        l708:    
             d0 += 1;
-        l70a:	
+        l70a:    
             d6 = xpk_table[(8*a2) + d6 -17];
             if (d6 != 8) goto l730;
-        l718:	
+        l718:    
             if (d2 >= 20)
             {
                 d5 = 1;
@@ -438,14 +438,14 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
             d5 = 0;
             goto l734;
 
-        l726:	
+        l726:    
             d0 += 1;
             d6 = 8;
             if (d6 == a2) goto l718;
             d6 = a2;
-        l730:	
+        l730:    
             d5 = 4;
-        l732:	
+        l732:    
             d2 += 8;
         l734:
             while ((d5 >= 0) && (cup1 > 0))
@@ -460,7 +460,7 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
             }
             if (d1 != 31) d1++;
             a2 = d6;
-        l74c:	
+        l74c:    
             d6 = d2;
             d6 >>= 3;
             d2 -= d6;
@@ -468,25 +468,25 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
     }
     return;
 
-l75a:	
+l75a:    
     d0 += 1;
     if (bfextu(src,d0,1)) goto l766;
     d4 = 2;
     goto l79e;
   
-l766:	
+l766:    
     d0 += 1;
     if (bfextu(src,d0,1)) goto l772;
     d4 = 4;
     goto l79e;
 
-l772:	
+l772:    
     d0 += 1;
     if (bfextu(src,d0,1)) goto l77e;
     d4 = 6;
     goto l79e;
 
-l77e:	
+l77e:    
     d0 += 1;
     if (bfextu(src,d0,1)) goto l792;
     d0 += 1;
@@ -495,7 +495,7 @@ l77e:
     d6 += 8;
     goto l7a8;
   
-l792:	
+l792:    
     d0 += 1;
     d6 = bfextu(src,d0,5);
     d0 += 5;

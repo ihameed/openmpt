@@ -25,7 +25,7 @@
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
 #define VST_FORCE_DEPRECATED 0
-#include <aeffect.h>			// VST
+#include <aeffect.h>    		// VST
 #else
 typedef int32_t VstInt32;
 typedef intptr_t VstIntPtr;
@@ -54,7 +54,7 @@ extern BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t 
 
 ////////////////////////////////////////////////////////////////////
 // Mix Plugins
-#define MIXPLUG_MIXREADY			0x01	// Set when cleared
+#define MIXPLUG_MIXREADY    		0x01	// Set when cleared
 
 typedef VstInt32 PlugParamIndex;
 typedef float PlugParamValue;
@@ -72,8 +72,8 @@ public:
     virtual void MidiCC(UINT nMidiCh, UINT nController, UINT nParam, UINT trackChannel) = 0;
     virtual void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel) = 0;
     virtual void MidiCommand(UINT nMidiCh, UINT nMidiProg, WORD wMidiBank, UINT note, UINT vol, UINT trackChan) = 0;
-    virtual void HardAllNotesOff() = 0;		//rewbs.VSTCompliance
-    virtual void RecalculateGain() = 0;		
+    virtual void HardAllNotesOff() = 0;    	//rewbs.VSTCompliance
+    virtual void RecalculateGain() = 0;    	
     virtual bool isPlaying(UINT note, UINT midiChn, UINT trackerChn) = 0; //rewbs.VSTiNNA
     virtual bool MoveNote(UINT note, UINT midiChn, UINT sourceTrackerChn, UINT destTrackerChn) = 0; //rewbs.VSTiNNA
     virtual void SetParameter(PlugParamIndex paramindex, PlugParamValue paramvalue) = 0;
@@ -82,7 +82,7 @@ public:
     virtual UINT GetZxxParameter(UINT nParam) = 0; //rewbs.smoothVST 
     virtual void ModifyParameter(PlugParamIndex nIndex, PlugParamValue diff);
     virtual VstIntPtr Dispatch(VstInt32 opCode, VstInt32 index, VstIntPtr value, void *ptr, float opt) =0; //rewbs.VSTCompliance
-    virtual void NotifySongPlaying(bool)=0;	//rewbs.VSTCompliance
+    virtual void NotifySongPlaying(bool)=0;    //rewbs.VSTCompliance
     virtual bool IsSongPlaying()=0;
     virtual bool IsResumed()=0;
     virtual void Resume()=0;
@@ -105,21 +105,21 @@ inline void IMixPlugin::ModifyParameter(PlugParamIndex nIndex, PlugParamValue di
                                                 ///////////////////////////////////////////////////
                                                 // !!! bits 8 -> 15 reserved for mixing mode !!! //
                                                 ///////////////////////////////////////////////////
-#define MIXPLUG_INPUTF_MASTEREFFECT				0x01	// Apply to master mix
-#define MIXPLUG_INPUTF_BYPASS					0x02	// Bypass effect
-#define MIXPLUG_INPUTF_WETMIX					0x04	// Wet Mix (dry added)
+#define MIXPLUG_INPUTF_MASTEREFFECT    			0x01	// Apply to master mix
+#define MIXPLUG_INPUTF_BYPASS    				0x02	// Bypass effect
+#define MIXPLUG_INPUTF_WETMIX    				0x04	// Wet Mix (dry added)
 // -> CODE#0028
 // -> DESC="effect plugin mixing mode combo"
-#define MIXPLUG_INPUTF_MIXEXPAND				0x08	// [0%,100%] -> [-200%,200%]
+#define MIXPLUG_INPUTF_MIXEXPAND    			0x08	// [0%,100%] -> [-200%,200%]
 // -! BEHAVIOUR_CHANGE#0028
 
 
 struct SNDMIXPLUGINSTATE
 {
-    DWORD dwFlags;					// MIXPLUG_XXXX
-    LONG nVolDecayL, nVolDecayR;	// Buffer click removal
-    int *pMixBuffer;				// Stereo effect send buffer
-    float *pOutBufferL;				// Temp storage for int -> float conversion
+    DWORD dwFlags;    				// MIXPLUG_XXXX
+    LONG nVolDecayL, nVolDecayR;    // Buffer click removal
+    int *pMixBuffer;    			// Stereo effect send buffer
+    float *pOutBufferL;    			// Temp storage for int -> float conversion
     float *pOutBufferR;
 };
 typedef SNDMIXPLUGINSTATE* PSNDMIXPLUGINSTATE;
@@ -128,14 +128,14 @@ struct SNDMIXPLUGININFO
 {
     DWORD dwPluginId1;
     DWORD dwPluginId2;
-    DWORD dwInputRouting;	// MIXPLUG_INPUTF_XXXX, bits 16-23 = gain
-    DWORD dwOutputRouting;	// 0=mix 0x80+=fx
-    DWORD dwReserved[4];	// Reserved for routing info
+    DWORD dwInputRouting;    // MIXPLUG_INPUTF_XXXX, bits 16-23 = gain
+    DWORD dwOutputRouting;    // 0=mix 0x80+=fx
+    DWORD dwReserved[4];    // Reserved for routing info
     CHAR szName[32];
-    CHAR szLibraryName[64];	// original DLL name
-}; // Size should be 128 							
+    CHAR szLibraryName[64];    // original DLL name
+}; // Size should be 128     						
 typedef SNDMIXPLUGININFO* PSNDMIXPLUGININFO;
-STATIC_ASSERT(sizeof(SNDMIXPLUGININFO) == 128);	// this is directly written to files, so the size must be correct!
+STATIC_ASSERT(sizeof(SNDMIXPLUGININFO) == 128);    // this is directly written to files, so the size must be correct!
 
 struct SNDMIXPLUGIN
 {
@@ -148,14 +148,14 @@ struct SNDMIXPLUGIN
     ULONG nPluginDataSize;
     PVOID pPluginData;
     SNDMIXPLUGININFO Info;
-    float fDryRatio;		    // rewbs.dryRatio [20040123]
-    long defaultProgram;		// rewbs.plugDefaultProgram
+    float fDryRatio;    	    // rewbs.dryRatio [20040123]
+    long defaultProgram;    	// rewbs.plugDefaultProgram
 }; // rewbs.dryRatio: Hopefully this doesn't need to be a fixed size.
 typedef SNDMIXPLUGIN* PSNDMIXPLUGIN;
 
 //class CSoundFile;
 class CModDoc;
-typedef	BOOL (__cdecl *PMIXPLUGINCREATEPROC)(PSNDMIXPLUGIN, CSoundFile*);
+typedef    BOOL (__cdecl *PMIXPLUGINCREATEPROC)(PSNDMIXPLUGIN, CSoundFile*);
 
 struct SNDMIXSONGEQ
 {
@@ -184,7 +184,7 @@ typedef SNDMIX_REVERB_PROPERTIES* PSNDMIX_REVERB_PROPERTIES;
 
 #ifndef NO_REVERB
 
-#define NUM_REVERBTYPES			29
+#define NUM_REVERBTYPES    		29
 
 LPCSTR GetReverbPresetName(UINT nPreset);
 
@@ -207,8 +207,8 @@ enum
 };
 
 
-#define NUM_MACROS 16	// number of parametered macros
-#define MACRO_LENGTH 32	// max number of chars per macro
+#define NUM_MACROS 16    // number of parametered macros
+#define MACRO_LENGTH 32    // max number of chars per macro
 struct MODMIDICFG
 {
     CHAR szMidiGlb[9][MACRO_LENGTH];
@@ -228,20 +228,20 @@ typedef VOID (__cdecl * LPSNDMIXHOOKPROC)(int *, unsigned long, unsigned long); 
 // Line ending types (for reading song messages from module files)
 enum enmLineEndings
 {
-    leCR,			// Carriage Return (0x0D, \r)
-    leLF,			// Line Feed (0x0A \n)
-    leCRLF,			// Carriage Return, Line Feed (0x0D0A, \r\n)
-    leMixed,		// It is not defined whether Carriage Return or Line Feed is the actual line ending. Both are accepted.
-    leAutodetect,	// Detect suitable line ending
+    leCR,    		// Carriage Return (0x0D, \r)
+    leLF,    		// Line Feed (0x0A \n)
+    leCRLF,    		// Carriage Return, Line Feed (0x0D0A, \r\n)
+    leMixed,    	// It is not defined whether Carriage Return or Line Feed is the actual line ending. Both are accepted.
+    leAutodetect,    // Detect suitable line ending
 };
 
 
 // For WAV export (writing pattern positions to file)
 struct PatternCuePoint
 {
-    bool		processed;		// has this point been processed by the main WAV render function yet?
-    ULONGLONG	offset;			// offset in the file (in samples)
-    ORDERINDEX	order;			// which order is this?
+    bool    	processed;		// has this point been processed by the main WAV render function yet?
+    ULONGLONG    offset;			// offset in the file (in samples)
+    ORDERINDEX    order;			// which order is this?
 };
 
 // Data type for the visited rows routines.
@@ -252,40 +252,40 @@ typedef vector<VisitedRowsBaseType> VisitedRowsType;
 // Return values for GetLength()
 struct GetLengthType
 {
-    double duration;		// total time in seconds
-    bool targetReached;		// true if the specified order/row combination has been reached while going through the module
-    ORDERINDEX lastOrder;	// last parsed order (if no target is specified, this is the first order that is parsed twice, i.e. not the *last* played order)
-    ROWINDEX lastRow;		// last parsed row (dito)
-    ORDERINDEX endOrder;	// last order before module loops (UNDEFINED if a target is specified)
-    ROWINDEX endRow;		// last row before module loops (dito)
+    double duration;    	// total time in seconds
+    bool targetReached;    	// true if the specified order/row combination has been reached while going through the module
+    ORDERINDEX lastOrder;    // last parsed order (if no target is specified, this is the first order that is parsed twice, i.e. not the *last* played order)
+    ROWINDEX lastRow;    	// last parsed row (dito)
+    ORDERINDEX endOrder;    // last order before module loops (UNDEFINED if a target is specified)
+    ROWINDEX endRow;    	// last row before module loops (dito)
 };
 
 // Reset mode for GetLength()
 enum enmGetLengthResetMode
 {
     // Never adjust global variables / mod parameters
-    eNoAdjust			= 0x00,
+    eNoAdjust    		= 0x00,
     // Mod parameters (such as global volume, speed, tempo, etc...) will always be memorized if the target was reached (i.e. they won't be reset to the previous values).  If target couldn't be reached, they are reset to their default values.
-    eAdjust				= 0x01,
+    eAdjust    			= 0x01,
     // Same as above, but global variables will only be memorized if the target could be reached. This does *NOT* influence the visited rows vector - it will *ALWAYS* be adjusted in this mode.
-    eAdjustOnSuccess	= 0x02 | eAdjust,
+    eAdjustOnSuccess    = 0x02 | eAdjust,
 };
 
 
 // Row advance mode for TryWriteEffect()
 enum writeEffectAllowRowChange
 {
-    weIgnore,			// If effect can't be written, abort.
-    weTryNextRow,		// If effect can't be written, try next row.
-    weTryPreviousRow,	// If effect can't be written, try previous row.
+    weIgnore,    		// If effect can't be written, abort.
+    weTryNextRow,    	// If effect can't be written, try next row.
+    weTryPreviousRow,    // If effect can't be written, try previous row.
 };
 
 
 //Note: These are bit indeces. MSF <-> Mod(Specific)Flag.
 //If changing these, ChangeModTypeTo() might need modification.
-const BYTE MSF_COMPATIBLE_PLAY		= 0;		//IT/MPT/XM
-const BYTE MSF_OLDVOLSWING			= 1;		//IT/MPT
-const BYTE MSF_MIDICC_BUGEMULATION	= 2;		//IT/MPT/XM
+const BYTE MSF_COMPATIBLE_PLAY    	= 0;		//IT/MPT/XM
+const BYTE MSF_OLDVOLSWING    		= 1;		//IT/MPT
+const BYTE MSF_MIDICC_BUGEMULATION    = 2;		//IT/MPT/XM
 
 
 class CTuningCollection;
@@ -358,13 +358,13 @@ private: //'Controllers'
 private: //Misc data
     uint16_t m_ModFlags;
     const CModSpecifications* m_pModSpecs;
-    bool m_bITBidiMode;	// Process bidi loops like Impulse Tracker (see Fastmix.cpp for an explanation)
+    bool m_bITBidiMode;    // Process bidi loops like Impulse Tracker (see Fastmix.cpp for an explanation)
 
     // For handling backwards jumps and stuff to prevent infinite loops when counting the mod length or rendering to wav.
     VisitedRowsType m_VisitedRows;
 
 
-public:	// Static Members
+public:    // Static Members
     static UINT m_nXBassDepth, m_nXBassRange;
     static float m_nMaxSample;
     static UINT m_nReverbDepth, gnReverbType;
@@ -382,24 +382,24 @@ public:	// Static Members
     static uint8_t s_DefaultPlugVolumeHandling;
 
 
-public:	// for Editing
-    CModDoc* m_pModDoc;		// Can be a null pointer f.e. when previewing samples from the treeview.
+public:    // for Editing
+    CModDoc* m_pModDoc;    	// Can be a null pointer f.e. when previewing samples from the treeview.
     MODTYPE m_nType;
     CHANNELINDEX m_nChannels;
     SAMPLEINDEX m_nSamples;
     INSTRUMENTINDEX m_nInstruments;
     UINT m_nDefaultSpeed, m_nDefaultTempo, m_nDefaultGlobalVolume;
-    DWORD m_dwSongFlags;							// Song flags SONG_XXXX
+    DWORD m_dwSongFlags;    						// Song flags SONG_XXXX
     bool m_bIsRendering;
     UINT m_nMixChannels, m_nMixStat, m_nBufferCount;
     double m_dBufferDiff;
     UINT m_nTickCount, m_nTotalCount;
-    UINT m_nPatternDelay, m_nFrameDelay;	// m_nPatternDelay = pattern delay, m_nFrameDelay = fine pattern delay
-    ULONG m_lTotalSampleCount;	// rewbs.VSTTimeInfo
-    UINT m_nSamplesPerTick;		// rewbs.betterBPM
-    ROWINDEX m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;	// default rows per beat and measure for this module // rewbs.betterBPM
-    ROWINDEX m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;	// current rows per beat and measure for this module
-    BYTE m_nTempoMode;			// rewbs.betterBPM
+    UINT m_nPatternDelay, m_nFrameDelay;    // m_nPatternDelay = pattern delay, m_nFrameDelay = fine pattern delay
+    ULONG m_lTotalSampleCount;    // rewbs.VSTTimeInfo
+    UINT m_nSamplesPerTick;    	// rewbs.betterBPM
+    ROWINDEX m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;    // default rows per beat and measure for this module // rewbs.betterBPM
+    ROWINDEX m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;    // current rows per beat and measure for this module
+    BYTE m_nTempoMode;    		// rewbs.betterBPM
     BYTE m_nMixLevels;
     UINT m_nMusicSpeed, m_nMusicTempo;
     ROWINDEX m_nNextRow, m_nRow;
@@ -412,35 +412,35 @@ public:	// for Editing
          m_nGlobalVolumeDestination, m_nSamplePreAmp, m_nVSTiVolume;
     long m_lHighResRampingGlobalVolume;
     UINT m_nFreqFactor, m_nTempoFactor, m_nOldGlbVolSlide;
-    LONG m_nMinPeriod, m_nMaxPeriod;	// min period = highest possible frequency, max period = lowest possible frequency
-    LONG m_nRepeatCount;	// -1 means repeat infinitely.
+    LONG m_nMinPeriod, m_nMaxPeriod;    // min period = highest possible frequency, max period = lowest possible frequency
+    LONG m_nRepeatCount;    // -1 means repeat infinitely.
     DWORD m_nGlobalFadeSamples, m_nGlobalFadeMaxSamples;
     UINT m_nMaxOrderPosition;
     LPSTR m_lpszSongComments;
-    UINT ChnMix[MAX_CHANNELS];							// Channels to be mixed
-    modplug::tracker::modchannel_t Chn[MAX_CHANNELS];						// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
-    modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];	// Initial channels settings
-    CPatternContainer Patterns;							// Patterns
-    ModSequenceSet Order;								// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
+    UINT ChnMix[MAX_CHANNELS];    						// Channels to be mixed
+    modplug::tracker::modchannel_t Chn[MAX_CHANNELS];    					// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
+    modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
+    CPatternContainer Patterns;    						// Patterns
+    ModSequenceSet Order;    							// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
 
-    modplug::tracker::modsample_t Samples[MAX_SAMPLES];						// Sample Headers
-    modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];		// Instrument Headers
-    modplug::tracker::modinstrument_t m_defaultInstrument;					// Currently only used to get default values for extented properties. 
+    modplug::tracker::modsample_t Samples[MAX_SAMPLES];    					// Sample Headers
+    modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];    	// Instrument Headers
+    modplug::tracker::modinstrument_t m_defaultInstrument;    				// Currently only used to get default values for extented properties. 
 
-    CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];		// Song and sample names
+    CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];    	// Song and sample names
     std::string song_name;
 
-    MODMIDICFG m_MidiCfg;								// Midi macro config table
-    SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];			// Mix plugins
-    SNDMIXSONGEQ m_SongEQ;								// Default song EQ preset
-    CHAR CompressionTable[16];							// ADPCM compression LUT
+    MODMIDICFG m_MidiCfg;    							// Midi macro config table
+    SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];    		// Mix plugins
+    SNDMIXSONGEQ m_SongEQ;    							// Default song EQ preset
+    CHAR CompressionTable[16];    						// ADPCM compression LUT
     bool m_bChannelMuteTogglePending[MAX_BASECHANNELS];
 
     CSoundFilePlayConfig* m_pConfig;
     DWORD m_dwCreatedWithVersion;
     DWORD m_dwLastSavedWithVersion;
 
-    vector<PatternCuePoint> m_PatternCuePoints;			// For WAV export (writing pattern positions to file)
+    vector<PatternCuePoint> m_PatternCuePoints;    		// For WAV export (writing pattern positions to file)
 
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
@@ -481,8 +481,8 @@ public:
     static const CModSpecifications& GetModSpecifications(const MODTYPE type);
 
     double GetCurrentBPM() const;
-    ORDERINDEX FindOrder(PATTERNINDEX nPat, UINT startFromOrder=0, bool direction = true);	//rewbs.playSongFromCursor
-    void DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);		//rewbs.playSongFromCursor
+    ORDERINDEX FindOrder(PATTERNINDEX nPat, UINT startFromOrder=0, bool direction = true);    //rewbs.playSongFromCursor
+    void DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);    	//rewbs.playSongFromCursor
     void SetCurrentPos(UINT nPos);
     void SetCurrentOrder(ORDERINDEX nOrder);
     void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
@@ -503,7 +503,7 @@ public:
     // A repeat count value of -1 means infinite loop
     void SetRepeatCount(int n) { m_nRepeatCount = n; }
     int GetRepeatCount() const { return m_nRepeatCount; }
-    bool IsPaused() const {	return (m_dwSongFlags & (SONG_PAUSED|SONG_STEP)) ? true : false; }	// Added SONG_STEP as it seems to be desirable in most cases to check for this as well.
+    bool IsPaused() const {    return (m_dwSongFlags & (SONG_PAUSED|SONG_STEP)) ? true : false; }	// Added SONG_STEP as it seems to be desirable in most cases to check for this as well.
     void LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);
     void CheckCPUUsage(UINT nCPU);
 
@@ -627,7 +627,7 @@ public:
 #ifdef ENABLE_EQ
     // EQ
     static void InitializeEQ(BOOL bReset=TRUE);
-    static void SetEQGains(const UINT *pGains, UINT nBands, const UINT *pFreqs=NULL, BOOL bReset=FALSE);	// 0=-12dB, 32=+12dB
+    static void SetEQGains(const UINT *pGains, UINT nBands, const UINT *pFreqs=NULL, BOOL bReset=FALSE);    // 0=-12dB, 32=+12dB
     /*static*/ void EQStereo(int *pbuffer, UINT nCount);
     /*static*/ void EQMono(int *pbuffer, UINT nCount);
 #endif
@@ -677,7 +677,7 @@ private:
     void Tremolo(modplug::tracker::modchannel_t *pChn, UINT param);
     void Panbrello(modplug::tracker::modchannel_t *pChn, UINT param);
     void RetrigNote(UINT nChn, int param, UINT offset=0);  //rewbs.volOffset: added last param
-    void SampleOffset(UINT nChn, UINT param, bool bPorta);	//rewbs.volOffset: moved offset code to own method
+    void SampleOffset(UINT nChn, UINT param, bool bPorta);    //rewbs.volOffset: moved offset code to own method
     void NoteCut(UINT nChn, UINT nTick);
     int PatternLoop(modplug::tracker::modchannel_t *, UINT param);
     void ExtendedMODCommands(UINT nChn, UINT param);
@@ -730,7 +730,7 @@ public:
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
-//	BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
+//    BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
     UINT ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
 // -! NEW_FEATURE#0027
 
@@ -759,12 +759,12 @@ public:
     UINT MapMidiInstrument(DWORD dwProgram, UINT nChannel, UINT nNote);
     long ITInstrToMPT(const void *p, modplug::tracker::modinstrument_t *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
     UINT LoadMixPlugins(const void *pData, UINT nLen);
-//	PSNDMIXPLUGIN GetSndPlugMixPlug(IMixPlugin *pPlugin); //rewbs.plugDocAware
+//    PSNDMIXPLUGIN GetSndPlugMixPlug(IMixPlugin *pPlugin); //rewbs.plugDocAware
 #ifndef NO_FILTER
     DWORD CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
 #endif
 #ifdef MODPLUG_TRACKER
-    VOID ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn);		//rewbs.VSTdelay : added arg.
+    VOID ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn);    	//rewbs.VSTdelay : added arg.
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
@@ -877,22 +877,22 @@ inline IMixPlugin* CSoundFile::GetInstrumentPlugin(INSTRUMENTINDEX instr)
 ///////////////////////////////////////////////////////////
 // Low-level Mixing functions
 
-#define FADESONGDELAY		100
-#define EQ_BUFFERSIZE		(modplug::mixer::MIX_BUFFER_SIZE)
-#define AGC_PRECISION		10
-#define AGC_UNITY			(1 << AGC_PRECISION)
+#define FADESONGDELAY    	100
+#define EQ_BUFFERSIZE    	(modplug::mixer::MIX_BUFFER_SIZE)
+#define AGC_PRECISION    	10
+#define AGC_UNITY    		(1 << AGC_PRECISION)
 
 // Calling conventions
 #ifdef WIN32
-#define MPPASMCALL	__cdecl
-#define MPPFASTCALL	__fastcall
+#define MPPASMCALL    __cdecl
+#define MPPFASTCALL    __fastcall
 #else
 #define MPPASMCALL
 #define MPPFASTCALL
 #endif
 
-#define MOD2XMFineTune(k)	((int)( (signed char)((k)<<4) ))
-#define XM2MODFineTune(k)	((int)( (k>>4)&0x0f ))
+#define MOD2XMFineTune(k)    ((int)( (signed char)((k)<<4) ))
+#define XM2MODFineTune(k)    ((int)( (k>>4)&0x0f ))
 
 int _muldiv(long a, long b, long c);
 int _muldivr(long a, long b, long c);
@@ -904,9 +904,9 @@ int _muldivr(long a, long b, long c);
 
 typedef struct MODFORMATINFO
 {
-    MODTYPE mtFormatId;		// MOD_TYPE_XXXX
-    LPCSTR  lpszFormatName;	// "ProTracker"
-    LPCSTR  lpszExtension;	// ".xxx"
+    MODTYPE mtFormatId;    	// MOD_TYPE_XXXX
+    LPCSTR  lpszFormatName;    // "ProTracker"
+    LPCSTR  lpszExtension;    // ".xxx"
     DWORD   dwPadding;
 } MODFORMATINFO;
 

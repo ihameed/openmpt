@@ -8,9 +8,9 @@
 #include "globals.h"
 #include "view_pat.h"
 #include "ctrl_pat.h"
-#include "vstplug.h"	// for writing plug params to pattern
+#include "vstplug.h"    // for writing plug params to pattern
 
-#include "EffectVis.h"		//rewbs.fxvis
+#include "EffectVis.h"    	//rewbs.fxvis
 #include "PatternGotoDialog.h"
 #include "PatternRandomizer.h"
 #include "arrayutils.h"
@@ -20,7 +20,7 @@
 #include "midi.h"
 #include <cmath>
 
-#define	PLUGNAME_HEIGHT	16	//rewbs.patPlugName
+#define    PLUGNAME_HEIGHT	16	//rewbs.patPlugName
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
@@ -51,32 +51,32 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_WM_KILLFOCUS()
     ON_WM_SYSKEYDOWN()
     ON_WM_DESTROY()
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,	OnCustomKeyMsg)		//rewbs.customKeys
-    ON_MESSAGE(WM_MOD_MIDIMSG,		OnMidiMsg)
+    ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg)		//rewbs.customKeys
+    ON_MESSAGE(WM_MOD_MIDIMSG,    	OnMidiMsg)
     ON_MESSAGE(WM_MOD_RECORDPARAM,  OnRecordPlugParamChange)
-    ON_COMMAND(ID_EDIT_CUT,			OnEditCut)
-    ON_COMMAND(ID_EDIT_COPY,		OnEditCopy)
-    ON_COMMAND(ID_EDIT_PASTE,		OnEditPaste)
-    ON_COMMAND(ID_EDIT_MIXPASTE,	OnEditMixPaste)
+    ON_COMMAND(ID_EDIT_CUT,    		OnEditCut)
+    ON_COMMAND(ID_EDIT_COPY,    	OnEditCopy)
+    ON_COMMAND(ID_EDIT_PASTE,    	OnEditPaste)
+    ON_COMMAND(ID_EDIT_MIXPASTE,    OnEditMixPaste)
     ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,OnEditMixPasteITStyle)
-    ON_COMMAND(ID_EDIT_PASTEFLOOD,	OnEditPasteFlood)
+    ON_COMMAND(ID_EDIT_PASTEFLOOD,    OnEditPasteFlood)
     ON_COMMAND(ID_EDIT_PUSHFORWARDPASTE,OnEditPushForwardPaste)
-    ON_COMMAND(ID_EDIT_SELECT_ALL,	OnEditSelectAll)
+    ON_COMMAND(ID_EDIT_SELECT_ALL,    OnEditSelectAll)
     ON_COMMAND(ID_EDIT_SELECTCOLUMN,OnEditSelectColumn)
     ON_COMMAND(ID_EDIT_SELECTCOLUMN2,OnSelectCurrentColumn)
-    ON_COMMAND(ID_EDIT_FIND,		OnEditFind)
-    ON_COMMAND(ID_EDIT_GOTO_MENU,	OnEditGoto)
-    ON_COMMAND(ID_EDIT_FINDNEXT,	OnEditFindNext)
-    ON_COMMAND(ID_EDIT_RECSELECT,	OnRecordSelect)
+    ON_COMMAND(ID_EDIT_FIND,    	OnEditFind)
+    ON_COMMAND(ID_EDIT_GOTO_MENU,    OnEditGoto)
+    ON_COMMAND(ID_EDIT_FINDNEXT,    OnEditFindNext)
+    ON_COMMAND(ID_EDIT_RECSELECT,    OnRecordSelect)
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-    ON_COMMAND(ID_EDIT_SPLITRECSELECT,	OnSplitRecordSelect)
-    ON_COMMAND(ID_EDIT_SPLITKEYBOARDSETTINGS,	SetSplitKeyboardSettings)
+    ON_COMMAND(ID_EDIT_SPLITRECSELECT,    OnSplitRecordSelect)
+    ON_COMMAND(ID_EDIT_SPLITKEYBOARDSETTINGS,    SetSplitKeyboardSettings)
 // -! NEW_FEATURE#0012
-    ON_COMMAND(ID_EDIT_UNDO,		OnEditUndo)
-    ON_COMMAND(ID_PATTERN_CHNRESET,	OnChannelReset)
-    ON_COMMAND(ID_PATTERN_MUTE,		OnMuteFromClick) //rewbs.customKeys
-    ON_COMMAND(ID_PATTERN_SOLO,		OnSoloFromClick) //rewbs.customKeys
+    ON_COMMAND(ID_EDIT_UNDO,    	OnEditUndo)
+    ON_COMMAND(ID_PATTERN_CHNRESET,    OnChannelReset)
+    ON_COMMAND(ID_PATTERN_MUTE,    	OnMuteFromClick) //rewbs.customKeys
+    ON_COMMAND(ID_PATTERN_SOLO,    	OnSoloFromClick) //rewbs.customKeys
     ON_COMMAND(ID_PATTERN_TRANSITIONMUTE, OnTogglePendingMuteFromClick)
     ON_COMMAND(ID_PATTERN_TRANSITIONSOLO, OnPendingSoloChnFromClick)
     ON_COMMAND(ID_PATTERN_TRANSITION_UNMUTEALL, OnPendingUnmuteAllChnFromClick)
@@ -84,43 +84,43 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_COMMAND(ID_PATTERN_DELETEROW,OnDeleteRows)
     ON_COMMAND(ID_PATTERN_DELETEALLROW,OnDeleteRowsEx)
     ON_COMMAND(ID_PATTERN_INSERTROW,OnInsertRows)
-    ON_COMMAND(ID_NEXTINSTRUMENT,	OnNextInstrument)
-    ON_COMMAND(ID_PREVINSTRUMENT,	OnPrevInstrument)
-    ON_COMMAND(ID_PATTERN_PLAYROW,	OnPatternStep)
-    ON_COMMAND(ID_CONTROLENTER,		OnPatternStep)
-    ON_COMMAND(ID_CONTROLTAB,		OnSwitchToOrderList)
-    ON_COMMAND(ID_PREVORDER,		OnPrevOrder)
-    ON_COMMAND(ID_NEXTORDER,		OnNextOrder)
-    ON_COMMAND(IDC_PATTERN_RECORD,	OnPatternRecord)
-    ON_COMMAND(ID_RUN_SCRIPT,					OnRunScript)
-    ON_COMMAND(ID_TRANSPOSE_UP,					OnTransposeUp)
-    ON_COMMAND(ID_TRANSPOSE_DOWN,				OnTransposeDown)
-    ON_COMMAND(ID_TRANSPOSE_OCTUP,				OnTransposeOctUp)
-    ON_COMMAND(ID_TRANSPOSE_OCTDOWN,			OnTransposeOctDown)
-    ON_COMMAND(ID_PATTERN_PROPERTIES,			OnPatternProperties)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_VOLUME,	OnInterpolateVolume)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_EFFECT,	OnInterpolateEffect)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,		OnInterpolateNote)
-    ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,		OnVisualizeEffect)		//rewbs.fxvis
-    ON_COMMAND(ID_PATTERN_OPEN_RANDOMIZER,		OnOpenRandomizer)
-    ON_COMMAND(ID_GROW_SELECTION,				OnGrowSelection)
-    ON_COMMAND(ID_SHRINK_SELECTION,				OnShrinkSelection)
-    ON_COMMAND(ID_PATTERN_SETINSTRUMENT,		OnSetSelInstrument)
-    ON_COMMAND(ID_PATTERN_ADDCHANNEL_FRONT,		OnAddChannelFront)
-    ON_COMMAND(ID_PATTERN_ADDCHANNEL_AFTER,		OnAddChannelAfter)
-    ON_COMMAND(ID_PATTERN_DUPLICATECHANNEL,		OnDuplicateChannel)
-    ON_COMMAND(ID_PATTERN_REMOVECHANNEL,		OnRemoveChannel)
-    ON_COMMAND(ID_PATTERN_REMOVECHANNELDIALOG,	OnRemoveChannelDialog)
-    ON_COMMAND(ID_CURSORCOPY,					OnCursorCopy)
-    ON_COMMAND(ID_CURSORPASTE,					OnCursorPaste)
-    ON_COMMAND(ID_PATTERN_AMPLIFY,				OnPatternAmplify)
-    ON_COMMAND(ID_CLEAR_SELECTION,				OnClearSelectionFromMenu)
-    ON_COMMAND(ID_SHOWTIMEATROW,				OnShowTimeAtRow)
-    ON_COMMAND(ID_CHANNEL_RENAME,				OnRenameChannel)
-    ON_COMMAND(ID_PATTERN_EDIT_PCNOTE_PLUGIN,	OnTogglePCNotePluginEditor)
+    ON_COMMAND(ID_NEXTINSTRUMENT,    OnNextInstrument)
+    ON_COMMAND(ID_PREVINSTRUMENT,    OnPrevInstrument)
+    ON_COMMAND(ID_PATTERN_PLAYROW,    OnPatternStep)
+    ON_COMMAND(ID_CONTROLENTER,    	OnPatternStep)
+    ON_COMMAND(ID_CONTROLTAB,    	OnSwitchToOrderList)
+    ON_COMMAND(ID_PREVORDER,    	OnPrevOrder)
+    ON_COMMAND(ID_NEXTORDER,    	OnNextOrder)
+    ON_COMMAND(IDC_PATTERN_RECORD,    OnPatternRecord)
+    ON_COMMAND(ID_RUN_SCRIPT,    				OnRunScript)
+    ON_COMMAND(ID_TRANSPOSE_UP,    				OnTransposeUp)
+    ON_COMMAND(ID_TRANSPOSE_DOWN,    			OnTransposeDown)
+    ON_COMMAND(ID_TRANSPOSE_OCTUP,    			OnTransposeOctUp)
+    ON_COMMAND(ID_TRANSPOSE_OCTDOWN,    		OnTransposeOctDown)
+    ON_COMMAND(ID_PATTERN_PROPERTIES,    		OnPatternProperties)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_VOLUME,    OnInterpolateVolume)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_EFFECT,    OnInterpolateEffect)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,    	OnInterpolateNote)
+    ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,    	OnVisualizeEffect)		//rewbs.fxvis
+    ON_COMMAND(ID_PATTERN_OPEN_RANDOMIZER,    	OnOpenRandomizer)
+    ON_COMMAND(ID_GROW_SELECTION,    			OnGrowSelection)
+    ON_COMMAND(ID_SHRINK_SELECTION,    			OnShrinkSelection)
+    ON_COMMAND(ID_PATTERN_SETINSTRUMENT,    	OnSetSelInstrument)
+    ON_COMMAND(ID_PATTERN_ADDCHANNEL_FRONT,    	OnAddChannelFront)
+    ON_COMMAND(ID_PATTERN_ADDCHANNEL_AFTER,    	OnAddChannelAfter)
+    ON_COMMAND(ID_PATTERN_DUPLICATECHANNEL,    	OnDuplicateChannel)
+    ON_COMMAND(ID_PATTERN_REMOVECHANNEL,    	OnRemoveChannel)
+    ON_COMMAND(ID_PATTERN_REMOVECHANNELDIALOG,    OnRemoveChannelDialog)
+    ON_COMMAND(ID_CURSORCOPY,    				OnCursorCopy)
+    ON_COMMAND(ID_CURSORPASTE,    				OnCursorPaste)
+    ON_COMMAND(ID_PATTERN_AMPLIFY,    			OnPatternAmplify)
+    ON_COMMAND(ID_CLEAR_SELECTION,    			OnClearSelectionFromMenu)
+    ON_COMMAND(ID_SHOWTIMEATROW,    			OnShowTimeAtRow)
+    ON_COMMAND(ID_CHANNEL_RENAME,    			OnRenameChannel)
+    ON_COMMAND(ID_PATTERN_EDIT_PCNOTE_PLUGIN,    OnTogglePCNotePluginEditor)
     ON_COMMAND_RANGE(ID_CHANGE_INSTRUMENT, ID_CHANGE_INSTRUMENT+MAX_INSTRUMENTS, OnSelectInstrument)
     ON_COMMAND_RANGE(ID_CHANGE_PCNOTE_PARAM, ID_CHANGE_PCNOTE_PARAM + modplug::tracker::modcommand_t::maxColumnValue, OnSelectPCNoteParam)
-    ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,			OnUpdateUndo)
+    ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,    		OnUpdateUndo)
     ON_COMMAND_RANGE(ID_PLUGSELECT, ID_PLUGSELECT+MAX_MIXPLUGINS, OnSelectPlugin) //rewbs.patPlugName
 
 
@@ -222,7 +222,7 @@ BOOL CViewPattern::SetCurrentPattern(UINT npat, int nrow)
     UpdateScrollSize();
     UpdateIndicator();
 
-    if (m_bWholePatternFitsOnScreen) 		//rewbs.scrollFix
+    if (m_bWholePatternFitsOnScreen)     	//rewbs.scrollFix
         SetScrollPos(SB_VERT, 0);
     else if (bUpdateScroll) //rewbs.fix3147
         SetScrollPos(SB_VERT, m_nRow * GetColumnHeight());
@@ -461,7 +461,7 @@ DWORD CViewPattern::GetDragItem(CPoint point, LPRECT lpRect)
 {
     CModDoc *pModDoc = GetDocument();
     CSoundFile *pSndFile;
-    CRect rcClient, rect, plugRect; 	//rewbs.patPlugNames
+    CRect rcClient, rect, plugRect;     //rewbs.patPlugNames
     UINT n;
     int xofs, yofs;
 
@@ -470,7 +470,7 @@ DWORD CViewPattern::GetDragItem(CPoint point, LPRECT lpRect)
     xofs = GetXScrollPos();
     yofs = GetYScrollPos();
     rect.SetRect(m_szHeader.cx, 0, m_szHeader.cx + GetColumnWidth() /*- 2*/, m_szHeader.cy);
-    plugRect.SetRect(m_szHeader.cx, m_szHeader.cy-PLUGNAME_HEIGHT, m_szHeader.cx + GetColumnWidth() - 2, m_szHeader.cy);	//rewbs.patPlugNames
+    plugRect.SetRect(m_szHeader.cx, m_szHeader.cy-PLUGNAME_HEIGHT, m_szHeader.cx + GetColumnWidth() - 2, m_szHeader.cy);    //rewbs.patPlugNames
     pSndFile = pModDoc->GetSoundFile();
     const UINT nmax = pSndFile->GetNumChannels();
     // Checking channel headers
@@ -689,19 +689,19 @@ void CViewPattern::OnDestroy()
     {
         pModDoc->SetOldPatternScrollbarsPos(CSize(m_nXScroll*m_szCell.cx, m_nYScroll*m_szCell.cy));
     };
-    if (m_pEffectVis)	{
+    if (m_pEffectVis)    {
         m_pEffectVis->DoClose();
         delete m_pEffectVis;
         m_pEffectVis = NULL;
     }
 
-    if (m_pEditWnd)	{
+    if (m_pEditWnd)    {
         m_pEditWnd->DestroyWindow();
         delete m_pEditWnd;
         m_pEditWnd = NULL;
     }
 
-    if (m_pGotoWnd)	{
+    if (m_pGotoWnd)    {
         m_pGotoWnd->DestroyWindow();
         delete m_pGotoWnd;
         m_pGotoWnd = NULL;
@@ -740,7 +740,7 @@ void CViewPattern::OnKillFocus(CWnd *pNewWnd)
     //Unset all selection
     m_dwStatus &= ~PATSTATUS_KEYDRAGSEL;
     m_dwStatus &= ~PATSTATUS_CTRLDRAGSEL;
-//	CMainFrame::GetMainFrame()->GetInputHandler()->SetModifierMask(0);
+//    CMainFrame::GetMainFrame()->GetInputHandler()->SetModifierMask(0);
     //end rewbs.customKeys
 
     m_dwStatus &= ~PATSTATUS_FOCUS;
@@ -777,12 +777,12 @@ void CViewPattern::OnGrowSelection()
             //Log("dst: %d; src: %d; blk: %d\n", row, (row-offset/2), (row-1));
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:	dest->note    = src->note;    blank->note = NOTE_NONE;		break;
-                case INST_COLUMN:	dest->instr   = src->instr;   blank->instr = 0;				break;
-                case VOL_COLUMN:	dest->vol     = src->vol;     blank->vol = 0;
-                                    dest->volcmd  = src->volcmd;  blank->volcmd = VOLCMD_NONE;	break;
-                case EFFECT_COLUMN:	dest->command = src->command; blank->command = 0;			break;
-                case PARAM_COLUMN:	dest->param   = src->param;   blank->param = CMD_NONE;		break;
+                case NOTE_COLUMN:    dest->note    = src->note;    blank->note = NOTE_NONE;		break;
+                case INST_COLUMN:    dest->instr   = src->instr;   blank->instr = 0;				break;
+                case VOL_COLUMN:    dest->vol     = src->vol;     blank->vol = 0;
+                                    dest->volcmd  = src->volcmd;  blank->volcmd = VOLCMD_NONE;    break;
+                case EFFECT_COLUMN:    dest->command = src->command; blank->command = 0;			break;
+                case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CMD_NONE;		break;
             }
         }
     }
@@ -848,12 +848,12 @@ void CViewPattern::OnShrinkSelection()
             Log("dst: %d; src: %d\n", row, srcRow);
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:	dest->note    = src->note;    break;
-                case INST_COLUMN:	dest->instr   = src->instr;   break;
-                case VOL_COLUMN:	dest->vol     = src->vol;      
+                case NOTE_COLUMN:    dest->note    = src->note;    break;
+                case INST_COLUMN:    dest->instr   = src->instr;   break;
+                case VOL_COLUMN:    dest->vol     = src->vol;      
                                     dest->volcmd  = src->volcmd;  break;
-                case EFFECT_COLUMN:	dest->command = src->command; break;
-                case PARAM_COLUMN:	dest->param   = src->param;   break;
+                case EFFECT_COLUMN:    dest->command = src->command; break;
+                case PARAM_COLUMN:    dest->param   = src->param;   break;
             }
         }
     }
@@ -865,12 +865,12 @@ void CViewPattern::OnShrinkSelection()
             modplug::tracker::modcommand_t *dest = pSndFile->Patterns[m_nPattern].GetpModCommand(row, chn);
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:	dest->note    = NOTE_NONE;		break;
-                case INST_COLUMN:	dest->instr   = 0;				break;
-                case VOL_COLUMN:	dest->vol     = 0;
-                                    dest->volcmd  = VOLCMD_NONE;	break;
-                case EFFECT_COLUMN:	dest->command = CMD_NONE;		break;
-                case PARAM_COLUMN:	dest->param   = 0;				break;
+                case NOTE_COLUMN:    dest->note    = NOTE_NONE;		break;
+                case INST_COLUMN:    dest->instr   = 0;				break;
+                case VOL_COLUMN:    dest->vol     = 0;
+                                    dest->volcmd  = VOLCMD_NONE;    break;
+                case EFFECT_COLUMN:    dest->command = CMD_NONE;		break;
+                case PARAM_COLUMN:    dest->param   = 0;				break;
             }
         }
     }
@@ -918,7 +918,7 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
             modplug::tracker::modcommand_t *m = &p[row * pSndFile->m_nChannels + chn];
             switch(GetColTypeFromCursor(i))
             {
-            case NOTE_COLUMN:	// Clear note
+            case NOTE_COLUMN:    // Clear note
                 if (rm.note)
                 {
                     if(m->IsPcNote())
@@ -937,7 +937,7 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
                 if (rm.instrument)
                     m->instr = 0;
                 break;
-            case VOL_COLUMN:	// Clear volume
+            case VOL_COLUMN:    // Clear volume
                 if (rm.volume)
                     m->volcmd = m->vol = 0;
                 break;
@@ -952,7 +952,7 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
                     }
                 }
                 break;
-            case PARAM_COLUMN:	// Clear Command Param
+            case PARAM_COLUMN:    // Clear Command Param
                 if (rm.parameter)
                 {
                     m->param = 0;
@@ -1194,7 +1194,7 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
                 }
                 else
                 {
-                    if(i == nItemNo && !duplicate)	// Don't want that source channel twice if we're just moving
+                    if(i == nItemNo && !duplicate)    // Don't want that source channel twice if we're just moving
                     {
                         i++;
                     }
@@ -1221,7 +1221,7 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
     case DRAGITEM_PATTERNHEADER:
         OnPatternProperties();
         break;
-    case DRAGITEM_PLUGNAME:			//rewbs.patPlugNames
+    case DRAGITEM_PLUGNAME:    		//rewbs.patPlugNames
         if (nItemNo < MAX_BASECHANNELS)
             TogglePluginEditor(nItemNo);
         break;
@@ -1260,7 +1260,7 @@ void CViewPattern::OnRButtonDown(UINT, CPoint pt)
     }
 
     // Handle drag n drop
-    if (m_dwStatus & PATSTATUS_DRAGNDROPEDIT)	{
+    if (m_dwStatus & PATSTATUS_DRAGNDROPEDIT)    {
         if (m_dwStatus & PATSTATUS_DRAGNDROPPING)
         {
             OnDrawDragSel();
@@ -1322,20 +1322,20 @@ void CViewPattern::OnRButtonDown(UINT, CPoint pt)
         }
         
         //------ Standard Menu ---------- :
-        else if ((pt.x >= m_szHeader.cx) && (pt.y >= m_szHeader.cy))	{
+        else if ((pt.x >= m_szHeader.cx) && (pt.y >= m_szHeader.cy))    {
             /*if (BuildSoloMuteCtxMenu(hMenu, ih, nChn, pSndFile))
                 AppendMenu(hMenu, MF_SEPARATOR, 0, "");*/
             if (BuildSelectionCtxMenu(hMenu, ih))
                 AppendMenu(hMenu, MF_SEPARATOR, 0, "");
             if (BuildEditCtxMenu(hMenu, ih, pModDoc))
                 AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-            if (BuildNoteInterpolationCtxMenu(hMenu, ih, pSndFile) |	//Use bitwise ORs to avoid shortcuts
+            if (BuildNoteInterpolationCtxMenu(hMenu, ih, pSndFile) |    //Use bitwise ORs to avoid shortcuts
                 BuildVolColInterpolationCtxMenu(hMenu, ih, pSndFile) | 
                 BuildEffectInterpolationCtxMenu(hMenu, ih, pSndFile) )
                 AppendMenu(hMenu, MF_SEPARATOR, 0, "");
             if (BuildTransposeCtxMenu(hMenu, ih))
                 AppendMenu(hMenu, MF_SEPARATOR, 0, "");
-            if (BuildVisFXCtxMenu(hMenu, ih)   | 	//Use bitwise ORs to avoid shortcuts
+            if (BuildVisFXCtxMenu(hMenu, ih)   |     //Use bitwise ORs to avoid shortcuts
                 BuildAmplifyCtxMenu(hMenu, ih) |
                 BuildSetInstCtxMenu(hMenu, ih, pSndFile) )
                 AppendMenu(hMenu, MF_SEPARATOR, 0, "");
@@ -1569,15 +1569,15 @@ void CViewPattern::OnSoloChannel(bool current)
     if (pModDoc->IsChannelSolo(nChn))
     {
         bool nChnIsOnlyUnMutedChan=true;
-        for (CHANNELINDEX i = 0; i < pModDoc->GetNumChannels(); i++)	//check status of all other chans
+        for (CHANNELINDEX i = 0; i < pModDoc->GetNumChannels(); i++)    //check status of all other chans
         {
             if (i != nChn && !pModDoc->IsChannelMuted(i))
             {
-                nChnIsOnlyUnMutedChan=false;	//found a channel that isn't muted!
-                break;					
+                nChnIsOnlyUnMutedChan=false;    //found a channel that isn't muted!
+                break;    				
             }
         }
-        if (nChnIsOnlyUnMutedChan)	// this is the only playable channel and it is already soloed ->  uunMute all
+        if (nChnIsOnlyUnMutedChan)    // this is the only playable channel and it is already soloed ->  uunMute all
         {
             OnUnmuteAll();
             return;
@@ -1602,7 +1602,7 @@ void CViewPattern::OnRecordSelect()
         UINT nChn = GetChanFromCursor(m_nMenuParam);
         if (nChn < nNumChn)
         {
-//			MultiRecordMask[nChn>>3] ^= (1 << (nChn & 7));
+//    		MultiRecordMask[nChn>>3] ^= (1 << (nChn & 7));
 // -> CODE#0012
 // -> DESC="midi keyboard split"
             pModDoc->Record1Channel(nChn);
@@ -2235,11 +2235,11 @@ void CViewPattern::OnCursorPaste()
 
         switch(nCursor)
         {
-            case NOTE_COLUMN:	p->note = m_cmdOld.note;
-            case INST_COLUMN:	p->instr = m_cmdOld.instr; break;
-            case VOL_COLUMN:	p->vol = m_cmdOld.vol; p->volcmd = m_cmdOld.volcmd; break;
+            case NOTE_COLUMN:    p->note = m_cmdOld.note;
+            case INST_COLUMN:    p->instr = m_cmdOld.instr; break;
+            case VOL_COLUMN:    p->vol = m_cmdOld.vol; p->volcmd = m_cmdOld.volcmd; break;
             case EFFECT_COLUMN:
-            case PARAM_COLUMN:	p->command = m_cmdOld.command; p->param = m_cmdOld.param; break;
+            case PARAM_COLUMN:    p->command = m_cmdOld.command; p->param = m_cmdOld.param; break;
         }
         pModDoc->SetModified();
 
@@ -2355,7 +2355,7 @@ void CViewPattern::Interpolate(PatternColumns type)
         ListChansWhereColSelected(EFFECT_COLUMN, validChans);
         ListChansWhereColSelected(PARAM_COLUMN, moreValidChans);
         //CArrayUtils<UINT>::Merge(validChans, moreValidChans); //Causes unresolved external, not sure why yet.
-        validChans.Append(moreValidChans);						//for now we'll just interpolate the same data several times. :)
+        validChans.Append(moreValidChans);    					//for now we'll just interpolate the same data several times. :)
     } else
     {
         ListChansWhereColSelected(type, validChans);
@@ -2448,18 +2448,18 @@ void CViewPattern::Interpolate(PatternColumns type)
 
         modplug::tracker::modcommand_t* pcmd = pSndFile->Patterns[m_nPattern].GetpModCommand(row0, nchn);
 
-        for (UINT i=0; i<=distance; i++, pcmd += pSndFile->m_nChannels)	{
+        for (UINT i=0; i<=distance; i++, pcmd += pSndFile->m_nChannels)    {
 
             switch(type) {
                 case NOTE_COLUMN:
-                    if ((!pcmd->note) || (pcmd->instr == vcmd))	{
+                    if ((!pcmd->note) || (pcmd->instr == vcmd))    {
                         int note = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
                         pcmd->note = (BYTE)note;
                         pcmd->instr = vcmd;
                     }
                     break;
                 case VOL_COLUMN:
-                    if ((!pcmd->volcmd) || (pcmd->volcmd == vcmd))	{
+                    if ((!pcmd->volcmd) || (pcmd->volcmd == vcmd))    {
                         int vol = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
                         pcmd->vol = (BYTE)vol;
                         pcmd->volcmd = vcmd;
@@ -2467,7 +2467,7 @@ void CViewPattern::Interpolate(PatternColumns type)
                     break;
                 case EFFECT_COLUMN:
                     if(doPCinterpolation)
-                    {	// With PC/PCs notes, copy PCs note and plug index to all rows where
+                    {    // With PC/PCs notes, copy PCs note and plug index to all rows where
                         // effect interpolation is done if no PC note with non-zero instrument is there.
                         const uint16_t val = static_cast<uint16_t>(vsrc + ((vdest - vsrc) * (int)i + verr) / distance);
                         if (pcmd->IsPcNote() == false || pcmd->instr == 0)
@@ -2605,7 +2605,7 @@ void CViewPattern::OnDropSelection()
                     modplug::tracker::modcommand_t *psrc = &pOldPattern[ysrc*nChannels+xsrc];
                     switch(c)
                     {
-                    case 0:	p->note = psrc->note; break;
+                    case 0:    p->note = psrc->note; break;
                     case 1: p->instr = psrc->instr; break;
                     case 2: p->vol = psrc->vol; p->volcmd = psrc->volcmd; break;
                     default: p->command = psrc->command; p->param = psrc->param; break;
@@ -2916,7 +2916,7 @@ void CViewPattern::OnPatternAmplify()
                             if ((nSmp <= pSndFile->m_nInstruments) && (pSndFile->Instruments[nSmp]))
                             {
                                 nSmp = pSndFile->Instruments[nSmp]->Keyboard[m->note];
-                                if(!nSmp) chvol[nChn] = 64;	// hack for instruments without samples
+                                if(!nSmp) chvol[nChn] = 64;    // hack for instruments without samples
                             } else
                             {
                                 nSmp = 0;
@@ -2928,7 +2928,7 @@ void CViewPattern::OnPatternAmplify()
                             break;
                         }
                         else
-                        {	//nonexistant sample and no volume present in patten? assume volume=64.
+                        {    //nonexistant sample and no volume present in patten? assume volume=64.
                             if(useVolCol)
                             {
                                 m->volcmd = VOLCMD_VOLUME;
@@ -3089,7 +3089,7 @@ LRESULT CViewPattern::OnPlayerNotify(MPTNOTIFICATION *pnotify)
                     if (nOrd < pSndFile->Order.size()) SendCtrlMessage(CTRLMSG_SETCURRENTORDER, nOrd);
                     updateOrderList = false;
                 }
-                if (nRow != m_nRow)	SetCurrentRow((nRow < pSndFile->Patterns[nPat].GetNumRows()) ? nRow : 0, FALSE, FALSE);
+                if (nRow != m_nRow)    SetCurrentRow((nRow < pSndFile->Patterns[nPat].GetNumRows()) ? nRow : 0, FALSE, FALSE);
             }
             SetPlayCursor(0xFFFF, 0);
         } else
@@ -3121,7 +3121,7 @@ LRESULT CViewPattern::OnPlayerNotify(MPTNOTIFICATION *pnotify)
 // record plugin parameter changes into current pattern
 LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex)
 //-------------------------------------------------------------------------------
-{	
+{    
     CModDoc *pModDoc = GetDocument();
     //if (!m_bRecord || !pModDoc) {
     if (!IsEditingEnabled() || !pModDoc)
@@ -3269,12 +3269,12 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
     const BYTE nByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
     const BYTE nByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
 
-    const BYTE nNote = nByte1 + 1;				// +1 is for MPT, where middle C is 61
-    int nVol = nByte2;							// At this stage nVol is a non linear value in [0;127]
+    const BYTE nNote = nByte1 + 1;    			// +1 is for MPT, where middle C is 61
+    int nVol = nByte2;    						// At this stage nVol is a non linear value in [0;127]
                                                 // Need to convert to linear in [0;64] - see below
     BYTE event = GetFromMIDIMsg_Event(dwMidiData);
 
-    if ((event == MIDIEVENT_NOTEON) && !nVol) event = MIDIEVENT_NOTEOFF;	//Convert event to note-off if req'd
+    if ((event == MIDIEVENT_NOTEON) && !nVol) event = MIDIEVENT_NOTEOFF;    //Convert event to note-off if req'd
 
 
     // Handle MIDI mapping.
@@ -3376,7 +3376,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
                 const UINT instr = GetCurrentInstrument();
                 IMixPlugin* plug = pSndFile->GetInstrumentPlugin(instr);
                 if(plug)
-                {	
+                {    
                     plug->MidiSend(dwMidiData);
                     // Sending midi may modify the plug. For now, if MIDI data
                     // is not active sensing, set modified.
@@ -3469,7 +3469,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 // -> DESC="midi keyboard split"
             //CModDoc *pModDoc = GetDocument();
             //CSoundFile * pSndFile = pModDoc->GetSoundFile();
-//			if (timeGetTime() - lParam >= 10)
+//    		if (timeGetTime() - lParam >= 10)
             int temp = timeGetTime();
             if (temp - lParam >= 60)
 // -! NEW_FEATURE#0012
@@ -3487,7 +3487,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
             {
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-//				Sleep(1);
+//    			Sleep(1);
                 Sleep(0);
                 PostMessage(WM_MOD_VIEWMSG, VIEWMSG_DOMIDISPACING, lParam);
             }
@@ -3591,7 +3591,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 //rewbs.customKeys
 void CViewPattern::CursorJump(DWORD distance, bool direction, bool snap)
 //-----------------------------------------------------------------------
-{											  //up is true
+{    										  //up is true
     switch(snap)
     {
         case false: //no snap
@@ -3612,82 +3612,82 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
     if (wParam == kcNull)
         return NULL;
     
-    CModDoc *pModDoc = GetDocument();	
+    CModDoc *pModDoc = GetDocument();    
     if (!pModDoc) return NULL;
     
-    CSoundFile *pSndFile = pModDoc->GetSoundFile();	
+    CSoundFile *pSndFile = pModDoc->GetSoundFile();    
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 
     switch(wParam)
     {
-        case kcPrevInstrument:				OnPrevInstrument(); return wParam;
-        case kcNextInstrument:				OnNextInstrument(); return wParam;
-        case kcPrevOrder:					OnPrevOrder(); return wParam;
-        case kcNextOrder:					OnNextOrder(); return wParam;
-        case kcPatternPlayRow:				OnPatternStep(); return wParam;
-        case kcPatternRecord:				OnPatternRecord(); return wParam;
-        case kcCursorCopy:					OnCursorCopy(); return wParam;
-        case kcCursorPaste:					OnCursorPaste(); return wParam;
-        case kcChannelMute:					OnMuteChannel(true); return wParam;
-        case kcChannelSolo:					OnSoloChannel(true); return wParam;
-        case kcChannelUnmuteAll:			OnUnmuteAll(); return wParam;
+        case kcPrevInstrument:    			OnPrevInstrument(); return wParam;
+        case kcNextInstrument:    			OnNextInstrument(); return wParam;
+        case kcPrevOrder:    				OnPrevOrder(); return wParam;
+        case kcNextOrder:    				OnNextOrder(); return wParam;
+        case kcPatternPlayRow:    			OnPatternStep(); return wParam;
+        case kcPatternRecord:    			OnPatternRecord(); return wParam;
+        case kcCursorCopy:    				OnCursorCopy(); return wParam;
+        case kcCursorPaste:    				OnCursorPaste(); return wParam;
+        case kcChannelMute:    				OnMuteChannel(true); return wParam;
+        case kcChannelSolo:    				OnSoloChannel(true); return wParam;
+        case kcChannelUnmuteAll:    		OnUnmuteAll(); return wParam;
         case kcToggleChanMuteOnPatTransition: TogglePendingMute(GetChanFromCursor(m_dwCursor)); return wParam;
-        case kcUnmuteAllChnOnPatTransition:	OnPendingUnmuteAllChnFromClick(); return wParam;
-        case kcChannelReset:				OnChannelReset(); return wParam;
-        case kcTimeAtRow:					OnShowTimeAtRow(); return wParam;
-        case kcSoloChnOnPatTransition:		PendingSoloChn(GetCurrentChannel()); return wParam;
-        case kcTransposeUp:					OnTransposeUp(); return wParam;
-        case kcTransposeDown:				OnTransposeDown(); return wParam;
-        case kcTransposeOctUp:				OnTransposeOctUp(); return wParam;
-        case kcTransposeOctDown:			OnTransposeOctDown(); return wParam;
-        case kcSelectColumn:				OnSelectCurrentColumn(); return wParam;
-        case kcPatternAmplify:				OnPatternAmplify(); return wParam;
-        case kcPatternSetInstrument:		OnSetSelInstrument(); return wParam;
-        case kcPatternInterpolateNote:		OnInterpolateNote(); return wParam;
-        case kcPatternInterpolateVol:		OnInterpolateVolume(); return wParam;
-        case kcPatternInterpolateEffect:	OnInterpolateEffect(); return wParam;
-        case kcPatternVisualizeEffect:		OnVisualizeEffect(); return wParam;
-        case kcPatternOpenRandomizer:		OnOpenRandomizer(); return wParam;
-        case kcPatternGrowSelection:		OnGrowSelection(); return wParam;
-        case kcPatternShrinkSelection:		OnShrinkSelection(); return wParam;
+        case kcUnmuteAllChnOnPatTransition:    OnPendingUnmuteAllChnFromClick(); return wParam;
+        case kcChannelReset:    			OnChannelReset(); return wParam;
+        case kcTimeAtRow:    				OnShowTimeAtRow(); return wParam;
+        case kcSoloChnOnPatTransition:    	PendingSoloChn(GetCurrentChannel()); return wParam;
+        case kcTransposeUp:    				OnTransposeUp(); return wParam;
+        case kcTransposeDown:    			OnTransposeDown(); return wParam;
+        case kcTransposeOctUp:    			OnTransposeOctUp(); return wParam;
+        case kcTransposeOctDown:    		OnTransposeOctDown(); return wParam;
+        case kcSelectColumn:    			OnSelectCurrentColumn(); return wParam;
+        case kcPatternAmplify:    			OnPatternAmplify(); return wParam;
+        case kcPatternSetInstrument:    	OnSetSelInstrument(); return wParam;
+        case kcPatternInterpolateNote:    	OnInterpolateNote(); return wParam;
+        case kcPatternInterpolateVol:    	OnInterpolateVolume(); return wParam;
+        case kcPatternInterpolateEffect:    OnInterpolateEffect(); return wParam;
+        case kcPatternVisualizeEffect:    	OnVisualizeEffect(); return wParam;
+        case kcPatternOpenRandomizer:    	OnOpenRandomizer(); return wParam;
+        case kcPatternGrowSelection:    	OnGrowSelection(); return wParam;
+        case kcPatternShrinkSelection:    	OnShrinkSelection(); return wParam;
 
         // Pattern navigation:
         case kcPatternJumpUph1Select:
-        case kcPatternJumpUph1:			CursorJump(GetRowsPerMeasure(), true, false); return wParam;
+        case kcPatternJumpUph1:    		CursorJump(GetRowsPerMeasure(), true, false); return wParam;
         case kcPatternJumpDownh1Select:
-        case kcPatternJumpDownh1:		CursorJump(GetRowsPerMeasure(), false, false);  return wParam;
+        case kcPatternJumpDownh1:    	CursorJump(GetRowsPerMeasure(), false, false);  return wParam;
         case kcPatternJumpUph2Select:
-        case kcPatternJumpUph2:			CursorJump(GetRowsPerBeat(), true, false);  return wParam;
+        case kcPatternJumpUph2:    		CursorJump(GetRowsPerBeat(), true, false);  return wParam;
         case kcPatternJumpDownh2Select:
-        case kcPatternJumpDownh2:		CursorJump(GetRowsPerBeat(), false, false);  return wParam;
+        case kcPatternJumpDownh2:    	CursorJump(GetRowsPerBeat(), false, false);  return wParam;
 
         case kcPatternSnapUph1Select:
-        case kcPatternSnapUph1:			CursorJump(GetRowsPerMeasure(), true, true); return wParam;
+        case kcPatternSnapUph1:    		CursorJump(GetRowsPerMeasure(), true, true); return wParam;
         case kcPatternSnapDownh1Select:
-        case kcPatternSnapDownh1:		CursorJump(GetRowsPerMeasure(), false, true);  return wParam;
+        case kcPatternSnapDownh1:    	CursorJump(GetRowsPerMeasure(), false, true);  return wParam;
         case kcPatternSnapUph2Select:
-        case kcPatternSnapUph2:			CursorJump(GetRowsPerBeat(), true, true);  return wParam;
+        case kcPatternSnapUph2:    		CursorJump(GetRowsPerBeat(), true, true);  return wParam;
         case kcPatternSnapDownh2Select:
-        case kcPatternSnapDownh2:		CursorJump(GetRowsPerBeat(), false, true);  return wParam;
+        case kcPatternSnapDownh2:    	CursorJump(GetRowsPerBeat(), false, true);  return wParam;
 
         case kcNavigateDownSelect:
-        case kcNavigateDown:	SetCurrentRow(m_nRow+1, TRUE); return wParam;
+        case kcNavigateDown:    SetCurrentRow(m_nRow+1, TRUE); return wParam;
         case kcNavigateUpSelect:
-        case kcNavigateUp:		SetCurrentRow(m_nRow-1, TRUE); return wParam;
+        case kcNavigateUp:    	SetCurrentRow(m_nRow-1, TRUE); return wParam;
 
         case kcNavigateDownBySpacingSelect:
-        case kcNavigateDownBySpacing:	SetCurrentRow(m_nRow+m_nSpacing, TRUE); return wParam;
+        case kcNavigateDownBySpacing:    SetCurrentRow(m_nRow+m_nSpacing, TRUE); return wParam;
         case kcNavigateUpBySpacingSelect:
-        case kcNavigateUpBySpacing:		SetCurrentRow(m_nRow-m_nSpacing, TRUE); return wParam;
+        case kcNavigateUpBySpacing:    	SetCurrentRow(m_nRow-m_nSpacing, TRUE); return wParam;
 
         case kcNavigateLeftSelect:
-        case kcNavigateLeft:	if ((CMainFrame::m_dwPatternSetup & PATTERN_WRAP) && (!m_dwCursor))
+        case kcNavigateLeft:    if ((CMainFrame::m_dwPatternSetup & PATTERN_WRAP) && (!m_dwCursor))
                                     SetCurrentColumn((((pSndFile->GetNumChannels() - 1) << 3) | 4));
                                 else
                                     SetCurrentColumn(m_dwCursor - 1);
                                 return wParam;
         case kcNavigateRightSelect:
-        case kcNavigateRight:	if ((CMainFrame::m_dwPatternSetup & PATTERN_WRAP) && (m_dwCursor >= (((pSndFile->m_nChannels-1) << 3) | 4)))
+        case kcNavigateRight:    if ((CMainFrame::m_dwPatternSetup & PATTERN_WRAP) && (m_dwCursor >= (((pSndFile->m_nChannels-1) << 3) | 4)))
                                     SetCurrentColumn(0);
                                 else
                                     SetCurrentColumn(m_dwCursor + 1);
@@ -3703,35 +3703,35 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 SetCurSel(n, n);  return wParam;}
 
         case kcHomeHorizontalSelect:
-        case kcHomeHorizontal:	if (m_dwCursor) SetCurrentColumn(0);
+        case kcHomeHorizontal:    if (m_dwCursor) SetCurrentColumn(0);
                                 else if (m_nRow > 0) SetCurrentRow(0);
                                 return wParam;
         case kcHomeVerticalSelect:
-        case kcHomeVertical:	if (m_nRow > 0) SetCurrentRow(0);
+        case kcHomeVertical:    if (m_nRow > 0) SetCurrentRow(0);
                                 else if (m_dwCursor) SetCurrentColumn(0);
                                 return wParam;
         case kcHomeAbsoluteSelect:
-        case kcHomeAbsolute:	if (m_dwCursor) SetCurrentColumn(0); if (m_nRow > 0) SetCurrentRow(0); return wParam;
+        case kcHomeAbsolute:    if (m_dwCursor) SetCurrentColumn(0); if (m_nRow > 0) SetCurrentRow(0); return wParam;
 
         case kcEndHorizontalSelect:
-        case kcEndHorizontal:	if (m_dwCursor!=(((pSndFile->GetNumChannels() - 1) << 3) | 4)) SetCurrentColumn(((pSndFile->m_nChannels-1) << 3) | 4);
+        case kcEndHorizontal:    if (m_dwCursor!=(((pSndFile->GetNumChannels() - 1) << 3) | 4)) SetCurrentColumn(((pSndFile->m_nChannels-1) << 3) | 4);
                                 else if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1);
                                 return wParam;
         case kcEndVerticalSelect:
-        case kcEndVertical:		if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1);
+        case kcEndVertical:    	if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1);
                                 else if (m_dwCursor!=(((pSndFile->GetNumChannels() - 1) << 3) | 4)) SetCurrentColumn(((pSndFile->m_nChannels-1) << 3) | 4);
                                 return wParam;
         case kcEndAbsoluteSelect:
-        case kcEndAbsolute:		SetCurrentColumn(((pSndFile->GetNumChannels() - 1) << 3) | 4); if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1); return wParam;
+        case kcEndAbsolute:    	SetCurrentColumn(((pSndFile->GetNumChannels() - 1) << 3) | 4); if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1); return wParam;
 
-        case kcNextPattern:	{	UINT n = m_nPattern + 1;
+        case kcNextPattern:    {	UINT n = m_nPattern + 1;
                                 while ((n < pSndFile->Patterns.Size()) && (!pSndFile->Patterns[n])) n++;
                                 SetCurrentPattern((n < pSndFile->Patterns.Size()) ? n : 0);
                                 ORDERINDEX currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
                                 ORDERINDEX newOrder = pSndFile->FindOrder(m_nPattern, currentOrder, true);
                                 SendCtrlMessage(CTRLMSG_SETCURRENTORDER, newOrder);
                                 return wParam; }
-        case kcPrevPattern: {	UINT n = (m_nPattern) ? m_nPattern - 1 : pSndFile->Patterns.Size()-1;
+        case kcPrevPattern: {    UINT n = (m_nPattern) ? m_nPattern - 1 : pSndFile->Patterns.Size()-1;
                                 while ((n > 0) && (!pSndFile->Patterns[n])) n--;
                                 SetCurrentPattern(n);
                                 ORDERINDEX currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
@@ -3740,57 +3740,57 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 return wParam; }
         case kcSelectWithCopySelect:
         case kcSelectWithNav:
-        case kcSelect:			if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
-                                    m_dwStatus |= PATSTATUS_KEYDRAGSEL;	return wParam;
+        case kcSelect:    		if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
+                                    m_dwStatus |= PATSTATUS_KEYDRAGSEL;    return wParam;
         case kcSelectOffWithCopySelect:
         case kcSelectOffWithNav:
-        case kcSelectOff:		m_dwStatus &= ~PATSTATUS_KEYDRAGSEL; return wParam;
+        case kcSelectOff:    	m_dwStatus &= ~PATSTATUS_KEYDRAGSEL; return wParam;
         case kcCopySelectWithSelect:
         case kcCopySelectWithNav:
-        case kcCopySelect:		if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
+        case kcCopySelect:    	if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
                                     m_dwStatus |= PATSTATUS_CTRLDRAGSEL; return wParam;
         case kcCopySelectOffWithSelect:
         case kcCopySelectOffWithNav:
-        case kcCopySelectOff:	m_dwStatus &= ~PATSTATUS_CTRLDRAGSEL; return wParam;
+        case kcCopySelectOff:    m_dwStatus &= ~PATSTATUS_CTRLDRAGSEL; return wParam;
 
         case kcSelectBeat:
         case kcSelectMeasure:
             SelectBeatOrMeasure(wParam == kcSelectBeat); return wParam;
 
-        case kcClearRow:		OnClearField(-1, false);	return wParam;
-        case kcClearField:		OnClearField(GetColTypeFromCursor(m_dwCursor), false);	return wParam;
-        case kcClearFieldITStyle: OnClearField(GetColTypeFromCursor(m_dwCursor), false, true);	return wParam;
-        case kcClearRowStep:	OnClearField(-1, true);	return wParam;
-        case kcClearFieldStep:	OnClearField(GetColTypeFromCursor(m_dwCursor), true);	return wParam;
-        case kcClearFieldStepITStyle:	OnClearField(GetColTypeFromCursor(m_dwCursor), true, true);	return wParam;
-        case kcDeleteRows:		OnDeleteRows(); return wParam;
-        case kcDeleteAllRows:	DeleteRows(0, pSndFile->GetNumChannels() - 1, 1); return wParam;
-        case kcInsertRow:		OnInsertRows(); return wParam;
-        case kcInsertAllRows:	InsertRows(0, pSndFile->GetNumChannels() - 1); return wParam;
+        case kcClearRow:    	OnClearField(-1, false);	return wParam;
+        case kcClearField:    	OnClearField(GetColTypeFromCursor(m_dwCursor), false);	return wParam;
+        case kcClearFieldITStyle: OnClearField(GetColTypeFromCursor(m_dwCursor), false, true);    return wParam;
+        case kcClearRowStep:    OnClearField(-1, true);	return wParam;
+        case kcClearFieldStep:    OnClearField(GetColTypeFromCursor(m_dwCursor), true);	return wParam;
+        case kcClearFieldStepITStyle:    OnClearField(GetColTypeFromCursor(m_dwCursor), true, true);	return wParam;
+        case kcDeleteRows:    	OnDeleteRows(); return wParam;
+        case kcDeleteAllRows:    DeleteRows(0, pSndFile->GetNumChannels() - 1, 1); return wParam;
+        case kcInsertRow:    	OnInsertRows(); return wParam;
+        case kcInsertAllRows:    InsertRows(0, pSndFile->GetNumChannels() - 1); return wParam;
 
         case kcShowNoteProperties: ShowEditWindow(); return wParam;
         case kcShowPatternProperties: OnPatternProperties(); return wParam;
-        case kcShowMacroConfig:	SendCtrlMessage(CTRLMSG_SETUPMACROS); return wParam;
-        case kcShowSplitKeyboardSettings:	SetSplitKeyboardSettings(); return wParam;
-        case kcShowEditMenu:	{CPoint pt =	GetPointFromPosition(CreateCursor(m_nRow) | m_dwCursor);
+        case kcShowMacroConfig:    SendCtrlMessage(CTRLMSG_SETUPMACROS); return wParam;
+        case kcShowSplitKeyboardSettings:    SetSplitKeyboardSettings(); return wParam;
+        case kcShowEditMenu:    {CPoint pt =	GetPointFromPosition(CreateCursor(m_nRow) | m_dwCursor);
                                 OnRButtonDown(0, pt); }
                                 return wParam;
-        case kcPatternGoto:		OnEditGoto(); return wParam;
+        case kcPatternGoto:    	OnEditGoto(); return wParam;
 
-        case kcNoteCut:			TempEnterNote(NOTE_NOTECUT, false); return wParam;
-        case kcNoteCutOld:		TempEnterNote(NOTE_NOTECUT, true);  return wParam;
-        case kcNoteOff:			TempEnterNote(NOTE_KEYOFF, false); return wParam;
-        case kcNoteOffOld:		TempEnterNote(NOTE_KEYOFF, true);  return wParam;
-        case kcNoteFade:		TempEnterNote(NOTE_FADE, false); return wParam;
-        case kcNoteFadeOld:		TempEnterNote(NOTE_FADE, true);  return wParam;
-        case kcNotePC:			TempEnterNote(NOTE_PC); return wParam;
-        case kcNotePCS:			TempEnterNote(NOTE_PCS); return wParam;
+        case kcNoteCut:    		TempEnterNote(NOTE_NOTECUT, false); return wParam;
+        case kcNoteCutOld:    	TempEnterNote(NOTE_NOTECUT, true);  return wParam;
+        case kcNoteOff:    		TempEnterNote(NOTE_KEYOFF, false); return wParam;
+        case kcNoteOffOld:    	TempEnterNote(NOTE_KEYOFF, true);  return wParam;
+        case kcNoteFade:    	TempEnterNote(NOTE_FADE, false); return wParam;
+        case kcNoteFadeOld:    	TempEnterNote(NOTE_FADE, true);  return wParam;
+        case kcNotePC:    		TempEnterNote(NOTE_PC); return wParam;
+        case kcNotePCS:    		TempEnterNote(NOTE_PCS); return wParam;
 
-        case kcEditUndo:		OnEditUndo(); return wParam;
-        case kcEditFind:		OnEditFind(); return wParam;
-        case kcEditFindNext:	OnEditFindNext(); return wParam;
-        case kcEditCut:			OnEditCut(); return wParam;
-        case kcEditCopy:		OnEditCopy(); return wParam;
+        case kcEditUndo:    	OnEditUndo(); return wParam;
+        case kcEditFind:    	OnEditFind(); return wParam;
+        case kcEditFindNext:    OnEditFindNext(); return wParam;
+        case kcEditCut:    		OnEditCut(); return wParam;
+        case kcEditCopy:    	OnEditCopy(); return wParam;
         case kcCopyAndLoseSelection:
                                 {
                                 OnEditCopy();
@@ -3798,19 +3798,19 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 SetCurSel(sel, sel);
                                 return wParam;
                                 }
-        case kcEditPaste:		OnEditPaste(); return wParam;
-        case kcEditMixPaste:	OnEditMixPaste(); return wParam;
-        case kcEditMixPasteITStyle:	OnEditMixPasteITStyle(); return wParam;
-        case kcEditPasteFlood:	OnEditPasteFlood(); return wParam;
+        case kcEditPaste:    	OnEditPaste(); return wParam;
+        case kcEditMixPaste:    OnEditMixPaste(); return wParam;
+        case kcEditMixPasteITStyle:    OnEditMixPasteITStyle(); return wParam;
+        case kcEditPasteFlood:    OnEditPasteFlood(); return wParam;
         case kcEditPushForwardPaste: OnEditPushForwardPaste(); return wParam;
-        case kcEditSelectAll:	OnEditSelectAll(); return wParam;
+        case kcEditSelectAll:    OnEditSelectAll(); return wParam;
         case kcTogglePluginEditor: TogglePluginEditor(GetChanFromCursor(m_dwCursor)); return wParam;
         case kcToggleFollowSong: SendCtrlMessage(CTRLMSG_PAT_FOLLOWSONG, 1); return wParam;
         case kcChangeLoopStatus: SendCtrlMessage(CTRLMSG_PAT_LOOP, -1); return wParam;
-        case kcNewPattern:		 SendCtrlMessage(CTRLMSG_PAT_NEWPATTERN); return wParam;
+        case kcNewPattern:    	 SendCtrlMessage(CTRLMSG_PAT_NEWPATTERN); return wParam;
         case kcDuplicatePattern: SendCtrlMessage(CTRLMSG_PAT_DUPPATTERN); return wParam;
         case kcSwitchToOrderList: OnSwitchToOrderList();
-        case kcSwitchOverflowPaste:	CMainFrame::m_dwPatternSetup ^= PATTERN_OVERFLOWPASTE; return wParam;
+        case kcSwitchOverflowPaste:    CMainFrame::m_dwPatternSetup ^= PATTERN_OVERFLOWPASTE; return wParam;
         case kcPatternEditPCNotePlugin: OnTogglePCNotePluginEditor(); return wParam;
 
     }
@@ -3881,7 +3881,7 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
 #define ENTER_PCNOTE_VALUE(v, method) \
     { \
         if((v >= 0) && (v <= 9)) \
-        {	\
+        {    \
             uint16_t val = p->Get##method##(); \
             /* Move existing digits to left, drop out leftmost digit and */ \
             /* push new digit to the least meaning digit. */ \
@@ -3925,20 +3925,20 @@ void CViewPattern::TempEnterVol(int v)
             else
                 switch(v+kcSetVolumeStart)
                 {
-                case kcSetVolumeVol:			volcmd = VOLCMD_VOLUME; break;
-                case kcSetVolumePan:			volcmd = VOLCMD_PANNING; break;
-                case kcSetVolumeVolSlideUp:		volcmd = VOLCMD_VOLSLIDEUP; break;
-                case kcSetVolumeVolSlideDown:	volcmd = VOLCMD_VOLSLIDEDOWN; break;
-                case kcSetVolumeFineVolUp:		volcmd = VOLCMD_FINEVOLUP; break;
-                case kcSetVolumeFineVolDown:	volcmd = VOLCMD_FINEVOLDOWN; break;
-                case kcSetVolumeVibratoSpd:		if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_VIBRATOSPEED; break;
-                case kcSetVolumeVibrato:		volcmd = VOLCMD_VIBRATODEPTH; break;
-                case kcSetVolumeXMPanLeft:		if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDELEFT; break;
-                case kcSetVolumeXMPanRight:		if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDERIGHT; break;
-                case kcSetVolumePortamento:		volcmd = VOLCMD_TONEPORTAMENTO; break;
-                case kcSetVolumeITPortaUp:		if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTAUP; break;
-                case kcSetVolumeITPortaDown:	if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTADOWN; break;
-                case kcSetVolumeITOffset:		if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_OFFSET; break;		//rewbs.volOff
+                case kcSetVolumeVol:    		volcmd = VOLCMD_VOLUME; break;
+                case kcSetVolumePan:    		volcmd = VOLCMD_PANNING; break;
+                case kcSetVolumeVolSlideUp:    	volcmd = VOLCMD_VOLSLIDEUP; break;
+                case kcSetVolumeVolSlideDown:    volcmd = VOLCMD_VOLSLIDEDOWN; break;
+                case kcSetVolumeFineVolUp:    	volcmd = VOLCMD_FINEVOLUP; break;
+                case kcSetVolumeFineVolDown:    volcmd = VOLCMD_FINEVOLDOWN; break;
+                case kcSetVolumeVibratoSpd:    	if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_VIBRATOSPEED; break;
+                case kcSetVolumeVibrato:    	volcmd = VOLCMD_VIBRATODEPTH; break;
+                case kcSetVolumeXMPanLeft:    	if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDELEFT; break;
+                case kcSetVolumeXMPanRight:    	if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDERIGHT; break;
+                case kcSetVolumePortamento:    	volcmd = VOLCMD_TONEPORTAMENTO; break;
+                case kcSetVolumeITPortaUp:    	if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTAUP; break;
+                case kcSetVolumeITPortaDown:    if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTADOWN; break;
+                case kcSetVolumeITOffset:    	if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_OFFSET; break;		//rewbs.volOff
                 }
             //if ((pSndFile->m_nType & MOD_TYPE_MOD) && (volcmd > VOLCMD_PANNING)) volcmd = vol = 0;
 
@@ -3998,7 +3998,7 @@ void CViewPattern::TempEnterFX(int c, int v)
 
     if ((pModDoc) && (pMainFrm))
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();	
+        CSoundFile *pSndFile = pModDoc->GetSoundFile();    
         
         modplug::tracker::modcommand_t *p = pSndFile->Patterns[m_nPattern].GetpModCommand(m_nRow, GetChanFromCursor(m_dwCursor));
         modplug::tracker::modcommand_t oldcmd = *p; // This is the command we are about to overwrite
@@ -4042,7 +4042,7 @@ void CViewPattern::TempEnterFX(int c, int v)
             InvalidateArea(sel, sel + LAST_COLUMN);
             UpdateIndicator();
         }
-    }	// end if mainframe & moddoc exist
+    }    // end if mainframe & moddoc exist
 }
 
 
@@ -4118,7 +4118,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
             if (note < 0) note = 1;
         }
         if (!ins)    ins = GetCurrentInstrument();
-        if (!ins)	 ins = m_nFoundInstrument;
+        if (!ins)     ins = m_nFoundInstrument;
         if(bChordMode == true)
         {
             m_dwStatus &= ~PATSTATUS_CHORDPLAYING;
@@ -4145,7 +4145,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     BYTE* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
     const CHANNELINDEX nChn = (activeNoteMap[note] < pSndFile->GetNumChannels()) ? activeNoteMap[note] : nChnCursor;
 
-    activeNoteMap[note] = 0xFF;	//unlock channel
+    activeNoteMap[note] = 0xFF;    //unlock channel
 
     if (!((CMainFrame::m_dwPatternSetup & PATTERN_KBDNOTEOFF) || fromMidi))
     {
@@ -4185,8 +4185,8 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     pModDoc->GetPatternUndo()->PrepareUndo(nPat, nChn, nRow, 1, 1);
 
     // -- write sdx if playing live
-    if (usePlaybackPosition && nTick) {	// avoid SD0 which will be mis-interpreted
-        if (p->command == 0) {	//make sure we don't overwrite any existing commands.
+    if (usePlaybackPosition && nTick) {    // avoid SD0 which will be mis-interpreted
+        if (p->command == 0) {    //make sure we don't overwrite any existing commands.
             p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CMD_S3MCMDEX : CMD_MODCMDEX;
             p->param   = 0xD0 | min(0xF, nTick);
         }
@@ -4211,8 +4211,8 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     }
     p->instr = (bChordMode) ? 0 : ins; //p->instr = 0; 
     //Writing the instrument as well - probably someone finds this annoying :)
-    p->volcmd	= 0;
-    p->vol		= 0;
+    p->volcmd    = 0;
+    p->vol    	= 0;
 
     pModDoc->SetModified();
 
@@ -4268,14 +4268,14 @@ void CViewPattern::TempEnterIns(int val)
         PrepareUndo(m_dwBeginSel, m_dwEndSel);
 
         modplug::tracker::modcommand_t *p = pSndFile->Patterns[m_nPattern].GetpModCommand(m_nRow, nChn);
-        modplug::tracker::modcommand_t oldcmd = *p;		// This is the command we are about to overwrite
+        modplug::tracker::modcommand_t oldcmd = *p;    	// This is the command we are about to overwrite
 
         UINT instr = p->instr, nTotalMax, nTempMax;
-        if(p->IsPcNote())	// this is a plugin index
+        if(p->IsPcNote())    // this is a plugin index
         {
             nTotalMax = MAX_MIXPLUGINS + 1;
             nTempMax = MAX_MIXPLUGINS + 1;
-        } else if(pSndFile->GetNumInstruments() > 0)	// this is an instrument index
+        } else if(pSndFile->GetNumInstruments() > 0)    // this is an instrument index
         {
             nTotalMax = MAX_INSTRUMENTS;
             nTempMax = pSndFile->GetNumInstruments();
@@ -4287,8 +4287,8 @@ void CViewPattern::TempEnterIns(int val)
 
         instr = ((instr * 10) + val) % 1000;
         if (instr >= nTotalMax) instr = instr % 100;
-        if (nTempMax < 100)			// if we're using samples & have less than 100 samples
-            instr = instr % 100;	// or if we're using instruments and have less than 100 instruments
+        if (nTempMax < 100)    		// if we're using samples & have less than 100 samples
+            instr = instr % 100;    // or if we're using instruments and have less than 100 instruments
                                     // --> ensure the entered instrument value is less than 100.
         p->instr = instr;
 
@@ -4411,10 +4411,10 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
 
         // -- write vol data
         int volWrite = -1;
-        if (vol >= 0 && vol <= 64 && !(isSplit && pModDoc->GetSplitKeyboardSettings()->splitVolume))	//write valid volume, as long as there's no split volume override.
+        if (vol >= 0 && vol <= 64 && !(isSplit && pModDoc->GetSplitKeyboardSettings()->splitVolume))    //write valid volume, as long as there's no split volume override.
         {
             volWrite = vol;
-        } else if (isSplit && pModDoc->GetSplitKeyboardSettings()->splitVolume)	//cater for split volume override.
+        } else if (isSplit && pModDoc->GetSplitKeyboardSettings()->splitVolume)    //cater for split volume override.
         {
             if (pModDoc->GetSplitKeyboardSettings()->splitVolume > 0 && pModDoc->GetSplitKeyboardSettings()->splitVolume <= 64)
             {
@@ -4436,9 +4436,9 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         }
 
         // -- write sdx if playing live
-        if (usePlaybackPosition && nTick)	// avoid SD0 which will be mis-interpreted
+        if (usePlaybackPosition && nTick)    // avoid SD0 which will be mis-interpreted
         {
-            if (newcmd.command == CMD_NONE)	//make sure we don't overwrite any existing commands.
+            if (newcmd.command == CMD_NONE)    //make sure we don't overwrite any existing commands.
             {
                 newcmd.command = (pSndFile->TypeIsS3M_IT_MPT()) ? CMD_S3MCMDEX : CMD_MODCMDEX;
                 UINT maxSpeed = 0x0F;
@@ -4494,8 +4494,8 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                     }
                 }
                 BOOL bNotPlaying = ((pMainFrm->GetModPlaying() == pModDoc) && (pMainFrm->IsPlaying())) ? FALSE : TRUE;
-                //pModDoc->PlayNote(p->note, nPlayIns, 0, bNotPlaying, -1, 0, 0, nChn);	//rewbs.vstiLive - added extra args
-                pModDoc->PlayNote(newcmd.note, nPlayIns, 0, bNotPlaying, 4*vol, 0, 0, nChn);	//rewbs.vstiLive - added extra args
+                //pModDoc->PlayNote(p->note, nPlayIns, 0, bNotPlaying, -1, 0, 0, nChn);    //rewbs.vstiLive - added extra args
+                pModDoc->PlayNote(newcmd.note, nPlayIns, 0, bNotPlaying, 4*vol, 0, 0, nChn);    //rewbs.vstiLive - added extra args
             }
         }
 
@@ -4532,7 +4532,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                     } else
                     {
                         m_bLastNoteEntryBlocked = true;  // if the cursor is block by the end of the pattern here,
-                    }								     // we must remember to not step back should the next note form a chord.
+                    }    							     // we must remember to not step back should the next note form a chord.
 
                 }
                 DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
@@ -4595,7 +4595,7 @@ void CViewPattern::TempEnterChord(int note)
 
         const PatternRow prowbase = pSndFile->Patterns[m_nPattern].GetRow(m_nRow);
         modplug::tracker::modcommand_t* pTarget = &prowbase[nChn];
-        // Save old row contents		
+        // Save old row contents    	
         vector<modplug::tracker::modcommand_t> newrow(pSndFile->GetNumChannels());
         for(CHANNELINDEX n = 0; n < pSndFile->GetNumChannels(); n++)
         {
@@ -4622,9 +4622,9 @@ void CViewPattern::TempEnterChord(int note)
             UINT nchordnote = pChords[nchord].key + baseoctave * 12 + 1;
             // Rev. 244, commented the isSplit conditions below, can't see the point in it.
             //if (isSplit)
-            //	nchordnote = pChords[nchord].key + baseoctave*(p->note%12) + 1;
+            //    nchordnote = pChords[nchord].key + baseoctave*(p->note%12) + 1;
             //else
-            //	nchordnote = pChords[nchord].key + baseoctave*12 + 1;
+            //    nchordnote = pChords[nchord].key + baseoctave*12 + 1;
             if (nchordnote <= NOTE_MAX)
             {
                 UINT nchordch = nChn, nchno = 0;
@@ -4727,12 +4727,12 @@ void CViewPattern::TempEnterChord(int note)
                     }
                 }
                 BOOL bNotPlaying = ((pMainFrm->GetModPlaying() == pModDoc) && (pMainFrm->IsPlaying())) ? FALSE : TRUE;
-                pModDoc->PlayNote(p->note, nPlayIns, 0, bNotPlaying, -1, 0, 0, nChn);	//rewbs.vstiLive - added extra args
+                pModDoc->PlayNote(p->note, nPlayIns, 0, bNotPlaying, -1, 0, 0, nChn);    //rewbs.vstiLive - added extra args
                 for (UINT kplchrd=0; kplchrd<nPlayChord; kplchrd++)
                 {
                     if (chordplaylist[kplchrd])
                     {
-                        pModDoc->PlayNote(chordplaylist[kplchrd], nPlayIns, 0, FALSE, -1, 0, 0, nChn);	//rewbs.vstiLive - 	- added extra args
+                        pModDoc->PlayNote(chordplaylist[kplchrd], nPlayIns, 0, FALSE, -1, 0, 0, nChn);    //rewbs.vstiLive - 	- added extra args
                         m_dwStatus |= PATSTATUS_CHORDPLAYING;
                     }
                 }
@@ -4776,12 +4776,12 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
 
         switch(field)
         {
-            case NOTE_COLUMN:	if(p->IsPcNote()) p->Clear(); else {p->note = NOTE_NONE; if (ITStyle) p->instr = 0;}  break;		//Note
-            case INST_COLUMN:	p->instr = 0; break;				//instr
-            case VOL_COLUMN:	p->vol = 0; p->volcmd = 0; break;	//Vol
-            case EFFECT_COLUMN:	p->command = 0;	break;				//Effect
-            case PARAM_COLUMN:	p->param = 0; break;				//Param
-            default:			p->Clear();							//If not specified, delete them all! :)
+            case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NOTE_NONE; if (ITStyle) p->instr = 0;}  break;		//Note
+            case INST_COLUMN:    p->instr = 0; break;				//instr
+            case VOL_COLUMN:    p->vol = 0; p->volcmd = 0; break;	//Vol
+            case EFFECT_COLUMN:    p->command = 0;	break;				//Effect
+            case PARAM_COLUMN:    p->param = 0; break;				//Param
+            default:    		p->Clear();							//If not specified, delete them all! :)
         }
         if((field == 3 || field == 4) && (p->IsPcNote()))
             p->SetValueEffectCol(0);
@@ -4820,10 +4820,10 @@ void CViewPattern::OnInitMenu(CMenu* pMenu)
     CModScrollView::OnInitMenu(pMenu);
 
     //rewbs: ensure modifiers are reset when we go into menu
-/*	m_dwStatus &= ~PATSTATUS_KEYDRAGSEL;	
+/*    m_dwStatus &= ~PATSTATUS_KEYDRAGSEL;	
     m_dwStatus &= ~PATSTATUS_CTRLDRAGSEL;
     CMainFrame::GetMainFrame()->GetInputHandler()->SetModifierMask(0);
-*/	//end rewbs
+*/    //end rewbs
 
 }
 
@@ -4849,7 +4849,7 @@ void CViewPattern::OnSelectInstrument(UINT nID)
     if (newIns == 0)
     {
         RowMask sp = {false, true, false, false, false};    // Setup mask to only clear instrument data in OnClearSelection
-        OnClearSelection(false, sp);	// Clears instrument selection from pattern
+        OnClearSelection(false, sp);    // Clears instrument selection from pattern
     } else
     {
         SetSelectionInstrument(newIns);
@@ -4931,7 +4931,7 @@ bool CViewPattern::HandleSplit(modplug::tracker::modcommand_t* p, int note)
         }
     }
     
-    p->note = note;	
+    p->note = note;    
     if(ins) 
         p->instr = ins;
 
@@ -4943,7 +4943,7 @@ bool CViewPattern::BuildPluginCtxMenu(HMENU hMenu, UINT nChn, CSoundFile* pSndFi
 {
     CHAR s[512];
     bool itemFound;
-    for (UINT plug=0; plug<=MAX_MIXPLUGINS; plug++)	{
+    for (UINT plug=0; plug<=MAX_MIXPLUGINS; plug++)    {
 
         itemFound=false;
         s[0] = 0;
@@ -4951,7 +4951,7 @@ bool CViewPattern::BuildPluginCtxMenu(HMENU hMenu, UINT nChn, CSoundFile* pSndFi
         if (!plug) {
             strcpy(s, "No plugin");
             itemFound=true;
-        } else	{
+        } else    {
             PSNDMIXPLUGIN p = &(pSndFile->m_MixPlugins[plug-1]);
             if (p->Info.szLibraryName[0]) {
                 wsprintf(s, "FX%d: %s", plug, p->Info.szName);
@@ -5077,7 +5077,7 @@ bool CViewPattern::BuildNoteInterpolationCtxMenu(HMENU hMenu, CInputHandler* ih,
             if (IsInterpolationPossible(startRow, endRow, 
                                         validChans[valChnIdx], NOTE_COLUMN, pSndFile))
             {
-                greyed=0;	//Can do interpolation.
+                greyed=0;    //Can do interpolation.
                 break;
             }
         }
@@ -5107,7 +5107,7 @@ bool CViewPattern::BuildVolColInterpolationCtxMenu(HMENU hMenu, CInputHandler* i
             if (IsInterpolationPossible(startRow, endRow, 
                                         validChans[valChnIdx], VOL_COLUMN, pSndFile))
             {
-                greyed = 0;	//Can do interpolation.
+                greyed = 0;    //Can do interpolation.
                 break;
             }
         }
@@ -5136,7 +5136,7 @@ bool CViewPattern::BuildEffectInterpolationCtxMenu(HMENU hMenu, CInputHandler* i
         {
             if  (IsInterpolationPossible(startRow, endRow, validChans[valChnIdx], EFFECT_COLUMN, pSndFile))
             {
-                greyed=0;	//Can do interpolation.
+                greyed=0;    //Can do interpolation.
                 break;
             }
         }
@@ -5148,7 +5148,7 @@ bool CViewPattern::BuildEffectInterpolationCtxMenu(HMENU hMenu, CInputHandler* i
         {
             if  (IsInterpolationPossible(startRow, endRow, validChans[valChnIdx], EFFECT_COLUMN, pSndFile))
             {
-                greyed = 0;	//Can do interpolation.
+                greyed = 0;    //Can do interpolation.
                 break;
             }
         }
@@ -5385,7 +5385,7 @@ bool CViewPattern::BuildPCNoteCtxMenu(HMENU hMenu, CInputHandler* ih, CSoundFile
                 wsprintf(s, "%02d: %s", i, sname);
                 AppendMenu(paramChangeMenu, MF_STRING | (i == nThisParam) ? MF_CHECKED : 0, ID_CHANGE_PCNOTE_PARAM + i, s);
             }
-        }				
+        }    			
 
         AppendMenu(hMenu, MF_STRING, ID_PATTERN_EDIT_PCNOTE_PLUGIN, "Toggle plugin editor\t" + ih->GetKeyTextFromCommand(kcPatternEditPCNotePlugin));
     }
@@ -5425,13 +5425,13 @@ UINT CViewPattern::ListChansWhereColSelected(PatternColumns colType, CArray<UINT
     UINT endChan   = GetSelectionEndChan();
 
     if (GetColTypeFromCursor(m_dwBeginSel) <= colType) {
-        chans.Add(startChan);	//first selected chan includes this col type
+        chans.Add(startChan);    //first selected chan includes this col type
     }
     for (UINT chan=startChan+1; chan<endChan; chan++) {
         chans.Add(chan); //All chans between first & last must include this col type
     }
     if ((startChan != endChan) && colType <= GetColTypeFromCursor(m_dwEndSel)) {
-        chans.Add(endChan);		//last selected chan includes this col type
+        chans.Add(endChan);    	//last selected chan includes this col type
     }
 
     return chans.GetCount();
@@ -5568,7 +5568,7 @@ void CViewPattern::OnShowTimeAtRow()
     else
         msg.Format("Unable to determine the time: pattern at current order(=%d) does not correspond to pattern at pattern view(=pattern %d).", currentOrder, m_nPattern);
     
-    MessageBox(msg);	
+    MessageBox(msg);    
 }
 
 
@@ -5749,7 +5749,7 @@ void CViewPattern::SelectBeatOrMeasure(bool selectBeat)
     if(m_dwBeginSel == m_dwEndSel)
     {
         // No selection has been made yet => expand selection to whole channel.
-        endColumn = LAST_COLUMN;	// Extend to param column
+        endColumn = LAST_COLUMN;    // Extend to param column
     } else if(startRow == GetSelectionStartRow() && endRow == GetSelectionEndRow())
     {
         // Whole beat or measure is already selected
@@ -5762,7 +5762,7 @@ void CViewPattern::SelectBeatOrMeasure(bool selectBeat)
         } else
         {
             // Channel is only partly selected => expand to whole channel first.
-            endColumn = LAST_COLUMN;	// Extend to param column
+            endColumn = LAST_COLUMN;    // Extend to param column
         }
     }
     else

@@ -77,7 +77,7 @@ CDocument *CModDocTemplate::OpenDocumentFile(LPCTSTR path, BOOL addToMru, BOOL m
                 CString str;
                 str.Format(GetStrI18N(_TEXT("Unable to open \"%s\": file does not exist.")), path);
                 AfxMessageBox(str);
-            } else {		
+            } else {    	
                 const int nOdc = AfxGetApp()->m_pDocManager->GetOpenDocumentCount();
                 CString str;
                 str.Format(GetStrI18N(_TEXT("Opening \"%s\" failed. This can happen if "
@@ -203,24 +203,24 @@ const LPCTSTR szDefaultNoteNames[NOTE_MAX] = {
 
 const BYTE gEffectColors[MAX_EFFECTS] =
 {
-    0,					0,					MODCOLOR_PITCH,		MODCOLOR_PITCH,
-    MODCOLOR_PITCH,		MODCOLOR_PITCH,		MODCOLOR_VOLUME,	MODCOLOR_VOLUME,
-    MODCOLOR_VOLUME,	MODCOLOR_PANNING,	0,					MODCOLOR_VOLUME,
-    MODCOLOR_GLOBALS,	MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	0,
-    MODCOLOR_GLOBALS,	MODCOLOR_GLOBALS,	0,					0,					
-    0,					MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	
-    MODCOLOR_GLOBALS,	0,					MODCOLOR_PITCH,		MODCOLOR_PANNING,
-    MODCOLOR_PITCH,		MODCOLOR_PANNING,	0,					0,
-    0,					0,					0,					MODCOLOR_PITCH,
+    0,    				0,					MODCOLOR_PITCH,		MODCOLOR_PITCH,
+    MODCOLOR_PITCH,    	MODCOLOR_PITCH,		MODCOLOR_VOLUME,	MODCOLOR_VOLUME,
+    MODCOLOR_VOLUME,    MODCOLOR_PANNING,	0,					MODCOLOR_VOLUME,
+    MODCOLOR_GLOBALS,    MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	0,
+    MODCOLOR_GLOBALS,    MODCOLOR_GLOBALS,	0,					0,					
+    0,    				MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	
+    MODCOLOR_GLOBALS,    0,					MODCOLOR_PITCH,		MODCOLOR_PANNING,
+    MODCOLOR_PITCH,    	MODCOLOR_PANNING,	0,					0,
+    0,    				0,					0,					MODCOLOR_PITCH,
     MODCOLOR_PITCH,
 };
 
 const BYTE gVolEffectColors[MAX_VOLCMDS] =
 {
-    0,					MODCOLOR_VOLUME,	MODCOLOR_PANNING,	MODCOLOR_VOLUME,
-    MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_PITCH,
-    MODCOLOR_PITCH,		MODCOLOR_PANNING,	MODCOLOR_PANNING,	MODCOLOR_PITCH,
-    MODCOLOR_PITCH,		MODCOLOR_PITCH,		0,					0,
+    0,    				MODCOLOR_VOLUME,	MODCOLOR_PANNING,	MODCOLOR_VOLUME,
+    MODCOLOR_VOLUME,    MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_PITCH,
+    MODCOLOR_PITCH,    	MODCOLOR_PANNING,	MODCOLOR_PANNING,	MODCOLOR_PITCH,
+    MODCOLOR_PITCH,    	MODCOLOR_PITCH,		0,					0,
 };
 
 static void ShowChangesDialog()
@@ -311,7 +311,7 @@ BOOL CTrackApp::ImportMidiConfig(LPCSTR lpszConfigFile, BOOL bNoWarn)
                     DWORD dwProgram = (iIns < 128) ? iIns : 0xFF;
                     DWORD dwKey = (iIns < 128) ? 0xFF : iIns & 0x7F;
                     DWORD dwBank = (iIns < 128) ? 0 : F_INSTRUMENT_DRUMS;
-                    if (dlsbank.FindInstrument((iIns < 128) ? FALSE : TRUE,	dwBank, dwProgram, dwKey))
+                    if (dlsbank.FindInstrument((iIns < 128) ? FALSE : TRUE,    dwBank, dwProgram, dwKey))
                     {
                         if (!glpMidiLibrary->MidiMap[iIns])
                         {
@@ -400,7 +400,7 @@ BOOL CTrackApp::ExportMidiConfig(LPCSTR lpszConfigFile)
 /////////////////////////////////////////////////////////////////////////////
 // DLS Banks support
 
-#define MPTRACK_REG_DLS		"Software\\Olivier Lapicque\\ModPlug Tracker\\DLS Banks"
+#define MPTRACK_REG_DLS    	"Software\\Olivier Lapicque\\ModPlug Tracker\\DLS Banks"
 CDLSBank *CTrackApp::gpDLSBanks[MAX_DLS_BANKS];
 
 
@@ -465,7 +465,7 @@ void CTrackApp::LoadRegistryDLS()
     CHAR szFileNameX[_MAX_PATH];
     HKEY keyX;
 
-    if (RegOpenKeyEx(HKEY_CURRENT_USER,	MPTRACK_REG_DLS, 0, KEY_READ, &keyX) == ERROR_SUCCESS)
+    if (RegOpenKeyEx(HKEY_CURRENT_USER,    MPTRACK_REG_DLS, 0, KEY_READ, &keyX) == ERROR_SUCCESS)
     {
         DWORD dwRegType = REG_DWORD;
         DWORD dwSize = sizeof(DWORD);
@@ -556,22 +556,22 @@ BOOL CTrackApp::m_nProject = FALSE;
 
 BEGIN_MESSAGE_MAP(CTrackApp, CWinApp)
     //{{AFX_MSG_MAP(CTrackApp)
-    ON_COMMAND(ID_FILE_NEW,		OnFileNew)
-    ON_COMMAND(ID_FILE_NEWMOD,	OnFileNewMOD)
-    ON_COMMAND(ID_FILE_NEWS3M,	OnFileNewS3M)
-    ON_COMMAND(ID_FILE_NEWXM,	OnFileNewXM)
-    ON_COMMAND(ID_FILE_NEWIT,	OnFileNewIT)
+    ON_COMMAND(ID_FILE_NEW,    	OnFileNew)
+    ON_COMMAND(ID_FILE_NEWMOD,    OnFileNewMOD)
+    ON_COMMAND(ID_FILE_NEWS3M,    OnFileNewS3M)
+    ON_COMMAND(ID_FILE_NEWXM,    OnFileNewXM)
+    ON_COMMAND(ID_FILE_NEWIT,    OnFileNewIT)
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
-    ON_COMMAND(ID_NEW_ITPROJECT,OnFileNewITProject)	
+    ON_COMMAND(ID_NEW_ITPROJECT,OnFileNewITProject)    
 // -! NEW_FEATURE#0023
-    ON_COMMAND(ID_NEW_MPT,		OnFileNewMPT)
-    ON_COMMAND(ID_FILE_OPEN,	OnFileOpen)
-    ON_COMMAND(ID_APP_ABOUT,	OnAppAbout)
-    ON_COMMAND(ID_HELP_INDEX,	CWinApp::OnHelpIndex)
-    ON_COMMAND(ID_HELP_FINDER,	CWinApp::OnHelpFinder)
-    ON_COMMAND(ID_HELP_USING,	CWinApp::OnHelpUsing)
-    ON_COMMAND(ID_HELP_SEARCH,	OnHelpSearch)
+    ON_COMMAND(ID_NEW_MPT,    	OnFileNewMPT)
+    ON_COMMAND(ID_FILE_OPEN,    OnFileOpen)
+    ON_COMMAND(ID_APP_ABOUT,    OnAppAbout)
+    ON_COMMAND(ID_HELP_INDEX,    CWinApp::OnHelpIndex)
+    ON_COMMAND(ID_HELP_FINDER,    CWinApp::OnHelpFinder)
+    ON_COMMAND(ID_HELP_USING,    CWinApp::OnHelpUsing)
+    ON_COMMAND(ID_HELP_SEARCH,    OnHelpSearch)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -640,7 +640,7 @@ static DWORD GetDSoundVersion()
 
 void Terminate_AppThread()
 //----------------------------------------------
-{	
+{    
     //TODO: Why does this not get called.
     AfxMessageBox("Application thread terminated unexpectedly. Attempting to shut down audio device");
     CMainFrame* pMainFrame = CMainFrame::GetMainFrame();
@@ -649,7 +649,7 @@ void Terminate_AppThread()
     exit(-1);
 }
 
-#ifdef WIN32	// Legacy stuff
+#ifdef WIN32    // Legacy stuff
 // Move a config file called sFileName from the App's directory (or one of its sub directories specified by sSubDir) to
 // %APPDATA%. If specified, it will be renamed to sNewFileName. Existing files are never overwritten.
 // Returns true on success.
@@ -677,7 +677,7 @@ bool CTrackApp::MoveConfigFile(TCHAR sFileName[_MAX_PATH], TCHAR sSubDir[_MAX_PA
     }
     return false;
 }
-#endif	// WIN32 Legacy Stuff
+#endif    // WIN32 Legacy Stuff
 
 
 void CTrackApp::SetupPaths()
@@ -723,12 +723,12 @@ void CTrackApp::SetupPaths()
             CreateDirectory(m_szConfigDirectory, 0);
         }
 
-        #ifdef WIN32	// Legacy stuff
+        #ifdef WIN32    // Legacy stuff
         // Move the config files if they're still in the old place.
         MoveConfigFile("mptrack.ini");
         MoveConfigFile("plugin.cache");
         MoveConfigFile("mpt_intl.ini");
-        #endif	// WIN32 Legacy Stuff
+        #endif    // WIN32 Legacy Stuff
     }
     
     // Create tunings dir
@@ -916,8 +916,8 @@ BOOL CTrackApp::InitInstance()
     // Initialize CMainFrame
     pMainFrame->Initialize();
     InitCommonControls();
-    m_dwLastPluginIdleCall=0;	//rewbs.VSTCompliance
-    pMainFrame->m_InputHandler->UpdateMainMenu();	//rewbs.customKeys
+    m_dwLastPluginIdleCall=0;    //rewbs.VSTCompliance
+    pMainFrame->m_InputHandler->UpdateMainMenu();    //rewbs.customKeys
 
     // Dispatch commands specified on the command line
     if (!ProcessShellCommand(cmdInfo))
@@ -1016,7 +1016,7 @@ int CTrackApp::ExitInstance()
 
 void CTrackApp::LoadChords(PMPTCHORD pChords)
 //-------------------------------------------
-{	
+{    
     if (!m_szConfigFileName[0]) return;
     for (UINT i=0; i<3*12; i++)
     {
@@ -1455,13 +1455,13 @@ const int __SinusTable[256] =
      -97, -92, -86, -80, -74, -68, -62, -56, -49, -43, -37, -31, -25, -18, -12,  -6
 };
 
-#define Sinus(x)	__SinusTable[(x)&0xFF]
-#define Cosinus(x)	__SinusTable[((x)+0x40)&0xFF]
+#define Sinus(x)    __SinusTable[(x)&0xFF]
+#define Cosinus(x)    __SinusTable[((x)+0x40)&0xFF]
 
-#define PI	3.14159265358979323f
+#define PI    3.14159265358979323f
 BOOL CPaletteBitmap::Animate()
 //----------------------------
-{	
+{    
     //included random hacking by rewbs to get funny animation.
     LPBYTE dest, src;
     DWORD t = (timeGetTime() - m_dwStartTime) / 10;
@@ -1469,7 +1469,7 @@ BOOL CPaletteBitmap::Animate()
     bool dir;
 
     if ((!m_lpRotoZoom) || (!m_lpBmp) || (!m_nRotoWidth) || (!m_nRotoHeight)) return FALSE;
-    Sleep(2); 	//give away some CPU
+    Sleep(2);     //give away some CPU
 
     if (t > 256)
         m_bFirst = FALSE;
@@ -1489,8 +1489,8 @@ BOOL CPaletteBitmap::Animate()
     spdy = 0;
     spdx =(Cosinus(Phi)+Sinus(Phi<<2))*(Dist<<9)/sizex;
     spdy =(Sinus(Phi)+Cosinus(Phi>>2))*(Dist<<9)/sizey;
-    srcx = 0x800000 - ((spdx * sizex) >> 1) + (spdy * sizey);	
-    srcy = 0x800000 - ((spdy * sizex) >> 1) + (spdx * sizey);	
+    srcx = 0x800000 - ((spdx * sizex) >> 1) + (spdy * sizey);    
+    srcy = 0x800000 - ((spdy * sizex) >> 1) + (spdx * sizey);    
     for (UINT y=sizey; y; y--)
     {
         UINT oldx = srcx, oldy = srcy;
@@ -1544,7 +1544,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CModTypeDlg)
-    DDX_Control(pDX, IDC_EDIT1,			m_heContact);
+    DDX_Control(pDX, IDC_EDIT1,    		m_heContact);
     //}}AFX_DATA_MAP
 }
 
@@ -1774,7 +1774,7 @@ BOOL CTrackApp::OnIdle(LONG lCount)
     BOOL b = CWinApp::OnIdle(lCount);
     if ((gpSplashScreen) && (m_bInitialized))
     {
-        if (timeGetTime() - m_dwTimeStarted > 1000)		//Set splash screen duration here -rewbs
+        if (timeGetTime() - m_dwTimeStarted > 1000)    	//Set splash screen duration here -rewbs
         {
             StopSplashScreen();
         }
@@ -1822,7 +1822,7 @@ void DibBlt(HDC hdc, int x, int y, int sizex, int sizey, int srcx, int srcy, LPM
 //----------------------------------------------------------------------------------------------
 {
     if (!lpdib) return;
-    SetDIBitsToDevice(	hdc,
+    SetDIBitsToDevice(    hdc,
                         x,
                         y,
                         sizex,
@@ -2064,7 +2064,7 @@ void ErrorBox(UINT nStringID, CWnd*p)
 void CFastBitmap::Init(LPMODPLUGDIB lpTextDib)
 //--------------------------------------------
 {
-    m_nBlendOffset = 0;			// rewbs.buildfix for pattern display bug in debug builds
+    m_nBlendOffset = 0;    		// rewbs.buildfix for pattern display bug in debug builds
                                 // & release builds when ran directly from vs.net 
 
     m_pTextDib = lpTextDib;
@@ -2093,7 +2093,7 @@ void CFastBitmap::Init(LPMODPLUGDIB lpTextDib)
 void CFastBitmap::Blit(HDC hdc, int x, int y, int cx, int cy)
 //-----------------------------------------------------------
 {
-    SetDIBitsToDevice(	hdc,
+    SetDIBitsToDevice(    hdc,
                         x,
                         y,
                         cx,
@@ -2501,12 +2501,12 @@ MMRESULT CTrackApp::AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMF
                 }
                 switch(iFmt & 7)
                 {
-                case 5:	wfx.wfx.nAvgBytesPerSec = 320/8; break;
-                case 4:	wfx.wfx.nAvgBytesPerSec = 64/8; break;
-                case 3:	wfx.wfx.nAvgBytesPerSec = 96/8; break;
-                case 2:	wfx.wfx.nAvgBytesPerSec = 128/8; break;
-                case 1:	if (wfx.wfx.nChannels == 2) { wfx.wfx.nAvgBytesPerSec = 192/8; break; }
-                case 0:	if (wfx.wfx.nChannels == 2) { wfx.wfx.nAvgBytesPerSec = 256/8; break; }
+                case 5:    wfx.wfx.nAvgBytesPerSec = 320/8; break;
+                case 4:    wfx.wfx.nAvgBytesPerSec = 64/8; break;
+                case 3:    wfx.wfx.nAvgBytesPerSec = 96/8; break;
+                case 2:    wfx.wfx.nAvgBytesPerSec = 128/8; break;
+                case 1:    if (wfx.wfx.nChannels == 2) { wfx.wfx.nAvgBytesPerSec = 192/8; break; }
+                case 0:    if (wfx.wfx.nChannels == 2) { wfx.wfx.nAvgBytesPerSec = 256/8; break; }
                 default: wfx.wfx.nSamplesPerSec = 0;
                 }
                 wsprintf(afd.szFormat, "%dkbps, %dHz, %s", wfx.wfx.nAvgBytesPerSec*8, wfx.wfx.nSamplesPerSec, (wfx.wfx.nChannels == 2) ? "stereo" : "mono");
@@ -2653,7 +2653,7 @@ MMRESULT CTrackApp::AcmStreamOpen(
             pbeCfg->beCfg.dwConfig = BE_CONFIG_MP3;
             pbeCfg->beCfg.format.mp3.dwSampleRate = pwfxDst->nSamplesPerSec; // 48000, 44100 and 32000 allowed
             pbeCfg->beCfg.format.mp3.byMode = (BYTE)((pwfxSrc->nChannels == 2) ? BE_MP3_MODE_STEREO : BE_MP3_MODE_MONO);
-            pbeCfg->beCfg.format.mp3.wBitrate = (WORD)(pwfxDst->nAvgBytesPerSec * 8);	// 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256 and 320 allowed
+            pbeCfg->beCfg.format.mp3.wBitrate = (WORD)(pwfxDst->nAvgBytesPerSec * 8);    // 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256 and 320 allowed
             pbeCfg->beCfg.format.mp3.bPrivate = FALSE;
             pbeCfg->beCfg.format.mp3.bCRC = FALSE;
             pbeCfg->beCfg.format.mp3.bCopyright = FALSE;
@@ -2736,7 +2736,7 @@ MMRESULT CTrackApp::AcmStreamSize(HACMSTREAM has, DWORD cbInput, LPDWORD pdwOutp
     }
     if (m_hACMInst)
     {
-        if (fdwSize & ACM_STREAMSIZEF_DESTINATION)	// Why does acmStreamSize return ACMERR_NOTPOSSIBLE in this case?
+        if (fdwSize & ACM_STREAMSIZEF_DESTINATION)    // Why does acmStreamSize return ACMERR_NOTPOSSIBLE in this case?
             return MMSYSERR_NOERROR;
         PFNACMSTREAMSIZE pfnAcmStreamSize = (PFNACMSTREAMSIZE)GetProcAddress(m_hACMInst, "acmStreamSize");
         if (pfnAcmStreamSize) return pfnAcmStreamSize(has, cbInput, pdwOutputBytes, fdwSize);
@@ -2947,7 +2947,7 @@ BOOL CTrackApp::OpenURL(LPCSTR lpszURL)
                     lpszURL,
                     NULL,
                     NULL,
-                    0)) >= 32) return TRUE;				
+                    0)) >= 32) return TRUE;    			
     }
     return FALSE;
 }
