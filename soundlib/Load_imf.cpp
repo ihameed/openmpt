@@ -80,17 +80,17 @@ struct IMFSAMPLE
 {
     char filename[13];	// Sample legacy_filename (12345678.ABC) */
     uint8 unused1[3];
-    uint32 length;		// Length
-    uint32 loop_start;	// Loop start
-    uint32 loop_end;	// Loop end
-    uint32 C5Speed;		// Samplerate
+    uint32_t length;		// Length
+    uint32_t loop_start;	// Loop start
+    uint32_t loop_end;	// Loop end
+    uint32_t C5Speed;		// Samplerate
     uint8 volume;		// Default volume (0...64)
     uint8 panning;		// Default pan (0...255)
     uint8 unused2[14];
     uint8 flags;		// Sample flags
     uint8 unused3[5];
     uint16 ems;			// Reserved for internal usage
-    uint32 dram;		// Reserved for internal usage
+    uint32_t dram;		// Reserved for internal usage
     char is10[4];		// 'IS10'
 };
 #pragma pack()
@@ -273,7 +273,7 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
     IMFHEADER hdr;
     modsample_t *pSample = Samples + 1;
     WORD firstsample = 1; // first pSample for the current instrument
-    uint32 ignore_channels = 0; // bit set for each channel that's completely disabled
+    uint32_t ignore_channels = 0; // bit set for each channel that's completely disabled
 
     ASSERT_CAN_READ(sizeof(IMFHEADER));
     memset(&hdr, 0, sizeof(IMFHEADER));
@@ -533,7 +533,7 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         for(SAMPLEINDEX nSmp = 0; nSmp < imfins.smpnum; nSmp++)
         {
             IMFSAMPLE imfsmp;
-            uint32 blen;
+            uint32_t blen;
             ASSERT_CAN_READ(sizeof(IMFSAMPLE));
             memset(&imfsmp, 0, sizeof(IMFSAMPLE));
             memcpy(&imfsmp, lpStream + dwMemPos, sizeof(IMFSAMPLE));

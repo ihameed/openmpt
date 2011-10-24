@@ -160,7 +160,7 @@ int CMainFrame::gnPlugWindowWidth = 370;
 int CMainFrame::gnPlugWindowHeight = 332;
 DWORD CMainFrame::gnPlugWindowLast = 0;
 
-uint32 CMainFrame::gnMsgBoxVisiblityFlags = uint32_max;
+uint32_t CMainFrame::gnMsgBoxVisiblityFlags = uint32_max;
 
 CRITICAL_SECTION CMainFrame::m_csAudio;
 HANDLE CMainFrame::m_hPlayThread = NULL;

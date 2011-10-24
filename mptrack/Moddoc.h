@@ -142,7 +142,7 @@ struct FileHistory
     // Date when the file was loaded in the the tracker or created.
     tm loadDate;
     // Time the file was open in the editor, in 1/18.2th seconds (frequency of a standard DOS timer, to keep compatibility with Impulse Tracker easy).
-    uint32 openTime;
+    uint32_t openTime;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -293,7 +293,7 @@ public:
     bool RemovePattern(PATTERNINDEX nPat);
     bool RemoveSample(SAMPLEINDEX nSmp);
     bool RemoveInstrument(INSTRUMENTINDEX nIns);
-    UINT PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol=-1, LONG loopstart=0, LONG loopend=0, int nCurrentChn=-1, const uint32 nStartPos = uint32_max); //rewbs.vstiLive: added current chan param
+    UINT PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol=-1, LONG loopstart=0, LONG loopend=0, int nCurrentChn=-1, const uint32_t nStartPos = uint32_max); //rewbs.vstiLive: added current chan param
     BOOL NoteOff(UINT note, BOOL bFade=FALSE, UINT nins=-1, UINT nCurrentChn=-1); //rewbs.vstiLive: add params
 
     BOOL IsNotePlaying(UINT note, UINT nsmp=0, UINT nins=0);

@@ -345,8 +345,8 @@ void WriteModPattern(std::ostream& oStrm, const CPattern& pat)
 	// pattern time signature
 	if(pat.GetOverrideSignature())
 	{
-		ssb.WriteItem<uint32>(pat.GetRowsPerBeat(), "RPB.");
-		ssb.WriteItem<uint32>(pat.GetRowsPerMeasure(), "RPM.");
+		ssb.WriteItem<uint32_t>(pat.GetRowsPerBeat(), "RPB.");
+		ssb.WriteItem<uint32_t>(pat.GetRowsPerMeasure(), "RPM.");
 	}
 	ssb.FinishWrite();
 }
@@ -361,9 +361,9 @@ void ReadModPattern(std::istream& iStrm, CPattern& pat, const size_t)
 		return;
 	ssb.ReadItem(pat, "data", strlen("data"), &ReadData);
 	// pattern time signature
-	uint32 nRPB = 0, nRPM = 0;
-	ssb.ReadItem<uint32>(nRPB, "RPB.");
-	ssb.ReadItem<uint32>(nRPM, "RPM.");
+	uint32_t nRPB = 0, nRPM = 0;
+	ssb.ReadItem<uint32_t>(nRPB, "RPB.");
+	ssb.ReadItem<uint32_t>(nRPM, "RPM.");
 	pat.SetSignature(nRPB, nRPM);
 }
 

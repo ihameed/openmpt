@@ -26,14 +26,14 @@
 
 struct OKT_IFFCHUNK
 {
-	uint32 signature;	// IFF chunk name
-	uint32 chunksize;	// chunk size without header
+	uint32_t signature;	// IFF chunk name
+	uint32_t chunksize;	// chunk size without header
 };
 
 struct OKT_SAMPLE
 {
 	char   name[20];
-	uint32 length;		// length in bytes
+	uint32_t length;		// length in bytes
 	uint16 loopstart;	// *2 for real value
 	uint16 looplen;		// dito
 	uint16 volume;		// default volume

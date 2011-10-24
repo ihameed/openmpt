@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include <khash.h>
-
 #include "../mixgraph/core.h"
 
 #include <cstdlib>
@@ -540,26 +538,19 @@ struct mixgraph_viewstate_t {
             unsigned path_command;
             pointd_t last_point;
             pointd_t current_point;
-            debug_log("\n\nnew match sequence");
             do {
                 path_command = path.vertex(&current_point.x, &current_point.y);
-                switch (path_command) {
-                case agg::path_cmd_move_to:
-                    last_point = current_point;
-                    break;
-                case agg::path_cmd_line_to:
-                    debug_log("\nnew line segment");
-                    if (rect_intersects_ideal_line(selection_area, last_point, current_point)) {
-                        rect_t projection = rect_of_points(last_point, current_point);
-                        normalize_rect(projection);
-                        if (rect_intersects_rect(projection, selection_area)) {
-                            selected_ids.insert(id);
-                            path_command = agg::path_cmd_stop;
-                        }
+                if (path_command == agg::path_cmd_line_to &&
+                    rect_intersects_ideal_line(selection_area, last_point, current_point) )
+                {
+                    rect_t projection = rect_of_points(last_point, current_point);
+                    normalize_rect(projection);
+                    if (rect_intersects_rect(projection, selection_area)) {
+                        selected_ids.insert(id);
+                        break;
                     }
-                    last_point = current_point;
-                    break;
                 }
+                last_point = current_point;
             } while (path_command != agg::path_cmd_stop);
         };
 

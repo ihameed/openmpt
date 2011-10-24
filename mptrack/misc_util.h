@@ -32,7 +32,7 @@ inline T ConvertStrTo(LPCSTR psz)
 		return static_cast<T>(atof(psz));
 }
 
-template<> inline uint32 ConvertStrTo(LPCSTR psz) {return strtoul(psz, nullptr, 10);}
+template<> inline uint32_t ConvertStrTo(LPCSTR psz) {return strtoul(psz, nullptr, 10);}
 template<> inline int64 ConvertStrTo(LPCSTR psz) {return _strtoi64(psz, nullptr, 10);}
 template<> inline uint64 ConvertStrTo(LPCSTR psz) {return _strtoui64(psz, nullptr, 10);}
 

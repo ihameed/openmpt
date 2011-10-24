@@ -4,7 +4,7 @@
 #include "tuningbase.h"
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-	typedef CTuningBase<int16, uint16, float32, int32, uint32> CTuning;
+	typedef CTuningBase<int16, uint16, float32, int32, uint32_t> CTuning;
 	//If changing RATIOTYPE, serialization methods may need modifications.
 #else
 	typedef CTuningBase CTuning;
@@ -56,7 +56,7 @@ public:
 	
 	static CTuningBase* Deserialize(istream& inStrm);
 
-	static uint32 GetVersion() {return s_SerializationVersion;}
+	static uint32_t GetVersion() {return s_SerializationVersion;}
 
 	//Try to read old version (v.3) and return pointer to new instance if succesfull, else 0.
 	static CTuningRTI* DeserializeOLD(istream& iStrm);
@@ -107,7 +107,7 @@ protected:
 	NOTEINDEXTYPE ProSetGroupSize(const UNOTEINDEXTYPE& p) {return m_GroupSize = (p<=static_cast<UNOTEINDEXTYPE>(NOTEINDEXTYPE_MAX)) ? static_cast<NOTEINDEXTYPE>(p) : NOTEINDEXTYPE_MAX;}
 	RATIOTYPE ProSetGroupRatio(const RATIOTYPE& pr) {return m_GroupRatio = (pr >= 0) ? pr : -pr;}
 
-	virtual uint32 GetClassVersion() const {return GetVersion();}
+	virtual uint32_t GetClassVersion() const {return GetVersion();}
 
 	virtual bool ProProcessUnserializationdata();
 	

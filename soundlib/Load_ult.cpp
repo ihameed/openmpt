@@ -21,10 +21,10 @@ struct ULT_SAMPLE
 {
 	char   name[32];
 	char   filename[12];
-	uint32 loop_start;
-	uint32 loop_end;
-	uint32 size_start;
-	uint32 size_end;
+	uint32_t loop_start;
+	uint32_t loop_end;
+	uint32_t size_start;
+	uint32_t size_end;
 	uint8  volume;		// 0-255, apparently prior to 1.4 this was logarithmic?
 	uint8  flags;		// above
 	uint16 speed;		// only exists for 1.4+
@@ -173,16 +173,16 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const BYTE *lpStre
 	// sample offset -- this is even more special than digitrakker's
 	if(cmd1 == CMD_OFFSET && cmd2 == CMD_OFFSET)
 	{
-		uint32 off = ((param1 << 8) | param2) >> 6;
+		uint32_t off = ((param1 << 8) | param2) >> 6;
 		cmd1 = CMD_NONE;
 		param1 = (uint8)min(off, 0xFF);
 	} else if(cmd1 == CMD_OFFSET)
 	{
-		uint32 off = param1 * 4;
+		uint32_t off = param1 * 4;
 		param1 = (uint8)min(off, 0xFF);
 	} else if(cmd2 == CMD_OFFSET)
 	{
-		uint32 off = param2 * 4;
+		uint32_t off = param2 * 4;
 		param2 = (uint8)min(off, 0xFF);
 	} else if(cmd1 == cmd2)
 	{

@@ -207,7 +207,7 @@ void CMIDIMapper::Serialize(FILE* f) const
 	{
 		uint16 temp16 = (citer->GetChnEvent() << 1) + (citer->GetController() << 9);
 		if(citer->GetAnyChannel()) temp16 |= 1;
-		uint32 temp32 = citer->GetParamIndex();
+		uint32_t temp32 = citer->GetParamIndex();
 
 		uint8 temp8 = citer->IsActive(); //bit 0
 		if(citer->GetCaptureMIDI()) temp8 |= (1 << 1); //bit 1
@@ -242,7 +242,7 @@ bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
 	{
 		uint8 i8 = 0;
 		uint16 i16 = 0;
-		uint32 i32 = 0;
+		uint32_t i32 = 0;
 		memcpy(&i8, ptr, 1); ptr++;
 		BYTE psize = 0;
 		switch(i8 >> 6)
@@ -277,7 +277,7 @@ bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
 }
 
 
-bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32& paramindex, BYTE& paramval)
+bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32_t& paramindex, BYTE& paramval)
 //----------------------------------------------------------------------------------------------------
 {
 	bool captured = false;
@@ -297,7 +297,7 @@ bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32& para
 	{
 		if(!citer->IsActive()) continue;
 		BYTE plugindex = 0;
-		uint32 param = 0;
+		uint32_t param = 0;
 		if( citer->GetAnyChannel() || channel+1 == citer->GetChannel())
 		{
 			plugindex = citer->GetPlugIndex();

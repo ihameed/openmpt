@@ -24,10 +24,10 @@ CFileTagging::CFileTagging()
 // Convert Integer to Synchsafe Integer (see ID3v2.4 specs)
 // Basically, it's a BigEndian integer, but the MSB of all bytes is 0.
 // Thus, a 32-bit integer turns into a 28-bit integer.
-uint32 CFileTagging::intToSynchsafe(uint32 iIn)
+uint32_t CFileTagging::intToSynchsafe(uint32_t iIn)
 //---------------------------------------------
 {
-	uint32 iOut = 0, iSteps = 0;
+	uint32_t iOut = 0, iSteps = 0;
 	do
 	{
 		iOut |= (iIn & 0x7F) << iSteps;

@@ -167,7 +167,7 @@ void TestTypes()
 
 	VERIFY_EQUAL(int32_min, (std::numeric_limits<int32>::min)());
 	VERIFY_EQUAL(int32_max, (std::numeric_limits<int32>::max)());
-	VERIFY_EQUAL(uint32_max, (std::numeric_limits<uint32>::max)());
+	VERIFY_EQUAL(uint32_max, (std::numeric_limits<uint32_t>::max)());
 
 	VERIFY_EQUAL(int64_min, (std::numeric_limits<int64>::min)());
 	VERIFY_EQUAL(int64_max, (std::numeric_limits<int64>::max)());
@@ -184,9 +184,9 @@ void TestTypes()
 void TestMisc()
 //-------------
 {
-	VERIFY_EQUAL(ConvertStrTo<uint32>("586"), 586);
-	VERIFY_EQUAL(ConvertStrTo<uint32>("2147483647"), int32_max);
-	VERIFY_EQUAL(ConvertStrTo<uint32>("4294967295"), uint32_max);
+	VERIFY_EQUAL(ConvertStrTo<uint32_t>("586"), 586);
+	VERIFY_EQUAL(ConvertStrTo<uint32_t>("2147483647"), int32_max);
+	VERIFY_EQUAL(ConvertStrTo<uint32_t>("4294967295"), uint32_max);
 
 	VERIFY_EQUAL(ConvertStrTo<int64>("-9223372036854775808"), int64_min);
 	VERIFY_EQUAL(ConvertStrTo<int64>("-159"), -159);
@@ -240,7 +240,7 @@ void TestLoadFile(const CModDoc *pModDoc)
 	VERIFY_EQUAL_NONCONT(fh.loadDate.tm_hour, 21);
 	VERIFY_EQUAL_NONCONT(fh.loadDate.tm_min, 8);
 	VERIFY_EQUAL_NONCONT(fh.loadDate.tm_sec, 32);
-	VERIFY_EQUAL_NONCONT((uint32)((double)fh.openTime / HISTORY_TIMER_PRECISION), 31);
+	VERIFY_EQUAL_NONCONT((uint32_t)((double)fh.openTime / HISTORY_TIMER_PRECISION), 31);
 
 	// Macros
 	VERIFY_EQUAL_NONCONT(pModDoc->GetMacroType(pSndFile->m_MidiCfg.szMidiSFXExt[0]), sfx_reso);

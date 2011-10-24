@@ -26,10 +26,10 @@ protected:
 	CButton m_CheckPanning;
 	SAMPLEINDEX m_nSample;
 	double m_dTimeStretchRatio; //rewbs.timeStretchMods
-	uint32 m_nStretchProcessStepLength;
-	uint32 m_nSequenceMs;
-	uint32 m_nSeekWindowMs;
-	uint32 m_nOverlapMs;
+	uint32_t m_nStretchProcessStepLength;
+	uint32_t m_nSequenceMs;
+	uint32_t m_nSeekWindowMs;
+	uint32_t m_nOverlapMs;
 	uint16 m_nFinetuneStep; // Increment finetune by x when using spin control. Default = 25
 	enum {nDefaultStretchChunkSize = 8192};
 	UINT m_nPreviousRawFormat;

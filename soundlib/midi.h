@@ -64,7 +64,7 @@ public:
 	BYTE GetPlugIndex() const {return m_PluginIndex;}
 
 	void SetParamIndex(const int i) {m_Parameter = i;}
-	uint32 GetParamIndex() const {return m_Parameter;}
+	uint32_t GetParamIndex() const {return m_Parameter;}
 
 	bool IsDefault() const {return *this == CMIDIMappingDirective();}
 
@@ -82,7 +82,7 @@ private:
 	uint8 m_ChnEvent; //0-3 channel, 4-7 event
 	BYTE m_MIDIByte1;
 	BYTE m_PluginIndex;
-	uint32 m_Parameter;
+	uint32_t m_Parameter;
 };
 
 class CSoundFile;
@@ -104,7 +104,7 @@ public:
 	//	-paramvalue to parameter value.
 	//In case of multiple mappings, these get the values from the last mapping found.
 	//Returns true if MIDI was 'captured' by some directive, false otherwise.
-	bool OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32& paramindex, BYTE& paramvalue);
+	bool OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32_t& paramindex, BYTE& paramvalue);
 
 	//Swaps the positions of two elements. Returns true if swap was not done.
 	bool Swap(const size_t a, const size_t b);

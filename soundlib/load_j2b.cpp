@@ -57,20 +57,20 @@
 // header for compressed j2b files
 struct J2BHEADER
 {
-    uint32 signature;		// MUSE
-    uint32 deadbeaf;		// 0xDEADBEAF (AM) or 0xDEADBABE (AMFF)
-    uint32 j2blength;		// complete filesize
-    uint32 crc32;			// checksum of the compressed data block
-    uint32 packed_length;	// length of the compressed data block
-    uint32 unpacked_length;	// length of the decompressed module
+    uint32_t signature;		// MUSE
+    uint32_t deadbeaf;		// 0xDEADBEAF (AM) or 0xDEADBABE (AMFF)
+    uint32_t j2blength;		// complete filesize
+    uint32_t crc32;			// checksum of the compressed data block
+    uint32_t packed_length;	// length of the compressed data block
+    uint32_t unpacked_length;	// length of the decompressed module
 };
 
 // am(ff) stuff
 
 struct AMFF_RIFFCHUNK
 {
-    uint32 signature;	// "RIFF"
-    uint32 chunksize;	// chunk size without header
+    uint32_t signature;	// "RIFF"
+    uint32_t chunksize;	// chunk size without header
 };
 
 // this header is used for both AM's "INIT" as well as AMFF's "MAIN" chunk
@@ -81,7 +81,7 @@ struct AMFFCHUNK_MAIN
     uint8  channels;
     uint8  speed;
     uint8  tempo;
-    uint32 unknown;		// 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
+    uint32_t unknown;		// 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
     uint8  globalvolume;
 };
 
@@ -117,18 +117,18 @@ struct AMFFCHUNK_INSTRUMENT
 // AMFF sample header
 struct AMFFCHUNK_SAMPLE
 {
-    uint32 signature;	// "SAMP"
-    uint32 chunksize;	// header + sample size
+    uint32_t signature;	// "SAMP"
+    uint32_t chunksize;	// header + sample size
     char   name[28];
     uint8  pan;
     uint8  volume;
     uint16 flags;
-    uint32 length;
-    uint32 loopstart;
-    uint32 loopend;
-    uint32 samplerate;
-    uint32 reserved1;
-    uint32 reserved2;
+    uint32_t length;
+    uint32_t loopstart;
+    uint32_t loopend;
+    uint32_t samplerate;
+    uint32_t reserved1;
+    uint32_t reserved2;
 };
 
 // AM instrument envelope point
@@ -171,18 +171,18 @@ struct AMCHUNK_INSTRUMENT
 // AM sample header
 struct AMCHUNK_SAMPLE
 {
-    uint32 signature;	// "SAMP"
-    uint32 chunksize;	// header + sample size
-    uint32 headsize;	// header size
+    uint32_t signature;	// "SAMP"
+    uint32_t chunksize;	// header + sample size
+    uint32_t headsize;	// header size
     char   name[32];
     uint16 pan;
     uint16 volume;
     uint16 flags;
     uint16 unkown;		// 0x0000 / 0x0080?
-    uint32 length;
-    uint32 loopstart;
-    uint32 loopend;
-    uint32 samplerate;
+    uint32_t length;
+    uint32_t loopstart;
+    uint32_t loopend;
+    uint32_t samplerate;
 };
 
 #pragma pack()
@@ -459,8 +459,8 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
     bool bIsAM; // false: AMFF, true: AM
 
     ASSERT_CAN_READ(4);
-    if(LittleEndian(*(uint32 *)(lpStream + dwMemPos)) == AMCHUNKID_AMFF) bIsAM = false; // "AMFF"
-    else if(LittleEndian(*(uint32 *)(lpStream + dwMemPos)) == AMCHUNKID_AM__) bIsAM = true; // "AM  "
+    if(LittleEndian(*(uint32_t *)(lpStream + dwMemPos)) == AMCHUNKID_AMFF) bIsAM = false; // "AMFF"
+    else if(LittleEndian(*(uint32_t *)(lpStream + dwMemPos)) == AMCHUNKID_AM__) bIsAM = true; // "AM  "
     else return false;
     dwMemPos += 4;
     m_nChannels = 0;
@@ -636,7 +636,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
             if(bIsAM)
             {
                 ASSERT_CAN_READ_CHUNK(4);
-                if(LittleEndian(*(uint32 *)(lpStream + dwMemPos)) != AMCHUNKID_AI__) break; // "AI  "
+                if(LittleEndian(*(uint32_t *)(lpStream + dwMemPos)) != AMCHUNKID_AI__) break; // "AI  "
                 dwMemPos += 4;
 
                 ASSERT_CAN_READ_CHUNK(sizeof(AMFF_RIFFCHUNK));
@@ -646,7 +646,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 if(LittleEndian(instchunk->signature) != AMCHUNKID_INST) break; // "INST"
 
                 ASSERT_CAN_READ_CHUNK(4);
-                const DWORD dwHeadlen = LittleEndian(*(uint32 *)(lpStream + dwMemPos));
+                const DWORD dwHeadlen = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
                 ASSERT(dwHeadlen == sizeof(AMCHUNK_INSTRUMENT));
                 dwMemPos += 4;
 
@@ -709,7 +709,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
                     if(LittleEndian(instchunk->signature) != AMCHUNKID_RIFF) break;
 
                     ASSERT_CAN_READ_CHUNK(4);
-                    if(LittleEndian(*(uint32 *)(lpStream + dwChunkPos)) != AMCHUNKID_AS__) break;
+                    if(LittleEndian(*(uint32_t *)(lpStream + dwChunkPos)) != AMCHUNKID_AS__) break;
                     dwChunkPos += 4;
 
                     // Moved this stuff here (was below the next ASSERT_CAN_READ_CHUNK) because of instrument 12 in Carrotus.j2b

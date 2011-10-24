@@ -19,9 +19,9 @@
 typedef struct tagMTMSAMPLE
 {
     char   samplename[22];
-    uint32 length;
-    uint32 reppos;
-    uint32 repend;
+    uint32_t length;
+    uint32_t reppos;
+    uint32_t repend;
     int8   finetune;
     uint8  volume;
     uint8  attribute;

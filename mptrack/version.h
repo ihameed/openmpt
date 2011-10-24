@@ -30,7 +30,7 @@
 
 namespace MptVersion
 {
-	typedef uint32 VersionNum;
+	typedef uint32_t VersionNum;
 	const VersionNum num = MPT_VERSION_NUMERIC;
 	const char* const str = MPT_VERSION_STR;
 

@@ -62,14 +62,14 @@ typedef struct _TAGID3v2HEADER
 	uint8 signature[3];
 	uint8 version[2];
 	uint8 flags;
-	uint32 size;
+	uint32_t size;
 	// Total: 10 bytes
 } TAGID3v2HEADER;
 
 typedef struct _TAGID3v2FRAME
 {
-	uint32 frameid;
-	uint32 size;
+	uint32_t frameid;
+	uint32_t size;
 	uint16 flags;
 	// Total: 10 bytes
 } TAGID3v2FRAME;
@@ -107,11 +107,11 @@ public:
 
 private:
 	// Convert Integer to Synchsafe Integer (see ID3v2.4 specs)
-	uint32 intToSynchsafe(UINT32 in);
+	uint32_t intToSynchsafe(UINT32 in);
 	// Write a frame
 	void WriteID3v2Frame(char cFrameID[4], string sFramecontent, FILE *f);
 	// Size of our tag
-	uint32 totalID3v2Size;
+	uint32_t totalID3v2Size;
 };
 
 #pragma pack()

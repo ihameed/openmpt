@@ -2114,7 +2114,7 @@ void CViewSample::OnChar(UINT /*nChar*/, UINT, UINT /*nFlags*/)
 {
 }
 
-void CViewSample::PlayNote(UINT note, const uint32 nStartPos)
+void CViewSample::PlayNote(UINT note, const uint32_t nStartPos)
 //-----------------------------------------------------------
 {
 	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();

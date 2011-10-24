@@ -771,7 +771,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
                     GetpModDoc()->GetFileHistory()->push_back(mptHistory);
 
 #ifdef DEBUG
-                    const uint32 seconds = (uint32)(((double)itHistory.runtime) / 18.2f);
+                    const uint32_t seconds = (uint32_t)(((double)itHistory.runtime) / 18.2f);
                     CHAR stime[128];
                     wsprintf(stime, "IT Edit History: Loaded %04u-%02u-%02u %02u:%02u:%02u, open for %u:%02u:%02u (%u ticks)\n", ((itHistory.fatdate >> 9) & 0x7F) + 1980, (itHistory.fatdate >> 5) & 0x0F, itHistory.fatdate & 0x1F, (itHistory.fattime >> 11) & 0x1F, (itHistory.fattime >> 5) & 0x3F, (itHistory.fattime & 0x1F) * 2, seconds / 3600, (seconds / 60) % 60, seconds % 60, itHistory.runtime);
                     Log(stime);
@@ -1314,7 +1314,7 @@ DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
     {
         tm loadDate;
         MemsetZero(loadDate);
-        uint32 openTime;
+        uint32_t openTime;
 
         if(n < num - 1)
         {
@@ -1334,7 +1334,7 @@ DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
                 pSndFile->GetModDocPtr()->AddLogEvent(LogEventUnexpectedError,
                                                       __FUNCTION__,
                                                       _T("localtime() returned nullptr."));
-            openTime = (uint32)((double)difftime(time(nullptr), creationTime) * 18.2f);
+            openTime = (uint32_t)((double)difftime(time(nullptr), creationTime) * 18.2f);
         }
 
         ITHISTORYSTRUCT itHistory;

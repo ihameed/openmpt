@@ -56,7 +56,7 @@
 // DMF header
 struct DMFHEADER
 {
-    uint32 signature;		// "DDMF"
+    uint32_t signature;		// "DDMF"
     uint8  version;			// 1 - 7 are beta versions, 8 is the official thing, 10 is xtracker32
     char   tracker[8];		// "XTRACKER"
     char   songname[30];
@@ -68,8 +68,8 @@ struct DMFHEADER
 
 struct DMF_IFFCHUNK
 {
-    uint32 signature;	// 4-letter identifier
-    uint32 chunksize;	// chunk size without header
+    uint32_t signature;	// 4-letter identifier
+    uint32_t chunksize;	// chunk size without header
 };
 
 // Order list
@@ -93,16 +93,16 @@ struct DMFCHUNK_PATTERNHEADER
     uint8  numTracks;	// 1..32 channels
     uint8  beat;		// [hi|lo] -> hi = rows per beat, lo = reserved
     uint16 numRows;
-    uint32 patternLength;
+    uint32_t patternLength;
     // patttern data follows here ...
 };
 
 // Sample header
 struct DMFCHUNK_SAMPLEHEADER
 {
-    uint32 length;
-    uint32 loopStart;
-    uint32 loopEnd;
+    uint32_t length;
+    uint32_t loopStart;
+    uint32_t loopEnd;
     uint16 c3freq;		// 1000..45000hz
     uint8  volume;		// 0 = ignore
     uint8  flags;
@@ -112,7 +112,7 @@ struct DMFCHUNK_SAMPLEHEADER
 struct DMFCHUNK_SAMPLEHEADERTAIL
 {
     uint16 filler;
-    uint32 crc32;
+    uint32_t crc32;
 };
 
 #pragma pack()
@@ -855,7 +855,7 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
     {
         // Special case: Last 4 bytes should be "ENDE", without a size field (WTF)
         ASSERT_CAN_READ(4);
-        if(LittleEndian(*(uint32 *)(lpStream + dwMemPos)) == DMF_ENDE)
+        if(LittleEndian(*(uint32_t *)(lpStream + dwMemPos)) == DMF_ENDE)
         {
             break;
         }
@@ -948,7 +948,7 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
             for(SAMPLEINDEX nSmp = 1; nSmp <= m_nSamples; nSmp++)
             {
                 ASSERT_CAN_READ_CHUNK(4);
-                const uint32 length = LittleEndian(*(uint32 *)(lpStream + dwMemPos));
+                const uint32_t length = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
                 dwMemPos += 4;
                 ASSERT_CAN_READ_CHUNK(length);
 
@@ -1038,7 +1038,7 @@ typedef struct DMF_HNODE
 typedef struct DMF_HTREE
 {
     uint8 *ibuf, *ibufmax;
-    uint32 bitbuf;
+    uint32_t bitbuf;
     int bitnum;
     int lastnode, nodecount;
     DMF_HNODE nodes[256];

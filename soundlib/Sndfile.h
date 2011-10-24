@@ -852,10 +852,10 @@ public:
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())
 
 
-inline uint32 modplug::tracker::modsample_t::GetSampleRate(const MODTYPE type) const
+inline uint32_t modplug::tracker::modsample_t::GetSampleRate(const MODTYPE type) const
 //--------------------------------------------------------------
 {
-    uint32 nRate;
+    uint32_t nRate;
     if(type & (MOD_TYPE_MOD|MOD_TYPE_XM))
         nRate = CSoundFile::TransposeToFrequency(RelativeTone, nFineTune);
     else

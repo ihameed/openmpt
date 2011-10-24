@@ -1829,7 +1829,7 @@ int CCtrlSamples::TimeStretch(float ratio)
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return -1;
 
-    const uint32 nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
+    const uint32_t nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
 
     // SoundTouch(1.3.1) seems to crash with short samples. Don't know what
     // the actual limit or whether it depends on sample rate,
@@ -2075,7 +2075,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return -1;
 
-    const uint32 nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
+    const uint32_t nSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
 
     // SoundTouch(1.3.1) seems to crash with short samples. Don't know what
     // the actual limit or whether it depends on sample rate,

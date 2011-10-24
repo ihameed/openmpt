@@ -849,7 +849,7 @@ UINT CModDoc::ShowLog(LPCSTR lpszTitle, CWnd *parent)
     return IDCANCEL;
 }
 
-UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, LONG loopstart, LONG loopend, int nCurrentChn, const uint32 nStartPos) //rewbs.vstiLive: added current chan param
+UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, LONG loopstart, LONG loopend, int nCurrentChn, const uint32_t nStartPos) //rewbs.vstiLive: added current chan param
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();

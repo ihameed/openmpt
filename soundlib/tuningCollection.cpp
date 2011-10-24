@@ -7,7 +7,7 @@
 /*
 Version history:
 	2->3: Serialization revamp(August 2007)
-	1->2: Sizetypes of string serialisation from size_t(uint32)
+	1->2: Sizetypes of string serialisation from size_t(uint32_t)
 		  to uint8. (March 2007)
 */
 
@@ -204,7 +204,7 @@ bool CTuningCollection::DeserializeOLD(istream& inStrm, bool& loadingSuccessful)
 	//3. Name
 	if(version < 2)
 	{
-		if(StringFromBinaryStream<uint32>(inStrm, m_Name, 256))
+		if(StringFromBinaryStream<uint32_t>(inStrm, m_Name, 256))
 			return false;
 	}
 	else

@@ -24,7 +24,7 @@ typedef __int64 int64;
 
 typedef unsigned __int8 uint8;
 typedef unsigned __int16 uint16;
-typedef unsigned __int32 uint32;
+typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64;
 
 const int8 int8_min	    = -127-1;
@@ -39,7 +39,7 @@ const int64 int64_max   = 9223372036854775807;
 
 const uint8 uint8_max   = 255;
 const uint16 uint16_max = 65535;
-const uint32 uint32_max = 4294967295;
+const uint32_t uint32_max = 4294967295;
 const uint64 uint64_max = 18446744073709551615;
 
 typedef float float32;
@@ -58,7 +58,7 @@ typedef float float32;
 			SPECIALIZE_TRIVIAL_ASSIGN(int16);
 			SPECIALIZE_TRIVIAL_ASSIGN(uint16);
 			SPECIALIZE_TRIVIAL_ASSIGN(int32);
-			SPECIALIZE_TRIVIAL_ASSIGN(uint32);
+			SPECIALIZE_TRIVIAL_ASSIGN(uint32_t);
 			SPECIALIZE_TRIVIAL_ASSIGN(int64);
 			SPECIALIZE_TRIVIAL_ASSIGN(uint64);
 			#undef SPECIALIZE_TRIVIAL_ASSIGN

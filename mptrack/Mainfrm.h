@@ -477,7 +477,7 @@ public:
 	static int gnPlugWindowHeight;
 	static DWORD gnPlugWindowLast;
 
-	static uint32 gnMsgBoxVisiblityFlags;
+	static uint32_t gnMsgBoxVisiblityFlags;
 
 	// Midi Input
 public:

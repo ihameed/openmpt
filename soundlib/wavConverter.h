@@ -15,7 +15,7 @@ double MaxFinderSignedInt(const char* const buffer, const size_t bs)
 	if(INBYTES > 4) return 0;
 	if(bs < INBYTES) return 0;
 	
-	uint32 max = 0;
+	uint32_t max = 0;
 	for(size_t i = 0; i <= bs-INBYTES; i += INBYTES)
 	{
 		int32 temp = 0;
@@ -23,13 +23,13 @@ double MaxFinderSignedInt(const char* const buffer, const size_t bs)
 		if(temp < 0) temp = -temp;
 		if(temp < 0)
 		{
-			max = static_cast<uint32>(int32_min);
+			max = static_cast<uint32_t>(int32_min);
 			max >>= 8*(4-INBYTES);
 			break; //This is the max possible value so no need to look for bigger one.
 		}
 		temp >>= 8*(4-INBYTES);
-		if(static_cast<uint32>(temp) > max)
-			max = static_cast<uint32>(temp);
+		if(static_cast<uint32_t>(temp) > max)
+			max = static_cast<uint32_t>(temp);
 	}
 	return static_cast<double>(max);
 }

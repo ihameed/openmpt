@@ -1159,8 +1159,8 @@ BOOL CModTree::ExecuteItem(HTREEITEM hItem)
 	if (hItem)
 	{
 		const uint64 modItem = GetModItem(hItem);
-		const uint32 modItemType = GetModItemType(modItem);
-		uint32 modItemID = GetModItemID(modItem);
+		const uint32_t modItemType = GetModItemType(modItem);
+		uint32_t modItemID = GetModItemID(modItem);
 		PMODTREEDOCINFO pInfo = DocInfo[m_nDocNdx];
 		CModDoc *pModDoc = (pInfo) ? pInfo->pModDoc : NULL;
 		switch(modItemType)
@@ -1228,8 +1228,8 @@ BOOL CModTree::PlayItem(HTREEITEM hItem, UINT nParam)
 	if (hItem)
 	{
 		const uint64 modItem = GetModItem(hItem);
-		const uint32 modItemType = GetModItemType(modItem);
-		uint32 modItemID = GetModItemID(modItem);
+		const uint32_t modItemType = GetModItemType(modItem);
+		uint32_t modItemID = GetModItemID(modItem);
 		PMODTREEDOCINFO pInfo = DocInfo[m_nDocNdx];
 		CModDoc *pModDoc = (pInfo) ? pInfo->pModDoc : NULL;
 		switch(modItemType)
@@ -1391,8 +1391,8 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
 //--------------------------------------------
 {
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 	TCHAR s[64];
 
 	PMODTREEDOCINFO pInfo = DocInfo[m_nDocNdx];
@@ -1485,8 +1485,8 @@ BOOL CModTree::OpenTreeItem(HTREEITEM hItem)
 //------------------------------------------
 {
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	//const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	//const uint32_t modItemID = GetModItemID(modItem);
 
 	switch(modItemType)
 	{
@@ -2021,11 +2021,11 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
 //---------------------------------------------------
 {
 	const uint64 modItemDrop = GetModItem(hItem);
-	const uint32 modItemDropType = GetModItemType(modItemDrop);
-	const uint32 modItemDropID = GetModItemID(modItemDrop);
+	const uint32_t modItemDropType = GetModItemType(modItemDrop);
+	const uint32_t modItemDropID = GetModItemID(modItemDrop);
 
-	const uint32 modItemDragType = GetModItemType(m_qwItemDrag);
-	const uint32 modItemDragID = GetModItemID(m_qwItemDrag);
+	const uint32_t modItemDragType = GetModItemType(m_qwItemDrag);
+	const uint32_t modItemDragID = GetModItemID(m_qwItemDrag);
 
 	const PMODTREEDOCINFO pInfoDrag = DocInfo[m_nDragDocNdx];
 	const PMODTREEDOCINFO pInfoDrop = DocInfo[m_nDocNdx];
@@ -2374,8 +2374,8 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
 			BOOL bSep = FALSE;
 
 			const uint64 modItem = GetModItem(hItem);
-			const uint32 modItemType = GetModItemType(modItem);
-			const uint32 modItemID = GetModItemID(modItem);
+			const uint32_t modItemType = GetModItemType(modItem);
+			const uint32_t modItemID = GetModItemID(modItem);
 
 			SelectItem(hItem);
 			switch(modItemType)
@@ -2584,8 +2584,8 @@ void CModTree::OnItemLeftClick(LPNMHDR, LRESULT *pResult)
 		if (hItem != NULL)
 		{
 			const uint64 modItem = GetModItem(hItem);
-			const uint32 modItemType = GetModItemType(modItem);
-			const uint32 modItemID = GetModItemID(modItem);
+			const uint32_t modItemType = GetModItemType(modItem);
+			const uint32_t modItemID = GetModItemID(modItem);
 
 			switch(modItemType)
 			{
@@ -2836,8 +2836,8 @@ void CModTree::OnMuteTreeItem()
 	CModDoc *pModDoc;
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	pModDoc = GetDocumentFromItem(hItem);
 
@@ -2879,8 +2879,8 @@ void CModTree::OnSoloTreeItem()
 	CModDoc *pModDoc;
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	pModDoc = GetDocumentFromItem(hItem);
 	if (pModDoc)
@@ -2913,8 +2913,8 @@ void CModTree::OnUnmuteAllTreeItem()
 	CModDoc *pModDoc;
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	//const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	//const uint32_t modItemID = GetModItemID(modItem);
 
 	pModDoc = GetDocumentFromItem(hItem);
 	if (pModDoc)
@@ -2943,8 +2943,8 @@ void CModTree::OnDuplicateTreeItem()
 	CModDoc *pModDoc;
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	pModDoc = GetDocumentFromItem(hItem);
 	CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
@@ -2967,8 +2967,8 @@ void CModTree::OnInsertTreeItem()
 	CModDoc *pModDoc;
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	//const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	//const uint32_t modItemID = GetModItemID(modItem);
 
 	pModDoc = GetDocumentFromItem(hItem);
 	CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
@@ -2989,8 +2989,8 @@ void CModTree::OnSwitchToTreeItem()
 	CModDoc *pModDoc;
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	pModDoc = GetDocumentFromItem(hItem);
 
@@ -3010,8 +3010,8 @@ void CModTree::OnSetItemPath()
 	CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
 	const uint64 modItem = GetModItem(hItem);
-	//const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	//const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	if(pSndFile && modItemID){
 
@@ -3032,8 +3032,8 @@ void CModTree::OnSaveItem()
 	CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
 	const uint64 modItem = GetModItem(hItem);
-	//const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	//const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	if(pSndFile && modItemID){
 
@@ -3116,8 +3116,8 @@ DROPEFFECT CModTree::OnDragOver(COleDataObject*, DWORD, CPoint point)
 	HTREEITEM hItem = HitTest(point, &flags);
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	//const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	//const uint32_t modItemID = GetModItemID(modItem);
 
 	switch(modItemType)
 	{
@@ -3239,8 +3239,8 @@ void CModTree::OnSoundBankProperties()
 	HTREEITEM hItem = GetSelectedItem();
 
 	const uint64 modItem = GetModItem(hItem);
-	const uint32 modItemType = GetModItemType(modItem);
-	const uint32 modItemID = GetModItemID(modItem);
+	const uint32_t modItemType = GetModItemType(modItem);
+	const uint32_t modItemID = GetModItemID(modItem);
 
 	if ((modItemType & 0xFFFF) == MODITEM_DLSBANK_FOLDER)
 	{

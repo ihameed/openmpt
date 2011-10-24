@@ -2112,7 +2112,7 @@ LRESULT CViewInstrument::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 	if ((event == 0x9) && !nVol) event = 0x8;	//Convert event to note-off if req'd
 
 	BYTE mappedIndex = 0, paramValue = 0;
-	uint32 paramIndex = 0;
+	uint32_t paramIndex = 0;
 	if(pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue)) 
 		return 0;
 

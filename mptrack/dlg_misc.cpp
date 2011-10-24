@@ -1582,7 +1582,7 @@ BOOL CEditHistoryDlg::OnInitDialog()
 		TCHAR szDate[32];
 		_tcsftime(szDate, sizeof(szDate), _T("%d %b %Y, %H:%M:%S"), &hist->loadDate);
 		// Time + stuff
-		uint32 duration = (uint32)((double)(hist->openTime) / HISTORY_TIMER_PRECISION);
+		uint32_t duration = (uint32_t)((double)(hist->openTime) / HISTORY_TIMER_PRECISION);
 		s.AppendFormat(_T("Loaded %s, open in the editor for %luh %02lum %02lus\r\n"),
 			szDate, duration / 3600, (duration / 60) % 60, duration % 60);
 	}
@@ -1654,7 +1654,7 @@ struct MsgBoxHidableMessage
 //=========================
 {
 	LPCTSTR strMsg;
-	uint32 nMask;
+	uint32_t nMask;
 	bool bDefaultDontShowAgainStatus; // true for don't show again, false for show again.
 };
 
@@ -1679,7 +1679,7 @@ void MsgBoxHidable(enMsgBoxHidableMessage enMsg)
 		return;
 
 	const LPCTSTR strMsg = HidableMessages[enMsg].strMsg;
-	const uint32 mask = HidableMessages[enMsg].nMask;
+	const uint32_t mask = HidableMessages[enMsg].nMask;
 	const bool defaulCheckStatus = HidableMessages[enMsg].bDefaultDontShowAgainStatus;
 
 	// Show dialog.

@@ -14,7 +14,7 @@
 typedef const BYTE * LPCBYTE;
 #endif
 
-typedef uint32 ROWINDEX;
+typedef uint32_t ROWINDEX;
     const ROWINDEX ROWINDEX_MAX = uint32_max;
     const ROWINDEX ROWINDEX_INVALID = ROWINDEX_MAX;
 typedef uint16 CHANNELINDEX;
@@ -37,7 +37,7 @@ typedef uint16 INSTRUMENTINDEX;
 typedef uint8 SEQUENCEINDEX;
     const SEQUENCEINDEX SEQUENCEINDEX_MAX	= uint8_max;
     const SEQUENCEINDEX SEQUENCEINDEX_INVALID	= SEQUENCEINDEX_MAX;
-typedef uint32 MODTYPE;
+typedef uint32_t MODTYPE;
 
 #define MAX_PATTERN_ROWS	1024	// -> CODE#0008 -> DESC="#define to set pattern size" -! BEHAVIOUR_CHANGE#0008
 

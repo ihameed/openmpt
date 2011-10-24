@@ -152,7 +152,7 @@ public:
 	void BeginRead(const LPCSTR pszId, const uint64& nVersion) {return BeginRead(pszId, strlen(pszId), nVersion);}
 
 	// Reserves space for map to current position. Call after BeginWrite and before writing any entries.
-	void ReserveMapSize(uint32 nSize);
+	void ReserveMapSize(uint32_t nSize);
 
 	// Creates subentry for writing. Use SubEntry() to access the subentry and 
 	// when done, call ReleaseSubEntry. Don't call WriteItem() for 'this' while 
@@ -231,7 +231,7 @@ public:
 	void Log(LPCTSTR psz) {if (m_fpLogFunc) m_fpLogFunc(psz);}
 
 	SsbStatus m_Status;
-	uint32 m_nFixedEntrySize;			// Read/write: If > 0, data entries have given fixed size.
+	uint32_t m_nFixedEntrySize;			// Read/write: If > 0, data entries have given fixed size.
 	fpLogFunc_t m_fpLogFunc;			// Pointer to log function.
 
 private:
@@ -304,7 +304,7 @@ private:
 
 	Ssb* m_pSubEntry;					// Read/Write: Pointer to SubEntry.
 	Postype m_posSubEntryStart;			// Write: Holds data position where SubEntry started.
-	uint32 m_nMapReserveSize;			// Write: Number of bytes to reserve for map if writing it before data.			
+	uint32_t m_nMapReserveSize;			// Write: Number of bytes to reserve for map if writing it before data.			
 	Postype m_posEntrycount;			// Write: Pos of entrycount field. 
 	Postype m_posMapPosField;			// Write: Pos of map position field.
 	Postype m_posMapStart;				// Write: Pos of map start.

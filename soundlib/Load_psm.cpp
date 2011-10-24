@@ -50,9 +50,9 @@
 
 struct PSMNEWHEADER
 {
-    uint32 formatID;			// "PSM " (new format)
-    uint32 fileSize;			// Filesize - 12
-    uint32 fileInfoID;			// "FILE" Start of file info
+    uint32_t formatID;			// "PSM " (new format)
+    uint32_t fileSize;			// Filesize - 12
+    uint32_t fileInfoID;			// "FILE" Start of file info
 };
 
 struct PSMSONGHEADER
@@ -67,17 +67,17 @@ struct PSMOLDSAMPLEHEADER // Regular sample header
 {
     uint8  flags;
     char   fileName[8];		// Filename of the original module (without extension)
-    uint32 sampleID;		// INS0...INS9 (only last digit of sample ID, i.e. sample 1 and sample 11 are equal)
+    uint32_t sampleID;		// INS0...INS9 (only last digit of sample ID, i.e. sample 1 and sample 11 are equal)
     char   sampleName[33];
     uint8  unknown1[6];		// 00 00 00 00 00 FF
     uint16 sampleNumber;
-    uint32 sampleLength;
-    uint32 loopStart;
-    uint32 loopEnd;			// FF FF FF FF = end of sample
+    uint32_t sampleLength;
+    uint32_t loopStart;
+    uint32_t loopEnd;			// FF FF FF FF = end of sample
     uint8  unknown3;
     uint8  defaulPan;		// unused?
     uint8  defaultVolume;
-    uint32 unknown4;
+    uint32_t unknown4;
     uint16 C5Freq;
     uint8  unknown5[21];	// 00 ... 00
 };
@@ -90,13 +90,13 @@ struct PSMNEWSAMPLEHEADER // Sinaria sample header (and possibly other games)
     char   sampleName[33];
     uint8  unknown1[6];		// 00 00 00 00 00 FF
     uint16 sampleNumber;
-    uint32 sampleLength;
-    uint32 loopStart;
-    uint32 loopEnd;
+    uint32_t sampleLength;
+    uint32_t loopStart;
+    uint32_t loopEnd;
     uint16 unknown3;
     uint8  defaultPan;		// unused?
     uint8  defaultVolume;
-    uint32 unknown4;
+    uint32_t unknown4;
     uint16 C5Freq;
     char   unknown5[16];	// 00 ... 00
 };
@@ -161,9 +161,9 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
     // pattern offset and identifier
     PATTERNINDEX numPatterns = 0;	// used for setting up the orderlist - final pattern count
-    vector<uint32> patternOffsets;	// pattern offsets (sorted as they occour in the file)
-    vector<uint32> patternIDs;		// pattern IDs (sorted as they occour in the file)
-    vector<uint32> orderOffsets;	// combine the upper two vectors to get the offsets for each order item
+    vector<uint32_t> patternOffsets;	// pattern offsets (sorted as they occour in the file)
+    vector<uint32_t> patternIDs;		// pattern IDs (sorted as they occour in the file)
+    vector<uint32_t> orderOffsets;	// combine the upper two vectors to get the offsets for each order item
     patternOffsets.clear();
     patternIDs.clear();
     orderOffsets.clear();
@@ -176,8 +176,8 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
     {
         // Skip through the chunks
         ASSERT_CAN_READ(8);
-        uint32 chunkID = LittleEndian(*(uint32 *)(lpStream + dwMemPos));
-        uint32 chunkSize = LittleEndian(*(uint32 *)(lpStream + dwMemPos + 4));
+        uint32_t chunkID = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
+        uint32_t chunkSize = LittleEndian(*(uint32_t *)(lpStream + dwMemPos + 4));
         dwMemPos += 8;
 
         ASSERT_CAN_READ(chunkSize);
@@ -193,7 +193,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
             break;
 
         case PSMCHUNKID_PBOD: // "PBOD" - Pattern data of a single pattern
-            if(chunkSize < 8 || chunkSize != LittleEndian(*(uint32 *)(lpStream + dwMemPos))) return false; // same value twice
+            if(chunkSize < 8 || chunkSize != LittleEndian(*(uint32_t *)(lpStream + dwMemPos))) return false; // same value twice
 
             // Pattern ID (something like "P0  " or "P13 ", or "PATT0   " in Sinaria) follows
             if(memcmp(lpStream + dwMemPos + 4, "P", 1)) return false;
@@ -226,8 +226,8 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 // "Sub sub chunks"
                 while(dwChunkPos + 8 < dwMemPos + chunkSize)
                 {
-                    uint32 subChunkID = LittleEndian(*(uint32 *)(lpStream + dwChunkPos));
-                    uint32 subChunkSize = LittleEndian(*(uint32 *)(lpStream + dwChunkPos + 4));
+                    uint32_t subChunkID = LittleEndian(*(uint32_t *)(lpStream + dwChunkPos));
+                    uint32_t subChunkSize = LittleEndian(*(uint32_t *)(lpStream + dwChunkPos + 4));
                     dwChunkPos += 8;
 
                     switch(subChunkID)
@@ -273,10 +273,10 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                                         char patternID[4]; // temporary
                                         memcpy(patternID, lpStream + dwSettingsOffset + 2 + (bNewFormat ? 3 : 0), 3);
                                         patternID[3] = 0;
-                                        uint32 nPattern = atoi(patternID);
+                                        uint32_t nPattern = atoi(patternID);
 
                                         // seek which pattern has this ID
-                                        for(uint32 i = 0; i < patternIDs.size(); i++)
+                                        for(uint32_t i = 0; i < patternIDs.size(); i++)
                                         {
                                             if(patternIDs[i] == nPattern)
                                             {
@@ -389,7 +389,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
                     case PSMCHUNKID_PPAN: // PPAN - Channel panning table (used in Sinaria)
                         if(subChunkSize & 1) return false;
-                        for(uint32 i = 0; i < subChunkSize; i += 2)
+                        for(uint32_t i = 0; i < subChunkSize; i += 2)
                         {
                             CHANNELINDEX nChn = (CHANNELINDEX)(i >> 1);
                             if(nChn >= m_nChannels) break;
@@ -519,7 +519,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
     for(ORDERINDEX nOrd = 0; nOrd < Order.size(); nOrd++)
     {
         if(orderOffsets[nOrd] == nullptr) continue;
-        uint32 dwPatternOffset = orderOffsets[nOrd];
+        uint32_t dwPatternOffset = orderOffsets[nOrd];
         if(dwPatternOffset + 2 > dwMemLength) return false;
         uint16 patternSize = LittleEndianW(*(uint16 *)(lpStream + dwPatternOffset));
         dwPatternOffset += 2;
@@ -536,7 +536,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
             if(dwPatternOffset + 2 > dwMemLength) return false;
             uint16 rowSize = LittleEndianW(*(uint16 *)(lpStream + dwPatternOffset));
             
-            uint32 dwRowOffset = dwPatternOffset + 2;
+            uint32_t dwRowOffset = dwPatternOffset + 2;
 
             while(dwRowOffset < dwPatternOffset + rowSize)
             {
@@ -757,7 +757,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
     if(subsongs.size() > 1)
     {
         // write subsong "configuration" to patterns (only if there are multiple subsongs)
-        for(uint32 i = 0; i < subsongs.size(); i++)
+        for(uint32_t i = 0; i < subsongs.size(); i++)
         {
             PATTERNINDEX startPattern = Order[subsongs[i].startOrder], endPattern = Order[subsongs[i].endOrder];
             if(startPattern == PATTERNINDEX_INVALID || endPattern == PATTERNINDEX_INVALID) continue; // what, invalid subtune?
@@ -791,7 +791,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 ROWINDEX lastRow = Patterns[endPattern].GetNumRows() - 1;
                 modplug::tracker::modcommand_t *row_data;
                 row_data = Patterns[endPattern];
-                for(uint32 nCell = 0; nCell < m_nChannels * Patterns[endPattern].GetNumRows(); nCell++, row_data++)
+                for(uint32_t nCell = 0; nCell < m_nChannels * Patterns[endPattern].GetNumRows(); nCell++, row_data++)
                 {
                     if(row_data->command == CMD_PATTERNBREAK || row_data->command == CMD_POSITIONJUMP)
                     {
@@ -816,7 +816,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
 struct PSM16HEADER
 {
-    uint32 formatID;		// "PSM�" (PSM16)
+    uint32_t formatID;		// "PSM�" (PSM16)
     char   songName[59];	// Song title, padded with nulls
     uint8  lineEnd;			// $1A
     uint8  songType;		// Song Type bitfield
@@ -831,12 +831,12 @@ struct PSM16HEADER
     uint16 numSamples;		// 1 ... 255
     uint16 numChannelsPlay;	// 0 ... 32 (max. number of channels to play)
     uint16 numChannelsReal;	// 0 ... 32 (max. number of channels to process)
-    uint32 orderOffset;
-    uint32 panOffset;
-    uint32 patOffset;
-    uint32 smpOffset;
-    uint32 commentsOffset;
-    uint32 patSize;			// Size of all patterns
+    uint32_t orderOffset;
+    uint32_t panOffset;
+    uint32_t patOffset;
+    uint32_t smpOffset;
+    uint32_t commentsOffset;
+    uint32_t patSize;			// Size of all patterns
     uint8  filler[40];
 };
 
@@ -844,13 +844,13 @@ struct PSM16SMPHEADER
 {
     uint8 filename[13];	// null-terminated
     uint8 name[24];		// dito
-    uint32 offset;		// in file
-    uint32 memoffset;	// not used
+    uint32_t offset;		// in file
+    uint32_t memoffset;	// not used
     uint16 sampleNumber;// 1 ... 255
     uint8  flags;		// sample flag bitfield
-    uint32 length;		// in bytes
-    uint32 loopStart;	// in samples?
-    uint32 loopEnd;		// in samples?
+    uint32_t length;		// in bytes
+    uint32_t loopStart;	// in samples?
+    uint32_t loopEnd;		// in samples?
     int8   finetune;	// 0 ... 15 (useless? also, why is this almost always 70?)
     uint8  volume;		// default volume
     uint16 c2freq;
@@ -898,7 +898,7 @@ bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
     // Read orders
     dwMemPos = LittleEndian(shdr->orderOffset);
     ASSERT_CAN_READ((DWORD)LittleEndianW(shdr->songOrders) + 2);
-    if(LittleEndian(shdr->orderOffset) > 4 && LittleEndian(*(uint32 *)(lpStream + dwMemPos - 4)) == 0x44524f50) // PORD
+    if(LittleEndian(shdr->orderOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x44524f50) // PORD
     {
         Order.ReadAsByte(lpStream + dwMemPos, LittleEndianW(shdr->songOrders), dwMemLength - dwMemPos);
     }
@@ -906,7 +906,7 @@ bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
     // Read pan positions
     dwMemPos = LittleEndian(shdr->panOffset);
     ASSERT_CAN_READ(32);
-    if(LittleEndian(shdr->panOffset) > 4 && LittleEndian(*(uint32 *)(lpStream + dwMemPos - 4)) == 0x4E415050) // PPAN
+    if(LittleEndian(shdr->panOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x4E415050) // PPAN
     {
         for(CHANNELINDEX i = 0; i < 32; i++)
         {
@@ -919,7 +919,7 @@ bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
     // Read samples
     dwMemPos = LittleEndian(shdr->smpOffset);
     ASSERT_CAN_READ(0);
-    if(LittleEndian(shdr->smpOffset) > 4 && LittleEndian(*(uint32 *)(lpStream + dwMemPos - 4)) == 0x48415350) // PSAH
+    if(LittleEndian(shdr->smpOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x48415350) // PSAH
     {
         SAMPLEINDEX iSmpCount = 0;
         m_nSamples = LittleEndianW(shdr->numSamples);

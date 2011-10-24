@@ -581,7 +581,7 @@ DWORD ModSequence::Deserialize(const BYTE* const src, const DWORD memLength)
 	resize(max(s, MAX_ORDERS));
 	for(size_t i = 0; i<s; i++, memPos +=4 )
 	{
-		uint32 temp;
+		uint32_t temp;
 		memcpy(&temp, src+memPos, 4);
 		(*this)[i] = static_cast<PATTERNINDEX>(temp);
 	}

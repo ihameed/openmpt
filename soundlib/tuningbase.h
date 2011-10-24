@@ -28,7 +28,7 @@ namespace srlztn {class Ssb;};
 
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16, class TUNOTEINDEXTYPE = uint16, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32> 
+	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16, class TUNOTEINDEXTYPE = uint16, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32_t> 
 	#define TEMPLATEDEC template<class A, class B, class C, class D, class E>
 	#define TYPENAME typename
 	#define CTUNINGBASE CTuningBase<A, B, C, D, E>
@@ -38,7 +38,7 @@ namespace srlztn {class Ssb;};
 	typedef uint16 TUNOTEINDEXTYPE;
 	typedef float32 TRATIOTYPE;
 	typedef int32 TSTEPINDEXTYPE;
-	typedef uint32 TUSTEPINDEXTYPE;
+	typedef uint32_t TUSTEPINDEXTYPE;
 	#define TYPENAME
 	#define TEMPLATEDEC
 	#define CTUNINGBASE CTuningBase
@@ -181,7 +181,7 @@ public:
 	bool ChangeGroupsize(const NOTEINDEXTYPE&);
 	bool ChangeGroupRatio(const RATIOTYPE&);
 
-	static uint32 GetVersion() {return s_SerializationVersion;}
+	static uint32_t GetVersion() {return s_SerializationVersion;}
 
 	virtual UNOTEINDEXTYPE GetGroupSize() const {return 0;}
 	virtual RATIOTYPE GetGroupRatio() const {return 0;}
@@ -239,7 +239,7 @@ protected:
 	virtual NOTEINDEXTYPE ProSetGroupSize(const UNOTEINDEXTYPE&) {return 0;}
 	virtual RATIOTYPE ProSetGroupRatio(const RATIOTYPE&) {return 0;}
 
-	virtual uint32 GetClassVersion() const = 0;
+	virtual uint32_t GetClassVersion() const = 0;
 
 //END PROTECTED VIRTUALS
 

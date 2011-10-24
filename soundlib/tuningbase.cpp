@@ -29,7 +29,7 @@ const TYPENAME CTUNINGBASE::SERIALIZATION_VERSION CTUNINGBASE::s_SerializationVe
 /*
 Version history:
 	4->5: Lots of changes, finestep interpretation revamp, fileformat revamp.
-	3->4: Changed sizetypes in serialisation from size_t(uint32) to
+	3->4: Changed sizetypes in serialisation from size_t(uint32_t) to
 			smaller types (uint8, USTEPTYPE) (March 2007)
 */
 

@@ -39,7 +39,7 @@ using namespace CTuningS11n;
 Version changes:
 	3->4: Finetune related internal structure and serialization revamp.
 	2->3: The type for the size_type in the serialisation changed
-		  from default(size_t, uint32) to unsigned STEPTYPE. (March 2007)
+		  from default(size_t, uint32_t) to unsigned STEPTYPE. (March 2007)
 */
 
 

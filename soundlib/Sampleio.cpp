@@ -51,7 +51,7 @@ bool CSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
 bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
-    uint32 *psig = (uint32 *)lpMemFile;
+    uint32_t *psig = (uint32_t *)lpMemFile;
     if ((!lpMemFile) || (dwFileLength < 128)) return false;
     if (((psig[0] == LittleEndian(0x46464952)) && (psig[2] == LittleEndian(0x45564157)))	// RIFF....WAVE signature
      || ((psig[0] == LittleEndian(0x5453494C)) && (psig[2] == LittleEndian(0x65766177)))	// LIST....wave

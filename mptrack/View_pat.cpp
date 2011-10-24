@@ -3279,7 +3279,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 
     // Handle MIDI mapping.
     uint8 mappedIndex = uint8_max, paramValue = uint8_max;
-    uint32 paramIndex = 0;
+    uint32_t paramIndex = 0;
     const bool bCaptured = pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue); 
 
     // Write parameter control commands if needed.
@@ -5560,7 +5560,7 @@ void CViewPattern::OnShowTimeAtRow()
             msg.Format("Unable to determine the time. Possible cause: No order %d, row %d found from play sequence", currentOrder, m_nRow);
         else
         {
-            const uint32 minutes = static_cast<uint32>(t/60.0);
+            const uint32_t minutes = static_cast<uint32_t>(t/60.0);
             const float seconds = t - minutes*60;
             msg.Format("Estimate for playback time at order %d(pattern %d), row %d: %d minute%s %.2f seconds", currentOrder, m_nPattern, m_nRow, minutes, (minutes == 1) ? "" : "s", seconds);
         }

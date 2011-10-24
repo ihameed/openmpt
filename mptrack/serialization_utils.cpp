@@ -40,7 +40,7 @@ uint8 GetByteReq1248(const uint64 size)
 }
 
 
-uint8 GetByteReq1234(const uint32 num)
+uint8 GetByteReq1234(const uint32_t num)
 //------------------------------------
 {
 	if((num >> 6) == 0) return 1;
@@ -60,12 +60,12 @@ void WriteAdaptive12(OutStream& oStrm, const uint16 num)
 }
 
 
-void WriteAdaptive1234(OutStream& oStrm, const uint32 num)
+void WriteAdaptive1234(OutStream& oStrm, const uint32_t num)
 //--------------------------------------------------------
 {
 	const uint8 bc = GetByteReq1234(num);
-	const uint32 sizeInstruction = (num << 2) | (bc - 1);
-	Binarywrite<uint32>(oStrm, sizeInstruction, bc);
+	const uint32_t sizeInstruction = (num << 2) | (bc - 1);
+	Binarywrite<uint32_t>(oStrm, sizeInstruction, bc);
 }
 
 
@@ -108,10 +108,10 @@ void ReadAdaptive12(InStream& iStrm, uint16& val)
 }
 
 
-void ReadAdaptive1234(InStream& iStrm, uint32& val)
+void ReadAdaptive1234(InStream& iStrm, uint32_t& val)
 //-------------------------------------------------
 {
-	Binaryread<uint32>(iStrm, val, 1);
+	Binaryread<uint32_t>(iStrm, val, 1);
 	const uint8 bc = 1 + static_cast<uint8>(val & 3);
 	if(bc > 1) iStrm.read(reinterpret_cast<char*>(&val)+1, bc-1);
 	val >>= 2;
@@ -135,9 +135,9 @@ void ReadAdaptive1248(InStream& iStrm, uint64& val)
 void WriteItemString(OutStream& oStrm, const char* const pStr, const size_t nSize)
 //--------------------------------------------------------------------------------
 {
-	uint32 id = (std::min)(nSize, (uint32_max >> 4)) << 4;
+	uint32_t id = (std::min)(nSize, (uint32_max >> 4)) << 4;
 	id |= 12; // 12 == 1100b
-	Binarywrite<uint32>(oStrm, id);
+	Binarywrite<uint32_t>(oStrm, id);
 	id >>= 4;
 	if(id > 0)
 		oStrm.write(pStr, id);
@@ -149,7 +149,7 @@ void ReadItemString(InStream& iStrm, std::string& str, const DataSize)
 {
 	// bits 0,1: Bytes per char type: 1,2,3,4.
 	// bits 2,3: Bytes in size indicator, 1,2,3,4
-	uint32 id = 0;
+	uint32_t id = 0;
 	Binaryread(iStrm, id, 1);
 	const uint8 nSizeBytes = (id & 12) >> 2; // 12 == 1100b
 	if (nSizeBytes > 0)
@@ -358,7 +358,7 @@ void Ssb::WriteMapItem( const void* pId,
 }
 
 
-void Ssb::ReserveMapSize(uint32 nSize)
+void Ssb::ReserveMapSize(uint32_t nSize)
 //------------------------------------
 {
 	OutStream& oStrm = *m_pOstrm;
@@ -551,7 +551,7 @@ void Ssb::OnWroteItem(const void* pId, const size_t nIdSize, const Postype& posB
 	{
 		if(nEntrySize <= m_nFixedEntrySize)
 		{
-			for(uint32 i = 0; i<m_nFixedEntrySize-nEntrySize; i++)
+			for(uint32_t i = 0; i<m_nFixedEntrySize-nEntrySize; i++)
 				m_pOstrm->put(0);
 			nEntrySize = m_nFixedEntrySize;
 		}
@@ -633,9 +633,9 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64& nVersio
 		SetFlag(RwfRTwoBytesDescChar, true);
 
 	// Read headerdata size
-	uint32 tempU32 = 0;
+	uint32_t tempU32 = 0;
 	ReadAdaptive1234(iStrm, tempU32);
-	const uint32 headerdatasize = tempU32;
+	const uint32_t headerdatasize = tempU32;
 
 	// If headerdatasize != 0, read known headerdata and ignore rest.
 	uint8 flagbyte = s_DefaultFlagbyte;
@@ -853,7 +853,7 @@ void Ssb::FinishWrite()
 {
 	OutStream& oStrm = *m_pOstrm;
 	const Postype posDataEnd = oStrm.tellp();
-	if (m_posMapStart != Postype(0) && ((uint32)m_MapStream.pcount() > m_nMapReserveSize))
+	if (m_posMapStart != Postype(0) && ((uint32_t)m_MapStream.pcount() > m_nMapReserveSize))
 		{ AddWriteNote(SNW_INSUFFICIENT_MAPSIZE); return; }
 		
 	if (m_posMapStart < 1)
@@ -862,7 +862,7 @@ void Ssb::FinishWrite()
 		oStrm.seekp(m_posMapStart);
 
 	if (m_fpLogFunc)
-		m_fpLogFunc(tstrWritingMap, uint32(m_posMapStart - m_posStart));
+		m_fpLogFunc(tstrWritingMap, uint32_t(m_posMapStart - m_posStart));
 
 	if (GetFlag(RwfRwHasMap)) //Write map
 	{
@@ -887,7 +887,7 @@ void Ssb::FinishWrite()
 	oStrm.seekp(max(posMapEnd, posDataEnd)); 
 
 	if (m_fpLogFunc)
-		m_fpLogFunc(tstrEndOfStream, uint32(oStrm.tellp() - m_posStart));
+		m_fpLogFunc(tstrEndOfStream, uint32_t(oStrm.tellp() - m_posStart));
 }
 
 } // namespace srlztn 

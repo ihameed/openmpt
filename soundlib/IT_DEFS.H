@@ -141,7 +141,7 @@ typedef struct tagITHISTORYSTRUCT
 {
 	uint16 fatdate;	// DOS/FAT date when the file was opened / created in the editor. For details, read http://msdn.microsoft.com/en-us/library/ms724247(VS.85).aspx
 	uint16 fattime;	// DOS/FAT time when the file was opened / created in the editor.
-	uint32 runtime;	// The time how long the file was open in the editor, in 1/18.2th seconds. (= ticks of the DOS timer)
+	uint32_t runtime;	// The time how long the file was open in the editor, in 1/18.2th seconds. (= ticks of the DOS timer)
 } ITHISTORYSTRUCT;
 
 #pragma pack()

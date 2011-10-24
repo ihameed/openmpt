@@ -11,6 +11,7 @@
 #ifndef ZLIB_WINAPI
 #define ZLIB_WINAPI
 #endif // ZLIB_WINAPI
+#include <cstdint>
 #include "../zlib/zlib.h"
 #include "../mptrack/typedefs.h"
 
@@ -18,19 +19,19 @@
 
 struct GZheader
 {
-	uint8  magic1;	// 0x1F
-	uint8  magic2;	// 0x8B
-	uint8  method;	// 0-7 = reserved, 8 = deflate
-	uint8  flags;	// See GZ_F* constants
-	uint32 mtime;	// UNIX time
-	uint8  xflags;	// Available for use by specific compression methods. We ignore this.
-	uint8  os;		// Which OS was used to compress the file? We also ignore this.
+	uint8_t  magic1;	// 0x1F
+	uint8_t  magic2;	// 0x8B
+	uint8_t  method;	// 0-7 = reserved, 8 = deflate
+	uint8_t  flags;	// See GZ_F* constants
+	uint32_t mtime;	// UNIX time
+	uint8_t  xflags;	// Available for use by specific compression methods. We ignore this.
+	uint8_t  os;		// Which OS was used to compress the file? We also ignore this.
 };
 
 struct GZtrailer
 {
-	uint32 crc32;	// CRC32 of decompressed data
-	uint32 isize;	// Size of decompressed data
+	uint32_t crc32;	// CRC32 of decompressed data
+	uint32_t isize;	// Size of decompressed data
 };
 
 #pragma pack()
