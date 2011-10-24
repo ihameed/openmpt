@@ -1161,7 +1161,7 @@ void CCtrlSamples::OnNormalize()
 
             if (pSmp->flags & CHN_16BIT)
             {
-                int16 *p = (int16 *)pSmp->sample_data;
+                int16_t *p = (int16_t *)pSmp->sample_data;
                 int max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
@@ -1174,7 +1174,7 @@ void CCtrlSamples::OnNormalize()
                     for (UINT j = iStart; j < iEnd; j++)
                     {
                         int l = (((int)p[j]) << 15) / max;
-                        p[j] = (int16)l;
+                        p[j] = (int16_t)l;
                     }
                     bModified = bOk = true;
                 }
@@ -1354,7 +1354,7 @@ void CCtrlSamples::OnRemoveDCOffset()
 void CCtrlSamples::OnAmplify()
 //----------------------------
 {
-    static int16 snOldAmp = 100;
+    static int16_t snOldAmp = 100;
     CAmpDlg dlg(this, snOldAmp);
     if (dlg.DoModal() != IDOK) return;
     snOldAmp = dlg.m_nFactor;
@@ -1982,10 +1982,10 @@ int CCtrlSamples::TimeStretch(float ratio)
         ::GdiFlush();
 
         // Send sampledata for processing.
-        soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->sample_data + pos * smpsize * nChn), len);
+        soundtouch_putSamples(handleSt, reinterpret_cast<int16_t*>(pSmp->sample_data + pos * smpsize * nChn), len);
 
         // Receive some processed samples (it's not guaranteed that there is any available).
-        nLengthCounter += soundtouch_receiveSamples(handleSt, reinterpret_cast<int16*>(pNewSample) + nChn * nLengthCounter, nNewSampleLength - nLengthCounter);
+        nLengthCounter += soundtouch_receiveSamples(handleSt, reinterpret_cast<int16_t*>(pNewSample) + nChn * nLengthCounter, nNewSampleLength - nLengthCounter);
 
         // Next buffer chunk
         pos += len;
@@ -1995,7 +1995,7 @@ int CCtrlSamples::TimeStretch(float ratio)
     soundtouch_flush(handleSt);
     while(soundtouch_numSamples(handleSt) > 0 && nNewSampleLength > nLengthCounter)
     {
-        nLengthCounter += soundtouch_receiveSamples(handleSt, reinterpret_cast<int16*>(pNewSample) + nChn * nLengthCounter, nNewSampleLength - nLengthCounter);
+        nLengthCounter += soundtouch_receiveSamples(handleSt, reinterpret_cast<int16_t*>(pNewSample) + nChn * nLengthCounter, nNewSampleLength - nLengthCounter);
     }
     soundtouch_clear(handleSt);
     ASSERT(soundtouch_isEmpty(handleSt) != 0);
@@ -2207,7 +2207,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
             }
             outChannels[ch] = new float[512];
             for(UINT s=0;s<len;s++) {
-                inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16*>(pSmp->sample_data) + (pos + s)*nChn + ch);
+                inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16_t*>(pSmp->sample_data) + (pos + s)*nChn + ch);
             }
         }
         
@@ -2216,12 +2216,12 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
         for(int ch=0;ch<nChn;ch++) {
             if(len) delete[] inChannels[ch];
             for(UINT s=0;s<512;s++) {
-                *(reinterpret_cast<int16*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
+                *(reinterpret_cast<int16_t*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
             }
             delete[] outChannels[ch];
         }		
         
-        //soundtouch_putSamples(handleSt, reinterpret_cast<int16*>(pSmp->sample_data + pos * smpsize * nChn), len);
+        //soundtouch_putSamples(handleSt, reinterpret_cast<int16_t*>(pSmp->sample_data + pos * smpsize * nChn), len);
 
         // Receive some processed samples (it's not guaranteed that there is any available).
         nLengthCounter += 512;
@@ -2241,7 +2241,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
         
         for(int ch=0;ch<nChn;ch++) {
             for(UINT s=0;s<extra;s++) {
-                *(reinterpret_cast<int16*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
+                *(reinterpret_cast<int16_t*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
             }
             delete[] outChannels[ch];
         }		

@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////
 // Sample amplification dialog
 
-CAmpDlg::CAmpDlg(CWnd *parent, int16 nFactor, int16 nFactorMin, int16 nFactorMax) 
+CAmpDlg::CAmpDlg(CWnd *parent, int16_t nFactor, int16_t nFactorMin, int16_t nFactorMax) 
 //-------------------------------------------------------------------------------
 : CDialog(IDD_SAMPLE_AMPLIFY, parent), m_nFactor(nFactor),
 m_nFactorMin(nFactorMin), m_nFactorMax(nFactorMax),
@@ -49,7 +49,7 @@ void CAmpDlg::OnOK()
 		AfxMessageBox(str, MB_ICONINFORMATION);
 		return;
 	}
-	m_nFactor = static_cast<int16>(nVal);
+	m_nFactor = static_cast<int16_t>(nVal);
 	m_bFadeIn = (IsDlgButtonChecked(IDC_CHECK1) != 0);
 	m_bFadeOut = (IsDlgButtonChecked(IDC_CHECK2) != 0);
 	CDialog::OnOK();

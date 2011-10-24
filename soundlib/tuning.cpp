@@ -456,7 +456,7 @@ CTuningRTI* CTuningRTI::DeserializeOLD(istream& inStrm)
 
 	char begin[8];
 	char end[8];
-	int16 version;
+	int16_t version;
 
 	const long startPos = inStrm.tellg();
 
@@ -598,8 +598,8 @@ void ReadNoteMap(srlztn::InStream& iStrm, CTuningBase::NOTENAMEMAP& m, const siz
 	LimitMax(val, 256); // Read 256 at max.
 	for(size_t i = 0; i < val; i++)
 	{
-		int16 key;
-		srlztn::Binaryread<int16>(iStrm, key);
+		int16_t key;
+		srlztn::Binaryread<int16_t>(iStrm, key);
 		std::string str;
 		StringFromBinaryStream<uint8_t>(iStrm, str);
 		m[key] = str;
@@ -638,7 +638,7 @@ void WriteNoteMap(srlztn::OutStream& oStrm, const CTUNINGBASE::NOTENAMEMAP& m)
 	CTUNINGBASE::NNM_CITER end = m.end();
 	for(; iter != end; iter++)
 	{
-		srlztn::Binarywrite<int16>(oStrm, iter->first);
+		srlztn::Binarywrite<int16_t>(oStrm, iter->first);
 		StringToBinaryStream<uint8_t>(oStrm, iter->second);
 	}
 }

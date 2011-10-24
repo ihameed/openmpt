@@ -429,10 +429,10 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
             pMPTEnv->Values[i] = (BYTE)((val + 1) >> 9);
             break;
         case ENV_PITCH:		// -4096....4096
-            pMPTEnv->Values[i] = (BYTE)((((int16)val) + 0x1001) >> 7);
+            pMPTEnv->Values[i] = (BYTE)((((int16_t)val) + 0x1001) >> 7);
             break;
         case ENV_PANNING:	// -32768...32767
-            pMPTEnv->Values[i] = (BYTE)((((int16)val) + 0x8001) >> 10);
+            pMPTEnv->Values[i] = (BYTE)((((int16_t)val) + 0x8001) >> 10);
             break;
         }
         pMPTEnv->Values[i] = CLAMP(pMPTEnv->Values[i], ENVELOPE_MIN, ENVELOPE_MAX);

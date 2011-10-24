@@ -1967,7 +1967,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 
 
 
-bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16 size)
+bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t size)
 //------------------------------------------------------------------------------
 {
     if(size < 0 || (uintptr_t)(pEnd - pData) < (uintptr_t)size)
@@ -1977,7 +1977,7 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16 size)
 }
 
 
-void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16 size)
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16_t size)
 //------------------------------------------------------------------------------------------------------------
 {
     // get field's address in instrument's header
@@ -1998,7 +1998,7 @@ void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, con
     if(pEnd < pData || uintptr_t(pEnd - pData) < 2)
         return;
 
-    int16 size;
+    int16_t size;
     memcpy(&size, pData, sizeof(size)); // read field size
     pData += sizeof(size);				// jump field size
 

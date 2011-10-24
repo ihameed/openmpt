@@ -1357,7 +1357,7 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
 				}
 
 				if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 2)
-					SetSampleData<int16, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
+					SetSampleData<int16_t, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
 				else if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 1)
 					SetSampleData<int8, uint8_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
 				
@@ -1413,7 +1413,7 @@ void CViewSample::OnLButtonDown(UINT, CPoint point)
 		m_lastDrawPoint = point;
 		pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
 		if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 2)
-			SetInitialDrawPoint<int16, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point);
+			SetInitialDrawPoint<int16_t, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point);
 		else if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 1)
 			SetInitialDrawPoint<int8, uint8_t>(pSndFile->Samples[m_nSample].sample_data, point);
 

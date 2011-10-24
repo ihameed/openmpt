@@ -1031,7 +1031,7 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
 
 typedef struct DMF_HNODE
 {
-    int16 left, right;
+    int16_t left, right;
     uint8_t value;
 } DMF_HNODE;
 
@@ -1088,7 +1088,7 @@ void DMFNewNode(DMF_HTREE *tree)
     tree->lastnode = tree->nodecount;
     if (isleft)
     {
-        tree->nodes[actnode].left = (int16)tree->lastnode;
+        tree->nodes[actnode].left = (int16_t)tree->lastnode;
         DMFNewNode(tree);
     } else
     {
@@ -1097,7 +1097,7 @@ void DMFNewNode(DMF_HTREE *tree)
     tree->lastnode = tree->nodecount;
     if (isright)
     {
-        tree->nodes[actnode].right = (int16)tree->lastnode;
+        tree->nodes[actnode].right = (int16_t)tree->lastnode;
         DMFNewNode(tree);
     } else
     {

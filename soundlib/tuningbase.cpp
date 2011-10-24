@@ -422,7 +422,7 @@ bool CTUNINGBASE::DeserializeOLD(istream& inStrm)
 //------------------------------------------------
 {
 	char begin[8];
-	int16 version;
+	int16_t version;
 
 	inStrm.read(begin, sizeof(begin));
 	if(memcmp(begin, "CT<sfs>B", 8)) return SERIALIZATION_FAILURE;
@@ -435,12 +435,12 @@ bool CTUNINGBASE::DeserializeOLD(istream& inStrm)
 		return SERIALIZATION_FAILURE;
 
 	//Const mask
-	int16 em = 0;
+	int16_t em = 0;
 	inStrm.read(reinterpret_cast<char*>(&em), sizeof(em));
 	m_EditMask = em;
 
 	//Tuning type
-	int16 tt = 0;
+	int16_t tt = 0;
 	inStrm.read(reinterpret_cast<char*>(&tt), sizeof(tt));
 	m_TuningType = tt;
 

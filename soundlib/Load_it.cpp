@@ -3132,7 +3132,7 @@ void CSoundFile::SaveExtendedSongProperties(FILE* f)
         {
             code = 'MIMA';
             fwrite(&code, 1, sizeof(__int32), f);
-            size = static_cast<int16>(objectsize);
+            size = static_cast<int16_t>(objectsize);
             fwrite(&size, 1, sizeof(__int16), f);
             GetMIDIMapper().Serialize(f);
         }
@@ -3151,7 +3151,7 @@ LPCBYTE CSoundFile::LoadExtendedInstrumentProperties(const LPCBYTE pStart,
         return NULL;
 
     int32 code = 0;
-    int16 size = 0;
+    int16_t size = 0;
     LPCBYTE ptr = pStart;
 
     memcpy(&code, ptr, sizeof(code));
@@ -3205,7 +3205,7 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
     const LPCBYTE pEnd = lpStream + searchlimit;
 
     int32 code = 0;
-    int16 size = 0;
+    int16_t size = 0;
     
     memcpy(&code, ptr, sizeof(code));
     
@@ -3230,8 +3230,8 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
     { 
         code = (*((int32 *)ptr));			// read field code
         ptr += sizeof(int32);				// jump field code
-        size = (*((int16 *)ptr));			// read field size
-        ptr += sizeof(int16);				// jump field size
+        size = (*((int16_t *)ptr));			// read field size
+        ptr += sizeof(int16_t);				// jump field size
 
         if(IsValidSizeField(ptr, pEnd, size) == false)
             break;

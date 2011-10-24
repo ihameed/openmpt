@@ -70,7 +70,7 @@ inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const d
 
 	ASSERT(absval - 32768 <= 0);
 
-	int16 outVal = static_cast<int16>(absval);
+	int16_t outVal = static_cast<int16_t>(absval);
 
 	if(negative) outVal = -outVal;
 
@@ -80,19 +80,19 @@ inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const d
 inline void WavFloat32To16(const char* const inBuffer, char* outBuffer, double max)
 //----------------------------------------------------------------------
 {
-	int16* pOut = reinterpret_cast<int16*>(outBuffer);
+	int16_t* pOut = reinterpret_cast<int16_t*>(outBuffer);
 	const float* pIn = reinterpret_cast<const float*>(inBuffer);
 	const double NC = (*pIn < 0) ? 32768 : 32767;
-	*pOut = static_cast<int16>((*pIn / max) * NC);
+	*pOut = static_cast<int16_t>((*pIn / max) * NC);
 }
 
 inline void WavSigned32To16(const char* const inBuffer, char* outBuffer, double max)
 //----------------------------------------------------------------------
 {
-	int16& out = *reinterpret_cast<int16*>(outBuffer);
+	int16_t& out = *reinterpret_cast<int16_t*>(outBuffer);
 	double temp = *reinterpret_cast<const int32*>(inBuffer);
 	const double NC = (temp < 0) ? 32768 : 32767;
-	out = static_cast<int16>(temp / max * NC);
+	out = static_cast<int16_t>(temp / max * NC);
 }
 
 

@@ -329,7 +329,7 @@ public:
     static CTuningCollection& GetLocalTunings() {return *s_pTuningsSharedLocal;}
     CTuningCollection& GetTuneSpecificTunings() {return *m_pTuningsTuneSpecific;}
 
-    std::string GetNoteName(const int16&, const INSTRUMENTINDEX inst = INSTRUMENTINDEX_INVALID) const;
+    std::string GetNoteName(const int16_t&, const INSTRUMENTINDEX inst = INSTRUMENTINDEX_INVALID) const;
 private:
     CTuningCollection* m_pTuningsTuneSpecific;
     static CTuningCollection* s_pTuningsSharedBuiltIn;
@@ -916,11 +916,11 @@ extern MODFORMATINFO gModFormatInfo[];
 
 
 // Used in instrument/song extension reading to make sure the size field is valid.
-bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16 size);
+bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t size);
 
 // Read instrument property with 'code' and 'size' from 'ptr' to instrument 'pIns'.
 // Note: (ptr, size) pair must be valid (e.g. can read 'size' bytes from 'ptr')
-void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16 size);
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32 code, const int16_t size);
 
 // Read instrument property with 'code' from 'pData' to instrument 'pIns'.
 void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32 code, LPCBYTE& pData, const LPCBYTE pEnd);

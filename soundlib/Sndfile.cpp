@@ -287,7 +287,7 @@ WRITE_MPTHEADER_sized_member(	fadeout, UINT			, FO..							)
     fcode = 'dF..';
     fwrite(&fcode, 1, sizeof(int32), file);
     fsize = sizeof(dwFlags);
-    fwrite(&fsize, 1, sizeof(int16), file);
+    fwrite(&fsize, 1, sizeof(int16_t), file);
     fwrite(&dwFlags, 1, fsize, file);
 }
 
@@ -1640,7 +1640,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
     case RS_PCM16D:
     case RS_PCM16S:
         {
-            int16 *p = (int16 *)pSample;
+            int16_t *p = (int16_t *)pSample;
             int s_old = 0, s_ofs;
             len = nLen * 2;
             bufcount = 0;
@@ -1656,11 +1656,11 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
                 }
                 if (nFlags == RS_PCM16D)
                 {
-                    *((int16 *)(&buffer[bufcount])) = (int16)(s_new - s_old);
+                    *((int16_t *)(&buffer[bufcount])) = (int16_t)(s_new - s_old);
                     s_old = s_new;
                 } else
                 {
-                    *((int16 *)(&buffer[bufcount])) = (int16)(s_new + s_ofs);
+                    *((int16_t *)(&buffer[bufcount])) = (int16_t)(s_new + s_ofs);
                 }
                 bufcount += 2;
                 if (bufcount >= sizeof(buffer) - 1)
@@ -1717,7 +1717,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
             int s_ofs = (nFlags == RS_STPCM16U) ? 0x8000 : 0;
             for (UINT iCh=0; iCh<2; iCh++)
             {
-                int16 *p = ((int16 *)pSample) + iCh;
+                int16_t *p = ((int16_t *)pSample) + iCh;
                 int s_old = 0;
 
                 bufcount = 0;
@@ -1727,11 +1727,11 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
                     p += 2;
                     if (nFlags == RS_STPCM16D)
                     {
-                        *((int16 *)(&buffer[bufcount])) = (int16)(s_new - s_old);
+                        *((int16_t *)(&buffer[bufcount])) = (int16_t)(s_new - s_old);
                         s_old = s_new;
                     } else
                     {
-                        *((int16 *)(&buffer[bufcount])) = (int16)(s_new + s_ofs);
+                        *((int16_t *)(&buffer[bufcount])) = (int16_t)(s_new + s_ofs);
                     }
                     bufcount += 2;
                     if (bufcount >= sizeof(buffer))

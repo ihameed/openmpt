@@ -28,13 +28,13 @@ namespace srlztn {class Ssb;};
 
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32_t> 
+	#define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16_t, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32, class TUSTEPINDEXTYPE = uint32_t> 
 	#define TEMPLATEDEC template<class A, class B, class C, class D, class E>
 	#define TYPENAME typename
 	#define CTUNINGBASE CTuningBase<A, B, C, D, E>
 #else
 	#define CLASSTEMPLATEDEC
-	typedef int16 TNOTEINDEXTYPE;
+	typedef int16_t TNOTEINDEXTYPE;
 	typedef uint16_t TUNOTEINDEXTYPE;
 	typedef float32 TRATIOTYPE;
 	typedef int32 TSTEPINDEXTYPE;
@@ -71,7 +71,7 @@ public:
 	typedef TUSTEPINDEXTYPE USTEPINDEXTYPE;
 	typedef void (*MESSAGEHANDLER)(const char*, const char*);
 
-	typedef int16 SERIALIZATION_VERSION;
+	typedef int16_t SERIALIZATION_VERSION;
 	typedef bool SERIALIZATION_RETURN_TYPE;
 
 	//Validity Range PAIR.

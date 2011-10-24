@@ -214,7 +214,7 @@ bool CTuningCollection::DeserializeOLD(istream& inStrm, bool& loadingSuccessful)
 	}
 
 	//4. Editmask
-	int16 em = 0;
+	int16_t em = 0;
 	inStrm.read(reinterpret_cast<char*>(&em), sizeof(em));
 	//Not assigning the value yet, for if it sets some property const,
 	//further loading might fail.

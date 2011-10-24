@@ -44,7 +44,7 @@ protected:
 	static mu::value_type *sample_buffer;
 	static size_t samples_written;
 
-	typedef int16 sampling_type; // has to match SMPGEN_MIXBYTES!
+	typedef int16_t sampling_type; // has to match SMPGEN_MIXBYTES!
 	static const sampling_type sample_maxvalue = (1 << ((SMPGEN_MIXBYTES << 3) - 1)) - 1;
 
 	// muParser object for parsing the expression

@@ -161,8 +161,8 @@ void TestTypes()
 	VERIFY_EQUAL(int8_max, (std::numeric_limits<int8>::max)());
 	VERIFY_EQUAL(uint8_max, (std::numeric_limits<uint8_t>::max)());
 
-	VERIFY_EQUAL(int16_min, (std::numeric_limits<int16>::min)());
-	VERIFY_EQUAL(int16_max, (std::numeric_limits<int16>::max)());
+	VERIFY_EQUAL(int16_min, (std::numeric_limits<int16_t>::min)());
+	VERIFY_EQUAL(int16_max, (std::numeric_limits<int16_t>::max)());
 	VERIFY_EQUAL(uint16_max, (std::numeric_limits<uint16_t>::max)());
 
 	VERIFY_EQUAL(int32_min, (std::numeric_limits<int32>::min)());
