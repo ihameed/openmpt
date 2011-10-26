@@ -266,10 +266,10 @@ static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINS
     }
 }
 
-bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
     IMFHEADER hdr;
     modsample_t *pSample = Samples + 1;
     uint16_t firstsample = 1; // first pSample for the current instrument

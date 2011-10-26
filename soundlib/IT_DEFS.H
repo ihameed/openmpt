@@ -5,7 +5,7 @@
 
 typedef struct tagITFILEHEADER
 {
-	DWORD id;			// 0x4D504D49
+	uint32_t id;			// 0x4D504D49
 	CHAR songname[26];
 	uint8_t highlight_minor;
 	uint8_t highlight_major;
@@ -24,8 +24,8 @@ typedef struct tagITFILEHEADER
 	uint8_t sep;			// panning separation (0...128)
 	uint8_t pwd;			// pitch wheel depth
 	uint16_t msglength;
-	DWORD msgoffset;
-	DWORD reserved;		// ChibiTracker writes "CHBI" here. OpenMPT writes "OMPT" here in some cases, see Load_it.cpp
+	uint32_t msgoffset;
+	uint32_t reserved;		// ChibiTracker writes "CHBI" here. OpenMPT writes "OMPT" here in some cases, see Load_it.cpp
 	uint8_t chnpan[64];
 	uint8_t chnvol[64];
 } ITFILEHEADER;
@@ -46,7 +46,7 @@ typedef struct tagITENVELOPE
 // Old Impulse Instrument Format (cmwt < 0x200)
 typedef struct tagITOLDINSTRUMENT
 {
-	DWORD id;			// IMPI = 0x49504D49
+	uint32_t id;			// IMPI = 0x49504D49
 	CHAR filename[12];	// DOS file name
 	uint8_t zero;
 	uint8_t flags;
@@ -72,7 +72,7 @@ typedef struct tagITOLDINSTRUMENT
 // Impulse Instrument Format
 typedef struct tagITINSTRUMENT
 {
-	DWORD id;
+	uint32_t id;
 	CHAR filename[12];
 	uint8_t zero;
 	uint8_t nna;
@@ -113,7 +113,7 @@ typedef struct _ITINSTRUMENTEX
 // IT Sample Format
 typedef struct tagITSAMPLESTRUCT
 {
-	DWORD id;		// 0x53504D49
+	uint32_t id;		// 0x53504D49
 	CHAR filename[12];
 	uint8_t zero;
 	uint8_t gvl;
@@ -122,13 +122,13 @@ typedef struct tagITSAMPLESTRUCT
 	CHAR name[26];
 	uint8_t cvt;
 	uint8_t dfp;
-	DWORD length;
-	DWORD loopbegin;
-	DWORD loopend;
-	DWORD C5Speed;
-	DWORD susloopbegin;
-	DWORD susloopend;
-	DWORD samplepointer;
+	uint32_t length;
+	uint32_t loopbegin;
+	uint32_t loopend;
+	uint32_t C5Speed;
+	uint32_t susloopbegin;
+	uint32_t susloopend;
+	uint32_t samplepointer;
 	uint8_t vis;
 	uint8_t vid;
 	uint8_t vir;

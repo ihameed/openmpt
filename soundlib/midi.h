@@ -7,12 +7,12 @@ using std::vector;
 
 class CMainFrame;
 
-int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const uint8_t midivolume);
-void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, DWORD& dwParam1);
-inline uint8_t GetFromMIDIMsg_Channel(const DWORD MIDImsg) {return static_cast<uint8_t>((MIDImsg & 0xF));}
-inline uint8_t GetFromMIDIMsg_Event(const DWORD MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 4) & 0xF));}
-inline uint8_t GetFromMIDIMsg_DataByte1(const DWORD MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 8) & 0xFF));}
-inline uint8_t GetFromMIDIMsg_DataByte2(const DWORD MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 16) & 0xFF));}
+int ApplyVolumeRelatedMidiSettings(const uint32_t& dwParam1, const uint8_t midivolume);
+void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, uint32_t& dwParam1);
+inline uint8_t GetFromMIDIMsg_Channel(const uint32_t MIDImsg) {return static_cast<uint8_t>((MIDImsg & 0xF));}
+inline uint8_t GetFromMIDIMsg_Event(const uint32_t MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 4) & 0xF));}
+inline uint8_t GetFromMIDIMsg_DataByte1(const uint32_t MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 8) & 0xFF));}
+inline uint8_t GetFromMIDIMsg_DataByte2(const uint32_t MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 16) & 0xFF));}
 
 enum
 {
@@ -104,7 +104,7 @@ public:
     //	-paramvalue to parameter value.
     //In case of multiple mappings, these get the values from the last mapping found.
     //Returns true if MIDI was 'captured' by some directive, false otherwise.
-    bool OnMIDImsg(const DWORD midimsg, uint8_t& mappedIndex, uint32_t& paramindex, uint8_t& paramvalue);
+    bool OnMIDImsg(const uint32_t midimsg, uint8_t& mappedIndex, uint32_t& paramindex, uint8_t& paramvalue);
 
     //Swaps the positions of two elements. Returns true if swap was not done.
     bool Swap(const size_t a, const size_t b);

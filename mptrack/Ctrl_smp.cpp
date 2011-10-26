@@ -533,7 +533,7 @@ BOOL CCtrlSamples::GetToolTipText(UINT uId, LPSTR pszText)
 }
 
 
-void CCtrlSamples::UpdateView(DWORD dwHintMask, CObject *pObj)
+void CCtrlSamples::UpdateView(uint32_t dwHintMask, CObject *pObj)
 //------------------------------------------------------------
 {
     if ((pObj == this) || (!m_pModDoc) || (!m_pSndFile)) return;
@@ -621,7 +621,7 @@ void CCtrlSamples::UpdateView(DWORD dwHintMask, CObject *pObj)
     {
         modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
         CHAR s[128];
-        DWORD d;
+        uint32_t d;
         
         // Length / Type
         wsprintf(s, "%d-bit %s, len: %d", pSmp->GetElementarySampleSize() * 8, (pSmp->flags & CHN_STEREO) ? "stereo" : "mono", pSmp->length);
@@ -706,7 +706,7 @@ bool CCtrlSamples::OpenSample(LPCSTR lpszFileName)
     CMappedFile f;
     CHAR szName[_MAX_FNAME], szExt[_MAX_EXT];
     LPBYTE lpFile;
-    DWORD len;
+    uint32_t len;
     bool bOk = false;
 
     BeginWaitCursor();
@@ -764,7 +764,7 @@ bool CCtrlSamples::OpenSample(LPCSTR lpszFileName)
                 flags |= 0x40|RSF_STEREO;
             }
             LPSTR p16 = (LPSTR)lpFile;
-            DWORD l16 = len;
+            uint32_t l16 = len;
             if ((pSmp->flags & CHN_16BIT) && (len & 1))
             {
                 p16++;
@@ -1392,7 +1392,7 @@ void CCtrlSamples::OnUpsample()
 //-----------------------------
 {
     modplug::tracker::modsample_t *pSmp;
-    DWORD dwStart, dwEnd, dwNewLen;
+    uint32_t dwStart, dwEnd, dwNewLen;
     UINT smplsize, newsmplsize;
     PVOID pOriginal, pNewSample;
 
@@ -1500,7 +1500,7 @@ void CCtrlSamples::OnUpsample()
         if (pSmp->sustain_end >= dwEnd) pSmp->sustain_end += (dwEnd-dwStart); else
         if (pSmp->sustain_end > dwStart) pSmp->sustain_end += (pSmp->sustain_end - dwStart);
         BEGIN_CRITICAL();
-        for (UINT iFix=0; iFix<MAX_CHANNELS; iFix++)
+        for (UINT iFix=0; iFix<MAX_VIRTUAL_CHANNELS; iFix++)
         {
             if ((PVOID)m_pSndFile->Chn[iFix].sample_data == pOriginal)
             {
@@ -1540,7 +1540,7 @@ void CCtrlSamples::OnDownsample()
 //-------------------------------
 {
     modplug::tracker::modsample_t *pSmp;
-    DWORD dwStart, dwEnd, dwRemove, dwNewLen;
+    uint32_t dwStart, dwEnd, dwRemove, dwNewLen;
     UINT smplsize;
     PVOID pOriginal, pNewSample;
 
@@ -1629,7 +1629,7 @@ void CCtrlSamples::OnDownsample()
         if (pSmp->sustain_end > dwStart) pSmp->sustain_end -= (pSmp->sustain_end - dwStart)/2;
         if (pSmp->sustain_end > dwNewLen) pSmp->sustain_end = dwNewLen;
         BEGIN_CRITICAL();
-        for (UINT iFix=0; iFix<MAX_CHANNELS; iFix++)
+        for (UINT iFix=0; iFix<MAX_VIRTUAL_CHANNELS; iFix++)
         {
             if ((PVOID)m_pSndFile->Chn[iFix].sample_data == pOriginal)
             {
@@ -1889,8 +1889,8 @@ int CCtrlSamples::TimeStretch(float ratio)
 
     // Allocate new sample. Returned sample may not be exactly the size what ratio would suggest
     // so allocate a bit more(1.03*).
-    const DWORD nNewSampleLength = (DWORD)(1.03 * ratio * (double)pSmp->length);
-    //const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->length);
+    const uint32_t nNewSampleLength = (uint32_t)(1.03 * ratio * (double)pSmp->length);
+    //const uint32_t nNewSampleLength = (uint32_t)(0.5 + ratio * (double)pSmp->length);
     PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
@@ -2127,8 +2127,8 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 
     // Allocate new sample. Returned sample may not be exactly the size what ratio would suggest
     // so allocate a bit more(1.03*).
-    const DWORD nNewSampleLength = (DWORD)(2.03 * ratio * (double)pSmp->length);
-    //const DWORD nNewSampleLength = (DWORD)(0.5 + ratio * (double)pSmp->length);
+    const uint32_t nNewSampleLength = (uint32_t)(2.03 * ratio * (double)pSmp->length);
+    //const uint32_t nNewSampleLength = (uint32_t)(0.5 + ratio * (double)pSmp->length);
     PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;

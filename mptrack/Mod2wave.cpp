@@ -168,7 +168,7 @@ BOOL CWaveConvert::OnInitDialog()
 void CWaveConvert::OnFormatChanged()
 //----------------------------------
 {
-    DWORD dwFormat = m_CbnSampleFormat.GetItemData(m_CbnSampleFormat.GetCurSel());
+    uint32_t dwFormat = m_CbnSampleFormat.GetItemData(m_CbnSampleFormat.GetCurSel());
     UINT nBits = dwFormat & 0xFF;
 // -> CODE#0024
 // -> DESC="wav export update"
@@ -276,7 +276,7 @@ void CWaveConvert::OnOK()
     m_bInstrumentMode= IsDlgButtonChecked(IDC_CHECK6) ? true : false;
 
     // WaveFormatEx
-    DWORD dwFormat = m_CbnSampleFormat.GetItemData(m_CbnSampleFormat.GetCurSel());
+    uint32_t dwFormat = m_CbnSampleFormat.GetItemData(m_CbnSampleFormat.GetCurSel());
     WaveFormat.Format.wFormatTag = WAVE_FORMAT_PCM;
     WaveFormat.Format.nSamplesPerSec = m_CbnSampleRate.GetItemData(m_CbnSampleRate.GetCurSel());
     if (WaveFormat.Format.nSamplesPerSec < 11025) WaveFormat.Format.nSamplesPerSec = 11025;
@@ -371,7 +371,7 @@ BOOL CLayer3Convert::OnInitDialog()
     pwfx->wBitsPerSample = 16;
     pwfx->nBlockAlign = (pwfx->nChannels * pwfx->wBitsPerSample) / 8;
     pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
-    theApp.AcmFormatEnum(NULL, &afd, AcmFormatEnumCB, (DWORD)this, ACM_FORMATENUMF_CONVERT);
+    theApp.AcmFormatEnum(NULL, &afd, AcmFormatEnumCB, (uint32_t)this, ACM_FORMATENUMF_CONVERT);
     m_bDriversEnumerated = TRUE;
     m_CbnDriver.SetCurSel(m_nDriverIndex);
     if (m_bSaveInfoField) CheckDlgButton(IDC_CHECK3, MF_CHECKED);
@@ -413,7 +413,7 @@ VOID CLayer3Convert::UpdateDialog()
     pwfx->wBitsPerSample = 16;
     pwfx->nBlockAlign = pwfx->nChannels * pwfx->wBitsPerSample / 8;
     pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
-    theApp.AcmFormatEnum(NULL, &afd, AcmFormatEnumCB, (DWORD)this, ACM_FORMATENUMF_CONVERT);
+    theApp.AcmFormatEnum(NULL, &afd, AcmFormatEnumCB, (uint32_t)this, ACM_FORMATENUMF_CONVERT);
     m_CbnFormat.SetCurSel(m_nFormatIndex);
 }
 
@@ -441,7 +441,7 @@ BOOL CLayer3Convert::AcmFormatEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd,
 }
 
 
-BOOL CLayer3Convert::DriverEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, DWORD fdwSupport)
+BOOL CLayer3Convert::DriverEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, uint32_t fdwSupport)
 //---------------------------------------------------------------------------------------------
 {
     if ((pafd) && (fdwSupport & ACMDRIVERDETAILS_SUPPORTF_CODEC)
@@ -466,7 +466,7 @@ BOOL CLayer3Convert::DriverEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, DW
 }
 
 
-BOOL CLayer3Convert::FormatEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, DWORD fdwSupport)
+BOOL CLayer3Convert::FormatEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, uint32_t fdwSupport)
 //---------------------------------------------------------------------------------------------
 {
     if ((pafd) && (fdwSupport & ACMDRIVERDETAILS_SUPPORTF_CODEC)
@@ -623,7 +623,7 @@ void CDoWaveConvert::OnButton1()
     HWND progress = ::GetDlgItem(m_hWnd, IDC_PROGRESS1);
     UINT ok = IDOK, pos;
     ULONGLONG ullSamples, ullMaxSamples;
-    DWORD dwDataOffset;
+    uint32_t dwDataOffset;
     LONG lMax = 256;
 
     if ((!m_pSndFile) || (!m_lpszFileName) || ((f = fopen(m_lpszFileName, "w+b")) == NULL))
@@ -691,7 +691,7 @@ void CDoWaveConvert::OnButton1()
     ULONGLONG l = ((ULONGLONG)m_pSndFile->GetSongTime()) * m_pWaveFormat->nSamplesPerSec;
     if (m_nMaxPatterns > 0)
     {
-        DWORD dwOrds = m_pSndFile->Order.GetLengthFirstEmpty();
+        uint32_t dwOrds = m_pSndFile->Order.GetLengthFirstEmpty();
         if ((m_nMaxPatterns < dwOrds) && (dwOrds > 0)) l = (l*m_nMaxPatterns) / dwOrds;
     }
 
@@ -699,7 +699,7 @@ void CDoWaveConvert::OnButton1()
 
     if (progress != NULL)
     {
-        ::SendMessage(progress, PBM_SETRANGE, 0, MAKELPARAM(0, (DWORD)(max >> 14)));
+        ::SendMessage(progress, PBM_SETRANGE, 0, MAKELPARAM(0, (uint32_t)(max >> 14)));
     }
 
     // No pattern cue points yet
@@ -709,9 +709,9 @@ void CDoWaveConvert::OnButton1()
     // Process the conversion
     UINT nBytesPerSample = (CSoundFile::gnBitsPerSample * CSoundFile::gnChannels) / 8;
     // For calculating the remaining time
-    DWORD dwStartTime = timeGetTime();
+    uint32_t dwStartTime = timeGetTime();
     // For giving away some processing time every now and then
-    DWORD dwSleepTime = dwStartTime;
+    uint32_t dwSleepTime = dwStartTime;
 
     CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     for (UINT n = 0; ; n++)
@@ -787,13 +787,13 @@ void CDoWaveConvert::OnButton1()
             break;
         if (!(n % 10))
         {
-            DWORD l = (DWORD)(ullSamples / CSoundFile::gdwMixingFreq);
+            uint32_t l = (uint32_t)(ullSamples / CSoundFile::gdwMixingFreq);
 
-            const DWORD dwCurrentTime = timeGetTime();
-            DWORD timeRemaining = 0; // estimated remainig time
+            const uint32_t dwCurrentTime = timeGetTime();
+            uint32_t timeRemaining = 0; // estimated remainig time
             if((ullSamples > 0) && (ullSamples < max))
             {
-                timeRemaining = static_cast<DWORD>(((dwCurrentTime - dwStartTime) * (max - ullSamples) / ullSamples) / 1000);
+                timeRemaining = static_cast<uint32_t>(((dwCurrentTime - dwStartTime) * (max - ullSamples) / ullSamples) / 1000);
             }
 
             wsprintf(s, "Writing file... (%uKB, %umn%02us, %umn%02us remaining)", datahdr.length >> 10, l / 60, l % 60, timeRemaining / 60, timeRemaining % 60);
@@ -806,9 +806,9 @@ void CDoWaveConvert::OnButton1()
                 dwSleepTime = dwCurrentTime;
             }
         }
-        if ((progress != NULL) && ((DWORD)(ullSamples >> 14) != pos))
+        if ((progress != NULL) && ((uint32_t)(ullSamples >> 14) != pos))
         {
-            pos = (DWORD)(ullSamples >> 14);
+            pos = (uint32_t)(ullSamples >> 14);
             ::SendMessage(progress, PBM_SETPOS, pos, 0);
         }
         if (::PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
@@ -826,9 +826,9 @@ void CDoWaveConvert::OnButton1()
     CMainFrame::GetMainFrame()->StopRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     if (m_bNormalize)
     {
-        DWORD dwLength = datahdr.length;
-        DWORD percent = 0xFF, dwPos, dwSize, dwCount;
-        DWORD dwBitSize, dwOutPos;
+        uint32_t dwLength = datahdr.length;
+        uint32_t percent = 0xFF, dwPos, dwSize, dwCount;
+        uint32_t dwBitSize, dwOutPos;
 
         dwPos = dwOutPos = dwDataOffset;
         dwBitSize = m_pWaveFormat->wBitsPerSample / 8;
@@ -860,7 +860,7 @@ void CDoWaveConvert::OnButton1()
     }
 
     // Write cue points
-    DWORD cuePointLength = 0;
+    uint32_t cuePointLength = 0;
     if(m_pSndFile->m_PatternCuePoints.size() > 0)
     {
         // Cue point header
@@ -875,16 +875,16 @@ void CDoWaveConvert::OnButton1()
 
         // Write all cue points
         vector<PatternCuePoint>::const_iterator iter;
-        DWORD num = 0;
+        uint32_t num = 0;
         for(iter = m_pSndFile->m_PatternCuePoints.begin(); iter != m_pSndFile->m_PatternCuePoints.end(); ++iter, num++)
         {
             WAVCUEPOINT cuepoint;
             cuepoint.cp_id = LittleEndian(num);
-            cuepoint.cp_pos = LittleEndian((DWORD)iter->offset);
+            cuepoint.cp_pos = LittleEndian((uint32_t)iter->offset);
             cuepoint.cp_chunkid = LittleEndian(IFFID_data);
             cuepoint.cp_chunkstart = 0;    	// we use no Wave List Chunk (wavl) as we have only one data block, so this should be 0.
             cuepoint.cp_blockstart = 0;    	// dito
-            cuepoint.cp_offset = LittleEndian((DWORD)iter->offset);
+            cuepoint.cp_offset = LittleEndian((uint32_t)iter->offset);
             fwrite(&cuepoint, 1, sizeof(WAVCUEPOINT), f);
         }
         m_pSndFile->m_PatternCuePoints.clear();
@@ -1042,9 +1042,9 @@ void CDoAcmConvert::OnButton1()
         m_FileTags.WriteID3v2Tags(f);
 
     }
-    static DWORD oldsndcfg = CSoundFile::gdwSoundSetup;
+    static uint32_t oldsndcfg = CSoundFile::gdwSoundSetup;
     oldrepeat = m_pSndFile->GetRepeatCount();
-    const DWORD dwSongTime = m_pSndFile->GetSongTime();
+    const uint32_t dwSongTime = m_pSndFile->GetSongTime();
     CSoundFile::gdwMixingFreq = wfxSrc.nSamplesPerSec;
     CSoundFile::gnBitsPerSample = 16;
 //    CSoundFile::SetResamplingMode(SRCMODE_POLYPHASE); //rewbs.resamplerConf - we don't want this anymore.
@@ -1075,7 +1075,7 @@ void CDoAcmConvert::OnButton1()
     }
 
     // For calculating the remaining time
-    DWORD dwStartTime = timeGetTime();
+    uint32_t dwStartTime = timeGetTime();
 
     ullSamples = 0;
     pos = 0;
@@ -1103,7 +1103,7 @@ void CDoAcmConvert::OnButton1()
                 ::DispatchMessage(&msg);
             }
             if (m_bAbort) break;
-        } while (0 == (ACMSTREAMHEADER_STATUSF_DONE & (*((volatile DWORD *)&ash.fdwStatus))));
+        } while (0 == (ACMSTREAMHEADER_STATUSF_DONE & (*((volatile uint32_t *)&ash.fdwStatus))));
         // Prepare for next time
         pcmBufSize = WAVECONVERTBUFSIZE;
         if ((ash.cbSrcLengthUsed > 0) && (ash.cbSrcLengthUsed < WAVECONVERTBUFSIZE))
@@ -1121,12 +1121,12 @@ void CDoAcmConvert::OnButton1()
         if ((!lRead) || (ullSamples >= ullMaxSamples) || (wdh.length >= m_dwFileLimit)) break;
         if (!(n % 10))
         {
-            DWORD l = (DWORD)(ullSamples / wfxSrc.nSamplesPerSec);
+            uint32_t l = (uint32_t)(ullSamples / wfxSrc.nSamplesPerSec);
 
-            DWORD timeRemaining = 0; // estimated remainig time
+            uint32_t timeRemaining = 0; // estimated remainig time
             if((ullSamples > 0) && (ullSamples < max))
             {
-                timeRemaining = static_cast<DWORD>(((timeGetTime() - dwStartTime) * (max - ullSamples) / ullSamples) / 1000);
+                timeRemaining = static_cast<uint32_t>(((timeGetTime() - dwStartTime) * (max - ullSamples) / ullSamples) / 1000);
             }
 
             wsprintf(s, "Writing file... (%uKB, %umn%02us) %umn%02us remaining)", wdh.length >> 10, l / 60, l % 60, timeRemaining / 60, timeRemaining % 60);
@@ -1134,7 +1134,7 @@ void CDoAcmConvert::OnButton1()
         }
         if ((progress != NULL) && ((ullSamples >> 14) != pos))
         {
-            pos = (DWORD)(ullSamples >> 14);
+            pos = (uint32_t)(ullSamples >> 14);
             ::SendMessage(progress, PBM_SETPOS, pos, 0);
         }
         if (m_bAbort) break;

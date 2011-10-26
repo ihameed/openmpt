@@ -90,7 +90,7 @@ void CCtrlComments::RecalcLayout()
 }
 
 
-void CCtrlComments::UpdateView(DWORD dwHint, CObject *pHint)
+void CCtrlComments::UpdateView(uint32_t dwHint, CObject *pHint)
 //----------------------------------------------------------
 {
     if ((pHint == this) || (!m_pSndFile) || (!(dwHint & (HINT_MODCOMMENTS|HINT_MPTOPTIONS|HINT_MODTYPE)))) return;

@@ -32,7 +32,7 @@ LPCCH LoadResource(LPCTSTR lpName, LPCTSTR lpType, LPCCH& pData, size_t& nSize, 
 
 
 // Returns error message corresponding to error code returned by GetLastError().
-CString GetErrorMessage(DWORD nErrorCode)
+CString GetErrorMessage(uint32_t nErrorCode)
 //---------------------------------------
 {
     const size_t nBufferSize = 256;

@@ -51,8 +51,8 @@ public:
     CommandID KeyEvent(InputTargetContext context, UINT &nChar, UINT &nRepCnt, UINT &nFlags, KeyEventType keyEventType, CWnd* pSourceWnd=NULL);
     int SetCommand(InputTargetContext context, CommandID command, UINT modifierMask, UINT actionKey, UINT keyEventType);
     KeyEventType GetKeyEventType(UINT nFlags);
-    DWORD GetKey(CommandID);
-    bool isKeyPressHandledByTextBox(DWORD wparam);
+    uint32_t GetKey(CommandID);
+    bool isKeyPressHandledByTextBox(uint32_t wparam);
 
     KeyCombination GetKey(CommandID cmd, UINT key);
     int GetKeyListSize(CommandID cmd);

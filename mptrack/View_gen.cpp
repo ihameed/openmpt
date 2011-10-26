@@ -301,7 +301,7 @@ void CViewGlobals::OnSize(UINT nType, int cx, int cy)
 }
 
 
-void CViewGlobals::UpdateView(DWORD dwHintMask, CObject *)
+void CViewGlobals::UpdateView(uint32_t dwHintMask, CObject *)
 //--------------------------------------------------------
 {
     CHAR s[128];
@@ -451,7 +451,7 @@ void CViewGlobals::UpdateView(DWORD dwHintMask, CObject *)
     		CheckDlgButton(IDC_CHECK12, (pPlugin->Info.dwInputRouting & MIXPLUG_INPUTF_MIXEXPAND) ? TRUE : FALSE);
     	}
     	// update#02
-    	DWORD gain = (pPlugin->Info.dwInputRouting>>16) & 0xff;
+    	uint32_t gain = (pPlugin->Info.dwInputRouting>>16) & 0xff;
     	if(gain == 0) gain = 10;
     	float value = 0.1f * (float)gain;
     	sprintf(s,"Gain: x %1.1f",value);
@@ -770,7 +770,7 @@ void CViewGlobals::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
     	if(pPlugin->pMixPlugin)
     	{
-    		DWORD gain = nPos;
+    		uint32_t gain = nPos;
     		if(gain == 0) gain = 1;
 
     		pPlugin->Info.dwInputRouting = (pPlugin->Info.dwInputRouting & 0xff00ffff) | (gain<<16);
@@ -1333,7 +1333,7 @@ void CViewGlobals::OnMovePlugToSlot()
     {
     	for(PLUGINDEX i = 0; i < m_nCurrentPlugin; i++)
     	{
-    		const DWORD toPlug = pSndFile->m_MixPlugins[i].Info.dwOutputRouting;
+    		const uint32_t toPlug = pSndFile->m_MixPlugins[i].Info.dwOutputRouting;
     		if((toPlug & 0x80) && (toPlug & 0x7F) == m_nCurrentPlugin)
     		{
     			defaultIndex = i + 1;
@@ -1553,7 +1553,7 @@ void CViewGlobals::OnFillProgramCombo()
 
 // This is used for retrieving the correct background colour for the
 // frames on the general tab when using WinXP Luna or Vista/Win7 Aero.
-typedef HRESULT (__stdcall * ETDT)(HWND, DWORD);
+typedef HRESULT (__stdcall * ETDT)(HWND, uint32_t);
 #include <uxtheme.h>
 
 HBRUSH CViewGlobals::OnCtlColor(CDC *pDC, CWnd* pWnd, UINT nCtlColor)

@@ -39,7 +39,7 @@ typedef double sample_t;
 static const id_t ID_INVALID = 0;
 static const id_t ID_MASTER_SINK = 1;
 
-static const size_t MAX_CHANNELS = MAX_BASECHANNELS;
+static const size_t MAX_PHYSICAL_CHANNELS = 127;
 static const size_t MAX_NODE_CHANNELS = 64;
 static const size_t MAX_CHANNEL_ENDPOINTS = 256;
 

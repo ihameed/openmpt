@@ -105,7 +105,7 @@ public:
 
     //{{AFX_VIRTUAL(COrderList)
     virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     //}}AFX_VIRTUAL
 
 protected:
@@ -187,7 +187,7 @@ public:
     virtual BOOL OnInitDialog();
     virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
     virtual void RecalcLayout();
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual CRuntimeClass *GetAssociatedViewClass();
     virtual LRESULT OnModCtrlMsg(WPARAM wParam, LPARAM lParam);
     virtual void OnActivatePage(LPARAM);

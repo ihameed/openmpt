@@ -91,7 +91,7 @@ CommandID CInputHandler::GeneralKeyEvent(InputTargetContext context, int code, W
 
     if (code == HC_ACTION)	{
     	//Get the KeyEventType (key up, key down, key repeat)
-    	DWORD scancode = lParam >> 16;
+    	uint32_t scancode = lParam >> 16;
     	if	((scancode & 0xC000) == 0xC000) {
     		keyEventType = kKeyEventUp;
     	} else if ((scancode & 0xC000) == 0x0000) {
@@ -267,7 +267,7 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
 }
 
 //--------------------------------------------------------------
-DWORD CInputHandler::GetKey(CommandID /*c*/)
+uint32_t CInputHandler::GetKey(CommandID /*c*/)
 {
     return 0;// command[c].kc.code command[c].kc.mod;
 }
@@ -577,7 +577,7 @@ bool CInputHandler::SetXMEffects(void)
 }
 
 
-bool CInputHandler::isKeyPressHandledByTextBox(DWORD key) 
+bool CInputHandler::isKeyPressHandledByTextBox(uint32_t key) 
 {
 
     //Alpha-numerics (only shift or no modifier):

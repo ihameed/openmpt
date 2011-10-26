@@ -573,7 +573,7 @@ void CChannelManagerDlg::OnTabSelchange(NMHDR* /*header*/, LRESULT* /*pResult*/)
     InvalidateRect(NULL, FALSE);
 }
 
-void DrawChannelButton(HDC hdc, LPRECT lpRect, LPCSTR lpszText, BOOL bActivate, BOOL bEnable, DWORD dwFlags, HBRUSH /*markBrush*/)
+void DrawChannelButton(HDC hdc, LPRECT lpRect, LPCSTR lpszText, BOOL bActivate, BOOL bEnable, uint32_t dwFlags, HBRUSH /*markBrush*/)
 {
     RECT rect;
     rect = (*lpRect);

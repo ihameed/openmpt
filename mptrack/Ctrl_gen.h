@@ -56,7 +56,7 @@ public:
     virtual BOOL OnInitDialog();
     virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
     virtual void RecalcLayout();
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual CRuntimeClass *GetAssociatedViewClass();
     virtual void OnActivatePage(LPARAM);
     virtual void OnDeactivatePage();

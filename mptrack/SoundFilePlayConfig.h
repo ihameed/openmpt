@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 enum {
     NO_ATTENUATION = 1,
     MIXING_CLIPMIN = -0x07FFFFFF,
@@ -96,7 +98,7 @@ private:
 
     int m_extraAttenuation;
 
-    DWORD m_LastSavedWithVersion;
-    DWORD m_CreatedWithVersion;
+    uint32_t m_LastSavedWithVersion;
+    uint32_t m_CreatedWithVersion;
 };
 

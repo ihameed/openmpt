@@ -19,8 +19,8 @@ class CSoundFile;
 
 typedef struct DLSREGION
 {
-    DWORD ulLoopStart;
-    DWORD ulLoopEnd;
+    uint32_t ulLoopStart;
+    uint32_t ulLoopEnd;
     uint16_t nWaveLink;
     uint16_t uPercEnv;
     uint16_t usVolume;		// 0..256
@@ -47,7 +47,7 @@ typedef struct DLSENVELOPE
 
 typedef struct DLSINSTRUMENT
 {
-    DWORD ulBank, ulInstrument;
+    uint32_t ulBank, ulInstrument;
     UINT nRegions, nMelodicEnv;
     DLSREGION Regions[DLSMAXREGIONS];
     CHAR szName[32];
@@ -58,10 +58,10 @@ typedef struct DLSINSTRUMENT
 typedef struct DLSSAMPLEEX
 {
     CHAR szName[20];
-    DWORD dwLen;
-    DWORD dwStartloop;
-    DWORD dwEndloop;
-    DWORD dwSampleRate;
+    uint32_t dwLen;
+    uint32_t dwStartloop;
+    uint32_t dwEndloop;
+    uint32_t dwSampleRate;
     uint8_t byOriginalPitch;
     CHAR chPitchCorrection;
 } DLSSAMPLEEX;
@@ -91,10 +91,10 @@ protected:
     SOUNDBANKINFO m_BankInfo;
     CHAR m_szFileName[_MAX_PATH];
     UINT m_nType;
-    DWORD m_dwWavePoolOffset;
+    uint32_t m_dwWavePoolOffset;
     // DLS Information
     UINT m_nInstruments, m_nWaveForms, m_nEnvelopes, m_nSamplesEx, m_nMaxWaveLink;
-    DWORD *m_pWaveForms;
+    uint32_t *m_pWaveForms;
     DLSINSTRUMENT *m_pInstruments;
     DLSSAMPLEEX *m_pSamplesEx;
     DLSENVELOPE m_Envelopes[DLSMAXENVELOPES];
@@ -104,8 +104,8 @@ public:
     virtual ~CDLSBank();
     void Destroy();
     static BOOL IsDLSBank(LPCSTR lpszFileName);
-    static DWORD MakeMelodicCode(UINT bank, UINT instr) { return ((bank << 16) | (instr));}
-    static DWORD MakeDrumCode(UINT rgn, UINT instr) { return (0x80000000 | (rgn << 16) | (instr));}
+    static uint32_t MakeMelodicCode(UINT bank, UINT instr) { return ((bank << 16) | (instr));}
+    static uint32_t MakeDrumCode(UINT rgn, UINT instr) { return (0x80000000 | (rgn << 16) | (instr));}
 
 public:
     BOOL Open(LPCSTR lpszFileName);
@@ -117,17 +117,17 @@ public:
     UINT GetNumInstruments() const { return m_nInstruments; }
     UINT GetNumSamples() const { return m_nWaveForms; }
     DLSINSTRUMENT *GetInstrument(UINT iIns) { return (m_pInstruments) ? &m_pInstruments[iIns] : NULL; }
-    DLSINSTRUMENT *FindInstrument(BOOL bDrum, UINT nBank=0xFF, DWORD dwProgram=0xFF, DWORD dwKey=0xFF, UINT *pInsNo=NULL);
+    DLSINSTRUMENT *FindInstrument(BOOL bDrum, UINT nBank=0xFF, uint32_t dwProgram=0xFF, uint32_t dwKey=0xFF, UINT *pInsNo=NULL);
     UINT GetRegionFromKey(UINT nIns, UINT nKey);
     BOOL FreeWaveForm(LPBYTE p);
-    BOOL ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, DWORD *pLen);
+    BOOL ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, uint32_t *pLen);
     BOOL ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT nRgn, int transpose=0);
     BOOL ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, UINT nDrumRgn);
 
 // Internal Loader Functions
 protected:
-    BOOL UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pchunk, DWORD dwMaxLen);
-    BOOL UpdateSF2PresetData(LPVOID psf2info, LPVOID pchunk, DWORD dwMaxLen);
+    BOOL UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pchunk, uint32_t dwMaxLen);
+    BOOL UpdateSF2PresetData(LPVOID psf2info, LPVOID pchunk, uint32_t dwMaxLen);
     BOOL ConvertSF2ToDLS(LPVOID psf2info);
 
 public:

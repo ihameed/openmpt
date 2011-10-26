@@ -5,6 +5,9 @@ using std::vector;
 #include "snddev.h"
 #include "snddevx.h"
 
+#include "../mptrack/pervasives/pervasives.h"
+using namespace modplug::pervasives;
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //
@@ -49,7 +52,7 @@ ULONG ISoundDevice::Release()
 }
 
 
-VOID ISoundDevice::Configure(HWND hwnd, UINT nBuffers, UINT nBufferLen, DWORD fdwCfgOptions)
+VOID ISoundDevice::Configure(HWND hwnd, UINT nBuffers, UINT nBufferLen, uint32_t fdwCfgOptions)
 //------------------------------------------------------------------------------------------
 {
     if (nBuffers < SNDDEV_MINBUFFERS) nBuffers = SNDDEV_MINBUFFERS;
@@ -105,10 +108,10 @@ BOOL CWaveDevice::Open(UINT nDevice, LPWAVEFORMATEX pwfx)
 
     if (m_hWaveOut) Close();
     nWaveDev = (nDevice) ? nDevice-1 : WAVE_MAPPER;
-    if (waveOutOpen(&m_hWaveOut, nWaveDev, pwfx, (DWORD)WaveOutCallBack, (DWORD)this, CALLBACK_FUNCTION))
+    if (waveOutOpen(&m_hWaveOut, nWaveDev, pwfx, (uint32_t)WaveOutCallBack, (uint32_t)this, CALLBACK_FUNCTION))
     {
     	sndPlaySound(NULL, 0);
-    	LONG err = waveOutOpen(&m_hWaveOut, nWaveDev, pwfx, (DWORD)WaveOutCallBack, (DWORD)this, CALLBACK_FUNCTION);
+    	LONG err = waveOutOpen(&m_hWaveOut, nWaveDev, pwfx, (uint32_t)WaveOutCallBack, (uint32_t)this, CALLBACK_FUNCTION);
     	if (err) return FALSE;
     }
     m_nWaveBufferSize = (m_nBufferLen * pwfx->nAvgBytesPerSec) / 1000;
@@ -173,13 +176,13 @@ VOID CWaveDevice::Reset()
     }
 }
 
-void CWaveDevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer)
+void CWaveDevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer)
 {
 
 }
 
 
-BOOL CWaveDevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD)
+BOOL CWaveDevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t)
 //--------------------------------------------------------------------------------
 {
     ULONG nBytesWritten;
@@ -214,7 +217,7 @@ BOOL CWaveDevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWOR
 }
 
 
-VOID CWaveDevice::WaveOutCallBack(HWAVEOUT, UINT uMsg, DWORD dwUser, DWORD, DWORD)
+VOID CWaveDevice::WaveOutCallBack(HWAVEOUT, UINT uMsg, uint32_t dwUser, uint32_t, uint32_t)
 //--------------------------------------------------------------------------------
 {
     if ((uMsg == MM_WOM_DONE) && (dwUser))
@@ -451,10 +454,12 @@ VOID CDSoundDevice::Reset()
 }
 
 
-DWORD CDSoundDevice::LockBuffer(DWORD dwBytes, LPVOID *lpBuf1, LPDWORD lpSize1, LPVOID *lpBuf2, LPDWORD lpSize2)
+uint32_t CDSoundDevice::LockBuffer(uint32_t dwBytes, LPVOID *lpBuf1, LPDWORD lpSize1, LPVOID *lpBuf2, LPDWORD lpSize2)
 //--------------------------------------------------------------------------------------------------------------
 {
-    DWORD d, dwPlay = 0, dwWrite = 0;
+    uint32_t d;
+    DWORD dwPlay = 0;
+    DWORD dwWrite = 0;
 
     if ((!m_pMixBuffer) || (!m_nDSoundBufferSize)) return 0;
     if (m_pMixBuffer->GetCurrentPosition(&dwPlay, &dwWrite) != DS_OK) return 0;
@@ -492,7 +497,7 @@ DWORD CDSoundDevice::LockBuffer(DWORD dwBytes, LPVOID *lpBuf1, LPDWORD lpSize1, 
 }
 
 
-BOOL CDSoundDevice::UnlockBuffer(LPVOID lpBuf1, DWORD dwSize1, LPVOID lpBuf2, DWORD dwSize2)
+BOOL CDSoundDevice::UnlockBuffer(LPVOID lpBuf1, uint32_t dwSize1, LPVOID lpBuf2, uint32_t dwSize2)
 //------------------------------------------------------------------------------------------
 {
     if (!m_pMixBuffer) return FALSE;
@@ -506,24 +511,24 @@ BOOL CDSoundDevice::UnlockBuffer(LPVOID lpBuf1, DWORD dwSize1, LPVOID lpBuf2, DW
 }
 
 
-void CDSoundDevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer)
+void CDSoundDevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer)
 {
 
 }
 
-BOOL CDSoundDevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD)
+BOOL CDSoundDevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t)
 //----------------------------------------------------------------------------------
 {
     LPVOID lpBuf1=NULL, lpBuf2=NULL;
     DWORD dwSize1=0, dwSize2=0;
-    DWORD dwBytes;
+    uint32_t dwBytes;
 
     if (!m_pMixBuffer) return FALSE;
     if (!nMaxLatency) nMaxLatency = m_nDSoundBufferSize;
     dwBytes = LockBuffer(nMaxLatency, &lpBuf1, &dwSize1, &lpBuf2, &dwSize2);
     if (dwBytes)
     {
-    	DWORD nRead1=0, nRead2=0;
+    	uint32_t nRead1=0, nRead2=0;
 
     	if ((lpBuf1) && (dwSize1)) nRead1 = pSource->AudioRead(lpBuf1, dwSize1);
     	if ((lpBuf2) && (dwSize2)) nRead2 = pSource->AudioRead(lpBuf2, dwSize2);
@@ -574,7 +579,7 @@ BOOL CASIODevice::EnumerateDevices(UINT nIndex, LPSTR pszDescription, UINT cbSiz
     	CHAR s[256];
     	WCHAR w[100];
     	LONG cr;
-    	DWORD index;
+    	uint32_t index;
 
     	cr = RegOpenKey(HKEY_LOCAL_MACHINE, "software\\asio", &hkEnum);
     	index = 0;
@@ -589,10 +594,10 @@ BOOL CASIODevice::EnumerateDevices(UINT nIndex, LPSTR pszDescription, UINT cbSiz
 
     			if ((RegOpenKeyEx(hkEnum, (LPCTSTR)keyname, 0, KEY_READ, &hksub)) == ERROR_SUCCESS)
     			{
-    				DWORD datatype = REG_SZ;
-    				DWORD datasize = 64;
+    				uint32_t datatype = REG_SZ;
+    				uint32_t datasize = 64;
     				
-    				if (ERROR_SUCCESS == RegQueryValueEx(hksub, "description", 0, &datatype, (LPBYTE)gAsioDrivers[gnNumAsioDrivers].name, &datasize))
+    				if (ERROR_SUCCESS == registry_query_value(hksub, "description", 0, &datatype, (LPBYTE)gAsioDrivers[gnNumAsioDrivers].name, &datasize))
     				{
     				#ifdef ASIO_LOG
     					Log("  description =\"%s\":\n", gAsioDrivers[gnNumAsioDrivers].name);
@@ -603,7 +608,7 @@ BOOL CASIODevice::EnumerateDevices(UINT nIndex, LPSTR pszDescription, UINT cbSiz
     				}
     				datatype = REG_SZ;
     				datasize = sizeof(s);
-    				if (ERROR_SUCCESS == RegQueryValueEx(hksub, "clsid", 0, &datatype, (LPBYTE)s, &datasize))
+    				if (ERROR_SUCCESS == registry_query_value(hksub, "clsid", 0, &datatype, (LPBYTE)s, &datasize))
     				{
     					MultiByteToWideChar(CP_ACP, 0, (LPCSTR)s,-1,(LPWSTR)w,100);
     					if (CLSIDFromString((LPOLESTR)w, (LPCLSID)&gAsioDrivers[gnNumAsioDrivers].clsid) == S_OK)
@@ -901,7 +906,7 @@ void CASIODevice::CloseDevice()
 }
 
 
-void CASIODevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer)
+void CASIODevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer)
 //--------------------------------------------------------------------------------------------
 {
     for (UINT ich=0; ich<m_nChannels; ich++){
@@ -910,13 +915,13 @@ void CASIODevice::SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, D
 
 }
 
-BOOL CASIODevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer)
+BOOL CASIODevice::FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer)
 //-----------------------------------------------------------------------------------------
 {
-    DWORD dwSampleSize = m_nChannels*(m_nBitsPerSample>>3);
-    DWORD dwSamplesLeft = m_nAsioBufferLen;
-    DWORD dwFrameLen = (ASIO_BLOCK_LEN*sizeof(int)) / dwSampleSize;
-    DWORD dwBufferOffset = 0;
+    uint32_t dwSampleSize = m_nChannels*(m_nBitsPerSample>>3);
+    uint32_t dwSamplesLeft = m_nAsioBufferLen;
+    uint32_t dwFrameLen = (ASIO_BLOCK_LEN*sizeof(int)) / dwSampleSize;
+    uint32_t dwBufferOffset = 0;
     
     dwBuffer &= 1;
     //Log("FillAudioBuffer(%d): dwSampleSize=%d dwSamplesLeft=%d dwFrameLen=%d\n", dwBuffer, dwSampleSize, dwSamplesLeft, dwFrameLen);

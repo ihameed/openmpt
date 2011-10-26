@@ -31,7 +31,7 @@ typedef struct PTMFILEHEADER
     uint16_t nchannels;    		// number of channels (voices) used (1..32)
     uint16_t fileflags;    		// set to 0
     uint16_t reserved2;    		// reserved, set to 0
-    DWORD ptmf_id;    		// song identification, 'PTMF' or 0x464d5450
+    uint32_t ptmf_id;    		// song identification, 'PTMF' or 0x464d5450
     uint8_t reserved3[16];    	// reserved, set to 0
     uint8_t chnpan[32];    	// channel panning settings, 0..15, 0 = left, 7 = middle, 15 = right
     uint8_t orders[256];    	// order list, valid entries 0..nOrders-1
@@ -54,7 +54,7 @@ typedef struct PTMSAMPLE
     uint16_t loopend[2];    	// end of loop
     uint16_t gusdata[8];
     char  samplename[28];    // name of sample, asciiz
-    DWORD ptms_id;    		// sample identification, 'PTMS' or 0x534d5450
+    uint32_t ptms_id;    		// sample identification, 'PTMS' or 0x534d5450
 } PTMSAMPLE;
 
 #define SIZEOF_PTMSAMPLE    80
@@ -62,14 +62,14 @@ typedef struct PTMSAMPLE
 #pragma pack()
 
 
-bool CSoundFile::ReadPTM(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     if(lpStream == nullptr || dwMemLength < sizeof(PTMFILEHEADER))
         return false;
 
     PTMFILEHEADER pfh = *(LPPTMFILEHEADER)lpStream;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     UINT nOrders;
 
     pfh.norders = LittleEndianW(pfh.norders);
@@ -122,7 +122,7 @@ bool CSoundFile::ReadPTM(const uint8_t *lpStream, const DWORD dwMemLength)
         if ((psmp->sampletype & 3) == 1)
         {
             UINT smpflg = RS_PCM8D;
-            DWORD samplepos;
+            uint32_t samplepos;
             pSmp->length = LittleEndian(*(LPDWORD)(psmp->length));
             pSmp->loop_start = LittleEndian(*(LPDWORD)(psmp->loopbeg));
             pSmp->loop_end = LittleEndian(*(LPDWORD)(psmp->loopend));

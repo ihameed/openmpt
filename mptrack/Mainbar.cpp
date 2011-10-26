@@ -24,7 +24,7 @@ BOOL CToolBarEx::SetVertical()
 }
 
 
-CSize CToolBarEx::CalcDynamicLayout(int nLength, DWORD dwMode)
+CSize CToolBarEx::CalcDynamicLayout(int nLength, uint32_t dwMode)
 //------------------------------------------------------------
 {
     CSize sizeResult;
@@ -225,7 +225,7 @@ BOOL CMainToolBar::Create(CWnd *parent)
 //-------------------------------------
 {
     CRect rect;
-    DWORD dwStyle = WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY;
+    uint32_t dwStyle = WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY;
 
     if (!CToolBar::Create(parent, dwStyle)) return FALSE;
     if (!LoadBitmap(IDB_MAINBAR)) return FALSE;
@@ -920,7 +920,7 @@ VOID CModTreeBar::OnDocumentClosed(CModDoc *pModDoc)
 }
 
 
-VOID CModTreeBar::OnUpdate(CModDoc *pModDoc, DWORD lHint, CObject *pHint)
+VOID CModTreeBar::OnUpdate(CModDoc *pModDoc, uint32_t lHint, CObject *pHint)
 //-----------------------------------------------------------------------
 {
     if (m_pModTree) m_pModTree->OnUpdate(pModDoc, lHint, pHint);

@@ -99,8 +99,8 @@ public:
     BOOL Register(CModTree *pWnd);
 
 public:
-    virtual DROPEFFECT OnDragEnter(CWnd *pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
-    virtual DROPEFFECT OnDragOver(CWnd *pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
+    virtual DROPEFFECT OnDragEnter(CWnd *pWnd, COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point);
+    virtual DROPEFFECT OnDragOver(CWnd *pWnd, COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point);
     virtual BOOL OnDrop(CWnd *pWnd, COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point);
 };
 
@@ -113,7 +113,7 @@ protected:
     CSoundFile m_SongFile;
     CModTreeDropTarget m_DropTarget;
     CModTree *m_pDataTree;
-    DWORD m_dwStatus;
+    uint32_t m_dwStatus;
     HWND m_hDropWnd;
     uint64_t m_qwItemDrag;
     BOOL m_bShowAllFiles;
@@ -150,14 +150,14 @@ public:
     BOOL DeleteTreeItem(HTREEITEM hItem);
     BOOL PlayItem(HTREEITEM hItem, UINT nParam=0);
     BOOL OpenTreeItem(HTREEITEM hItem);
-    BOOL OpenMidiInstrument(DWORD dwItem);
+    BOOL OpenMidiInstrument(uint32_t dwItem);
     BOOL InstrumentLibraryChDir(LPCSTR lpszDir);
     BOOL GetDropInfo(LPDRAGONDROP pdropinfo, LPSTR lpszPath);
     VOID OnOptionsChanged();
     VOID AddDocument(CModDoc *pModDoc);
     VOID RemoveDocument(CModDoc *pModDoc);
-    VOID UpdateView(UINT nDocNdx, DWORD dwHint);
-    VOID OnUpdate(CModDoc *pModDoc, DWORD dwHint, CObject *pHint);
+    VOID UpdateView(UINT nDocNdx, uint32_t dwHint);
+    VOID OnUpdate(CModDoc *pModDoc, uint32_t dwHint, CObject *pHint);
     bool CanDrop(HTREEITEM hItem, bool bDoDrop);
     VOID UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify);
     bool IsItemExpanded(HTREEITEM hItem);
@@ -171,8 +171,8 @@ public:
 
 // Drag & Drop operations
 public:
-    DROPEFFECT OnDragEnter(COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
-    DROPEFFECT OnDragOver(COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
+    DROPEFFECT OnDragEnter(COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point);
+    DROPEFFECT OnDragOver(COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point);
     BOOL OnDrop(COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point);
 
 protected:
@@ -191,7 +191,7 @@ protected:
     afx_msg void OnBeginDrag(HTREEITEM, bool bLeft, LRESULT *pResult);
     afx_msg void OnBeginLDrag(LPNMHDR, LRESULT *pResult);
     afx_msg void OnBeginRDrag(LPNMHDR, LRESULT *pResult);
-    afx_msg void OnEndDrag(DWORD dwMask);
+    afx_msg void OnEndDrag(uint32_t dwMask);
     afx_msg void OnItemDblClk(LPNMHDR phdr, LRESULT *pResult);
     afx_msg void OnItemReturn(LPNMHDR, LRESULT *pResult);
     afx_msg void OnItemLeftClick(LPNMHDR pNMHDR, LRESULT *pResult);

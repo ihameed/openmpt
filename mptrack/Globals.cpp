@@ -138,7 +138,7 @@ BOOL CModControlDlg::OnToolTipText(UINT nID, NMHDR* pNMHDR, LRESULT* pResult)
 /////////////////////////////////////////////////////////////////////////////
 // CModControlView
 
-BOOL CModTabCtrl::Create(DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
+BOOL CModTabCtrl::Create(uint32_t dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID)
 //-----------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -417,7 +417,7 @@ void CModControlView::OnDestroy()
 }
 
 
-void CModControlView::UpdateView(DWORD lHint, CObject *pObject)
+void CModControlView::UpdateView(uint32_t lHint, CObject *pObject)
 //-------------------------------------------------------------
 {
     CWnd *pActiveDlg = NULL;

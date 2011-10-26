@@ -24,7 +24,7 @@
 typedef struct tagXMFILEHEADER
 {
     uint16_t xmversion;    	// current: 0x0104
-    DWORD size;    		// header size
+    uint32_t size;    		// header size
     uint16_t orders;    	// number of orders
     uint16_t restartpos;    // restart position
     uint16_t channels;    	// number of channels
@@ -38,7 +38,7 @@ typedef struct tagXMFILEHEADER
 
 typedef struct tagXMINSTRUMENTHEADER
 {
-    DWORD size; // size of XMINSTRUMENTHEADER + XMSAMPLEHEADER
+    uint32_t size; // size of XMINSTRUMENTHEADER + XMSAMPLEHEADER
     CHAR name[22];
     uint8_t type; // should always be 0
     uint16_t samples;
@@ -47,7 +47,7 @@ typedef struct tagXMINSTRUMENTHEADER
 
 typedef struct tagXMSAMPLEHEADER
 {
-    DWORD shsize; // size of XMSAMPLESTRUCT
+    uint32_t shsize; // size of XMSAMPLESTRUCT
     uint8_t snum[96];
     uint16_t venv[24];
     uint16_t penv[24];
@@ -67,9 +67,9 @@ typedef struct tagXMSAMPLEHEADER
 
 typedef struct tagXMSAMPLESTRUCT
 {
-    DWORD samplen;
-    DWORD loopstart;
-    DWORD looplen;
+    uint32_t samplen;
+    uint32_t loopstart;
+    uint32_t looplen;
     uint8_t vol;
     signed char finetune;
     uint8_t type;
@@ -82,7 +82,7 @@ typedef struct tagXMSAMPLESTRUCT
 
 
 // Read .XM patterns
-DWORD ReadXMPatterns(const uint8_t *lpStream, DWORD dwMemLength, DWORD dwMemPos, XMFILEHEADER *xmheader, CSoundFile *pSndFile)
+uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t dwMemPos, XMFILEHEADER *xmheader, CSoundFile *pSndFile)
 //-------------------------------------------------------------------------------------------------------------------------
 {
     uint8_t patterns_used[256];
@@ -122,9 +122,9 @@ DWORD ReadXMPatterns(const uint8_t *lpStream, DWORD dwMemLength, DWORD dwMemPos,
     for (UINT ipat = 0; ipat < xmheader->patterns; ipat++)
     {
         UINT ipatmap = pattern_map[ipat];
-        DWORD dwSize = 0;
+        uint32_t dwSize = 0;
         uint16_t rows = 64, packsize = 0;
-        dwSize = LittleEndian(*((DWORD *)(lpStream + dwMemPos)));
+        dwSize = LittleEndian(*((uint32_t *)(lpStream + dwMemPos)));
 
         if(xmheader->xmversion == 0x0102)
         {
@@ -234,13 +234,13 @@ DWORD ReadXMPatterns(const uint8_t *lpStream, DWORD dwMemLength, DWORD dwMemPos,
     return dwMemPos;
 }
 
-bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength)
 //--------------------------------------------------------------------
 {
     XMFILEHEADER xmheader;
     XMSAMPLEHEADER xmsh;
     XMSAMPLESTRUCT xmss;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
 
     bool bMadeWithModPlug = false, bProbablyMadeWithModPlug = false, bProbablyMPT109 = false, bIsFT2 = false;
 
@@ -305,12 +305,12 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
     {
         XMINSTRUMENTHEADER pih;
         uint8_t flags[32];
-        DWORD samplesize[32];
+        uint32_t samplesize[32];
         UINT samplemap[32];
         uint16_t nsamples;
                 
-        if (dwMemPos + sizeof(DWORD) >= dwMemLength) return true;
-        DWORD ihsize = LittleEndian(*((DWORD *)(lpStream + dwMemPos)));
+        if (dwMemPos + sizeof(uint32_t) >= dwMemLength) return true;
+        uint32_t ihsize = LittleEndian(*((uint32_t *)(lpStream + dwMemPos)));
         if (dwMemPos + ihsize > dwMemLength) return true;
 
         MemsetZero(pih);
@@ -596,9 +596,9 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
     }
 
     // Read song comments: "TEXT"
-    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((DWORD *)(lpStream+dwMemPos))) == 0x74786574))
+    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((uint32_t *)(lpStream+dwMemPos))) == 0x74786574))
     {
-        UINT len = *((DWORD *)(lpStream+dwMemPos+4));
+        UINT len = *((uint32_t *)(lpStream+dwMemPos+4));
         dwMemPos += 8;
         if ((dwMemPos + len <= dwMemLength) && (len < 16384))
         {
@@ -608,9 +608,9 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
         bMadeWithModPlug = true;
     }
     // Read midi config: "MIDI"
-    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((DWORD *)(lpStream+dwMemPos))) == 0x4944494D))
+    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((uint32_t *)(lpStream+dwMemPos))) == 0x4944494D))
     {
-        UINT len = *((DWORD *)(lpStream+dwMemPos+4));
+        UINT len = *((uint32_t *)(lpStream+dwMemPos+4));
         dwMemPos += 8;
         if (len == sizeof(MODMIDICFG))
         {
@@ -622,13 +622,13 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
         bMadeWithModPlug = true;
     }
     // Read pattern names: "PNAM"
-    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((DWORD *)(lpStream+dwMemPos))) == 0x4d414e50))
+    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((uint32_t *)(lpStream+dwMemPos))) == 0x4d414e50))
     {
-        UINT len = *((DWORD *)(lpStream + dwMemPos + 4));
+        UINT len = *((uint32_t *)(lpStream + dwMemPos + 4));
         dwMemPos += 8;
         if ((dwMemPos + len <= dwMemLength) && (len <= MAX_PATTERNS * MAX_PATTERNNAME) && (len >= MAX_PATTERNNAME))
         {
-            DWORD pos = 0;
+            uint32_t pos = 0;
             PATTERNINDEX nPat = 0;
             for(pos = 0; pos < len; pos += MAX_PATTERNNAME, nPat++)
             {
@@ -639,9 +639,9 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
         bMadeWithModPlug = true;
     }
     // Read channel names: "CNAM"
-    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((DWORD *)(lpStream+dwMemPos))) == 0x4d414e43))
+    if ((dwMemPos + 8 < dwMemLength) && (LittleEndian(*((uint32_t *)(lpStream+dwMemPos))) == 0x4d414e43))
     {
-        UINT len = *((DWORD *)(lpStream+dwMemPos+4));
+        UINT len = *((uint32_t *)(lpStream+dwMemPos+4));
         dwMemPos += 8;
         if ((dwMemPos + len <= dwMemLength) && (len <= MAX_BASECHANNELS*MAX_CHANNELNAME))
         {
@@ -658,7 +658,7 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
     // Read mix plugins information
     if (dwMemPos + 8 < dwMemLength) 
     {
-        DWORD dwOldPos = dwMemPos;
+        uint32_t dwOldPos = dwMemPos;
         dwMemPos += LoadMixPlugins(lpStream+dwMemPos, dwMemLength-dwMemPos);
         if(dwMemPos != dwOldPos)
             bMadeWithModPlug = true;
@@ -788,7 +788,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
 
     xmheader.orders = LittleEndianW((uint16_t)nMaxOrds);
     xmheader.patterns = LittleEndianW((uint16_t)nPatterns);
-    xmheader.size = LittleEndian((DWORD)(xmheader.size + nMaxOrds));
+    xmheader.size = LittleEndian((uint32_t)(xmheader.size + nMaxOrds));
 
     if(m_nInstruments > 0)
         xmheader.instruments = LittleEndianW(m_nInstruments);
@@ -1085,7 +1085,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
         // Writing song comments
         if ((m_lpszSongComments) && (m_lpszSongComments[0]))
         {
-            DWORD d = 0x74786574;
+            uint32_t d = 0x74786574;
             fwrite(&d, 1, 4, f);
             d = strlen(m_lpszSongComments);
             fwrite(&d, 1, 4, f);
@@ -1094,7 +1094,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
         // Writing midi cfg
         if (m_dwSongFlags & SONG_EMBEDMIDICFG)
         {
-            DWORD d = 0x4944494D;
+            uint32_t d = 0x4944494D;
             fwrite(&d, 1, 4, f);
             d = sizeof(MODMIDICFG);
             fwrite(&d, 1, 4, f);
@@ -1104,8 +1104,8 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
         const PATTERNINDEX numNamedPats = Patterns.GetNumNamedPatterns();
         if (numNamedPats > 0)
         {
-            DWORD dwLen = numNamedPats * MAX_PATTERNNAME;
-            DWORD d = 0x4d414e50;
+            uint32_t dwLen = numNamedPats * MAX_PATTERNNAME;
+            uint32_t d = 0x4d414e50;
             fwrite(&d, 1, 4, f);
             fwrite(&dwLen, 1, 4, f);
 
@@ -1127,8 +1127,8 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
             // Do it!
             if (nChnNames)
             {
-                DWORD dwLen = nChnNames * MAX_CHANNELNAME;
-                DWORD d = 0x4d414e43;
+                uint32_t dwLen = nChnNames * MAX_CHANNELNAME;
+                uint32_t d = 0x4d414e43;
                 fwrite(&d, 1, 4, f);
                 fwrite(&dwLen, 1, 4, f);
                 for (UINT inam=0; inam<nChnNames; inam++)

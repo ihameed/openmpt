@@ -221,7 +221,7 @@ void CCtrlPatterns::RecalcLayout()
 }
 
 
-void CCtrlPatterns::UpdateView(DWORD dwHintMask, CObject *pObj)
+void CCtrlPatterns::UpdateView(uint32_t dwHintMask, CObject *pObj)
 //-------------------------------------------------------------
 {
     CHAR s[256];

@@ -18,7 +18,7 @@
 
 #pragma warning(disable:4244)
 
-bool CSoundFile::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //--------------------------------------------------------------------------------------------
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
@@ -34,7 +34,7 @@ bool CSoundFile::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD
 }
 
 
-bool CSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr >= MAX_INSTRUMENTS)) return false;
@@ -48,7 +48,7 @@ bool CSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
 }
 
 
-bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
     uint32_t *psig = (uint32_t *)lpMemFile;
@@ -132,7 +132,7 @@ bool CSoundFile::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples)
 
     modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     Instruments[nInstr] = nullptr;
-    for(CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
+    for(CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
         if (Chn[i].instrument == pIns)
         {
@@ -292,20 +292,20 @@ bool CSoundFile::ReadSampleFromSong(SAMPLEINDEX nSample, CSoundFile *pSrcSong, U
 #define IFFID_pcm    0x206d6370
 #define IFFID_fact    0x74636166
 
-extern BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, DWORD dwBytes, UINT pkBlkAlign);
+extern BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, uint32_t dwBytes, UINT pkBlkAlign);
 
-bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD *pdwWSMPOffset)
+bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset)
 //-------------------------------------------------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0, dwDataPos;
+    uint32_t dwMemPos = 0, dwDataPos;
     WAVEFILEHEADER *phdr = (WAVEFILEHEADER *)lpMemFile;
     WAVEFORMATHEADER *pfmt, *pfmtpk;
     WAVEDATAHEADER *pdata;
     WAVESMPLHEADER *psh;
     WAVEEXTRAHEADER *pxh;
-    DWORD dwInfoList, dwFact, dwSamplesPerBlock;
+    uint32_t dwInfoList, dwFact, dwSamplesPerBlock;
     
-    if ((!nSample) || (!lpMemFile) || (dwFileLength < (DWORD)(sizeof(WAVEFILEHEADER)+sizeof(WAVEFORMATHEADER)))) return false;
+    if ((!nSample) || (!lpMemFile) || (dwFileLength < (uint32_t)(sizeof(WAVEFILEHEADER)+sizeof(WAVEFORMATHEADER)))) return false;
     if (((phdr->id_RIFF != IFFID_RIFF) && (phdr->id_RIFF != IFFID_LIST))
      || ((phdr->id_WAVE != IFFID_WAVE) && (phdr->id_WAVE != IFFID_wave))) return false;
     dwMemPos = sizeof(WAVEFILEHEADER);
@@ -320,8 +320,8 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
     dwFact = 0;
     while ((dwMemPos + 8 < dwFileLength) && (dwMemPos < phdr->filesize))
     {
-        DWORD dwLen = *((LPDWORD)(lpMemFile+dwMemPos+4));
-        DWORD dwIFFID = *((LPDWORD)(lpMemFile+dwMemPos));
+        uint32_t dwLen = *((LPDWORD)(lpMemFile+dwMemPos+4));
+        uint32_t dwIFFID = *((LPDWORD)(lpMemFile+dwMemPos));
         if ((dwLen > dwFileLength) || (dwMemPos+8+dwLen > dwFileLength)) break;
         switch(dwIFFID)
         {
@@ -476,18 +476,18 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
     // LIST field
     if (dwInfoList)
     {
-        DWORD dwLSize = *((DWORD *)(lpMemFile+dwInfoList+4)) + 8;
-        DWORD d = 12;
+        uint32_t dwLSize = *((uint32_t *)(lpMemFile+dwInfoList+4)) + 8;
+        uint32_t d = 12;
         while (d+8 < dwLSize)
         {
             if (!lpMemFile[dwInfoList+d]) d++;
-            DWORD id = *((DWORD *)(lpMemFile+dwInfoList+d));
-            DWORD len = *((DWORD *)(lpMemFile+dwInfoList+d+4));
+            uint32_t id = *((uint32_t *)(lpMemFile+dwInfoList+d));
+            uint32_t len = *((uint32_t *)(lpMemFile+dwInfoList+d+4));
             if (id == 0x4D414E49) // "INAM"
             {
                 if ((dwInfoList+d+8+len <= dwFileLength) && (len))
                 {
-                    DWORD dwNameLen = len;
+                    uint32_t dwNameLen = len;
                     if (dwNameLen > 31) dwNameLen = 31;
                     memcpy(m_szNames[nSample], lpMemFile+dwInfoList+d+8, dwNameLen);
                     if (phdr->id_RIFF != 0x46464952)
@@ -672,8 +672,8 @@ bool CSoundFile::SaveRAWSample(UINT nSample, LPCSTR lpszFileName)
 
 typedef struct GF1PATCHFILEHEADER
 {
-    DWORD gf1p;    			// "GF1P"
-    DWORD atch;    			// "ATCH"
+    uint32_t gf1p;    			// "GF1P"
+    uint32_t atch;    			// "ATCH"
     CHAR version[4];    	// "100", or "110"
     CHAR id[10];    		// "ID#000002"
     CHAR copyright[60];    	// Copyright
@@ -682,7 +682,7 @@ typedef struct GF1PATCHFILEHEADER
     uint8_t channels;    		// Number of wav channels that can be played concurently to the patch
     uint16_t samples;    		// Total number of waveforms for all the .PAT
     uint16_t volume;    		// Master volume
-    DWORD data_size;
+    uint32_t data_size;
     uint8_t reserved2[36];
 } GF1PATCHFILEHEADER;
 
@@ -691,7 +691,7 @@ typedef struct GF1INSTRUMENT
 {
     uint16_t id;    			// Instrument id: 0-65535
     CHAR name[16];    		// Name of instrument. Gravis doesn't seem to use it
-    DWORD size;    			// Number of bytes for the instrument with header. (To skip to next instrument)
+    uint32_t size;    			// Number of bytes for the instrument with header. (To skip to next instrument)
     uint8_t layers;    		// Number of layers in instrument: 1-4
     uint8_t reserved[40];
 } GF1INSTRUMENT;
@@ -701,11 +701,11 @@ typedef struct GF1SAMPLEHEADER
 {
     CHAR name[7];    		// null terminated string. name of the wave.
     uint8_t fractions;    		// Start loop point fraction in 4 bits + End loop point fraction in the 4 other bits.
-    DWORD length;    		// total size of wavesample. limited to 65535 now by the drivers, not the card.
-    DWORD loopstart;    	// start loop position in the wavesample
-    DWORD loopend;    		// end loop position in the wavesample
+    uint32_t length;    		// total size of wavesample. limited to 65535 now by the drivers, not the card.
+    uint32_t loopstart;    	// start loop position in the wavesample
+    uint32_t loopend;    		// end loop position in the wavesample
     uint16_t freq;    			// Rate at which the wavesample has been sampled
-    DWORD low_freq, high_freq, root_freq;    // check note.h for the correspondance.
+    uint32_t low_freq, high_freq, root_freq;    // check note.h for the correspondance.
     SHORT finetune;    		// fine tune. -512 to +512, EXCLUDING 0 cause it is a multiplier. 512 is one octave off, and 1 is a neutral value
     uint8_t balance;    		// Balance: 0-15. 0=full left, 15 = full right
     uint8_t env_rate[6];    	// attack rates
@@ -752,7 +752,7 @@ typedef struct GF1LAYER
 {
     uint8_t previous;    		// If !=0 the wavesample to use is from the previous layer. The waveheader is still needed
     uint8_t id;    			// Layer id: 0-3
-    DWORD size;    			// data size in bytes in the layer, without the header. to skip to next layer for example:
+    uint32_t size;    			// data size in bytes in the layer, without the header. to skip to next layer for example:
     uint8_t samples;    		// number of wavesamples
     uint8_t reserved[40];
 } GF1LAYER;
@@ -779,11 +779,11 @@ LONG PatchFreqToNote(ULONG nFreq)
 }
 
 
-void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, DWORD dwMemLength)
+void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, uint32_t dwMemLength)
 //------------------------------------------------------------------------------------
 {
     modplug::tracker::modsample_t *pIns = &that->Samples[nSample];
-    DWORD dwMemPos = sizeof(GF1SAMPLEHEADER);
+    uint32_t dwMemPos = sizeof(GF1SAMPLEHEADER);
     GF1SAMPLEHEADER *psh = (GF1SAMPLEHEADER *)(lpStream);
     UINT nSmpType;
     
@@ -829,10 +829,10 @@ void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, DWORD dwMemL
 }
 
 
-bool CSoundFile::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, uint32_t dwMemLength)
 //-------------------------------------------------------------------------------------
 {
-    DWORD dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
+    uint32_t dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
     GF1PATCHFILEHEADER *phdr = (GF1PATCHFILEHEADER *)lpStream;
     GF1INSTRUMENT *pinshdr = (GF1INSTRUMENT *)(lpStream+sizeof(GF1PATCHFILEHEADER));
 
@@ -852,14 +852,14 @@ bool CSoundFile::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, DWORD dwMem
 
 
 // PAT Instrument
-bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, uint32_t dwMemLength)
 //--------------------------------------------------------------------------------------------
 {
     GF1PATCHFILEHEADER *phdr = (GF1PATCHFILEHEADER *)lpStream;
     GF1INSTRUMENT *pih = (GF1INSTRUMENT *)(lpStream+sizeof(GF1PATCHFILEHEADER));
     GF1LAYER *plh = (GF1LAYER *)(lpStream+sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT));
     modplug::tracker::modinstrument_t *pIns;
-    DWORD dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
+    uint32_t dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
     UINT nSamples;
 
     if ((!lpStream) || (dwMemLength < 512)
@@ -979,31 +979,31 @@ typedef struct S3ISAMPLESTRUCT
     CHAR filename[12];
     uint8_t reserved1;
     uint16_t offset;
-    DWORD length;
-    DWORD loopstart;
-    DWORD loopend;
+    uint32_t length;
+    uint32_t loopstart;
+    uint32_t loopend;
     uint8_t volume;
     uint8_t reserved2;
     uint8_t pack;
     uint8_t flags;
-    DWORD nC5Speed;
-    DWORD reserved3;
-    DWORD reserved4;
-    DWORD date;
+    uint32_t nC5Speed;
+    uint32_t reserved3;
+    uint32_t reserved4;
+    uint32_t date;
     CHAR name[28];
-    DWORD scrs;
+    uint32_t scrs;
 } S3ISAMPLESTRUCT;
 
-bool CSoundFile::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------
 {
     S3ISAMPLESTRUCT *pss = (S3ISAMPLESTRUCT *)lpMemFile;
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     UINT flags;
 
     if ((!lpMemFile) || (dwFileLength < sizeof(S3ISAMPLESTRUCT))
-     || (pss->id != 0x01) || (((DWORD)pss->offset << 4) >= dwFileLength)
+     || (pss->id != 0x01) || (((uint32_t)pss->offset << 4) >= dwFileLength)
      || (pss->scrs != 0x53524353)) return false;
     DestroySample(nSample);
     dwMemPos = pss->offset << 4;
@@ -1059,9 +1059,9 @@ typedef struct XIINSTRUMENTHEADER
 
 typedef struct XISAMPLEHEADER
 {
-    DWORD samplen;
-    DWORD loopstart;
-    DWORD looplen;
+    uint32_t samplen;
+    uint32_t loopstart;
+    uint32_t looplen;
     uint8_t vol;
     signed char finetune;
     uint8_t type;
@@ -1074,15 +1074,15 @@ typedef struct XISAMPLEHEADER
 
 
 
-bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------
 {
     XIFILEHEADER *pxh = (XIFILEHEADER *)lpMemFile;
     XIINSTRUMENTHEADER *pih = (XIINSTRUMENTHEADER *)(lpMemFile+sizeof(XIFILEHEADER));
     UINT samplemap[32];
     UINT sampleflags[32];
-    DWORD samplesize[32];
-    DWORD dwMemPos = sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER);
+    uint32_t samplesize[32];
+    uint32_t dwMemPos = sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER);
     UINT nsamples;
 
     if ((!lpMemFile) || (dwFileLength < sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER))) return false;
@@ -1397,13 +1397,13 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 }
 
 
-bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //--------------------------------------------------------------------------------------
 {
     XIFILEHEADER *pxh = (XIFILEHEADER *)lpMemFile;
     XIINSTRUMENTHEADER *pih = (XIINSTRUMENTHEADER *)(lpMemFile+sizeof(XIFILEHEADER));
     UINT sampleflags = 0;
-    DWORD dwMemPos = sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER);
+    uint32_t dwMemPos = sizeof(XIFILEHEADER)+sizeof(XIINSTRUMENTHEADER);
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     UINT nsamples;
 
@@ -1489,15 +1489,15 @@ bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFil
 
 typedef struct AIFFFILEHEADER
 {
-    DWORD dwFORM;    // "FORM" -> 0x4D524F46
-    DWORD dwLen;
-    DWORD dwAIFF;    // "AIFF" -> 0x46464941
+    uint32_t dwFORM;    // "FORM" -> 0x4D524F46
+    uint32_t dwLen;
+    uint32_t dwAIFF;    // "AIFF" -> 0x46464941
 } AIFFFILEHEADER;
 
 typedef struct AIFFCOMM
 {
-    DWORD dwCOMM;    // "COMM" -> 0x4D4D4F43
-    DWORD dwLen;
+    uint32_t dwCOMM;    // "COMM" -> 0x4D4D4F43
+    uint32_t dwLen;
     uint16_t wChannels;
     uint16_t wFramesHi;    // Align!
     uint16_t wFramesLo;
@@ -1507,16 +1507,16 @@ typedef struct AIFFCOMM
 
 typedef struct AIFFSSND
 {
-    DWORD dwSSND;    // "SSND" -> 0x444E5353
-    DWORD dwLen;
-    DWORD dwOffset;
-    DWORD dwBlkSize;
+    uint32_t dwSSND;    // "SSND" -> 0x444E5353
+    uint32_t dwLen;
+    uint32_t dwOffset;
+    uint32_t dwBlkSize;
 } AIFFSSND;
 
 
-static DWORD FetchLong(LPBYTE p)
+static uint32_t FetchLong(LPBYTE p)
 {
-    DWORD d = p[0];
+    uint32_t d = p[0];
     d = (d << 8) | p[1];
     d = (d << 8) | p[2];
     d = (d << 8) | p[3];
@@ -1524,9 +1524,9 @@ static DWORD FetchLong(LPBYTE p)
 }
 
 
-static DWORD Ext2Long(LPBYTE p)
+static uint32_t Ext2Long(LPBYTE p)
 {
-    DWORD mantissa, last=0;
+    uint32_t mantissa, last=0;
     uint8_t exp;
 
     mantissa = FetchLong(p+2);
@@ -1542,20 +1542,20 @@ static DWORD Ext2Long(LPBYTE p)
 
 
 
-bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //----------------------------------------------------------------------------------------
 {
-    DWORD dwMemPos = sizeof(AIFFFILEHEADER);
-    DWORD dwFORMLen, dwCOMMLen, dwSSNDLen;
+    uint32_t dwMemPos = sizeof(AIFFFILEHEADER);
+    uint32_t dwFORMLen, dwCOMMLen, dwSSNDLen;
     AIFFFILEHEADER *phdr = (AIFFFILEHEADER *)lpMemFile;
     AIFFCOMM *pcomm;
     AIFFSSND *psnd;
     UINT nType;
 
-    if ((!lpMemFile) || (dwFileLength < (DWORD)sizeof(AIFFFILEHEADER))) return false;
+    if ((!lpMemFile) || (dwFileLength < (uint32_t)sizeof(AIFFFILEHEADER))) return false;
     dwFORMLen = BigEndian(phdr->dwLen);
     if ((phdr->dwFORM != 0x4D524F46) || (phdr->dwAIFF != 0x46464941)
-     || (dwFORMLen > dwFileLength) || (dwFORMLen < (DWORD)sizeof(AIFFCOMM))) return false;
+     || (dwFORMLen > dwFileLength) || (dwFORMLen < (uint32_t)sizeof(AIFFCOMM))) return false;
     pcomm = (AIFFCOMM *)(lpMemFile+dwMemPos);
     dwCOMMLen = BigEndian(pcomm->dwLen);
     if ((pcomm->dwCOMM != 0x4D4D4F43) || (dwCOMMLen < 0x12) || (dwCOMMLen >= dwFileLength)) return false;
@@ -1612,20 +1612,20 @@ bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwF
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
-//BOOL CSoundFile::ReadITSSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset)
-UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset)
+//BOOL CSoundFile::ReadITSSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
+UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
 //-------------------------------------------------------------------------------------------------------
 {
     ITSAMPLESTRUCT *pis = (ITSAMPLESTRUCT *)lpMemFile;
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
 //    if ((!lpMemFile) || (dwFileLength < sizeof(ITSAMPLESTRUCT))
-//     || (pis->id != LittleEndian(IT_IMPS)) || (((DWORD)pis->samplepointer) >= dwFileLength + dwOffset)) return FALSE;
+//     || (pis->id != LittleEndian(IT_IMPS)) || (((uint32_t)pis->samplepointer) >= dwFileLength + dwOffset)) return FALSE;
     if ((!lpMemFile) || (dwFileLength < sizeof(ITSAMPLESTRUCT))
-     || (pis->id != LittleEndian(IT_IMPS)) || (((DWORD)pis->samplepointer) >= dwFileLength + dwOffset)) return 0;
+     || (pis->id != LittleEndian(IT_IMPS)) || (((uint32_t)pis->samplepointer) >= dwFileLength + dwOffset)) return 0;
 // -! NEW_FEATURE#0027
     DestroySample(nSample);
     dwMemPos = pis->samplepointer - dwOffset;
@@ -1691,12 +1691,12 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
 }
 
 
-bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //----------------------------------------------------------------------------------------------
 {
     ITINSTRUMENT *pinstr = (ITINSTRUMENT *)lpMemFile;
     uint16_t samplemap[NOTE_MAX];    //rewbs.noSamplePerInstroLimit (120 was 64)
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     UINT nsmp, nsamples;
 
     if ((!lpMemFile) || (dwFileLength < sizeof(ITINSTRUMENT))
@@ -1787,7 +1787,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     vector<bool> smpcount(GetNumSamples(), false);
     UINT smptable[MAX_SAMPLES], smpmap[MAX_SAMPLES];
-    DWORD dwPos;
+    uint32_t dwPos;
     FILE *f;
 
     if ((!pIns) || (!lpszFileName)) return false;
@@ -2039,7 +2039,7 @@ void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, c
 void ConvertReadExtendedFlags(modplug::tracker::modinstrument_t *pIns)
 //------------------------------------------------
 {
-    const DWORD dwOldFlags = pIns->flags;
+    const uint32_t dwOldFlags = pIns->flags;
     pIns->flags = pIns->volume_envelope.flags = pIns->panning_envelope.flags = pIns->pitch_envelope.flags = 0;
     if(dwOldFlags & dFdd_VOLUME)    	pIns->volume_envelope.flags |= ENV_ENABLED;
     if(dwOldFlags & dFdd_VOLSUSTAIN)    pIns->volume_envelope.flags |= ENV_SUSTAIN;
@@ -2072,28 +2072,28 @@ void ConvertReadExtendedFlags(modplug::tracker::modinstrument_t *pIns)
 
 typedef struct IFF8SVXFILEHEADER
 {
-    DWORD dwFORM;    // "FORM"
-    DWORD dwSize;
-    DWORD dw8SVX;    // "8SVX"
+    uint32_t dwFORM;    // "FORM"
+    uint32_t dwSize;
+    uint32_t dw8SVX;    // "8SVX"
 } IFF8SVXFILEHEADER;
 
 typedef struct IFFVHDR
 {
-    DWORD dwVHDR;    // "VHDR"
-    DWORD dwSize;
+    uint32_t dwVHDR;    // "VHDR"
+    uint32_t dwSize;
     ULONG oneShotHiSamples,    		/* # samples in the high octave 1-shot part */
             repeatHiSamples,    	/* # samples in the high octave repeat part */
             samplesPerHiCycle;    	/* # samples/cycle in high octave, else 0 */
     uint16_t samplesPerSec;    			/* data sampling rate */
     uint8_t    ctOctave,				/* # octaves of waveforms */
             sCompression;    		/* data compression technique used */
-    DWORD Volume;
+    uint32_t Volume;
 } IFFVHDR;
 
 typedef struct IFFBODY
 {
-    DWORD dwBody;
-    DWORD dwSize;
+    uint32_t dwBody;
+    uint32_t dwSize;
 } IFFBODY;
 
 
@@ -2101,13 +2101,13 @@ typedef struct IFFBODY
 
 
 
-bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength)
+bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------
 {
     IFF8SVXFILEHEADER *pfh = (IFF8SVXFILEHEADER *)lpMemFile;
     IFFVHDR *pvh = (IFFVHDR *)(lpMemFile + 12);
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
-    DWORD dwMemPos = 12;
+    uint32_t dwMemPos = 12;
     
     if ((!lpMemFile) || (dwFileLength < sizeof(IFFVHDR)+12) || (pfh->dwFORM != IFFID_FORM)
      || (pfh->dw8SVX != IFFID_8SVX) || (BigEndian(pfh->dwSize) >= dwFileLength)
@@ -2133,8 +2133,8 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLeng
     dwMemPos += BigEndian(pvh->dwSize) + 8;
     while (dwMemPos + 8 < dwFileLength)
     {
-        DWORD dwChunkId = *((LPDWORD)(lpMemFile+dwMemPos));
-        DWORD dwChunkLen = BigEndian(*((LPDWORD)(lpMemFile+dwMemPos+4)));
+        uint32_t dwChunkId = *((LPDWORD)(lpMemFile+dwMemPos));
+        uint32_t dwChunkLen = BigEndian(*((LPDWORD)(lpMemFile+dwMemPos+4)));
         LPBYTE pChunkData = (LPBYTE)(lpMemFile+dwMemPos+8);
         // Hack for broken files: Trim claimed length if it's too long
         dwChunkLen = min(dwChunkLen, dwFileLength - dwMemPos);

@@ -23,14 +23,14 @@ class CVstPluginManager;
 // ACM Functions (for dynamic linking)
 
 typedef VOID (ACMAPI *PFNACMMETRICS)(HACMOBJ, UINT, LPVOID);
-typedef MMRESULT (ACMAPI *PFNACMFORMATENUM)(HACMDRIVER, LPACMFORMATDETAILSA, ACMFORMATENUMCBA, DWORD dwInstance, DWORD fdwEnum);
-typedef MMRESULT (ACMAPI *PFNACMDRIVEROPEN)(LPHACMDRIVER, HACMDRIVERID, DWORD);
-typedef MMRESULT (ACMAPI *PFNACMDRIVERCLOSE)(HACMDRIVER, DWORD);
+typedef MMRESULT (ACMAPI *PFNACMFORMATENUM)(HACMDRIVER, LPACMFORMATDETAILSA, ACMFORMATENUMCBA, uint32_t dwInstance, uint32_t fdwEnum);
+typedef MMRESULT (ACMAPI *PFNACMDRIVEROPEN)(LPHACMDRIVER, HACMDRIVERID, uint32_t);
+typedef MMRESULT (ACMAPI *PFNACMDRIVERCLOSE)(HACMDRIVER, uint32_t);
 typedef MMRESULT (ACMAPI *PFNACMSTREAMOPEN)(LPHACMSTREAM, HACMDRIVER, LPWAVEFORMATEX, LPWAVEFORMATEX, LPWAVEFILTER, DWORD, DWORD, DWORD);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMCLOSE)(HACMSTREAM, DWORD);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMSIZE)(HACMSTREAM, DWORD, LPDWORD, DWORD);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMCONVERT)(HACMSTREAM, LPACMSTREAMHEADER, DWORD);
-typedef MMRESULT (ACMAPI *PFNACMDRIVERDETAILS)(HACMDRIVERID, LPACMDRIVERDETAILS, DWORD);
+typedef MMRESULT (ACMAPI *PFNACMSTREAMCLOSE)(HACMSTREAM, uint32_t);
+typedef MMRESULT (ACMAPI *PFNACMSTREAMSIZE)(HACMSTREAM, uint32_t, LPDWORD, uint32_t);
+typedef MMRESULT (ACMAPI *PFNACMSTREAMCONVERT)(HACMSTREAM, LPACMSTREAMHEADER, uint32_t);
+typedef MMRESULT (ACMAPI *PFNACMDRIVERDETAILS)(HACMDRIVERID, LPACMDRIVERDETAILS, uint32_t);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -76,8 +76,8 @@ typedef struct MPTCHORD
 typedef struct DRAGONDROP
 {
     CModDoc *pModDoc;
-    DWORD dwDropType;
-    DWORD dwDropItem;
+    uint32_t dwDropType;
+    uint32_t dwDropItem;
     LPARAM lDropParam;
 } DRAGONDROP, *LPDRAGONDROP;
 
@@ -131,7 +131,7 @@ protected:
     CMultiDocTemplate *m_pModTemplate;
     CVstPluginManager *m_pPluginManager;
     BOOL m_bInitialized, m_bLayer3Present, m_bExWaveSupport, m_bDebugMode;
-    DWORD m_dwTimeStarted, m_dwLastPluginIdleCall;
+    uint32_t m_dwTimeStarted, m_dwLastPluginIdleCall;
     HANDLE m_hAlternateResourceHandle;
     // Default macro configuration
     MODMIDICFG m_MidiCfg;
@@ -206,16 +206,16 @@ public:
     BOOL InitializeDXPlugins();
     BOOL UninitializeDXPlugins();
     static void AcmExceptionHandler();
-    MMRESULT AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMFORMATENUMCBA fnCallback, DWORD dwInstance, DWORD fdwEnum);
-    MMRESULT AcmDriverOpen(LPHACMDRIVER, HACMDRIVERID, DWORD);
-    MMRESULT AcmDriverDetails(HACMDRIVERID hadid, LPACMDRIVERDETAILS padd, DWORD fdwDetails);
-    MMRESULT AcmDriverClose(HACMDRIVER, DWORD);
+    MMRESULT AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMFORMATENUMCBA fnCallback, uint32_t dwInstance, uint32_t fdwEnum);
+    MMRESULT AcmDriverOpen(LPHACMDRIVER, HACMDRIVERID, uint32_t);
+    MMRESULT AcmDriverDetails(HACMDRIVERID hadid, LPACMDRIVERDETAILS padd, uint32_t fdwDetails);
+    MMRESULT AcmDriverClose(HACMDRIVER, uint32_t);
     MMRESULT AcmStreamOpen(LPHACMSTREAM, HACMDRIVER, LPWAVEFORMATEX, LPWAVEFORMATEX, LPWAVEFILTER pwfltr, DWORD dwCallback, DWORD dwInstance, DWORD fdwOpen);
-    MMRESULT AcmStreamClose(HACMSTREAM, DWORD);
-    MMRESULT AcmStreamSize(HACMSTREAM has, DWORD cbInput, LPDWORD pdwOutputBytes, DWORD fdwSize);
-    MMRESULT AcmStreamPrepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, DWORD fdwPrepare);
-    MMRESULT AcmStreamUnprepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, DWORD fdwUnprepare);
-    MMRESULT AcmStreamConvert(HACMSTREAM has, LPACMSTREAMHEADER pash, DWORD fdwConvert);
+    MMRESULT AcmStreamClose(HACMSTREAM, uint32_t);
+    MMRESULT AcmStreamSize(HACMSTREAM has, uint32_t cbInput, LPDWORD pdwOutputBytes, uint32_t fdwSize);
+    MMRESULT AcmStreamPrepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwPrepare);
+    MMRESULT AcmStreamUnprepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwUnprepare);
+    MMRESULT AcmStreamConvert(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwConvert);
 
 protected:
     static BOOL CALLBACK AcmFormatEnumCB(HACMDRIVERID, LPACMFORMATDETAILS, DWORD, DWORD);
@@ -312,8 +312,8 @@ public:
 public:
     BOOL Open(LPCSTR lpszFileName);
     void Close();
-    DWORD GetLength();
-    LPBYTE Lock(DWORD dwMaxLen=0);
+    uint32_t GetLength();
+    LPBYTE Lock(uint32_t dwMaxLen=0);
     BOOL Unlock();
 };
 
@@ -368,7 +368,7 @@ RGBQUAD rgb2quad(COLORREF c);
 
 // Other bitmap functions
 void DrawBitmapButton(HDC hdc, LPRECT lpRect, LPMODPLUGDIB lpdib, int srcx, int srcy, BOOL bPushed);
-void DrawButtonRect(HDC hdc, LPRECT lpRect, LPCSTR lpszText=NULL, BOOL bDisabled=FALSE, BOOL bPushed=FALSE, DWORD dwFlags=(DT_CENTER|DT_VCENTER));
+void DrawButtonRect(HDC hdc, LPRECT lpRect, LPCSTR lpszText=NULL, BOOL bDisabled=FALSE, BOOL bPushed=FALSE, uint32_t dwFlags=(DT_CENTER|DT_VCENTER));
 
 // Misc functions
 class CVstPlugin;

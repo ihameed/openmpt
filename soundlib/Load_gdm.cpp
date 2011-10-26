@@ -76,7 +76,7 @@ static MODTYPE GDMHeader_Origin[] =
     MOD_TYPE_NONE, MOD_TYPE_MOD, MOD_TYPE_MTM, MOD_TYPE_S3M, MOD_TYPE_669, MOD_TYPE_FAR, MOD_TYPE_ULT, MOD_TYPE_STM, MOD_TYPE_MED
 };
 
-bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength < sizeof(GDMHEADER))) return false;
@@ -258,7 +258,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const DWORD dwMemLength
             break;
 
         // position in THIS pattern
-        DWORD iPatternPos = iPatternsOffset + 2;
+        uint32_t iPatternPos = iPatternsOffset + 2;
 
         modplug::tracker::modcommand_t *p = Patterns[iPat];
 

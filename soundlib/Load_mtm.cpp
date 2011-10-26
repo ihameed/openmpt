@@ -48,10 +48,10 @@ typedef struct tagMTMHEADER
 #pragma pack()
 
 
-bool CSoundFile::ReadMTM(const uint8_t * lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
 //-----------------------------------------------------------
 {
-    DWORD dwMemPos = 66;
+    uint32_t dwMemPos = 66;
 
     if ((!lpStream) || (dwMemLength < 0x100)) return false;
 

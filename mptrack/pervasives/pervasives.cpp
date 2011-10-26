@@ -71,6 +71,10 @@ void debug_log(const char *fmt, ...) {
 #endif
 }
 
+int32_t registry_query_value(hkey_t key, const char *value_name, uint32_t *reserved, uint32_t *type, uint8_t *data, uint32_t *data_size) {
+    return RegQueryValueEx(key, value_name, reinterpret_cast<DWORD *>(reserved), reinterpret_cast<DWORD *>(type), data, reinterpret_cast<DWORD *>(data_size));
+}
+
 ::std::string &rtrim_whitespace(::std::string &str) {
     str.erase(
         ::std::find_if(

@@ -560,13 +560,13 @@ bool ModSequenceSet::MergeSequences()
 /////////////////////////////////////
 
 
-DWORD ModSequence::Deserialize(const uint8_t* const src, const DWORD memLength)
+uint32_t ModSequence::Deserialize(const uint8_t* const src, const uint32_t memLength)
 //--------------------------------------------------------------------------
 {
     if(memLength < 2 + 4) return 0;
     uint16_t version = 0;
     uint16_t s = 0;
-    DWORD memPos = 0;
+    uint32_t memPos = 0;
     memcpy(&version, src, sizeof(version));
     memPos += sizeof(version);
     if(version != 0) return memPos;

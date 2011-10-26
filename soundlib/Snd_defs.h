@@ -56,11 +56,11 @@ const SEQUENCEINDEX MAX_SEQUENCES = 50;
 
 const size_t MAX_INSTRUMENTS = 256;    //200 // -> CODE#0006 -> DESC="misc quantity changes" // -! BEHAVIOUR_CHANGE#0006
 //#ifdef FASTSOUNDLIB
-//#define MAX_CHANNELS    	80
+//#define MAX_VIRTUAL_CHANNELS    	80
 //#else
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-const size_t MAX_CHANNELS = 256;    //200 // Note: This is the maximum number of sound channels,
+const size_t MAX_VIRTUAL_CHANNELS = 256;    //200 // Note: This is the maximum number of sound channels,
                                 //            see MAX_BASECHANNELS for max pattern channels.
 // -! BEHAVIOUR_CHANGE#0006
 //#endif

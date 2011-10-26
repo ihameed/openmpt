@@ -477,15 +477,15 @@ void CopyPatternName(CPattern &pattern, char **patNames, UINT &patNamesLen)
 }
 
 
-bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //----------------------------------------------------------------------
 {
     ITFILEHEADER *pifh = (ITFILEHEADER *)lpStream;
 
-    DWORD dwMemPos = sizeof(ITFILEHEADER);
-    vector<DWORD> inspos;
-    vector<DWORD> smppos;
-    vector<DWORD> patpos;
+    uint32_t dwMemPos = sizeof(ITFILEHEADER);
+    vector<uint32_t> inspos;
+    vector<uint32_t> smppos;
+    vector<uint32_t> patpos;
 // Using eric's code here to take care of NNAs etc..
 // -> CODE#0006
 // -> DESC="misc quantity changes"
@@ -505,8 +505,8 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
      + pifh->smpnum*4 + pifh->patnum*4 > dwMemLength) return false;
 
 
-    DWORD mptStartPos = dwMemLength;
-    memcpy(&mptStartPos, lpStream + (dwMemLength - sizeof(DWORD)), sizeof(DWORD));
+    uint32_t mptStartPos = dwMemLength;
+    memcpy(&mptStartPos, lpStream + (dwMemLength - sizeof(uint32_t)), sizeof(uint32_t));
     if(mptStartPos >= dwMemLength || mptStartPos < 0x100)
         mptStartPos = dwMemLength;
 
@@ -668,7 +668,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     // This is used for finding out whether the edit history is actually stored in the file or not,
     // as some early versions of Schism Tracker set the history flag, but didn't save anything.
     // We will consider the history invalid if it ends after the first parapointer.
-    DWORD minptr = dwMemLength;
+    uint32_t minptr = dwMemLength;
 
     // Reading Instrument Offsets
     inspos.resize(pifh->insnum);
@@ -676,7 +676,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     {
         if(4 > dwMemLength - dwMemPos)
             return false;
-        DWORD insptr = LittleEndian(*(DWORD *)(lpStream + dwMemPos));
+        uint32_t insptr = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
         inspos[n] = insptr;
         if(insptr > 0)
         {
@@ -691,7 +691,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     {
         if(4 > dwMemLength - dwMemPos)
             return false;
-        DWORD smpptr = LittleEndian(*(DWORD *)(lpStream + dwMemPos));
+        uint32_t smpptr = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
         smppos[n] = smpptr;
         if(smpptr > 0)
         {
@@ -706,7 +706,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     {
         if(4 > dwMemLength - dwMemPos)
             return false;
-        DWORD patptr = LittleEndian(*(DWORD *)(lpStream + dwMemPos));
+        uint32_t patptr = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
         patpos[n] = patptr;
         if(patptr > 0)
         {
@@ -822,9 +822,9 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     // Read pattern names: "PNAM"
     char *patNames = nullptr;
     UINT patNamesLen = 0;
-    if ((dwMemPos + 8 < dwMemLength) && (*((DWORD *)(lpStream+dwMemPos)) == 0x4d414e50))
+    if ((dwMemPos + 8 < dwMemLength) && (*((uint32_t *)(lpStream+dwMemPos)) == 0x4d414e50))
     {
-        patNamesLen = *((DWORD *)(lpStream + dwMemPos + 4));
+        patNamesLen = *((uint32_t *)(lpStream + dwMemPos + 4));
         dwMemPos += 8;
         if ((dwMemPos + patNamesLen <= dwMemLength) && (patNamesLen > 0))
         {
@@ -835,9 +835,9 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
 
     m_nChannels = GetModSpecifications().channelsMin;
     // Read channel names: "CNAM"
-    if ((dwMemPos + 8 < dwMemLength) && (*((DWORD *)(lpStream+dwMemPos)) == 0x4d414e43))
+    if ((dwMemPos + 8 < dwMemLength) && (*((uint32_t *)(lpStream+dwMemPos)) == 0x4d414e43))
     {
-        UINT len = *((DWORD *)(lpStream+dwMemPos+4));
+        UINT len = *((uint32_t *)(lpStream+dwMemPos+4));
         dwMemPos += 8;
         if ((dwMemPos + len <= dwMemLength) && (len <= MAX_BASECHANNELS*MAX_CHANNELNAME))
         {
@@ -868,7 +868,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     {
         memset(chnmask, 0, sizeof(chnmask));
 
-        if ((!patpos[patchk]) || ((DWORD)patpos[patchk] >= dwMemLength - 4)) 
+        if ((!patpos[patchk]) || ((uint32_t)patpos[patchk] >= dwMemLength - 4)) 
             continue;
 
         UINT len = *((uint16_t *)(lpStream+patpos[patchk]));
@@ -1059,7 +1059,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
     Patterns.ResizeArray(max(MAX_PATTERNS, npatterns));
     for (UINT npat=0; npat<npatterns; npat++)
     {
-        if ((!patpos[npat]) || ((DWORD)patpos[npat] >= dwMemLength - 4))
+        if ((!patpos[npat]) || ((uint32_t)patpos[npat] >= dwMemLength - 4))
         {
             if(Patterns.Insert(npat, 64)) 
             {
@@ -1287,7 +1287,7 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
 #ifndef MODPLUG_NO_FILESAVE
 
 // Save edit history. Pass a null pointer for *f to retrieve the number of bytes that would be written.
-DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
+uint32_t SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
 //----------------------------------------------------------
 {
 #ifdef MODPLUG_TRACKER
@@ -1360,15 +1360,15 @@ DWORD SaveITEditHistory(const CSoundFile *pSndFile, FILE *f)
 bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
 //---------------------------------------------------------
 {
-    DWORD dwPatNamLen, dwChnNamLen;
+    uint32_t dwPatNamLen, dwChnNamLen;
     ITFILEHEADER header;
     ITINSTRUMENT iti;
     ITSAMPLESTRUCT itss;
     vector<bool>smpcount(GetNumSamples(), false);
-    DWORD inspos[MAX_INSTRUMENTS];
-    vector<DWORD> patpos;
-    DWORD smppos[MAX_SAMPLES];
-    DWORD dwPos = 0, dwHdrPos = 0, dwExtra = 0;
+    uint32_t inspos[MAX_INSTRUMENTS];
+    vector<uint32_t> patpos;
+    uint32_t smppos[MAX_SAMPLES];
+    uint32_t dwPos = 0, dwHdrPos = 0, dwExtra = 0;
     uint16_t patinfo[4];
 // -> CODE#0006
 // -> DESC="misc quantity changes"
@@ -1514,7 +1514,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     // Writing pattern names
     if (numNamedPats)
     {
-        DWORD d = 0x4d414e50;
+        uint32_t d = 0x4d414e50;
         fwrite(&d, 1, 4, f);
         d = numNamedPats * MAX_PATTERNNAME;
         fwrite(&d, 1, 4, f);
@@ -1530,7 +1530,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     // Writing channel names
     if (dwChnNamLen)
     {
-        DWORD d = 0x4d414e43;
+        uint32_t d = 0x4d414e43;
         fwrite(&d, 1, 4, f);
         fwrite(&dwChnNamLen, 1, 4, f);
         UINT nChnNames = dwChnNamLen / MAX_CHANNELNAME;
@@ -1682,7 +1682,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     bool bNeedsMptPatSave = false;
     for (UINT npat=0; npat<header.patnum; npat++)
     {
-        DWORD dwPatPos = dwPos;
+        uint32_t dwPatPos = dwPos;
         if (!Patterns[npat]) continue;
         patpos[npat] = dwPos;
         patinfo[0] = 0;
@@ -1943,7 +1943,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
 
     fseek(f, 0, SEEK_END);
     std::ofstream fout(f);
-    const DWORD MPTStartPos = fout.tellp();
+    const uint32_t MPTStartPos = fout.tellp();
 
     srlztn::Ssb ssb(fout);
     ssb.BeginWrite("mptm", MptVersion::num);
@@ -1995,15 +1995,15 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
 //------------------------------------------------
 {
     const int IT_MAX_CHANNELS=64;
-    DWORD dwPatNamLen, dwChnNamLen;
+    uint32_t dwPatNamLen, dwChnNamLen;
     ITFILEHEADER header;
     ITINSTRUMENT iti;
     ITSAMPLESTRUCT itss;
     vector<bool>smpcount(GetNumSamples(), false);
-    DWORD inspos[MAX_INSTRUMENTS];
-    DWORD patpos[MAX_PATTERNS];
-    DWORD smppos[MAX_SAMPLES];
-    DWORD dwPos = 0, dwHdrPos = 0, dwExtra = 0;
+    uint32_t inspos[MAX_INSTRUMENTS];
+    uint32_t patpos[MAX_PATTERNS];
+    uint32_t smppos[MAX_SAMPLES];
+    uint32_t dwPos = 0, dwHdrPos = 0, dwExtra = 0;
     uint16_t patinfo[4];
 // -> CODE#0006
 // -> DESC="misc quantity changes"
@@ -2125,7 +2125,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     // Writing pattern names
 /*    if (dwPatNamLen)
     {
-        DWORD d = 0x4d414e50;
+        uint32_t d = 0x4d414e50;
         fwrite(&d, 1, 4, f);
         fwrite(&dwPatNamLen, 1, 4, f);
         fwrite(m_lpszPatternNames, 1, dwPatNamLen, f);
@@ -2133,7 +2133,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
 */    // Writing channel Names
 /*    if (dwChnNamLen)
     {
-        DWORD d = 0x4d414e43;
+        uint32_t d = 0x4d414e43;
         fwrite(&d, 1, 4, f);
         fwrite(&dwChnNamLen, 1, 4, f);
         UINT nChnNames = dwChnNamLen / MAX_CHANNELNAME;
@@ -2275,7 +2275,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     // Writing Patterns
     for (UINT npat=0; npat<header.patnum; npat++)
     {
-        DWORD dwPatPos = dwPos;
+        uint32_t dwPatPos = dwPos;
         UINT len;
         if (!Patterns[npat]) continue;
         patpos[npat] = dwPos;
@@ -2504,10 +2504,10 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
 //////////////////////////////////////////////////////////////////////////////
 // IT 2.14 compression
 
-DWORD ITReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
+uint32_t ITReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
 //-----------------------------------------------------------------
 {
-    DWORD retval = 0;
+    uint32_t retval = 0;
     UINT i = n;
 
     if (n > 0)
@@ -2531,14 +2531,14 @@ DWORD ITReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
 }
 
 #define IT215_SUPPORT
-void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215)
+void ITUnpack8Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215)
 //-------------------------------------------------------------------------------------------
 {
     LPSTR pDst = pSample;
     LPBYTE pSrc = lpMemFile;
-    DWORD wHdr = 0;
-    DWORD wCount = 0;
-    DWORD bitbuf = 0;
+    uint32_t wHdr = 0;
+    uint32_t wCount = 0;
+    uint32_t bitbuf = 0;
     UINT bitnum = 0;
     uint8_t bLeft = 0, bTemp = 0, bTemp2 = 0;
 
@@ -2553,17 +2553,17 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
             bTemp = bTemp2 = 0;
             bitbuf = bitnum = 0;
         }
-        DWORD d = wCount;
+        uint32_t d = wCount;
         if (d > dwLen) d = dwLen;
         // Unpacking
-        DWORD dwPos = 0;
+        uint32_t dwPos = 0;
         do
         {
             uint16_t wBits = (uint16_t)ITReadBits(bitbuf, bitnum, pSrc, bLeft);
             if (bLeft < 7)
             {
-                DWORD i = 1 << (bLeft-1);
-                DWORD j = wBits & 0xFFFF;
+                uint32_t i = 1 << (bLeft-1);
+                uint32_t j = wBits & 0xFFFF;
                 if (i != j) goto UnpackByte;
                 wBits = (uint16_t)(ITReadBits(bitbuf, bitnum, pSrc, 3) + 1) & 0xFF;
                 bLeft = ((uint8_t)wBits < bLeft) ? (uint8_t)wBits : (uint8_t)((wBits+1) & 0xFF);
@@ -2613,14 +2613,14 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
 }
 
 
-void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215)
+void ITUnpack16Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215)
 //--------------------------------------------------------------------------------------------
 {
     signed short *pDst = (signed short *)pSample;
     LPBYTE pSrc = lpMemFile;
-    DWORD wHdr = 0;
-    DWORD wCount = 0;
-    DWORD bitbuf = 0;
+    uint32_t wHdr = 0;
+    uint32_t wCount = 0;
+    uint32_t bitbuf = 0;
     UINT bitnum = 0;
     uint8_t bLeft = 0;
     signed short wTemp = 0, wTemp2 = 0;
@@ -2636,17 +2636,17 @@ void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLeng
             wTemp = wTemp2 = 0;
             bitbuf = bitnum = 0;
         }
-        DWORD d = wCount;
+        uint32_t d = wCount;
         if (d > dwLen) d = dwLen;
         // Unpacking
-        DWORD dwPos = 0;
+        uint32_t dwPos = 0;
         do
         {
-            DWORD dwBits = ITReadBits(bitbuf, bitnum, pSrc, bLeft);
+            uint32_t dwBits = ITReadBits(bitbuf, bitnum, pSrc, bLeft);
             if (bLeft < 7)
             {
-                DWORD i = 1 << (bLeft-1);
-                DWORD j = dwBits;
+                uint32_t i = 1 << (bLeft-1);
+                uint32_t j = dwBits;
                 if (i != j) goto UnpackByte;
                 dwBits = ITReadBits(bitbuf, bitnum, pSrc, 4) + 1;
                 bLeft = ((uint8_t)(dwBits & 0xFF) < bLeft) ? (uint8_t)(dwBits & 0xFF) : (uint8_t)((dwBits+1) & 0xFF);
@@ -2654,8 +2654,8 @@ void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLeng
             }
             if (bLeft < 17)
             {
-                DWORD i = (0xFFFF >> (17 - bLeft)) + 8;
-                DWORD j = (i - 16) & 0xFFFF;
+                uint32_t i = (0xFFFF >> (17 - bLeft)) + 8;
+                uint32_t j = (i - 16) & 0xFFFF;
                 if ((dwBits <= j) || (dwBits > (i & 0xFFFF))) goto UnpackByte;
                 dwBits -= j;
                 bLeft = ((uint8_t)(dwBits & 0xFF) < bLeft) ? (uint8_t)(dwBits & 0xFF) : (uint8_t)((dwBits+1) & 0xFF);
@@ -2673,7 +2673,7 @@ void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLeng
                 uint8_t shift = 16 - bLeft;
                 signed short c = (signed short)(dwBits << shift);
                 c >>= shift;
-                dwBits = (DWORD)c;
+                dwBits = (uint32_t)c;
             }
             dwBits += wTemp;
             wTemp = (signed short)dwBits;
@@ -2705,11 +2705,11 @@ UINT CSoundFile::SaveMixPlugins(FILE *f, BOOL bUpdate)
 
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-//    DWORD chinfo[64];
-    DWORD chinfo[MAX_BASECHANNELS];
+//    uint32_t chinfo[64];
+    uint32_t chinfo[MAX_BASECHANNELS];
 // -! BEHAVIOUR_CHANGE#0006
     CHAR s[32];
-    DWORD nPluginSize;
+    uint32_t nPluginSize;
     UINT nTotalSize = 0;
     UINT nChInfo = 0;
 
@@ -2729,11 +2729,11 @@ UINT CSoundFile::SaveMixPlugins(FILE *f, BOOL bUpdate)
             }
             
             // rewbs.modularPlugData
-            DWORD MPTxPlugDataSize = 4 + (sizeof(m_MixPlugins[i].fDryRatio)) +     //4 for ID and size of dryRatio
+            uint32_t MPTxPlugDataSize = 4 + (sizeof(m_MixPlugins[i].fDryRatio)) +     //4 for ID and size of dryRatio
                                      4 + (sizeof(m_MixPlugins[i].defaultProgram)); //rewbs.plugDefaultProgram
                                 // for each extra entity, add 4 for ID, plus size of entity, plus optionally 4 for size of entity.
 
-            nPluginSize += MPTxPlugDataSize+4; //+4 is for size itself: sizeof(DWORD) is 4    
+            nPluginSize += MPTxPlugDataSize+4; //+4 is for size itself: sizeof(uint32_t) is 4    
             // rewbs.modularPlugData
             if (f)
             {
@@ -2826,12 +2826,12 @@ UINT CSoundFile::LoadMixPlugins(const void *pData, UINT nLen)
 
     while (nPos+8 < nLen)    // read 4 magic bytes + size
     {
-        DWORD nPluginSize;
+        uint32_t nPluginSize;
         UINT nPlugin;
 
-        nPluginSize = *(DWORD *)(p+nPos+4);
+        nPluginSize = *(uint32_t *)(p+nPos+4);
         if (nPluginSize > nLen-nPos-8) break;;
-        if ((*(DWORD *)(p+nPos)) == 'XFHC')
+        if ((*(uint32_t *)(p+nPos)) == 'XFHC')
         {
 // -> CODE#0006
 // -> DESC="misc quantity changes"
@@ -2839,11 +2839,11 @@ UINT CSoundFile::LoadMixPlugins(const void *pData, UINT nLen)
             for (UINT ch=0; ch<MAX_BASECHANNELS; ch++) if (ch*4 < nPluginSize)
 // -! BEHAVIOUR_CHANGE#0006
             {
-                ChnSettings[ch].nMixPlugin = *(DWORD *)(p+nPos+8+ch*4);
+                ChnSettings[ch].nMixPlugin = *(uint32_t *)(p+nPos+8+ch*4);
             }
         }
 
-        else if ((*(DWORD *)(p+nPos)) == 'XFQE')
+        else if ((*(uint32_t *)(p+nPos)) == 'XFQE')
         {
             m_SongEQ.nEQBands = nPluginSize/4;
             if (m_SongEQ.nEQBands > MAX_EQ_BANDS) m_SongEQ.nEQBands = MAX_EQ_BANDS;
@@ -2865,7 +2865,7 @@ UINT CSoundFile::LoadMixPlugins(const void *pData, UINT nLen)
                 m_MixPlugins[nPlugin].Info = *(const SNDMIXPLUGININFO *)(p+nPos+8);
 
                 //data for VST setchunk? size lies just after standard plugin data.
-                DWORD dwExtra = *(DWORD *)(p+nPos+8+sizeof(SNDMIXPLUGININFO));
+                uint32_t dwExtra = *(uint32_t *)(p+nPos+8+sizeof(SNDMIXPLUGININFO));
                 
                 if ((dwExtra) && (dwExtra <= nPluginSize-sizeof(SNDMIXPLUGININFO)-4))
                 {
@@ -2879,14 +2879,14 @@ UINT CSoundFile::LoadMixPlugins(const void *pData, UINT nLen)
                 }
 
                 //rewbs.modularPlugData
-                DWORD dwXPlugData = *(DWORD *)(p+nPos+8+sizeof(SNDMIXPLUGININFO)+dwExtra+4); //read next DWORD into dwMPTExtra
+                uint32_t dwXPlugData = *(uint32_t *)(p+nPos+8+sizeof(SNDMIXPLUGININFO)+dwExtra+4); //read next uint32_t into dwMPTExtra
                 
                 //if dwMPTExtra is positive and there are dwMPTExtra bytes left in nPluginSize, we have some more data!
                 if ((dwXPlugData) && ((int)dwXPlugData <= (int)nPluginSize-(int)(sizeof(SNDMIXPLUGININFO)+dwExtra+8)))
                 {
-                    DWORD startPos = nPos+8+sizeof(SNDMIXPLUGININFO)+dwExtra+8; // start of extra data for this plug
-                    DWORD endPos = startPos + dwXPlugData;    					// end of extra data for this plug
-                    DWORD currPos = startPos;
+                    uint32_t startPos = nPos+8+sizeof(SNDMIXPLUGININFO)+dwExtra+8; // start of extra data for this plug
+                    uint32_t endPos = startPos + dwXPlugData;    					// end of extra data for this plug
+                    uint32_t currPos = startPos;
 
                     while (currPos < endPos) //cycle through all the bytes
                     {

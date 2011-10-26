@@ -16,6 +16,8 @@
 #include "stdafx.h"
 #include "sndfile.h"
 
+#include <cstdint>
+
 #include "../mptrack/mixgraph/constants.h"
 #include "../mptrack/mixer/mixutil.h"
 
@@ -80,15 +82,15 @@ static EQBANDSTRUCT gEQ[MAX_EQ_BANDS*2] =
 
 #pragma warning(disable:4100)
 
-#define PBS_A0    DWORD PTR [eax]
-#define PBS_A1    DWORD PTR [eax+4]
-#define PBS_A2    DWORD PTR [eax+8]
-#define PBS_B1    DWORD PTR [eax+12]
-#define PBS_B2    DWORD PTR [eax+16]
-#define PBS_X1    DWORD PTR [eax+20]
-#define PBS_X2    DWORD PTR [eax+24]
-#define PBS_Y1    DWORD PTR [eax+28]
-#define PBS_Y2    DWORD PTR [eax+32]
+#define PBS_A0    dword PTR [eax]
+#define PBS_A1    dword PTR [eax+4]
+#define PBS_A2    dword PTR [eax+8]
+#define PBS_B1    dword PTR [eax+12]
+#define PBS_B2    dword PTR [eax+16]
+#define PBS_X1    dword PTR [eax+20]
+#define PBS_X2    dword PTR [eax+24]
+#define PBS_Y1    dword PTR [eax+28]
+#define PBS_Y2    dword PTR [eax+32]
 
 void __cdecl EQFilter(EQBANDSTRUCT *pbs, REAL *pbuffer, UINT nCount)
 //------------------------------------------------------------------
@@ -102,7 +104,7 @@ void __cdecl EQFilter(EQBANDSTRUCT *pbs, REAL *pbuffer, UINT nCount)
     fld    	PBS_X2		// ST(1)=x2
     fld    	PBS_X1		// ST(0)=x1
 EQ_Loop:
-    fld    	DWORD PTR [ecx]		// ST(0):x ST(1):x1 ST(2):x2 ST(3):y1 ST(4):y2
+    fld    	dword PTR [ecx]		// ST(0):x ST(1):x1 ST(2):x2 ST(3):y1 ST(4):y2
     fld    	PBS_A0				// ST(0):a0 ST(1):x ST(2):x1 ST(3):x2 ST(4):y1 ST(5):y2
     fmul    ST(0), ST(1)		// ST(0):a0*x
     fld    	PBS_A1				// ST(0):a1 ST(1):a0*x ST(2):x ST(3):x1 ST(4):x2 ST(5):y1 ST(6):y2
@@ -120,7 +122,7 @@ EQ_Loop:
     fmul    ST(0), ST(6)
     sub     edx, 1
     faddp    ST(1), ST(0)
-    fst    	DWORD PTR [ecx-4]		// *pbuffer = a0*x+a1*x1+a2*x2+b1*y1+b2*y2
+    fst    	dword PTR [ecx-4]		// *pbuffer = a0*x+a1*x1+a2*x2+b1*y1+b2*y2
     // Here, ST(0)=y ST(1)=x ST(2)=x1 ST(3)=x2 ST(4)=y1 ST(5)=y2
     fxch    ST(4)	// y1=y
     fstp    ST(5)	// y2=y1

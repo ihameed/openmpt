@@ -30,16 +30,16 @@ typedef struct DSMNOTE
 
 typedef struct DSMSAMPLE
 {
-    DWORD id_INST;
-    DWORD inst_len;
+    uint32_t id_INST;
+    uint32_t inst_len;
     CHAR filename[13];
     uint8_t flags;
     uint8_t flags2;
     uint8_t volume;
-    DWORD length;
-    DWORD loopstart;
-    DWORD loopend;
-    DWORD reserved1;
+    uint32_t length;
+    uint32_t loopstart;
+    uint32_t loopend;
+    uint32_t reserved1;
     uint16_t c2spd;
     uint16_t reserved2;
     CHAR samplename[28];
@@ -48,11 +48,11 @@ typedef struct DSMSAMPLE
 
 typedef struct DSMFILEHEADER
 {
-    DWORD id_RIFF;	// "RIFF"
-    DWORD riff_len;
-    DWORD id_DSMF;	// "DSMF"
-    DWORD id_SONG;	// "SONG"
-    DWORD song_len;
+    uint32_t id_RIFF;	// "RIFF"
+    uint32_t riff_len;
+    uint32_t id_DSMF;	// "DSMF"
+    uint32_t id_SONG;	// "SONG"
+    uint32_t song_len;
 } DSMFILEHEADER;
 
 
@@ -61,7 +61,7 @@ typedef struct DSMSONG
     CHAR songname[28];
     uint16_t reserved1;
     uint16_t flags;
-    DWORD reserved2;
+    uint32_t reserved2;
     uint16_t numord;
     uint16_t numsmp;
     uint16_t numpat;
@@ -76,8 +76,8 @@ typedef struct DSMSONG
 
 typedef struct DSMPATT
 {
-    DWORD id_PATT;
-    DWORD patt_len;
+    uint32_t id_PATT;
+    uint32_t patt_len;
     uint8_t dummy1;
     uint8_t dummy2;
 } DSMPATT;
@@ -85,12 +85,12 @@ typedef struct DSMPATT
 #pragma pack()
 
 
-bool CSoundFile::ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadDSM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     DSMFILEHEADER *pfh = (DSMFILEHEADER *)lpStream;
     DSMSONG *psong;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     UINT nPat, nSmp;
 
     if ((!lpStream) || (dwMemLength < 1024) || (pfh->id_RIFF != DSMID_RIFF)
@@ -132,7 +132,7 @@ bool CSoundFile::ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength
         {
             dwMemPos += 8;
             if (dwMemPos + ppatt->patt_len >= dwMemLength) break;
-            DWORD dwPos = dwMemPos;
+            uint32_t dwPos = dwMemPos;
             dwMemPos += ppatt->patt_len;
             if(Patterns.Insert(nPat, 64))
                 break;
@@ -211,7 +211,7 @@ bool CSoundFile::ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength
         if ((nSmp <= m_nSamples) && (pSmp->id_INST == DSMID_INST))
         {
             if (dwMemPos + pSmp->inst_len >= dwMemLength - 8) break;
-            DWORD dwPos = dwMemPos + sizeof(DSMSAMPLE);
+            uint32_t dwPos = dwMemPos + sizeof(DSMSAMPLE);
             dwMemPos += 8 + pSmp->inst_len;
             memcpy(m_szNames[nSmp], pSmp->samplename, 28);
             SpaceToNullStringFixed<28>(m_szNames[nSmp]);

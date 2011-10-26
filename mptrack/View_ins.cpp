@@ -179,7 +179,7 @@ BOOL CViewInstrument::SetCurrentInstrument(INSTRUMENTINDEX nIns, enmEnvelopeType
 //-------------------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    DWORD dwNotify;
+    uint32_t dwNotify;
 
     if ((!pModDoc) || (nIns < 1) || (nIns >= MAX_INSTRUMENTS)) return FALSE;
     if (nEnv) m_nEnv = nEnv;
@@ -324,7 +324,7 @@ UINT CViewInstrument::EnvGetLastPoint() const
 
 
 // Return if an envelope flag is set.
-bool CViewInstrument::EnvGetFlag(const DWORD dwFlag) const
+bool CViewInstrument::EnvGetFlag(const uint32_t dwFlag) const
 //--------------------------------------------------------
 {
     modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
@@ -516,7 +516,7 @@ bool CViewInstrument::EnvToggleReleaseNode(int nPoint)
 }
 
 // Enable or disable a flag of the current envelope
-bool CViewInstrument::EnvSetFlag(const DWORD dwFlag, const bool bEnable) const
+bool CViewInstrument::EnvSetFlag(const uint32_t dwFlag, const bool bEnable) const
 //----------------------------------------------------------------------------
 {
     modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
@@ -540,7 +540,7 @@ bool CViewInstrument::EnvSetFlag(const DWORD dwFlag, const bool bEnable) const
 }
 
 
-bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags)
+bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, uint32_t dwChanFlag, uint32_t dwExtraFlags)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(pEnv == nullptr) return false;
@@ -559,7 +559,7 @@ bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSound
     } else
     {
     	pEnv->flags &= ~(ENV_ENABLED|dwExtraFlags);
-    	for(CHANNELINDEX nChn = 0; nChn < MAX_CHANNELS; nChn++)
+    	for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
     	{
     		if(pSndFile->Chn[nChn].instrument == pIns)
     			pSndFile->Chn[nChn].flags &= ~dwChanFlag;
@@ -719,7 +719,7 @@ void CViewInstrument::UpdateNcButtonState()
     pSndFile = pModDoc->GetSoundFile();
     for (UINT i=0; i<ENV_LEFTBAR_BUTTONS; i++) if (cLeftBarButtons[i] != ID_SEPARATOR)
     {
-    	DWORD dwStyle = 0;
+    	uint32_t dwStyle = 0;
     	
     	switch(cLeftBarButtons[i])
     	{
@@ -760,7 +760,7 @@ void CViewInstrument::UpdateNcButtonState()
 ////////////////////////////////////////////////////////////////////
 // CViewInstrument drawing
 
-void CViewInstrument::UpdateView(DWORD dwHintMask, CObject *)
+void CViewInstrument::UpdateView(uint32_t dwHintMask, CObject *)
 //-----------------------------------------------------------
 {
     if ((dwHintMask & (HINT_MPTOPTIONS|HINT_MODTYPE))
@@ -1106,7 +1106,7 @@ void CViewInstrument::DrawPositionMarks(HDC hdc)
 //----------------------------------------------
 {
     CRect rect;
-    for (UINT i=0; i<MAX_CHANNELS; i++) if (m_dwNotifyPos[i] & MPTNOTIFY_POSVALID)
+    for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++) if (m_dwNotifyPos[i] & MPTNOTIFY_POSVALID)
     {
     	rect.top = -2;
     	rect.left = TickToScreen(m_dwNotifyPos[i] & 0xFFFF);
@@ -1120,7 +1120,7 @@ void CViewInstrument::DrawPositionMarks(HDC hdc)
 LRESULT CViewInstrument::OnPlayerNotify(MPTNOTIFICATION *pnotify)
 //---------------------------------------------------------------
 {
-    DWORD dwType;
+    uint32_t dwType;
     CModDoc *pModDoc = GetDocument();
     if ((!pnotify) || (!pModDoc)) return 0;
     switch(m_nEnv)
@@ -1131,7 +1131,7 @@ LRESULT CViewInstrument::OnPlayerNotify(MPTNOTIFICATION *pnotify)
     }
     if (pnotify->dwType & MPTNOTIFY_STOP)
     {
-    	for (UINT i=0; i<MAX_CHANNELS; i++)
+    	for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     	{
     		if (m_dwNotifyPos[i])
     		{
@@ -1146,10 +1146,10 @@ LRESULT CViewInstrument::OnPlayerNotify(MPTNOTIFICATION *pnotify)
     if ((pnotify->dwType & dwType) && ((pnotify->dwType & 0xFFFF) == m_nInstrument))
     {
     	BOOL bUpdate = FALSE;
-    	for (UINT i=0; i<MAX_CHANNELS; i++)
+    	for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     	{
-    		//DWORD newpos = (pSndFile->m_dwSongFlags & SONG_PAUSED) ? pnotify->dwPos[i] : 0;
-    		DWORD newpos = pnotify->dwPos[i];
+    		//uint32_t newpos = (pSndFile->m_dwSongFlags & SONG_PAUSED) ? pnotify->dwPos[i] : 0;
+    		uint32_t newpos = pnotify->dwPos[i];
     		if (m_dwNotifyPos[i] != newpos)
     		{
     			bUpdate = TRUE;
@@ -1160,10 +1160,10 @@ LRESULT CViewInstrument::OnPlayerNotify(MPTNOTIFICATION *pnotify)
     	{
     		HDC hdc = ::GetDC(m_hWnd);
     		DrawPositionMarks(hdc);
-    		for (UINT j=0; j<MAX_CHANNELS; j++)
+    		for (UINT j=0; j<MAX_VIRTUAL_CHANNELS; j++)
     		{
-    			//DWORD newpos = (pSndFile->m_dwSongFlags & SONG_PAUSED) ? pnotify->dwPos[j] : 0;
-    			DWORD newpos = pnotify->dwPos[j];
+    			//uint32_t newpos = (pSndFile->m_dwSongFlags & SONG_PAUSED) ? pnotify->dwPos[j] : 0;
+    			uint32_t newpos = pnotify->dwPos[j];
     			m_dwNotifyPos[j] = newpos;
     		}
     		DrawPositionMarks(hdc);
@@ -1185,7 +1185,7 @@ void CViewInstrument::DrawNcButton(CDC *pDC, UINT nBtn)
 
     if (GetNcButtonRect(nBtn, &rect))
     {
-    	DWORD dwStyle = m_NcButtonState[nBtn];
+    	uint32_t dwStyle = m_NcButtonState[nBtn];
     	COLORREF c3, c4;
     	int xofs = 0, yofs = 0, nImage = 0;
     		
@@ -1881,8 +1881,8 @@ void CViewInstrument::OnEditPaste()
     if (pModDoc) pModDoc->PasteEnvelope(m_nInstrument, m_nEnv);
 }
 
-static DWORD nLastNotePlayed = 0;
-static DWORD nLastScanCode = 0;
+static uint32_t nLastNotePlayed = 0;
+static uint32_t nLastScanCode = 0;
 
 
 void CViewInstrument::PlayNote(UINT note)
@@ -1908,7 +1908,7 @@ void CViewInstrument::PlayNote(UINT note)
     			MODCHANNEL *pChn = &(pSoundFile->Chn[m_nPlayingChannel]); //Get pointer to channel playing last note.
     			if (pChn->pHeader)	//is it valid?
     			{
-    				DWORD tempflags = pChn->flags;
+    				uint32_t tempflags = pChn->flags;
     				pChn->flags = 0;
     				pModDoc->GetSoundFile()->CheckNNA(m_nPlayingChannel, m_nInstrument, note, FALSE); //if so, apply NNA
     				pChn->flags = tempflags;
@@ -2096,7 +2096,7 @@ BOOL CViewInstrument::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
 LRESULT CViewInstrument::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //-----------------------------------------------------------
 {
-    const DWORD dwMidiData = dwMidiDataParam;
+    const uint32_t dwMidiData = dwMidiDataParam;
     static uint8_t midivolume = 127;
 
     CModDoc *pModDoc = GetDocument();

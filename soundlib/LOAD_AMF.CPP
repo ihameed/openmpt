@@ -171,11 +171,11 @@ void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const uint8_t *pTrack, UIN
 
 
 
-bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     const AMFFILEHEADER *pfh = (AMFFILEHEADER *)lpStream;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     
     if ((!lpStream) || (dwMemLength < 2048)) return false;
     if ((!strncmp((LPCSTR)lpStream, "ASYLUM Music Format V1.0", 25)) && (dwMemLength > 4096))
@@ -265,7 +265,7 @@ bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength
     ////////////////////////////
     // DSM/AMF
     USHORT *ptracks[MAX_PATTERNS];
-    DWORD sampleseekpos[MAX_SAMPLES];
+    uint32_t sampleseekpos[MAX_SAMPLES];
 
     if ((pfh->szAMF[0] != 'A') || (pfh->szAMF[1] != 'M') || (pfh->szAMF[2] != 'F')
      || (pfh->version < 10) || (pfh->version > 14) || (!LittleEndianW(pfh->numtracks))
@@ -344,8 +344,8 @@ bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength
         pSmp->default_volume = psh->volume * 4;
         if (pfh->version >= 11)
         {
-            pSmp->loop_start = LittleEndian(*(DWORD *)(lpStream+dwMemPos));
-            pSmp->loop_end = LittleEndian(*(DWORD *)(lpStream+dwMemPos+4));
+            pSmp->loop_start = LittleEndian(*(uint32_t *)(lpStream+dwMemPos));
+            pSmp->loop_end = LittleEndian(*(uint32_t *)(lpStream+dwMemPos+4));
             dwMemPos += 8;
         } else
         {

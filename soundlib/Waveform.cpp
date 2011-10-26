@@ -11,10 +11,10 @@
 #include "sndfile.h"
 
 
-void X86_Cvt16S_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt16S_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //-------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -26,10 +26,10 @@ void X86_Cvt16S_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc
 }
 
 
-void X86_Cvt8S_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt8S_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     unsigned char *s = (unsigned char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -41,10 +41,10 @@ void X86_Cvt8S_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
 }
 
 
-void X86_Cvt16M_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt16M_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //-------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -56,10 +56,10 @@ void X86_Cvt16M_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc
 }
 
 
-void X86_Cvt8M_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt8M_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -70,10 +70,10 @@ void X86_Cvt8M_8M(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
 }
 
 
-void X86_Cvt16S_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt16S_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //-------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -87,10 +87,10 @@ void X86_Cvt16S_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc
 }
 
 
-void X86_Cvt8S_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt8S_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -104,10 +104,10 @@ void X86_Cvt8S_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
 }
 
 
-void X86_Cvt16M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt16M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //-------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -120,10 +120,10 @@ void X86_Cvt16M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc
 }
 
 
-void X86_Cvt8M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
+void X86_Cvt8M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwInc)
 //------------------------------------------------------------------------------
 {
-    DWORD dwPos = 0;
+    uint32_t dwPos = 0;
     signed char *p = lpDest;
     signed char *s = (signed char *)lpSrc;
     for (UINT i=0; i<nSamples; i++)
@@ -139,7 +139,7 @@ void X86_Cvt8M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, DWORD dwInc)
 UINT CSoundFile::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
 //----------------------------------------------------------------------------
 {
-    DWORD dwInc;
+    uint32_t dwInc;
     if ((!lpSrc) || (!lpDest) || (!nSamples)) return 0;
     dwInc = _muldiv(gdwMixingFreq, 0x10000, 22050);
     if (gnChannels >= 2)
@@ -172,7 +172,7 @@ UINT CSoundFile::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
 UINT CSoundFile::WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
 //----------------------------------------------------------------------------------
 {
-    DWORD dwInc;
+    uint32_t dwInc;
     if ((!lpSrc) || (!lpDest) || (!nSamples)) return 0;
     dwInc = _muldiv(gdwMixingFreq, 0x10000, 22050);
     if (gnChannels >= 2)
@@ -274,7 +274,7 @@ void normalize_24_bit_buffer(char *buffer, size_t size, int lmax24, int *output)
     }
 }
 
-void __cdecl X86_Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, DWORD lmax24, int *poutput)
+void __cdecl X86_Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, int *poutput)
 {
     _asm {
     mov esi, pbuffer    // esi = edi = pbuffer
@@ -314,7 +314,7 @@ normloop:
 extern void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
 extern int MixSoundBuffer[];
 
-UINT CSoundFile::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, DWORD lmax24, DWORD dwByteInc)
+UINT CSoundFile::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, uint32_t dwByteInc)
 //-----------------------------------------------------------------------------------------------
 {
 #ifdef ASM_NORMALIZE

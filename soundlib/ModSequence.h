@@ -87,7 +87,7 @@ public:
     bool ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength);
 
     // Deprecated function used for MPTm's created in 1.17.02.46 - 1.17.02.48.
-    DWORD Deserialize(const uint8_t* const src, const DWORD memLength);
+    uint32_t Deserialize(const uint8_t* const src, const uint32_t memLength);
 
     //Returns true if the IT orderlist datafield is not sufficient to store orderlist information.
     bool NeedsExtraDatafield() const;

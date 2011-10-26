@@ -15,8 +15,8 @@ void ReplaceSample(modplug::tracker::modsample_t& smp, const LPSTR pNewSample, c
 //----------------------------------------------------------------------------------------------------------
 {
     LPSTR const pOldSmp = smp.sample_data;
-    DWORD dwOrFlags = 0;
-    DWORD dwAndFlags = MAXDWORD;
+    uint32_t dwOrFlags = 0;
+    uint32_t dwAndFlags = MAXDWORD;
     if(smp.flags & CHN_16BIT)
     	dwOrFlags |= CHN_16BIT;
     else
@@ -188,7 +188,7 @@ bool AdjustEndOfSample(modplug::tracker::modsample_t& smp, CSoundFile* pSndFile)
     if(pSndFile != nullptr)
     {
     	CSoundFile& rSndFile = *pSndFile;
-    	for (UINT i=0; i<MAX_CHANNELS; i++) if ((rSndFile.Chn[i].sample == pSmp) && (rSndFile.Chn[i].length))
+    	for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++) if ((rSndFile.Chn[i].sample == pSmp) && (rSndFile.Chn[i].length))
     	{
     		if ((pSmp->loop_start + 3 < pSmp->loop_end) && (pSmp->loop_end <= pSmp->length))
     		{
@@ -200,7 +200,7 @@ bool AdjustEndOfSample(modplug::tracker::modsample_t& smp, CSoundFile* pSndFile)
     				rSndFile.Chn[i].sample_position = rSndFile.Chn[i].loop_start;
     				rSndFile.Chn[i].flags &= ~CHN_PINGPONGFLAG;
     			}
-    			DWORD d = rSndFile.Chn[i].flags & ~(CHN_PINGPONGLOOP|CHN_LOOP);
+    			uint32_t d = rSndFile.Chn[i].flags & ~(CHN_PINGPONGLOOP|CHN_LOOP);
     			if (pSmp->flags & CHN_LOOP)
     			{
     				d |= CHN_LOOP;
@@ -370,7 +370,7 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
     {
     	BEGIN_CRITICAL();
     	pSmp->global_volume = min((uint16_t)(pSmp->global_volume / dAmplify), 64);
-    	for (CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
+    	for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     	{
     		if(pSndFile->Chn[i].sample_data == pSmp->sample_data)
     		{
@@ -559,7 +559,7 @@ bool ConvertToMono(modplug::tracker::modsample_t *pSmp, CSoundFile *pSndFile)
 
     BEGIN_CRITICAL();
     pSmp->flags &= ~(CHN_STEREO);
-    for (CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
+    for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
     	if(pSndFile->Chn[i].sample_data == pSmp->sample_data)
     	{
@@ -580,14 +580,14 @@ bool ConvertToMono(modplug::tracker::modsample_t *pSmp, CSoundFile *pSndFile)
 namespace ctrlChn
 {
 
-void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_CHANNELS],
+void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_VIRTUAL_CHANNELS],
     				LPCSTR pOldSample,
     				LPSTR pNewSample,
     				const ctrlSmp::SmpLength nNewLength,
-    				DWORD orFlags /* = 0*/,
-    				DWORD andFlags /* = MAXDWORD*/)
+    				uint32_t orFlags /* = 0*/,
+    				uint32_t andFlags /* = MAXDWORD*/)
 {
-    for (CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
+    for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
     	if (Chn[i].sample_data == pOldSample)
     	{

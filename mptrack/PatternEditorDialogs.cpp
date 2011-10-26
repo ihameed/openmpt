@@ -205,7 +205,7 @@ BOOL CFindReplaceTab::OnInitDialog()
     if ((combo = (CComboBox *)GetDlgItem(IDC_COMBO3)) != NULL)
     {
     	combo->InitStorage(m_pModDoc->GetNumVolCmds(), 15);
-    	combo->SetItemData(combo->AddString(" None"), (DWORD)-1);
+    	combo->SetItemData(combo->AddString(" None"), (uint32_t)-1);
     	UINT count = m_pModDoc->GetNumVolCmds();
     	for (UINT n=0; n<count; n++)
     	{
@@ -240,7 +240,7 @@ BOOL CFindReplaceTab::OnInitDialog()
     if ((combo = (CComboBox *)GetDlgItem(IDC_COMBO5)) != NULL)
     {
     	combo->InitStorage(m_pModDoc->GetNumEffects(), 20);
-    	combo->SetItemData(combo->AddString(" None"), (DWORD)-1);
+    	combo->SetItemData(combo->AddString(" None"), (uint32_t)-1);
     	UINT count = m_pModDoc->GetNumEffects();
     	for (UINT n=0; n<count; n++)
     	{
@@ -606,7 +606,7 @@ BOOL CEditCommand::PreTranslateMessage(MSG *pMsg)
 }
 
 
-BOOL CEditCommand::ShowEditWindow(UINT nPat, DWORD dwCursor)
+BOOL CEditCommand::ShowEditWindow(UINT nPat, uint32_t dwCursor)
 //----------------------------------------------------------
 {
     CHAR s[64];
@@ -921,7 +921,7 @@ void CPageEditVolume::UpdateDialog()
     	combo->EnableWindow(TRUE);
     	combo->ResetContent();
     	UINT count = m_pModDoc->GetNumVolCmds();
-    	combo->SetItemData(combo->AddString(" None"), (DWORD)-1);
+    	combo->SetItemData(combo->AddString(" None"), (uint32_t)-1);
     	combo->SetCurSel(0);
     	UINT fxndx = m_pModDoc->GetIndexFromVolCmd(m_nVolCmd);
     	for (UINT i=0; i<count; i++)
@@ -944,7 +944,7 @@ void CPageEditVolume::UpdateRanges()
     CSliderCtrl *slider = (CSliderCtrl *)GetDlgItem(IDC_SLIDER1);
     if ((slider) && (m_pModDoc))
     {
-    	DWORD rangeMin = 0, rangeMax = 0;
+    	uint32_t rangeMin = 0, rangeMax = 0;
     	LONG fxndx = m_pModDoc->GetIndexFromVolCmd(m_nVolCmd);
     	BOOL bOk = m_pModDoc->GetVolCmdInfo(fxndx, NULL, &rangeMin, &rangeMax);
     	if ((bOk) && (rangeMax > rangeMin))
@@ -1027,7 +1027,7 @@ void CPageEditEffect::UpdateDialog()
     		// process as effect
     		UINT numfx = m_pModDoc->GetNumEffects();
     		UINT fxndx = m_pModDoc->GetIndexFromEffect(m_nCommand, m_nParam);
-    		combo->SetItemData(combo->AddString(" None"), (DWORD)-1);
+    		combo->SetItemData(combo->AddString(" None"), (uint32_t)-1);
     		if (!m_nCommand) combo->SetCurSel(0);
     		for (UINT i=0; i<numfx; i++)
     		{
@@ -1050,7 +1050,7 @@ void CPageEditEffect::UpdateRange(BOOL bSet)
     CSliderCtrl *slider = (CSliderCtrl *)GetDlgItem(IDC_SLIDER1);
     if ((slider) && (m_pModDoc))
     {
-    	DWORD rangeMin = 0, rangeMax = 0;
+    	uint32_t rangeMin = 0, rangeMax = 0;
     	LONG fxndx = m_pModDoc->GetIndexFromEffect(m_nCommand, m_nParam);
     	bool bEnable = ((fxndx >= 0) && (m_pModDoc->GetEffectInfo(fxndx, NULL, false, &rangeMin, &rangeMax)));
     	if (bEnable)
@@ -1058,7 +1058,7 @@ void CPageEditEffect::UpdateRange(BOOL bSet)
     		slider->EnableWindow(TRUE);
     		slider->SetPageSize(1);
     		slider->SetRange(rangeMin, rangeMax);
-    		DWORD pos = m_pModDoc->MapValueToPos(fxndx, m_nParam);
+    		uint32_t pos = m_pModDoc->MapValueToPos(fxndx, m_nParam);
     		if (pos > rangeMax) pos = rangeMin | (pos & 0x0F);
     		if (pos < rangeMin) pos = rangeMin;
     		if (pos > rangeMax) pos = rangeMax;

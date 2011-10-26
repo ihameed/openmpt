@@ -456,7 +456,7 @@ BOOL CViewPattern::UpdateScrollbarPositions( BOOL UpdateHorizontalScrollbar )
     return TRUE;
 }
 
-DWORD CViewPattern::GetDragItem(CPoint point, LPRECT lpRect)
+uint32_t CViewPattern::GetDragItem(CPoint point, LPRECT lpRect)
 //----------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -517,7 +517,7 @@ DWORD CViewPattern::GetDragItem(CPoint point, LPRECT lpRect)
 // If bNoMode if specified, the original selection points are not altered.
 // Note that scrolling will only be executed if dwPos contains legal coordinates.
 // This can be useful when selecting a whole row and specifying 0xFFFF as the end channel.
-BOOL CViewPattern::DragToSel(DWORD dwPos, BOOL bScroll, BOOL bNoMove)
+BOOL CViewPattern::DragToSel(uint32_t dwPos, BOOL bScroll, BOOL bNoMove)
 //-------------------------------------------------------------------
 {
     CRect rect;
@@ -615,7 +615,7 @@ BOOL CViewPattern::ShowEditWindow()
 }
 
 
-BOOL CViewPattern::PrepareUndo(DWORD dwBegin, DWORD dwEnd)
+BOOL CViewPattern::PrepareUndo(uint32_t dwBegin, uint32_t dwEnd)
 //--------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -758,8 +758,8 @@ void CViewPattern::OnGrowSelection()
     if (!p) return;
     BeginWaitCursor();
 
-    DWORD startSel = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwBeginSel : m_dwEndSel;
-    DWORD endSel   = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwEndSel : m_dwBeginSel;
+    uint32_t startSel = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwBeginSel : m_dwEndSel;
+    uint32_t endSel   = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwEndSel : m_dwBeginSel;
     pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, 0, 0, pSndFile->m_nChannels, pSndFile->Patterns[m_nPattern].GetNumRows());
 
     int finalDest = GetRowFromCursor(startSel) + (GetRowFromCursor(endSel) - GetRowFromCursor(startSel))*2;
@@ -808,8 +808,8 @@ void CViewPattern::OnShrinkSelection()
     if (!p) return;
     BeginWaitCursor();
 
-    DWORD startSel = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwBeginSel : m_dwEndSel;
-    DWORD endSel   = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwEndSel : m_dwBeginSel;
+    uint32_t startSel = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwBeginSel : m_dwEndSel;
+    uint32_t endSel   = ((m_dwBeginSel>>16)<(m_dwEndSel>>16)) ? m_dwEndSel : m_dwBeginSel;
     pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, 0, 0, pSndFile->m_nChannels, pSndFile->Patterns[m_nPattern].GetNumRows());
 
     int finalDest = GetRowFromCursor(startSel) + (GetRowFromCursor(endSel) - GetRowFromCursor(startSel))/2;
@@ -907,7 +907,7 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
     //removed with note data.
 
     PrepareUndo(m_dwBeginSel, m_dwEndSel);
-    DWORD tmp = m_dwEndSel;
+    uint32_t tmp = m_dwEndSel;
     bool invalidateAllCols = false;
 
     for (UINT row = GetRowFromCursor(m_dwBeginSel); row <= GetRowFromCursor(m_dwEndSel); row++) { // for all selected rows
@@ -1078,7 +1078,7 @@ void CViewPattern::OnLButtonDown(UINT nFlags, CPoint point)
     {
         // Mark row number => mark whole row (start)
         InvalidateSelection();
-        DWORD dwPoint = GetPositionFromPoint(point);
+        uint32_t dwPoint = GetPositionFromPoint(point);
         if(GetRowFromCursor(dwPoint) < pModDoc->GetSoundFile()->Patterns[m_nPattern].GetNumRows())
         {
             m_dwBeginSel = m_dwStartSel = dwPoint;
@@ -1099,7 +1099,7 @@ void CViewPattern::OnLButtonDown(UINT nFlags, CPoint point)
 void CViewPattern::OnLButtonDblClk(UINT uFlags, CPoint point)
 //-----------------------------------------------------------
 {
-    DWORD dwPos = GetPositionFromPoint(point);
+    uint32_t dwPos = GetPositionFromPoint(point);
     if ((dwPos == (CreateCursor(m_nRow) | m_dwCursor)) && (point.y >= m_szHeader.cy))
     {
         if (ShowEditWindow()) return;
@@ -1129,7 +1129,7 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
             m_dwStatus &= ~PATSTATUS_DRAGNDROPPING;
             OnDropSelection();
         }
-        DWORD dwPos = GetPositionFromPoint(point);
+        uint32_t dwPos = GetPositionFromPoint(point);
         if (dwPos == m_dwStartSel)
         {
             SetCurSel(dwPos, dwPos);
@@ -1143,7 +1143,7 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
     {
         if ((m_nMidRow) && (m_dwBeginSel == m_dwEndSel))
         {
-            DWORD dwPos = m_dwBeginSel;
+            uint32_t dwPos = m_dwBeginSel;
             // Fix: Horizontal scrollbar pos screwed when selecting with mouse
             SetCursorPosition( GetRowFromCursor(dwPos), dwPos & 0xFFFF );
             //UpdateIndicator();
@@ -1364,7 +1364,7 @@ void CViewPattern::OnRButtonUp(UINT nFlags, CPoint point)
 
     //CSoundFile *pSndFile = pModDoc->GetSoundFile();
     m_nDragItem = GetDragItem(point, &m_rcDragItem);
-    DWORD nItemNo = m_nDragItem & DRAGITEM_VALUEMASK;
+    uint32_t nItemNo = m_nDragItem & DRAGITEM_VALUEMASK;
     switch(m_nDragItem & DRAGITEM_MASK)
     {
     case DRAGITEM_CHNHEADER:
@@ -1391,7 +1391,7 @@ void CViewPattern::OnMouseMove(UINT nFlags, CPoint point)
     if (m_nDragItem)
     {
         const CRect oldDropRect = m_rcDropItem;
-        const DWORD oldDropItem = m_nDropItem;
+        const uint32_t oldDropItem = m_nDropItem;
 
         m_bShiftDragging = (nFlags & MK_SHIFT) ? true : false;
         m_nDropItem = GetDragItem(point, &m_rcDropItem);
@@ -1421,7 +1421,7 @@ void CViewPattern::OnMouseMove(UINT nFlags, CPoint point)
     } else if (m_dwStatus & PATSTATUS_MOUSEDRAGSEL)
     {
         CModDoc *pModDoc = GetDocument();
-        DWORD dwPos = GetPositionFromPoint(point);
+        uint32_t dwPos = GetPositionFromPoint(point);
         if ((pModDoc) && (m_nPattern < pModDoc->GetSoundFile()->Patterns.Size()))
         {
             UINT row = GetRowFromCursor(dwPos);
@@ -1489,8 +1489,8 @@ void CViewPattern::OnSelectCurrentColumn()
     if (pModDoc)
     {
         CSoundFile *pSndFile = pModDoc->GetSoundFile();
-        DWORD dwBeginSel = CreateCursor(0, GetChanFromCursor(m_dwCursor), 0);
-        DWORD dwEndSel = CreateCursor(pSndFile->Patterns[m_nPattern].GetNumRows() - 1, GetChanFromCursor(m_dwCursor), LAST_COLUMN);
+        uint32_t dwBeginSel = CreateCursor(0, GetChanFromCursor(m_dwCursor), 0);
+        uint32_t dwEndSel = CreateCursor(pSndFile->Patterns[m_nPattern].GetNumRows() - 1, GetChanFromCursor(m_dwCursor), LAST_COLUMN);
         // If column is already selected, select the current pattern
         if ((dwBeginSel == m_dwBeginSel) && (dwEndSel == m_dwEndSel))
         {
@@ -1676,7 +1676,7 @@ void CViewPattern::DeleteRows(UINT colmin, UINT colmax, UINT nrows)
         }
     }
     //rewbs.customKeys
-    DWORD finalPos = CreateCursor(GetSelectionStartRow()) | (m_dwEndSel & 0xFFFF);
+    uint32_t finalPos = CreateCursor(GetSelectionStartRow()) | (m_dwEndSel & 0xFFFF);
     SetCurSel(finalPos, finalPos);
     // Fix: Horizontal scrollbar pos screwed when selecting with mouse
     SetCursorPosition( GetRowFromCursor(finalPos), finalPos & 0xFFFF );
@@ -1913,7 +1913,7 @@ void CViewPattern::OnEditFindNext()
     for (UINT nPat=nPatStart; nPat<nPatEnd; nPat++)
     {
         modplug::tracker::modcommand_t *m = pSndFile->Patterns[nPat];
-        DWORD len = pSndFile->m_nChannels * pSndFile->Patterns[nPat].GetNumRows();
+        uint32_t len = pSndFile->m_nChannels * pSndFile->Patterns[nPat].GetNumRows();
         if ((!m) || (!len)) continue;
         UINT n = 0;
         if ((m_bContinueSearch) && (nPat == nPatStart) && (nPat == m_nPattern))
@@ -2161,7 +2161,7 @@ void CViewPattern::PatternStep(bool autoStep)
         if ((!pSndFile->Patterns.IsValidPat(m_nPattern)) || (!pSndFile->Patterns[m_nPattern].GetNumRows())) return;
         BEGIN_CRITICAL();
         // Cut instruments/samples in virtual channels
-        for (CHANNELINDEX i = pSndFile->GetNumChannels(); i < MAX_CHANNELS; i++)
+        for (CHANNELINDEX i = pSndFile->GetNumChannels(); i < MAX_VIRTUAL_CHANNELS; i++)
         {
             pSndFile->Chn[i].flags |= CHN_NOTEFADE | CHN_KEYOFF;
         }
@@ -2245,7 +2245,7 @@ void CViewPattern::OnCursorPaste()
 
         if (((pMainFrm->GetFollowSong(pModDoc) != m_hWnd) || (pSndFile->IsPaused()) || (!(m_dwStatus & PATSTATUS_FOLLOWSONG))))
         {
-            DWORD sel = CreateCursor(m_nRow, nChn, 0);
+            uint32_t sel = CreateCursor(m_nRow, nChn, 0);
             InvalidateArea(sel, sel + LAST_COLUMN);
             SetCurrentRow(m_nRow + m_nSpacing);
             sel = CreateCursor(m_nRow) | m_dwCursor;
@@ -3238,7 +3238,7 @@ modplug::tracker::modcommand_t* CViewPattern::GetModCommand(CSoundFile& rSf, con
 LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //--------------------------------------------------------
 {
-    const DWORD dwMidiData = dwMidiDataParam;
+    const uint32_t dwMidiData = dwMidiDataParam;
     static uint8_t midivolume = 127;
 
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -3589,7 +3589,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 }
 
 //rewbs.customKeys
-void CViewPattern::CursorJump(DWORD distance, bool direction, bool snap)
+void CViewPattern::CursorJump(uint32_t distance, bool direction, bool snap)
 //-----------------------------------------------------------------------
 {    										  //up is true
     switch(snap)
@@ -3958,7 +3958,7 @@ void CViewPattern::TempEnterVol(int v)
 
         if (IsEditingEnabled_bmsg())
         {
-            DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+            uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
             SetCurSel(sel, sel);
             sel &= ~7;
             if(oldcmd != *p)
@@ -4033,7 +4033,7 @@ void CViewPattern::TempEnterFX(int c, int v)
             }
         }
 
-        DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+        uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
         SetCurSel(sel, sel);
         sel &= ~7;
         if(oldcmd != *p)
@@ -4080,7 +4080,7 @@ void CViewPattern::TempEnterFXparam(int v)
             }
         }
 
-        DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+        uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
         SetCurSel(sel, sel);
         sel &= ~7;
         if(*p != oldcmd)
@@ -4219,7 +4219,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     // Update only if not recording live.
     if(bIsLiveRecord == false)
     {
-        DWORD sel = CreateCursor(nRow, nChn, 0);
+        uint32_t sel = CreateCursor(nRow, nChn, 0);
         InvalidateArea(sel, sel + LAST_COLUMN);
         UpdateIndicator();
     }
@@ -4294,7 +4294,7 @@ void CViewPattern::TempEnterIns(int val)
 
         if (IsEditingEnabled_bmsg())
         {
-            DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+            uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
             SetCurSel(sel, sel);
             sel &= ~7;
             if(*p != oldcmd)
@@ -4356,7 +4356,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         {
             pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, nChn, nRow, 1, 1);
             pSndFile->Patterns[m_nPattern].GetpModCommand(nRow, nChn)->note = note;
-            const DWORD sel = CreateCursor(nRow) | m_dwCursor;
+            const uint32_t sel = CreateCursor(nRow) | m_dwCursor;
             pModDoc->SetModified();
             InvalidateArea(sel, sel + LAST_COLUMN);
             UpdateIndicator();
@@ -4503,7 +4503,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         // -- if recording, handle post note entry behaviour (move cursor etc..)
         if(bRecordEnabled)
         {
-            DWORD sel = CreateCursor(nRow) | m_dwCursor;
+            uint32_t sel = CreateCursor(nRow) | m_dwCursor;
             if(bIsLiveRecord == false)
             {   // Update only when not recording live.
                 SetCurSel(sel, sel);
@@ -4535,7 +4535,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                     }    							     // we must remember to not step back should the next note form a chord.
 
                 }
-                DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+                uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
                 SetCurSel(sel, sel);
             }
 
@@ -4674,7 +4674,7 @@ void CViewPattern::TempEnterChord(int note)
         // -- write notedata
         if(bRecordEnabled)
         {
-            DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+            uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
             SetCurSel(sel, sel);
             sel = GetRowFromCursor(sel) | GetChanFromCursor(sel);
             if(modified)
@@ -4745,7 +4745,7 @@ void CViewPattern::TempEnterChord(int note)
         {
             if ((m_nSpacing > 0) && (m_nSpacing <= MAX_SPACING)) 
                 SetCurrentRow(m_nRow + m_nSpacing);
-            DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+            uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
             SetCurSel(sel, sel);
         }
 
@@ -4788,7 +4788,7 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
 
         if(IsEditingEnabled_bmsg())
         {
-            DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+            uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
             SetCurSel(sel, sel);
             sel = GetRowFromCursor(sel) | GetChanFromCursor(sel);
             if(*p != oldcmd)
@@ -4802,7 +4802,7 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
             {
                 if ((m_nSpacing > 0) && (m_nSpacing <= MAX_SPACING)) 
                     SetCurrentRow(m_nRow+m_nSpacing);
-                DWORD sel = CreateCursor(m_nRow) | m_dwCursor;
+                uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
                 SetCurSel(sel, sel);
             }
         } else
@@ -5065,7 +5065,7 @@ bool CViewPattern::BuildNoteInterpolationCtxMenu(HMENU hMenu, CInputHandler* ih,
 //----------------------------------------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = MF_GRAYED;
+    uint32_t greyed = MF_GRAYED;
 
     UINT startRow = GetSelectionStartRow();
     UINT endRow   = GetSelectionEndRow();
@@ -5095,7 +5095,7 @@ bool CViewPattern::BuildVolColInterpolationCtxMenu(HMENU hMenu, CInputHandler* i
 //------------------------------------------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = MF_GRAYED;
+    uint32_t greyed = MF_GRAYED;
 
     UINT startRow = GetSelectionStartRow();
     UINT endRow   = GetSelectionEndRow();
@@ -5125,7 +5125,7 @@ bool CViewPattern::BuildEffectInterpolationCtxMenu(HMENU hMenu, CInputHandler* i
 //------------------------------------------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = MF_GRAYED;
+    uint32_t greyed = MF_GRAYED;
 
     UINT startRow = GetSelectionStartRow();
     UINT endRow   = GetSelectionEndRow();
@@ -5176,7 +5176,7 @@ bool CViewPattern::BuildEditCtxMenu(HMENU hMenu, CInputHandler* ih, CModDoc* pMo
     AppendMenu(pasteSpecialMenu, MF_STRING, ID_EDIT_PASTEFLOOD, "Paste Flood\t" + ih->GetKeyTextFromCommand(kcEditPasteFlood));
     AppendMenu(pasteSpecialMenu, MF_STRING, ID_EDIT_PUSHFORWARDPASTE, "Push Forward Paste (Insert)\t" + ih->GetKeyTextFromCommand(kcEditPushForwardPaste));
 
-    DWORD greyed = pModDoc->GetPatternUndo()->CanUndo() ? MF_ENABLED : MF_GRAYED;
+    uint32_t greyed = pModDoc->GetPatternUndo()->CanUndo() ? MF_ENABLED : MF_GRAYED;
     if (!greyed || !(CMainFrame::m_dwPatternSetup & PATTERN_OLDCTXMENUSTYLE))
     {
         AppendMenu(hMenu, MF_STRING | greyed, ID_EDIT_UNDO, "Undo\t" + ih->GetKeyTextFromCommand(kcEditUndo));
@@ -5191,7 +5191,7 @@ bool CViewPattern::BuildVisFXCtxMenu(HMENU hMenu, CInputHandler* ih)
 //------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = (ListChansWhereColSelected(EFFECT_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
+    uint32_t greyed = (ListChansWhereColSelected(EFFECT_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
 
     if (!greyed || !(CMainFrame::m_dwPatternSetup&PATTERN_OLDCTXMENUSTYLE)) {
         AppendMenu(hMenu, MF_STRING|greyed, ID_PATTERN_VISUALIZE_EFFECT, "Visualize Effect\t" + ih->GetKeyTextFromCommand(kcPatternVisualizeEffect));
@@ -5211,7 +5211,7 @@ bool CViewPattern::BuildTransposeCtxMenu(HMENU hMenu, CInputHandler* ih)
 //----------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = (ListChansWhereColSelected(NOTE_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
+    uint32_t greyed = (ListChansWhereColSelected(NOTE_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
 
     //AppendMenu(hMenu, MF_STRING, ID_RUN_SCRIPT, "Run script");
 
@@ -5229,7 +5229,7 @@ bool CViewPattern::BuildAmplifyCtxMenu(HMENU hMenu, CInputHandler* ih)
 //--------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = (ListChansWhereColSelected(VOL_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
+    uint32_t greyed = (ListChansWhereColSelected(VOL_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
 
     if (!greyed || !(CMainFrame::m_dwPatternSetup&PATTERN_OLDCTXMENUSTYLE)) {
         AppendMenu(hMenu, MF_STRING|greyed, ID_PATTERN_AMPLIFY, "Amplify\t" + ih->GetKeyTextFromCommand(kcPatternAmplify));
@@ -5265,7 +5265,7 @@ bool CViewPattern::BuildSetInstCtxMenu(HMENU hMenu, CInputHandler* ih, CSoundFil
 //------------------------------------------------------------------------------------------
 {
     CArray<UINT, UINT> validChans;
-    DWORD greyed = (ListChansWhereColSelected(INST_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
+    uint32_t greyed = (ListChansWhereColSelected(INST_COLUMN, validChans)>0)?FALSE:MF_GRAYED;
 
     if (!greyed || !(CMainFrame::m_dwPatternSetup & PATTERN_OLDCTXMENUSTYLE))
     {

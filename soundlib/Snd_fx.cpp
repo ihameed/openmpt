@@ -27,10 +27,10 @@ extern uint16_t ProTrackerTunedPeriods[15*12];
 extern uint16_t FreqS3MTable[];
 extern uint16_t XMPeriodTable[96+8];
 extern UINT XMLinearTable[768];
-extern DWORD FineLinearSlideUpTable[16];
-extern DWORD FineLinearSlideDownTable[16];
-extern DWORD LinearSlideUpTable[256];
-extern DWORD LinearSlideDownTable[256];
+extern uint32_t FineLinearSlideUpTable[16];
+extern uint32_t FineLinearSlideDownTable[16];
+extern uint32_t LinearSlideUpTable[256];
+extern uint32_t LinearSlideDownTable[256];
 extern signed char retrigTable1[16];
 extern signed char retrigTable2[16];
 extern short int ModRandomTable[64];
@@ -198,7 +198,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
         modplug::tracker::modchannel_t *pChn = Chn;
         modplug::tracker::modcommand_t *p = Patterns[nPattern] + nRow * m_nChannels;
         modplug::tracker::modcommand_t *nextRow = NULL;
-        for (CHANNELINDEX nChn = 0; nChn < m_nChannels; p++, pChn++, nChn++) if (*((DWORD *)p))
+        for (CHANNELINDEX nChn = 0; nChn < m_nChannels; p++, pChn++, nChn++) if (*((uint32_t *)p))
         {
             if((GetType() == MOD_TYPE_S3M) && (ChnSettings[nChn].dwFlags & CHN_MUTE) != 0)    // not even effects are processed on muted S3M channels
                 continue;
@@ -1044,17 +1044,17 @@ UINT CSoundFile::GetNNAChannel(UINT nChn) const
     const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
     // Check for empty channel
     const modplug::tracker::modchannel_t *pi = &Chn[m_nChannels];
-    for (UINT i=m_nChannels; i<MAX_CHANNELS; i++, pi++) if (!pi->length) return i;
+    for (UINT i=m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, pi++) if (!pi->length) return i;
     if (!pChn->nFadeOutVol) return 0;
     // All channels are used: check for lowest volume
     UINT result = 0;
-    DWORD vol = 64*65536;    // 25%
-    DWORD envpos = 0xFFFFFF;
+    uint32_t vol = 64*65536;    // 25%
+    uint32_t envpos = 0xFFFFFF;
     const modplug::tracker::modchannel_t *pj = &Chn[m_nChannels];
-    for (UINT j=m_nChannels; j<MAX_CHANNELS; j++, pj++)
+    for (UINT j=m_nChannels; j<MAX_VIRTUAL_CHANNELS; j++, pj++)
     {
         if (!pj->nFadeOutVol) return j;
-        DWORD v = pj->nVolume;
+        uint32_t v = pj->nVolume;
         if (pj->flags & CHN_NOTEFADE)
             v = v * pj->nFadeOutVol;
         else
@@ -1124,7 +1124,7 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
     if (pChn->flags & CHN_MUTE) return;
 
     bool applyDNAtoPlug;    //rewbs.VSTiNNA
-    for (UINT i=nChn; i<MAX_CHANNELS; p++, i++)
+    for (UINT i=nChn; i<MAX_VIRTUAL_CHANNELS; p++, i++)
     if ((i >= m_nChannels) || (p == pChn))
     {
         applyDNAtoPlug = false; //rewbs.VSTiNNA
@@ -2885,7 +2885,7 @@ void CSoundFile::ExtendedS3MCommands(UINT nChn, UINT param)
                 case 2:
                     {
                         modplug::tracker::modchannel_t *bkp = &Chn[m_nChannels];
-                        for (UINT i=m_nChannels; i<MAX_CHANNELS; i++, bkp++)
+                        for (UINT i=m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, bkp++)
                         {
                             if (bkp->parent_channel == nChn+1)
                             {
@@ -2953,7 +2953,7 @@ void CSoundFile::ExtendedS3MCommands(UINT nChn, UINT param)
                     pChn->nOldHiOffset = param;
                     if ((pChn->nRowNote) && (pChn->nRowNote < 0x80))
                     {
-                        DWORD pos = param << 16;
+                        uint32_t pos = param << 16;
                         if (pos < pChn->length) pChn->sample_position = pos;
                     }
                 }
@@ -3059,7 +3059,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
 //------------------------------------------------------------------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
-    DWORD dwMacro = LittleEndian(*((DWORD *)pszMidiMacro)) & MACRO_MASK;
+    uint32_t dwMacro = LittleEndian(*((uint32_t *)pszMidiMacro)) & MACRO_MASK;
     int nInternalCode;
 
     // Not Internal Device ?
@@ -3072,7 +3072,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
         }
 
         UINT pos = 0, nNib = 0, nBytes = 0;
-        DWORD dwMidiCode = 0, dwByteCode = 0;
+        uint32_t dwMidiCode = 0, dwByteCode = 0;
 
         while (pos + 6 <= 32)
         {
@@ -3137,7 +3137,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
     if (nInternalCode >= 0)
     {
         CHAR cData1 = pszMidiMacro[2];
-        DWORD dwParam = 0;
+        uint32_t dwParam = 0;
 
         if ((cData1 == 'z') || (cData1 == 'Z'))
         {
@@ -3776,7 +3776,7 @@ void CSoundFile::GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide)
 }
 
 
-DWORD CSoundFile::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
+uint32_t CSoundFile::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
 //----------------------------------------------------------------------
 {
     UINT nOrd;
@@ -3945,7 +3945,7 @@ UINT CSoundFile::GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac) 
 UINT  CSoundFile::GetBestPlugin(UINT nChn, UINT priority, bool respectMutes)
 //-------------------------------------------------------------------------
 {
-    if (nChn > MAX_CHANNELS)    	//Check valid channel number
+    if (nChn > MAX_VIRTUAL_CHANNELS)    	//Check valid channel number
     {
         return 0;
     }

@@ -33,30 +33,30 @@ typedef struct tagFILEHEADER669
 typedef struct tagSAMPLE669
 {
     uint8_t filename[13];
-    uint8_t length[4];    // when will somebody think about DWORD align ???
+    uint8_t length[4];    // when will somebody think about uint32_t align ???
     uint8_t loopstart[4];
     uint8_t loopend[4];
 } SAMPLE669;
 
 
-bool CSoundFile::Read669(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::Read669(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     BOOL b669Ext;
     const FILEHEADER669 *pfh = (const FILEHEADER669 *)lpStream;
     const SAMPLE669 *psmp = (const SAMPLE669 *)(lpStream + 0x1F1);
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     if ((!lpStream) || (dwMemLength < sizeof(FILEHEADER669))) return false;
     if ((LittleEndianW(pfh->sig) != 0x6669) && (LittleEndianW(pfh->sig) != 0x4E4A)) return false;
     b669Ext = (LittleEndianW(pfh->sig) == 0x4E4A) ? TRUE : FALSE;
     if ((!pfh->samples) || (pfh->samples > 64) || (pfh->restartpos >= 128)
      || (!pfh->patterns) || (pfh->patterns > 128)) return false;
-    DWORD dontfuckwithme = 0x1F1 + pfh->samples * sizeof(SAMPLE669) + pfh->patterns * 0x600;
+    uint32_t dontfuckwithme = 0x1F1 + pfh->samples * sizeof(SAMPLE669) + pfh->patterns * 0x600;
     if (dontfuckwithme > dwMemLength) return false;
     for (UINT ichk=0; ichk<pfh->samples; ichk++)
     {
-        DWORD len = LittleEndian(*((DWORD *)(&psmp[ichk].length)));
+        uint32_t len = LittleEndian(*((uint32_t *)(&psmp[ichk].length)));
         dontfuckwithme += len;
     }
     if (dontfuckwithme  - 0x1F1 > dwMemLength) return false;
@@ -74,9 +74,9 @@ bool CSoundFile::Read669(const uint8_t *lpStream, const DWORD dwMemLength)
     m_nSamples = pfh->samples;
     for (SAMPLEINDEX nSmp = 1; nSmp <= m_nSamples; nSmp++, psmp++)
     {
-        DWORD len = LittleEndian(*((DWORD *)(&psmp->length)));
-        DWORD loopstart = LittleEndian(*((DWORD *)(&psmp->loopstart)));
-        DWORD loopend = LittleEndian(*((DWORD *)(&psmp->loopend)));
+        uint32_t len = LittleEndian(*((uint32_t *)(&psmp->length)));
+        uint32_t loopstart = LittleEndian(*((uint32_t *)(&psmp->loopstart)));
+        uint32_t loopend = LittleEndian(*((uint32_t *)(&psmp->loopend)));
         if (len > MAX_SAMPLE_LENGTH) len = MAX_SAMPLE_LENGTH;
         if ((loopend > len) && (!loopstart)) loopend = 0;
         if (loopend > len) loopend = len;

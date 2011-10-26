@@ -65,17 +65,17 @@ extern void Log(LPCSTR s, ...);
 
 typedef struct tagMEDMODULEHEADER
 {
-    DWORD id;    	// MMD1-MMD3
-    DWORD modlen;    // Size of file
-    DWORD song;    	// Position in file for this song
+    uint32_t id;    	// MMD1-MMD3
+    uint32_t modlen;    // Size of file
+    uint32_t song;    	// Position in file for this song
     uint16_t psecnum;
     uint16_t pseq;
-    DWORD blockarr;    // Position in file for blocks
-    DWORD mmdflags;
-    DWORD smplarr;    // Position in file for samples
-    DWORD reserved;
-    DWORD expdata;    // Absolute offset in file for ExpData (0 if not present)
-    DWORD reserved2;
+    uint32_t blockarr;    // Position in file for blocks
+    uint32_t mmdflags;
+    uint32_t smplarr;    // Position in file for samples
+    uint32_t reserved;
+    uint32_t expdata;    // Absolute offset in file for ExpData (0 if not present)
+    uint32_t reserved2;
     uint16_t pstate;
     uint16_t pblock;
     uint16_t pline;
@@ -99,7 +99,7 @@ typedef struct tagMMD0SAMPLE
 // Sample header is immediately followed by sample data...
 typedef struct tagMMDSAMPLEHEADER
 {
-    DWORD length;     // length of *one* *unpacked* channel in *bytes*
+    uint32_t length;     // length of *one* *unpacked* channel in *bytes*
     uint16_t type;   
                 // if non-negative
                     // bits 0-3 reserved for multi-octave instruments, not supported on the PC
@@ -148,12 +148,12 @@ typedef struct tagMMD2SONGHEADER
     MMD0SAMPLE sample[63];
     uint16_t numblocks;    	// # of blocks
     uint16_t numsections;    // # of sections
-    DWORD playseqtable;    // filepos of play sequence
-    DWORD sectiontable;    // filepos of sections table (uint16_t array)
-    DWORD trackvols;    // filepos of tracks volume (uint8_t array)
+    uint32_t playseqtable;    // filepos of play sequence
+    uint32_t sectiontable;    // filepos of sections table (uint16_t array)
+    uint32_t trackvols;    // filepos of tracks volume (uint8_t array)
     uint16_t numtracks;    	// # of tracks (max 64)
     uint16_t numpseqs;    	// # of play sequences
-    DWORD trackpans;    // filepos of tracks pan values (uint8_t array)
+    uint32_t trackpans;    // filepos of tracks pan values (uint8_t array)
     LONG flags3;    	// 0x1:stereo_mix, 0x2:free_panning, 0x4:GM/XG compatibility
     uint16_t voladj;    	// vol_adjust (set to 100 if 0)
     uint16_t channels;    	// # of channels (4 if =0)
@@ -197,18 +197,18 @@ typedef struct tagMMD1BLOCK
 {
     uint16_t numtracks;    // Number of tracks, may be > 64, but then that data is skipped.
     uint16_t lines;    	// Stored value is 1 less than actual, so 0 -> 1 line
-    DWORD info;    	// Offset of BlockInfo (if 0, no block_info is present)
+    uint32_t info;    	// Offset of BlockInfo (if 0, no block_info is present)
 } MMD1BLOCK;
 
 
 typedef struct tagMMD1BLOCKINFO
 {
-    DWORD hlmask;    	// Unimplemented - ignore
-    DWORD blockname;    // file offset of block name
-    DWORD blocknamelen;    // length of block name (including term. 0)
-    DWORD pagetable;    // file offset of command page table
-    DWORD cmdexttable;    // file offset of command extension table
-    DWORD reserved[4];    // future expansion
+    uint32_t hlmask;    	// Unimplemented - ignore
+    uint32_t blockname;    // file offset of block name
+    uint32_t blocknamelen;    // length of block name (including term. 0)
+    uint32_t pagetable;    // file offset of command page table
+    uint32_t cmdexttable;    // file offset of command extension table
+    uint32_t reserved[4];    // future expansion
 } MMD1BLOCKINFO;
 
 
@@ -217,8 +217,8 @@ typedef struct tagMMD1BLOCKINFO
 typedef struct tagMMD2PLAYSEQ
 {
     CHAR name[32];
-    DWORD command_offs;    // filepos of command table
-    DWORD reserved;
+    uint32_t command_offs;    // filepos of command table
+    uint32_t reserved;
     uint16_t length;
     uint16_t seq[512];    // skip if > 0x8000
 } MMD2PLAYSEQ;
@@ -238,28 +238,28 @@ typedef struct tagMMDCOMMAND
 
 typedef struct tagMMD0EXP
 {
-    DWORD nextmod;    		// File offset of next Hdr
-    DWORD exp_smp;    		// Pointer to extra instrument data
+    uint32_t nextmod;    		// File offset of next Hdr
+    uint32_t exp_smp;    		// Pointer to extra instrument data
     uint16_t s_ext_entries;    	// Number of extra instrument entries
     uint16_t s_ext_entrsz;    	// Size of extra instrument data
-    DWORD annotxt;
-    DWORD annolen;
-    DWORD iinfo;    		// Instrument names
+    uint32_t annotxt;
+    uint32_t annolen;
+    uint32_t iinfo;    		// Instrument names
     uint16_t i_ext_entries;    
     uint16_t i_ext_entrsz;
-    DWORD jumpmask;
-    DWORD rgbtable;
+    uint32_t jumpmask;
+    uint32_t rgbtable;
     uint8_t channelsplit[4];    // Only used if 8ch_conv (extra channel for every nonzero entry)
-    DWORD n_info;
-    DWORD songname;    		// Song name
-    DWORD songnamelen;
-    DWORD dumps;
-    DWORD mmdinfo;
-    DWORD mmdrexx;
-    DWORD mmdcmd3x;
-    DWORD trackinfo_ofs;    // ptr to song->numtracks ptrs to tag lists
-    DWORD effectinfo_ofs;    // ptr to group ptrs
-    DWORD tag_end;
+    uint32_t n_info;
+    uint32_t songname;    		// Song name
+    uint32_t songnamelen;
+    uint32_t dumps;
+    uint32_t mmdinfo;
+    uint32_t mmdrexx;
+    uint32_t mmdcmd3x;
+    uint32_t trackinfo_ofs;    // ptr to song->numtracks ptrs to tag lists
+    uint32_t effectinfo_ofs;    // ptr to group ptrs
+    uint32_t tag_end;
 } MMD0EXP;
 
 #pragma pack()
@@ -474,14 +474,14 @@ static void MedConvert(modplug::tracker::modcommand_t *p, const MMD0SONGHEADER *
 }
 
 
-bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     const MEDMODULEHEADER *pmmh;
     const MMD0SONGHEADER *pmsh;
     const MMD2SONGHEADER *pmsh2;
     const MMD0EXP *pmex;
-    DWORD dwBlockArr, dwSmplArr, dwExpData, wNumBlocks;
+    uint32_t dwBlockArr, dwSmplArr, dwExpData, wNumBlocks;
     LPDWORD pdwTable;
     CHAR version;
     UINT deftempo;
@@ -491,7 +491,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
     pmmh = (MEDMODULEHEADER *)lpStream;
     if (((pmmh->id & 0x00FFFFFF) != 0x444D4D) || (!pmmh->song)) return false;
     // Check for 'MMDx'
-    DWORD dwSong = BigEndian(pmmh->song);
+    uint32_t dwSong = BigEndian(pmmh->song);
     if ((dwSong >= dwMemLength) || (dwSong + sizeof(MMD0SONGHEADER) >= dwMemLength)) return false;
     version = (signed char)((pmmh->id >> 24) & 0xFF);
     if ((version < '0') || (version > '3')) return false;
@@ -639,12 +639,12 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
         UINT nOrders, nSections;
         uint16_t nTrks = BigEndianW(pmsh2->numtracks);
         if ((nTrks >= 4) && (nTrks <= 32)) m_nChannels = nTrks;
-        DWORD playseqtable = BigEndian(pmsh2->playseqtable);
+        uint32_t playseqtable = BigEndian(pmsh2->playseqtable);
         UINT numplayseqs = BigEndianW(pmsh2->numpseqs);
         if (!numplayseqs) numplayseqs = 1;
         nOrders = 0;
         nSections = BigEndianW(pmsh2->numsections);
-        DWORD sectiontable = BigEndian(pmsh2->sectiontable);
+        uint32_t sectiontable = BigEndian(pmsh2->sectiontable);
         if ((!nSections) || (!sectiontable) || (sectiontable >= dwMemLength-2)) nSections = 1;
         nOrders = 0;
         for (UINT iSection=0; iSection<nSections; iSection++)
@@ -714,10 +714,10 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
             assign_without_padding(this->song_name, reinterpret_cast<const char *>(lpStream + songname), songnamelen);
         }
         // Sample Names
-        DWORD smpinfoex = BigEndian(pmex->iinfo);
+        uint32_t smpinfoex = BigEndian(pmex->iinfo);
         if (smpinfoex)
         {
-            DWORD iinfoptr = BigEndian(pmex->iinfo);
+            uint32_t iinfoptr = BigEndian(pmex->iinfo);
             UINT ientries = BigEndianW(pmex->i_ext_entries);
             UINT ientrysz = BigEndianW(pmex->i_ext_entrsz);
 
@@ -734,21 +734,21 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
             }
         }
         // Track Names
-        DWORD trackinfo_ofs = BigEndian(pmex->trackinfo_ofs);
+        uint32_t trackinfo_ofs = BigEndian(pmex->trackinfo_ofs);
         if ((trackinfo_ofs) && (trackinfo_ofs < dwMemLength) && (m_nChannels * 4 < dwMemLength - trackinfo_ofs))
         {
-            DWORD *ptrktags = (DWORD *)(lpStream + trackinfo_ofs);
+            uint32_t *ptrktags = (uint32_t *)(lpStream + trackinfo_ofs);
             for (UINT i=0; i<m_nChannels; i++)
             {
-                DWORD trknameofs = 0, trknamelen = 0;
-                DWORD trktagofs = BigEndian(ptrktags[i]);
+                uint32_t trknameofs = 0, trknamelen = 0;
+                uint32_t trktagofs = BigEndian(ptrktags[i]);
                 if (trktagofs && (trktagofs <= dwMemLength - 8) )
                 {
                     while (trktagofs+8 < dwMemLength)
                     {
-                        DWORD ntag = BigEndian(*(DWORD *)(lpStream + trktagofs));
+                        uint32_t ntag = BigEndian(*(uint32_t *)(lpStream + trktagofs));
                         if (ntag == MMDTAG_END) break;
-                        DWORD tagdata = BigEndian(*(DWORD *)(lpStream + trktagofs + 4));
+                        uint32_t tagdata = BigEndian(*(uint32_t *)(lpStream + trktagofs + 4));
                         switch(ntag)
                         {
                         case MMDTAG_TRK_NAMELEN:    trknamelen = tagdata; break;
@@ -852,7 +852,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
             tracks = pmb->numtracks >> 8;
             if (!tracks) tracks = m_nChannels;
             Patterns.Insert(iBlk, lines);
-            DWORD dwBlockInfo = BigEndian(pmb->info);
+            uint32_t dwBlockInfo = BigEndian(pmb->info);
             if ((dwBlockInfo) && (dwBlockInfo < dwMemLength - sizeof(MMD1BLOCKINFO)))
             {
                 pbi = (MMD1BLOCKINFO *)(lpStream + dwBlockInfo);
@@ -862,7 +862,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
             #endif
                 if ((pbi->blockname) && (pbi->blocknamelen))
                 {
-                    DWORD nameofs = BigEndian(pbi->blockname);
+                    uint32_t nameofs = BigEndian(pbi->blockname);
                     UINT namelen = BigEndian(pbi->blocknamelen);
                     if ((nameofs < dwMemLength) && (namelen < dwMemLength - nameofs))
                     {
@@ -871,10 +871,10 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
                 }
                 if (pbi->cmdexttable)
                 {
-                    DWORD cmdexttable = BigEndian(pbi->cmdexttable);
+                    uint32_t cmdexttable = BigEndian(pbi->cmdexttable);
                     if (cmdexttable < dwMemLength - 4)
                     {
-                        cmdexttable = BigEndian(*(DWORD *)(lpStream + cmdexttable));
+                        cmdexttable = BigEndian(*(uint32_t *)(lpStream + cmdexttable));
                         if ((cmdexttable) && (cmdexttable <= dwMemLength - lines*tracks))
                         {
                             pcmdext = (uint8_t *)(lpStream + cmdexttable);

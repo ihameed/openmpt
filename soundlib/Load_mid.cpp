@@ -34,8 +34,8 @@ UINT gnMidiPatternLen = 128;
 
 typedef struct MIDIFILEHEADER
 {
-    DWORD id;    	// "MThd" = 0x6468544D
-    DWORD len;    	// 6
+    uint32_t id;    	// "MThd" = 0x6468544D
+    uint32_t len;    	// 6
     uint16_t w1;    	// 1?
     uint16_t wTrks;    	// 2?
     uint16_t wDivision;    // F0
@@ -44,8 +44,8 @@ typedef struct MIDIFILEHEADER
 
 typedef struct MIDITRACKHEADER
 {
-    DWORD id;    // "MTrk" = 0x6B72544D
-    DWORD len;
+    uint32_t id;    // "MTrk" = 0x6B72544D
+    uint32_t len;
 } MIDITRACKHEADER;
 
 //////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ typedef struct MIDITRACKHEADER
 // MOD Channel State description (current volume, panning, etc...)
 typedef struct MODCHANNELSTATE
 {
-    DWORD flags;    // Channel Flags
+    uint32_t flags;    // Channel Flags
     uint16_t idlecount;
     uint16_t pitchsrc, pitchdest;    // Pitch Bend (current position/new position)
     uint8_t parent;    // Midi Channel parent
@@ -67,7 +67,7 @@ typedef struct MODCHANNELSTATE
 // MIDI Channel State (Midi Channels 0-15)
 typedef struct MIDICHANNELSTATE
 {
-    DWORD flags;    	// Channel Flags
+    uint32_t flags;    	// Channel Flags
     uint16_t pitchbend;    	// Pitch Bend Amount (14-bits unsigned)
     uint8_t note_on[128];    // If note=on -> MOD channel # + 1 (0 if note=off)
     uint8_t program;    	// Channel Midi Program
@@ -84,7 +84,7 @@ typedef struct MIDITRACK
 {
     const uint8_t *ptracks;
     const uint8_t *ptrmax;
-    DWORD status;
+    uint32_t status;
     LONG nexteventtime;
 } MIDITRACK;
 
@@ -343,7 +343,7 @@ const uint16_t kMidiChannelPriority[16] =
 static LONG __fastcall getmidilong(const uint8_t * &p, const uint8_t * pmax)
 //----------------------------------------------------------
 {
-    DWORD n;
+    uint32_t n;
     UINT a;
 
     a = (p < pmax) ? *(p++) : 0;
@@ -387,7 +387,7 @@ static int ConvertMidiTempo(int tempo_us, int *pTickMultiplier)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Maps a midi instrument - returns the instrument number in the file
-UINT CSoundFile::MapMidiInstrument(DWORD dwBankProgram, UINT nChannel, UINT nNote)
+UINT CSoundFile::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, UINT nNote)
 //--------------------------------------------------------------------------------
 {
     modinstrument_t *pIns;
@@ -486,7 +486,7 @@ UINT CSoundFile::MapMidiInstrument(DWORD dwBankProgram, UINT nChannel, UINT nNot
 #define MIDIGLOBAL_XGSYSTEMON    	0x0200
 
 
-bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
 //---------------------------------------------------------------
 {
     const MIDIFILEHEADER *pmfh = (const MIDIFILEHEADER *)lpStream;
@@ -494,7 +494,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
     MODCHANNELSTATE chnstate[MAX_BASECHANNELS];
     MIDICHANNELSTATE midichstate[16];
     MIDITRACK miditracks[MIDI_MAXTRACKS];
-    DWORD dwMemPos, dwGlobalFlags, tracks, tempo;
+    uint32_t dwMemPos, dwGlobalFlags, tracks, tempo;
     UINT row, pat, midimastervol;
     short int division;
     int midi_clock, nTempoUsec, nPPQN, nTickMultiplier;
@@ -506,15 +506,15 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
     if (gnMidiPatternLen > 256) gnMidiPatternLen = 256;
     // Detect RMI files
     if ((dwMemLength > 12)
-     && (*(DWORD *)(lpStream) == IFFID_RIFF)
-     && (*(DWORD *)(lpStream+8) == 0x44494D52))
+     && (*(uint32_t *)(lpStream) == IFFID_RIFF)
+     && (*(uint32_t *)(lpStream+8) == 0x44494D52))
     {
         lpStream += 12;
         dwMemLength -= 12;
         while (dwMemLength > 8)
         {
-            DWORD id = *(DWORD *)lpStream;
-            DWORD len = *(DWORD *)(lpStream+4);
+            uint32_t id = *(uint32_t *)lpStream;
+            uint32_t len = *(uint32_t *)(lpStream+4);
             lpStream += 8;
             dwMemLength -= 8;
             if ((id == IFFID_data) && (len < dwMemLength))
@@ -590,7 +590,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
         miditracks[itrk].status = 0x2F;
         pmth = (MIDITRACKHEADER *)(lpStream+dwMemPos);
         if (dwMemPos + 8 >= dwMemLength) break;
-        DWORD len = BigEndian(pmth->len);
+        uint32_t len = BigEndian(pmth->len);
         if ((pmth->id == 0x6B72544D) && (len <= dwMemLength - (dwMemPos + 8)))
         {
 #ifdef MIDI_DETAILED_LOG
@@ -665,9 +665,9 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
                         LONG len = getmidilong(ptrk->ptracks, ptrk->ptrmax);
                         if ((len > 1) && (ptrk->ptracks + len <ptrk->ptrmax) && (ptrk->ptracks[len-1] == 0xF7))
                         {
-                            DWORD dwSysEx1 = 0, dwSysEx2 = 0;
-                            if (len >= 4) dwSysEx1 = (*((DWORD *)(ptrk->ptracks))) & 0x7F7F7F7F;
-                            if (len >= 8) dwSysEx2 = (*((DWORD *)(ptrk->ptracks+4))) & 0x7F7F7F7F;
+                            uint32_t dwSysEx1 = 0, dwSysEx2 = 0;
+                            if (len >= 4) dwSysEx1 = (*((uint32_t *)(ptrk->ptracks))) & 0x7F7F7F7F;
+                            if (len >= 8) dwSysEx2 = (*((uint32_t *)(ptrk->ptracks+4))) & 0x7F7F7F7F;
                             // GM System On
                             if ((len == 5) && (dwSysEx1 == 0x01097F7E))
                             {
@@ -763,7 +763,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
                                 }
 #ifdef MIDI_LOG
                                 Log("Track #%d, META 0x%02X, Pattern %d: ", trk, i, pat);
-                                Log("%s\n", (DWORD)s);
+                                Log("%s\n", (uint32_t)s);
 #endif
                             }
                             break;

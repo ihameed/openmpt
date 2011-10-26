@@ -7,17 +7,17 @@
 
 typedef struct _RMIDDATACHUNK
 {
-    DWORD id_RIFF;	// "RIFF"
-    DWORD filelen;
-    DWORD id_RMID;	// "RMID"
-    DWORD id_data;	// "data"
-    DWORD datalen;
+    uint32_t id_RIFF;	// "RIFF"
+    uint32_t filelen;
+    uint32_t id_RMID;	// "RMID"
+    uint32_t id_data;	// "data"
+    uint32_t datalen;
 } RMIDDATACHUNK, *PRMIDDATACHUNK;
 
 typedef struct _MTHDCHUNK    // (big endian)
 {
-    DWORD id;		// "MThd" = 0x6468544D
-    DWORD len;		// 6
+    uint32_t id;		// "MThd" = 0x6468544D
+    uint32_t len;		// 6
     uint16_t wFmt;		// 0=single track, 1=synchro multitrack, 2=asynch multitrack 
     uint16_t wTrks;		// # of tracks
     uint16_t wDivision;	// PPQN
@@ -25,8 +25,8 @@ typedef struct _MTHDCHUNK    // (big endian)
 
 typedef struct _MTRKCHUNK    // (big endian)
 {
-    DWORD id;		// "MTrk" = 0x6B72544D
-    DWORD len;
+    uint32_t id;		// "MTrk" = 0x6B72544D
+    uint32_t len;
 } MTRKCHUNK, *PMTRKCHUNK;
 
 typedef struct _DYNMIDITRACK

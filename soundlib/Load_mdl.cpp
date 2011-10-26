@@ -18,7 +18,7 @@
 
 typedef struct MDLSONGHEADER
 {
-    DWORD id;    // "DMDL" = 0x4C444D44
+    uint32_t id;    // "DMDL" = 0x4C444D44
     uint8_t version;
 } MDLSONGHEADER;
 
@@ -226,10 +226,10 @@ void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nR
 
 
 
-bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
-    DWORD dwMemPos, dwPos, blocklen, dwTrackPos;
+    uint32_t dwMemPos, dwPos, blocklen, dwTrackPos;
     const MDLSONGHEADER *pmsh = (const MDLSONGHEADER *)lpStream;
     MDLINFOBLOCK *pmib;
     UINT i,j, norders = 0, npatterns = 0, ntracks = 0;
@@ -262,7 +262,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
     while (dwMemPos+6 < dwMemLength)
     {
         block = *((uint16_t *)(lpStream+dwMemPos));
-        blocklen = *((DWORD *)(lpStream+dwMemPos+2));
+        blocklen = *((uint32_t *)(lpStream+dwMemPos+2));
         dwMemPos += 6;
         if (blocklen > dwMemLength - dwMemPos)
         {
@@ -471,16 +471,16 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
                 const uint8_t *p = lpStream+dwPos+41;
                 if (pmsh->version > 0)
                 {
-                    pSmp->c5_samplerate = *((DWORD *)p);
+                    pSmp->c5_samplerate = *((uint32_t *)p);
                     p += 4;
                 } else
                 {
                     pSmp->c5_samplerate = *((uint16_t *)p);
                     p += 2;
                 }
-                pSmp->length = *((DWORD *)(p));
-                pSmp->loop_start = *((DWORD *)(p+4));
-                pSmp->loop_end = pSmp->loop_start + *((DWORD *)(p+8));
+                pSmp->length = *((uint32_t *)(p));
+                pSmp->loop_start = *((uint32_t *)(p+4));
+                pSmp->loop_end = pSmp->loop_start + *((uint32_t *)(p+8));
                 if (pSmp->loop_end > pSmp->loop_start) pSmp->flags |= CHN_LOOP;
                 pSmp->global_volume = 64;
                 if (p[13] & 0x01)
@@ -509,7 +509,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
                     dwPos += ReadSample(pSmp, flags, (LPSTR)(lpStream+dwPos), dwMemLength - dwPos);
                 } else
                 {
-                    DWORD dwLen = *((DWORD *)(lpStream+dwPos));
+                    uint32_t dwLen = *((uint32_t *)(lpStream+dwPos));
                     dwPos += 4;
                     if ( (dwLen <= dwMemLength) && (dwPos <= dwMemLength - dwLen) && (dwLen > 4) )
                     {
@@ -577,7 +577,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
 // MDL Sample Unpacking
 
 // MDL Huffman ReadBits compression
-uint16_t MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
+uint16_t MDLReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
 //-----------------------------------------------------------------
 {
     uint16_t v = (uint16_t)(bitbuf & ((1 << n) - 1) );
@@ -585,7 +585,7 @@ uint16_t MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
     bitnum -= n;
     if (bitnum <= 24)
     {
-        bitbuf |= (((DWORD)(*ibuf++)) << bitnum);
+        bitbuf |= (((uint32_t)(*ibuf++)) << bitnum);
         bitnum += 8;
     }
     return v;

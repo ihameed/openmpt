@@ -45,20 +45,20 @@
 
 typedef struct WAVEFILEHEADER
 {
-    DWORD id_RIFF;		// "RIFF"
-    DWORD filesize;		// file length-8
-    DWORD id_WAVE;
+    uint32_t id_RIFF;		// "RIFF"
+    uint32_t filesize;		// file length-8
+    uint32_t id_WAVE;
 } WAVEFILEHEADER;
 
 
 typedef struct WAVEFORMATHEADER
 {
-    DWORD id_fmt;		// "fmt "
-    DWORD hdrlen;		// 16
+    uint32_t id_fmt;		// "fmt "
+    uint32_t hdrlen;		// 16
     uint16_t format;		// 1
     uint16_t channels;		// 1:mono, 2:stereo
-    DWORD freqHz;		// sampling freq
-    DWORD bytessec;		// bytes/sec=freqHz*samplesize
+    uint32_t freqHz;		// sampling freq
+    uint32_t bytessec;		// bytes/sec=freqHz*samplesize
     uint16_t samplesize;	// sizeof(sample)
     uint16_t bitspersample;	// bits per sample (8/16)
 } WAVEFORMATHEADER;
@@ -66,36 +66,36 @@ typedef struct WAVEFORMATHEADER
 
 typedef struct WAVEDATAHEADER
 {
-    DWORD id_data;		// "data"
-    DWORD length;		// length of data
+    uint32_t id_data;		// "data"
+    uint32_t length;		// length of data
 } WAVEDATAHEADER;
 
 
 typedef struct WAVESMPLHEADER
 {
     // SMPL
-    DWORD smpl_id;		// "smpl"	-> 0x6C706D73
-    DWORD smpl_len;		// length of smpl: 3Ch	(54h with sustain loop)
-    DWORD dwManufacturer;
-    DWORD dwProduct;
-    DWORD dwSamplePeriod;	// 1000000000/freqHz
-    DWORD dwBaseNote;	// 3Ch = C-4 -> 60 + RelativeTone
-    DWORD dwPitchFraction;
-    DWORD dwSMPTEFormat;
-    DWORD dwSMPTEOffset;
-    DWORD dwSampleLoops;	// number of loops
-    DWORD cbSamplerData;
+    uint32_t smpl_id;		// "smpl"	-> 0x6C706D73
+    uint32_t smpl_len;		// length of smpl: 3Ch	(54h with sustain loop)
+    uint32_t dwManufacturer;
+    uint32_t dwProduct;
+    uint32_t dwSamplePeriod;	// 1000000000/freqHz
+    uint32_t dwBaseNote;	// 3Ch = C-4 -> 60 + RelativeTone
+    uint32_t dwPitchFraction;
+    uint32_t dwSMPTEFormat;
+    uint32_t dwSMPTEOffset;
+    uint32_t dwSampleLoops;	// number of loops
+    uint32_t cbSamplerData;
 } WAVESMPLHEADER;
 
 
 typedef struct SAMPLELOOPSTRUCT
 {
-    DWORD dwIdentifier;
-    DWORD dwLoopType;		// 0=normal, 1=bidi
-    DWORD dwLoopStart;
-    DWORD dwLoopEnd;		// Byte offset ?
-    DWORD dwFraction;
-    DWORD dwPlayCount;		// Loop Count, 0=infinite
+    uint32_t dwIdentifier;
+    uint32_t dwLoopType;		// 0=normal, 1=bidi
+    uint32_t dwLoopStart;
+    uint32_t dwLoopEnd;		// Byte offset ?
+    uint32_t dwFraction;
+    uint32_t dwPlayCount;		// Loop Count, 0=infinite
 } SAMPLELOOPSTRUCT;
 
 
@@ -108,17 +108,17 @@ typedef struct WAVESAMPLERINFO
 
 typedef struct WAVELISTHEADER
 {
-    DWORD list_id;	// "LIST" -> 0x5453494C
-    DWORD list_len;
-    DWORD info;		// "INFO"
+    uint32_t list_id;	// "LIST" -> 0x5453494C
+    uint32_t list_len;
+    uint32_t info;		// "INFO"
 } WAVELISTHEADER;
 
 
 typedef struct WAVEEXTRAHEADER
 {
-    DWORD xtra_id;	// "xtra"	-> 0x61727478
-    DWORD xtra_len;
-    DWORD dwFlags;
+    uint32_t xtra_id;	// "xtra"	-> 0x61727478
+    uint32_t xtra_len;
+    uint32_t dwFlags;
     uint16_t  wPan;
     uint16_t  wVolume;
     uint16_t  wGlobalVol;
@@ -132,20 +132,20 @@ typedef struct WAVEEXTRAHEADER
 
 typedef struct WAVCUEHEADER
 {
-    DWORD cue_id;	// "cue "	-> 0x20657563
-    DWORD cue_len;
-    DWORD cue_num;
+    uint32_t cue_id;	// "cue "	-> 0x20657563
+    uint32_t cue_len;
+    uint32_t cue_num;
 } WAVCUEHEADER;
 
 
 typedef struct WAVCUEPOINT
 {
-    DWORD cp_id;			// Unique identification value
-    DWORD cp_pos;			// Play order position
-    DWORD cp_chunkid;		// RIFF ID of corresponding data chunk
-    DWORD cp_chunkstart;	// Byte Offset of Data Chunk
-    DWORD cp_blockstart;	// Byte Offset to sample of First Channel
-    DWORD cp_offset;		// Byte Offset to sample byte of First Channel
+    uint32_t cp_id;			// Unique identification value
+    uint32_t cp_pos;			// Play order position
+    uint32_t cp_chunkid;		// RIFF ID of corresponding data chunk
+    uint32_t cp_chunkstart;	// Byte Offset of Data Chunk
+    uint32_t cp_blockstart;	// Byte Offset to sample of First Channel
+    uint32_t cp_offset;		// Byte Offset to sample byte of First Channel
 } WAVCUEPOINT;
 
 

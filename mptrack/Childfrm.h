@@ -16,45 +16,45 @@ class CChildFrame;
 
 typedef struct _GENERALVIEWSTATE
 {
-    DWORD cbStruct;
+    uint32_t cbStruct;
     PLUGINDEX nPlugin;
-    DWORD nParam;
-    DWORD nTab;
+    uint32_t nParam;
+    uint32_t nTab;
 } GENERALVIEWSTATE;
 
 
 typedef struct PATTERNVIEWSTATE
 {
-    DWORD cbStruct;
+    uint32_t cbStruct;
     PATTERNINDEX nPattern;
     ROWINDEX nRow;
     UINT nCursor;
-    DWORD dwBeginSel;
-    DWORD dwEndSel;
+    uint32_t dwBeginSel;
+    uint32_t dwEndSel;
     UINT nDetailLevel;
     ORDERINDEX nOrder;		//rewbs.playSongFromCursor
 } PATTERNVIEWSTATE;
 
 typedef struct SAMPLEVIEWSTATE
 {
-    DWORD cbStruct;
-    DWORD dwScrollPos;
-    DWORD dwBeginSel;
-    DWORD dwEndSel;
+    uint32_t cbStruct;
+    uint32_t dwScrollPos;
+    uint32_t dwBeginSel;
+    uint32_t dwEndSel;
     UINT nSample;
 } SAMPLEVIEWSTATE;
 
 
 typedef struct INSTRUMENTVIEWSTATE
 {
-    DWORD cbStruct;
+    uint32_t cbStruct;
     enmEnvelopeTypes nEnv;
     bool bGrid;
 } INSTRUMENTVIEWSTATE;
 
 typedef struct COMMENTVIEWSTATE
 {
-    DWORD cbStruct;
+    uint32_t cbStruct;
     UINT nId;
 } COMMENTVIEWSTATE;
 

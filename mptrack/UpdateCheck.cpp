@@ -62,7 +62,7 @@ void CUpdateCheck::DoUpdateCheck()
 
 
 // Run update check (independent thread)
-DWORD WINAPI CUpdateCheck::UpdateThread(LPVOID param)
+uint32_t WINAPI CUpdateCheck::UpdateThread(LPVOID param)
 //---------------------------------------------------
 {
     CUpdateCheck *caller = (CUpdateCheck *)param;
@@ -115,7 +115,7 @@ DWORD WINAPI CUpdateCheck::UpdateThread(LPVOID param)
     }
 
     // Retrieve HTTP status code.
-    DWORD statusCodeHTTP = 0;
+    uint32_t statusCodeHTTP = 0;
     DWORD length = sizeof(statusCodeHTTP);
     if(HttpQueryInfo(caller->connectionHandle, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, (LPVOID)&statusCodeHTTP, &length, NULL) == FALSE)
     {
@@ -144,7 +144,7 @@ DWORD WINAPI CUpdateCheck::UpdateThread(LPVOID param)
     		return 0;
     	}
 
-    	LimitMax(availableSize, (DWORD)DOWNLOAD_BUFFER_SIZE);
+    	LimitMax(availableSize, (uint32_t)DOWNLOAD_BUFFER_SIZE);
 
     	// Put downloaded bytes into our buffer
     	if(InternetReadFile(caller->connectionHandle, downloadBuffer, availableSize, &bytesRead) == FALSE)
@@ -229,7 +229,7 @@ void CUpdateCheck::Die(CString errorMessage)
 
 
 // Die with WinINet error message
-void CUpdateCheck::Die(CString errorMessage, DWORD errorCode)
+void CUpdateCheck::Die(CString errorMessage, uint32_t errorCode)
 //-----------------------------------------------------------
 {
     if(!isAutoUpdate)

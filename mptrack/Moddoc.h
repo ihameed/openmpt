@@ -179,7 +179,7 @@ protected:
 
     BOOL m_bPaused;
     HWND m_hWndFollow;
-    DWORD m_dwNotifyType;
+    uint32_t m_dwNotifyType;
 
     bool bModifiedAutosave; // Modified since last autosave?
 
@@ -231,14 +231,14 @@ public:
     void ViewSample(UINT nSmp);
     void ViewInstrument(UINT nIns);
     HWND GetFollowWnd() const { return m_hWndFollow; }
-    void SetFollowWnd(HWND hwnd, DWORD dwType);
+    void SetFollowWnd(HWND hwnd, uint32_t dwType);
 
     void ActivateWindow();
 
     // Effects Description
     bool GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool bXX = false, CHANNELINDEX nChn = CHANNELINDEX_INVALID); // bXX: Nxx: ...
     UINT GetNumEffects() const;
-    bool GetEffectInfo(UINT ndx, LPSTR s, bool bXX = false, DWORD *prangeMin=NULL, DWORD *prangeMax=NULL);
+    bool GetEffectInfo(UINT ndx, LPSTR s, bool bXX = false, uint32_t *prangeMin=NULL, uint32_t *prangeMax=NULL);
     LONG GetIndexFromEffect(UINT command, UINT param);
     UINT GetEffectFromIndex(UINT ndx, int &refParam);
     UINT GetEffectFromIndex(UINT ndx);
@@ -251,7 +251,7 @@ public:
     UINT GetNumVolCmds() const;
     LONG GetIndexFromVolCmd(UINT volcmd);
     UINT GetVolCmdFromIndex(UINT ndx);
-    BOOL GetVolCmdInfo(UINT ndx, LPSTR s, DWORD *prangeMin=NULL, DWORD *prangeMax=NULL);
+    BOOL GetVolCmdInfo(UINT ndx, LPSTR s, uint32_t *prangeMin=NULL, uint32_t *prangeMax=NULL);
 
     // Various MIDI Macro helpers
     static enmParameteredMacroType GetMacroType(CString value); //rewbs.xinfo
@@ -333,13 +333,13 @@ public:
     BOOL ShrinkPattern(PATTERNINDEX nPattern);
 
     // Copy&Paste
-    bool CopyPattern(PATTERNINDEX nPattern, DWORD dwBeginSel, DWORD dwEndSel);
-    bool PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPasteModes pasteMode);
+    bool CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t dwEndSel);
+    bool PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatternPasteModes pasteMode);
 
     bool CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv);
     bool PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv);
 
-    LRESULT ActivateView(UINT nIdView, DWORD dwParam);
+    LRESULT ActivateView(UINT nIdView, uint32_t dwParam);
     void UpdateAllViews(CView *pSender, LPARAM lHint=0L, CObject *pHint=NULL);
     HWND GetEditPosition(ROWINDEX &row, PATTERNINDEX &pat, ORDERINDEX &ord); //rewbs.customKeys
     LRESULT OnCustomKeyMsg(WPARAM, LPARAM);    			   //rewbs.customKeys

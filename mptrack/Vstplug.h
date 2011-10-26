@@ -36,8 +36,8 @@ enum {
 typedef struct _VSTPLUGINLIB
 {
     struct _VSTPLUGINLIB *pPrev, *pNext;
-    DWORD dwPluginId1;
-    DWORD dwPluginId2;
+    uint32_t dwPluginId1;
+    uint32_t dwPluginId2;
     BOOL bIsInstrument;
     CVstPlugin *pPluginsList;
     CHAR szLibraryName[_MAX_FNAME];
@@ -48,7 +48,7 @@ typedef struct _VSTPLUGINLIB
 typedef struct _VSTINSTCH
 {
     //uint8_t uNoteOnMap[128/8];			rewbs.deMystifyMidiNoteMap
-    uint8_t uNoteOnMap[128][MAX_CHANNELS];
+    uint8_t uNoteOnMap[128][MAX_VIRTUAL_CHANNELS];
     UINT nProgram;
     uint16_t wMidiBank; //rewbs.MidiBank
 } VSTINSTCH, *PVSTINSTCH;
@@ -96,7 +96,7 @@ protected:
     UINT m_nPreviousMidiChan; //rewbs.VSTCompliance
     bool m_bSongPlaying; //rewbs.VSTCompliance
     bool m_bPlugResumed; //rewbs.VSTCompliance
-    DWORD m_dwTimeAtStartOfProcess;
+    uint32_t m_dwTimeAtStartOfProcess;
     bool m_bModified;
     HANDLE processCalled;
     UINT m_nSlot;
@@ -175,7 +175,7 @@ public:
     void RecalculateGain();
     void Process(float *pOutL, float *pOutR, unsigned long nSamples);
     void Init(unsigned long nFreq, int bReset);
-    bool MidiSend(DWORD dwMidiCode);
+    bool MidiSend(uint32_t dwMidiCode);
     void MidiCC(UINT nMidiCh, UINT nController, UINT nParam, UINT trackChannel);
     void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel);
     void MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChan);
@@ -190,7 +190,7 @@ public:
     bool IsResumed() {return m_bPlugResumed;}
     void Resume();
     void Suspend();
-    DWORD GetTimeAtStartOfProcess() {return m_dwTimeAtStartOfProcess;}
+    uint32_t GetTimeAtStartOfProcess() {return m_dwTimeAtStartOfProcess;}
     void SetDryRatio(UINT param);
 
 
@@ -289,7 +289,7 @@ protected:
 public:
     CSelectPluginDlg(CModDoc *pModDoc, int nPlugSlot, CWnd *parent); //rewbs.plugDocAware
     VOID DoClose();
-    VOID UpdatePluginsList(DWORD forceSelect=0);
+    VOID UpdatePluginsList(uint32_t forceSelect=0);
     bool VerifyPlug(PVSTPLUGINLIB plug);
     virtual void DoDataExchange(CDataExchange* pDX);
     virtual BOOL OnInitDialog();

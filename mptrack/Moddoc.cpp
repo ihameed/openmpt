@@ -124,7 +124,7 @@ CModDoc::CModDoc()
 
 #ifdef _DEBUG
     modplug::tracker::modchannel_t *p = m_SndFile.Chn;
-    if (((DWORD)p) & 7) Log("modplug::tracker::modchannel_t is not aligned (0x%08X)\n", p);
+    if (((uint32_t)p) & 7) Log("modplug::tracker::modchannel_t is not aligned (0x%08X)\n", p);
 #endif
 // Fix: save pattern scrollbar position when switching to other tab
     m_szOldPatternScrollbarsPos = CSize(-10,-10);
@@ -199,7 +199,7 @@ BOOL CModDoc::OnOpenDocument(LPCTSTR lpszPathName)
     BeginWaitCursor();
     if (f.Open(lpszPathName))
     {
-        DWORD dwLen = f.GetLength();
+        uint32_t dwLen = f.GetLength();
         if (dwLen)
         {
             LPBYTE lpStream = f.Lock();
@@ -323,7 +323,7 @@ BOOL CModDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
                     if (f.Open(pszMidiMapName, CFile::modeRead))
                     {
-                        DWORD len = static_cast<DWORD>(f.GetLength());
+                        uint32_t len = static_cast<uint32_t>(f.GetLength());
                         LPBYTE lpFile;
                         if ((len) && ((lpFile = (LPBYTE)GlobalAllocPtr(GHND, len)) != NULL))
                         {
@@ -869,7 +869,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             pMainFrm->SetLastMixActiveTime(); // mark activity
 
             // All notes off
-            for (UINT i=0; i<MAX_CHANNELS; i++)
+            for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
             {
                 if ((i < GetNumChannels()) || (m_SndFile.Chn[i].parent_channel))
                 {
@@ -1042,7 +1042,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
 
             UINT nPlugin = pIns->nMixPlug;      	// First try intrument VST
             if (((!nPlugin) || (nPlugin > MAX_MIXPLUGINS)) && //no good plug yet
-                (nCurrentChn<MAX_CHANNELS)) // chan OK
+                (nCurrentChn<MAX_VIRTUAL_CHANNELS)) // chan OK
                 nPlugin = m_SndFile.ChnSettings[nCurrentChn].nMixPlugin;// Then try Channel VST
             
             if ((nPlugin) && (nPlugin <= MAX_MIXPLUGINS))
@@ -1056,9 +1056,9 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
     //end rewbs.vstiLive
 
     modplug::tracker::modchannel_t *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
-    for (UINT i=m_SndFile.m_nChannels; i<MAX_CHANNELS; i++, pChn++) if (!pChn->parent_channel)
+    for (UINT i=m_SndFile.m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, pChn++) if (!pChn->parent_channel)
     {
-        DWORD mask = (bFade) ? CHN_NOTEFADE : (CHN_NOTEFADE|CHN_KEYOFF);
+        uint32_t mask = (bFade) ? CHN_NOTEFADE : (CHN_NOTEFADE|CHN_KEYOFF);
 
         // Fade all channels > m_nChannels which are playing this note. 
         // Could conflict with NNAs.
@@ -1081,7 +1081,7 @@ BOOL CModDoc::IsNotePlaying(UINT note, UINT nsmp, UINT nins)
 //----------------------------------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
-    for (UINT i=m_SndFile.m_nChannels; i<MAX_CHANNELS; i++, pChn++) if (!pChn->parent_channel)
+    for (UINT i=m_SndFile.m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, pChn++) if (!pChn->parent_channel)
     {
         if ((pChn->length) && (!(pChn->flags & (CHN_NOTEFADE|CHN_KEYOFF|CHN_MUTE)))
          && ((note == pChn->nNewNote) || (!note))
@@ -1095,7 +1095,7 @@ BOOL CModDoc::IsNotePlaying(UINT note, UINT nsmp, UINT nins)
 bool CModDoc::MuteChannel(CHANNELINDEX nChn, bool doMute)
 //-------------------------------------------------------
 {
-    DWORD muteType = (CMainFrame::m_dwPatternSetup&PATTERN_SYNCMUTE)? CHN_SYNCMUTE:CHN_MUTE;
+    uint32_t muteType = (CMainFrame::m_dwPatternSetup&PATTERN_SYNCMUTE)? CHN_SYNCMUTE:CHN_MUTE;
 
     if (nChn >= m_SndFile.m_nChannels) {
         return false;
@@ -1126,7 +1126,7 @@ bool CModDoc::MuteChannel(CHANNELINDEX nChn, bool doMute)
     }
 
     //mute any NNA'd channels
-    for (UINT i=m_SndFile.m_nChannels; i<MAX_CHANNELS; i++) {
+    for (UINT i=m_SndFile.m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++) {
         if (m_SndFile.Chn[i].parent_channel == nChn + 1u)    {
             if (doMute) { 
                 m_SndFile.Chn[i].flags |= muteType;
@@ -1282,7 +1282,7 @@ bool CModDoc::MuteInstrument(INSTRUMENTINDEX nInstr, bool bMute)
 bool CModDoc::SurroundChannel(CHANNELINDEX nChn, bool bSurround)
 //--------------------------------------------------------------
 {
-    DWORD d = (bSurround) ? CHN_SURROUND : 0;
+    uint32_t d = (bSurround) ? CHN_SURROUND : 0;
     
     if (nChn >= m_SndFile.m_nChannels) return false;
     if (!(m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))) d = 0;
@@ -1371,7 +1371,7 @@ UINT CModDoc::GetPatternSize(PATTERNINDEX nPat) const
 }
 
 
-void CModDoc::SetFollowWnd(HWND hwnd, DWORD dwType)
+void CModDoc::SetFollowWnd(HWND hwnd, uint32_t dwType)
 //-------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -1435,7 +1435,7 @@ UINT CModDoc::FindInstrumentChild(UINT nIns) const
 }
 
 
-LRESULT CModDoc::ActivateView(UINT nIdView, DWORD dwParam)
+LRESULT CModDoc::ActivateView(UINT nIdView, uint32_t dwParam)
 //--------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -1524,7 +1524,7 @@ void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
     int nRenderPasses = 1;
     // Channel mode
     vector<bool> usedChannels;
-    vector<DWORD> channelFlags;
+    vector<uint32_t> channelFlags;
     // Instrument mode
     vector<bool> instrMuteState;
 
@@ -1571,7 +1571,7 @@ void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
     }
 
     CDoWaveConvert dwcdlg(&m_SndFile, sFilename, &wsdlg.WaveFormat.Format, wsdlg.m_bNormalize, pMainFrm);
-    dwcdlg.m_dwFileLimit = static_cast<DWORD>(wsdlg.m_dwFileLimit);
+    dwcdlg.m_dwFileLimit = static_cast<uint32_t>(wsdlg.m_dwFileLimit);
     dwcdlg.m_bGivePlugsIdleTime = wsdlg.m_bGivePlugsIdleTime;
     dwcdlg.m_dwSongLimit = wsdlg.m_dwSongLimit;
     dwcdlg.m_nMaxPatterns = (wsdlg.m_bSelectPlay) ? wsdlg.m_nMaxOrder - wsdlg.m_nMinOrder + 1 : 0;
@@ -1866,7 +1866,7 @@ void CModDoc::OnPlayerPlay()
             return;
         }
         BEGIN_CRITICAL();
-        for (UINT i=m_SndFile.m_nChannels; i<MAX_CHANNELS; i++) if (!m_SndFile.Chn[i].parent_channel)
+        for (UINT i=m_SndFile.m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++) if (!m_SndFile.Chn[i].parent_channel)
         {
             m_SndFile.Chn[i].flags |= (CHN_NOTEFADE|CHN_KEYOFF);
             if (!bPlaying) m_SndFile.Chn[i].length = 0;
@@ -2106,7 +2106,7 @@ void CModDoc::OnEstimateSongLength()
 //----------------------------------
 {
     CHAR s[256];
-    DWORD dwSongLength = m_SndFile.GetSongTime();
+    uint32_t dwSongLength = m_SndFile.GetSongTime();
     wsprintf(s, "Approximate song length: %dmn%02ds", dwSongLength/60, dwSongLength%60);
     CMainFrame::GetMainFrame()->MessageBox(s, NULL, MB_OK|MB_ICONINFORMATION);
 }
@@ -2147,11 +2147,11 @@ void CModDoc::OnApproximateBPM()
 
 typedef struct MPTEFFECTINFO
 {
-    DWORD dwEffect;    	// CMD_XXXX
-    DWORD dwParamMask;    // 0 = default
-    DWORD dwParamValue;    // 0 = default
-    DWORD dwFlags;    	// FXINFO_XXXX
-    DWORD dwFormats;    // MOD_TYPE_XXX combo
+    uint32_t dwEffect;    	// CMD_XXXX
+    uint32_t dwParamMask;    // 0 = default
+    uint32_t dwParamValue;    // 0 = default
+    uint32_t dwFlags;    	// FXINFO_XXXX
+    uint32_t dwFormats;    // MOD_TYPE_XXX combo
     LPCSTR pszName;    	// ie "Tone Portamento"
 } MPTEFFECTINFO;
 
@@ -2436,7 +2436,7 @@ UINT CModDoc::GetEffectMaskFromIndex(UINT ndx)
 
 }
 
-bool CModDoc::GetEffectInfo(UINT ndx, LPSTR s, bool bXX, DWORD *prangeMin, DWORD *prangeMax)
+bool CModDoc::GetEffectInfo(UINT ndx, LPSTR s, bool bXX, uint32_t *prangeMin, uint32_t *prangeMax)
 //------------------------------------------------------------------------------------------
 {
     if (s) s[0] = 0;
@@ -3034,8 +3034,8 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
 
 typedef struct MPTVOLCMDINFO
 {
-    DWORD dwVolCmd;    	// VOLCMD_XXXX
-    DWORD dwFormats;    // MOD_TYPE_XXX combo
+    uint32_t dwVolCmd;    	// VOLCMD_XXXX
+    uint32_t dwFormats;    // MOD_TYPE_XXX combo
     LPCSTR pszName;    	// ie "Set Volume"
 } MPTVOLCMDINFO;
 
@@ -3087,7 +3087,7 @@ UINT CModDoc::GetVolCmdFromIndex(UINT ndx)
 }
 
 
-BOOL CModDoc::GetVolCmdInfo(UINT ndx, LPSTR s, DWORD *prangeMin, DWORD *prangeMax)
+BOOL CModDoc::GetVolCmdInfo(UINT ndx, LPSTR s, uint32_t *prangeMin, uint32_t *prangeMax)
 //--------------------------------------------------------------------------------
 {
     if (s) s[0] = 0;
@@ -3408,7 +3408,7 @@ void CModDoc::OnPatternRestart()
         SetElapsedTime(nOrd, 0);
 
         // Cut instruments/samples
-        for (UINT i=0; i<MAX_CHANNELS; i++)
+        for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
         {
             pSndFile->Chn[i].nPatternLoopCount = 0;
             pSndFile->Chn[i].nPatternLoop = 0;
@@ -3468,7 +3468,7 @@ void CModDoc::OnPatternPlay()
         SetElapsedTime(nOrd, nRow);
 
         // Cut instruments/samples
-        for (UINT i=pSndFile->m_nChannels; i<MAX_CHANNELS; i++)
+        for (UINT i=pSndFile->m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++)
         {
             pSndFile->Chn[i].flags |= CHN_NOTEFADE | CHN_KEYOFF;
         }
@@ -3524,7 +3524,7 @@ void CModDoc::OnPatternPlayNoLoop()
         SetElapsedTime(nOrd, nRow);
 
         // Cut instruments/samples
-        for (UINT i=pSndFile->m_nChannels; i<MAX_CHANNELS; i++)
+        for (UINT i=pSndFile->m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++)
         {
             pSndFile->Chn[i].flags |= CHN_NOTEFADE | CHN_KEYOFF;
         }
@@ -3574,7 +3574,7 @@ void CModDoc::OnViewMPTHacks()
 
 //XXXih: gross!
 void CModDoc::on_test_graph_editor() {
-    modplug::gui::show_my_weldus(&this->m_SndFile._graph);
+    modplug::gui::show_my_weldus(&this->m_SndFile.mixgraph);
 }
 
 
@@ -3692,7 +3692,7 @@ UINT CModDoc::FindAvailableChannel()
 {
     CHANNELINDEX nStoppedChannel = CHANNELINDEX_INVALID;
     // Search for available channel
-    for (CHANNELINDEX j = m_SndFile.m_nChannels; j < MAX_CHANNELS; j++)
+    for (CHANNELINDEX j = m_SndFile.m_nChannels; j < MAX_VIRTUAL_CHANNELS; j++)
     {
         modplug::tracker::modchannel_t *p = &m_SndFile.Chn[j];
         if (!p->length)
@@ -3803,7 +3803,7 @@ void CModDoc::SetElapsedTime(ORDERINDEX nOrd, ROWINDEX nRow)
         return;
 
     const double dPatternPlaytime = m_SndFile.GetPlaybackTimeAt(nOrd, nRow, true);
-    pMainFrm->SetElapsedTime((DWORD) (max(0, dPatternPlaytime) * 1000));
+    pMainFrm->SetElapsedTime((uint32_t) (max(0, dPatternPlaytime) * 1000));
 }
 
 

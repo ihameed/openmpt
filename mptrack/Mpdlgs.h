@@ -14,13 +14,13 @@ protected:
     CComboBoxEx m_CbnDevice;
     CComboBox m_CbnBufferLength, m_CbnMixingFreq, m_CbnPolyphony, m_CbnQuality;
     CSliderCtrl m_SliderStereoSep, m_SliderPreAmp;
-    DWORD m_dwRate, m_dwSoundSetup, m_nBitsPerSample, m_nChannels;
-    DWORD m_nBufferLength;
-    DWORD m_nSoundDevice;
+    uint32_t m_dwRate, m_dwSoundSetup, m_nBitsPerSample, m_nChannels;
+    uint32_t m_nBufferLength;
+    uint32_t m_nSoundDevice;
     bool m_PreAmpNoteShowed;
 
 public:
-    COptionsSoundcard(DWORD rate, DWORD q, DWORD bits, DWORD chns, DWORD bufsize, DWORD sd):CPropertyPage(IDD_OPTIONS_SOUNDCARD)
+    COptionsSoundcard(uint32_t rate, uint32_t q, uint32_t bits, uint32_t chns, uint32_t bufsize, uint32_t sd):CPropertyPage(IDD_OPTIONS_SOUNDCARD)
     	{ m_dwRate = rate; m_dwSoundSetup = q; m_nBitsPerSample = bits; m_nChannels = chns;
     	  m_nBufferLength = bufsize; m_nSoundDevice = sd; m_PreAmpNoteShowed = false;}
 
@@ -137,14 +137,14 @@ class CMidiSetupDlg: public CPropertyPage
 //=======================================
 {
 public:
-    DWORD m_dwMidiSetup;
+    uint32_t m_dwMidiSetup;
     LONG m_nMidiDevice;
 
 protected:
     CSpinButtonCtrl m_SpinSpd, m_SpinPat;
 
 public:
-    CMidiSetupDlg(DWORD d, LONG n):CPropertyPage(IDD_OPTIONS_MIDI)
+    CMidiSetupDlg(uint32_t d, LONG n):CPropertyPage(IDD_OPTIONS_MIDI)
     	{ m_dwMidiSetup = d; m_nMidiDevice = n; }
 
 protected:

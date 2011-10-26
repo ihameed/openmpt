@@ -90,7 +90,7 @@ inline void LimitMax(T& val, const C upperLimit)
 
  
 LPCCH LoadResource(LPCTSTR lpName, LPCTSTR lpType, LPCCH& pData, size_t& nSize, HGLOBAL& hglob);
-CString GetErrorMessage(DWORD nErrorCode);
+CString GetErrorMessage(uint32_t nErrorCode);
 
 namespace utilImpl
 {

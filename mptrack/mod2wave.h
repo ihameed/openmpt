@@ -12,7 +12,7 @@ class CWaveConvert: public CDialog
 public:
     WAVEFORMATEXTENSIBLE WaveFormat;
     ULONGLONG m_dwFileLimit;
-    DWORD m_dwSongLimit;
+    uint32_t m_dwSongLimit;
     bool m_bSelectPlay, m_bNormalize, m_bHighQuality, m_bGivePlugsIdleTime;
     ORDERINDEX m_nMinOrder, m_nMaxOrder;
     CComboBox m_CbnSampleRate, m_CbnSampleFormat;
@@ -50,7 +50,7 @@ public:
     PWAVEFORMATEX m_pWaveFormat;
     CSoundFile *m_pSndFile;
     LPCSTR m_lpszFileName;
-    DWORD m_dwFileLimit, m_dwSongLimit;
+    uint32_t m_dwFileLimit, m_dwSongLimit;
     UINT m_nMaxPatterns;
     bool m_bAbort, m_bNormalize, m_bGivePlugsIdleTime;
 
@@ -77,7 +77,7 @@ class CLayer3Convert: public CDialog
 public:
     enum { MAX_FORMATS=32 };
     enum { MAX_DRIVERS=32 };
-    DWORD m_dwFileLimit, m_dwSongLimit;
+    uint32_t m_dwFileLimit, m_dwSongLimit;
     BOOL m_bSaveInfoField;
     CFileTagging m_FileTags;
 
@@ -96,8 +96,8 @@ public:
     void GetFormat(PMPEGLAYER3WAVEFORMAT pwfx, HACMDRIVERID *phadid);
 
 protected:
-    BOOL FormatEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, DWORD fdwSupport);
-    BOOL DriverEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, DWORD fdwSupport);
+    BOOL FormatEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, uint32_t fdwSupport);
+    BOOL DriverEnumCB(HACMDRIVERID hdid, LPACMFORMATDETAILS pafd, uint32_t fdwSupport);
     VOID UpdateDialog();
 
 public:
@@ -120,7 +120,7 @@ class CDoAcmConvert: public CDialog
 public:
     CSoundFile *m_pSndFile;
     LPCSTR m_lpszFileName;
-    DWORD m_dwFileLimit, m_dwSongLimit;
+    uint32_t m_dwFileLimit, m_dwSongLimit;
     BOOL m_bAbort, m_bSaveInfoField;
     PWAVEFORMATEX m_pwfx;
     HACMDRIVERID m_hadid;

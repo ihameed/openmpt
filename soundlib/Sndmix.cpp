@@ -34,13 +34,13 @@ static const unsigned int VUMETER_DECAY = 4;
 // SNDMIX: These are global flags for playback control
 UINT CSoundFile::m_nStereoSeparation = 128;
 LONG CSoundFile::m_nStreamVolume = 0x8000;
-UINT CSoundFile::m_nMaxMixChannels = MAX_CHANNELS;
+UINT CSoundFile::m_nMaxMixChannels = MAX_VIRTUAL_CHANNELS;
 // Mixing Configuration (SetWaveConfig)
-DWORD CSoundFile::gdwSysInfo = 0;
-DWORD CSoundFile::gnChannels = 1;
-DWORD CSoundFile::gdwSoundSetup = 0;
-DWORD CSoundFile::gdwMixingFreq = 44100;
-DWORD CSoundFile::gnBitsPerSample = 16;
+uint32_t CSoundFile::gdwSysInfo = 0;
+uint32_t CSoundFile::gnChannels = 1;
+uint32_t CSoundFile::gdwSoundSetup = 0;
+uint32_t CSoundFile::gdwMixingFreq = 44100;
+uint32_t CSoundFile::gnBitsPerSample = 16;
 // Mixing data initialized in
 UINT CSoundFile::gnAGC = AGC_UNITY;
 UINT CSoundFile::gnVolumeRampInSamples = 0;    	//default value
@@ -57,7 +57,7 @@ typedef size_t (MPPASMCALL * LPCONVERTPROC)(void *, int *, size_t);
 
 extern UINT MPPASMCALL X86_AGC(int *pBuffer, UINT nSamples, UINT nAGC);
 extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
-extern VOID MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, DWORD nSamples);
+extern VOID MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, uint32_t nSamples);
 extern VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples);
 extern VOID SndMixInitializeTables();
 
@@ -68,10 +68,10 @@ extern short int ModRandomTable[64];
 extern short int ITSinusTable[64];
 extern short int ITRampDownTable[64];
 extern short int ITSquareTable[64];
-extern DWORD LinearSlideUpTable[256];
-extern DWORD LinearSlideDownTable[256];
-extern DWORD FineLinearSlideUpTable[16];
-extern DWORD FineLinearSlideDownTable[16];
+extern uint32_t LinearSlideUpTable[256];
+extern uint32_t LinearSlideDownTable[256];
+extern uint32_t FineLinearSlideUpTable[16];
+extern uint32_t FineLinearSlideDownTable[16];
 extern signed char ft2VibratoTable[256];    // -64 .. +64
 extern int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 extern int MixRearBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
@@ -219,7 +219,7 @@ BOOL CSoundFile::InitPlayer(BOOL bReset)
         gbInitTables = true;
     }
 #endif
-    if (m_nMaxMixChannels > MAX_CHANNELS) m_nMaxMixChannels = MAX_CHANNELS;
+    if (m_nMaxMixChannels > MAX_VIRTUAL_CHANNELS) m_nMaxMixChannels = MAX_VIRTUAL_CHANNELS;
     if (gdwMixingFreq < 4000) gdwMixingFreq = 4000;
     if (gdwMixingFreq > MAX_SAMPLE_RATE) gdwMixingFreq = MAX_SAMPLE_RATE;
     // Start with ramping disabled to avoid clicks on first read.
@@ -358,7 +358,7 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         ASSERT (computed_samples <= modplug::mixgraph::MIX_BUFFER_SIZE);
 
         num_samples *= (gnChannels >= 2) ? 2 : 1;
-        _graph.pre_process(computed_samples);
+        mixgraph.pre_process(computed_samples);
         m_nMixStat += CreateStereoMix(computed_samples);
 
         //XXXih: JUICY FRUITS
@@ -370,7 +370,7 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
             ProcessPlugins(computed_samples);
         }
         */
-        _graph.process(MixSoundBuffer, computed_samples, m_pConfig->getFloatToInt(), m_pConfig->getIntToFloat());
+        mixgraph.process(MixSoundBuffer, computed_samples, m_pConfig->getFloatToInt(), m_pConfig->getIntToFloat());
 
         if (gnChannels < 2) {
             X86_MonoFromStereo(MixSoundBuffer, computed_samples);
@@ -481,7 +481,7 @@ BOOL CSoundFile::ProcessRow()
                         m_nMusicSpeed = m_nDefaultSpeed;
                         m_nMusicTempo = m_nDefaultTempo;
                         m_nGlobalVolume = m_nDefaultGlobalVolume;
-                        for (UINT i=0; i<MAX_CHANNELS; i++)
+                        for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
                         {
                             Chn[i].flags |= CHN_NOTEFADE | CHN_KEYOFF;
                             Chn[i].nFadeOutVol = 0;
@@ -721,19 +721,19 @@ BOOL CSoundFile::ReadNote()
     m_nSamplesPerTick = m_nBufferCount; //rewbs.flu
 
     // Master Volume + Pre-Amplification / Attenuation setup
-    DWORD nMasterVol;
+    uint32_t nMasterVol;
     {
         /*int nchn32 = 0;
-        modplug::tracker::modchannel_t *pChn = Chn;
-        for (UINT nChn=0; nChn<m_nChannels; nChn++,pChn++)
+        modplug::tracker::modchannel_t *current_vchan = Chn;
+        for (UINT vchan_idx=0; vchan_idx<m_nChannels; vchan_idx++,current_vchan++)
         {
-            //if(!(pChn->flags & CHN_MUTE))    //removed by rewbs: fix http://www.modplug.com/forum/viewtopic.php?t=3358
+            //if(!(current_vchan->flags & CHN_MUTE))    //removed by rewbs: fix http://www.modplug.com/forum/viewtopic.php?t=3358
                 nchn32++;
         }
         nchn32 = CLAMP(nchn32, 1, 31);*/
         int nchn32 = CLAMP(m_nChannels, 1, 31);
         
-        DWORD mastervol;
+        uint32_t mastervol;
 
         if (m_pConfig->getUseGlobalPreAmp())
         {
@@ -764,166 +764,166 @@ BOOL CSoundFile::ReadNote()
     ////////////////////////////////////////////////////////////////////////////////////
     // Update channels data
     m_nMixChannels = 0;
-    modplug::tracker::modchannel_t *pChn = Chn;
-    for (UINT nChn = 0; nChn < MAX_CHANNELS; nChn++, pChn++)
+    modplug::tracker::modchannel_t *current_vchan = Chn;
+    for (size_t vchan_idx = 0; vchan_idx < MAX_VIRTUAL_CHANNELS; vchan_idx++, current_vchan++)
     {
     skipchn:
 
         // XM Compatibility: Prevent notes to be stopped after a fadeout. This way, a portamento effect can pick up a faded instrument which is long enough.
         // This occours for example in the bassline (channel 11) of jt_burn.xm. I hope this won't break anything else...
         // I also suppose this could decrease mixing performance a bit, but hey, which CPU can't handle 32 muted channels these days... :-)
-        if ((pChn->flags & CHN_NOTEFADE) && (!(pChn->nFadeOutVol|pChn->right_volume|pChn->left_volume)) && (!IsCompatibleMode(TRK_FASTTRACKER2)))
+        if ((current_vchan->flags & CHN_NOTEFADE) && (!(current_vchan->nFadeOutVol|current_vchan->right_volume|current_vchan->left_volume)) && (!IsCompatibleMode(TRK_FASTTRACKER2)))
         {
-            pChn->length = 0;
-            pChn->nROfs = pChn->nLOfs = 0;
+            current_vchan->length = 0;
+            current_vchan->nROfs = current_vchan->nLOfs = 0;
         }
         // Check for unused channel
-        if ((pChn->flags & CHN_MUTE) || ((nChn >= m_nChannels) && (!pChn->length)))
+        if (current_vchan->muted() || ((vchan_idx >= m_nChannels) && current_vchan->inactive()))
         {
-            pChn->nVUMeter = 0;
+            current_vchan->nVUMeter = 0;
 #ifdef ENABLE_STEREOVU
-            pChn->nLeftVU = pChn->nRightVU = 0;
+            current_vchan->nLeftVU = current_vchan->nRightVU = 0;
 #endif
 
-            nChn++;
-            pChn++;
-            if (nChn >= m_nChannels)
+            vchan_idx++;
+            current_vchan++;
+            if (vchan_idx >= m_nChannels)
             {
-                while ((nChn < MAX_CHANNELS) && (!pChn->length))
+                while ((vchan_idx < MAX_VIRTUAL_CHANNELS) && current_vchan->inactive())
                 {
-                    nChn++;
-                    pChn++;
+                    vchan_idx++;
+                    current_vchan++;
                 }
             }
-            if (nChn < MAX_CHANNELS)
+            if (vchan_idx < MAX_VIRTUAL_CHANNELS)
                 goto skipchn;    // >:(
             break;
         }
         // Reset channel data
-        pChn->position_delta = 0;
-        pChn->nRealVolume = 0;
+        current_vchan->position_delta = 0;
+        current_vchan->nRealVolume = 0;
 
         if(GetModFlag(MSF_OLDVOLSWING))
         {
-            pChn->nRealPan = pChn->nPan + pChn->nPanSwing;
+            current_vchan->nRealPan = current_vchan->nPan + current_vchan->nPanSwing;
         }
         else
         {
-            pChn->nPan += pChn->nPanSwing;
-            pChn->nPan = CLAMP(pChn->nPan, 0, 256);
-            pChn->nPanSwing = 0;
-            pChn->nRealPan = pChn->nPan;
+            current_vchan->nPan += current_vchan->nPanSwing;
+            current_vchan->nPan = CLAMP(current_vchan->nPan, 0, 256);
+            current_vchan->nPanSwing = 0;
+            current_vchan->nRealPan = current_vchan->nPan;
         }
 
-        pChn->nRealPan = CLAMP(pChn->nRealPan, 0, 256);
-        pChn->nRampLength = 0;
+        current_vchan->nRealPan = CLAMP(current_vchan->nRealPan, 0, 256);
+        current_vchan->nRampLength = 0;
 
         //Aux variables
         CTuning::RATIOTYPE vibratoFactor = 1;
         CTuning::NOTEINDEXTYPE arpeggioSteps = 0;
 
-        modplug::tracker::modinstrument_t *pIns = pChn->instrument;
+        modplug::tracker::modinstrument_t *pIns = current_vchan->instrument;
 
         // Calc Frequency
-        if ((pChn->nPeriod)    && (pChn->length))
+        if ((current_vchan->nPeriod)    && (current_vchan->length))
         {
-            int vol = pChn->nVolume;
+            int vol = current_vchan->nVolume;
 
-            if(pChn->nVolSwing)
+            if(current_vchan->nVolSwing)
             {
                 if(GetModFlag(MSF_OLDVOLSWING))
                 {
-                    vol += pChn->nVolSwing;
+                    vol += current_vchan->nVolSwing;
                 }
                 else
                 {
-                    pChn->nVolume += pChn->nVolSwing;
-                    pChn->nVolume = CLAMP(pChn->nVolume, 0, 256);
-                    vol = pChn->nVolume;
-                    pChn->nVolSwing = 0;
+                    current_vchan->nVolume += current_vchan->nVolSwing;
+                    current_vchan->nVolume = CLAMP(current_vchan->nVolume, 0, 256);
+                    vol = current_vchan->nVolume;
+                    current_vchan->nVolSwing = 0;
                 }
             }
 
             vol = CLAMP(vol, 0, 256);
 
             // Tremolo
-            if (pChn->flags & CHN_TREMOLO)
+            if (current_vchan->flags & CHN_TREMOLO)
             {
-                UINT trempos = pChn->nTremoloPos;
+                UINT trempos = current_vchan->nTremoloPos;
                 // IT compatibility: Why would you not want to execute tremolo at volume 0?
                 if (vol > 0 || IsCompatibleMode(TRK_IMPULSETRACKER))
                 {
                     // IT compatibility: We don't need a different attenuation here because of the different tables we're going to use
                     const int tremattn = (m_nType & MOD_TYPE_XM || IsCompatibleMode(TRK_IMPULSETRACKER)) ? 5 : 6;
-                    switch (pChn->nTremoloType & 0x03)
+                    switch (current_vchan->nTremoloType & 0x03)
                     {
                     case 1:
                         // IT compatibility: IT has its own, more precise tables
-                        vol += ((IsCompatibleMode(TRK_IMPULSETRACKER) ? ITRampDownTable[trempos] : ModRampDownTable[trempos]) * (int)pChn->nTremoloDepth) >> tremattn;
+                        vol += ((IsCompatibleMode(TRK_IMPULSETRACKER) ? ITRampDownTable[trempos] : ModRampDownTable[trempos]) * (int)current_vchan->nTremoloDepth) >> tremattn;
                         break;
                     case 2:
                         // IT compatibility: IT has its own, more precise tables
-                        vol += ((IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSquareTable[trempos] : ModSquareTable[trempos]) * (int)pChn->nTremoloDepth) >> tremattn;
+                        vol += ((IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSquareTable[trempos] : ModSquareTable[trempos]) * (int)current_vchan->nTremoloDepth) >> tremattn;
                         break;
                     case 3:
                         //IT compatibility 19. Use random values
                         if(IsCompatibleMode(TRK_IMPULSETRACKER))
-                            vol += (((rand() & 0x7F) - 0x40) * (int)pChn->nTremoloDepth) >> tremattn;
+                            vol += (((rand() & 0x7F) - 0x40) * (int)current_vchan->nTremoloDepth) >> tremattn;
                         else
-                            vol += (ModRandomTable[trempos] * (int)pChn->nTremoloDepth) >> tremattn;
+                            vol += (ModRandomTable[trempos] * (int)current_vchan->nTremoloDepth) >> tremattn;
                         break;
                     default:
                         // IT compatibility: IT has its own, more precise tables
-                        vol += ((IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSinusTable[trempos] : ModSinusTable[trempos]) * (int)pChn->nTremoloDepth) >> tremattn;
+                        vol += ((IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSinusTable[trempos] : ModSinusTable[trempos]) * (int)current_vchan->nTremoloDepth) >> tremattn;
                     }
                 }
                 if ((m_nTickCount) || ((m_nType & (MOD_TYPE_STM|MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT)) && (!(m_dwSongFlags & SONG_ITOLDEFFECTS))))
                 {
                     // IT compatibility: IT has its own, more precise tables
                     if(IsCompatibleMode(TRK_IMPULSETRACKER))
-                        pChn->nTremoloPos = (pChn->nTremoloPos + 4 * pChn->nTremoloSpeed) & 0xFF;
+                        current_vchan->nTremoloPos = (current_vchan->nTremoloPos + 4 * current_vchan->nTremoloSpeed) & 0xFF;
                     else
-                        pChn->nTremoloPos = (pChn->nTremoloPos + pChn->nTremoloSpeed) & 0x3F;
+                        current_vchan->nTremoloPos = (current_vchan->nTremoloPos + current_vchan->nTremoloSpeed) & 0x3F;
                 }
             }
 
             // Tremor
-            if(pChn->nCommand == CMD_TREMOR)
+            if(current_vchan->nCommand == CMD_TREMOR)
             {
                 // IT compatibility 12. / 13.: Tremor
                 if(IsCompatibleMode(TRK_IMPULSETRACKER))
                 {
-                    if ((pChn->nTremorCount & 128) && pChn->length)
+                    if ((current_vchan->nTremorCount & 128) && current_vchan->length)
                     {
-                        if (pChn->nTremorCount == 128)
-                            pChn->nTremorCount = (pChn->nTremorParam >> 4) | 192;
-                        else if (pChn->nTremorCount == 192)
-                            pChn->nTremorCount = (pChn->nTremorParam & 0xf) | 128;
+                        if (current_vchan->nTremorCount == 128)
+                            current_vchan->nTremorCount = (current_vchan->nTremorParam >> 4) | 192;
+                        else if (current_vchan->nTremorCount == 192)
+                            current_vchan->nTremorCount = (current_vchan->nTremorParam & 0xf) | 128;
                         else
-                            pChn->nTremorCount--;
+                            current_vchan->nTremorCount--;
                     }
 
-                    if ((pChn->nTremorCount & 192) == 128)
+                    if ((current_vchan->nTremorCount & 192) == 128)
                         vol = 0;
                 }
                 else
                 {
-                    UINT n = (pChn->nTremorParam >> 4) + (pChn->nTremorParam & 0x0F);
-                    UINT ontime = pChn->nTremorParam >> 4;
+                    UINT n = (current_vchan->nTremorParam >> 4) + (current_vchan->nTremorParam & 0x0F);
+                    UINT ontime = current_vchan->nTremorParam >> 4;
                     if ((!(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT))) || (m_dwSongFlags & SONG_ITOLDEFFECTS))
                     {
                         n += 2;
                         ontime++;
                     }
-                    UINT tremcount = (UINT)pChn->nTremorCount;
+                    UINT tremcount = (UINT)current_vchan->nTremorCount;
                     if (tremcount >= n) tremcount = 0;
                     if ((m_nTickCount) || (m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT)))
                     {
                         if (tremcount >= ontime) vol = 0;
-                        pChn->nTremorCount = (uint8_t)(tremcount + 1);
+                        current_vchan->nTremorCount = (uint8_t)(tremcount + 1);
                     }
                 }
-                pChn->flags |= CHN_FASTVOLRAMP;
+                current_vchan->flags |= CHN_FASTVOLRAMP;
             }
 
             // Clip volume and multiply
@@ -935,24 +935,24 @@ BOOL CSoundFile::ReadNote()
                 // Volume Envelope
                 // IT Compatibility: S77 does not disable the volume envelope, it just pauses the counter
                 // Problem: This pauses on the wrong tick at the moment...
-                if (((pChn->flags & CHN_VOLENV) || ((pIns->volume_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->volume_envelope.num_nodes))
+                if (((current_vchan->flags & CHN_VOLENV) || ((pIns->volume_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->volume_envelope.num_nodes))
                 {
-                    int envvol = GetVolEnvValueFromPosition(pChn->volume_envelope.position, pIns);
+                    int envvol = GetVolEnvValueFromPosition(current_vchan->volume_envelope.position, pIns);
                     
                     // if we are in the release portion of the envelope,
                     // rescale envelope factor so that it is proportional to the release point
                     // and release envelope beginning.
                     if (pIns->volume_envelope.release_node != ENV_RELEASE_NODE_UNSET
-                        && pChn->volume_envelope.position>=pIns->volume_envelope.Ticks[pIns->volume_envelope.release_node]
-                        && pChn->volume_envelope.release_value != NOT_YET_RELEASED)
+                        && current_vchan->volume_envelope.position>=pIns->volume_envelope.Ticks[pIns->volume_envelope.release_node]
+                        && current_vchan->volume_envelope.release_value != NOT_YET_RELEASED)
                     {
-                        int envValueAtReleaseJump = pChn->volume_envelope.release_value;
+                        int envValueAtReleaseJump = current_vchan->volume_envelope.release_value;
                         int envValueAtReleaseNode = pIns->volume_envelope.Values[pIns->volume_envelope.release_node] << 2;
 
                         //If we have just hit the release node, force the current env value
                         //to be that of the release node. This works around the case where 
                         // we have another node at the same position as the release node.
-                        if (pChn->volume_envelope.position == pIns->volume_envelope.Ticks[pIns->volume_envelope.release_node])
+                        if (current_vchan->volume_envelope.position == pIns->volume_envelope.Ticks[pIns->volume_envelope.release_node])
                             envvol = envValueAtReleaseNode;
 
                         int relativeVolumeChange = (envvol - envValueAtReleaseNode) * 2;
@@ -963,9 +963,9 @@ BOOL CSoundFile::ReadNote()
                 // Panning Envelope
                 // IT Compatibility: S79 does not disable the panning envelope, it just pauses the counter
                 // Problem: This pauses on the wrong tick at the moment...
-                if (((pChn->flags & CHN_PANENV) || ((pIns->panning_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->panning_envelope.num_nodes))
+                if (((current_vchan->flags & CHN_PANENV) || ((pIns->panning_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pIns->panning_envelope.num_nodes))
                 {
-                    int envpos = pChn->panning_envelope.position;
+                    int envpos = current_vchan->panning_envelope.position;
                     UINT pt = pIns->panning_envelope.num_nodes - 1;
                     for (UINT i=0; i<(UINT)(pIns->panning_envelope.num_nodes-1); i++)
                     {
@@ -997,7 +997,7 @@ BOOL CSoundFile::ReadNote()
                     }
                     
                     envpan = CLAMP(envpan, 0, 64);
-                    int pan = pChn->nPan;
+                    int pan = current_vchan->nPan;
                     if (pan >= 128)
                     {
                         pan += ((envpan - 32) * (256 - pan)) / 32;
@@ -1006,73 +1006,73 @@ BOOL CSoundFile::ReadNote()
                         pan += ((envpan - 32) * (pan)) / 32;
                     }
 
-                    pChn->nRealPan = CLAMP(pan, 0, 256);
+                    current_vchan->nRealPan = CLAMP(pan, 0, 256);
                 }
                 // FadeOut volume
-                if (pChn->flags & CHN_NOTEFADE)
+                if (current_vchan->flags & CHN_NOTEFADE)
                 {
                     UINT fadeout = pIns->fadeout;
                     if (fadeout)
                     {
-                        pChn->nFadeOutVol -= fadeout << 1;
-                        if (pChn->nFadeOutVol <= 0) pChn->nFadeOutVol = 0;
-                        vol = (vol * pChn->nFadeOutVol) >> 16;
+                        current_vchan->nFadeOutVol -= fadeout << 1;
+                        if (current_vchan->nFadeOutVol <= 0) current_vchan->nFadeOutVol = 0;
+                        vol = (vol * current_vchan->nFadeOutVol) >> 16;
                     } else
-                    if (!pChn->nFadeOutVol)
+                    if (!current_vchan->nFadeOutVol)
                     {
                         vol = 0;
                     }
                 }
                 // Pitch/Pan separation
-                if ((pIns->pitch_pan_separation) && (pChn->nRealPan) && (pChn->nNote))
+                if ((pIns->pitch_pan_separation) && (current_vchan->nRealPan) && (current_vchan->nNote))
                 {
                     // PPS value is 1/512, i.e. PPS=1 will adjust by 8/512 = 1/64 for each 8 semitones
                     // with PPS = 32 / PPC = C-5, E-6 will pan hard right (and D#6 will not)
                     // IT compatibility: IT has a wider pan range here
-                    int pandelta = (int)pChn->nRealPan + (int)((int)(pChn->nNote - pIns->pitch_pan_center - 1) * (int)pIns->pitch_pan_separation) / (int)(IsCompatibleMode(TRK_IMPULSETRACKER) ? 4 : 8);
-                    pChn->nRealPan = CLAMP(pandelta, 0, 256);
+                    int pandelta = (int)current_vchan->nRealPan + (int)((int)(current_vchan->nNote - pIns->pitch_pan_center - 1) * (int)pIns->pitch_pan_separation) / (int)(IsCompatibleMode(TRK_IMPULSETRACKER) ? 4 : 8);
+                    current_vchan->nRealPan = CLAMP(pandelta, 0, 256);
                 }
             } else
             {
                 // No Envelope: key off => note cut
-                if (pChn->flags & CHN_NOTEFADE) // 1.41-: CHN_KEYOFF|CHN_NOTEFADE
+                if (current_vchan->flags & CHN_NOTEFADE) // 1.41-: CHN_KEYOFF|CHN_NOTEFADE
                 {
-                    pChn->nFadeOutVol = 0;
+                    current_vchan->nFadeOutVol = 0;
                     vol = 0;
                 }
             }
             // vol is 14-bits
             if (vol)
             {
-                // IMPORTANT: pChn->nRealVolume is 14 bits !!!
+                // IMPORTANT: current_vchan->nRealVolume is 14 bits !!!
                 // -> _muldiv( 14+8, 6+6, 18); => RealVolume: 14-bit result (22+12-20)
                 
-                //UINT nPlugin = GetBestPlugin(nChn, PRIORITISE_INSTRUMENT, RESPECT_MUTES);
+                //UINT nPlugin = GetBestPlugin(vchan_idx, PRIORITISE_INSTRUMENT, RESPECT_MUTES);
 
                 //Don't let global volume affect level of sample if
                 //global volume is going to be applied to master output anyway.
-                if (pChn->flags & CHN_SYNCMUTE)
+                if (current_vchan->flags & CHN_SYNCMUTE)
                 {
-                    pChn->nRealVolume = 0;
+                    current_vchan->nRealVolume = 0;
                 } else if (m_pConfig->getGlobalVolumeAppliesToMaster())
                 {
-                    pChn->nRealVolume = _muldiv(vol * MAX_GLOBAL_VOLUME, pChn->nGlobalVol * pChn->nInsVol, 1 << 20);
+                    current_vchan->nRealVolume = _muldiv(vol * MAX_GLOBAL_VOLUME, current_vchan->nGlobalVol * current_vchan->nInsVol, 1 << 20);
                 } else
                 {
-                    pChn->nRealVolume = _muldiv(vol * m_nGlobalVolume, pChn->nGlobalVol * pChn->nInsVol, 1 << 20);
+                    current_vchan->nRealVolume = _muldiv(vol * m_nGlobalVolume, current_vchan->nGlobalVol * current_vchan->nInsVol, 1 << 20);
                 }
             }
-            if (pChn->nPeriod < m_nMinPeriod) pChn->nPeriod = m_nMinPeriod;
-            int period = pChn->nPeriod;
-            if ((pChn->flags & (CHN_GLISSANDO|CHN_PORTAMENTO)) ==    (CHN_GLISSANDO|CHN_PORTAMENTO))
+            if (current_vchan->nPeriod < m_nMinPeriod) current_vchan->nPeriod = m_nMinPeriod;
+            int period = current_vchan->nPeriod;
+            if ((current_vchan->flags & (CHN_GLISSANDO|CHN_PORTAMENTO)) ==    (CHN_GLISSANDO|CHN_PORTAMENTO))
             {
-                period = GetPeriodFromNote(GetNoteFromPeriod(period), pChn->nFineTune, pChn->nC5Speed);
+                period = GetPeriodFromNote(GetNoteFromPeriod(period), current_vchan->nFineTune, current_vchan->nC5Speed);
             }
 
             // Arpeggio ?
-            if (pChn->nCommand == CMD_ARPEGGIO)
+            if (current_vchan->nCommand == CMD_ARPEGGIO)
             {
-                if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
+                if(m_nType == MOD_TYPE_MPT && current_vchan->instrument && current_vchan->instrument->pTuning)
                 {
                     switch(m_nTickCount % 3)
                     {
@@ -1080,33 +1080,33 @@ BOOL CSoundFile::ReadNote()
                             arpeggioSteps = 0;
                             break;
                         case 1: 
-                            arpeggioSteps = pChn->nArpeggio >> 4; // >> 4 <-> division by 16. This gives the first number in the parameter.
+                            arpeggioSteps = current_vchan->nArpeggio >> 4; // >> 4 <-> division by 16. This gives the first number in the parameter.
                             break;
                         case 2:
-                            arpeggioSteps = pChn->nArpeggio % 16; //Gives the latter number in the parameter.
+                            arpeggioSteps = current_vchan->nArpeggio % 16; //Gives the latter number in the parameter.
                             break;
                     }
-                    pChn->m_CalculateFreq = true;
-                    pChn->m_ReCalculateFreqOnFirstTick = true;
+                    current_vchan->m_CalculateFreq = true;
+                    current_vchan->m_ReCalculateFreqOnFirstTick = true;
                 }
                 else
                 {
                     //IT playback compatibility 01 & 02
                     if(IsCompatibleMode(TRK_IMPULSETRACKER))
                     {
-                        if(pChn->nArpeggio >> 4 != 0 || (pChn->nArpeggio & 0x0F) != 0)
+                        if(current_vchan->nArpeggio >> 4 != 0 || (current_vchan->nArpeggio & 0x0F) != 0)
                         {
                             switch(m_nTickCount % 3)
                             {
-                                case 1:    period = period / TwoToPowerXOver12(pChn->nArpeggio >> 4); break;
-                                case 2:    period = period / TwoToPowerXOver12(pChn->nArpeggio & 0x0F); break;
+                                case 1:    period = period / TwoToPowerXOver12(current_vchan->nArpeggio >> 4); break;
+                                case 2:    period = period / TwoToPowerXOver12(current_vchan->nArpeggio & 0x0F); break;
                             }
                         }
                     }
                     // FastTracker 2: Swedish tracker logic (TM) arpeggio
                     else if(IsCompatibleMode(TRK_FASTTRACKER2))
                     {
-                        uint8_t note = pChn->nNote;
+                        uint8_t note = current_vchan->nNote;
                         int arpPos = 0;
 
                         if (!(m_dwSongFlags & SONG_FIRSTTICK))
@@ -1115,15 +1115,15 @@ BOOL CSoundFile::ReadNote()
                             if((m_nMusicSpeed > 18) && (m_nMusicSpeed - m_nTickCount > 16)) arpPos = 2; // swedish tracker logic, I love it
                             switch(arpPos)
                             {
-                                case 1:    note += (pChn->nArpeggio >> 4); break;
-                                case 2:    note += (pChn->nArpeggio & 0x0F); break;
+                                case 1:    note += (current_vchan->nArpeggio >> 4); break;
+                                case 2:    note += (current_vchan->nArpeggio & 0x0F); break;
                             }
                         }
 
                         if (note > 109 && arpPos != 0)
                             note = 109; // FT2's note limit
 
-                        period = GetPeriodFromNote(note, pChn->nFineTune, pChn->nC5Speed);
+                        period = GetPeriodFromNote(note, current_vchan->nFineTune, current_vchan->nC5Speed);
 
                     }
                     // Other trackers
@@ -1131,8 +1131,8 @@ BOOL CSoundFile::ReadNote()
                     {
                         switch(m_nTickCount % 3)
                         {
-                            case 1:    period = GetPeriodFromNote(pChn->nNote + (pChn->nArpeggio >> 4), pChn->nFineTune, pChn->nC5Speed); break;
-                            case 2:    period = GetPeriodFromNote(pChn->nNote + (pChn->nArpeggio & 0x0F), pChn->nFineTune, pChn->nC5Speed); break;
+                            case 1:    period = GetPeriodFromNote(current_vchan->nNote + (current_vchan->nArpeggio >> 4), current_vchan->nFineTune, current_vchan->nC5Speed); break;
+                            case 2:    period = GetPeriodFromNote(current_vchan->nNote + (current_vchan->nArpeggio & 0x0F), current_vchan->nFineTune, current_vchan->nC5Speed); break;
                         }
                     }
                 }
@@ -1145,9 +1145,9 @@ BOOL CSoundFile::ReadNote()
             // Pitch/Filter Envelope
             // IT Compatibility: S7B does not disable the pitch envelope, it just pauses the counter
             // Problem: This pauses on the wrong tick at the moment...
-            if ((pIns) && ((pChn->flags & CHN_PITCHENV) || ((pIns->pitch_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (pChn->instrument->pitch_envelope.num_nodes))
+            if ((pIns) && ((current_vchan->flags & CHN_PITCHENV) || ((pIns->pitch_envelope.flags & ENV_ENABLED) && IsCompatibleMode(TRK_IMPULSETRACKER))) && (current_vchan->instrument->pitch_envelope.num_nodes))
             {
-                int envpos = pChn->pitch_envelope.position;
+                int envpos = current_vchan->pitch_envelope.position;
                 UINT pt = pIns->pitch_envelope.num_nodes - 1;
                 for (UINT i=0; i<(UINT)(pIns->pitch_envelope.num_nodes-1); i++)
                 {
@@ -1182,20 +1182,20 @@ BOOL CSoundFile::ReadNote()
                 envpitch = CLAMP(envpitch, -256, 256);
                 // Filter Envelope: controls cutoff frequency
                 //if (pIns->pitch_envelope.flags & ENV_FILTER)
-                if (pChn->flags & CHN_FILTERENV)
+                if (current_vchan->flags & CHN_FILTERENV)
                 {
 #ifndef NO_FILTER
-                    SetupChannelFilter(pChn, (pChn->flags & CHN_FILTER) ? false : true, envpitch);
+                    SetupChannelFilter(current_vchan, (current_vchan->flags & CHN_FILTER) ? false : true, envpitch);
 #endif // NO_FILTER
                 } else
                 // Pitch Envelope
                 {
-                    if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
+                    if(m_nType == MOD_TYPE_MPT && current_vchan->instrument && current_vchan->instrument->pTuning)
                     {
-                        if(pChn->nFineTune != envpitch)
+                        if(current_vchan->nFineTune != envpitch)
                         {
-                            pChn->nFineTune = envpitch;
-                            pChn->m_CalculateFreq = true;
+                            current_vchan->nFineTune = envpitch;
+                            current_vchan->m_CalculateFreq = true;
                             //Preliminary tests indicated that this behavior
                             //is very close to original(with 12TET) when finestep count
                             //is 15.
@@ -1219,11 +1219,11 @@ BOOL CSoundFile::ReadNote()
             }
             
             // Vibrato
-            if (pChn->flags & CHN_VIBRATO)
+            if (current_vchan->flags & CHN_VIBRATO)
             {
-                UINT vibpos = pChn->nVibratoPos;
+                UINT vibpos = current_vchan->nVibratoPos;
                 LONG vdelta;
-                switch (pChn->nVibratoType & 0x03)
+                switch (current_vchan->nVibratoType & 0x03)
                 {
                 case 1:
                     // IT compatibility: IT has its own, more precise tables
@@ -1245,16 +1245,16 @@ BOOL CSoundFile::ReadNote()
                     vdelta = IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSinusTable[vibpos] : ModSinusTable[vibpos];
                 }
 
-                if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
+                if(m_nType == MOD_TYPE_MPT && current_vchan->instrument && current_vchan->instrument->pTuning)
                 {
                     //Hack implementation: Scaling vibratofactor to [0.95; 1.05]
                     //using figure from above tables and vibratodepth parameter
-                    vibratoFactor += 0.05F * vdelta * pChn->m_VibratoDepth / 128.0F;
-                    pChn->m_CalculateFreq = true;
-                    pChn->m_ReCalculateFreqOnFirstTick = false;
+                    vibratoFactor += 0.05F * vdelta * current_vchan->m_VibratoDepth / 128.0F;
+                    current_vchan->m_CalculateFreq = true;
+                    current_vchan->m_ReCalculateFreqOnFirstTick = false;
 
                     if(m_nTickCount + 1 == m_nMusicSpeed)
-                        pChn->m_ReCalculateFreqOnFirstTick = true;
+                        current_vchan->m_ReCalculateFreqOnFirstTick = true;
                 }
                 else //Original behavior
                 {
@@ -1276,7 +1276,7 @@ BOOL CSoundFile::ReadNote()
                     {
                         vdepth = ((!(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT))) || (m_dwSongFlags & SONG_ITOLDEFFECTS)) ? 6 : 7;
                     }
-                    vdelta = (vdelta * (int)pChn->nVibratoDepth) >> vdepth;
+                    vdelta = (vdelta * (int)current_vchan->nVibratoDepth) >> vdepth;
                     if ((m_dwSongFlags & SONG_LINEARSLIDES) && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)))
                     {
                         LONG l = vdelta;
@@ -1297,22 +1297,22 @@ BOOL CSoundFile::ReadNote()
                 {
                     // IT compatibility: IT has its own, more precise tables
                     if(IsCompatibleMode(TRK_IMPULSETRACKER))
-                        pChn->nVibratoPos = (vibpos + 4 * pChn->nVibratoSpeed) & 0xFF;
+                        current_vchan->nVibratoPos = (vibpos + 4 * current_vchan->nVibratoSpeed) & 0xFF;
                     else
-                        pChn->nVibratoPos = (vibpos + pChn->nVibratoSpeed) & 0x3F;
+                        current_vchan->nVibratoPos = (vibpos + current_vchan->nVibratoSpeed) & 0x3F;
                 }
             }
             // Panbrello
-            if (pChn->flags & CHN_PANBRELLO)
+            if (current_vchan->flags & CHN_PANBRELLO)
             {
                 UINT panpos;
                 // IT compatibility: IT has its own, more precise tables
                 if(IsCompatibleMode(TRK_IMPULSETRACKER))
-                    panpos = pChn->nPanbrelloPos & 0xFF;
+                    panpos = current_vchan->nPanbrelloPos & 0xFF;
                 else
-                    panpos = ((pChn->nPanbrelloPos + 0x10) >> 2) & 0x3F;
+                    panpos = ((current_vchan->nPanbrelloPos + 0x10) >> 2) & 0x3F;
                 LONG pdelta;
-                switch (pChn->nPanbrelloType & 0x03)
+                switch (current_vchan->nPanbrelloType & 0x03)
                 {
                 case 1:
                     // IT compatibility: IT has its own, more precise tables
@@ -1333,19 +1333,19 @@ BOOL CSoundFile::ReadNote()
                     // IT compatibility: IT has its own, more precise tables
                     pdelta = IsCompatibleMode(TRK_IMPULSETRACKER) ? ITSinusTable[panpos] : ModSinusTable[panpos];
                 }
-                pChn->nPanbrelloPos += pChn->nPanbrelloSpeed;
-                pdelta = ((pdelta * (int)pChn->nPanbrelloDepth) + 2) >> 3;
-                pdelta += pChn->nRealPan;
+                current_vchan->nPanbrelloPos += current_vchan->nPanbrelloSpeed;
+                pdelta = ((pdelta * (int)current_vchan->nPanbrelloDepth) + 2) >> 3;
+                pdelta += current_vchan->nRealPan;
                 
-                pChn->nRealPan = CLAMP(pdelta, 0, 256);
-                //if(IsCompatibleMode(TRK_IMPULSETRACKER)) pChn->nPan = pChn->nRealPan; // TODO
+                current_vchan->nRealPan = CLAMP(pdelta, 0, 256);
+                //if(IsCompatibleMode(TRK_IMPULSETRACKER)) current_vchan->nPan = current_vchan->nRealPan; // TODO
             }
             int nPeriodFrac = 0;
             // Sample Auto-Vibrato
-            if ((pChn->sample) && (pChn->sample->vibrato_depth))
+            if ((current_vchan->sample) && (current_vchan->sample->vibrato_depth))
             {
-                modplug::tracker::modsample_t *pSmp = pChn->sample;
-                const bool alternativeTuning = pChn->instrument && pChn->instrument->pTuning;
+                modplug::tracker::modsample_t *pSmp = current_vchan->sample;
+                const bool alternativeTuning = current_vchan->instrument && current_vchan->instrument->pTuning;
 
                 // IT compatibility: Autovibrato is so much different in IT that I just put this in a separate code block, to get rid of a dozen IsCompatibilityMode() calls.
                 if(IsCompatibleMode(TRK_IMPULSETRACKER) && !alternativeTuning)
@@ -1360,14 +1360,14 @@ BOOL CSoundFile::ReadNote()
                     4) AH contains the depth of the vibrato as a fine-linear slide.
                     5) Mov [SomeVariableNameRelatingToVibrato], AX  ; For the next cycle.
                     */
-                    const int vibpos = pChn->nAutoVibPos & 0xFF;
-                    int adepth = pChn->nAutoVibDepth; // (1)
+                    const int vibpos = current_vchan->nAutoVibPos & 0xFF;
+                    int adepth = current_vchan->nAutoVibDepth; // (1)
                     adepth += pSmp->vibrato_sweep & 0xFF; // (2 & 3)
                     adepth = min(adepth, (int)(pSmp->vibrato_depth << 8));
-                    pChn->nAutoVibDepth = adepth; // (5)
+                    current_vchan->nAutoVibDepth = adepth; // (5)
                     adepth >>= 8; // (4)
 
-                    pChn->nAutoVibPos += pSmp->vibrato_rate;
+                    current_vchan->nAutoVibPos += pSmp->vibrato_rate;
 
                     int vdelta;
                     switch(pSmp->vibrato_type)
@@ -1414,7 +1414,7 @@ BOOL CSoundFile::ReadNote()
                     // MPT's autovibrato code
                     if (pSmp->vibrato_sweep == 0)
                     {
-                        pChn->nAutoVibDepth = pSmp->vibrato_depth << 8;
+                        current_vchan->nAutoVibDepth = pSmp->vibrato_depth << 8;
                     } else
                     {
                         // Calculate current autovibrato depth using vibsweep
@@ -1422,52 +1422,52 @@ BOOL CSoundFile::ReadNote()
                         {
                             // Note: changed bitshift from 3 to 1 as the variable is not divided by 4 in the IT loader anymore
                             // - so we divide sweep by 4 here.
-                            pChn->nAutoVibDepth += pSmp->vibrato_sweep << 1;
+                            current_vchan->nAutoVibDepth += pSmp->vibrato_sweep << 1;
                         } else
                         {
-                            if (!(pChn->flags & CHN_KEYOFF))
+                            if (!(current_vchan->flags & CHN_KEYOFF))
                             {
-                                pChn->nAutoVibDepth += (pSmp->vibrato_depth << 8) /    pSmp->vibrato_sweep;
+                                current_vchan->nAutoVibDepth += (pSmp->vibrato_depth << 8) /    pSmp->vibrato_sweep;
                             }
                         }
-                        if ((pChn->nAutoVibDepth >> 8) > pSmp->vibrato_depth)
-                            pChn->nAutoVibDepth = pSmp->vibrato_depth << 8;
+                        if ((current_vchan->nAutoVibDepth >> 8) > pSmp->vibrato_depth)
+                            current_vchan->nAutoVibDepth = pSmp->vibrato_depth << 8;
                     }
-                    pChn->nAutoVibPos += pSmp->vibrato_rate;
+                    current_vchan->nAutoVibPos += pSmp->vibrato_rate;
                     int vdelta;
                     switch(pSmp->vibrato_type)
                     {
                     case VIB_RANDOM:
-                        vdelta = ModRandomTable[pChn->nAutoVibPos & 0x3F];
-                        pChn->nAutoVibPos++;
+                        vdelta = ModRandomTable[current_vchan->nAutoVibPos & 0x3F];
+                        current_vchan->nAutoVibPos++;
                         break;
                     case VIB_RAMP_DOWN:
-                        vdelta = ((0x40 - (pChn->nAutoVibPos >> 1)) & 0x7F) - 0x40;
+                        vdelta = ((0x40 - (current_vchan->nAutoVibPos >> 1)) & 0x7F) - 0x40;
                         break;
                     case VIB_RAMP_UP:
-                        vdelta = ((0x40 + (pChn->nAutoVibPos >> 1)) & 0x7f) - 0x40;
+                        vdelta = ((0x40 + (current_vchan->nAutoVibPos >> 1)) & 0x7f) - 0x40;
                         break;
                     case VIB_SQUARE:
-                        vdelta = (pChn->nAutoVibPos & 128) ? +64 : -64;
+                        vdelta = (current_vchan->nAutoVibPos & 128) ? +64 : -64;
                         break;
                     case VIB_SINE:
                     default:
-                        vdelta = ft2VibratoTable[pChn->nAutoVibPos & 0xFF];
+                        vdelta = ft2VibratoTable[current_vchan->nAutoVibPos & 0xFF];
                     }
                     int n;
-                    n =    ((vdelta * pChn->nAutoVibDepth) >> 8);
+                    n =    ((vdelta * current_vchan->nAutoVibDepth) >> 8);
 
                     if(alternativeTuning)
                     {
                         //Vib sweep is not taken into account here.
                         vibratoFactor += 0.05F * pSmp->vibrato_depth * vdelta / 4096.0F; //4096 == 64^2
                         //See vibrato for explanation.
-                        pChn->m_CalculateFreq = true;
+                        current_vchan->m_CalculateFreq = true;
                         /*
                         Finestep vibrato:
                         const float autoVibDepth = pSmp->vibrato_depth * val / 4096.0F; //4096 == 64^2
-                        vibratoFineSteps += static_cast<CTuning::FINESTEPTYPE>(pChn->instrument->pTuning->GetFineStepCount() *  autoVibDepth);
-                        pChn->m_CalculateFreq = true;
+                        vibratoFineSteps += static_cast<CTuning::FINESTEPTYPE>(current_vchan->instrument->pTuning->GetFineStepCount() *  autoVibDepth);
+                        current_vchan->m_CalculateFreq = true;
                         */
                     }
                     else //Original behavior
@@ -1502,7 +1502,7 @@ BOOL CSoundFile::ReadNote()
             // Final Period
             if (period <= m_nMinPeriod)
             {
-                if (m_nType & MOD_TYPE_S3M) pChn->length = 0;
+                if (m_nType & MOD_TYPE_S3M) current_vchan->length = 0;
                 period = m_nMinPeriod;
             }
             //rewbs: temporarily commenting out block to allow notes below A-0.
@@ -1510,9 +1510,9 @@ BOOL CSoundFile::ReadNote()
             {
                 if ((m_nType & MOD_TYPE_IT) || (period >= 0x100000))
                 {
-                    pChn->nFadeOutVol = 0;
-                    pChn->flags |= CHN_NOTEFADE;
-                    pChn->nRealVolume = 0;
+                    current_vchan->nFadeOutVol = 0;
+                    current_vchan->flags |= CHN_NOTEFADE;
+                    current_vchan->nRealVolume = 0;
                 }
                 period = m_nMaxPeriod;
                 nPeriodFrac = 0;
@@ -1521,20 +1521,20 @@ BOOL CSoundFile::ReadNote()
 
             if(m_nType != MOD_TYPE_MPT || !pIns || pIns->pTuning == nullptr)
             {
-                freq = GetFreqFromPeriod(period, pChn->nC5Speed, nPeriodFrac);
+                freq = GetFreqFromPeriod(period, current_vchan->nC5Speed, nPeriodFrac);
             }
             else //In this case: m_nType == MOD_TYPE_MPT and using custom tunings.
             {
-                if(pChn->m_CalculateFreq || (pChn->m_ReCalculateFreqOnFirstTick && m_nTickCount == 0))
+                if(current_vchan->m_CalculateFreq || (current_vchan->m_ReCalculateFreqOnFirstTick && m_nTickCount == 0))
                 {
-                    pChn->m_Freq = pChn->nC5Speed * vibratoFactor * pIns->pTuning->GetRatio(pChn->nNote - NOTE_MIDDLEC + arpeggioSteps, pChn->nFineTune+pChn->m_PortamentoFineSteps);
-                    if(!pChn->m_CalculateFreq)
-                        pChn->m_ReCalculateFreqOnFirstTick = false;
+                    current_vchan->m_Freq = current_vchan->nC5Speed * vibratoFactor * pIns->pTuning->GetRatio(current_vchan->nNote - NOTE_MIDDLEC + arpeggioSteps, current_vchan->nFineTune+current_vchan->m_PortamentoFineSteps);
+                    if(!current_vchan->m_CalculateFreq)
+                        current_vchan->m_ReCalculateFreqOnFirstTick = false;
                     else
-                        pChn->m_CalculateFreq = false;
+                        current_vchan->m_CalculateFreq = false;
                 }
 
-                freq = pChn->m_Freq;
+                freq = current_vchan->m_Freq;
             }
 
             //Applying Pitch/Tempo lock.
@@ -1544,165 +1544,143 @@ BOOL CSoundFile::ReadNote()
 
             if ((m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) && (freq < 256))
             {
-                pChn->nFadeOutVol = 0;
-                pChn->flags |= CHN_NOTEFADE;
-                pChn->nRealVolume = 0;
+                current_vchan->nFadeOutVol = 0;
+                current_vchan->flags |= CHN_NOTEFADE;
+                current_vchan->nRealVolume = 0;
             }
 
             UINT ninc = _muldiv(freq, 0x10000, gdwMixingFreq);
             if ((ninc >= 0xFFB0) && (ninc <= 0x10090)) ninc = 0x10000;
             if (m_nFreqFactor != 128) ninc = (ninc * m_nFreqFactor) >> 7;
             if (ninc > 0xFF0000) ninc = 0xFF0000;
-            pChn->position_delta = (ninc+1) & ~3;
+            current_vchan->position_delta = (ninc+1) & ~3;
         }
         
         // Increment envelope position
         if (pIns)
         {
             // Volume Envelope
-            if (pChn->flags & CHN_VOLENV)
+            if (current_vchan->flags & CHN_VOLENV)
             {
                 // Increase position
-                pChn->volume_envelope.position++;
+                current_vchan->volume_envelope.position++;
                 // Volume Loop ?
                 if (pIns->volume_envelope.flags & ENV_LOOP)
                 {
                     UINT volloopend = pIns->volume_envelope.Ticks[pIns->volume_envelope.loop_end];
                     if (m_nType != MOD_TYPE_XM) volloopend++;
-                    if (pChn->volume_envelope.position == volloopend)
+                    if (current_vchan->volume_envelope.position == volloopend)
                     {
-                        pChn->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.loop_start];
+                        current_vchan->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.loop_start];
                         if ((pIns->volume_envelope.loop_end == pIns->volume_envelope.loop_start) && (!pIns->volume_envelope.Values[pIns->volume_envelope.loop_start])
                          && ((!(m_nType & MOD_TYPE_XM)) || (pIns->volume_envelope.loop_end+1 == (int)pIns->volume_envelope.num_nodes)))
                         {
-                            pChn->flags |= CHN_NOTEFADE;
-                            pChn->nFadeOutVol = 0;
+                            current_vchan->flags |= CHN_NOTEFADE;
+                            current_vchan->nFadeOutVol = 0;
                         }
                     }
                 }
                 // Volume Sustain ?
-                if ((pIns->volume_envelope.flags & ENV_SUSTAIN) && (!(pChn->flags & CHN_KEYOFF)))
+                if ((pIns->volume_envelope.flags & ENV_SUSTAIN) && (!(current_vchan->flags & CHN_KEYOFF)))
                 {
-                    if (pChn->volume_envelope.position == (UINT)pIns->volume_envelope.Ticks[pIns->volume_envelope.sustain_end] + 1)
-                        pChn->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.sustain_start];
+                    if (current_vchan->volume_envelope.position == (UINT)pIns->volume_envelope.Ticks[pIns->volume_envelope.sustain_end] + 1)
+                        current_vchan->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.sustain_start];
                 } else
                 // End of Envelope ?
-                if (pChn->volume_envelope.position > pIns->volume_envelope.Ticks[pIns->volume_envelope.num_nodes - 1])
+                if (current_vchan->volume_envelope.position > pIns->volume_envelope.Ticks[pIns->volume_envelope.num_nodes - 1])
                 {
-                    if ((m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) || (pChn->flags & CHN_KEYOFF)) pChn->flags |= CHN_NOTEFADE;
-                    pChn->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.num_nodes - 1];
-                    if ((!pIns->volume_envelope.Values[pIns->volume_envelope.num_nodes-1]) && ((nChn >= m_nChannels) || (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))))
+                    if ((m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) || (current_vchan->flags & CHN_KEYOFF)) current_vchan->flags |= CHN_NOTEFADE;
+                    current_vchan->volume_envelope.position = pIns->volume_envelope.Ticks[pIns->volume_envelope.num_nodes - 1];
+                    if ((!pIns->volume_envelope.Values[pIns->volume_envelope.num_nodes-1]) && ((vchan_idx >= m_nChannels) || (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))))
                     {
-                        pChn->flags |= CHN_NOTEFADE;
-                        pChn->nFadeOutVol = 0;
-                        pChn->nRealVolume = 0;
+                        current_vchan->flags |= CHN_NOTEFADE;
+                        current_vchan->nFadeOutVol = 0;
+                        current_vchan->nRealVolume = 0;
                     }
                 }
             }
             // Panning Envelope
-            if (pChn->flags & CHN_PANENV)
+            if (current_vchan->flags & CHN_PANENV)
             {
-                pChn->panning_envelope.position++;
+                current_vchan->panning_envelope.position++;
                 if (pIns->panning_envelope.flags & ENV_LOOP)
                 {
                     UINT panloopend = pIns->panning_envelope.Ticks[pIns->panning_envelope.loop_end];
                     if (m_nType != MOD_TYPE_XM) panloopend++;
-                    if (pChn->panning_envelope.position == panloopend)
-                        pChn->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.loop_start];
+                    if (current_vchan->panning_envelope.position == panloopend)
+                        current_vchan->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.loop_start];
                 }
                 // Panning Sustain ?
-                if ((pIns->panning_envelope.flags & ENV_SUSTAIN) && (pChn->panning_envelope.position == (UINT)pIns->panning_envelope.Ticks[pIns->panning_envelope.sustain_end]+1)
-                 && (!(pChn->flags & CHN_KEYOFF)))
+                if ((pIns->panning_envelope.flags & ENV_SUSTAIN) && (current_vchan->panning_envelope.position == (UINT)pIns->panning_envelope.Ticks[pIns->panning_envelope.sustain_end]+1)
+                 && (!(current_vchan->flags & CHN_KEYOFF)))
                 {
                     // Panning sustained
-                    pChn->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.sustain_start];
+                    current_vchan->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.sustain_start];
                 } else
                 {
-                    if (pChn->panning_envelope.position > pIns->panning_envelope.Ticks[pIns->panning_envelope.num_nodes - 1])
-                        pChn->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.num_nodes - 1];
+                    if (current_vchan->panning_envelope.position > pIns->panning_envelope.Ticks[pIns->panning_envelope.num_nodes - 1])
+                        current_vchan->panning_envelope.position = pIns->panning_envelope.Ticks[pIns->panning_envelope.num_nodes - 1];
                 }
             }
             // Pitch Envelope
-            if (pChn->flags & CHN_PITCHENV)
+            if (current_vchan->flags & CHN_PITCHENV)
             {
                 // Increase position
-                pChn->pitch_envelope.position++;
+                current_vchan->pitch_envelope.position++;
                 // Pitch Loop ?
                 if (pIns->pitch_envelope.flags & ENV_LOOP)
                 {
                     UINT pitchloopend = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.loop_end];
                     //IT compatibility 24. Short envelope loops
                     if (IsCompatibleMode(TRK_IMPULSETRACKER)) pitchloopend++;
-                    if (pChn->pitch_envelope.position >= pitchloopend)
-                        pChn->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.loop_start];
+                    if (current_vchan->pitch_envelope.position >= pitchloopend)
+                        current_vchan->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.loop_start];
                 }
                 // Pitch Sustain ?
-                if ((pIns->pitch_envelope.flags & ENV_SUSTAIN) && (!(pChn->flags & CHN_KEYOFF)))
+                if ((pIns->pitch_envelope.flags & ENV_SUSTAIN) && (!(current_vchan->flags & CHN_KEYOFF)))
                 {
-                    if (pChn->pitch_envelope.position == (UINT)pIns->pitch_envelope.Ticks[pIns->pitch_envelope.sustain_end]+1)
-                        pChn->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.sustain_start];
+                    if (current_vchan->pitch_envelope.position == (UINT)pIns->pitch_envelope.Ticks[pIns->pitch_envelope.sustain_end]+1)
+                        current_vchan->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.sustain_start];
                 } else
                 {
-                    if (pChn->pitch_envelope.position > pIns->pitch_envelope.Ticks[pIns->pitch_envelope.num_nodes - 1])
-                        pChn->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.num_nodes - 1];
+                    if (current_vchan->pitch_envelope.position > pIns->pitch_envelope.Ticks[pIns->pitch_envelope.num_nodes - 1])
+                        current_vchan->pitch_envelope.position = pIns->pitch_envelope.Ticks[pIns->pitch_envelope.num_nodes - 1];
                 }
             }
         }
 
-#ifdef MODPLUG_PLAYER
-        // Limit CPU -> > 80% -> don't ramp
-        if ((gnCPUUsage >= 80) && (!pChn->nRealVolume))
-        {
-            pChn->left_volume = pChn->right_volume = 0;
-        }
-#endif // MODPLUG_PLAYER
         // Volume ramping
-        pChn->flags &= ~CHN_VOLUMERAMP;
-        if ((pChn->nRealVolume) || (pChn->left_volume) || (pChn->right_volume))
-            pChn->flags |= CHN_VOLUMERAMP;
-#ifdef MODPLUG_PLAYER
-        // Decrease VU-Meter
-        if (pChn->nVUMeter > VUMETER_DECAY)    pChn->nVUMeter -= VUMETER_DECAY; else pChn->nVUMeter = 0;
-#endif // MODPLUG_PLAYER
+        current_vchan->flags &= ~CHN_VOLUMERAMP;
+        if ((current_vchan->nRealVolume) || (current_vchan->left_volume) || (current_vchan->right_volume))
+            current_vchan->flags |= CHN_VOLUMERAMP;
 #ifdef ENABLE_STEREOVU
-        if (pChn->nLeftVU > VUMETER_DECAY) pChn->nLeftVU -= VUMETER_DECAY; else pChn->nLeftVU = 0;
-        if (pChn->nRightVU > VUMETER_DECAY) pChn->nRightVU -= VUMETER_DECAY; else pChn->nRightVU = 0;
+        if (current_vchan->nLeftVU > VUMETER_DECAY) current_vchan->nLeftVU -= VUMETER_DECAY; else current_vchan->nLeftVU = 0;
+        if (current_vchan->nRightVU > VUMETER_DECAY) current_vchan->nRightVU -= VUMETER_DECAY; else current_vchan->nRightVU = 0;
 #endif
         // Check for too big position_delta
-        if (((pChn->position_delta >> 16) + 1) >= (LONG)(pChn->loop_end - pChn->loop_start)) pChn->flags &= ~CHN_LOOP;
-        pChn->nNewRightVol = pChn->nNewLeftVol = 0;
-        pChn->active_sample_data = ((pChn->sample_data) && (pChn->length) && (pChn->position_delta)) ? pChn->sample_data : NULL;
-        if (pChn->active_sample_data)
+        if (((current_vchan->position_delta >> 16) + 1) >= (LONG)(current_vchan->loop_end - current_vchan->loop_start)) current_vchan->flags &= ~CHN_LOOP;
+        current_vchan->nNewRightVol = current_vchan->nNewLeftVol = 0;
+        current_vchan->active_sample_data = ((current_vchan->sample_data) && (current_vchan->length) && (current_vchan->position_delta)) ? current_vchan->sample_data : NULL;
+        if (current_vchan->active_sample_data)
         {
             // Update VU-Meter (nRealVolume is 14-bit)
-#ifdef MODPLUG_PLAYER
-            UINT vutmp = pChn->nRealVolume >> (14 - 8);
-            if (vutmp > 0xFF) vutmp = 0xFF;
-            if (pChn->nVUMeter >= 0x100) pChn->nVUMeter = vutmp;
-            vutmp >>= 1;
-            if (pChn->nVUMeter < vutmp)    pChn->nVUMeter = vutmp;
-#endif // MODPLUG_PLAYER
 #ifdef ENABLE_STEREOVU
-            UINT vul = (pChn->nRealVolume * pChn->nRealPan) >> 14;
+            UINT vul = (current_vchan->nRealVolume * current_vchan->nRealPan) >> 14;
             if (vul > 127) vul = 127;
-            if (pChn->nLeftVU > 127) pChn->nLeftVU = (uint8_t)vul;
+            if (current_vchan->nLeftVU > 127) current_vchan->nLeftVU = (uint8_t)vul;
             vul >>= 1;
-            if (pChn->nLeftVU < vul) pChn->nLeftVU = (uint8_t)vul;
-            UINT vur = (pChn->nRealVolume * (256-pChn->nRealPan)) >> 14;
+            if (current_vchan->nLeftVU < vul) current_vchan->nLeftVU = (uint8_t)vul;
+            UINT vur = (current_vchan->nRealVolume * (256-current_vchan->nRealPan)) >> 14;
             if (vur > 127) vur = 127;
-            if (pChn->nRightVU > 127) pChn->nRightVU = (uint8_t)vur;
+            if (current_vchan->nRightVU > 127) current_vchan->nRightVU = (uint8_t)vur;
             vur >>= 1;
-            if (pChn->nRightVU < vur) pChn->nRightVU = (uint8_t)vur;
+            if (current_vchan->nRightVU < vur) current_vchan->nRightVU = (uint8_t)vur;
 #endif
-#ifdef MODPLUG_TRACKER
-            UINT kChnMasterVol = (pChn->flags & CHN_EXTRALOUD) ? 0x100 : nMasterVol;
-#else
-#define    	kChnMasterVol	nMasterVol
-#endif // MODPLUG_TRACKER
+            UINT kChnMasterVol = (current_vchan->flags & CHN_EXTRALOUD) ? 0x100 : nMasterVol;
             // Adjusting volumes
             if (gnChannels >= 2)
             {
-                int pan = ((int)pChn->nRealPan) - 128;
+                int pan = ((int)current_vchan->nRealPan) - 128;
                 pan *= (int)m_nStereoSeparation;
                 pan /= 128;
                 pan += 128;
@@ -1714,11 +1692,11 @@ BOOL CSoundFile::ReadNote()
                 LONG realvol;
                 if (m_pConfig->getUseGlobalPreAmp())
                 {
-                    realvol = (pChn->nRealVolume * kChnMasterVol) >> 7;
+                    realvol = (current_vchan->nRealVolume * kChnMasterVol) >> 7;
                 } else
                 {
                     //Extra attenuation required here if we're bypassing pre-amp.
-                    realvol = (pChn->nRealVolume * kChnMasterVol) >> 8;
+                    realvol = (current_vchan->nRealVolume * kChnMasterVol) >> 8;
                 }
                 
                 const forcePanningMode panningMode = m_pConfig->getForcePanningMode();     			
@@ -1726,38 +1704,38 @@ BOOL CSoundFile::ReadNote()
                 {
                     if (pan < 128)
                     {
-                        pChn->nNewLeftVol = (realvol * pan) >> 8;
-                        pChn->nNewRightVol = (realvol * 128) >> 8;
+                        current_vchan->nNewLeftVol = (realvol * pan) >> 8;
+                        current_vchan->nNewRightVol = (realvol * 128) >> 8;
                     } else
                     {
-                        pChn->nNewLeftVol = (realvol * 128) >> 8;
-                        pChn->nNewRightVol = (realvol * (256 - pan)) >> 8;
+                        current_vchan->nNewLeftVol = (realvol * 128) >> 8;
+                        current_vchan->nNewRightVol = (realvol * (256 - pan)) >> 8;
                     }
                 } else
                 {
-                    pChn->nNewLeftVol = (realvol * pan) >> 8;
-                    pChn->nNewRightVol = (realvol * (256 - pan)) >> 8;
+                    current_vchan->nNewLeftVol = (realvol * pan) >> 8;
+                    current_vchan->nNewRightVol = (realvol * (256 - pan)) >> 8;
                 }
 
             } else
             {
-                pChn->nNewRightVol = (pChn->nRealVolume * kChnMasterVol) >> 8;
-                pChn->nNewLeftVol = pChn->nNewRightVol;
+                current_vchan->nNewRightVol = (current_vchan->nRealVolume * kChnMasterVol) >> 8;
+                current_vchan->nNewLeftVol = current_vchan->nNewRightVol;
             }
             // Clipping volumes
-            //if (pChn->nNewRightVol > 0xFFFF) pChn->nNewRightVol = 0xFFFF;
-            //if (pChn->nNewLeftVol > 0xFFFF) pChn->nNewLeftVol = 0xFFFF;
+            //if (current_vchan->nNewRightVol > 0xFFFF) current_vchan->nNewRightVol = 0xFFFF;
+            //if (current_vchan->nNewLeftVol > 0xFFFF) current_vchan->nNewLeftVol = 0xFFFF;
             // Check IDO
             if (gdwSoundSetup & SNDMIX_NORESAMPLING)
             {
-                pChn->flags |= CHN_NOIDO;
+                current_vchan->flags |= CHN_NOIDO;
             } else
             {
-                pChn->flags &= ~(CHN_NOIDO|CHN_HQSRC);
+                current_vchan->flags &= ~(CHN_NOIDO|CHN_HQSRC);
 #ifndef FASTSOUNDLIB
-                if (pChn->position_delta == 0x10000)
+                if (current_vchan->position_delta == 0x10000)
                 {
-                    pChn->flags |= CHN_NOIDO;
+                    current_vchan->flags |= CHN_NOIDO;
                 } else
                 if ((gdwSoundSetup & SNDMIX_HQRESAMPLER) && ((gnCPUUsage < 80) || (gdwSoundSetup & SNDMIX_DIRECTTODISK) || (m_nMixChannels < 8)))
                 {
@@ -1772,68 +1750,68 @@ BOOL CSoundFile::ReadNote()
                         {
                             fmax = 0x18000;
                         }
-                        if ((pChn->nNewLeftVol < 0x80) && (pChn->nNewRightVol < 0x80)
-                         && (pChn->left_volume < 0x80) && (pChn->right_volume < 0x80))
+                        if ((current_vchan->nNewLeftVol < 0x80) && (current_vchan->nNewRightVol < 0x80)
+                         && (current_vchan->left_volume < 0x80) && (current_vchan->right_volume < 0x80))
                         {
-                            if (pChn->position_delta >= 0xFF00) pChn->flags |= CHN_NOIDO;
+                            if (current_vchan->position_delta >= 0xFF00) current_vchan->flags |= CHN_NOIDO;
                         } else
                         {
-                            pChn->flags |= (pChn->position_delta >= fmax) ? CHN_NOIDO : CHN_HQSRC;
+                            current_vchan->flags |= (current_vchan->position_delta >= fmax) ? CHN_NOIDO : CHN_HQSRC;
                         }
                     } else
                     {
-                        pChn->flags |= CHN_HQSRC;
+                        current_vchan->flags |= CHN_HQSRC;
                     }
                     
                 } else
                 {
-                    if ((pChn->position_delta >= 0x14000)
-                    || ((pChn->position_delta >= 0xFF00) && ((pChn->position_delta < 0x10100) || (gdwSysInfo & SYSMIX_SLOWCPU)))
-                    || ((gnCPUUsage > 80) && (pChn->nNewLeftVol < 0x100) && (pChn->nNewRightVol < 0x100)))
-                        pChn->flags |= CHN_NOIDO;
+                    if ((current_vchan->position_delta >= 0x14000)
+                    || ((current_vchan->position_delta >= 0xFF00) && ((current_vchan->position_delta < 0x10100) || (gdwSysInfo & SYSMIX_SLOWCPU)))
+                    || ((gnCPUUsage > 80) && (current_vchan->nNewLeftVol < 0x100) && (current_vchan->nNewRightVol < 0x100)))
+                        current_vchan->flags |= CHN_NOIDO;
                 }
 #else
-                if (pChn->position_delta >= 0xFE00) pChn->flags |= CHN_NOIDO;
-                if (true) pChn->flags |= CHN_NOIDO;
+                if (current_vchan->position_delta >= 0xFE00) current_vchan->flags |= CHN_NOIDO;
+                if (true) current_vchan->flags |= CHN_NOIDO;
 #endif // FASTSOUNDLIB
             }
 
             /*if (m_pConfig->getUseGlobalPreAmp())
             {
-                pChn->nNewRightVol >>= modplug::mixer::MIXING_ATTENUATION;
-                pChn->nNewLeftVol >>= modplug::mixer::MIXING_ATTENUATION;
+                current_vchan->nNewRightVol >>= modplug::mixer::MIXING_ATTENUATION;
+                current_vchan->nNewLeftVol >>= modplug::mixer::MIXING_ATTENUATION;
             }*/
             const int extraAttenuation = m_pConfig->getExtraSampleAttenuation();
-            pChn->nNewRightVol >>= extraAttenuation;
-            pChn->nNewLeftVol >>= extraAttenuation;
+            current_vchan->nNewRightVol >>= extraAttenuation;
+            current_vchan->nNewLeftVol >>= extraAttenuation;
 
-            pChn->right_ramp = pChn->left_ramp = 0;
+            current_vchan->right_ramp = current_vchan->left_ramp = 0;
             // Dolby Pro-Logic Surround
-            if ((pChn->flags & CHN_SURROUND) && (gnChannels == 2)) pChn->nNewLeftVol = - pChn->nNewLeftVol;
+            if ((current_vchan->flags & CHN_SURROUND) && (gnChannels == 2)) current_vchan->nNewLeftVol = - current_vchan->nNewLeftVol;
             // Checking Ping-Pong Loops
-            if (pChn->flags & CHN_PINGPONGFLAG) pChn->position_delta = -pChn->position_delta;
+            if (current_vchan->flags & CHN_PINGPONGFLAG) current_vchan->position_delta = -current_vchan->position_delta;
 
             // Setting up volume ramp
              // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
-            if ((pChn->flags & CHN_VOLUMERAMP) && ((pChn->right_volume != pChn->nNewRightVol) || (pChn->left_volume != pChn->nNewLeftVol)))    {
-                bool rampUp = (pChn->nNewRightVol > pChn->right_volume) || (pChn->nNewLeftVol > pChn->left_volume);
+            if ((current_vchan->flags & CHN_VOLUMERAMP) && ((current_vchan->right_volume != current_vchan->nNewRightVol) || (current_vchan->left_volume != current_vchan->nNewLeftVol)))    {
+                bool rampUp = (current_vchan->nNewRightVol > current_vchan->right_volume) || (current_vchan->nNewLeftVol > current_vchan->left_volume);
                 LONG rampLength, globalRampLength, instrRampLength = 0;
                 rampLength = globalRampLength = rampUp ? gnVolumeRampInSamples : gnVolumeRampOutSamples;
                 //XXXih: add real support for bidi ramping here
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
                 //XXXih: jesus.
-                bool enableCustomRamp = pChn->instrument && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM));
+                bool enableCustomRamp = current_vchan->instrument && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM));
                 if (enableCustomRamp) {
-                    instrRampLength = rampUp ? pChn->instrument->volume_ramp_up : pChn->instrument->volume_ramp_down;
+                    instrRampLength = rampUp ? current_vchan->instrument->volume_ramp_up : current_vchan->instrument->volume_ramp_down;
                     rampLength = instrRampLength ? (gdwMixingFreq * instrRampLength / 100000) : globalRampLength;
                 }
                 if (!rampLength) {
                     rampLength = 1;
                 }
 // -! NEW_FEATURE#0027
-                LONG nRightDelta = ((pChn->nNewRightVol - pChn->right_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                LONG nLeftDelta  = ((pChn->nNewLeftVol - pChn->left_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                LONG nRightDelta = ((current_vchan->nNewRightVol - current_vchan->right_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                LONG nLeftDelta  = ((current_vchan->nNewLeftVol - current_vchan->left_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
 #ifndef FASTSOUNDLIB
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup "
@@ -1842,7 +1820,7 @@ BOOL CSoundFile::ReadNote()
 //    			  && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50)))
                 if ((gdwSoundSetup & SNDMIX_DIRECTTODISK) || ((gdwSysInfo & (SYSMIX_ENABLEMMX | SYSMIX_FASTCPU)) && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && instrRampLength))) {
 // -! NEW_FEATURE#0027
-                    if ((pChn->right_volume | pChn->left_volume) && (pChn->nNewRightVol | pChn->nNewLeftVol) && (!(pChn->flags & CHN_FASTVOLRAMP)))    {
+                    if ((current_vchan->right_volume | current_vchan->left_volume) && (current_vchan->nNewRightVol | current_vchan->nNewLeftVol) && (!(current_vchan->flags & CHN_FASTVOLRAMP)))    {
                         rampLength = m_nBufferCount;
                         if (rampLength > (1 << (modplug::mixgraph::VOLUME_RAMP_PRECISION-1))) {
                             rampLength = (1 << (modplug::mixgraph::VOLUME_RAMP_PRECISION-1));
@@ -1853,39 +1831,40 @@ BOOL CSoundFile::ReadNote()
                     }
                 }
 #endif // FASTSOUNDLIB
-                pChn->right_ramp = nRightDelta / rampLength;
-                pChn->left_ramp = nLeftDelta / rampLength;
-                pChn->right_volume = pChn->nNewRightVol - ((pChn->right_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                pChn->left_volume = pChn->nNewLeftVol - ((pChn->left_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                if (pChn->right_ramp|pChn->left_ramp)
+                current_vchan->right_ramp = nRightDelta / rampLength;
+                current_vchan->left_ramp = nLeftDelta / rampLength;
+                current_vchan->right_volume = current_vchan->nNewRightVol - ((current_vchan->right_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                current_vchan->left_volume = current_vchan->nNewLeftVol - ((current_vchan->left_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                if (current_vchan->right_ramp|current_vchan->left_ramp)
                 {
-                    pChn->nRampLength = rampLength;
+                    current_vchan->nRampLength = rampLength;
                 } else
                 {
-                    pChn->flags &= ~CHN_VOLUMERAMP;
-                    pChn->right_volume = pChn->nNewRightVol;
-                    pChn->left_volume = pChn->nNewLeftVol;
+                    current_vchan->flags &= ~CHN_VOLUMERAMP;
+                    current_vchan->right_volume = current_vchan->nNewRightVol;
+                    current_vchan->left_volume = current_vchan->nNewLeftVol;
                 }
             } else
             {
-                pChn->flags &= ~CHN_VOLUMERAMP;
-                pChn->right_volume = pChn->nNewRightVol;
-                pChn->left_volume = pChn->nNewLeftVol;
+                current_vchan->flags &= ~CHN_VOLUMERAMP;
+                current_vchan->right_volume = current_vchan->nNewRightVol;
+                current_vchan->left_volume = current_vchan->nNewLeftVol;
             }
-            pChn->nRampRightVol = pChn->right_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
-            pChn->nRampLeftVol = pChn->left_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+            current_vchan->nRampRightVol = current_vchan->right_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+            current_vchan->nRampLeftVol = current_vchan->left_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION;
             // Adding the channel in the channel list
-            ChnMix[m_nMixChannels++] = nChn;
+            ChnMix[m_nMixChannels] = vchan_idx;
+            ++m_nMixChannels;
         } else
         {
 #ifdef ENABLE_STEREOVU
             // Note change but no sample
-            if (pChn->nLeftVU > 128) pChn->nLeftVU = 0;
-            if (pChn->nRightVU > 128) pChn->nRightVU = 0;
+            if (current_vchan->nLeftVU > 128) current_vchan->nLeftVU = 0;
+            if (current_vchan->nRightVU > 128) current_vchan->nRightVU = 0;
 #endif // ENABLE_STEREOVU
-            if (pChn->nVUMeter > 0xFF) pChn->nVUMeter = 0;
-            pChn->left_volume = pChn->right_volume = 0;
-            pChn->length = 0;
+            if (current_vchan->nVUMeter > 0xFF) current_vchan->nVUMeter = 0;
+            current_vchan->left_volume = current_vchan->right_volume = 0;
+            current_vchan->length = 0;
         }
     }
 

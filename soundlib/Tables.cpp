@@ -373,21 +373,21 @@ signed char ft2VibratoTable[256] =
 
 
 
-DWORD FineLinearSlideUpTable[16] =
+uint32_t FineLinearSlideUpTable[16] =
 {
     65536, 65595, 65654, 65714,	65773, 65832, 65892, 65951,
     66011, 66071, 66130, 66190, 66250, 66309, 66369, 66429
 };
 
 
-DWORD FineLinearSlideDownTable[16] =
+uint32_t FineLinearSlideDownTable[16] =
 {
     65535, 65477, 65418, 65359, 65300, 65241, 65182, 65123,
     65065, 65006, 64947, 64888, 64830, 64772, 64713, 64645
 };
 
 
-DWORD LinearSlideUpTable[256] = 
+uint32_t LinearSlideUpTable[256] = 
 {
     65536, 65773, 66010, 66249, 66489, 66729, 66971, 67213, 
     67456, 67700, 67945, 68190, 68437, 68685, 68933, 69182, 
@@ -425,7 +425,7 @@ DWORD LinearSlideUpTable[256] =
 
 
 
-DWORD LinearSlideDownTable[256] = 
+uint32_t LinearSlideDownTable[256] = 
 {
     65536, 65299, 65064, 64830, 64596, 64363, 64131, 63900, 
     63670, 63440, 63212, 62984, 62757, 62531, 62305, 62081, 

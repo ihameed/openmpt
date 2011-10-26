@@ -132,7 +132,7 @@ public:
     virtual void RecalcLayout();
     virtual void OnActivatePage(LPARAM);
     virtual void OnDeactivatePage();
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual LRESULT OnModCtrlMsg(WPARAM wParam, LPARAM lParam);
     virtual BOOL GetToolTipText(UINT uId, LPSTR pszText);
     virtual BOOL PreTranslateMessage(MSG* pMsg);

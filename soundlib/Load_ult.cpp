@@ -141,12 +141,12 @@ static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
     *pp = p;
 }
 
-static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpStream, DWORD *dwMP, const DWORD dwMemLength)
+static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpStream, uint32_t *dwMP, const uint32_t dwMemLength)
 //---------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_ULTENV(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
 
-    DWORD dwMemPos = *dwMP;
+    uint32_t dwMemPos = *dwMP;
     uint8_t b, repeat = 1;
     uint8_t cmd1, cmd2;	// 1 = vol col, 2 = fx col in the original schismtracker code
     uint8_t param1, param2;
@@ -304,10 +304,10 @@ struct PostFixUltCommands
 };
 
 
-bool CSoundFile::ReadUlt(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
     uint8_t ult_version;
 
     // Tracker ID
@@ -330,7 +330,7 @@ bool CSoundFile::ReadUlt(const uint8_t *lpStream, const DWORD dwMemLength)
 
     ASSERT_CAN_READ(1);
     uint8_t nNumLines = (uint8_t)lpStream[dwMemPos++];
-    ASSERT_CAN_READ((DWORD)(nNumLines * 32));
+    ASSERT_CAN_READ((uint32_t)(nNumLines * 32));
     // read "nNumLines" lines, each containing 32 characters.
     ReadFixedLineLengthMessage(lpStream + dwMemPos, nNumLines * 32, 32, 0);
     dwMemPos += nNumLines * 32;

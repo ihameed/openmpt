@@ -34,21 +34,21 @@
 
 typedef struct DBMFILEHEADER
 {
-    DWORD dbm_id;		// "DBM0" = 0x304d4244
+    uint32_t dbm_id;		// "DBM0" = 0x304d4244
     uint16_t trkver;		// Tracker version: 02.15
     uint16_t reserved;
-    DWORD name_id;		// "NAME" = 0x454d414e
-    DWORD name_len;		// name length: always 44
+    uint32_t name_id;		// "NAME" = 0x454d414e
+    uint32_t name_len;		// name length: always 44
     CHAR songname[44];
-    DWORD info_id;		// "INFO" = 0x4f464e49
-    DWORD info_len;		// 0x0a000000
+    uint32_t info_id;		// "INFO" = 0x4f464e49
+    uint32_t info_len;		// 0x0a000000
     uint16_t instruments;
     uint16_t samples;
     uint16_t songs;
     uint16_t patterns;
     uint16_t channels;
-    DWORD song_id;		// "SONG" = 0x474e4f53
-    DWORD song_len;
+    uint32_t song_id;		// "SONG" = 0x474e4f53
+    uint32_t song_len;
     CHAR songname2[44];
     uint16_t orders;
 //	uint16_t orderlist[0];	// orderlist[orders] in words
@@ -59,9 +59,9 @@ typedef struct DBMINSTRUMENT
     CHAR name[30];
     uint16_t sampleno;
     uint16_t volume;
-    DWORD finetune;
-    DWORD loopstart;
-    DWORD looplen;
+    uint32_t finetune;
+    uint32_t loopstart;
+    uint32_t looplen;
     uint16_t panning;
     uint16_t flags;
 } DBMINSTRUMENT;
@@ -81,14 +81,14 @@ typedef struct DBMENVELOPE
 typedef struct DBMPATTERN
 {
     uint16_t rows;
-    DWORD packedsize;
+    uint32_t packedsize;
     uint8_t patterndata[2];	// [packedsize]
 } DBMPATTERN;
 
 typedef struct DBMSAMPLE
 {
-    DWORD flags;
-    DWORD samplesize;
+    uint32_t flags;
+    uint32_t samplesize;
     uint8_t sampledata[2];		// [samplesize]
 } DBMSAMPLE;
 
@@ -181,11 +181,11 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
 }
 
 
-bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     const DBMFILEHEADER *pfh = (DBMFILEHEADER *)lpStream;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     uint16_t nOrders, nSamples, nInstruments, nPatterns;
     
     if ((!lpStream) || (dwMemLength <= sizeof(DBMFILEHEADER)) || (!pfh->channels)
@@ -210,9 +210,9 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
     dwMemPos += 2*nOrders;
     while (dwMemPos + 10 < dwMemLength)
     {
-        DWORD chunk_id = LittleEndian(((LPDWORD)(lpStream+dwMemPos))[0]);
-        DWORD chunk_size = BigEndian(((LPDWORD)(lpStream+dwMemPos))[1]);
-        DWORD chunk_pos;
+        uint32_t chunk_id = LittleEndian(((LPDWORD)(lpStream+dwMemPos))[0]);
+        uint32_t chunk_size = BigEndian(((LPDWORD)(lpStream+dwMemPos))[1]);
+        uint32_t chunk_pos;
         
         dwMemPos += 8;
         chunk_pos = dwMemPos;
@@ -263,7 +263,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
                 // Sample Info
                 if (psmp)
                 {
-                    DWORD sflags = BigEndianW(pih->flags);
+                    uint32_t sflags = BigEndianW(pih->flags);
                     psmp->default_volume = BigEndianW(pih->volume) * 4;
                     if ((!psmp->default_volume) || (psmp->default_volume > 256)) psmp->default_volume = 256;
                     psmp->global_volume = 64;
@@ -326,7 +326,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
             for(PATTERNINDEX iPat = 0; iPat < nPatterns; iPat++)
             {
                 DBMPATTERN *pph;
-                DWORD pksize;
+                uint32_t pksize;
                 UINT nRows;
 
                 if (chunk_pos + sizeof(DBMPATTERN) > dwMemPos) break;
@@ -444,8 +444,8 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
             {
                 modsample_t *pSmp;
                 DBMSAMPLE *psh;
-                DWORD samplesize;
-                DWORD sampleflags;
+                uint32_t samplesize;
+                uint32_t sampleflags;
 
                 if (chunk_pos + sizeof(DBMSAMPLE) >= dwMemPos) break;
                 psh = (DBMSAMPLE *)(lpStream+chunk_pos);

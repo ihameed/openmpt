@@ -26,7 +26,7 @@ public:
 
 public:
     //{{AFX_VIRTUAL(CToolBarEx)
-    virtual CSize CalcDynamicLayout(int nLength, DWORD dwMode);
+    virtual CSize CalcDynamicLayout(int nLength, uint32_t dwMode);
     virtual BOOL SetHorizontal();
     virtual BOOL SetVertical();
     //}}AFX_VIRTUAL
@@ -82,7 +82,7 @@ class CModTreeBar: public CDialogBar
 {
 protected:
     CModTree *m_pModTree, *m_pModTreeData;
-    DWORD m_dwStatus; // MTB_XXXX
+    uint32_t m_dwStatus; // MTB_XXXX
     UINT m_nCursorDrag;
     CPoint ptDragging;
     UINT m_cxOriginal, m_cyOriginal, m_nTrackPos;
@@ -105,7 +105,7 @@ public:
     VOID OnOptionsChanged();
     VOID OnDocumentCreated(CModDoc *pModDoc);
     VOID OnDocumentClosed(CModDoc *pModDoc);
-    VOID OnUpdate(CModDoc *pModDoc, DWORD lHint=0, CObject *pHint=NULL);
+    VOID OnUpdate(CModDoc *pModDoc, uint32_t lHint=0, CObject *pHint=NULL);
     VOID UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify);
     HWND GetModTreeHWND(); //rewbs.customKeys
     BOOL PostMessageToModTree(UINT cmdID, WPARAM wParam, LPARAM lParam); //rewbs.customKeys

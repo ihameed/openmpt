@@ -453,7 +453,7 @@ struct mixgraph_viewstate_t {
 
 
         point_t old_origin = {10, 10};
-        auto &vertices = graph->_vertices;
+        auto &vertices = graph->vertices;
 
         for (auto iter = vertices.begin(); iter != vertices.end(); ++iter) {
             auto item = *iter;
@@ -467,7 +467,7 @@ struct mixgraph_viewstate_t {
         }
 
 
-        auto &arrows = graph->_arrows;
+        auto &arrows = graph->arrows;
         for (auto iter = arrows.begin(); iter != arrows.end(); ++iter) {
             auto item = *iter;
             auto key = item.first;

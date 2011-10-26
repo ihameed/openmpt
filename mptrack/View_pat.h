@@ -80,10 +80,10 @@ struct ModCommandPos
 struct FindReplaceStruct
 {
     modplug::tracker::modcommand_t cmdFind, cmdReplace;    		// Find/replace notes/instruments/effects
-    DWORD dwFindFlags, dwReplaceFlags;    	// PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
+    uint32_t dwFindFlags, dwReplaceFlags;    	// PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
     CHANNELINDEX nFindMinChn, nFindMaxChn;    // Find in these channels (if PATSEARCH_CHANNEL is set)
     signed char cInstrRelChange;    		// relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
-    DWORD dwBeginSel, dwEndSel;    			// Find in this selection (if PATSEARCH_PATSELECTION is set)
+    uint32_t dwBeginSel, dwEndSel;    			// Find in this selection (if PATSEARCH_PATSELECTION is set)
 };
 
 
@@ -103,23 +103,23 @@ protected:
     UINT m_nPattern, m_nRow, m_nMidRow, m_nPlayPat, m_nPlayRow, m_nSpacing, m_nAccelChar, m_nLastPlayedRow, m_nLastPlayedOrder;
 
     int m_nXScroll, m_nYScroll;
-    DWORD m_nMenuParam, m_nDetailLevel;
+    uint32_t m_nMenuParam, m_nDetailLevel;
 
-    DWORD m_nDragItem;    // Currently dragged item
-    DWORD m_nDropItem;    // Currently hovered item during dragondrop
+    uint32_t m_nDragItem;    // Currently dragged item
+    uint32_t m_nDropItem;    // Currently hovered item during dragondrop
     bool m_bDragging, m_bInItemRect, m_bShiftDragging;
     RECT m_rcDragItem, m_rcDropItem;
 
     bool m_bContinueSearch, m_bWholePatternFitsOnScreen;
-    DWORD m_dwStatus, m_dwCursor;
-    DWORD m_dwBeginSel, m_dwEndSel;    	// Upper-left / Lower-right corners of selection
-    DWORD m_dwStartSel, m_dwDragPos;    // Point where selection was started
+    uint32_t m_dwStatus, m_dwCursor;
+    uint32_t m_dwBeginSel, m_dwEndSel;    	// Upper-left / Lower-right corners of selection
+    uint32_t m_dwStartSel, m_dwDragPos;    // Point where selection was started
     uint16_t ChnVUMeters[MAX_BASECHANNELS];
     uint16_t OldVUMeters[MAX_BASECHANNELS];
     CListBox *ChnEffectList[MAX_BASECHANNELS]; //rewbs.patPlugName
     UINT m_nFoundInstrument;
     UINT m_nMenuOnChan;
-    DWORD m_dwLastNoteEntryTime; //rewbs.customkeys
+    uint32_t m_dwLastNoteEntryTime; //rewbs.customkeys
     UINT m_nLastPlayedChannel; //rewbs.customkeys
     bool m_bLastNoteEntryBlocked;
 
@@ -163,25 +163,25 @@ public:
     UINT GetCurrentRow() const { return m_nRow; }
     UINT GetCurrentColumn() const { return m_dwCursor; }
     UINT GetCurrentChannel() const { return (m_dwCursor >> 3); }
-    UINT GetColumnOffset(DWORD dwPos) const;
-    POINT GetPointFromPosition(DWORD dwPos);
-    DWORD GetPositionFromPoint(POINT pt);
-    DWORD GetDragItem(CPoint point, LPRECT lpRect);
+    UINT GetColumnOffset(uint32_t dwPos) const;
+    POINT GetPointFromPosition(uint32_t dwPos);
+    uint32_t GetPositionFromPoint(POINT pt);
+    uint32_t GetDragItem(CPoint point, LPRECT lpRect);
     ROWINDEX GetRowsPerBeat() const;
     ROWINDEX GetRowsPerMeasure() const;
 
     void InvalidatePattern(BOOL bHdr=FALSE);
     void InvalidateRow(int n=-1);
-    void InvalidateArea(DWORD dwBegin, DWORD dwEnd);
+    void InvalidateArea(uint32_t dwBegin, uint32_t dwEnd);
     void InvalidateSelection() { InvalidateArea(m_dwBeginSel, m_dwEndSel); }
     void InvalidateChannelsHeaders();
-    void SetCurSel(DWORD dwBegin, DWORD dwEnd);
+    void SetCurSel(uint32_t dwBegin, uint32_t dwEnd);
     BOOL SetCurrentPattern(UINT npat, int nrow=-1);
     BOOL SetCurrentRow(UINT nrow, BOOL bWrap=FALSE, BOOL bUpdateHorizontalScrollbar=TRUE );
     BOOL SetCurrentColumn(UINT ncol);
     // This should be used instead of consecutive calls to SetCurrentRow() then SetCurrentColumn()
     BOOL SetCursorPosition(UINT nrow, UINT ncol, BOOL bWrap=FALSE );
-    BOOL DragToSel(DWORD dwPos, BOOL bScroll, BOOL bNoMove=FALSE);
+    BOOL DragToSel(uint32_t dwPos, BOOL bScroll, BOOL bNoMove=FALSE);
     BOOL SetPlayCursor(UINT nPat, UINT nRow);
     BOOL UpdateScrollbarPositions( BOOL bUpdateHorizontalScrollbar=TRUE );
 // -> CODE#0014
@@ -194,7 +194,7 @@ public:
     void SelectBeatOrMeasure(bool selectBeat);
 
     BOOL TransposeSelection(int transp);
-    BOOL PrepareUndo(DWORD dwBegin, DWORD dwEnd);
+    BOOL PrepareUndo(uint32_t dwBegin, uint32_t dwEnd);
     void DeleteRows(UINT colmin, UINT colmax, UINT nrows);
     void OnDropSelection();
     void ProcessChar(UINT nChar, UINT nFlags);
@@ -212,7 +212,7 @@ public:
 
     //rewbs.customKeys
     BOOL ExecuteCommand(CommandID command);
-    void CursorJump(DWORD distance, bool direction, bool snap);
+    void CursorJump(uint32_t distance, bool direction, bool snap);
     void TempEnterNote(int n, bool oldStyle = false, int vol = -1);
     void TempStopNote(int note, bool fromMidi=false, const bool bChordMode=false);
     void TempEnterChord(int n);
@@ -238,7 +238,7 @@ public:
     virtual void OnInitialUpdate();
     virtual BOOL OnScrollBy(CSize sizeScroll, BOOL bDoScroll = TRUE);
     virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual LRESULT OnModViewMsg(WPARAM, LPARAM);
     virtual LRESULT OnPlayerNotify(MPTNOTIFICATION *);
     //}}AFX_VIRTUAL
@@ -372,10 +372,10 @@ private:
     CHANNELINDEX GetSelectionEndChan();
     UINT ListChansWhereColSelected(PatternColumns colType, CArray<UINT,UINT> &chans);
 
-    static ROWINDEX GetRowFromCursor(DWORD cursor) { return (cursor >> 16); };
-    static CHANNELINDEX GetChanFromCursor(DWORD cursor) { return static_cast<CHANNELINDEX>((cursor & 0xFFFF) >> 3); };
-    static UINT GetColTypeFromCursor(DWORD cursor) { return (cursor & 0x07); };
-    static DWORD CreateCursor(ROWINDEX row, CHANNELINDEX channel = 0, UINT column = 0) { return (row << 16) | ((channel << 3) & 0x1FFF) | (column & 0x07); };
+    static ROWINDEX GetRowFromCursor(uint32_t cursor) { return (cursor >> 16); };
+    static CHANNELINDEX GetChanFromCursor(uint32_t cursor) { return static_cast<CHANNELINDEX>((cursor & 0xFFFF) >> 3); };
+    static UINT GetColTypeFromCursor(uint32_t cursor) { return (cursor & 0x07); };
+    static uint32_t CreateCursor(ROWINDEX row, CHANNELINDEX channel = 0, UINT column = 0) { return (row << 16) | ((channel << 3) & 0x1FFF) | (column & 0x07); };
 
     bool IsInterpolationPossible(ROWINDEX startRow, ROWINDEX endRow, CHANNELINDEX chan, PatternColumns colType, CSoundFile* pSndFile);
     void Interpolate(PatternColumns type);

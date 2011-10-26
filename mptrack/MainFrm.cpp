@@ -26,6 +26,9 @@
 #include "ctrl_pat.h"
 #include "UpdateCheck.h"
 
+#include "pervasives/pervasives.h"
+using namespace modplug::pervasives;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -118,15 +121,15 @@ END_MESSAGE_MAP()
 // Static
 static int gdwLastLowLatencyTime = 0;
 static int gdwLastMixActiveTime = 0;
-static DWORD gsdwTotalSamples = 0;
-static DWORD gdwPlayLatency = 0;
+static uint32_t gsdwTotalSamples = 0;
+static uint32_t gdwPlayLatency = 0;
 
 // Globals
 UINT CMainFrame::gnPatternSpacing = 0;
 BOOL CMainFrame::gbPatternRecord = TRUE;
 BOOL CMainFrame::gbPatternVUMeters = FALSE;
 BOOL CMainFrame::gbPatternPluginNames = TRUE;
-DWORD CMainFrame::gdwNotificationType = MPTNOTIFY_DEFAULT;
+uint32_t CMainFrame::gdwNotificationType = MPTNOTIFY_DEFAULT;
 UINT CMainFrame::m_nLastOptionsPage = 0;
 BOOL CMainFrame::gbMdiMaximize = FALSE;
 bool CMainFrame::gbShowHackControls = false;
@@ -144,7 +147,7 @@ HHOOK CMainFrame::ghKbdHook = NULL;
 CString CMainFrame::gcsPreviousVersion = "";
 CString CMainFrame::gcsInstallGUID = "";
 
-DWORD CMainFrame::gnHotKeyMask = 0;
+uint32_t CMainFrame::gnHotKeyMask = 0;
 // Audio Setup
 //rewbs.resamplerConf
 long CMainFrame::glVolumeRampInSamples = 0;
@@ -158,7 +161,7 @@ int CMainFrame::gnPlugWindowX = 243;
 int CMainFrame::gnPlugWindowY = 273;
 int CMainFrame::gnPlugWindowWidth = 370;
 int CMainFrame::gnPlugWindowHeight = 332;
-DWORD CMainFrame::gnPlugWindowLast = 0;
+uint32_t CMainFrame::gnPlugWindowLast = 0;
 
 uint32_t CMainFrame::gnMsgBoxVisiblityFlags = UINT32_MAX;
 
@@ -174,34 +177,34 @@ LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
 UINT CMainFrame::gdwIdleTime = 0;
-DWORD CMainFrame::m_dwRate = 44100;
-DWORD CMainFrame::m_dwSoundSetup = SOUNDSETUP_SECONDARY;
-DWORD CMainFrame::m_nChannels = 2;
-DWORD CMainFrame::m_dwQuality = 0;
-DWORD CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
-DWORD CMainFrame::m_nBitsPerSample = 16;
-DWORD CMainFrame::m_nPreAmp = 128;
-DWORD CMainFrame::gbLoopSong = TRUE;
+uint32_t CMainFrame::m_dwRate = 44100;
+uint32_t CMainFrame::m_dwSoundSetup = SOUNDSETUP_SECONDARY;
+uint32_t CMainFrame::m_nChannels = 2;
+uint32_t CMainFrame::m_dwQuality = 0;
+uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
+uint32_t CMainFrame::m_nBitsPerSample = 16;
+uint32_t CMainFrame::m_nPreAmp = 128;
+uint32_t CMainFrame::gbLoopSong = TRUE;
 #ifndef NO_DSOUND
 LONG CMainFrame::m_nWaveDevice = SNDDEV_BUILD_ID(0, SNDDEV_DSOUND);
 #else
 LONG CMainFrame::m_nWaveDevice = SNDDEV_BUILD_ID(0, SNDDEV_WAVEOUT);
 #endif // NO_DSOUND
 LONG CMainFrame::m_nMidiDevice = 0;
-DWORD CMainFrame::m_nBufferLength = 75;
+uint32_t CMainFrame::m_nBufferLength = 75;
 LONG CMainFrame::gnLVuMeter = 0;
 LONG CMainFrame::gnRVuMeter = 0;
 EQPRESET CMainFrame::m_EqSettings = { "", {16,16,16,16,16,16}, { 125, 300, 600, 1250, 4000, 8000 } };
 // Midi Setup
-DWORD CMainFrame::m_dwMidiSetup = MIDISETUP_RECORDVELOCITY|MIDISETUP_RECORDNOTEOFF;
+uint32_t CMainFrame::m_dwMidiSetup = MIDISETUP_RECORDVELOCITY|MIDISETUP_RECORDNOTEOFF;
 // Pattern Setup
-DWORD CMainFrame::m_dwPatternSetup = PATTERN_PLAYNEWNOTE | PATTERN_EFFECTHILIGHT
+uint32_t CMainFrame::m_dwPatternSetup = PATTERN_PLAYNEWNOTE | PATTERN_EFFECTHILIGHT
                                    | PATTERN_SMALLFONT | PATTERN_CENTERROW
                                    | PATTERN_DRAGNDROPEDIT | PATTERN_FLATBUTTONS | PATTERN_NOEXTRALOUD
                                    | PATTERN_2NDHIGHLIGHT | PATTERN_STDHIGHLIGHT /*| PATTERN_HILITETIMESIGS*/
                                    | PATTERN_SHOWPREVIOUS | PATTERN_CONTSCROLL | PATTERN_SYNCMUTE | PATTERN_AUTODELAY | PATTERN_NOTEFADE;
-DWORD CMainFrame::m_nRowSpacing = 16;    // primary highlight (measures)
-DWORD CMainFrame::m_nRowSpacing2 = 4;    // secondary highlight (beats)
+uint32_t CMainFrame::m_nRowSpacing = 16;    // primary highlight (measures)
+uint32_t CMainFrame::m_nRowSpacing2 = 4;    // secondary highlight (beats)
 UINT CMainFrame::m_nSampleUndoMaxBuffer = 0;    // Real sample buffer undo size will be set later.
 
 // GDI
@@ -448,9 +451,9 @@ void CMainFrame::LoadIniSettings()
     }
 
 #ifndef NO_DSOUND
-    DWORD defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_DSOUND); // first DirectSound device
+    uint32_t defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_DSOUND); // first DirectSound device
 #else
-    DWORD defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_WAVEOUT); // first WaveOut device
+    uint32_t defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_WAVEOUT); // first WaveOut device
 #endif // NO_DSOUND
 #ifndef NO_ASIO
     // If there's an ASIO device available, prefer it over DirectSound
@@ -488,7 +491,7 @@ void CMainFrame::LoadIniSettings()
 
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
     CSoundFile::m_nStereoSeparation = GetPrivateProfileLong("Sound Settings", "StereoSeparation", 128, iniFile);
-    CSoundFile::m_nMaxMixChannels = GetPrivateProfileLong("Sound Settings", "MixChannels", MAX_CHANNELS, iniFile);
+    CSoundFile::m_nMaxMixChannels = GetPrivateProfileLong("Sound Settings", "MixChannels", MAX_VIRTUAL_CHANNELS, iniFile);
     gbWFIRType = static_cast<uint8_t>(GetPrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", 7, iniFile));
     gdWFIRCutoff = static_cast<double>(GetPrivateProfileLong("Sound Settings", "ResamplerWFIRCutoff", 97, iniFile))/100.0;
     //XXXih: kill the old registry entry or something
@@ -570,10 +573,10 @@ bool CMainFrame::LoadRegistrySettings()
 {
 
     HKEY key;
-    DWORD dwREG_DWORD = REG_DWORD;
-    DWORD dwREG_SZ = REG_SZ;
-    DWORD dwDWORDSize = sizeof(UINT);
-    DWORD dwCRSIZE = sizeof(COLORREF);
+    uint32_t dwREG_DWORD = REG_DWORD;
+    uint32_t dwREG_SZ = REG_SZ;
+    uint32_t dwDWORDSize = sizeof(UINT);
+    uint32_t dwCRSIZE = sizeof(COLORREF);
 
 
     bool asEnabled=true;
@@ -585,76 +588,76 @@ bool CMainFrame::LoadRegistrySettings()
 
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    m_csRegWindow, 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
-        DWORD d = 0;
-        RegQueryValueEx(key, "Maximized", NULL, &dwREG_DWORD, (LPBYTE)&d, &dwDWORDSize);
+        uint32_t d = 0;
+        registry_query_value(key, "Maximized", NULL, &dwREG_DWORD, (LPBYTE)&d, &dwDWORDSize);
         if (d) theApp.m_nCmdShow = SW_SHOWMAXIMIZED;
-        RegQueryValueEx(key, "MDIMaximize", NULL, &dwREG_DWORD, (LPBYTE)&gbMdiMaximize, &dwDWORDSize);
-        RegQueryValueEx(key, "MDITreeWidth", NULL, &dwREG_DWORD, (LPBYTE)&glTreeWindowWidth, &dwDWORDSize);
-        RegQueryValueEx(key, "MDIGeneralHeight", NULL, &dwREG_DWORD, (LPBYTE)&glGeneralWindowHeight, &dwDWORDSize);
-        RegQueryValueEx(key, "MDIPatternHeight", NULL, &dwREG_DWORD, (LPBYTE)&glPatternWindowHeight, &dwDWORDSize);
-        RegQueryValueEx(key, "MDISampleHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glSampleWindowHeight, &dwDWORDSize);
-        RegQueryValueEx(key, "MDIInstrumentHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glInstrumentWindowHeight, &dwDWORDSize);
-        RegQueryValueEx(key, "MDICommentsHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glCommentsWindowHeight, &dwDWORDSize);
-        RegQueryValueEx(key, "MDIGraphHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glGraphWindowHeight, &dwDWORDSize); //rewbs.graph
-        RegQueryValueEx(key, "MDITreeRatio", NULL, &dwREG_DWORD, (LPBYTE)&glTreeSplitRatio, &dwDWORDSize);
+        registry_query_value(key, "MDIMaximize", NULL, &dwREG_DWORD, (LPBYTE)&gbMdiMaximize, &dwDWORDSize);
+        registry_query_value(key, "MDITreeWidth", NULL, &dwREG_DWORD, (LPBYTE)&glTreeWindowWidth, &dwDWORDSize);
+        registry_query_value(key, "MDIGeneralHeight", NULL, &dwREG_DWORD, (LPBYTE)&glGeneralWindowHeight, &dwDWORDSize);
+        registry_query_value(key, "MDIPatternHeight", NULL, &dwREG_DWORD, (LPBYTE)&glPatternWindowHeight, &dwDWORDSize);
+        registry_query_value(key, "MDISampleHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glSampleWindowHeight, &dwDWORDSize);
+        registry_query_value(key, "MDIInstrumentHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glInstrumentWindowHeight, &dwDWORDSize);
+        registry_query_value(key, "MDICommentsHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glCommentsWindowHeight, &dwDWORDSize);
+        registry_query_value(key, "MDIGraphHeight", NULL, &dwREG_DWORD,  (LPBYTE)&glGraphWindowHeight, &dwDWORDSize); //rewbs.graph
+        registry_query_value(key, "MDITreeRatio", NULL, &dwREG_DWORD, (LPBYTE)&glTreeSplitRatio, &dwDWORDSize);
         // Colors
         for (int ncol=0; ncol<MAX_MODCOLORS; ncol++)
         {
             CHAR s[64];
             wsprintf(s, "Color%02d", ncol);
-            RegQueryValueEx(key, s, NULL, &dwREG_DWORD, (LPBYTE)&rgbCustomColors[ncol], &dwCRSIZE);
+            registry_query_value(key, s, NULL, &dwREG_DWORD, (LPBYTE)&rgbCustomColors[ncol], &dwCRSIZE);
         }
         RegCloseKey(key);
     }
 
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    m_csRegKey, 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
-        RegQueryValueEx(key, "SoundSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwSoundSetup, &dwDWORDSize);
-        RegQueryValueEx(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&m_dwQuality, &dwDWORDSize);
-        RegQueryValueEx(key, "SrcMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nSrcMode, &dwDWORDSize);
-        RegQueryValueEx(key, "Mixing_Rate", NULL, &dwREG_DWORD, (LPBYTE)&m_dwRate, &dwDWORDSize);
-        RegQueryValueEx(key, "BufferLength", NULL, &dwREG_DWORD, (LPBYTE)&m_nBufferLength, &dwDWORDSize);
+        registry_query_value(key, "SoundSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwSoundSetup, &dwDWORDSize);
+        registry_query_value(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&m_dwQuality, &dwDWORDSize);
+        registry_query_value(key, "SrcMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nSrcMode, &dwDWORDSize);
+        registry_query_value(key, "Mixing_Rate", NULL, &dwREG_DWORD, (LPBYTE)&m_dwRate, &dwDWORDSize);
+        registry_query_value(key, "BufferLength", NULL, &dwREG_DWORD, (LPBYTE)&m_nBufferLength, &dwDWORDSize);
         if ((m_nBufferLength < 10) || (m_nBufferLength > 200)) m_nBufferLength = 100;
-        RegQueryValueEx(key, "PreAmp", NULL, &dwREG_DWORD, (LPBYTE)&m_nPreAmp, &dwDWORDSize);
+        registry_query_value(key, "PreAmp", NULL, &dwREG_DWORD, (LPBYTE)&m_nPreAmp, &dwDWORDSize);
 
         CHAR sPath[_MAX_PATH] = "";
-        DWORD dwSZSIZE = sizeof(sPath);
-        RegQueryValueEx(key, "Songs_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
+        uint32_t dwSZSIZE = sizeof(sPath);
+        registry_query_value(key, "Songs_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
         SetDefaultDirectory(sPath, DIR_MODS);
         dwSZSIZE = sizeof(sPath);
-        RegQueryValueEx(key, "Samples_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
+        registry_query_value(key, "Samples_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
         SetDefaultDirectory(sPath, DIR_SAMPLES);
         dwSZSIZE = sizeof(sPath);
-        RegQueryValueEx(key, "Instruments_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
+        registry_query_value(key, "Instruments_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
         SetDefaultDirectory(sPath, DIR_INSTRUMENTS);
         dwSZSIZE = sizeof(sPath);
-        RegQueryValueEx(key, "Plugins_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
+        registry_query_value(key, "Plugins_Directory", NULL, &dwREG_SZ, (LPBYTE)sPath, &dwSZSIZE);
         SetDefaultDirectory(sPath, DIR_PLUGINS);
         dwSZSIZE = sizeof(m_szKbdFile);
-        RegQueryValueEx(key, "Key_Config_File", NULL, &dwREG_SZ, (LPBYTE)m_szKbdFile, &dwSZSIZE);
+        registry_query_value(key, "Key_Config_File", NULL, &dwREG_SZ, (LPBYTE)m_szKbdFile, &dwSZSIZE);
 
-        RegQueryValueEx(key, "XBassDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nXBassDepth, &dwDWORDSize);
-        RegQueryValueEx(key, "XBassRange", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nXBassRange, &dwDWORDSize);
-        RegQueryValueEx(key, "ReverbDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nReverbDepth, &dwDWORDSize);
-        RegQueryValueEx(key, "ReverbType", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::gnReverbType, &dwDWORDSize);
-        RegQueryValueEx(key, "ProLogicDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nProLogicDepth, &dwDWORDSize);
-        RegQueryValueEx(key, "ProLogicDelay", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nProLogicDelay, &dwDWORDSize);
-        RegQueryValueEx(key, "StereoSeparation", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nStereoSeparation, &dwDWORDSize);
-        RegQueryValueEx(key, "MixChannels", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nMaxMixChannels, &dwDWORDSize);
-        RegQueryValueEx(key, "WaveDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nWaveDevice, &dwDWORDSize);
-        RegQueryValueEx(key, "MidiSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwMidiSetup, &dwDWORDSize);
-        RegQueryValueEx(key, "MidiDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nMidiDevice, &dwDWORDSize);
-        RegQueryValueEx(key, "PatternSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwPatternSetup, &dwDWORDSize);
+        registry_query_value(key, "XBassDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nXBassDepth, &dwDWORDSize);
+        registry_query_value(key, "XBassRange", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nXBassRange, &dwDWORDSize);
+        registry_query_value(key, "ReverbDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nReverbDepth, &dwDWORDSize);
+        registry_query_value(key, "ReverbType", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::gnReverbType, &dwDWORDSize);
+        registry_query_value(key, "ProLogicDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nProLogicDepth, &dwDWORDSize);
+        registry_query_value(key, "ProLogicDelay", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nProLogicDelay, &dwDWORDSize);
+        registry_query_value(key, "StereoSeparation", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nStereoSeparation, &dwDWORDSize);
+        registry_query_value(key, "MixChannels", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nMaxMixChannels, &dwDWORDSize);
+        registry_query_value(key, "WaveDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nWaveDevice, &dwDWORDSize);
+        registry_query_value(key, "MidiSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwMidiSetup, &dwDWORDSize);
+        registry_query_value(key, "MidiDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nMidiDevice, &dwDWORDSize);
+        registry_query_value(key, "PatternSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwPatternSetup, &dwDWORDSize);
             m_dwPatternSetup &= ~(0x800|0x200000|0x400000);    // various deprecated old options
             m_dwPatternSetup |= PATTERN_NOTEFADE; // Set flag to maintain old behaviour (was changed in 1.17.02.50).
             m_dwPatternSetup |= PATTERN_RESETCHANNELS; // Set flag to reset channels on loop was changed in 1.17.03.01).
-        RegQueryValueEx(key, "RowSpacing", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing, &dwDWORDSize);
-        RegQueryValueEx(key, "RowSpacing2", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing2, &dwDWORDSize);
-        RegQueryValueEx(key, "LoopSong", NULL, &dwREG_DWORD, (LPBYTE)&gbLoopSong, &dwDWORDSize);
-        RegQueryValueEx(key, "BitsPerSample", NULL, &dwREG_DWORD, (LPBYTE)&m_nBitsPerSample, &dwDWORDSize);
-        RegQueryValueEx(key, "ChannelMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nChannels, &dwDWORDSize);
-        RegQueryValueEx(key, "MidiImportSpeed", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiImportSpeed, &dwDWORDSize);
-        RegQueryValueEx(key, "MidiImportPatLen", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiPatternLen, &dwDWORDSize);
+        registry_query_value(key, "RowSpacing", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing, &dwDWORDSize);
+        registry_query_value(key, "RowSpacing2", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing2, &dwDWORDSize);
+        registry_query_value(key, "LoopSong", NULL, &dwREG_DWORD, (LPBYTE)&gbLoopSong, &dwDWORDSize);
+        registry_query_value(key, "BitsPerSample", NULL, &dwREG_DWORD, (LPBYTE)&m_nBitsPerSample, &dwDWORDSize);
+        registry_query_value(key, "ChannelMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nChannels, &dwDWORDSize);
+        registry_query_value(key, "MidiImportSpeed", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiImportSpeed, &dwDWORDSize);
+        registry_query_value(key, "MidiImportPatLen", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiPatternLen, &dwDWORDSize);
         // EQ
         CEQSetupDlg::LoadEQ(key, "EQ_Settings", &m_EqSettings);
         CEQSetupDlg::LoadEQ(key, "EQ_User1", &CEQSetupDlg::gUserPresets[0]);
@@ -664,48 +667,48 @@ bool CMainFrame::LoadRegistrySettings()
 
         //rewbs.resamplerConf
         dwDWORDSize = sizeof(gbWFIRType);
-        RegQueryValueEx(key, "XMMSModplugResamplerWFIRType", NULL, &dwREG_DWORD, (LPBYTE)&gbWFIRType, &dwDWORDSize);
+        registry_query_value(key, "XMMSModplugResamplerWFIRType", NULL, &dwREG_DWORD, (LPBYTE)&gbWFIRType, &dwDWORDSize);
         dwDWORDSize = sizeof(gdWFIRCutoff);
-        RegQueryValueEx(key, "ResamplerWFIRCutoff", NULL, &dwREG_DWORD, (LPBYTE)&gdWFIRCutoff, &dwDWORDSize);
+        registry_query_value(key, "ResamplerWFIRCutoff", NULL, &dwREG_DWORD, (LPBYTE)&gdWFIRCutoff, &dwDWORDSize);
         dwDWORDSize = sizeof(glVolumeRampInSamples);
-        RegQueryValueEx(key, "VolumeRampInSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampInSamples, &dwDWORDSize);
+        registry_query_value(key, "VolumeRampInSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampInSamples, &dwDWORDSize);
         dwDWORDSize = sizeof(glVolumeRampOutSamples);
-        RegQueryValueEx(key, "VolumeRampOutSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampOutSamples, &dwDWORDSize);
+        registry_query_value(key, "VolumeRampOutSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampOutSamples, &dwDWORDSize);
         
         //end rewbs.resamplerConf
         //rewbs.autochord
         dwDWORDSize = sizeof(gnAutoChordWaitTime);
-        RegQueryValueEx(key, "AutoChordWaitTime", NULL, &dwREG_DWORD, (LPBYTE)&gnAutoChordWaitTime, &dwDWORDSize);
+        registry_query_value(key, "AutoChordWaitTime", NULL, &dwREG_DWORD, (LPBYTE)&gnAutoChordWaitTime, &dwDWORDSize);
         //end rewbs.autochord
 
         dwDWORDSize = sizeof(gnPlugWindowX);
-        RegQueryValueEx(key, "PlugSelectWindowX", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowX, &dwDWORDSize);
+        registry_query_value(key, "PlugSelectWindowX", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowX, &dwDWORDSize);
         dwDWORDSize = sizeof(gnPlugWindowY);
-        RegQueryValueEx(key, "PlugSelectWindowY", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowY, &dwDWORDSize);
+        registry_query_value(key, "PlugSelectWindowY", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowY, &dwDWORDSize);
         dwDWORDSize = sizeof(gnPlugWindowWidth);
-        RegQueryValueEx(key, "PlugSelectWindowWidth", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowWidth, &dwDWORDSize);
+        registry_query_value(key, "PlugSelectWindowWidth", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowWidth, &dwDWORDSize);
         dwDWORDSize = sizeof(gnPlugWindowHeight);
-        RegQueryValueEx(key, "PlugSelectWindowHeight", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowHeight, &dwDWORDSize);
+        registry_query_value(key, "PlugSelectWindowHeight", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowHeight, &dwDWORDSize);
         dwDWORDSize = sizeof(gnPlugWindowLast);
-        RegQueryValueEx(key, "PlugSelectWindowLast", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowLast, &dwDWORDSize);
+        registry_query_value(key, "PlugSelectWindowLast", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowLast, &dwDWORDSize);
 
 
         //rewbs.autoSave
         dwDWORDSize = sizeof(asEnabled);
-        RegQueryValueEx(key, "AutoSave_Enabled", NULL, &dwREG_DWORD, (LPBYTE)&asEnabled, &dwDWORDSize);
+        registry_query_value(key, "AutoSave_Enabled", NULL, &dwREG_DWORD, (LPBYTE)&asEnabled, &dwDWORDSize);
         dwDWORDSize = sizeof(asInterval);
-        RegQueryValueEx(key, "AutoSave_IntervalMinutes", NULL, &dwREG_DWORD, (LPBYTE)&asInterval, &dwDWORDSize);
+        registry_query_value(key, "AutoSave_IntervalMinutes", NULL, &dwREG_DWORD, (LPBYTE)&asInterval, &dwDWORDSize);
         dwDWORDSize = sizeof(asBackupHistory);
-        RegQueryValueEx(key, "AutoSave_BackupHistory", NULL, &dwREG_DWORD, (LPBYTE)&asBackupHistory, &dwDWORDSize);    	
+        registry_query_value(key, "AutoSave_BackupHistory", NULL, &dwREG_DWORD, (LPBYTE)&asBackupHistory, &dwDWORDSize);    	
         dwDWORDSize = sizeof(asUseOriginalPath);
-        RegQueryValueEx(key, "AutoSave_UseOriginalPath", NULL, &dwREG_DWORD, (LPBYTE)&asUseOriginalPath, &dwDWORDSize);    	
+        registry_query_value(key, "AutoSave_UseOriginalPath", NULL, &dwREG_DWORD, (LPBYTE)&asUseOriginalPath, &dwDWORDSize);    	
 
         dwDWORDSize = MAX_PATH;
-        RegQueryValueEx(key, "AutoSave_Path", NULL, &dwREG_DWORD, (LPBYTE)asPath.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
+        registry_query_value(key, "AutoSave_Path", NULL, &dwREG_DWORD, (LPBYTE)asPath.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
         asPath.ReleaseBuffer();
 
         dwDWORDSize = MAX_PATH;
-        RegQueryValueEx(key, "AutoSave_FileNameTemplate", NULL, &dwREG_DWORD, (LPBYTE)asFileNameTemplate.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
+        registry_query_value(key, "AutoSave_FileNameTemplate", NULL, &dwREG_DWORD, (LPBYTE)asFileNameTemplate.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
         asFileNameTemplate.ReleaseBuffer();
 
         //end rewbs.autoSave
@@ -719,9 +722,9 @@ bool CMainFrame::LoadRegistrySettings()
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    m_csRegSettings, 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
         // Version
-        dwDWORDSize = sizeof(DWORD);
-        DWORD dwPreviousVersion;
-        RegQueryValueEx(key, "Version", NULL, &dwREG_DWORD, (LPBYTE)&dwPreviousVersion, &dwDWORDSize);
+        dwDWORDSize = sizeof(uint32_t);
+        uint32_t dwPreviousVersion;
+        registry_query_value(key, "Version", NULL, &dwREG_DWORD, (LPBYTE)&dwPreviousVersion, &dwDWORDSize);
         gcsPreviousVersion = MptVersion::ToStr(dwPreviousVersion);
         RegCloseKey(key);
     }
@@ -1158,21 +1161,21 @@ long CMainFrame::GetPrivateProfileLong(const CString section, const CString key,
 }
 
 
-bool CMainFrame::WritePrivateProfileDWord(const CString section, const CString key, const DWORD value, const CString iniFile)
+bool CMainFrame::WritePrivateProfileDWord(const CString section, const CString key, const uint32_t value, const CString iniFile)
 {
     CHAR valueBuffer[INIBUFFERSIZE];
     wsprintf(valueBuffer, "%lu", value);
     return (WritePrivateProfileString(section, key, valueBuffer, iniFile) != 0);
 }
 
-DWORD CMainFrame::GetPrivateProfileDWord(const CString section, const CString key, const DWORD defaultValue, const CString iniFile)
+uint32_t CMainFrame::GetPrivateProfileDWord(const CString section, const CString key, const uint32_t defaultValue, const CString iniFile)
 {
     CHAR defaultValueBuffer[INIBUFFERSIZE];
     wsprintf(defaultValueBuffer, "%lu", defaultValue);
 
     CHAR valueBuffer[INIBUFFERSIZE];
     GetPrivateProfileString(section, key, defaultValueBuffer, valueBuffer, INIBUFFERSIZE, iniFile);
-    return static_cast<DWORD>(atol(valueBuffer));
+    return static_cast<uint32_t>(atol(valueBuffer));
 }
 
 bool CMainFrame::WritePrivateProfileCString(const CString section, const CString key, const CString value, const CString iniFile) 
@@ -1289,7 +1292,7 @@ void CMainFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
 static BOOL gbStopSent = FALSE;
 
 // Sound Device Callback
-BOOL SoundDeviceCallback(DWORD dwUser)
+BOOL SoundDeviceCallback(uint32_t dwUser)
 //------------------------------------
 {
     BOOL bOk = FALSE;
@@ -1434,7 +1437,7 @@ DWORD WINAPI CMainFrame::NotifyThread(LPVOID)
         if ((pMainFrm) && (pMainFrm->IsPlaying()))
         {
             MPTNOTIFICATION *pnotify = NULL;
-            DWORD dwLatency = 0;
+            uint32_t dwLatency = 0;
 
             for (UINT i=0; i<MAX_UPDATE_HISTORY; i++)
             {
@@ -1490,7 +1493,7 @@ ULONG CMainFrame::AudioRead(PVOID pvData, ULONG ulSize)
 {
     if ((IsPlaying()) && (m_pSndFile))
     {
-        DWORD dwSamplesRead = m_pSndFile->ReadPattern(pvData, ulSize);
+        uint32_t dwSamplesRead = m_pSndFile->ReadPattern(pvData, ulSize);
         //m_dTotalCPU = m_pPerfCounter->StartStop()/(static_cast<double>(dwSamplesRead)/m_dwRate);
         return dwSamplesRead * slSampleSize;
     }
@@ -1501,7 +1504,7 @@ ULONG CMainFrame::AudioRead(PVOID pvData, ULONG ulSize)
 VOID CMainFrame::AudioDone(ULONG nBytesWritten, ULONG nLatency)
 //-------------------------------------------------------------
 {
-    if (nBytesWritten > (DWORD)slSampleSize)
+    if (nBytesWritten > (uint32_t)slSampleSize)
     {
         DoNotification(nBytesWritten/CMainFrame::slSampleSize, nLatency);
     }
@@ -1588,7 +1591,7 @@ BOOL CMainFrame::audioOpenDevice()
     if ((err) && ((m_dwRate > 44100) || (m_nChannels > 2) || (m_nBitsPerSample > 16)
                || ((nFixedBitsPerSample) && (nFixedBitsPerSample != m_nBitsPerSample))))
     {
-        DWORD oldrate = m_dwRate;
+        uint32_t oldrate = m_dwRate;
 
         m_dwRate = 44100;
         if (m_nChannels > 2) m_nChannels = 2;
@@ -1655,7 +1658,7 @@ void CMainFrame::CalcStereoVuMeters(int *pMix, unsigned long nSamples, unsigned 
 }
 
 
-BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
+BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 //-------------------------------------------------------------------
 {
     m_dwElapsedTime += (dwSamplesRead * 1000) / m_dwRate;
@@ -1684,7 +1687,7 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
         if (!(p->dwType & MPTNOTIFY_TYPEMASK))
         {
             p->dwType = m_dwNotifyType;
-            DWORD d = dwLatency / slSampleSize;
+            uint32_t d = dwLatency / slSampleSize;
             p->dwLatency = gsdwTotalSamples + d;
             p->nOrder = m_pSndFile->m_nCurrentPattern;
             p->nRow = m_pSndFile->m_nRow;
@@ -1692,7 +1695,7 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
             if (m_dwNotifyType & MPTNOTIFY_SAMPLE)
             {
                 UINT nSmp = m_dwNotifyType & 0xFFFF;
-                for (UINT k=0; k<MAX_CHANNELS; k++)
+                for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
                     modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
                     p->dwPos[k] = 0;
@@ -1700,14 +1703,14 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
                      && (pChn->sample_data) && (pChn->sample_data == m_pSndFile->Samples[nSmp].sample_data)
                      && ((!(pChn->flags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
                     {
-                        p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->sample_position);
+                        p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->sample_position);
                     }
                 }
             } else
             if (m_dwNotifyType & (MPTNOTIFY_VOLENV|MPTNOTIFY_PANENV|MPTNOTIFY_PITCHENV))
             {
                 UINT nIns = m_dwNotifyType & 0xFFFF;
-                for (UINT k=0; k<MAX_CHANNELS; k++)
+                for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
                     modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
                     p->dwPos[k] = 0;
@@ -1717,21 +1720,21 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
                     {
                         if (m_dwNotifyType & MPTNOTIFY_PITCHENV)
                         {
-                            if (pChn->flags & CHN_PITCHENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->pitch_envelope.position);
+                            if (pChn->flags & CHN_PITCHENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->pitch_envelope.position);
                         } else
                         if (m_dwNotifyType & MPTNOTIFY_PANENV)
                         {
-                            if (pChn->flags & CHN_PANENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->panning_envelope.position);
+                            if (pChn->flags & CHN_PANENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->panning_envelope.position);
                         } else
                         {
-                            if (pChn->flags & CHN_VOLENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (DWORD)(pChn->volume_envelope.position);
+                            if (pChn->flags & CHN_VOLENV) p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->volume_envelope.position);
                         }
                     }
                 }
             } else
             if (m_dwNotifyType & (MPTNOTIFY_VUMETERS))
             {
-                for (UINT k=0; k<MAX_CHANNELS; k++)
+                for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
                     modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
                     UINT vul = pChn->nLeftVU;
@@ -1741,13 +1744,13 @@ BOOL CMainFrame::DoNotification(DWORD dwSamplesRead, DWORD dwLatency)
             } else
             if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
             {
-                DWORD lVu = (gnLVuMeter >> 11);
-                DWORD rVu = (gnRVuMeter >> 11);
+                uint32_t lVu = (gnLVuMeter >> 11);
+                uint32_t rVu = (gnRVuMeter >> 11);
                 if (lVu > 0x10000) lVu = 0x10000;
                 if (rVu > 0x10000) rVu = 0x10000;
                 p->dwPos[0] = lVu;
                 p->dwPos[1] = rVu;
-                DWORD dwVuDecay = _muldiv(dwSamplesRead, 120000, m_dwRate) + 1;
+                uint32_t dwVuDecay = _muldiv(dwSamplesRead, 120000, m_dwRate) + 1;
                 if (lVu >= dwVuDecay) gnLVuMeter = (lVu - dwVuDecay) << 11; else gnLVuMeter = 0;
                 if (rVu >= dwVuDecay) gnRVuMeter = (rVu - dwVuDecay) << 11; else gnRVuMeter = 0;
             }
@@ -1944,7 +1947,7 @@ BOOL CMainFrame::ResetNotificationBuffer(HWND hwnd)
 }
 
 
-BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, DWORD dwNotifyType)
+BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
 //-----------------------------------------------------------------------
 {
     if (!pModDoc) return FALSE;
@@ -2050,7 +2053,7 @@ BOOL CMainFrame::PauseMod(CModDoc *pModDoc)
             m_WaveFile.Destroy();
         } else
         {
-            for (UINT i=m_pSndFile->m_nChannels; i<MAX_CHANNELS; i++)
+            for (UINT i=m_pSndFile->m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++)
             {
                 if (!(m_pSndFile->Chn[i].parent_channel))
                 {
@@ -2168,7 +2171,7 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
     }
     if (lpszFileName)
     {
-        DWORD dwLen = f.GetLength();
+        uint32_t dwLen = f.GetLength();
         if (dwLen)
         {
             LPBYTE p = f.Lock();
@@ -2265,7 +2268,7 @@ BOOL CMainFrame::StopSoundFile(CSoundFile *pSndFile)
 }
 
 
-BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, DWORD dwType)
+BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, uint32_t dwType)
 //--------------------------------------------------------------------------------------
 {
     if ((!pDoc) || (pDoc != m_pModPlaying)) return FALSE;
@@ -2289,7 +2292,7 @@ BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, DWORD
 }
 
 
-BOOL CMainFrame::SetupSoundCard(DWORD q, DWORD rate, UINT nBits, UINT nChns, UINT bufsize, LONG wd)
+BOOL CMainFrame::SetupSoundCard(uint32_t q, uint32_t rate, UINT nBits, UINT nChns, UINT bufsize, LONG wd)
 //-------------------------------------------------------------------------------------------------
 {
     BOOL bPlaying = (m_dwStatus & MODSTATUS_PLAYING) ? TRUE : FALSE;
@@ -2329,7 +2332,7 @@ BOOL CMainFrame::SetupSoundCard(DWORD q, DWORD rate, UINT nBits, UINT nChns, UIN
 }
 
 
-BOOL CMainFrame::SetupPlayer(DWORD q, DWORD srcmode, BOOL bForceUpdate)
+BOOL CMainFrame::SetupPlayer(uint32_t q, uint32_t srcmode, BOOL bForceUpdate)
 //---------------------------------------------------------------------
 {
     if ((q != m_dwQuality) || (srcmode != m_nSrcMode) || (bForceUpdate))
@@ -2375,7 +2378,7 @@ BOOL CMainFrame::SetupMiscOptions()
 }
 
 
-BOOL CMainFrame::SetupMidi(DWORD d, LONG n)
+BOOL CMainFrame::SetupMidi(uint32_t d, LONG n)
 //-----------------------------------------
 {
     m_dwMidiSetup = d;
@@ -2384,7 +2387,7 @@ BOOL CMainFrame::SetupMidi(DWORD d, LONG n)
 }
 
 
-void CMainFrame::UpdateAllViews(DWORD dwHint, CObject *pHint)
+void CMainFrame::UpdateAllViews(uint32_t dwHint, CObject *pHint)
 //-----------------------------------------------------------
 {
     CDocTemplate *pDocTmpl = theApp.GetModDocTemplate();
@@ -2459,7 +2462,7 @@ VOID CMainFrame::OnDocumentClosed(CModDoc *pModDoc)
 }
 
 
-VOID CMainFrame::UpdateTree(CModDoc *pModDoc, DWORD lHint, CObject *pHint)
+VOID CMainFrame::UpdateTree(CModDoc *pModDoc, uint32_t lHint, CObject *pHint)
 //------------------------------------------------------------------------
 {
     m_wndTree.OnUpdate(pModDoc, lHint, pHint);
@@ -2615,7 +2618,7 @@ void CMainFrame::OnTimer(UINT)
 //----------------------------
 {
     // Display Time in status bar
-    DWORD dwTime = m_dwElapsedTime / 1000;
+    uint32_t dwTime = m_dwElapsedTime / 1000;
     if (dwTime != m_dwTimeSec)
     {
         m_dwTimeSec = dwTime;
@@ -2623,7 +2626,7 @@ void CMainFrame::OnTimer(UINT)
         OnUpdateTime(NULL);
     }
     // Idle Time Check
-    DWORD curTime = timeGetTime();
+    uint32_t curTime = timeGetTime();
     if (IsPlaying())
     {
         gdwIdleTime = 0;

@@ -46,7 +46,7 @@ CAutoSaver::~CAutoSaver(void)
 // Entry Point
 //////////////
 
-bool CAutoSaver::DoSave(DWORD curTime)
+bool CAutoSaver::DoSave(uint32_t curTime)
 {
     bool success = true;
     
@@ -179,9 +179,9 @@ int CAutoSaver::GetSaveInterval()
 // Implementation internals
 ///////////////////////////
 
-bool CAutoSaver::CheckTimer(DWORD curTime) 
+bool CAutoSaver::CheckTimer(uint32_t curTime) 
 {
-    DWORD curInterval = curTime-m_nLastSave;
+    uint32_t curInterval = curTime-m_nLastSave;
     return (curInterval>=m_nSaveInterval);
 }
 

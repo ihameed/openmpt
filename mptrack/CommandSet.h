@@ -1,6 +1,8 @@
 //rewbs.customKeys
 
 #pragma once
+#include <cstdint>
+
 #include "afxtempl.h"
 #include <string>
 
@@ -1202,7 +1204,7 @@ public:
     bool LoadFile(std::istream& iStrm, LPCTSTR szFilename);
     void UpgradeKeymap(CCommandSet *pCommands, int oldVersion);
 
-    static DWORD GetKeymapLabel(InputTargetContext ctx, UINT mod, UINT code, KeyEventType ke);
+    static uint32_t GetKeymapLabel(InputTargetContext ctx, UINT mod, UINT code, KeyEventType ke);
     
 };
 //end rewbs.customKeys

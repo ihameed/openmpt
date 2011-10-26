@@ -68,7 +68,7 @@ public:
     virtual void RestoreAllParameters(long nProg=-1) = 0; //rewbs.plugDefaultProgram: added param
     virtual void Process(float *pOutL, float *pOutR, unsigned long nSamples) = 0;
     virtual void Init(unsigned long nFreq, int bReset) = 0;
-    virtual bool MidiSend(DWORD dwMidiCode) = 0;
+    virtual bool MidiSend(uint32_t dwMidiCode) = 0;
     virtual void MidiCC(UINT nMidiCh, UINT nController, UINT nParam, UINT trackChannel) = 0;
     virtual void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel) = 0;
     virtual void MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChan) = 0;
@@ -116,7 +116,7 @@ inline void IMixPlugin::ModifyParameter(PlugParamIndex nIndex, PlugParamValue di
 
 struct SNDMIXPLUGINSTATE
 {
-    DWORD dwFlags;    				// MIXPLUG_XXXX
+    uint32_t dwFlags;    				// MIXPLUG_XXXX
     LONG nVolDecayL, nVolDecayR;    // Buffer click removal
     int *pMixBuffer;    			// Stereo effect send buffer
     float *pOutBufferL;    			// Temp storage for int -> float conversion
@@ -126,11 +126,11 @@ typedef SNDMIXPLUGINSTATE* PSNDMIXPLUGINSTATE;
 
 struct SNDMIXPLUGININFO
 {
-    DWORD dwPluginId1;
-    DWORD dwPluginId2;
-    DWORD dwInputRouting;    // MIXPLUG_INPUTF_XXXX, bits 16-23 = gain
-    DWORD dwOutputRouting;    // 0=mix 0x80+=fx
-    DWORD dwReserved[4];    // Reserved for routing info
+    uint32_t dwPluginId1;
+    uint32_t dwPluginId2;
+    uint32_t dwInputRouting;    // MIXPLUG_INPUTF_XXXX, bits 16-23 = gain
+    uint32_t dwOutputRouting;    // 0=mix 0x80+=fx
+    uint32_t dwReserved[4];    // Reserved for routing info
     CHAR szName[32];
     CHAR szLibraryName[64];    // original DLL name
 }; // Size should be 128     						
@@ -372,7 +372,7 @@ public:    // Static Members
     static UINT m_nStereoSeparation;
     static UINT m_nMaxMixChannels;
     static LONG m_nStreamVolume;
-    static DWORD gdwSysInfo, gdwSoundSetup, gdwMixingFreq, gnBitsPerSample, gnChannels;
+    static uint32_t gdwSysInfo, gdwSoundSetup, gdwMixingFreq, gnBitsPerSample, gnChannels;
     static UINT gnAGC;
     static UINT gnVolumeRampInSamples;
     static UINT gnVolumeRampOutSamples;
@@ -389,7 +389,7 @@ public:    // for Editing
     SAMPLEINDEX m_nSamples;
     INSTRUMENTINDEX m_nInstruments;
     UINT m_nDefaultSpeed, m_nDefaultTempo, m_nDefaultGlobalVolume;
-    DWORD m_dwSongFlags;    						// Song flags SONG_XXXX
+    uint32_t m_dwSongFlags;    						// Song flags SONG_XXXX
     bool m_bIsRendering;
     UINT m_nMixChannels, m_nMixStat, m_nBufferCount;
     double m_dBufferDiff;
@@ -414,11 +414,11 @@ public:    // for Editing
     UINT m_nFreqFactor, m_nTempoFactor, m_nOldGlbVolSlide;
     LONG m_nMinPeriod, m_nMaxPeriod;    // min period = highest possible frequency, max period = lowest possible frequency
     LONG m_nRepeatCount;    // -1 means repeat infinitely.
-    DWORD m_nGlobalFadeSamples, m_nGlobalFadeMaxSamples;
+    uint32_t m_nGlobalFadeSamples, m_nGlobalFadeMaxSamples;
     UINT m_nMaxOrderPosition;
     LPSTR m_lpszSongComments;
-    UINT ChnMix[MAX_CHANNELS];    						// Channels to be mixed
-    modplug::tracker::modchannel_t Chn[MAX_CHANNELS];    					// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
+    UINT ChnMix[MAX_VIRTUAL_CHANNELS];    						// Channels to be mixed
+    modplug::tracker::modchannel_t Chn[MAX_VIRTUAL_CHANNELS];    					// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
     modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
     CPatternContainer Patterns;    						// Patterns
     ModSequenceSet Order;    							// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
@@ -437,8 +437,8 @@ public:    // for Editing
     bool m_bChannelMuteTogglePending[MAX_BASECHANNELS];
 
     CSoundFilePlayConfig* m_pConfig;
-    DWORD m_dwCreatedWithVersion;
-    DWORD m_dwLastSavedWithVersion;
+    uint32_t m_dwCreatedWithVersion;
+    uint32_t m_dwLastSavedWithVersion;
 
     vector<PatternCuePoint> m_PatternCuePoints;    		// For WAV export (writing pattern positions to file)
 
@@ -452,7 +452,7 @@ public:
     ~CSoundFile();
 
 public:
-    BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, DWORD dwMemLength=0);
+    BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength=0);
     BOOL Destroy();
     MODTYPE GetType() const { return m_nType; }
     inline bool TypeIsIT_MPT() const { return (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) != 0; }
@@ -498,7 +498,7 @@ public:
 
 public:
     //Returns song length in seconds.
-    DWORD GetSongTime() { return static_cast<DWORD>((m_nTempoMode == tempo_mode_alternative) ? GetLength(eNoAdjust).duration + 1.0 : GetLength(eNoAdjust).duration + 0.5); }
+    uint32_t GetSongTime() { return static_cast<uint32_t>((m_nTempoMode == tempo_mode_alternative) ? GetLength(eNoAdjust).duration + 1.0 : GetLength(eNoAdjust).duration + 0.5); }
 
     // A repeat count value of -1 means infinite loop
     void SetRepeatCount(int n) { m_nRepeatCount = n; }
@@ -513,38 +513,38 @@ public:
     void ResetChannelState(CHANNELINDEX chn, uint8_t resetStyle);
 
     // Module Loaders
-    bool ReadXM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadS3M(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMod(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMed(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMTM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadSTM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength);
-    //bool ReadMPT(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadITProject(const uint8_t * const lpStream, const DWORD dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
-    bool Read669(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadUlt(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadWav(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadFAR(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadAMS2(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMDL(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadOKT(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadDMF(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadPTM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadDBM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMT2(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadPSM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadUMX(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMO3(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadGDM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadIMF(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadJ2B(const uint8_t * const lpStream, const DWORD dwMemLength);
-    bool ReadMID(const uint8_t * const lpStream, DWORD dwMemLength);
+    bool ReadXM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadS3M(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMod(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMed(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadSTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    //bool ReadMPT(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadITProject(const uint8_t * const lpStream, const uint32_t dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
+    bool Read669(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadUlt(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadWav(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadDSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadFAR(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAMS2(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMDL(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadOKT(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadDMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadPTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadDBM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMT2(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadUMX(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMO3(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMID(const uint8_t * const lpStream, uint32_t dwMemLength);
 
     // Save Functions
 #ifndef MODPLUG_NO_FILESAVE
@@ -588,7 +588,7 @@ public:
     void RecalculateGainForAllPlugs();
     void ResetChannels();
     UINT ReadPattern(LPVOID lpBuffer, UINT cbBuffer);
-    UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, CSoundFile *, DWORD *, LPBYTE ps=NULL);
+    UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, CSoundFile *, uint32_t *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
     UINT GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel);
     BOOL FadeSong(UINT msec);
@@ -604,10 +604,10 @@ public:
     static BOOL SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL xbass,BOOL dolbynr=FALSE,BOOL bEQ=FALSE);
     static BOOL SetResamplingMode(UINT nMode); // SRCMODE_XXXX
     static BOOL IsStereo() { return (gnChannels > 1) ? TRUE : FALSE; }
-    static DWORD GetSampleRate() { return gdwMixingFreq; }
-    static DWORD GetBitsPerSample() { return gnBitsPerSample; }
-    static DWORD InitSysInfo();
-    static DWORD GetSysInfo() { return gdwSysInfo; }
+    static uint32_t GetSampleRate() { return gdwMixingFreq; }
+    static uint32_t GetBitsPerSample() { return gnBitsPerSample; }
+    static uint32_t InitSysInfo();
+    static uint32_t GetSysInfo() { return gdwSysInfo; }
     static void EnableMMX(BOOL b) { if (b) gdwSoundSetup |= SNDMIX_ENABLEMMX; else gdwSoundSetup &= ~SNDMIX_ENABLEMMX; }
     // AGC
     static BOOL GetAGC() { return (gdwSoundSetup & SNDMIX_AGC) ? TRUE : FALSE; }
@@ -689,7 +689,7 @@ private:
     // Low-Level effect processing
     void DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSlide);
     void GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide);
-    DWORD IsSongFinished(UINT nOrder, UINT nRow) const;
+    uint32_t IsSongFinished(UINT nOrder, UINT nRow) const;
     void UpdateTimeSignature();
 
     UINT GetNumTicksOnCurrentRow() const { return m_nMusicSpeed * (m_nPatternDelay + 1) + m_nFrameDelay; };
@@ -701,7 +701,7 @@ public:
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
     UINT PackSample(int &sample, int next);
     bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result=NULL);
-    UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const uint16_t format = 1);
+    UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, uint32_t dwMemLength, const uint16_t format = 1);
     bool DestroySample(SAMPLEINDEX nSample);
 
 // -> CODE#0020
@@ -721,28 +721,28 @@ public:
     SAMPLEINDEX RemoveSelectedSamples(const vector<bool> &keepSamples);
     void AdjustSampleLoop(modplug::tracker::modsample_t *pSmp);
     // Samples file I/O
-    bool ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD *pdwWSMPOffset=NULL);
-    bool ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength);
+    bool ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset=NULL);
+    bool ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
-//    BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
-    UINT ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFileLength, DWORD dwOffset=0);
+//    BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
+    UINT ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
 // -! NEW_FEATURE#0027
 
-    bool Read8SVXSample(UINT nInstr, LPBYTE lpMemFile, DWORD dwFileLength);
+    bool Read8SVXSample(UINT nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
     bool SaveWAVSample(UINT nSample, LPCSTR lpszFileName);
     bool SaveRAWSample(UINT nSample, LPCSTR lpszFileName);
     // Instrument file I/O
-    bool ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength);
-    bool ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWORD dwFileLength);
+    bool ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
     bool SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName);
     bool SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName);
     // I/O from another sound file
@@ -756,12 +756,12 @@ public:
     modplug::tracker::modsample_t *GetSample(UINT n) { return Samples+n; }
     void ResetMidiCfg();
     void SanitizeMacros();
-    UINT MapMidiInstrument(DWORD dwProgram, UINT nChannel, UINT nNote);
+    UINT MapMidiInstrument(uint32_t dwProgram, UINT nChannel, UINT nNote);
     long ITInstrToMPT(const void *p, modplug::tracker::modinstrument_t *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
     UINT LoadMixPlugins(const void *pData, UINT nLen);
 //    PSNDMIXPLUGIN GetSndPlugMixPlug(IMixPlugin *pPlugin); //rewbs.plugDocAware
 #ifndef NO_FILTER
-    DWORD CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
+    uint32_t CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
 #endif
 #ifdef MODPLUG_TRACKER
     VOID ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn);    	//rewbs.VSTdelay : added arg.
@@ -770,15 +770,15 @@ public:
 
     // Static helper functions
 public:
-    static DWORD TransposeToFrequency(int transp, int ftune=0);
-    static int FrequencyToTranspose(DWORD freq);
+    static uint32_t TransposeToFrequency(int transp, int ftune=0);
+    static int FrequencyToTranspose(uint32_t freq);
     static void FrequencyToTranspose(modplug::tracker::modsample_t *psmp);
 
     // System-Dependant functions
 public:
     static LPSTR AllocateSample(UINT nbytes);
     static void FreeSample(LPVOID p);
-    static UINT Normalize24BitBuffer(LPBYTE pbuffer, UINT cbsizebytes, DWORD lmax24, DWORD dwByteInc);
+    static UINT Normalize24BitBuffer(LPBYTE pbuffer, UINT cbsizebytes, uint32_t lmax24, uint32_t dwByteInc);
 
     // Song message helper functions
 public:
@@ -846,7 +846,7 @@ public:
 
 public:
     //XXXih:   <:(
-    modplug::mixgraph::core _graph;
+    modplug::mixgraph::core mixgraph;
 };
 
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())
@@ -907,7 +907,7 @@ typedef struct MODFORMATINFO
     MODTYPE mtFormatId;    	// MOD_TYPE_XXXX
     LPCSTR  lpszFormatName;    // "ProTracker"
     LPCSTR  lpszExtension;    // ".xxx"
-    DWORD   dwPadding;
+    uint32_t   dwPadding;
 } MODFORMATINFO;
 
 extern MODFORMATINFO gModFormatInfo[];

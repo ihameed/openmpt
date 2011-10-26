@@ -105,31 +105,33 @@ bool id_map_del(std::map<id_t, has_id_t> &map, const id_t key) {
 core::core() : _largest_id(1) {
     debug_log("created core");
 
-    _master_sink = new modplug::mixgraph::vertex(1, std::string("audio out"));
-    _master_sink->_input_channels = 2;
-    id_map_put(_vertices, 1, _master_sink);
+    master_sink = new modplug::mixgraph::vertex(1, std::string("audio out"));
+    master_sink->_input_channels = 2;
+    id_map_put(vertices, 1, master_sink);
 
-    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
+    for (size_t idx = 0; idx < modplug::mixgraph::MAX_PHYSICAL_CHANNELS; ++idx) {
         char my_nuts[256];
         sprintf(my_nuts, "channel %d", idx + 1);
 
-        modplug::mixgraph::vertex *jenkmaster = new source_vertex(new_id(), std::string(my_nuts));
+        vertex *jenkmaster = new source_vertex(new_id(), std::string(my_nuts));
         jenkmaster->_output_channels = 2;
-        id_map_put(_vertices, jenkmaster->id, jenkmaster);
+        id_map_put(vertices, jenkmaster->id, jenkmaster);
         channel_vertices[idx] = jenkmaster;
 
-        link_vertices(jenkmaster->id, 0, _master_sink->id, 0);
-        link_vertices(jenkmaster->id, 1, _master_sink->id, 1);
+        link_vertices(jenkmaster->id, 0, master_sink->id, 0);
+        link_vertices(jenkmaster->id, 1, master_sink->id, 1);
     }
-    //link_vertices(id_t(2), 0, id_t(1), 0);
-    //link_vertices(id_t(2), 1, id_t(1), 1);
+
+    channel_bypass = new source_vertex(new_id(), "bypass");
+    link_vertices(channel_bypass->id, 0, master_sink->id, 0);
+    link_vertices(channel_bypass->id, 1, master_sink->id, 1);
 }
 
 core::~core() {
     //the power of sepples
-    std::for_each(_vertices.begin(), _vertices.end(), [](std::pair<id_t, modplug::mixgraph::vertex *> item) { delete item.second; });
-    std::for_each(_arrows.begin(), _arrows.end(), [](std::pair<id_t, modplug::mixgraph::arrow *> item) { delete item.second; });
-    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
+    for_each(vertices, [](vertex_item_t item) { delete item.second; });
+    for_each(arrows, [](arrow_item_t item) { delete item.second; });
+    for (size_t idx = 0; idx < modplug::mixgraph::MAX_PHYSICAL_CHANNELS; ++idx) {
         channel_vertices[idx] = nullptr;
     }
 
@@ -141,21 +143,21 @@ id_t core::new_id() {
     return _largest_id;
 }
 
-vertex *core::vertex(id_t vertex_id) {
+vertex *core::vertex_with_id(id_t vertex_id) {
     //XXXih:   uuurrr dur rururu
-    auto ret = id_map_get(_vertices,vertex_id);
+    auto ret = id_map_get(vertices,vertex_id);
     return (ret) ? (*ret) : (nullptr);
 }
 
 id_t core::link_vertices(id_t head_id, size_t head_channel, id_t tail_id, size_t tail_channel) {
-    auto *head = vertex(head_id);
-    auto *tail = vertex(tail_id);
+    auto *head = vertex_with_id(head_id);
+    auto *tail = vertex_with_id(tail_id);
     if (!head || !tail) return ID_INVALID;
     id_t id = new_id();
     auto *link = new arrow(id, head, head_channel, tail, tail_channel);
-    id_map_put(_arrows, id, link);
+    id_map_put(arrows, id, link);
     if (!_vtx_add_link(link)) {
-        id_map_del(_arrows, id);
+        id_map_del(arrows, id);
         return ID_INVALID;
     }
 
@@ -164,13 +166,13 @@ id_t core::link_vertices(id_t head_id, size_t head_channel, id_t tail_id, size_t
 }
 
 bool core::unlink_vertices(id_t arrow_id) {
-    auto arrow = id_map_get(_arrows, arrow_id);
+    auto arrow = id_map_get(arrows, arrow_id);
     if (arrow == nullptr) return false;
 
     auto link = *arrow;
     _vtx_remove_link(link);
 
-    id_map_del(_arrows, arrow_id);
+    id_map_del(arrows, arrow_id);
     delete arrow;
     return true;
 }
@@ -191,10 +193,10 @@ void _remove_links(std::vector<arrow *> &arrows) {
 }
 
 bool core::remove_vertex(id_t vertex_id) {
-    auto *node = vertex(vertex_id);
+    auto *node = vertex_with_id(vertex_id);
     _remove_links(node->_input_arrows);
     _remove_links(node->_output_arrows);
-    return id_map_del(_vertices, vertex_id);
+    return id_map_del(vertices, vertex_id);
 }
 
 
@@ -220,14 +222,14 @@ void __process(vertex *tail, const size_t num_samples) {
 
 
 void core::process(int *destbuf, const size_t num_samples, const sample_t float_to_int_scale, const sample_t int_to_float_scale) {
-    memset(_master_sink->channels[0], 0, sizeof(sample_t) * num_samples);
-    memset(_master_sink->channels[1], 0, sizeof(sample_t) * num_samples);
+    memset(master_sink->channels[0], 0, sizeof(sample_t) * num_samples);
+    memset(master_sink->channels[1], 0, sizeof(sample_t) * num_samples);
 
-    sample_t *left  = _master_sink->channels[0];
-    sample_t *right = _master_sink->channels[1];
+    sample_t *left  = master_sink->channels[0];
+    sample_t *right = master_sink->channels[1];
 
     //debug_log("pre process master vs child (left %f, right %f), (left %f, right %f)", left[0], right[0], channel_vertices[0]->channels[0][0], channel_vertices[0]->channels[0][1]);
-    __process(_master_sink, num_samples);
+    __process(master_sink, num_samples);
     //debug_log("process master vs child (left %f, right %f), (left %f, right %f)", left[0], right[0], channel_vertices[0]->channels[0][0], channel_vertices[0]->channels[0][1]);
 
     modplug::mixer::float_to_stereo_mix(right, left, destbuf, num_samples, float_to_int_scale);
@@ -235,12 +237,13 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
 }
 
 void core::pre_process(const size_t num_samples) {
-    for (size_t idx = 0; idx < modplug::mixgraph::MAX_CHANNELS; ++idx) {
-        modplug::mixgraph::vertex *channel = channel_vertices[idx];
-        modplug::mixer::stereo_fill(channel->ghetto_channels, num_samples, &channel->ghetto_vol_decay_l, &channel->ghetto_vol_decay_r);
-        memset(channel->channels[0], 0, sizeof(sample_t) * num_samples);
-        memset(channel->channels[1], 0, sizeof(sample_t) * num_samples);
-    }
+    auto clear_buffers = [&] (vertex *node) {
+        modplug::mixer::stereo_fill(node->ghetto_channels, num_samples, &node->ghetto_vol_decay_l, &node->ghetto_vol_decay_r);
+        memset(node->channels[0], 0, sizeof(sample_t) * num_samples);
+        memset(node->channels[1], 0, sizeof(sample_t) * num_samples);
+    };
+    for_each(channel_vertices, clear_buffers);
+    clear_buffers(channel_bypass);
 }
 
 

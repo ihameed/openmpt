@@ -68,7 +68,7 @@ public:
 
     int m_nDragItem;
     UINT m_nBtnMouseOver;
-    DWORD m_dwStatus;
+    uint32_t m_dwStatus;
 
     void InvalidateRow(int row);
     float m_pixelsPerRow, m_pixelsPerFXParam, m_pixelsPerPCParam;

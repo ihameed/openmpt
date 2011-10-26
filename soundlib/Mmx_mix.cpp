@@ -110,11 +110,11 @@ Done:
 }
 
 
-DWORD CSoundFile::InitSysInfo()
+uint32_t CSoundFile::InitSysInfo()
 //-----------------------------
 {
     OSVERSIONINFO osvi;
-    DWORD d = 0;
+    uint32_t d = 0;
 
 #ifdef _DEBUG
     // Must be aligned on 32 bytes for best performance
@@ -124,7 +124,7 @@ DWORD CSoundFile::InitSysInfo()
         wsprintf(s, "modplug::tracker::modchannel_t not aligned: sizeof(modplug::tracker::modchannel_t) = %d", sizeof(modplug::tracker::modchannel_t));
         ::MessageBox(NULL, s, NULL, MB_OK|MB_ICONEXCLAMATION); //disabled by rewbs
     }
-    DWORD dwFastSinc = (DWORD)(LPVOID)gFastSinc;
+    uint32_t dwFastSinc = (uint32_t)(LPVOID)gFastSinc;
     if (dwFastSinc & 7)
     {
         CHAR s[64];
@@ -135,7 +135,7 @@ DWORD CSoundFile::InitSysInfo()
     memset(&osvi, 0, sizeof(osvi));
     osvi.dwOSVersionInfoSize = sizeof(osvi);
     GetVersionEx(&osvi);
-    DWORD dwProcSupport = QueryProcessorExtensions();
+    uint32_t dwProcSupport = QueryProcessorExtensions();
     switch(osvi.dwPlatformId)
     {
     // Don't use MMX for Windows 3.1

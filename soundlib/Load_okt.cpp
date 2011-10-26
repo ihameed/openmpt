@@ -48,13 +48,13 @@ STATIC_ASSERT(sizeof(OKT_SAMPLE) == 32);
 // just for keeping track of offsets and stuff...
 struct OKT_SAMPLEINFO
 {
-    DWORD start;	// start position of the IFF block
-    DWORD length;	// length of the IFF block
+    uint32_t start;	// start position of the IFF block
+    uint32_t length;	// length of the IFF block
 };
 
 
 // Parse the sample header block
-void Read_OKT_Samples(const uint8_t *lpStream, const DWORD dwMemLength, vector<bool> &sample7bit, CSoundFile *pSndFile)
+void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vector<bool> &sample7bit, CSoundFile *pSndFile)
 //------------------------------------------------------------------------------------------------------------------
 {
     pSndFile->m_nSamples = min((SAMPLEINDEX)(dwMemLength / 32), MAX_SAMPLES - 1);	// typically 36
@@ -96,12 +96,12 @@ void Read_OKT_Samples(const uint8_t *lpStream, const DWORD dwMemLength, vector<b
 
 
 // Parse a pattern block
-void Read_OKT_Pattern(const uint8_t *lpStream, const DWORD dwMemLength, const PATTERNINDEX nPat, CSoundFile *pSndFile)
+void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const PATTERNINDEX nPat, CSoundFile *pSndFile)
 //-----------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_OKTPAT(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return);
 
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ_OKTPAT(2);
     ROWINDEX nRows = CLAMP(BigEndianW(*(uint16_t *)(lpStream + dwMemPos)), 1, MAX_PATTERN_ROWS);
@@ -266,10 +266,10 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const DWORD dwMemLength, const PA
 }
 
 
-bool CSoundFile::ReadOKT(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(8);
     if (memcmp(lpStream, "OKTASONG", 8) != 0)
@@ -278,7 +278,7 @@ bool CSoundFile::ReadOKT(const uint8_t *lpStream, const DWORD dwMemLength)
 
     OKT_IFFCHUNK iffHead;
     // prepare some arrays to store offsets etc.
-    vector<DWORD> patternOffsets;
+    vector<uint32_t> patternOffsets;
     vector<bool> sample7bit;	// 7-/8-bit sample
     vector<OKT_SAMPLEINFO> samplePos;
     PATTERNINDEX nPatterns = 0;

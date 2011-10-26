@@ -350,12 +350,12 @@ enum
 
 typedef struct MPTNOTIFICATION
 {
-    DWORD dwType;
-    DWORD dwLatency;
+    uint32_t dwType;
+    uint32_t dwLatency;
     ORDERINDEX nOrder;			// Always valid
     PATTERNINDEX nPattern;		// dito
     ROWINDEX nRow;				// dito
-    DWORD dwPos[MAX_CHANNELS];	// sample/envelope pos for each channel if >= 0
+    uint32_t dwPos[MAX_VIRTUAL_CHANNELS];	// sample/envelope pos for each channel if >= 0
 } MPTNOTIFICATION, *PMPTNOTIFICATION;
 
 /////////////////////////////////////////////////////////////////////////
@@ -420,21 +420,21 @@ public:
     static LONG glGeneralWindowHeight, glPatternWindowHeight, glSampleWindowHeight, 
     	        glInstrumentWindowHeight, glCommentsWindowHeight, glGraphWindowHeight; //rewbs.varWindowSize
     static HHOOK ghKbdHook;
-    static DWORD gdwNotificationType;
+    static uint32_t gdwNotificationType;
     static CString gcsPreviousVersion;
     static CString gcsInstallGUID;
     
     // Audio Setup
-    static DWORD m_dwSoundSetup, m_dwRate, m_dwQuality, m_nSrcMode, m_nBitsPerSample, m_nPreAmp, gbLoopSong, m_nChannels;
+    static uint32_t m_dwSoundSetup, m_dwRate, m_dwQuality, m_nSrcMode, m_nBitsPerSample, m_nPreAmp, gbLoopSong, m_nChannels;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
     static LONG m_nMidiDevice;
-    static DWORD m_nBufferLength;
+    static uint32_t m_nBufferLength;
     static EQPRESET m_EqSettings;
     // Pattern Setup
     static UINT gnPatternSpacing;
     static BOOL gbPatternVUMeters, gbPatternPluginNames, gbPatternRecord;
-    static DWORD m_dwPatternSetup, m_dwMidiSetup, m_nKeyboardCfg, gnHotKeyMask;
-    static DWORD m_nRowSpacing, m_nRowSpacing2;	// primary (measures) and secondary (beats) highlight
+    static uint32_t m_dwPatternSetup, m_dwMidiSetup, m_nKeyboardCfg, gnHotKeyMask;
+    static uint32_t m_nRowSpacing, m_nRowSpacing2;	// primary (measures) and secondary (beats) highlight
     static bool m_bHideUnavailableCtxMenuItems;
     // Sample Editor Setup
     static UINT m_nSampleUndoMaxBuffer;
@@ -475,7 +475,7 @@ public:
     static int gnPlugWindowY;
     static int gnPlugWindowWidth;
     static int gnPlugWindowHeight;
-    static DWORD gnPlugWindowLast;
+    static uint32_t gnPlugWindowLast;
 
     static uint32_t gnMsgBoxVisiblityFlags;
 
@@ -493,7 +493,7 @@ protected:
     CModDoc *m_pModPlaying;
     CSoundFile *m_pSndFile;
     HWND m_hFollowSong, m_hWndMidi;
-    DWORD m_dwStatus, m_dwElapsedTime, m_dwTimeSec, m_dwNotifyType;
+    uint32_t m_dwStatus, m_dwElapsedTime, m_dwTimeSec, m_dwNotifyType;
     UINT m_nTimer, m_nAvgMixChn, m_nMixChn;
     CHAR m_szUserText[512], m_szInfoText[512], m_szXInfoText[512]; //rewbs.xinfo
     // Chords
@@ -524,9 +524,9 @@ public:
     void audioCloseDevice();
     BOOL audioFillBuffers();
     LRESULT OnWOMDone(WPARAM, LPARAM);
-    BOOL dsoundFillBuffers(LPBYTE lpBuf, DWORD dwSize);
-    BOOL DSoundDone(LPBYTE lpBuffer, DWORD dwBytes);
-    BOOL DoNotification(DWORD dwSamplesRead, DWORD dwLatency);
+    BOOL dsoundFillBuffers(LPBYTE lpBuf, uint32_t dwSize);
+    BOOL DSoundDone(LPBYTE lpBuffer, uint32_t dwBytes);
+    BOOL DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency);
 
 // Midi Input Functions
 public:
@@ -544,7 +544,7 @@ public:
     static HFONT GetGUIFont() { return m_hGUIFont; }
     static HFONT GetFixedFont() { return m_hFixedFont; }
     static HFONT GetLargeFixedFont() { return m_hLargeFixedFont; }
-    static void UpdateAllViews(DWORD dwHint, CObject *pHint=NULL);
+    static void UpdateAllViews(uint32_t dwHint, CObject *pHint=NULL);
     static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam);
     static void TranslateKeyboardMap(LPSTR pszKbd);
     static VOID GetKeyName(LONG lParam, LPSTR pszName, UINT cbSize);
@@ -554,8 +554,8 @@ public:
 
     static bool WritePrivateProfileLong(const CString section, const CString key, const long value, const CString iniFile);
     static long GetPrivateProfileLong(const CString section, const CString key, const long defaultValue, const CString iniFile);
-    static bool WritePrivateProfileDWord(const CString section, const CString key, const DWORD value, const CString iniFile);
-    static DWORD GetPrivateProfileDWord(const CString section, const CString key, const DWORD defaultValue, const CString iniFile);
+    static bool WritePrivateProfileDWord(const CString section, const CString key, const uint32_t value, const CString iniFile);
+    static uint32_t GetPrivateProfileDWord(const CString section, const CString key, const uint32_t defaultValue, const CString iniFile);
     static bool WritePrivateProfileCString(const CString section, const CString key, const CString value, const CString iniFile);
     static CString GetPrivateProfileCString(const CString section, const CString key, const CString defaultValue, const CString iniFile);
     
@@ -573,7 +573,7 @@ public:
     PMPTCHORD GetChords() { return Chords; }
     VOID OnDocumentCreated(CModDoc *pModDoc);
     VOID OnDocumentClosed(CModDoc *pModDoc);
-    VOID UpdateTree(CModDoc *pModDoc, DWORD lHint=0, CObject *pHint=NULL);
+    VOID UpdateTree(CModDoc *pModDoc, uint32_t lHint=0, CObject *pHint=NULL);
     static CInputHandler* GetInputHandler() { return m_InputHandler; }  	//rewbs.customKeys
     bool m_bModTreeHasFocus;  	//rewbs.customKeys
     CWnd *m_pNoteMapHasFocus;  	//rewbs.customKeys
@@ -585,7 +585,7 @@ public:
 
 // Player functions
 public:
-    BOOL PlayMod(CModDoc *, HWND hPat=NULL, DWORD dwNotifyType=0);
+    BOOL PlayMod(CModDoc *, HWND hPat=NULL, uint32_t dwNotifyType=0);
     BOOL StopMod(CModDoc *pDoc=NULL);
     BOOL PauseMod(CModDoc *pDoc=NULL);
     BOOL PlaySoundFile(CSoundFile *);
@@ -595,22 +595,22 @@ public:
     BOOL StopSoundFile(CSoundFile *);
     inline BOOL IsPlaying() const { return (m_dwStatus & MODSTATUS_PLAYING); 	}
     inline BOOL IsRendering() const { return (m_dwStatus & MODSTATUS_RENDERING); 	} //rewbs.VSTTimeInfo
-    DWORD GetElapsedTime() const { return m_dwElapsedTime; }
+    uint32_t GetElapsedTime() const { return m_dwElapsedTime; }
     void ResetElapsedTime() { m_dwElapsedTime = 0; }
-    void SetElapsedTime(DWORD dwElapsedTime) { m_dwElapsedTime = dwElapsedTime; }
+    void SetElapsedTime(uint32_t dwElapsedTime) { m_dwElapsedTime = dwElapsedTime; }
     inline CModDoc *GetModPlaying() const { return (IsPlaying()||IsRendering()) ? m_pModPlaying : NULL; }
     inline CSoundFile *GetSoundFilePlaying() const { return (IsPlaying()||IsRendering()) ? m_pSndFile : NULL; }  //rewbs.VSTTimeInfo
     BOOL InitRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
     BOOL StopRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
     void SwitchToActiveView();
-    BOOL SetupSoundCard(DWORD q, DWORD rate, UINT nbits, UINT chns, UINT bufsize, LONG wd);
+    BOOL SetupSoundCard(uint32_t q, uint32_t rate, UINT nbits, UINT chns, UINT bufsize, LONG wd);
     BOOL SetupDirectories(LPCTSTR szModDir, LPCTSTR szSampleDir, LPCTSTR szInstrDir, LPCTSTR szVstDir, LPCTSTR szPresetDir);
     BOOL SetupMiscOptions();
-    BOOL SetupPlayer(DWORD, DWORD, BOOL bForceUpdate=FALSE);
-    BOOL SetupMidi(DWORD d, LONG n);
+    BOOL SetupPlayer(uint32_t, uint32_t, BOOL bForceUpdate=FALSE);
+    BOOL SetupMidi(uint32_t d, LONG n);
     void SetPreAmp(UINT n);
     HWND GetFollowSong(const CModDoc *pDoc) const { return (pDoc == m_pModPlaying) ? m_hFollowSong : NULL; }
-    BOOL SetFollowSong(CModDoc *, HWND hwnd, BOOL bFollowSong=TRUE, DWORD dwType=MPTNOTIFY_DEFAULT);
+    BOOL SetFollowSong(CModDoc *, HWND hwnd, BOOL bFollowSong=TRUE, uint32_t dwType=MPTNOTIFY_DEFAULT);
     BOOL ResetNotificationBuffer(HWND hwnd=NULL);
 
 

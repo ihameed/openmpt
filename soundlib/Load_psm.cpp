@@ -129,10 +129,10 @@ inline uint8_t convert_psm_porta(uint8_t param, bool bNewFormat)
     return ((bNewFormat) ? (param) : ((param < 4) ? (param | 0xF0) : (param >> 2)));
 }
 
-bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
     bool bNewFormat = false; // The game "Sinaria" uses a slightly modified PSM structure
 
     ASSERT_CAN_READ(sizeof(PSMNEWHEADER));
@@ -221,7 +221,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const DWORD dwMemLength
                 memcpy(subsong.songName, &pSong->songType, 9); // subsong name
                 SpaceToNullStringFixed<9>(subsong.songName);
 
-                DWORD dwChunkPos = dwMemPos + sizeof(PSMSONGHEADER);
+                uint32_t dwChunkPos = dwMemPos + sizeof(PSMSONGHEADER);
 
                 // "Sub sub chunks"
                 while(dwChunkPos + 8 < dwMemPos + chunkSize)
@@ -254,7 +254,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const DWORD dwMemLength
                             //uint16_t nTotalChunks = LittleEndian(*(uint16_t *)(lpStream + dwChunkPos));
 
                             // Now, the interesting part begins!
-                            DWORD dwSettingsOffset = dwChunkPos + 2;
+                            uint32_t dwSettingsOffset = dwChunkPos + 2;
                             uint16_t nChunkCount = 0, nFirstOrderChunk = UINT16_MAX;
 
                             // "Sub sub sub chunks" (grrrr, silly format)
@@ -866,10 +866,10 @@ struct PSM16PATHEADER
 #pragma pack()
 
 
-bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(sizeof(PSM16HEADER));
     PSM16HEADER *shdr = (PSM16HEADER *)lpStream;
@@ -897,7 +897,7 @@ bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLeng
 
     // Read orders
     dwMemPos = LittleEndian(shdr->orderOffset);
-    ASSERT_CAN_READ((DWORD)LittleEndianW(shdr->songOrders) + 2);
+    ASSERT_CAN_READ((uint32_t)LittleEndianW(shdr->songOrders) + 2);
     if(LittleEndian(shdr->orderOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x44524f50) // PORD
     {
         Order.ReadAsByte(lpStream + dwMemPos, LittleEndianW(shdr->songOrders), dwMemLength - dwMemPos);
@@ -985,9 +985,9 @@ bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLeng
     // Read patterns
     dwMemPos = LittleEndian(shdr->patOffset);
     ASSERT_CAN_READ(LittleEndian(shdr->patSize));
-    if(LittleEndian(shdr->patOffset) > 4 && LittleEndian(*(DWORD *)(lpStream + dwMemPos - 4)) == 0x54415050) // PPAT
+    if(LittleEndian(shdr->patOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x54415050) // PPAT
     {
-        DWORD dwPatEndPos = LittleEndian(shdr->patOffset) + LittleEndian(shdr->patSize);
+        uint32_t dwPatEndPos = LittleEndian(shdr->patOffset) + LittleEndian(shdr->patSize);
 
         for(PATTERNINDEX nPat = 0; nPat < LittleEndianW(shdr->numPatterns); nPat++)
         {
@@ -995,7 +995,7 @@ bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLeng
             PSM16PATHEADER *phdr = (PSM16PATHEADER *)(lpStream + dwMemPos);
             ASSERT_CAN_READ(LittleEndianW(phdr->size));
 
-            DWORD dwNextPattern = dwMemPos + ((LittleEndianW(phdr->size) + 15) & ~15);
+            uint32_t dwNextPattern = dwMemPos + ((LittleEndianW(phdr->size) + 15) & ~15);
             dwMemPos += sizeof(PSM16PATHEADER);
 
             if(Patterns.Insert(nPat, phdr->numRows))

@@ -29,6 +29,9 @@
 
 #include "gui/mixgraph_view.h"
 
+#include "pervasives/pervasives.h"
+using namespace modplug::pervasives;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -308,9 +311,9 @@ BOOL CTrackApp::ImportMidiConfig(LPCSTR lpszConfigFile, BOOL bNoWarn)
             {
                 if ((bReplaceAll) || (!glpMidiLibrary->MidiMap[iIns]) || (!glpMidiLibrary->MidiMap[iIns][0]))
                 {
-                    DWORD dwProgram = (iIns < 128) ? iIns : 0xFF;
-                    DWORD dwKey = (iIns < 128) ? 0xFF : iIns & 0x7F;
-                    DWORD dwBank = (iIns < 128) ? 0 : F_INSTRUMENT_DRUMS;
+                    uint32_t dwProgram = (iIns < 128) ? iIns : 0xFF;
+                    uint32_t dwKey = (iIns < 128) ? 0xFF : iIns & 0x7F;
+                    uint32_t dwBank = (iIns < 128) ? 0 : F_INSTRUMENT_DRUMS;
                     if (dlsbank.FindInstrument((iIns < 128) ? FALSE : TRUE,    dwBank, dwProgram, dwKey))
                     {
                         if (!glpMidiLibrary->MidiMap[iIns])
@@ -443,10 +446,10 @@ BOOL CTrackApp::LoadDefaultDLSBanks()
         {
             if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\DirectMusic", 0, KEY_READ, &key) == ERROR_SUCCESS)
             {
-                DWORD dwRegType = REG_SZ;
-                DWORD dwSize = sizeof(szFileName);
+                uint32_t dwRegType = REG_SZ;
+                uint32_t dwSize = sizeof(szFileName);
                 szFileName[0] = 0;
-                if (RegQueryValueEx(key, "GMFilePath", NULL, &dwRegType, (LPBYTE)&szFileName, &dwSize) == ERROR_SUCCESS)
+                if (registry_query_value(key, "GMFilePath", NULL, &dwRegType, (LPBYTE)&szFileName, &dwSize) == ERROR_SUCCESS)
                 {
                     AddDLSBank(szFileName);
                 }
@@ -467,10 +470,10 @@ void CTrackApp::LoadRegistryDLS()
 
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    MPTRACK_REG_DLS, 0, KEY_READ, &keyX) == ERROR_SUCCESS)
     {
-        DWORD dwRegType = REG_DWORD;
-        DWORD dwSize = sizeof(DWORD);
-        DWORD d = 0;
-        if (RegQueryValueEx(keyX, "NumBanks", NULL, &dwRegType, (LPBYTE)&d, &dwSize) == ERROR_SUCCESS)
+        uint32_t dwRegType = REG_DWORD;
+        uint32_t dwSize = sizeof(uint32_t);
+        uint32_t d = 0;
+        if (registry_query_value(keyX, "NumBanks", NULL, &dwRegType, (LPBYTE)&d, &dwSize) == ERROR_SUCCESS)
         {
             CHAR s[64];
             for (UINT i=0; i<d; i++)
@@ -479,7 +482,7 @@ void CTrackApp::LoadRegistryDLS()
                 szFileNameX[0] = 0;
                 dwRegType = REG_SZ;
                 dwSize = sizeof(szFileNameX);
-                RegQueryValueEx(keyX, s, NULL, &dwRegType, (LPBYTE)szFileNameX, &dwSize);
+                registry_query_value(keyX, s, NULL, &dwRegType, (LPBYTE)szFileNameX, &dwSize);
                 AddDLSBank(szFileNameX);
             }
         }
@@ -493,7 +496,7 @@ BOOL CTrackApp::SaveDefaultDLSBanks()
 {
     TCHAR s[64];
     TCHAR szPath[_MAX_PATH];
-    DWORD nBanks = 0;
+    uint32_t nBanks = 0;
     for (UINT i=0; i<MAX_DLS_BANKS; i++) {
         
         if (!gpDLSBanks[i] || !gpDLSBanks[i]->GetFileName() || !gpDLSBanks[i]->GetFileName()[0])
@@ -612,17 +615,17 @@ CTrackApp::CTrackApp()
 /////////////////////////////////////////////////////////////////////////////
 // GetDSoundVersion
 
-static DWORD GetDSoundVersion()
+static uint32_t GetDSoundVersion()
 //-----------------------------
 {
-    DWORD dwVersion = 0x600;
+    uint32_t dwVersion = 0x600;
     HKEY key = NULL;
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\DirectX", 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
         CHAR szVersion[32] = "";
-        DWORD dwSize = sizeof(szVersion);
-        DWORD dwType = REG_SZ;
-        if (RegQueryValueEx(key, "Version", NULL, &dwType, (LPBYTE)szVersion, &dwSize) == ERROR_SUCCESS)
+        uint32_t dwSize = sizeof(szVersion);
+        uint32_t dwType = REG_SZ;
+        if (registry_query_value(key, "Version", NULL, &dwType, (LPBYTE)szVersion, &dwSize) == ERROR_SUCCESS)
         {
             // "4.06.03.xxxx"
             dwVersion = ((szVersion[3] - '0') << 8) | ((szVersion[5] - '0') << 4) | ((szVersion[6] - '0'));
@@ -1253,7 +1256,7 @@ void CTrackApp::OnHelpSearch()
 //----------------------------
 {
     CHAR s[80] = "";
-    WinHelp((DWORD)&s, HELP_KEY);
+    WinHelp((uint32_t)&s, HELP_KEY);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1267,7 +1270,7 @@ protected:
     LPBITMAPINFO m_lpBmp, m_lpCopy;
     HPALETTE m_hPal;
     LPBYTE m_lpRotoZoom;
-    DWORD m_dwStartTime, m_dwFrameTime;
+    uint32_t m_dwStartTime, m_dwFrameTime;
     UINT m_nRotoWidth, m_nRotoHeight;
     BOOL m_bFirst;
 
@@ -1464,7 +1467,7 @@ BOOL CPaletteBitmap::Animate()
 {    
     //included random hacking by rewbs to get funny animation.
     LPBYTE dest, src;
-    DWORD t = (timeGetTime() - m_dwStartTime) / 10;
+    uint32_t t = (timeGetTime() - m_dwStartTime) / 10;
     LONG Dist, Phi, srcx, srcy, spdx, spdy, sizex, sizey;
     bool dir;
 
@@ -1785,7 +1788,7 @@ BOOL CTrackApp::OnIdle(LONG lCount)
     }
 
     // Call plugins idle routine for open editor
-    DWORD curTime = timeGetTime();
+    uint32_t curTime = timeGetTime();
     // TODO: is it worth the overhead of checking that 10ms have passed,
     //       or should we just do it on every idle message?
     if (m_pPluginManager)
@@ -1905,7 +1908,7 @@ void DrawBitmapButton(HDC hdc, LPRECT lpRect, LPMODPLUGDIB lpdib, int srcx, int 
 }
 
 
-void DrawButtonRect(HDC hdc, LPRECT lpRect, LPCSTR lpszText, BOOL bDisabled, BOOL bPushed, DWORD dwFlags)
+void DrawButtonRect(HDC hdc, LPRECT lpRect, LPCSTR lpszText, BOOL bDisabled, BOOL bPushed, uint32_t dwFlags)
 //-------------------------------------------------------------------------------------------------------
 {
     RECT rect;
@@ -2246,17 +2249,17 @@ void CMappedFile::Close()
 }
 
 
-DWORD CMappedFile::GetLength()
+uint32_t CMappedFile::GetLength()
 //----------------------------
 {
-    return static_cast<DWORD>(m_File.GetLength());
+    return static_cast<uint32_t>(m_File.GetLength());
 }
 
 
-LPBYTE CMappedFile::Lock(DWORD dwMaxLen)
+LPBYTE CMappedFile::Lock(uint32_t dwMaxLen)
 //--------------------------------------
 {
-    DWORD dwLen = GetLength();
+    uint32_t dwLen = GetLength();
     LPBYTE lpStream;
 
     if (!dwLen) return NULL;
@@ -2325,7 +2328,7 @@ typedef struct BLADEENCSTREAMINFO
     DWORD dwOutputSamples;
     HBE_STREAM hBeStream;
     SHORT *pPCMBuffer;
-    DWORD dwReadPos;
+    uint32_t dwReadPos;
 } BLADEENCSTREAMINFO, *PBLADEENCSTREAMINFO;
 
 static PBLADEENCSTREAMINFO gpbeBladeCfg = NULL;
@@ -2344,8 +2347,8 @@ void CTrackApp::AcmExceptionHandler()
 BOOL CTrackApp::InitializeACM(BOOL bNoAcm)
 //----------------------------------------
 {
-    DWORD (ACMAPI *pfnAcmGetVersion)(void);
-    DWORD dwVersion;
+    uint32_t (ACMAPI *pfnAcmGetVersion)(void);
+    uint32_t dwVersion;
     UINT fuErrorMode;
     BOOL bOk = FALSE;
 
@@ -2460,7 +2463,7 @@ BOOL CTrackApp::UninitializeACM()
 }
 
 
-MMRESULT CTrackApp::AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMFORMATENUMCBA fnCallback, DWORD dwInstance, DWORD fdwEnum)
+MMRESULT CTrackApp::AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMFORMATENUMCBA fnCallback, uint32_t dwInstance, uint32_t fdwEnum)
 //---------------------------------------------------------------------------------------------------------------------------------------
 {
     MMRESULT err = MMSYSERR_INVALPARAM;
@@ -2539,7 +2542,7 @@ BOOL CTrackApp::AcmFormatEnumCB(HACMDRIVERID, LPACMFORMATDETAILS pafd, DWORD, DW
 }
 
 
-MMRESULT CTrackApp::AcmDriverOpen(LPHACMDRIVER phad, HACMDRIVERID hadid, DWORD fdwOpen)
+MMRESULT CTrackApp::AcmDriverOpen(LPHACMDRIVER phad, HACMDRIVERID hadid, uint32_t fdwOpen)
 //-------------------------------------------------------------------------------------
 {
     if ((m_hBladeEnc) && (hadid == (HACMDRIVERID)&m_hBladeEnc))
@@ -2561,7 +2564,7 @@ MMRESULT CTrackApp::AcmDriverOpen(LPHACMDRIVER phad, HACMDRIVERID hadid, DWORD f
 }
 
 
-MMRESULT CTrackApp::AcmDriverClose(HACMDRIVER had, DWORD fdwClose)
+MMRESULT CTrackApp::AcmDriverClose(HACMDRIVER had, uint32_t fdwClose)
 //----------------------------------------------------------------
 {
     if ((m_hBladeEnc) && (had == (HACMDRIVER)&m_hBladeEnc))
@@ -2581,7 +2584,7 @@ MMRESULT CTrackApp::AcmDriverClose(HACMDRIVER had, DWORD fdwClose)
 }
 
 
-MMRESULT CTrackApp::AcmDriverDetails(HACMDRIVERID hadid, LPACMDRIVERDETAILS padd, DWORD fdwDetails)
+MMRESULT CTrackApp::AcmDriverDetails(HACMDRIVERID hadid, LPACMDRIVERDETAILS padd, uint32_t fdwDetails)
 //-------------------------------------------------------------------------------------------------
 {
     if (((m_hBladeEnc) && (hadid == (HACMDRIVERID)(&m_hBladeEnc)))
@@ -2680,7 +2683,7 @@ MMRESULT CTrackApp::AcmStreamOpen(
 }
 
 
-MMRESULT CTrackApp::AcmStreamClose(HACMSTREAM has, DWORD fdwClose)
+MMRESULT CTrackApp::AcmStreamClose(HACMSTREAM has, uint32_t fdwClose)
 //----------------------------------------------------------------
 {
     if (((m_hBladeEnc) && (has == (HACMSTREAM)&m_hBladeEnc))
@@ -2712,7 +2715,7 @@ MMRESULT CTrackApp::AcmStreamClose(HACMSTREAM has, DWORD fdwClose)
 }
 
 
-MMRESULT CTrackApp::AcmStreamSize(HACMSTREAM has, DWORD cbInput, LPDWORD pdwOutputBytes, DWORD fdwSize)
+MMRESULT CTrackApp::AcmStreamSize(HACMSTREAM has, uint32_t cbInput, LPDWORD pdwOutputBytes, uint32_t fdwSize)
 //-----------------------------------------------------------------------------------------------------
 {
     if (((m_hBladeEnc) && (has == (HACMSTREAM)&m_hBladeEnc))
@@ -2745,7 +2748,7 @@ MMRESULT CTrackApp::AcmStreamSize(HACMSTREAM has, DWORD cbInput, LPDWORD pdwOutp
 }
 
 
-MMRESULT CTrackApp::AcmStreamPrepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, DWORD fdwPrepare)
+MMRESULT CTrackApp::AcmStreamPrepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwPrepare)
 //--------------------------------------------------------------------------------------------------
 {
     if (((m_hBladeEnc) && (has == (HACMSTREAM)&m_hBladeEnc))
@@ -2763,7 +2766,7 @@ MMRESULT CTrackApp::AcmStreamPrepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pas
 }
 
 
-MMRESULT CTrackApp::AcmStreamUnprepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, DWORD fdwUnprepare)
+MMRESULT CTrackApp::AcmStreamUnprepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwUnprepare)
 //------------------------------------------------------------------------------------------------------
 {
     if (((m_hBladeEnc) && (has == (HACMSTREAM)&m_hBladeEnc))
@@ -2781,7 +2784,7 @@ MMRESULT CTrackApp::AcmStreamUnprepareHeader(HACMSTREAM has, LPACMSTREAMHEADER p
 }
 
 
-MMRESULT CTrackApp::AcmStreamConvert(HACMSTREAM has, LPACMSTREAMHEADER pash, DWORD fdwConvert)
+MMRESULT CTrackApp::AcmStreamConvert(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwConvert)
 //--------------------------------------------------------------------------------------------
 {
     static BEENCODECHUNK pfnbeEncodeChunk = NULL;
@@ -2812,7 +2815,7 @@ MMRESULT CTrackApp::AcmStreamConvert(HACMSTREAM has, LPACMSTREAMHEADER pash, DWO
         {
             if ((pfnbeEncodeChunk) && (pbeCfg))
             {
-                DWORD dwBytesLeft = pbeCfg->dwInputSamples*2 - pbeCfg->dwReadPos;
+                uint32_t dwBytesLeft = pbeCfg->dwInputSamples*2 - pbeCfg->dwReadPos;
                 if (!dwBytesLeft)
                 {
                     dwBytesLeft = pbeCfg->dwInputSamples*2;
@@ -2972,7 +2975,7 @@ void Log(LPCSTR format, ...) {
 VOID CTrackApp::ImportLocalizedStrings()
 //--------------------------------------
 {
-    //DWORD dwLangId = ((DWORD)GetUserDefaultLangID()) & 0xfff;
+    //uint32_t dwLangId = ((uint32_t)GetUserDefaultLangID()) & 0xfff;
     // TODO: look up [Strings.lcid], [Strings.(lcid&0xff)] & [Strings] in mpt_intl.ini
 }
 
@@ -2981,7 +2984,7 @@ BOOL CTrackApp::GetLocalizedString(LPCSTR pszName, LPSTR pszStr, UINT cbSize)
 //---------------------------------------------------------------------------
 {
     CHAR s[32];
-    DWORD dwLangId = ((DWORD)GetUserDefaultLangID()) & 0xffff;
+    uint32_t dwLangId = ((uint32_t)GetUserDefaultLangID()) & 0xffff;
 
     pszStr[0] = 0;
     if (!m_szStringsFileName[0]) return FALSE;
@@ -3049,7 +3052,7 @@ FileDlgResult CTrackApp::ShowOpenSaveFileDialog(const bool load, const std::stri
     if(!workingDirectory.empty())
         dlg.m_ofn.lpstrInitialDir = workingDirectory.c_str();
     if(filterIndex != nullptr)
-        dlg.m_ofn.nFilterIndex = (DWORD)(*filterIndex);
+        dlg.m_ofn.nFilterIndex = (uint32_t)(*filterIndex);
 
     vector<TCHAR> filenameBuffer;
     if(multiSelect)

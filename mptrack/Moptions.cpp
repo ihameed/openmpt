@@ -257,7 +257,7 @@ void COptionsColors::OnDrawItem(int nIdCtl, LPDRAWITEMSTRUCT lpdis)
 }
 
 
-static DWORD rgbCustomColors[16] =
+static COLORREF rgbCustomColors[16] =
 {
     0x808080,	0x0000FF,	0x00FF00,	0x00FFFF,
     0xFF0000,	0xFF00FF,	0xFFFF00,	0xFFFFFF,
@@ -553,7 +553,7 @@ END_MESSAGE_MAP()
 
 struct OPTGENDESC
 {
-    DWORD dwFlagID;
+    uint32_t dwFlagID;
     LPCSTR pszListName, pszDescription;
 };
 

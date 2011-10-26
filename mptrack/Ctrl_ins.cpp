@@ -1134,7 +1134,7 @@ LRESULT CCtrlInstruments::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
 }
 
 
-void CCtrlInstruments::UpdateView(DWORD dwHintMask, CObject *pObj)
+void CCtrlInstruments::UpdateView(uint32_t dwHintMask, CObject *pObj)
 //----------------------------------------------------------------
 {
     if ((pObj == this) || (!m_pModDoc) || (!m_pSndFile)) return;
@@ -1258,14 +1258,14 @@ void CCtrlInstruments::UpdateView(DWORD dwHintMask, CObject *pObj)
     		OnMixPlugChanged();
     		//end rewbs.instroVSTi
     		for(int nRes = 0; nRes<m_CbnResampling.GetCount(); nRes++) {
-                DWORD v = m_CbnResampling.GetItemData(nRes);
+                uint32_t v = m_CbnResampling.GetItemData(nRes);
     	        if (pIns->resampling_mode == v) {
     				m_CbnResampling.SetCurSel(nRes);
     				break;
                  }
     		}
     		for(int nFltMode = 0; nFltMode<m_CbnFilterMode.GetCount(); nFltMode++) {
-                DWORD v = m_CbnFilterMode.GetItemData(nFltMode);
+                uint32_t v = m_CbnFilterMode.GetItemData(nFltMode);
     	        if (pIns->default_filter_mode == v) {
     				m_CbnFilterMode.SetCurSel(nFltMode);
     				break;
@@ -1387,7 +1387,7 @@ BOOL CCtrlInstruments::OpenInstrument(LPCSTR lpszFileName)
 {
     CMappedFile f;
     BOOL bFirst, bOk;
-    DWORD len;
+    uint32_t len;
     LPBYTE lpFile;
     
     BeginWaitCursor();
@@ -2210,7 +2210,7 @@ void CCtrlInstruments::OnEnableCutOff()
     		{
     			pIns->default_filter_cutoff &= 0x7F;
     		}
-    		for (UINT i=0; i<MAX_CHANNELS; i++)
+    		for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     		{
     			if (pSndFile->Chn[i].instrument == pIns)
     			{
@@ -2248,7 +2248,7 @@ void CCtrlInstruments::OnEnableResonance()
     		{
     			pIns->default_filter_resonance &= 0x7F;
     		}
-    		for (UINT i=0; i<MAX_CHANNELS; i++)
+    		for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     		{
     			if (pSndFile->Chn[i].instrument == pIns)
     			{
@@ -2300,7 +2300,7 @@ void CCtrlInstruments::OnFilterModeChanged()
             //Update channel settings where this instrument is active, if required.
     		if(instFiltermode != FLTMODE_UNCHANGED)
     		{
-    			for (CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
+    			for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     			{
     				if (pSndFile->Chn[i].instrument == pIns)
     					pSndFile->Chn[i].nFilterMode = instFiltermode;
@@ -2405,7 +2405,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     		// Update channels
     		if (filterChanger==true)
     		{
-    			for (UINT i=0; i<MAX_CHANNELS; i++)
+    			for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     			{
     				if (pSndFile->Chn[i].instrument == pIns)
     				{

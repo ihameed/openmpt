@@ -147,7 +147,7 @@ void CViewSample::UpdateScrollSize(const UINT nZoomOld)
     	CPoint pt;
     	CSoundFile *pSndFile = pModDoc->GetSoundFile();
     	SIZE sizePage, sizeLine;
-    	DWORD dwLen = 0;
+    	uint32_t dwLen = 0;
 
     	if ((m_nSample > 0) && (m_nSample <= pSndFile->m_nSamples))
     	{
@@ -242,7 +242,7 @@ BOOL CViewSample::SetZoom(UINT nZoom)
 }
 
 
-void CViewSample::SetCurSel(DWORD nBegin, DWORD nEnd)
+void CViewSample::SetCurSel(uint32_t nBegin, uint32_t nEnd)
 //---------------------------------------------------
 {
     CSoundFile *pSndFile = (GetDocument()) ? GetDocument()->GetSoundFile() : nullptr;
@@ -253,8 +253,8 @@ void CViewSample::SetCurSel(DWORD nBegin, DWORD nEnd)
     if(m_nGridSegments > 0)
     {
     	const float sampsPerSegment = (float)(pSndFile->Samples[m_nSample].length / m_nGridSegments);
-    	nBegin = (DWORD)(floor((float)(nBegin / sampsPerSegment) + 0.5f) * sampsPerSegment);
-    	nEnd = (DWORD)(floor((float)(nEnd / sampsPerSegment) + 0.5f) * sampsPerSegment);
+    	nBegin = (uint32_t)(floor((float)(nBegin / sampsPerSegment) + 0.5f) * sampsPerSegment);
+    	nEnd = (uint32_t)(floor((float)(nEnd / sampsPerSegment) + 0.5f) * sampsPerSegment);
     }
 
     if (nBegin > nEnd)
@@ -265,7 +265,7 @@ void CViewSample::SetCurSel(DWORD nBegin, DWORD nEnd)
     if ((nBegin != m_dwBeginSel) || (nEnd != m_dwEndSel))
     {
     	RECT rect;
-    	DWORD dMin = m_dwBeginSel, dMax = m_dwEndSel;
+    	uint32_t dMin = m_dwBeginSel, dMax = m_dwEndSel;
     	if (m_dwBeginSel >= m_dwEndSel)
     	{
     		dMin = nBegin;
@@ -303,7 +303,7 @@ void CViewSample::SetCurSel(DWORD nBegin, DWORD nEnd)
     		s[0] = 0;
     		if (m_dwEndSel > m_dwBeginSel)
     		{
-    			const DWORD selLength = m_dwEndSel - m_dwBeginSel;
+    			const uint32_t selLength = m_dwEndSel - m_dwBeginSel;
     			wsprintf(s, "[%d,%d] (%d sample%s, ", m_dwBeginSel, m_dwEndSel, selLength, (selLength == 1) ? "" : "s");
     			LONG lSampleRate = pSndFile->Samples[m_nSample].c5_samplerate;
     			if (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
@@ -344,7 +344,7 @@ LONG CViewSample::SampleToScreen(LONG n) const
 }
 
 
-DWORD CViewSample::ScreenToSample(LONG x) const
+uint32_t CViewSample::ScreenToSample(LONG x) const
 //---------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -424,7 +424,7 @@ LRESULT CViewSample::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 ///////////////////////////////////////////////////////////////
 // CViewSample drawing
 
-void CViewSample::UpdateView(DWORD dwHintMask, CObject *)
+void CViewSample::UpdateView(uint32_t dwHintMask, CObject *)
 //-------------------------------------------------------
 {
     if ((dwHintMask & (HINT_MPTOPTIONS|HINT_MODTYPE))
@@ -905,7 +905,7 @@ void CViewSample::DrawPositionMarks(HDC hdc)
 //------------------------------------------
 {
     CRect rect;
-    for (UINT i=0; i<MAX_CHANNELS; i++) if (m_dwNotifyPos[i] & MPTNOTIFY_POSVALID)
+    for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++) if (m_dwNotifyPos[i] & MPTNOTIFY_POSVALID)
     {
     	rect.top = -2;
     	rect.left = SampleToScreen(m_dwNotifyPos[i] & 0x0FFFFFFF);
@@ -923,7 +923,7 @@ LRESULT CViewSample::OnPlayerNotify(MPTNOTIFICATION *pnotify)
     if ((!pnotify) || (!pModDoc)) return 0;
     if (pnotify->dwType & MPTNOTIFY_STOP)
     {
-    	for (UINT i=0; i<MAX_CHANNELS; i++)
+    	for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     	{
     		if (m_dwNotifyPos[i])
     		{
@@ -937,9 +937,9 @@ LRESULT CViewSample::OnPlayerNotify(MPTNOTIFICATION *pnotify)
     {
     	//CSoundFile *pSndFile = pModDoc->GetSoundFile();
     	BOOL bUpdate = FALSE;
-    	for (UINT i=0; i<MAX_CHANNELS; i++)
+    	for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     	{
-    		DWORD newpos = /*(pSndFile->m_dwSongFlags & SONG_PAUSED) ?*/ pnotify->dwPos[i]/* : 0*/;
+    		uint32_t newpos = /*(pSndFile->m_dwSongFlags & SONG_PAUSED) ?*/ pnotify->dwPos[i]/* : 0*/;
     		if (m_dwNotifyPos[i] != newpos)
     		{
     			bUpdate = TRUE;
@@ -950,9 +950,9 @@ LRESULT CViewSample::OnPlayerNotify(MPTNOTIFICATION *pnotify)
     	{
     		HDC hdc = ::GetDC(m_hWnd);
     		DrawPositionMarks(hdc);
-    		for (UINT j=0; j<MAX_CHANNELS; j++)
+    		for (UINT j=0; j<MAX_VIRTUAL_CHANNELS; j++)
     		{
-    			DWORD newpos = /*(pSndFile->m_dwSongFlags & SONG_PAUSED) ?*/ pnotify->dwPos[j] /*: 0*/;
+    			uint32_t newpos = /*(pSndFile->m_dwSongFlags & SONG_PAUSED) ?*/ pnotify->dwPos[j] /*: 0*/;
     			m_dwNotifyPos[j] = newpos;
     		}
     		DrawPositionMarks(hdc);
@@ -1004,7 +1004,7 @@ void CViewSample::DrawNcButton(CDC *pDC, UINT nBtn)
 
     if (GetNcButtonRect(nBtn, &rect))
     {
-    	DWORD dwStyle = m_NcButtonState[nBtn];
+    	uint32_t dwStyle = m_NcButtonState[nBtn];
     	COLORREF c3, c4;
     	int xofs = 0, yofs = 0, nImage = 0;
     		
@@ -1105,7 +1105,7 @@ void CViewSample::UpdateNcButtonState()
     pSndFile = pModDoc->GetSoundFile();
     for (UINT i=0; i<SMP_LEFTBAR_BUTTONS; i++) if (cLeftBarButtons[i] != ID_SEPARATOR)
     {
-    	DWORD dwStyle = 0;
+    	uint32_t dwStyle = 0;
     	
     	if (m_nBtnMouseOver == i)
     	{
@@ -1173,7 +1173,7 @@ BOOL CViewSample::OnScrollBy(CSize sizeScroll, BOOL bDoScroll)
 
     // don't scroll if there is no valid scroll range (ie. no scroll bar)
     CScrollBar* pBar;
-    DWORD dwStyle = GetStyle();
+    uint32_t dwStyle = GetStyle();
     // vertical scroll bar not enabled
     pBar = GetScrollBarCtrl(SB_HORZ);
     if ((pBar != NULL && !pBar->IsWindowEnabled()) || (pBar == NULL && !(dwStyle & WS_HSCROLL)))
@@ -1244,13 +1244,13 @@ void CViewSample::SetInitialDrawPoint(void* pSample, const CPoint& point)
 
 
 template<class T, class uT>
-void CViewSample::SetSampleData(void* pSample, const CPoint& point, const DWORD old )
+void CViewSample::SetSampleData(void* pSample, const CPoint& point, const uint32_t old )
 //-----------------------------------------------------------------------------------
 {
     T* data = reinterpret_cast<T*>(pSample);
     const int oldvalue = data[old];
     const int value = GetSampleValueFromPoint<T, uT>(point);
-    for(DWORD i=old; i != m_dwEndDrag; i += (m_dwEndDrag > old ? 1 : -1))
+    for(uint32_t i=old; i != m_dwEndDrag; i += (m_dwEndDrag > old ? 1 : -1))
     {
     	data[i] = static_cast<T>((float)oldvalue + (value - oldvalue) * ((float)i - old) / ((float)m_dwEndDrag - old));
     }
@@ -1277,7 +1277,7 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
     pSndFile = pModDoc->GetSoundFile();
     if (m_rcClient.PtInRect(point))
     {
-    	const DWORD x = ScreenToSample(point.x);
+    	const uint32_t x = ScreenToSample(point.x);
     	wsprintf(s, "Cursor: %u", x);
     	UpdateIndicator(s);
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -1286,8 +1286,8 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
     	{
     		if(m_nSample > 0 && m_nSample < MAX_SAMPLES && x < pSndFile->Samples[m_nSample].length)
     		{
-    			const DWORD xLow = (x / 0x100) % 0x100;
-    			const DWORD xHigh = x / 0x10000;
+    			const uint32_t xLow = (x / 0x100) % 0x100;
+    			const uint32_t xHigh = x / 0x10000;
 
     			const char cOffsetChar = pSndFile->GetModSpecifications().GetEffectLetter(CMD_OFFSET);
     			const bool bHasHighOffset = (pSndFile->TypeIsS3M_IT_MPT() || (pSndFile->GetType() == MOD_TYPE_XM));
@@ -1310,9 +1310,9 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
     if (m_dwStatus & SMPSTATUS_MOUSEDRAG)
     {
     	BOOL bAgain = FALSE;
-    	const DWORD len = pSndFile->Samples[m_nSample].length;
+    	const uint32_t len = pSndFile->Samples[m_nSample].length;
     	if (!len) return;
-    	DWORD old = m_dwEndDrag;
+    	uint32_t old = m_dwEndDrag;
     	if (m_nZoom)
     	{
     		if (point.x < 0)
@@ -1381,7 +1381,7 @@ void CViewSample::OnLButtonDown(UINT, CPoint point)
 {
     CModDoc *pModDoc = GetDocument();
     CSoundFile *pSndFile;
-    DWORD len;
+    uint32_t len;
 
     if ((m_dwStatus & SMPSTATUS_MOUSEDRAG) || (!pModDoc)) return;
     pSndFile = pModDoc->GetSoundFile();
@@ -1449,7 +1449,7 @@ void CViewSample::OnLButtonDblClk(UINT, CPoint)
     if (pModDoc)
     {
     	CSoundFile *pSndFile = pModDoc->GetSoundFile();
-    	DWORD len = pSndFile->Samples[m_nSample].length;
+    	uint32_t len = pSndFile->Samples[m_nSample].length;
     	if (len && !m_bDrawingEnabled) SetCurSel(0, len);
     }
 }
@@ -1478,7 +1478,7 @@ void CViewSample::OnRButtonDown(UINT, CPoint pt)
     		} else
     		{
     			CHAR s[256];
-    			DWORD dwPos = ScreenToSample(pt.x);
+    			uint32_t dwPos = ScreenToSample(pt.x);
     			if (dwPos <= pSmp->length)
     			{
     				//Set loop points
@@ -1707,7 +1707,7 @@ void CViewSample::OnEditSelectAll()
     if (pModDoc)
     {
     	CSoundFile *pSndFile = pModDoc->GetSoundFile();
-    	DWORD len = pSndFile->Samples[m_nSample].length;
+    	uint32_t len = pSndFile->Samples[m_nSample].length;
     	if (len) SetCurSel(0, len);
     }
 }
@@ -1719,8 +1719,8 @@ void CViewSample::OnEditDelete()
     CModDoc *pModDoc = GetDocument();
     CSoundFile *pSndFile;
     modplug::tracker::modsample_t *pSmp;
-    DWORD dwUpdateFlags = HINT_SAMPLEINFO | HINT_SAMPLEDATA;
-    DWORD len;
+    uint32_t dwUpdateFlags = HINT_SAMPLEINFO | HINT_SAMPLEDATA;
+    uint32_t len;
 
     if (!pModDoc) return;
     pSndFile = pModDoc->GetSoundFile();
@@ -1818,7 +1818,7 @@ void CViewSample::OnEditCopy()
     CModDoc *pModDoc = GetDocument();
     CSoundFile *pSndFile;
     modplug::tracker::modsample_t *pSmp;
-    DWORD dwMemSize, dwSmpLen, dwSmpOffset;
+    uint32_t dwMemSize, dwSmpLen, dwSmpOffset;
     HGLOBAL hCpy;
     BOOL bExtra = TRUE;
 
@@ -1947,7 +1947,7 @@ void CViewSample::OnEditPaste()
     		pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
 
     		CSoundFile *pSndFile = pModDoc->GetSoundFile();
-    		DWORD dwMemSize = GlobalSize(hCpy);
+    		uint32_t dwMemSize = GlobalSize(hCpy);
     		BEGIN_CRITICAL();
     		memcpy(s, pSndFile->m_szNames[m_nSample], 32);
     		memcpy(s2, pSndFile->Samples[m_nSample].legacy_filename, 22);
@@ -2006,7 +2006,7 @@ void CViewSample::On8BitConvert()
     			p[i] = (signed char) ((*((short int *)(p+i*2))) / 256);
     		}
     		pSmp->flags &= ~(CHN_16BIT);
-    		for (UINT j=0; j<MAX_CHANNELS; j++) if (pSndFile->Chn[j].sample_data == pSmp->sample_data)
+    		for (UINT j=0; j<MAX_VIRTUAL_CHANNELS; j++) if (pSndFile->Chn[j].sample_data == pSmp->sample_data)
     		{
     			pSndFile->Chn[j].flags &= ~(CHN_16BIT);
     		}
@@ -2133,7 +2133,7 @@ void CViewSample::PlayNote(UINT note, const uint32_t nStartPos)
     		else
     			pModDoc->NoteOff(0, TRUE);
 
-    		DWORD loopstart = m_dwBeginSel, loopend = m_dwEndSel;
+    		uint32_t loopstart = m_dwBeginSel, loopend = m_dwEndSel;
     		if (loopend - loopstart < (UINT)(4 << m_nZoom))
     			loopend = loopstart = 0; // selection is too small -> no loop
 
@@ -2326,9 +2326,9 @@ void CViewSample::OnZoomOnSel()
 {
     if ((m_dwEndSel > m_dwBeginSel) && (m_rcClient.right > 0))
     {
-    	DWORD dwZoom = 0;
+    	uint32_t dwZoom = 0;
     	
-    	while ((((DWORD)m_rcClient.right << dwZoom) < (m_dwEndSel - m_dwBeginSel)) && (dwZoom < (MAX_ZOOM-1))) dwZoom++;
+    	while ((((uint32_t)m_rcClient.right << dwZoom) < (m_dwEndSel - m_dwBeginSel)) && (dwZoom < (MAX_ZOOM-1))) dwZoom++;
     	if (dwZoom < (MAX_ZOOM-1)) dwZoom++; else dwZoom = 0;
     	SendCtrlMessage(CTRLMSG_SMP_SETZOOM, dwZoom);
     	if (dwZoom)
@@ -2525,7 +2525,7 @@ void CViewSample::OnAddSilence()
 LRESULT CViewSample::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //------------------------------------------------------------
 {
-    const DWORD dwMidiData = dwMidiDataParam;
+    const uint32_t dwMidiData = dwMidiDataParam;
     static uint8_t midivolume = 127;
 
     CModDoc *pModDoc = GetDocument();

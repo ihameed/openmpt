@@ -23,25 +23,25 @@
 #define ITP_FILE_ID 0x2e697470    // .itp ASCII
 
 
-bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadITProject(const uint8_t * lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     UINT i,n,nsmp;
-    DWORD id,len,size;
-    DWORD dwMemPos = 0;
-    DWORD version;
+    uint32_t id,len,size;
+    uint32_t dwMemPos = 0;
+    uint32_t version;
 
     ASSERT_CAN_READ(12);
 
     // Check file ID
 
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     if(id != ITP_FILE_ID) return false;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     version = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // max supported version
     if(version > ITP_VERSION)
@@ -54,9 +54,9 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
     // Song name
 
     // name string length
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     len = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // name string
     ASSERT_CAN_READ(len);
@@ -71,8 +71,8 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     // comment string length
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
-    dwMemPos += sizeof(DWORD);
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
+    dwMemPos += sizeof(uint32_t);
     if(id > UINT16_MAX) return false;
 
     // allocate and copy comment string
@@ -87,45 +87,45 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
     ASSERT_CAN_READ(5*4);
 
     // m_dwSongFlags
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_dwSongFlags = (id & SONG_FILE_FLAGS);
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     if(!(m_dwSongFlags & SONG_ITPROJECT)) return false;
 
     // m_nDefaultGlobalVolume
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_nDefaultGlobalVolume = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // m_nSamplePreAmp
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_nSamplePreAmp = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // m_nDefaultSpeed
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_nDefaultSpeed = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // m_nDefaultTempo
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_nDefaultTempo = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // Song channels data
     ASSERT_CAN_READ(2*4);
 
     // m_nChannels
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_nChannels = (CHANNELINDEX)id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
     if(m_nChannels > 127) return false;
 
     // channel name string length (=MAX_CHANNELNAME)
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     len = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
     if(len > MAX_CHANNELNAME) return false;
 
     // Channels' data
@@ -133,19 +133,19 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
         ASSERT_CAN_READ(3*4 + len);
 
         // ChnSettings[i].nPan
-        memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+        memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         ChnSettings[i].nPan = id;
-        dwMemPos += sizeof(DWORD);
+        dwMemPos += sizeof(uint32_t);
 
         // ChnSettings[i].dwFlags
-        memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+        memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         ChnSettings[i].dwFlags = id;
-        dwMemPos += sizeof(DWORD);
+        dwMemPos += sizeof(uint32_t);
 
         // ChnSettings[i].nVolume
-        memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+        memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         ChnSettings[i].nVolume = id;
-        dwMemPos += sizeof(DWORD);
+        dwMemPos += sizeof(uint32_t);
 
         // ChnSettings[i].szName
         memcpy(&ChnSettings[i].szName[0],lpStream+dwMemPos,len);
@@ -156,8 +156,8 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
     // Song mix plugins
     // size of mix plugins data
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
-    dwMemPos += sizeof(DWORD);
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
+    dwMemPos += sizeof(uint32_t);
 
     // mix plugins
     ASSERT_CAN_READ(id);
@@ -167,8 +167,8 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     // midi cfg data length
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
-    dwMemPos += sizeof(DWORD);
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
+    dwMemPos += sizeof(uint32_t);
 
     // midi cfg
     ASSERT_CAN_READ(id);
@@ -183,17 +183,17 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     // m_nInstruments
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     m_nInstruments = (INSTRUMENTINDEX)id;
     if(m_nInstruments > MAX_INSTRUMENTS) return false;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // path string length (=_MAX_PATH)
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     len = id;
     if(len > _MAX_PATH) return false;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // instruments' paths
     for(i=0; i<m_nInstruments; i++){
@@ -207,10 +207,10 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     // size of order array (=MAX_ORDERS)
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     size = id;
     if(size > MAX_ORDERS) return false;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // order data
     ASSERT_CAN_READ(size);
@@ -223,20 +223,20 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     ASSERT_CAN_READ(3*4);
     // number of patterns (=MAX_PATTERNS)
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     size = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
     if(size > MAX_PATTERNS) return false;
 
     // m_nPatternNames
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     const PATTERNINDEX numNamedPats = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // pattern name string length (=MAX_PATTERNNAME)
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
-    const DWORD patNameLen = id;
-    dwMemPos += sizeof(DWORD);
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
+    const uint32_t patNameLen = id;
+    dwMemPos += sizeof(uint32_t);
 
     // m_lpszPatternNames
     ASSERT_CAN_READ(numNamedPats * patNameLen);
@@ -245,19 +245,19 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     // modcommand data length
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     n = id;
     if(n != 6) return false;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     for(PATTERNINDEX npat=0; npat<size; npat++)
     {
         // Patterns[npat].GetNumRows()
         ASSERT_CAN_READ(4);
-        memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+        memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         if(id > MAX_PATTERN_ROWS) return false;
         const ROWINDEX nRows = id;
-        dwMemPos += sizeof(DWORD);
+        dwMemPos += sizeof(uint32_t);
 
         // Try to allocate & read only sized patterns
         if(nRows)
@@ -295,17 +295,17 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
 
     // Read original number of samples
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     if(id > MAX_SAMPLES) return false;
     m_nSamples = (SAMPLEINDEX)id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // Read number of embeded samples
     ASSERT_CAN_READ(4);
-    memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+    memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     if(id > MAX_SAMPLES) return false;
     n = id;
-    dwMemPos += sizeof(DWORD);
+    dwMemPos += sizeof(uint32_t);
 
     // Read samples
     for(i=0; i<n; i++){
@@ -313,9 +313,9 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
         ASSERT_CAN_READ(4 + sizeof(ITSAMPLESTRUCT) + 4);
 
         // Sample id number
-        memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+        memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         nsmp = id;
-        dwMemPos += sizeof(DWORD);
+        dwMemPos += sizeof(uint32_t);
 
         if(nsmp < 1 || nsmp >= MAX_SAMPLES)
             return false;
@@ -325,9 +325,9 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength
         dwMemPos += sizeof(ITSAMPLESTRUCT);
 
         // Sample length
-        memcpy(&id,lpStream+dwMemPos,sizeof(DWORD));
+        memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         len = id;
-        dwMemPos += sizeof(DWORD);
+        dwMemPos += sizeof(uint32_t);
         if(dwMemPos >= dwMemLength || len > dwMemLength - dwMemPos) return false;
 
         // Copy sample struct data (ut-oh... this code looks very familiar!)
@@ -486,7 +486,7 @@ bool CSoundFile::SaveITProject(LPCSTR lpszFileName)
 
     // File ID
 
-    DWORD id = ITP_FILE_ID;
+    uint32_t id = ITP_FILE_ID;
     fwrite(&id, 1, sizeof(id), f);
 
     id = ITP_VERSION;

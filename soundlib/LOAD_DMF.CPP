@@ -195,12 +195,12 @@ uint8_t DMFvibrato2MPT(uint8_t val, const uint8_t internalTicks)
 }
 
 
-PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const DWORD dwMemLength, DMF_PATTERNSETTINGS &settings, CSoundFile *pSndFile)
+PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dwMemLength, DMF_PATTERNSETTINGS &settings, CSoundFile *pSndFile)
 //----------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_PATTERN(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return nPat);
 
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     // ASSERT_CAN_READ_PATTERN(sizeof(DMFCHUNK_PATTERNHEADER)); -- already done in main loop
     DMFCHUNK_PATTERNHEADER *patHead = (DMFCHUNK_PATTERNHEADER *)(lpStream + dwMemPos);
@@ -740,12 +740,12 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const DWORD dwMem
 }
 
 
-DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, const DWORD dwMemLength, const bool isV8, uint8_t &sampleFlags, CSoundFile *pSndFile)
+uint32_t ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool isV8, uint8_t &sampleFlags, CSoundFile *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_SAMPLE(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
 
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ_SAMPLE(1);
     const size_t lenName = lpStream[dwMemPos++];
@@ -813,12 +813,12 @@ DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, c
 }
 
 
-bool CSoundFile::ReadDMF(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_CHUNK(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwChunkEnd, x, break);
 
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(sizeof(DMFHEADER));
     DMFHEADER *pHeader = (DMFHEADER *)lpStream;
@@ -845,8 +845,8 @@ bool CSoundFile::ReadDMF(const uint8_t *lpStream, const DWORD dwMemLength)
 #endif // MODPLUG_TRACKER
 
     vector<uint8_t> sampleFlags;
-    vector<DWORD> patternOffset;
-    vector<DWORD> patternLength;
+    vector<uint32_t> patternOffset;
+    vector<uint32_t> patternLength;
 
     ORDERINDEX loopStart = 0, loopEnd = ORDERINDEX_INVALID;
 
@@ -868,7 +868,7 @@ bool CSoundFile::ReadDMF(const uint8_t *lpStream, const DWORD dwMemLength)
         chunkheader.chunksize = LittleEndian(chunkheader.chunksize);
         ASSERT_CAN_READ(chunkheader.chunksize);
 
-        const DWORD dwChunkEnd = dwMemPos + chunkheader.chunksize;
+        const uint32_t dwChunkEnd = dwMemPos + chunkheader.chunksize;
 
         switch(chunkheader.signature)
         {
@@ -933,7 +933,7 @@ bool CSoundFile::ReadDMF(const uint8_t *lpStream, const DWORD dwMemLength)
                 sampleFlags.assign(m_nSamples, 0);
                 for(SAMPLEINDEX nSmp = 0; nSmp < m_nSamples; nSmp++)
                 {
-                    const DWORD bytesRead = ConvertDMFSample(nSmp + 1, lpStream + dwMemPos, dwChunkEnd - dwMemPos, (pHeader->version >= 8), sampleFlags[nSmp], this);
+                    const uint32_t bytesRead = ConvertDMFSample(nSmp + 1, lpStream + dwMemPos, dwChunkEnd - dwMemPos, (pHeader->version >= 8), sampleFlags[nSmp], this);
                     if(bytesRead == 0)
                     {
                         break;

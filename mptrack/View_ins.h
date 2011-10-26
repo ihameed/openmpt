@@ -20,9 +20,9 @@ protected:
     INSTRUMENTINDEX m_nInstrument;
     enmEnvelopeTypes m_nEnv;
     UINT m_nDragItem, m_nBtnMouseOver, m_nPlayingChannel;
-    DWORD m_dwStatus;
-    DWORD m_NcButtonState[ENV_LEFTBAR_BUTTONS];
-    DWORD m_dwNotifyPos[MAX_CHANNELS];
+    uint32_t m_dwStatus;
+    uint32_t m_NcButtonState[ENV_LEFTBAR_BUTTONS];
+    uint32_t m_dwNotifyPos[MAX_VIRTUAL_CHANNELS];
     //rewbs.envRowGrid
     bool m_bGrid;			  
     bool m_bGridForceRedraw;
@@ -47,7 +47,7 @@ protected:
     // Envelope get stuff
 
     // Flags
-    bool EnvGetFlag(const DWORD dwFlag) const;
+    bool EnvGetFlag(const uint32_t dwFlag) const;
     bool EnvGetLoop() const {return EnvGetFlag(ENV_LOOP);};
     bool EnvGetSustain() const {return EnvGetFlag(ENV_SUSTAIN);};
     bool EnvGetCarry() const {return EnvGetFlag(ENV_CARRY);};
@@ -74,7 +74,7 @@ protected:
     // Envelope set stuff
 
     // Flags
-    bool EnvSetFlag(const DWORD dwFlag, const bool bEnable) const;
+    bool EnvSetFlag(const uint32_t dwFlag, const bool bEnable) const;
     bool EnvSetLoop(bool bEnable) const {return EnvSetFlag(ENV_LOOP, bEnable);};
     bool EnvSetSustain(bool bEnable) const {return EnvSetFlag(ENV_SUSTAIN, bEnable);};
     bool EnvSetCarry(bool bEnable) const {return EnvSetFlag(ENV_CARRY, bEnable);};
@@ -91,7 +91,7 @@ protected:
     bool EnvToggleReleaseNode(int nPoint);
 
     // Set envelope status
-    bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags = 0);
+    bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, uint32_t dwChanFlag, uint32_t dwExtraFlags = 0);
     bool EnvSetVolEnv(bool bEnable);
     bool EnvSetPanEnv(bool bEnable);
     bool EnvSetPitchEnv(bool bEnable);
@@ -146,7 +146,7 @@ public:
     //{{AFX_VIRTUAL(CViewInstrument)
     virtual void OnDraw(CDC *);
     virtual void OnInitialUpdate();
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual LRESULT OnModViewMsg(WPARAM, LPARAM);
     virtual BOOL OnDragonDrop(BOOL, LPDRAGONDROP);
     virtual LRESULT OnPlayerNotify(MPTNOTIFICATION *);

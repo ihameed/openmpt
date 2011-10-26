@@ -17,10 +17,10 @@ protected:
     SIZE m_sizeTotal;
     SAMPLEINDEX m_nSample;
     UINT m_nZoom, m_nScrollPos, m_nScrollFactor, m_nBtnMouseOver;
-    DWORD m_dwStatus, m_dwBeginSel, m_dwEndSel, m_dwBeginDrag, m_dwEndDrag;
-    DWORD m_dwMenuParam;
-    DWORD m_NcButtonState[SMP_LEFTBAR_BUTTONS];
-    DWORD m_dwNotifyPos[MAX_CHANNELS];
+    uint32_t m_dwStatus, m_dwBeginSel, m_dwEndSel, m_dwBeginDrag, m_dwEndDrag;
+    uint32_t m_dwMenuParam;
+    uint32_t m_NcButtonState[SMP_LEFTBAR_BUTTONS];
+    uint32_t m_dwNotifyPos[MAX_VIRTUAL_CHANNELS];
     int m_nGridSegments;
 
     bool m_bDrawingEnabled;	// sample drawing mode enabled?
@@ -36,10 +36,10 @@ public:
     BOOL SetCurrentSample(SAMPLEINDEX nSmp);
     BOOL SetZoom(UINT nZoom);
     LONG SampleToScreen(LONG n) const;
-    DWORD ScreenToSample(LONG x) const;
+    uint32_t ScreenToSample(LONG x) const;
     void PlayNote(UINT note, const uint32_t nStartPos = UINT32_MAX); //rewbs.customKeys
     void InvalidateSample();
-    void SetCurSel(DWORD nBegin, DWORD nEnd);
+    void SetCurSel(uint32_t nBegin, uint32_t nEnd);
     void ScrollToPosition(int x);
     void DrawPositionMarks(HDC hdc);
     void DrawSampleData1(HDC hdc, int ymed, int cx, int cy, int len, int uFlags, PVOID pSampleData);
@@ -50,7 +50,7 @@ public:
 
     // Sets sample data on sample draw.
     template<class T, class uT>
-    void SetSampleData(void* pSample, const CPoint& point, const DWORD old);
+    void SetSampleData(void* pSample, const CPoint& point, const uint32_t old);
 
     // Sets initial draw point on sample draw.
     template<class T, class uT>
@@ -73,7 +73,7 @@ public:
     //{{AFX_VIRTUAL(CViewSample)
     virtual void OnDraw(CDC *);
     virtual void OnInitialUpdate();
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual LRESULT OnModViewMsg(WPARAM, LPARAM);
     virtual BOOL OnScrollBy(CSize sizeScroll, BOOL bDoScroll=TRUE);
     virtual BOOL OnDragonDrop(BOOL, LPDRAGONDROP);

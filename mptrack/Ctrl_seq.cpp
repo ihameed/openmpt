@@ -314,7 +314,7 @@ bool COrderList::SetCurSel(ORDERINDEX sel, bool bEdit, bool bShiftClick, bool bI
     		} else if (m_pParent->GetFollowSong())
     		{
     			BEGIN_CRITICAL();
-    			DWORD dwPaused = pSndFile->m_dwSongFlags & (SONG_PAUSED|SONG_STEP|SONG_PATTERNLOOP);
+    			uint32_t dwPaused = pSndFile->m_dwSongFlags & (SONG_PAUSED|SONG_STEP|SONG_PATTERNLOOP);
 
     			//if (!(dwPaused & SONG_PATTERNLOOP))	// why?
     			// update channel parameters and play time
@@ -569,7 +569,7 @@ void COrderList::OnEditPaste()
 
     	if ((hCpy) && ((p = (LPCSTR)GlobalLock(hCpy)) != NULL))
     	{
-    		const DWORD dwMemSize = GlobalSize(hCpy);
+    		const uint32_t dwMemSize = GlobalSize(hCpy);
 
     		if (dwMemSize > sizeof(szClipboardOrdersHdr) &&
     			memcmp(p, "OpenMPT ", 8) == 0 &&
@@ -638,7 +638,7 @@ void COrderList::OnEditCopy()
     
     const ORD_SELECTION ordsel = GetCurSel(false);
 
-    DWORD dwMemSize;
+    uint32_t dwMemSize;
     HGLOBAL hCpy;
     
     BeginWaitCursor();
@@ -690,7 +690,7 @@ void COrderList::OnEditCopy()
 }
 
 
-void COrderList::UpdateView(DWORD dwHintMask, CObject *pObj)
+void COrderList::UpdateView(uint32_t dwHintMask, CObject *pObj)
 //----------------------------------------------------------
 {
     if ((pObj != this) && (dwHintMask & HINT_MODSEQUENCE))
@@ -1045,7 +1045,7 @@ void COrderList::OnRButtonDown(UINT nFlags, CPoint pt)
     	if(bPatternExists) break;
     }
 
-    const DWORD greyed = bPatternExists ? 0 : MF_GRAYED;
+    const uint32_t greyed = bPatternExists ? 0 : MF_GRAYED;
 
     CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
 

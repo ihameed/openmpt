@@ -15,6 +15,10 @@
 #include "midi.h"
 #include "version.h"
 #include "midimappingdialog.h"
+
+#include "pervasives/pervasives.h"
+using namespace modplug::pervasives;
+
 #ifdef VST_USE_ALTERNATIVE_MAGIC    //Pelya's plugin ID fix. Breaks fx presets, so let's avoid it for now.
 #define ZLIB_WINAPI
 #include "../zlib/zlib.h"    		//For CRC32 calculation (to detect plugins with same UID)
@@ -128,7 +132,7 @@ VOID CVstPluginManager::EnumerateDirectXDMOs()
     CHAR s[256];
     WCHAR w[100];
     LONG cr;
-    DWORD index;
+    uint32_t index;
 
     cr = RegOpenKey(HKEY_LOCAL_MACHINE, "software\\classes\\DirectShow\\MediaObjects\\Categories\\f3602b3f-0592-48df-a4cd-674721e7ebeb", &hkEnum);
     index = 0;
@@ -147,10 +151,10 @@ VOID CVstPluginManager::EnumerateDirectXDMOs()
                 wsprintf(s, "software\\classes\\DirectShow\\MediaObjects\\%s", keyname);
                 if (RegOpenKey(HKEY_LOCAL_MACHINE, s, &hksub) == ERROR_SUCCESS)
                 {
-                    DWORD datatype = REG_SZ;
-                    DWORD datasize = 64;
+                    uint32_t datatype = REG_SZ;
+                    uint32_t datasize = 64;
 
-                    if (ERROR_SUCCESS == RegQueryValueEx(hksub, NULL, 0, &datatype, (LPBYTE)s, &datasize))
+                    if (ERROR_SUCCESS == registry_query_value(hksub, NULL, 0, &datatype, (LPBYTE)s, &datasize))
                     {
                         PVSTPLUGINLIB p = new VSTPLUGINLIB;
 
@@ -283,7 +287,7 @@ PVSTPLUGINLIB CVstPluginManager::AddPlugin(LPCSTR pszDllPath, BOOL bCache, const
             hLib = LoadLibrary(pszDllPath);
     //rewbs.VSTcompliance
 #ifdef _DEBUG
-            DWORD dw = GetLastError();
+            uint32_t dw = GetLastError();
             if (!hLib && dw != ERROR_MOD_NOT_FOUND)    // "File not found errors" are annoying.
             {
                 TCHAR szBuf[256]; 
@@ -1315,8 +1319,8 @@ CSelectPluginDlg::CSelectPluginDlg(CModDoc *pModDoc, int nPlugSlot, CWnd *parent
 BOOL CSelectPluginDlg::OnInitDialog()
 //-----------------------------------
 {
-    DWORD dwRemove = TVS_EDITLABELS|TVS_SINGLEEXPAND;
-    DWORD dwAdd = TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS;
+    uint32_t dwRemove = TVS_EDITLABELS|TVS_SINGLEEXPAND;
+    uint32_t dwAdd = TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS;
 
     CDialog::OnInitDialog();
     m_treePlugins.ModifyStyle(dwRemove, dwAdd);
@@ -1344,9 +1348,9 @@ BOOL CSelectPluginDlg::OnInitDialog()
 
 typedef struct _PROBLEMATIC_PLUG
 {
-    DWORD id1;
-    DWORD id2;
-    DWORD version;
+    uint32_t id1;
+    uint32_t id2;
+    uint32_t version;
     LPCSTR name;
     LPCSTR problem;
 } _PROBLEMATIC_PLUG, *PPROBLEMATIC_PLUG;
@@ -1505,7 +1509,7 @@ void CSelectPluginDlg::OnNameFilterChanged()
     UpdatePluginsList();
 }
 
-VOID CSelectPluginDlg::UpdatePluginsList(DWORD forceSelect/*=0*/)
+VOID CSelectPluginDlg::UpdatePluginsList(uint32_t forceSelect/*=0*/)
 //---------------------------------------------------------------
 {
     CVstPluginManager *pManager = theApp.GetPluginManager();
@@ -1756,14 +1760,14 @@ CVstPlugin::CVstPlugin(HMODULE hLibrary, PVSTPLUGINLIB pFactory, PSNDMIXPLUGIN p
     m_MixState.dwFlags = 0;
     m_MixState.nVolDecayL = 0;
     m_MixState.nVolDecayR = 0;
-    m_MixState.pMixBuffer = (int *)((((DWORD)m_MixBuffer)+7)&~7);
-    m_MixState.pOutBufferL = (float *)((((DWORD)&m_FloatBuffer[0])+7)&~7);
-    m_MixState.pOutBufferR = (float *)((((DWORD)&m_FloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE])+7)&~7);
+    m_MixState.pMixBuffer = (int *)((((uint32_t)m_MixBuffer)+7)&~7);
+    m_MixState.pOutBufferL = (float *)((((uint32_t)&m_FloatBuffer[0])+7)&~7);
+    m_MixState.pOutBufferR = (float *)((((uint32_t)&m_FloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE])+7)&~7);
     //XXXih: awful!
     memset(dummyBuffer_, 0, sizeof(float) * (modplug::mixgraph::MIX_BUFFER_SIZE + 2));
     
     //rewbs.dryRatio: we now initialise this in CVstPlugin::Initialize(). 
-    //m_pTempBuffer = (float *)((((DWORD)&m_FloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2])+7)&~7);
+    //m_pTempBuffer = (float *)((((uint32_t)&m_FloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2])+7)&~7);
 
     m_bSongPlaying = false; //rewbs.VSTCompliance
     m_bPlugResumed = false;
@@ -2744,7 +2748,7 @@ void CVstPlugin::Process(float *pOutL, float *pOutR, unsigned long nSamples)
 }
 
 
-bool CVstPlugin::MidiSend(DWORD dwMidiCode)
+bool CVstPlugin::MidiSend(uint32_t dwMidiCode)
 //-----------------------------------------
 {
     if ((m_pEvList) && (m_pEvList->numEvents < VSTEVENT_QUEUE_LEN-1))
@@ -2773,7 +2777,7 @@ bool CVstPlugin::MidiSend(DWORD dwMidiCode)
         pev->noteOffVelocity = 0;
         pev->reserved1 = 0;
         pev->reserved2 = 0;
-        *(DWORD *)pev->midiData = dwMidiCode;
+        *(uint32_t *)pev->midiData = dwMidiCode;
         m_pEvList->numEvents++;
     #ifdef VST_LOG
         Log("Sending Midi %02X.%02X.%02X\n", pev->midiData[0]&0xff, pev->midiData[1]&0xff, pev->midiData[2]&0xff);
@@ -2807,7 +2811,7 @@ void CVstPlugin::HardAllNotesOff()
         for (int mc=0; mc<16; mc++)    	//all midi chans
         {    
             UINT nCh = mc & 0x0f;
-            DWORD dwMidiCode = 0x80|nCh; //command|channel|velocity
+            uint32_t dwMidiCode = 0x80|nCh; //command|channel|velocity
             PVSTINSTCH pCh = &m_MidiCh[nCh];
 
             MidiPitchBend(mc, MIDI_PitchBend_Centre); // centre pitch bend
@@ -2817,7 +2821,7 @@ void CVstPlugin::HardAllNotesOff()
  
             for (UINT i=0; i<128; i++)    //all notes
             {
-                for (UINT c=0; c<MAX_CHANNELS; c++)
+                for (UINT c=0; c<MAX_VIRTUAL_CHANNELS; c++)
                 {
                     while (pCh->uNoteOnMap[i][c] && !overflow)
                     {
@@ -2912,7 +2916,7 @@ void CVstPlugin::MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, U
 {
     UINT nCh = (--nMidiCh) & 0x0f;
     PVSTINSTCH pCh = &m_MidiCh[nCh];
-    DWORD dwMidiCode = 0;
+    uint32_t dwMidiCode = 0;
     bool bankChanged = (pCh->wMidiBank != --wMidiBank) && (wMidiBank < 0x80);
     bool progChanged = (pCh->nProgram != --nMidiProg) && (nMidiProg < 0x80);
     //bool chanChanged = nCh != m_nPreviousMidiChan;
@@ -3868,7 +3872,7 @@ protected:
     short int m_MixBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2+16];    	// 16-bit Stereo interleaved
 
 public:
-    CDmo2Vst(IMediaObject *pMO, IMediaObjectInPlace *pMOIP, DWORD uid);
+    CDmo2Vst(IMediaObject *pMO, IMediaObjectInPlace *pMOIP, uint32_t uid);
     ~CDmo2Vst();
     AEffect *GetEffect() { return &m_Effect; }
     VstIntPtr Dispatcher(VstInt32 opCode, VstInt32 index, VstIntPtr value, void *ptr, float opt);
@@ -3884,7 +3888,7 @@ public:
 };
 
 
-CDmo2Vst::CDmo2Vst(IMediaObject *pMO, IMediaObjectInPlace *pMOIP, DWORD uid)
+CDmo2Vst::CDmo2Vst(IMediaObject *pMO, IMediaObjectInPlace *pMOIP, uint32_t uid)
 //--------------------------------------------------------------------------
 {
     m_pMediaObject = pMO;

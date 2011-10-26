@@ -227,7 +227,14 @@ __declspec(align(32)) struct modchannel_t {
     float m_nPlugInitialParamValue; //rewbs.smoothVST
     PLUGINDEX m_RowPlug;    		//NOTE_PCs memory.
     
-    void ClearRowCmd() {nRowNote = NOTE_NONE; nRowInstr = 0; nRowVolCmd = VOLCMD_NONE; nRowVolume = 0; nRowCommand = CMD_NONE; nRowParam = 0;}
+    bool inactive() { return length == 0; }
+    uint32_t muted() { return flags & CHN_MUTE; }
+
+    void ClearRowCmd() {
+        nRowNote = NOTE_NONE; nRowInstr = 0;
+        nRowVolCmd = VOLCMD_NONE; nRowVolume = 0;
+        nRowCommand = CMD_NONE; nRowParam = 0;
+    }
 
     typedef uint32_t VOLUME;
     VOLUME GetVSTVolume() {return (instrument) ? instrument->global_volume*4 : nVolume;}

@@ -209,12 +209,12 @@ static uint8_t riffam_autovibtrans[] =
 
 
 // Convert RIFF AM(FF) pattern data to MPT pattern data.
-bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpStream, const DWORD dwMemLength, const bool bIsAM, CSoundFile *pSndFile)
+bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool bIsAM, CSoundFile *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 {
     // version false = AMFF, true = AM
     
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(1);
 
@@ -440,12 +440,12 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
 }
 
 
-bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //----------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_CHUNK(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwChunkEnd, x, break);
 
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(sizeof(AMFF_RIFFCHUNK));
     AMFF_RIFFCHUNK *chunkheader = (AMFF_RIFFCHUNK *)lpStream;
@@ -475,7 +475,7 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
         dwMemPos += sizeof(AMFF_RIFFCHUNK);
         ASSERT_CAN_READ(LittleEndian(chunkheader->chunksize));
 
-        const DWORD dwChunkEnd = dwMemPos + LittleEndian(chunkheader->chunksize);
+        const uint32_t dwChunkEnd = dwMemPos + LittleEndian(chunkheader->chunksize);
 
         switch(LittleEndian(chunkheader->signature))
         {
@@ -533,7 +533,7 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
 
         case AMCHUNKID_PATT: // "PATT" - Pattern data for one pattern
             ASSERT_CAN_READ_CHUNK(5);
-            Convert_RIFF_AM_Pattern(lpStream[dwMemPos], (const uint8_t *)(lpStream + dwMemPos + 5), LittleEndian(*(DWORD *)(lpStream + dwMemPos + 1)), bIsAM, this);
+            Convert_RIFF_AM_Pattern(lpStream[dwMemPos], (const uint8_t *)(lpStream + dwMemPos + 5), LittleEndian(*(uint32_t *)(lpStream + dwMemPos + 1)), bIsAM, this);
             break;
 
         case AMCHUNKID_INST: // "INST" - Instrument (only in RIFF AMFF)
@@ -646,7 +646,7 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
                 if(LittleEndian(instchunk->signature) != AMCHUNKID_INST) break; // "INST"
 
                 ASSERT_CAN_READ_CHUNK(4);
-                const DWORD dwHeadlen = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
+                const uint32_t dwHeadlen = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
                 ASSERT(dwHeadlen == sizeof(AMCHUNK_INSTRUMENT));
                 dwMemPos += 4;
 
@@ -695,7 +695,7 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
                     MemsetZero(pIns->Keyboard);
                 }
 
-                DWORD dwChunkPos;
+                uint32_t dwChunkPos;
 
                 // read sample sub-chunks (RIFF nesting ftw)
                 for(size_t nSmpCnt = 0; nSmpCnt < nTotalSmps; nSmpCnt++)
@@ -778,10 +778,10 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
     #undef ASSERT_CAN_READ_CHUNK
 }
 
-bool CSoundFile::ReadJ2B(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(sizeof(J2BHEADER));
     J2BHEADER *header = (J2BHEADER *)lpStream;
@@ -798,11 +798,13 @@ bool CSoundFile::ReadJ2B(const uint8_t * const lpStream, const DWORD dwMemLength
     dwMemPos += sizeof(J2BHEADER);
 
     // header is valid, now unpack the RIFF AM file using inflate
-    DWORD destSize = LittleEndian(header->unpacked_length);
+    uint32_t destSize = LittleEndian(header->unpacked_length);
     Bytef *bOutput = new Bytef[destSize];
     if(bOutput == nullptr)
         return false;
-    int nRetVal = uncompress(bOutput, &destSize, &lpStream[dwMemPos], LittleEndian(header->packed_length));
+    uLongf zlib_dest_size;
+    int nRetVal = uncompress(bOutput, &zlib_dest_size, &lpStream[dwMemPos], LittleEndian(header->packed_length));
+    destSize = zlib_dest_size;
 
     bool bResult = false;
 

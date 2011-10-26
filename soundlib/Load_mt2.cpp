@@ -7,8 +7,8 @@
 
 typedef struct _MT2FILEHEADER
 {
-    DWORD dwMT20;    // 0x3032544D "MT20"
-    DWORD dwSpecial;
+    uint32_t dwMT20;    // 0x3032544D "MT20"
+    uint32_t dwSpecial;
     uint16_t wVersion;
     CHAR szTrackerName[32];    // "MadTracker 2.0"
     CHAR szSongName[64];
@@ -19,7 +19,7 @@ typedef struct _MT2FILEHEADER
     uint16_t wSamplesPerTick;
     uint8_t bTicksPerLine;
     uint8_t bLinesPerBeat;
-    DWORD fulFlags; // b0=packed patterns
+    uint32_t fulFlags; // b0=packed patterns
     uint16_t wInstruments;
     uint16_t wSamples;
     uint8_t Orders[256];
@@ -28,7 +28,7 @@ typedef struct _MT2FILEHEADER
 typedef struct _MT2PATTERN
 {
     uint16_t wLines;
-    DWORD wDataLen;
+    uint32_t wDataLen;
 } MT2PATTERN;
 
 typedef struct _MT2COMMAND
@@ -51,15 +51,15 @@ typedef struct _MT2DRUMSDATA
 
 typedef struct _MT2AUTOMATION
 {
-    DWORD dwFlags;
-    DWORD dwEffectId;
-    DWORD nEnvPoints;
+    uint32_t dwFlags;
+    uint32_t dwEffectId;
+    uint32_t nEnvPoints;
 } MT2AUTOMATION;
 
 typedef struct _MT2INSTRUMENT
 {
     CHAR szName[32];
-    DWORD dwDataLen;
+    uint32_t dwDataLen;
     uint16_t wSamples;
     uint8_t GroupsMapping[96];
     uint8_t bVibType;
@@ -98,15 +98,15 @@ typedef struct _MT2SYNTH
 typedef struct _MT2SAMPLE
 {
     CHAR szName[32];
-    DWORD dwDataLen;
-    DWORD dwLength;
-    DWORD dwFrequency;
+    uint32_t dwDataLen;
+    uint32_t dwLength;
+    uint32_t dwFrequency;
     uint8_t nQuality;
     uint8_t nChannels;
     uint8_t nFlags;
     uint8_t nLoop;
-    DWORD dwLoopStart;
-    DWORD dwLoopEnd;
+    uint32_t dwLoopStart;
+    uint32_t dwLoopEnd;
     uint16_t wVolume;
     uint8_t nPan;
     uint8_t nBaseNote;
@@ -181,11 +181,11 @@ static void ConvertMT2Command(CSoundFile *that, modplug::tracker::modcommand_t *
 }
 
 
-bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
 //-----------------------------------------------------------
 {
     MT2FILEHEADER *pfh = (MT2FILEHEADER *)lpStream;
-    DWORD dwMemPos, dwDrumDataPos, dwExtraDataPos;
+    uint32_t dwMemPos, dwDrumDataPos, dwExtraDataPos;
     UINT nDrumDataLen, nExtraDataLen;
     MT2DRUMSDATA *pdd;
     MT2INSTRUMENT *InstrMap[255];
@@ -226,9 +226,9 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
     Log("Drum Data: %d bytes @%04X\n", nDrumDataLen, dwDrumDataPos);
 #endif
     if (dwMemPos >= dwMemLength-12) return true;
-    if (!*(DWORD *)(lpStream+dwMemPos)) dwMemPos += 4;
-    if (!*(DWORD *)(lpStream+dwMemPos)) dwMemPos += 4;
-    nExtraDataLen = *(DWORD *)(lpStream+dwMemPos);
+    if (!*(uint32_t *)(lpStream+dwMemPos)) dwMemPos += 4;
+    if (!*(uint32_t *)(lpStream+dwMemPos)) dwMemPos += 4;
+    nExtraDataLen = *(uint32_t *)(lpStream+dwMemPos);
     dwExtraDataPos = dwMemPos + 4;
     dwMemPos += 4;
 #ifdef MT2DEBUG
@@ -237,8 +237,8 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
     if (dwMemPos + nExtraDataLen >= dwMemLength) return true;
     while (dwMemPos+8 < dwExtraDataPos + nExtraDataLen)
     {
-        DWORD dwId = *(DWORD *)(lpStream+dwMemPos);
-        DWORD dwLen = *(DWORD *)(lpStream+dwMemPos+4);
+        uint32_t dwId = *(uint32_t *)(lpStream+dwMemPos);
+        uint32_t dwLen = *(uint32_t *)(lpStream+dwMemPos+4);
         dwMemPos += 8;
         if (dwMemPos + dwLen > dwMemLength) return true;
 #ifdef MT2DEBUG
@@ -253,7 +253,7 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
         case 0x0047534D:
             if (dwLen > 3)
             {
-                DWORD nTxtLen = dwLen;
+                uint32_t nTxtLen = dwLen;
                 if (nTxtLen > 32000) nTxtLen = 32000;
                 ReadMessage(lpStream + dwMemPos + 1, nTxtLen - 1, leCRLF);
             }
@@ -379,7 +379,7 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
                 if (pma->dwFlags & (1 << iEnv))
                 {
                 #ifdef MT2DEBUG
-                    UINT nPoints = *(DWORD *)(lpStream+dwMemPos);
+                    UINT nPoints = *(uint32_t *)(lpStream+dwMemPos);
                     Log("  Env[%d/%d] %04X @%04X: %d points\n", iAuto, nAutoCount, 1 << iEnv, dwMemPos-8, nPoints);
                 #endif
                     dwMemPos += 260;
@@ -431,7 +431,7 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
                 uint16_t *pedata[4];
                 if (pfh->wVersion <= 0x201)
                 {
-                    DWORD dwEnvPos = dwMemPos + sizeof(MT2INSTRUMENT) - 4;
+                    uint32_t dwEnvPos = dwMemPos + sizeof(MT2INSTRUMENT) - 4;
                     pehdr[0] = (MT2ENVELOPE *)(lpStream+dwEnvPos);
                     pehdr[1] = (MT2ENVELOPE *)(lpStream+dwEnvPos+8);
                     pehdr[2] = pehdr[3] = NULL;
@@ -440,7 +440,7 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
                     pedata[2] = pedata[3] = NULL;
                 } else
                 {
-                    DWORD dwEnvPos = dwMemPos + sizeof(MT2INSTRUMENT);
+                    uint32_t dwEnvPos = dwMemPos + sizeof(MT2INSTRUMENT);
                     for (UINT i=0; i<4; i++)
                     {
                         if (pmi->wEnvFlags1 & (1<<i))
@@ -607,7 +607,7 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
         } else
         if (dwMemPos+4 < dwMemLength)
         {
-            UINT nNameLen = *(DWORD *)(lpStream+dwMemPos);
+            UINT nNameLen = *(uint32_t *)(lpStream+dwMemPos);
             dwMemPos += nNameLen + 16;
         }
         if (dwMemPos+4 >= dwMemLength) break;

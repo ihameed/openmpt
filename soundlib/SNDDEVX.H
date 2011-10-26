@@ -1,6 +1,8 @@
 #ifndef _SNDDEVX_H_
 #define _SNDDEVX_H_
 
+#include <cstdint>
+
 #include <mmsystem.h>
 
 #ifndef NO_DSOUND
@@ -41,15 +43,15 @@ public:
 	UINT GetDeviceType() { return SNDDEV_WAVEOUT; }
 	BOOL Open(UINT nDevice, LPWAVEFORMATEX pwfx);
 	BOOL Close();
-	BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD);
+	BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t);
 	VOID Reset();
 	VOID Start() {}
 	BOOL IsOpen() { return (m_hWaveOut != NULL) ? TRUE : FALSE; }
 	UINT GetCurrentLatency() { return m_nBuffersPending * m_nWaveBufferSize; }
-	void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer);
+	void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer);
 
 public:
-	static VOID CALLBACK WaveOutCallBack(HWAVEOUT, UINT uMsg, DWORD, DWORD dw1, DWORD dw2);
+	static VOID CALLBACK WaveOutCallBack(HWAVEOUT, UINT uMsg, uint32_t, uint32_t dw1, uint32_t dw2);
 	static BOOL EnumerateDevices(UINT nIndex, LPSTR pszDescription, UINT cbSize);
 };
 
@@ -70,7 +72,7 @@ protected:
 	IDirectSoundBuffer *m_pPrimary, *m_pMixBuffer;
 	ULONG m_nDSoundBufferSize;
 	BOOL m_bMixRunning;
-	DWORD m_dwWritePos, m_dwLatency;
+	uint32_t m_dwWritePos, m_dwLatency;
 
 public:
 	CDSoundDevice();
@@ -80,16 +82,16 @@ public:
 	UINT GetDeviceType() { return SNDDEV_DSOUND; }
 	BOOL Open(UINT nDevice, LPWAVEFORMATEX pwfx);
 	BOOL Close();
-	BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD);
+	BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t);
 	VOID Reset();
 	VOID Start() {}
 	BOOL IsOpen() { return (m_pMixBuffer != NULL) ? TRUE : FALSE; }
 	UINT GetCurrentLatency() { return m_dwLatency; }
-	void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer);
+	void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer);
 
 protected:
-	DWORD LockBuffer(DWORD dwBytes, LPVOID *lpBuf1, LPDWORD lpSize1, LPVOID *lpBuf2, LPDWORD lpSize2);
-	BOOL UnlockBuffer(LPVOID lpBuf1, DWORD dwSize1, LPVOID lpBuf2, DWORD dwSize2);
+	uint32_t LockBuffer(uint32_t dwBytes, LPVOID *lpBuf1, LPDWORD lpSize1, LPVOID *lpBuf2, LPDWORD lpSize2);
+	BOOL UnlockBuffer(LPVOID lpBuf1, uint32_t dwSize1, LPVOID lpBuf2, uint32_t dwSize2);
 
 public:
 	static BOOL EnumerateDevices(UINT nIndex, LPSTR pszDescription, UINT cbSize);
@@ -130,14 +132,14 @@ public:
 	UINT GetDeviceType() { return SNDDEV_ASIO; }
 	BOOL Open(UINT nDevice, LPWAVEFORMATEX pwfx);
 	BOOL Close();
-	BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwUser);
+	BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwUser);
 	VOID Reset();
 	VOID Start();
 	BOOL IsOpen() { return (m_pAsioDrv != NULL) ? TRUE : FALSE; }
 	BOOL Directcallback() { return TRUE; }
 	UINT HasFixedBitsPerSample() { return m_nBitsPerSample; }
 	UINT GetCurrentLatency() { return m_nAsioBufferLen; }
-	void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwBuffer);
+	void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwBuffer);
 
 	bool CanSampleRate(UINT nDevice, vector<UINT> &samplerates, vector<bool> &result);
 	UINT GetCurrentSampleRate(UINT nDevice);

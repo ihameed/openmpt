@@ -65,16 +65,16 @@ LPCSTR glpszModExtensions = "mod|s3m|xm|it|stm|nst|ult|669|wow|mtm|med|far|mdl|a
 #endif
 
 #ifdef MMCMP_SUPPORT
-extern BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength);
+extern BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, uint32_t *pdwMemLength);
 #endif
 
 // External decompressors
 extern void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char packcharacter);
-extern uint16_t MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
+extern uint16_t MDLReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
 extern int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen);
-extern DWORD ITReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
-extern void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
-extern void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
+extern uint32_t ITReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
+extern void ITUnpack8Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215);
+extern void ITUnpack16Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215);
 
 #define MAX_PACK_TABLES    	3
 
@@ -251,10 +251,10 @@ fwrite(&input-> name , 1 , fsize , file);
 
 namespace {
 // Create 'dF..' entry.
-DWORD CreateExtensionFlags(const modplug::tracker::modinstrument_t& ins)
+uint32_t CreateExtensionFlags(const modplug::tracker::modinstrument_t& ins)
 //--------------------------------------------------
 {
-    DWORD dwFlags = 0;
+    uint32_t dwFlags = 0;
     if (ins.volume_envelope.flags & ENV_ENABLED)    dwFlags |= dFdd_VOLUME;
     if (ins.volume_envelope.flags & ENV_SUSTAIN)    dwFlags |= dFdd_VOLSUSTAIN;
     if (ins.volume_envelope.flags & ENV_LOOP)    	dwFlags |= dFdd_VOLLOOP;
@@ -282,8 +282,8 @@ __int16 fsize;
 WRITE_MPTHEADER_sized_member(    fadeout, UINT			, FO..							)
 
 { // dwFlags needs to be constructed so write it manually.
-    //WRITE_MPTHEADER_sized_member(    dwFlags					, DWORD			, dF..							)
-    const DWORD dwFlags = CreateExtensionFlags(*input);
+    //WRITE_MPTHEADER_sized_member(    dwFlags					, uint32_t			, dF..							)
+    const uint32_t dwFlags = CreateExtensionFlags(*input);
     fcode = 'dF..';
     fwrite(&fcode, 1, sizeof(int32_t), file);
     fsize = sizeof(dwFlags);
@@ -344,9 +344,9 @@ WRITE_MPTHEADER_sized_member(    pitch_to_tempo_lock, uint16_t			, PTTL							)
 WRITE_MPTHEADER_sized_member(    pitch_envelope.release_node	, uint8_t			, PERN							)
 WRITE_MPTHEADER_sized_member(    panning_envelope.release_node		, uint8_t		    , AERN							)
 WRITE_MPTHEADER_sized_member(    volume_envelope.release_node		, uint8_t			, VERN							)
-WRITE_MPTHEADER_sized_member(    pitch_envelope.flags		, DWORD			, PFLG							)
-WRITE_MPTHEADER_sized_member(    panning_envelope.flags			, DWORD		    , AFLG							)
-WRITE_MPTHEADER_sized_member(    volume_envelope.flags			, DWORD			, VFLG							)
+WRITE_MPTHEADER_sized_member(    pitch_envelope.flags		, uint32_t			, PFLG							)
+WRITE_MPTHEADER_sized_member(    panning_envelope.flags			, uint32_t		    , AFLG							)
+WRITE_MPTHEADER_sized_member(    volume_envelope.flags			, uint32_t			, VFLG							)
 }
 
 // --------------------------------------------------------------------------------------------
@@ -373,7 +373,7 @@ uint8_t * pointer = NULL;
 
 switch(fcode){
 GET_MPTHEADER_sized_member(    fadeout				, UINT			, FO..							)
-GET_MPTHEADER_sized_member(    flags					, DWORD			, dF..							)
+GET_MPTHEADER_sized_member(    flags					, uint32_t			, dF..							)
 GET_MPTHEADER_sized_member(    global_volume				, UINT			, GV..							)
 GET_MPTHEADER_sized_member(    default_pan					, UINT			, P...							)
 GET_MPTHEADER_sized_member(    volume_envelope.num_nodes			, UINT			, VE..							)
@@ -427,9 +427,9 @@ GET_MPTHEADER_sized_member(    nPluginVolumeHandling	, uint8_t			, PVOH							)
 GET_MPTHEADER_sized_member(    pitch_envelope.release_node	, uint8_t			, PERN							)
 GET_MPTHEADER_sized_member(    panning_envelope.release_node		, uint8_t		    , AERN							)
 GET_MPTHEADER_sized_member(    volume_envelope.release_node		, uint8_t			, VERN							)
-GET_MPTHEADER_sized_member(    pitch_envelope.flags     	, DWORD			, PFLG							)
-GET_MPTHEADER_sized_member(    panning_envelope.flags     		, DWORD		    , AFLG							)
-GET_MPTHEADER_sized_member(    volume_envelope.flags     		, DWORD			, VFLG							)
+GET_MPTHEADER_sized_member(    pitch_envelope.flags     	, uint32_t			, PFLG							)
+GET_MPTHEADER_sized_member(    panning_envelope.flags     		, uint32_t		    , AFLG							)
+GET_MPTHEADER_sized_member(    volume_envelope.flags     		, uint32_t			, VFLG							)
 }
 
 return pointer;
@@ -523,7 +523,7 @@ CSoundFile::~CSoundFile()
 }
 
 
-BOOL CSoundFile::Create(const uint8_t * lpStream, CModDoc *pModDoc, DWORD dwMemLength)
+BOOL CSoundFile::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength)
 //----------------------------------------------------------------------------
 {
     m_pModDoc = pModDoc;
@@ -962,7 +962,7 @@ BOOL CSoundFile::SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
 //----------------------------------------------------------------------------
 {
     BOOL bReset = FALSE;
-    DWORD d = gdwSoundSetup & ~SNDMIX_ENABLEMMX;
+    uint32_t d = gdwSoundSetup & ~SNDMIX_ENABLEMMX;
     if (bMMX) d |= SNDMIX_ENABLEMMX;
     if ((gdwMixingFreq != nRate) || (gnBitsPerSample != nBits) || (gnChannels != nChannels) || (d != gdwSoundSetup)) bReset = TRUE;
     gnChannels = nChannels;
@@ -977,7 +977,7 @@ BOOL CSoundFile::SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
 BOOL CSoundFile::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL bNR,BOOL bEQ)
 //------------------------------------------------------------------------------------------
 {
-    DWORD d = gdwSoundSetup & ~(SNDMIX_SURROUND | SNDMIX_REVERB | SNDMIX_MEGABASS | SNDMIX_NOISEREDUCTION | SNDMIX_EQ);
+    uint32_t d = gdwSoundSetup & ~(SNDMIX_SURROUND | SNDMIX_REVERB | SNDMIX_MEGABASS | SNDMIX_NOISEREDUCTION | SNDMIX_EQ);
     if (bSurround) d |= SNDMIX_SURROUND;
     if ((bReverb) && (gdwSysInfo & SYSMIX_ENABLEMMX)) d |= SNDMIX_REVERB;
     if (bMegaBass) d |= SNDMIX_MEGABASS;
@@ -992,7 +992,7 @@ BOOL CSoundFile::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL b
 BOOL CSoundFile::SetResamplingMode(UINT nMode)
 //--------------------------------------------
 {
-    DWORD d = gdwSoundSetup & ~(SNDMIX_NORESAMPLING|SNDMIX_SPLINESRCMODE|SNDMIX_POLYPHASESRCMODE|SNDMIX_FIRFILTERSRCMODE);
+    uint32_t d = gdwSoundSetup & ~(SNDMIX_NORESAMPLING|SNDMIX_SPLINESRCMODE|SNDMIX_POLYPHASESRCMODE|SNDMIX_FIRFILTERSRCMODE);
     switch(nMode)
     {
     case SRCMODE_NEAREST:    d |= SNDMIX_NORESAMPLING; break;
@@ -1101,7 +1101,7 @@ void CSoundFile::SetCurrentPos(UINT nPos)
     ORDERINDEX nPattern;
     uint8_t resetMask = (!nPos) ? CHNRESET_SETPOS_FULL : CHNRESET_SETPOS_BASIC;
 
-    for (CHANNELINDEX i=0; i<MAX_CHANNELS; i++)
+    for (CHANNELINDEX i=0; i<MAX_VIRTUAL_CHANNELS; i++)
         ResetChannelState(i, resetMask);
     
     if (!nPos)
@@ -1170,7 +1170,7 @@ void CSoundFile::SetCurrentOrder(ORDERINDEX nOrder)
 {
     while ((nOrder < Order.size()) && (Order[nOrder] == Order.GetIgnoreIndex())) nOrder++;
     if ((nOrder >= Order.size()) || (Order[nOrder] >= Patterns.Size())) return;
-    for (CHANNELINDEX j = 0; j < MAX_CHANNELS; j++)
+    for (CHANNELINDEX j = 0; j < MAX_VIRTUAL_CHANNELS; j++)
     {
         Chn[j].nPeriod = 0;
         Chn[j].nNote = NOTE_NONE;
@@ -1293,7 +1293,7 @@ void CSoundFile::ResetChannels()
 {
     m_dwSongFlags &= ~(SONG_CPUVERYHIGH|SONG_FADINGSONG|SONG_ENDREACHED|SONG_GLOBALFADE);
     m_nBufferCount = 0;
-    for (UINT i=0; i<MAX_CHANNELS; i++)
+    for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     {
         Chn[i].nROfs = Chn[i].nLOfs = Chn[i].length = 0;
     }
@@ -1453,7 +1453,7 @@ bool CSoundFile::InitChannel(CHANNELINDEX nChn)
 void CSoundFile::ResetChannelState(CHANNELINDEX i, uint8_t resetMask)
 //----------------------------------------------------------------
 {
-    if(i >= MAX_CHANNELS) return;
+    if(i >= MAX_VIRTUAL_CHANNELS) return;
 
     if(resetMask & 2)
     {
@@ -1549,7 +1549,7 @@ bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t 
 //--------------------------------------------------------------------------------------------
 {
     int pos, old, oldpos, besttable = 0;
-    DWORD dwErr, dwTotal, dwResult;
+    uint32_t dwErr, dwTotal, dwResult;
     int i,j;
     
     if (result) *result = 0;
@@ -1821,7 +1821,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
 //    5 = signed 16-bit PCM data
 //    6 = unsigned 16-bit PCM data
 
-UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const uint16_t format)
+UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, uint32_t dwMemLength, const uint16_t format)
 //---------------------------------------------------------------------------------------------------------------
 {
     if ((!pSmp) || (pSmp->length < 2) || (!lpMemFile)) return 0;
@@ -2142,7 +2142,7 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
         {
             LPBYTE pSample = (LPBYTE)pSmp->sample_data;
             LPBYTE ibuf = (LPBYTE)lpMemFile;
-            DWORD bitbuf = *((DWORD *)ibuf);
+            uint32_t bitbuf = *((uint32_t *)ibuf);
             UINT bitnum = 32;
             uint8_t dlt = 0, lowbyte = 0;
             ibuf += 4;
@@ -2395,13 +2395,13 @@ void CSoundFile::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
 // Transpose <-> Frequency conversions
 
 // returns 8363*2^((transp*128+ftune)/(12*128))
-DWORD CSoundFile::TransposeToFrequency(int transp, int ftune)
+uint32_t CSoundFile::TransposeToFrequency(int transp, int ftune)
 //-----------------------------------------------------------
 {
     const float _fbase = 8363;
     const float _factor = 1.0f/(12.0f*128.0f);
     int result;
-    DWORD freq;
+    uint32_t freq;
 
     transp = (transp << 7) + ftune;
     _asm {
@@ -2430,7 +2430,7 @@ DWORD CSoundFile::TransposeToFrequency(int transp, int ftune)
 
 
 // returns 12*128*log2(freq/8363)
-int CSoundFile::FrequencyToTranspose(DWORD freq)
+int CSoundFile::FrequencyToTranspose(uint32_t freq)
 //----------------------------------------------
 {
     const float _f1_8363 = 1.0f / 8363.0f;
@@ -2478,7 +2478,7 @@ void CSoundFile::CheckCPUUsage(UINT nCPU)
     } else
     if ((m_dwSongFlags & SONG_CPUVERYHIGH) && (nCPU >= 94))
     {
-        UINT i=MAX_CHANNELS;
+        UINT i=MAX_VIRTUAL_CHANNELS;
         while (i >= 8)
         {
             i--;
@@ -2639,7 +2639,7 @@ bool CSoundFile::DestroySample(SAMPLEINDEX nSample)
     pSmp->sample_data = nullptr;
     pSmp->length = 0;
     pSmp->flags &= ~(CHN_16BIT);
-    for (UINT i=0; i<MAX_CHANNELS; i++)
+    for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     {
         if (Chn[i].sample_data == pSample)
         {

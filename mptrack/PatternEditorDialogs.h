@@ -43,7 +43,7 @@ public:
     CHANNELINDEX m_nMinChannel, m_nMaxChannel;
     signed char cInstrRelChange;
     bool m_bPatSel;
-    DWORD m_dwFlags;
+    uint32_t m_dwFlags;
 
     enum findItem
     {
@@ -242,7 +242,7 @@ public:
 
 public:
     BOOL SetParent(CWnd *parent, CModDoc *pModDoc);
-    BOOL ShowEditWindow(UINT nPat, DWORD dwCursor);
+    BOOL ShowEditWindow(UINT nPat, uint32_t dwCursor);
     // -> CODE#0010
     // -> DESC="add extended parameter mechanism to pattern effects"
     void OnSelListChange();

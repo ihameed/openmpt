@@ -24,7 +24,7 @@ BOOL CModTreeDropTarget::Register(CModTree *pWnd)
 }
 
 
-DROPEFFECT CModTreeDropTarget::OnDragEnter(CWnd *pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)
+DROPEFFECT CModTreeDropTarget::OnDragEnter(CWnd *pWnd, COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point)
 //-----------------------------------------------------------------------------------------------------------------
 {
     if ((m_pModTree) && (m_pModTree == pWnd)) return m_pModTree->OnDragEnter(pDataObject, dwKeyState, point);
@@ -32,7 +32,7 @@ DROPEFFECT CModTreeDropTarget::OnDragEnter(CWnd *pWnd, COleDataObject* pDataObje
 }
 
 
-DROPEFFECT CModTreeDropTarget::OnDragOver(CWnd *pWnd, COleDataObject* pDataObject, DWORD dwKeyState, CPoint point)
+DROPEFFECT CModTreeDropTarget::OnDragOver(CWnd *pWnd, COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point)
 //----------------------------------------------------------------------------------------------------------------
 {
     if ((m_pModTree) && (m_pModTree == pWnd)) return m_pModTree->OnDragOver(pDataObject, dwKeyState, point);
@@ -138,8 +138,8 @@ CModTree::~CModTree()
 VOID CModTree::Init()
 //-------------------
 {
-    DWORD dwRemove = TVS_EDITLABELS|TVS_SINGLEEXPAND;
-    DWORD dwAdd = TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS;
+    uint32_t dwRemove = TVS_EDITLABELS|TVS_SINGLEEXPAND;
+    uint32_t dwAdd = TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS;
 
     if (!m_pDataTree)
     {
@@ -244,7 +244,7 @@ VOID CModTree::InsLibSetFullPath(LPCSTR pszLibPath, LPCSTR pszSongName)
     	SetCurrentDirectory(m_szInstrLibPath);
     	if (f.Open(pszSongName))
     	{
-    		DWORD dwLen = f.GetLength();
+    		uint32_t dwLen = f.GetLength();
     		if (dwLen)
     		{
     			LPBYTE lpStream = f.Lock();
@@ -266,7 +266,7 @@ VOID CModTree::InsLibSetFullPath(LPCSTR pszLibPath, LPCSTR pszSongName)
 VOID CModTree::OnOptionsChanged()
 //-------------------------------
 {
-    DWORD dwRemove = TVS_SINGLEEXPAND, dwAdd = 0;
+    uint32_t dwRemove = TVS_SINGLEEXPAND, dwAdd = 0;
     m_dwStatus &= ~TREESTATUS_SINGLEEXPAND;
     if (CMainFrame::m_dwPatternSetup & PATTERN_SINGLEEXPAND)
     {
@@ -378,7 +378,7 @@ VOID CModTree::RefreshMidiLibrary()
     // Midi Programs
     for (UINT iMidi=0; iMidi<128; iMidi++)
     {
-    	DWORD dwImage = IMAGE_NOINSTRUMENT;
+    	uint32_t dwImage = IMAGE_NOINSTRUMENT;
     	wsprintf(s, "%d: %s", iMidi, szMidiProgramNames[iMidi]);
     	if ((lpMidiLib) && (lpMidiLib->MidiMap[iMidi]) && (lpMidiLib->MidiMap[iMidi][0]))
     	{
@@ -413,7 +413,7 @@ VOID CModTree::RefreshMidiLibrary()
     // Midi Percussions
     for (UINT iPerc=24; iPerc<=84; iPerc++)
     {
-    	DWORD dwImage = IMAGE_NOSAMPLE;
+    	uint32_t dwImage = IMAGE_NOSAMPLE;
     	wsprintf(s, "%s: %s", szDefaultNoteNames[iPerc], szMidiPercussionNames[iPerc-24]);
     	if ((lpMidiLib) && (lpMidiLib->MidiMap[iPerc|0x80]) && (lpMidiLib->MidiMap[iPerc|0x80][0]))
     	{
@@ -600,7 +600,7 @@ VOID CModTree::RefreshInstrumentLibrary()
 }
 
 
-VOID CModTree::UpdateView(UINT nDocNdx, DWORD lHint)
+VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
 //--------------------------------------------------
 {
     PMODTREEDOCINFO pInfo = DocInfo[nDocNdx];
@@ -608,7 +608,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, DWORD lHint)
     CSoundFile *pSndFile;
     CHAR s[256], stmp[256];
     TV_ITEM tvi;
-    const DWORD hintFlagPart = HintFlagPart(lHint);
+    const uint32_t hintFlagPart = HintFlagPart(lHint);
     if ((!pInfo) || (nDocNdx >= MODTREE_MAX_DOCUMENTS) || (!pInfo->pModDoc) || (!m_pDataTree)) return;
     if (!hintFlagPart) return;
     pDoc = pInfo->pModDoc;
@@ -703,7 +703,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, DWORD lHint)
     // Add Orders
     if ((pInfo->hOrders) && (hintFlagPart != HINT_INSNAMES) && (hintFlagPart != HINT_SMPNAMES))
     {
-    	const DWORD nPat = (lHint >> HINT_SHIFT_PAT);
+    	const uint32_t nPat = (lHint >> HINT_SHIFT_PAT);
     	bool adjustParentNode = false;	// adjust sequence name of "Sequence" node?
 
     	// (only one seq remaining || previously only one sequence): update parent item
@@ -1502,7 +1502,7 @@ BOOL CModTree::OpenTreeItem(HTREEITEM hItem)
 }
 
 
-BOOL CModTree::OpenMidiInstrument(DWORD dwItem)
+BOOL CModTree::OpenMidiInstrument(uint32_t dwItem)
 //---------------------------------------------
 {
     FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(true, "", "",
@@ -1786,7 +1786,7 @@ VOID CModTree::FillInstrumentLibrary()
 void CModTree::ModTreeBuildTVIParam(TV_INSERTSTRUCT &tvis, LPCSTR lpszName, int iImage)
 //-------------------------------------------------------------------------------------
 {
-    DWORD dwId = 0;
+    uint32_t dwId = 0;
     switch(iImage)
     {
     case IMAGE_FOLDERPARENT:
@@ -2006,7 +2006,7 @@ BOOL CModTree::GetDropInfo(LPDRAGONDROP pdropinfo, LPSTR pszFullPath)
     	{
     		pdropinfo->dwDropType = DRAGONDROP_DLS;
     		// dwDropItem = DLS Bank #
-    		pdropinfo->dwDropItem = (DWORD)((m_qwItemDrag & 0x3F000000) >> 24);	// bank #
+    		pdropinfo->dwDropItem = (uint32_t)((m_qwItemDrag & 0x3F000000) >> 24);	// bank #
     		// Melodic: (Instrument)
     		// Drums:	(0x80000000) | (Region << 16) | (Instrument)
     		pdropinfo->lDropParam = (LPARAM)((m_qwItemDrag & 0x80FF7FFF)); // 
@@ -2121,9 +2121,9 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
     			CHAR szFullPath[_MAX_PATH] = "";
     			InsLibGetFullPath(m_hItemDrag, szFullPath);
     			if (modItemDropType == MODITEM_MIDIINSTRUMENT)
-    				SetMidiInstrument((DWORD)modItemDropID, szFullPath);
+    				SetMidiInstrument((uint32_t)modItemDropID, szFullPath);
     			else
-    				SetMidiPercussion((DWORD)modItemDropID, szFullPath);
+    				SetMidiPercussion((uint32_t)modItemDropID, szFullPath);
     		}
     		return true;
     	}
@@ -2168,7 +2168,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
     CSoundFile *pSndFile = pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return;
 
-    for(CHANNELINDEX nChn = 0; nChn < MAX_CHANNELS; nChn++)
+    for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
     {
     	if(pSndFile->Chn[nChn].active_sample_data != nullptr)
     	{
@@ -2197,7 +2197,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
     	}
     }
     // what should be updated?
-    DWORD dwHintFlags = (bUpdateSamples ? HINT_SAMPLEINFO : 0) | (bUpdateInstruments ? HINT_INSTRUMENT : 0);
+    uint32_t dwHintFlags = (bUpdateSamples ? HINT_SAMPLEINFO : 0) | (bUpdateInstruments ? HINT_INSTRUMENT : 0);
     if(dwHintFlags != 0) UpdateView(nDocNdx, dwHintFlags);
 }
 
@@ -2207,7 +2207,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
 // CViewModTree message handlers
 
 
-void CModTree::OnUpdate(CModDoc *pModDoc, DWORD dwHint, CObject *pHint)
+void CModTree::OnUpdate(CModDoc *pModDoc, uint32_t dwHint, CObject *pHint)
 //---------------------------------------------------------------------
 {
     dwHint &= (HINT_PATNAMES|HINT_SMPNAMES|HINT_INSNAMES|HINT_MODTYPE|HINT_MODGENERAL|HINT_MODSEQUENCE|HINT_MIXPLUGINS|HINT_MPTOPTIONS|HINT_MASK_ITEM|HINT_SEQNAMES);
@@ -2618,7 +2618,7 @@ void CModTree::OnItemLeftClick(LPNMHDR, LRESULT *pResult)
 }
 
 
-void CModTree::OnEndDrag(DWORD dwMask)
+void CModTree::OnEndDrag(uint32_t dwMask)
 //------------------------------------
 {
     if (m_dwStatus & dwMask)
@@ -3102,14 +3102,14 @@ void CModTree::OnExportMidiLib()
 ///////////////////////////////////////////////////////////////////////
 // Drop support
 
-DROPEFFECT CModTree::OnDragEnter(COleDataObject*, DWORD, CPoint)
+DROPEFFECT CModTree::OnDragEnter(COleDataObject*, uint32_t, CPoint)
 //--------------------------------------------------------------
 {
     return DROPEFFECT_LINK;
 }
 
 
-DROPEFFECT CModTree::OnDragOver(COleDataObject*, DWORD, CPoint point)
+DROPEFFECT CModTree::OnDragOver(COleDataObject*, uint32_t, CPoint point)
 //-------------------------------------------------------------------
 {
     UINT flags;
@@ -3161,7 +3161,7 @@ BOOL CModTree::OnDrop(COleDataObject* pDataObject, DROPEFFECT, CPoint)
     	DragQueryFile(hDropInfo, 0, szFileName, _MAX_PATH);
     	if (szFileName[0])
     	{
-    		DWORD dwItem = (DWORD)(m_qwItemDrag >> 16);
+    		uint32_t dwItem = (uint32_t)(m_qwItemDrag >> 16);
     		switch(m_qwItemDrag & 0xFFFF)
     		{
     		case MODITEM_MIDIINSTRUMENT:

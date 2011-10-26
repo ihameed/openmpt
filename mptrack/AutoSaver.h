@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+
 #include "resource.h"
 
 class CModDoc;
@@ -13,7 +15,7 @@ public:
     ~CAutoSaver(void);
     
 //Work
-    bool DoSave(DWORD curTime);
+    bool DoSave(uint32_t curTime);
 
 //Member access
     void Enable();
@@ -35,7 +37,7 @@ private:
     bool SaveSingleFile(CModDoc *pModDoc);
     CString BuildFileName(CModDoc *pModDoc);
     void CleanUpBackups(CModDoc *pModDoc);
-    bool CheckTimer(DWORD curTime);
+    bool CheckTimer(uint32_t curTime);
     
 //internal implementation members
 private:
@@ -44,15 +46,14 @@ private:
     bool m_bSaveInProgress; 
 
     bool m_bEnabled;
-    DWORD m_nLastSave;
-    DWORD m_nSaveInterval;
+    uint32_t m_nLastSave;
+    uint32_t m_nSaveInterval;
     int m_nBackupHistory;
     bool m_bUseOriginalPath;
     CString m_csPath;
     CString m_csFileNameTemplate;
 
 };
-#pragma once
 
 
 // CAutoSaverGUI dialog

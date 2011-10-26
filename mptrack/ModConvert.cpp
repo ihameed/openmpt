@@ -148,7 +148,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         }
 
         // Removing all instrument headers from channels
-        for(CHANNELINDEX nChn = 0; nChn < MAX_CHANNELS; nChn++)
+        for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
         {
             m_SndFile.Chn[nChn].instrument = nullptr;
         }

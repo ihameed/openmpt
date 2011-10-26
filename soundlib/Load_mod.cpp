@@ -221,7 +221,7 @@ typedef struct _MODMAGIC
 
 bool IsMagic(LPCSTR s1, LPCSTR s2)
 {
-    return ((*(DWORD *)s1) == (*(DWORD *)s2)) ? true : false;
+    return ((*(uint32_t *)s1) == (*(uint32_t *)s2)) ? true : false;
 }
 
 // Functor for fixing VBlank MODs and MODs with 7-bit panning
@@ -259,11 +259,11 @@ struct FixMODPatterns
 };
 
 
-bool CSoundFile::ReadMod(const uint8_t *lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
 //---------------------------------------------------------------
 {
     char s[1024];
-    DWORD dwMemPos, dwTotalSampleLen;
+    uint32_t dwMemPos, dwTotalSampleLen;
     PMODMAGIC pMagic;
     UINT nErr;
 
@@ -397,7 +397,7 @@ bool CSoundFile::ReadMod(const uint8_t *lpStream, DWORD dwMemLength)
     if (m_nRestartPos >= 0x78) m_nRestartPos = 0;
     if (m_nRestartPos + 1 >= (UINT)norders) m_nRestartPos = 0;
     if (!nbp) return false;
-    DWORD dwWowTest = dwTotalSampleLen+dwMemPos;
+    uint32_t dwWowTest = dwTotalSampleLen+dwMemPos;
     if ((IsMagic(pMagic->Magic, "M.K.")) && (dwWowTest + nbp*8*256 == dwMemLength)) m_nChannels = 8;
     if ((nbp != nbpbuggy) && (dwWowTest + nbp*m_nChannels*256 != dwMemLength))
     {
@@ -512,7 +512,7 @@ bool CSoundFile::ReadMod(const uint8_t *lpStream, DWORD dwMemLength)
                 dwMemPos += 5;
             }
         }
-        DWORD dwSize = ReadSample(&Samples[ismp], flags, p, dwMemLength - dwMemPos);
+        uint32_t dwSize = ReadSample(&Samples[ismp], flags, p, dwMemLength - dwMemPos);
         if (dwSize)
         {
             dwMemPos += dwSize;

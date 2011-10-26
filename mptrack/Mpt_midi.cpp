@@ -14,7 +14,7 @@ HMIDIIN CMainFrame::shMidiIn = NULL;
 
 //Get Midi message(dwParam1), apply MIDI settings having effect on volume, and return
 //the volume value [0, 256]. In addition value -1 is used as 'use default value'-indicator.
-int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const uint8_t midivolume)
+int ApplyVolumeRelatedMidiSettings(const uint32_t& dwParam1, const uint8_t midivolume)
 //----------------------------------------------------------------
 {
     int nVol = GetFromMIDIMsg_DataByte2(dwParam1);
@@ -38,7 +38,7 @@ int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const uint8_t midivolu
     return nVol;
 }
 
-void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, DWORD& dwParam1)
+void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, uint32_t& dwParam1)
 //------------------------------------------------------------------------
 {
     if ( (CMainFrame::m_dwMidiSetup & MIDISETUP_TRANSPOSEKEYBOARD)
@@ -70,9 +70,9 @@ void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, DWORD& dwParam1)
 /////////////////////////////////////////////////////////////////////////////
 // MMSYSTEM Midi Record
 
-DWORD gdwLastMidiEvtTime = 0;
+uint32_t gdwLastMidiEvtTime = 0;
 
-void CALLBACK MidiInCallBack(HMIDIIN, UINT wMsg, DWORD, DWORD dwParam1, DWORD dwParam2)
+void CALLBACK MidiInCallBack(HMIDIIN, UINT wMsg, uint32_t, uint32_t dwParam1, uint32_t dwParam2)
 //-------------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -80,10 +80,10 @@ void CALLBACK MidiInCallBack(HMIDIIN, UINT wMsg, DWORD, DWORD dwParam1, DWORD dw
 
     if (!pMainFrm) return;
 #ifdef MPTMIDI_RECORDLOG
-    DWORD dwMidiStatus = dwParam1 & 0xFF;
-    DWORD dwMidiByte1 = (dwParam1 >> 8) & 0xFF;
-    DWORD dwMidiByte2 = (dwParam1 >> 16) & 0xFF;
-    DWORD dwTimeStamp = dwParam2;
+    uint32_t dwMidiStatus = dwParam1 & 0xFF;
+    uint32_t dwMidiByte1 = (dwParam1 >> 8) & 0xFF;
+    uint32_t dwMidiByte2 = (dwParam1 >> 16) & 0xFF;
+    uint32_t dwTimeStamp = dwParam2;
     Log("time=%8dms status=%02X data=%02X.%02X\n", dwTimeStamp, dwMidiStatus, dwMidiByte1, dwMidiByte2);
 #endif
 
@@ -95,8 +95,8 @@ void CALLBACK MidiInCallBack(HMIDIIN, UINT wMsg, DWORD, DWORD dwParam1, DWORD dw
     		case 0xF0:	// Midi Clock
     			if (wMsg == MIM_DATA)
     			{
-    				DWORD dwTime = timeGetTime();
-    				const DWORD timediff = dwTime - gdwLastMidiEvtTime;
+    				uint32_t dwTime = timeGetTime();
+    				const uint32_t timediff = dwTime - gdwLastMidiEvtTime;
     				if (timediff < 20*3) break;
     				
     				gdwLastMidiEvtTime = dwTime; // continue
@@ -120,7 +120,7 @@ BOOL CMainFrame::midiOpenDevice()
 {
     if (shMidiIn) return TRUE;
     try {
-    	if (midiInOpen(&shMidiIn, m_nMidiDevice, (DWORD)MidiInCallBack, 0, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+    	if (midiInOpen(&shMidiIn, m_nMidiDevice, (uint32_t)MidiInCallBack, 0, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
     	{
     		shMidiIn = NULL;
 
@@ -277,7 +277,7 @@ bool CMIDIMapper::Deserialize(const uint8_t* ptr, const size_t size)
 }
 
 
-bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, uint8_t& mappedIndex, uint32_t& paramindex, uint8_t& paramval)
+bool CMIDIMapper::OnMIDImsg(const uint32_t midimsg, uint8_t& mappedIndex, uint32_t& paramindex, uint8_t& paramval)
 //----------------------------------------------------------------------------------------------------
 {
     bool captured = false;

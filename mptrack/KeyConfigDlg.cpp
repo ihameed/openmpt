@@ -500,7 +500,7 @@ void COptionsKeyboard::OnHotKeyChanged()
     	uint16_t wVk=0, wMod=0;
     	
     	m_HotKey.GetHotKey(wVk, wMod);
-    	DWORD dwHk = ((DWORD)wVk) | (((DWORD)wMod) << 16);
+    	uint32_t dwHk = ((uint32_t)wVk) | (((uint32_t)wMod) << 16);
     	for (UINT i = 0; i<MAX_MPTHOTKEYS; i++) if (i != (UINT)m_nCurHotKey)
     	{
     		if (CustomKeys[i] == dwHk)

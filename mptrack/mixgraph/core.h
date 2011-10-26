@@ -26,6 +26,7 @@ DAMAGE.
 
 #pragma once
 
+#include <array>
 #include <vector>
 #include <map>
 #include <utility>
@@ -39,7 +40,9 @@ namespace mixgraph {
 
 typedef std::pair<id_t, vertex *> vertex_item_t;
 typedef std::map<id_t, vertex *> vertex_map_t;
-//typedef std::map<id_t, arrow *> arrow_map_t;
+
+typedef std::pair<id_t, arrow *> arrow_item_t;
+typedef std::map<id_t, arrow *> arrow_map_t;
 
 class core {
 public:
@@ -58,7 +61,7 @@ public:
     void rename_vertex();
 
 
-    vertex *vertex(id_t vertex);
+    vertex *vertex_with_id(id_t vertex);
 
     id_t link_vertices(id_t, size_t, id_t, size_t);
     bool unlink_vertices(id_t);
@@ -66,10 +69,12 @@ public:
     id_t new_id();
     id_t _largest_id;
     
-    modplug::mixgraph::vertex *channel_vertices[MAX_CHANNELS];
-    vertex_map_t _vertices;
-    std::map<id_t, arrow *> _arrows;
-    modplug::mixgraph::vertex *_master_sink;
+    std::array<vertex *, MAX_PHYSICAL_CHANNELS> channel_vertices;
+    vertex *channel_bypass;
+    vertex *master_sink;
+
+    vertex_map_t vertices;
+    arrow_map_t arrows;
 };
 
 

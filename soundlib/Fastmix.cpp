@@ -1483,7 +1483,7 @@ UINT CSoundFile::CreateStereoMix(int count)
 //-----------------------------------------
 {
     LPLONG pOfsL, pOfsR;
-    DWORD nchused, nchmixed;
+    uint32_t nchused, nchmixed;
     
     if (!count) return 0;
 #ifndef FASTSOUNDLIB
@@ -1504,7 +1504,9 @@ UINT CSoundFile::CreateStereoMix(int count)
         int *JUICY_FRUITS;
 
         size_t channel_i_care_about = pChannel->parent_channel ? (pChannel->parent_channel - 1) : (ChnMix[nChn]);
-        auto herp = _graph.channel_vertices[channel_i_care_about];
+        auto herp = (channel_i_care_about > modplug::mixgraph::MAX_PHYSICAL_CHANNELS) ? 
+            (mixgraph.channel_bypass) :
+            (mixgraph.channel_vertices[channel_i_care_about]);
         auto herp_left = herp->channels[0];
         auto herp_right = herp->channels[1];
 
@@ -1540,7 +1542,7 @@ UINT CSoundFile::CreateStereoMix(int count)
 
         JUICY_FRUITS = pbuffer;
         //XXXih: JUICY FRUITS
-        pbuffer = _graph.channel_vertices[channel_i_care_about]->ghetto_channels;
+        pbuffer = herp->ghetto_channels;
 
     #ifdef ENABLE_MMX
         //XXXih: reverb - delete
@@ -1691,7 +1693,7 @@ UINT CSoundFile::CreateStereoMix(int count)
 
         //XXXih: the worst
         /*
-        modplug::mixgraph::vertex *channel_vertex  = _graph.channel_vertices[channel_i_care_about];
+        modplug::mixgraph::vertex *channel_vertex  = mixgraph.channel_vertices[channel_i_care_about];
         modplug::mixgraph::sample_t *left_channel  = channel_vertex->channels[0];
         modplug::mixgraph::sample_t *right_channel = channel_vertex->channels[1];
         modplug::mixer::stereo_mix_to_sample_t(pbuffer, left_channel, right_channel, modplug::mixer::MIX_BUFFER_SIZE, m_pConfig->getIntToFloat());
@@ -2010,7 +2012,7 @@ noiseloop:
     int a = 0, b = 0;
     for (UINT i=0; i<len; i++)
     {
-        a = (a << 1) | (((DWORD)a) >> (uint8_t)31);
+        a = (a << 1) | (((uint32_t)a) >> (uint8_t)31);
         a ^= 0x10204080;
         a += 0x78649E7D + (b << 2);
         b += ((a << 16) | (a >> 16)) * 5;
@@ -2028,7 +2030,7 @@ noiseloop:
 }
 
 
-void MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, DWORD nSamples)
+void MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, uint32_t nSamples)
 //------------------------------------------------------------------------------------
 {
     _asm {
@@ -2126,7 +2128,7 @@ done:
 void CSoundFile::ProcessAGC(int count)
 //------------------------------------
 {
-    static DWORD gAGCRecoverCount = 0;
+    static uint32_t gAGCRecoverCount = 0;
     UINT agc = X86_AGC(MixSoundBuffer, count, gnAGC);
     // Some kind custom law, so that the AGC stays quite stable, but slowly
     // goes back up if the sound level stays below a level inversely proportional

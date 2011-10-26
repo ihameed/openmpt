@@ -21,7 +21,7 @@
 
 typedef struct FARHEADER1
 {
-    DWORD id;    			// file magic FAR=
+    uint32_t id;    			// file magic FAR=
     CHAR songname[40];    	// songname
     CHAR magic2[3];    		// 13,10,26
     uint16_t headerlen;    		// remaining length of header in bytes
@@ -46,11 +46,11 @@ typedef struct FARHEADER2
 typedef struct FARSAMPLE
 {
     CHAR samplename[32];
-    DWORD length;
+    uint32_t length;
     uint8_t finetune;
     uint8_t volume;
-    DWORD reppos;
-    DWORD repend;
+    uint32_t reppos;
+    uint32_t repend;
     uint8_t type;
     uint8_t loop;
 } FARSAMPLE;
@@ -58,7 +58,7 @@ typedef struct FARSAMPLE
 #pragma pack()
 
 
-bool CSoundFile::ReadFAR(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     if(dwMemLength < sizeof(FARHEADER1))
@@ -68,7 +68,7 @@ bool CSoundFile::ReadFAR(const uint8_t *lpStream, const DWORD dwMemLength)
     memcpy(&farHeader, lpStream, sizeof(FARHEADER1));
     FARHEADER1 *pmh1 = &farHeader;
     FARHEADER2 *pmh2 = 0;
-    DWORD dwMemPos = sizeof(FARHEADER1);
+    uint32_t dwMemPos = sizeof(FARHEADER1);
     UINT headerlen;
     uint8_t samplemap[8];
 
@@ -246,7 +246,7 @@ bool CSoundFile::ReadFAR(const uint8_t *lpStream, const DWORD dwMemLength)
         m_nSamples = ismp + 1;
         memcpy(m_szNames[ismp+1], pfs->samplename, 31);
         SpaceToNullStringFixed<31>(m_szNames[ismp + 1]);
-        const DWORD length = LittleEndian( pfs->length );
+        const uint32_t length = LittleEndian( pfs->length );
         pSmp->length = length;
         pSmp->loop_start = LittleEndian(pfs->reppos) ;
         pSmp->loop_end = LittleEndian(pfs->repend) ;

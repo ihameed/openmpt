@@ -74,12 +74,12 @@ namespace ctrlChn
 {
 
 // Replaces sample from sound channels by given sample.
-void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_CHANNELS],
+void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_VIRTUAL_CHANNELS],
     				LPCSTR pOldSample,
     				LPSTR pNewSample,
     				const ctrlSmp::SmpLength nNewLength,
-    				DWORD orFlags = 0,
-    				DWORD andFlags = MAXDWORD);
+    				uint32_t orFlags = 0,
+    				uint32_t andFlags = MAXDWORD);
 
 } // namespace ctrlChn
 

@@ -136,22 +136,22 @@
 
 typedef struct IFFCHUNK
 {
-    DWORD id;
-    DWORD len;
+    uint32_t id;
+    uint32_t len;
 } IFFCHUNK, *LPIFFCHUNK;
 
 typedef struct RIFFCHUNKID
 {
-    DWORD id_RIFF;
-    DWORD riff_len;
-    DWORD id_DLS;
+    uint32_t id_RIFF;
+    uint32_t riff_len;
+    uint32_t id_DLS;
 } RIFFCHUNKID;
 
 typedef struct LISTCHUNK
 {
-    DWORD id;
-    DWORD len;
-    DWORD listid;
+    uint32_t id;
+    uint32_t len;
+    uint32_t listid;
 } LISTCHUNK;
 
 typedef struct DLSRGNRANGE
@@ -162,40 +162,40 @@ typedef struct DLSRGNRANGE
 
 typedef struct COLHCHUNK
 {
-    DWORD id;
-    DWORD len;
-    DWORD ulInstruments;
+    uint32_t id;
+    uint32_t len;
+    uint32_t ulInstruments;
 } COLHCHUNK;
 
 typedef struct VERSCHUNK
 {
-    DWORD id;
-    DWORD len;
+    uint32_t id;
+    uint32_t len;
     uint16_t version[4];
 } VERSCHUNK;
 
 typedef struct PTBLCHUNK
 {
-    DWORD id;
-    DWORD len;
-    DWORD cbSize;
-    DWORD cCues;
-    DWORD ulOffsets[1];
+    uint32_t id;
+    uint32_t len;
+    uint32_t cbSize;
+    uint32_t cCues;
+    uint32_t ulOffsets[1];
 } PTBLCHUNK;
 
 typedef struct INSHCHUNK
 {
-    DWORD id;
-    DWORD len;
-    DWORD cRegions;
-    DWORD ulBank;
-    DWORD ulInstrument;
+    uint32_t id;
+    uint32_t len;
+    uint32_t cRegions;
+    uint32_t ulBank;
+    uint32_t ulInstrument;
 } INSHCHUNK;
 
 typedef struct RGNHCHUNK
 {
-    DWORD id;
-    DWORD len;
+    uint32_t id;
+    uint32_t len;
     DLSRGNRANGE RangeKey;
     DLSRGNRANGE RangeVelocity;
     uint16_t fusOptions;
@@ -204,20 +204,20 @@ typedef struct RGNHCHUNK
 
 typedef struct WLNKCHUNK
 {
-    DWORD id;
-    DWORD len;
+    uint32_t id;
+    uint32_t len;
     uint16_t fusOptions;
     uint16_t usPhaseGroup;
-    DWORD ulChannel;
-    DWORD ulTableIndex;
+    uint32_t ulChannel;
+    uint32_t ulTableIndex;
 } WLNKCHUNK;
 
 typedef struct ART1CHUNK
 {
-    DWORD id;
-    DWORD len;
-    DWORD cbSize;
-    DWORD cConnectionBlocks;
+    uint32_t id;
+    uint32_t len;
+    uint32_t cbSize;
+    uint32_t cConnectionBlocks;
 } ART1CHUNK;
 
 typedef struct CONNECTIONBLOCK
@@ -231,22 +231,22 @@ typedef struct CONNECTIONBLOCK
 
 typedef struct WSMPCHUNK
 {
-    DWORD id;
-    DWORD len;
-    DWORD cbSize;
+    uint32_t id;
+    uint32_t len;
+    uint32_t cbSize;
     uint16_t usUnityNote;
     signed short sFineTune;
     LONG lAttenuation;
-    DWORD fulOptions;
-    DWORD cSampleLoops;
+    uint32_t fulOptions;
+    uint32_t cSampleLoops;
 } WSMPCHUNK;
 
 typedef struct WSMPSAMPLELOOP
 {
-    DWORD cbSize;
-    DWORD ulLoopType;
-    DWORD ulLoopStart;
-    DWORD ulLoopLength;
+    uint32_t cbSize;
+    uint32_t ulLoopType;
+    uint32_t ulLoopStart;
+    uint32_t ulLoopLength;
 } WSMPSAMPLELOOP;
 
 
@@ -291,9 +291,9 @@ typedef struct SFPRESETHEADER
     uint16_t wPreset;
     uint16_t wBank;
     uint16_t wPresetBagNdx;
-    DWORD dwLibrary;
-    DWORD dwGenre;
-    DWORD dwMorphology;
+    uint32_t dwLibrary;
+    uint32_t dwGenre;
+    uint32_t dwMorphology;
 } SFPRESETHEADER;
 
 typedef struct SFPRESETBAG
@@ -329,11 +329,11 @@ typedef struct SFINSTGENLIST
 typedef struct SFSAMPLE
 {
     CHAR achSampleName[20];
-    DWORD dwStart;
-    DWORD dwEnd;
-    DWORD dwStartloop;
-    DWORD dwEndloop;
-    DWORD dwSampleRate;
+    uint32_t dwStart;
+    uint32_t dwEnd;
+    uint32_t dwStartloop;
+    uint32_t dwEndloop;
+    uint32_t dwSampleRate;
     uint8_t byOriginalPitch;
     CHAR chPitchCorrection;
     uint16_t wSampleLink;
@@ -369,7 +369,7 @@ LONG __cdecl CDLSBank::DLS32BitTimeCentsToMilliseconds(LONG lTimeCents)
 {
     // tc = log2(time[secs]) * 1200*65536
     // time[secs] = 2^(tc/(1200*65536))
-    if ((DWORD)lTimeCents == 0x80000000) return 0;
+    if ((uint32_t)lTimeCents == 0x80000000) return 0;
     double fmsecs = 1000.0 * pow(2.0, ((double)lTimeCents)/(1200.0*65536.0));
     if (fmsecs < -32767) return -32767;
     if (fmsecs > 32767) return 32767;
@@ -495,7 +495,7 @@ BOOL CDLSBank::IsDLSBank(LPCSTR lpszFileName)
 ///////////////////////////////////////////////////////////////
 // Find an instrument based on the given parameters
 
-DLSINSTRUMENT *CDLSBank::FindInstrument(BOOL bDrum, UINT nBank, DWORD dwProgram, DWORD dwKey, UINT *pInsNo)
+DLSINSTRUMENT *CDLSBank::FindInstrument(BOOL bDrum, UINT nBank, uint32_t dwProgram, uint32_t dwKey, UINT *pInsNo)
 //---------------------------------------------------------------------------------------------------------
 {
     if ((!m_pInstruments) || (!m_nInstruments)) return NULL;
@@ -543,7 +543,7 @@ DLSINSTRUMENT *CDLSBank::FindInstrument(BOOL bDrum, UINT nBank, DWORD dwProgram,
 ///////////////////////////////////////////////////////////////
 // Update DLS instrument definition from an IFF chunk
 
-BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk, DWORD dwMaxLen)
+BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk, uint32_t dwMaxLen)
 //--------------------------------------------------------------------------------------------
 {
     IFFCHUNK *pchunk = (IFFCHUNK *)pvchunk;
@@ -551,7 +551,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     if (pchunk->id == IFFID_LIST)
     {
     	LISTCHUNK *plist = (LISTCHUNK *)pchunk;
-    	DWORD dwPos = 12;
+    	uint32_t dwPos = 12;
     	while (dwPos < plist->len)
     	{
     		LPIFFCHUNK p = (LPIFFCHUNK)(((LPBYTE)plist) + dwPos);
@@ -658,7 +658,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     			for (UINT iblk=0; iblk<p->cConnectionBlocks; iblk++, pblk++)
     			{
     				// [4-bit transform][12-bit dest][8-bit control][8-bit source] = 32-bit ID
-    				DWORD dwArticulation = pblk->usTransform;
+    				uint32_t dwArticulation = pblk->usTransform;
     				dwArticulation = (dwArticulation << 12) | (pblk->usDestination & 0x0FFF);
     				dwArticulation = (dwArticulation << 8) | (pblk->usControl & 0x00FF);
     				dwArticulation = (dwArticulation << 8) | (pblk->usSource & 0x00FF);
@@ -684,7 +684,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     						if (attacktime < 0) attacktime = 0;
     						if (attacktime > 20000) attacktime = 20000;
     						if (attacktime >= 20) pDlsEnv->wVolAttack = (uint16_t)(attacktime / 20);
-    						//Log("%3d: Envelope Attack Time set to %d (%d time cents)\n", (DWORD)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), attacktime, pblk->lScale);
+    						//Log("%3d: Envelope Attack Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), attacktime, pblk->lScale);
     					}
     					break;
 
@@ -696,7 +696,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     						LONG decaytime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
     						if (decaytime > 20000) decaytime = 20000;
     						if (decaytime >= 20) pDlsEnv->wVolDecay = (uint16_t)(decaytime / 20);
-    						//Log("%3d: Envelope Decay Time set to %d (%d time cents)\n", (DWORD)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), decaytime, pblk->lScale);
+    						//Log("%3d: Envelope Decay Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), decaytime, pblk->lScale);
     					}
     					break;
 
@@ -708,7 +708,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     						LONG releasetime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
     						if (releasetime > 20000) releasetime = 20000;
     						if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
-    						//Log("%3d: Envelope Release Time set to %d (%d time cents)\n", (DWORD)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), pDlsEnv->wVolRelease, pblk->lScale);
+    						//Log("%3d: Envelope Release Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), pDlsEnv->wVolRelease, pblk->lScale);
     					}
     					break;
 
@@ -718,7 +718,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     					{
     						LONG l = pblk->lScale / (1000*512);
     						if ((l >= 0) || (l <= 128)) pDlsEnv->nVolSustainLevel = (uint8_t)l;
-    						//Log("%3d: Envelope Sustain Level set to %d (%d)\n", (DWORD)(pDlsIns->ulInstrument & 0x7F)|((pDlsIns->ulBank >> 16) & 0x8000), l, pblk->lScale);
+    						//Log("%3d: Envelope Sustain Level set to %d (%d)\n", (uint32_t)(pDlsIns->ulInstrument & 0x7F)|((pDlsIns->ulBank >> 16) & 0x8000), l, pblk->lScale);
     					}
     					break;
 
@@ -735,7 +735,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     			UINT len = (pchunk->len < 32) ? pchunk->len : 31;
     			if (len) memcpy(pDlsIns->szName, ((LPCSTR)pchunk)+8, len);
     			pDlsIns->szName[31] = 0;
-    			//Log("%s\n", (DWORD)pDlsIns->szName);
+    			//Log("%s\n", (uint32_t)pDlsIns->szName);
     		}
     		break;
     #if 0
@@ -744,7 +744,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     			CHAR sid[5];
     			memcpy(sid, &pchunk->id, 4);
     			sid[4] = 0;
-    			Log("    \"%s\": %d bytes\n", (DWORD)sid, pchunk->len);
+    			Log("    \"%s\": %d bytes\n", (uint32_t)sid, pchunk->len);
     		}
     #endif
     	}
@@ -755,7 +755,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
 ///////////////////////////////////////////////////////////////
 // Converts SF2 chunks to DLS
 
-BOOL CDLSBank::UpdateSF2PresetData(LPVOID pvsf2, LPVOID pvchunk, DWORD dwMaxLen)
+BOOL CDLSBank::UpdateSF2PresetData(LPVOID pvsf2, LPVOID pvchunk, uint32_t dwMaxLen)
 //------------------------------------------------------------------------------
 {
     SF2LOADERINFO *psf2 = (SF2LOADERINFO *)pvsf2;
@@ -862,11 +862,11 @@ BOOL CDLSBank::UpdateSF2PresetData(LPVOID pvsf2, LPVOID pvchunk, DWORD dwMaxLen)
     	if (m_nSamplesEx < 1) break;
     	m_nWaveForms = m_nSamplesEx;
     	m_pSamplesEx = new DLSSAMPLEEX[m_nSamplesEx];
-    	m_pWaveForms = new DWORD[m_nWaveForms];
+    	m_pWaveForms = new uint32_t[m_nWaveForms];
     	if ((m_pSamplesEx) && (m_pWaveForms))
     	{
     		memset(m_pSamplesEx, 0, sizeof(DLSSAMPLEEX)*m_nSamplesEx);
-    		memset(m_pWaveForms, 0, sizeof(DWORD)*m_nWaveForms);
+    		memset(m_pWaveForms, 0, sizeof(uint32_t)*m_nWaveForms);
     		DLSSAMPLEEX *pDlsSmp = m_pSamplesEx;
     		SFSAMPLE *p = (SFSAMPLE *)(pchunk+1);
     		for (UINT i=0; i<m_nSamplesEx; i++, pDlsSmp++, p++)
@@ -1094,7 +1094,7 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     SF2LOADERINFO sf2info;
     const uint8_t *lpMemFile;	// Pointer to memory-mapped file
     RIFFCHUNKID *priff;
-    DWORD dwMemPos, dwMemLength;
+    uint32_t dwMemPos, dwMemLength;
     UINT nInsDef;
 
     if ((!lpszFileName) || (!lpszFileName[0])) return FALSE;
@@ -1136,7 +1136,7 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     	do {
     		priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
     		int len = BigEndian(priff->riff_len);
-    		if ((len <= 4) || ((DWORD)len >= dwMemLength - dwMemPos)) break;
+    		if ((len <= 4) || ((uint32_t)len >= dwMemLength - dwMemPos)) break;
     		if (priff->id_DLS == IFFID_XDLS)
     		{
     			dwMemPos += 12;
@@ -1204,10 +1204,10 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     			m_nWaveForms = ((PTBLCHUNK *)pchunk)->cCues;
     			if (m_nWaveForms)
     			{
-    				m_pWaveForms = new DWORD[m_nWaveForms];
+    				m_pWaveForms = new uint32_t[m_nWaveForms];
     				if (m_pWaveForms)
     				{
-    					memcpy(m_pWaveForms, (lpMemFile + dwMemPos + 8 + ((PTBLCHUNK *)pchunk)->cbSize), m_nWaveForms * sizeof(DWORD));
+    					memcpy(m_pWaveForms, (lpMemFile + dwMemPos + 8 + ((PTBLCHUNK *)pchunk)->cbSize), m_nWaveForms * sizeof(uint32_t));
     				}
     			}
     		#ifdef DLSBANK_LOG
@@ -1223,8 +1223,8 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     	#endif
     		{
     			LISTCHUNK *plist = (LISTCHUNK *)pchunk;
-    			DWORD dwPos = dwMemPos + sizeof(LISTCHUNK);
-    			DWORD dwMaxPos = dwMemPos + 8 + plist->len;
+    			uint32_t dwPos = dwMemPos + sizeof(LISTCHUNK);
+    			uint32_t dwMaxPos = dwMemPos + 8 + plist->len;
     			if (dwMaxPos > dwMemLength) dwMaxPos = dwMemLength;
     			if (((plist->listid == IFFID_wvpl) && (m_nType & SOUNDBANK_TYPE_DLS))
     			 || ((plist->listid == IFFID_sdta) && (m_nType & SOUNDBANK_TYPE_SF2)))
@@ -1308,10 +1308,10 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     #ifdef DLSBANK_LOG
     	Log("ptbl not present: building table (%d wavelinks)...\n", m_nMaxWaveLink);
     #endif
-    	m_pWaveForms = new DWORD[m_nMaxWaveLink];
+    	m_pWaveForms = new uint32_t[m_nMaxWaveLink];
     	if (m_pWaveForms)
     	{
-    		memset(m_pWaveForms, 0, m_nMaxWaveLink * sizeof(DWORD));
+    		memset(m_pWaveForms, 0, m_nMaxWaveLink * sizeof(uint32_t));
     		dwMemPos = m_dwWavePoolOffset;
     		while (dwMemPos + sizeof(IFFCHUNK) < dwMemLength)
     		{
@@ -1367,11 +1367,11 @@ BOOL CDLSBank::FreeWaveForm(LPBYTE p)
 }
 
 
-BOOL CDLSBank::ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, DWORD *pLen)
+BOOL CDLSBank::ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, uint32_t *pLen)
 //-------------------------------------------------------------------------------
 {
     DLSINSTRUMENT *pDlsIns;
-    DWORD dwOffset;
+    uint32_t dwOffset;
     UINT nWaveLink;
     FILE *f;
     BOOL bOk = FALSE;
@@ -1473,7 +1473,7 @@ BOOL CDLSBank::ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT
 {
     DLSINSTRUMENT *pDlsIns;
     LPBYTE pWaveForm = NULL;
-    DWORD dwLen = 0, dwWSMPOffset = 0;
+    uint32_t dwLen = 0, dwWSMPOffset = 0;
     BOOL bOk, bWaveForm;
     
     if ((!m_pInstruments) || (nIns >= m_nInstruments) || (!pSndFile)) return FALSE;

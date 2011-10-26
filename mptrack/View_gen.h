@@ -65,7 +65,7 @@ public:
     //{{AFX_VIRTUAL(CViewGlobals)
     virtual void OnInitialUpdate();
     virtual void DoDataExchange(CDataExchange* pDX);
-    virtual void UpdateView(DWORD dwHintMask=0, CObject *pObj=NULL);
+    virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
     virtual LRESULT OnModViewMsg(WPARAM, LPARAM);
     virtual HBRUSH OnCtlColor(CDC *pDC, CWnd* pWnd, UINT nCtlColor);

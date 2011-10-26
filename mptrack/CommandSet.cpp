@@ -1364,7 +1364,7 @@ void CCommandSet::GenKeyMap(KeyMap &km)
 //-------------------------------------
 
 
-DWORD CCommandSet::GetKeymapLabel(InputTargetContext ctx, UINT mod, UINT code, KeyEventType ke)
+uint32_t CCommandSet::GetKeymapLabel(InputTargetContext ctx, UINT mod, UINT code, KeyEventType ke)
 { //Unused
     ASSERT((long)ctx<0xFF);
     ASSERT((long)mod<0xFF);
@@ -1376,7 +1376,7 @@ DWORD CCommandSet::GetKeymapLabel(InputTargetContext ctx, UINT mod, UINT code, K
     uint8_t codeCode = (uint8_t)code;
     //uint8_t keCode   = (uint8_t)ke;
 
-    DWORD label = ctxCode | (modCode<<8) | (codeCode<<16) | (ke<<24);
+    uint32_t label = ctxCode | (modCode<<8) | (codeCode<<16) | (ke<<24);
 
     return label;
 }

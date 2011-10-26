@@ -744,11 +744,11 @@ BOOL CModDoc::ShrinkPattern(PATTERNINDEX nPattern)
 
 static LPCSTR lpszClipboardPatternHdr = "ModPlug Tracker %3s\r\n";
 
-bool CModDoc::CopyPattern(PATTERNINDEX nPattern, DWORD dwBeginSel, DWORD dwEndSel)
+bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t dwEndSel)
 //--------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    DWORD dwMemSize;
+    uint32_t dwMemSize;
     HGLOBAL hCpy;
     UINT nrows = (dwEndSel >> 16) - (dwBeginSel >> 16) + 1;
     UINT ncols = ((dwEndSel & 0xFFFF) >> 3) - ((dwBeginSel & 0xFFFF) >> 3) + 1;
@@ -891,7 +891,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, DWORD dwBeginSel, DWORD dwEndSe
 }
 
 
-bool CModDoc::PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPasteModes pasteMode)
+bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatternPasteModes pasteMode)
 //-------------------------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -905,7 +905,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, DWORD dwBeginSel, enmPatternPa
     	if ((hCpy) && ((p = (LPSTR)GlobalLock(hCpy)) != NULL))
     	{
     		const TEMPO spdmax = m_SndFile.GetModSpecifications().speedMax;
-    		const DWORD dwMemSize = GlobalSize(hCpy);
+    		const uint32_t dwMemSize = GlobalSize(hCpy);
     		CHANNELINDEX ncol = (dwBeginSel & 0xFFFF) >> 3, col;
     		const ROWINDEX startRow = (ROWINDEX)(dwBeginSel >> 16);
     		ROWINDEX nrow = startRow;
@@ -1195,7 +1195,7 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     HANDLE hCpy;
     CHAR s[4096];
     modplug::tracker::modinstrument_t *pIns;
-    DWORD dwMemSize;
+    uint32_t dwMemSize;
 
     if ((nIns < 1) || (nIns > m_SndFile.m_nInstruments) || (!m_SndFile.Instruments[nIns]) || (!pMainFrm)) return false;
     BeginWaitCursor();
@@ -1270,7 +1270,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     	modplug::tracker::modenvelope_t *pEnv = nullptr;
 
     	UINT susBegin = 0, susEnd = 0, loopBegin = 0, loopEnd = 0, bSus = 0, bLoop = 0, bCarry = 0, nPoints = 0, releaseNode = ENV_RELEASE_NODE_UNSET;
-    	DWORD dwMemSize = GlobalSize(hCpy), dwPos = strlen(pszEnvHdr);
+    	uint32_t dwMemSize = GlobalSize(hCpy), dwPos = strlen(pszEnvHdr);
     	if ((dwMemSize > dwPos) && (!_strnicmp(p, pszEnvHdr, dwPos - 2)))
     	{
     		sscanf(p + dwPos, pszEnvFmt, &nPoints, &susBegin, &susEnd, &loopBegin, &loopEnd, &bSus, &bLoop, &bCarry);

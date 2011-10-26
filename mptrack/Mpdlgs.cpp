@@ -9,6 +9,9 @@
 #include "snddev.h"
 #include ".\mpdlgs.h"
 
+#include "pervasives/pervasives.h"
+using namespace modplug::pervasives;
+
 #define str_preampChangeNote GetStrI18N(_TEXT("Note: The Pre-Amp setting affects sample volume only. Changing it may cause undesired effects on volume balance between sample based instruments and plugin instruments.\nIn other words: Don't touch this slider unless you know what you are doing."))
 
 //#pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
@@ -35,7 +38,7 @@ UINT nCPUMix[8] =
     64,
     96,
     128,
-    MAX_CHANNELS
+    MAX_VIRTUAL_CHANNELS
 };
 
 
@@ -475,7 +478,7 @@ void COptionsPlayer::DoDataExchange(CDataExchange* pDX)
 BOOL COptionsPlayer::OnInitDialog()
 //---------------------------------
 {
-    DWORD dwQuality;
+    uint32_t dwQuality;
     
     CPropertyPage::OnInitDialog();
     dwQuality = CMainFrame::m_dwQuality;
@@ -585,7 +588,7 @@ void COptionsPlayer::OnWFIRTypeChanged()
 
 void COptionsPlayer::OnResamplerChanged()
 {
-    DWORD dwSrcMode = m_CbnResampling.GetCurSel();
+    uint32_t dwSrcMode = m_CbnResampling.GetCurSel();
     m_CbnWFIRType.ResetContent();
 
     char s[10] = "";
@@ -641,8 +644,8 @@ extern VOID SndMixInitializeTables();
 void COptionsPlayer::OnOK()
 //-------------------------
 {
-    DWORD dwQuality = 0;
-    DWORD dwSrcMode = 0;
+    uint32_t dwQuality = 0;
+    uint32_t dwSrcMode = 0;
 
     if (IsDlgButtonChecked(IDC_CHECK1)) dwQuality |= QUALITY_MEGABASS;
     if (IsDlgButtonChecked(IDC_CHECK2)) dwQuality |= QUALITY_AGC;
@@ -810,9 +813,9 @@ VOID CEQSavePresetDlg::OnOK()
 VOID CEQSetupDlg::LoadEQ(HKEY key, LPCSTR pszName, PEQPRESET pEqSettings)
 //-----------------------------------------------------------------------
 {
-    DWORD dwType = REG_BINARY;
-    DWORD dwSize = sizeof(EQPRESET);
-    RegQueryValueEx(key, pszName, NULL, &dwType, (LPBYTE)pEqSettings, &dwSize);
+    uint32_t dwType = REG_BINARY;
+    uint32_t dwSize = sizeof(EQPRESET);
+    registry_query_value(key, pszName, NULL, &dwType, (LPBYTE)pEqSettings, &dwSize);
     for (UINT i=0; i<MAX_EQ_BANDS; i++)
     {
     	if (pEqSettings->Gains[i] > 32) pEqSettings->Gains[i] = 16;
@@ -1068,7 +1071,7 @@ void CEQSetupDlg::OnSliderMenu(UINT nID)
     	const UINT *pFreqs = &gEqBandFreqs[m_nSliderMenu*EQ_MAX_FREQS];
     	for (UINT i=0; i<EQ_MAX_FREQS; i++)
     	{
-    		DWORD d = MF_STRING;
+    		uint32_t d = MF_STRING;
     		if (m_pEqPreset->Freqs[m_nSliderMenu] == pFreqs[i]) d |= MF_CHECKED;
     		f2s(pFreqs[i], s);
     		::AppendMenu(hMenu, d, ID_EQMENU_BASE+i, s);

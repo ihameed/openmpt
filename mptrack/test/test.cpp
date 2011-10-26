@@ -116,7 +116,7 @@ void TestVersion()
     {
     	char  szFullPath[MAX_PATH];
     	DWORD dwVerHnd;
-    	DWORD dwVerInfoSize;
+    	uint32_t dwVerInfoSize;
 
     	// Get version information from the application
     	::GetModuleFileName(NULL, szFullPath, sizeof(szFullPath));
@@ -130,8 +130,8 @@ void TestVersion()
 
     	char* szVer = NULL;
     	UINT uVerLength;
-    	if (!(::GetFileVersionInfo((LPTSTR)szFullPath, (DWORD)dwVerHnd, 
-    							   (DWORD)dwVerInfoSize, (LPVOID)pVersionInfo))) {
+    	if (!(::GetFileVersionInfo((LPTSTR)szFullPath, (uint32_t)dwVerHnd, 
+    							   (uint32_t)dwVerInfoSize, (LPVOID)pVersionInfo))) {
     		delete[] pVersionInfo;
     		throw std::runtime_error("GetFileVersionInfo() returned false");
     	}   

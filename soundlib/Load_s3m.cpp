@@ -26,18 +26,18 @@ typedef struct tagS3MSAMPLESTRUCT
     CHAR dosname[12];
     uint8_t hmem;
     uint16_t memseg;
-    DWORD length;
-    DWORD loopbegin;
-    DWORD loopend;
+    uint32_t length;
+    uint32_t loopbegin;
+    uint32_t loopend;
     uint8_t vol;
     uint8_t bReserved;
     uint8_t pack;
     uint8_t flags;
-    DWORD finetune;
-    DWORD dwReserved;
+    uint32_t finetune;
+    uint32_t dwReserved;
     uint16_t intgp;
     uint16_t int512;
-    DWORD lastused;
+    uint32_t lastused;
     CHAR name[28];
     CHAR scrs[4];
 } S3MSAMPLESTRUCT;
@@ -55,7 +55,7 @@ typedef struct tagS3MFILEHEADER
     uint16_t flags;
     uint16_t cwtv;
     uint16_t version;
-    DWORD scrm;    // "SCRM" = 0x4D524353
+    uint32_t scrm;    // "SCRM" = 0x4D524353
     uint8_t globalvol;
     uint8_t speed;
     uint8_t tempo;
@@ -216,15 +216,15 @@ void CSoundFile::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatib
 }
 
 
-bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength <= sizeof(S3MFILEHEADER) + 64)) return false;
 
     UINT insnum, patnum, nins, npat;
     uint8_t s[1024];
-    DWORD dwMemPos;
-    vector<DWORD> smpdatapos;
+    uint32_t dwMemPos;
+    vector<uint32_t> smpdatapos;
     vector<uint16_t> smppos;
     vector<uint16_t> patpos;
     vector<uint8_t> insflags;
@@ -356,7 +356,7 @@ bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
     insflags.resize(insnum, 0);
     for (UINT iSmp=1; iSmp<=insnum; iSmp++)
     {
-        UINT nInd = ((DWORD)smppos[iSmp - 1]) * 16;
+        UINT nInd = ((uint32_t)smppos[iSmp - 1]) * 16;
         if (nInd + 0x50 > dwMemLength) continue;
 
         memcpy(s, lpStream + nInd, 0x50);
@@ -411,7 +411,7 @@ bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
     for (UINT iPat = 0; iPat < patnum; iPat++)
     {
         bool fail = Patterns.Insert(iPat, 64);
-        UINT nInd = ((DWORD)patpos[iPat]) * 16;
+        UINT nInd = ((uint32_t)patpos[iPat]) * 16;
         if (nInd == 0 || nInd + 0x40 > dwMemLength) continue;
         uint16_t len = LittleEndianW(*((uint16_t *)(lpStream + nInd)));
         nInd += 2;
@@ -746,8 +746,8 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
         memcpy(insex[i-1].dosname, pSmp->legacy_filename, 12);
         memcpy(insex[i-1].name, m_szNames[i], 28);
         memcpy(insex[i-1].scrs, "SCRS", 4);
-        insex[i-1].hmem = (uint8_t)((DWORD)ofs >> 20);
-        insex[i-1].memseg = (uint16_t)((DWORD)ofs >> 4);
+        insex[i-1].hmem = (uint8_t)((uint32_t)ofs >> 20);
+        insex[i-1].memseg = (uint16_t)((uint32_t)ofs >> 4);
         if (pSmp->sample_data)
         {
             insex[i-1].type = 1;
@@ -784,7 +784,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
                     flags = (pSmp->flags & CHN_16BIT) ? RS_STPCM16U : RS_STPCM8U;
                 }
             }
-            DWORD len = WriteSample(f, pSmp, flags);
+            uint32_t len = WriteSample(f, pSmp, flags);
             if (len & 0x0F)
             {
                 fwrite(S3MFiller, 0x10 - (len & 0x0F), 1, f);

@@ -74,7 +74,7 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
     	{
     		for (UINT i=0; i<ndif; i++)
     		{
-    			if (*((DWORD *)(p+i+npos)))
+    			if (*((uint32_t *)(p+i+npos)))
     			{
     				bOk = false;
     				break;
@@ -281,13 +281,13 @@ bool CPattern::WriteITPdata(FILE* f) const
     return false;
 }
 
-bool CPattern::ReadITPdata(const uint8_t* const lpStream, DWORD& streamPos, const DWORD datasize, const DWORD dwMemLength)
+bool CPattern::ReadITPdata(const uint8_t* const lpStream, uint32_t& streamPos, const uint32_t datasize, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------------------------------
 {
     if(streamPos > dwMemLength || datasize >= dwMemLength - streamPos || datasize < sizeof(modplug::tracker::modcommand_t))
     	return true;
 
-    const DWORD startPos = streamPos;
+    const uint32_t startPos = streamPos;
     size_t counter = 0;
     while(streamPos - startPos + sizeof(modplug::tracker::modcommand_t) <= datasize)
     {

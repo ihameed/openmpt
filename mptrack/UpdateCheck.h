@@ -59,9 +59,9 @@ protected:
     CUpdateCheck(const bool showErrors);
     ~CUpdateCheck();
 
-    static DWORD WINAPI UpdateThread(LPVOID param);
+    static uint32_t WINAPI UpdateThread(LPVOID param);
     void Die(CString errorMessage);
-    void Die(CString errorMessage, DWORD errorCode);
+    void Die(CString errorMessage, uint32_t errorCode);
     void Terminate();
 };
 

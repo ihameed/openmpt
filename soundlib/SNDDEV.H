@@ -1,6 +1,8 @@
 #ifndef _SNDDEV_H_
 #define _SNDDEV_H_
 
+#include <cstdint>
+
 ////////////////////////////////////////////////////////////////////////////////////
 //
 // ISoundSource: provides streaming audio data to a device
@@ -63,7 +65,7 @@ public:
 	ULONG Release();
 
 public:
-	VOID Configure(HWND hwnd, UINT nBuffers, UINT nBufferLen, DWORD fdwCfgOptions);
+	VOID Configure(HWND hwnd, UINT nBuffers, UINT nBufferLen, uint32_t fdwCfgOptions);
 	ULONG GetMaxFillInterval() const { return m_nMaxFillInterval; }
 	ULONG GetNumBuffers() const { return m_nBuffers; }
 	ULONG GetBufferLength() const { return m_nBufferLen; }
@@ -72,14 +74,14 @@ public:
 	virtual UINT GetDeviceType() = 0;
 	virtual BOOL Open(UINT nDevice, LPWAVEFORMATEX pwfx) = 0;	// Open a device
 	virtual BOOL Close() = 0;				// Close the currently open device
-	virtual BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwUser=0) = 0;
+	virtual BOOL FillAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwUser=0) = 0;
 	virtual VOID Start() = 0;
 	virtual VOID Reset() = 0;
 	virtual BOOL Directcallback() { return FALSE; }
 	virtual UINT HasFixedBitsPerSample() { return 0; }
 	virtual BOOL IsOpen() = 0;
 	virtual UINT GetCurrentLatency() = 0;
-	virtual void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, DWORD dwUser=0) = 0;
+	virtual void SilenceAudioBuffer(ISoundSource *pSource, ULONG nMaxLatency, uint32_t dwUser=0) = 0;
 	virtual UINT GetCurrentSampleRate(UINT nDevice) { UNREFERENCED_PARAMETER(nDevice); return 0; }
 	// Return which samplerates are actually supported by the device. Currently only implemented properly for ASIO.
 	virtual bool CanSampleRate(UINT nDevice, vector<UINT> &samplerates, vector<bool> &result) { UNREFERENCED_PARAMETER(nDevice); result.assign(samplerates.size(), true); return true; } ;
@@ -98,7 +100,7 @@ BOOL SndDevUninitialize();
 // Enumerate devices for a specific type
 BOOL EnumerateSoundDevices(UINT nType, UINT nIndex, LPSTR pszDescription, UINT cbSize);
 BOOL CreateSoundDevice(UINT nType, ISoundDevice **ppsd);
-extern BOOL SoundDeviceCallback(DWORD dwUser);
+extern BOOL SoundDeviceCallback(uint32_t dwUser);
 
 ////////////////////////////////////////////////////////////////////////////////////
 

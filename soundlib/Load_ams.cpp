@@ -37,9 +37,9 @@ typedef struct AMSFILEHEADER
 
 typedef struct AMSSAMPLEHEADER
 {
-    DWORD length;
-    DWORD loopstart;
-    DWORD loopend;
+    uint32_t length;
+    uint32_t loopstart;
+    uint32_t loopend;
     uint8_t finetune_and_pan;
     uint16_t samplerate;    // C-2 = 8363
     uint8_t volume;    	// 0-127
@@ -72,12 +72,12 @@ void Convert_AMS_Text_Chars(char &c)
 }
 
 
-bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     uint8_t pkinf[MAX_SAMPLES];
     AMSFILEHEADER *pfh = (AMSFILEHEADER *)lpStream;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     UINT tmp, tmp2;
     
     if ((!lpStream) || (dwMemLength < 126)) return false;
@@ -180,7 +180,7 @@ bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength
     for (UINT iPat=0; iPat<pfh->patterns; iPat++)
     {
         if (dwMemPos + 4 >= dwMemLength) return true;
-        UINT len = *((DWORD *)(lpStream + dwMemPos));
+        UINT len = *((uint32_t *)(lpStream + dwMemPos));
         dwMemPos += 4;
         if ((len >= dwMemLength) || (dwMemPos + len > dwMemLength)) return true;
         // Pattern has been inserted when reading pattern names
@@ -295,7 +295,7 @@ bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength
 
 typedef struct AMS2FILEHEADER
 {
-    DWORD dwHdr1;    	// AMShdr
+    uint32_t dwHdr1;    	// AMShdr
     uint16_t wHdr2;
     uint8_t b1A;    		// 0x1A
     uint8_t titlelen;    	// 30-bytes max
@@ -334,9 +334,9 @@ typedef struct AMS2ENVELOPE
 
 typedef struct AMS2SAMPLE
 {
-    DWORD length;
-    DWORD loopstart;
-    DWORD loopend;
+    uint32_t length;
+    uint32_t loopstart;
+    uint32_t loopend;
     uint16_t frequency;
     uint8_t finetune;
     uint16_t nC5Speed;
@@ -349,14 +349,14 @@ typedef struct AMS2SAMPLE
 #pragma pack()
 
 
-bool CSoundFile::ReadAMS2(const uint8_t * /*lpStream*/, DWORD /*dwMemLength*/)
+bool CSoundFile::ReadAMS2(const uint8_t * /*lpStream*/, uint32_t /*dwMemLength*/)
 //------------------------------------------------------------
 {
     return false;
 #if 0
     const AMS2FILEHEADER *pfh = (AMS2FILEHEADER *)lpStream;
     AMS2SONGHEADER *psh;
-    DWORD dwMemPos;
+    uint32_t dwMemPos;
     uint8_t smpmap[16];
     uint8_t packedsamples[MAX_SAMPLES];
 

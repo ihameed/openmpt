@@ -18,13 +18,13 @@
 /////////////////////////////////////////////////////////////
 // WAV file support
 
-bool CSoundFile::ReadWav(const uint8_t *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadWav(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
-    DWORD dwMemPos = 0;
+    uint32_t dwMemPos = 0;
     WAVEFILEHEADER *phdr = (WAVEFILEHEADER *)lpStream;
     WAVEFORMATHEADER *pfmt = (WAVEFORMATHEADER *)(lpStream + sizeof(WAVEFILEHEADER));
-    if ((!lpStream) || (dwMemLength < (DWORD)sizeof(WAVEFILEHEADER))) return false;
+    if ((!lpStream) || (dwMemLength < (uint32_t)sizeof(WAVEFILEHEADER))) return false;
     if ((phdr->id_RIFF != IFFID_RIFF) || (phdr->id_WAVE != IFFID_WAVE)
      || (pfmt->id_fmt != IFFID_fmt)) return false;
     dwMemPos = sizeof(WAVEFILEHEADER) + 8 + pfmt->hdrlen;
@@ -65,8 +65,8 @@ bool CSoundFile::ReadWav(const uint8_t *lpStream, const DWORD dwMemLength)
     if (len > MAX_SAMPLE_LENGTH) len = MAX_SAMPLE_LENGTH;
     if (!len) return true;
     // Setting up module length
-    DWORD dwTime = ((len * 50) / pfmt->freqHz) + 1;
-    DWORD framesperrow = (dwTime + 63) / 63;
+    uint32_t dwTime = ((len * 50) / pfmt->freqHz) + 1;
+    uint32_t framesperrow = (dwTime + 63) / 63;
     if (framesperrow < 4) framesperrow = 4;
     UINT norders = 1;
     while (framesperrow >= 0x20)
@@ -175,7 +175,7 @@ static const int gIMAUnpackTable[90] =
 };
 
 
-BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, DWORD dwBytes, UINT pkBlkAlign)
+BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, uint32_t dwBytes, UINT pkBlkAlign)
 //------------------------------------------------------------------------------------------------
 {
     static const int gIMAIndexTab[8] =  { -1, -1, -1, -1, 2, 4, 6, 8 };

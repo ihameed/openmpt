@@ -21,6 +21,8 @@
 #include "stdafx.h"
 #include "HyperEdit.h"
 
+#include <cstdint>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -200,7 +202,7 @@ void CHyperEdit::OnTimer(UINT nIDEvent)
 
     static int iPrevStart=0, iPrevFinish=0;
     
-    DWORD dwSel = GetSel();	
+    uint32_t dwSel = GetSel();	
 
     // Check the previous start/finish of selection range
     // and compare them against the current selection range

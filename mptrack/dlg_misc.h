@@ -15,7 +15,7 @@ public:
     CSoundFile *m_pSndFile;
     UINT m_nChannels;
     MODTYPE m_nType;
-    DWORD m_dwSongFlags;
+    uint32_t m_dwSongFlags;
 
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"

@@ -157,7 +157,7 @@ BOOL CViewPattern::UpdateSizes()
 }
 
 
-UINT CViewPattern::GetColumnOffset(DWORD dwPos) const
+UINT CViewPattern::GetColumnOffset(uint32_t dwPos) const
 //---------------------------------------------------
 {
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
@@ -169,7 +169,7 @@ UINT CViewPattern::GetColumnOffset(DWORD dwPos) const
 }
 
 
-void CViewPattern::UpdateView(DWORD dwHintMask, CObject *)
+void CViewPattern::UpdateView(uint32_t dwHintMask, CObject *)
 //--------------------------------------------------------
 {
     if (dwHintMask & HINT_MPTOPTIONS)
@@ -204,7 +204,7 @@ void CViewPattern::UpdateView(DWORD dwHintMask, CObject *)
 }
 
 
-POINT CViewPattern::GetPointFromPosition(DWORD dwPos) 
+POINT CViewPattern::GetPointFromPosition(uint32_t dwPos) 
 //---------------------------------------------------
 {
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
@@ -228,7 +228,7 @@ POINT CViewPattern::GetPointFromPosition(DWORD dwPos)
 }
 
 
-DWORD CViewPattern::GetPositionFromPoint(POINT pt)
+uint32_t CViewPattern::GetPositionFromPoint(POINT pt)
 //------------------------------------------------
 {
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
@@ -824,7 +824,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPatte
         xbmp = nbmp = 0;
         do
         {
-            DWORD dwSpeedUpMask;
+            uint32_t dwSpeedUpMask;
             modplug::tracker::modcommand_t *m;
             int x, bk_col, tx_col, col_sel, fx_col;
 
@@ -1076,7 +1076,7 @@ void CViewPattern::DrawDragSel(HDC hdc)
     CSoundFile *pSndFile;
     CRect rect;
     POINT ptTopLeft, ptBottomRight;
-    DWORD dwTopLeft, dwBottomRight;
+    uint32_t dwTopLeft, dwBottomRight;
     bool bLeft, bTop, bRight, bBottom;
     int x1, y1, x2, y2, dx, dy, c1, c2;
     int nChannels, nRows;
@@ -1225,7 +1225,7 @@ BOOL CViewPattern::OnScrollBy(CSize sizeScroll, BOOL bDoScroll)
 
     // don't scroll if there is no valid scroll range (ie. no scroll bar)
     CScrollBar* pBar;
-    DWORD dwStyle = GetStyle();
+    uint32_t dwStyle = GetStyle();
     pBar = GetScrollBarCtrl(SB_VERT);
     if ((pBar != NULL && !pBar->IsWindowEnabled()) ||
         (pBar == NULL && !(dwStyle & WS_VSCROLL)))
@@ -1309,7 +1309,7 @@ void CViewPattern::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 }
 
 
-void CViewPattern::SetCurSel(DWORD dwBegin, DWORD dwEnd)
+void CViewPattern::SetCurSel(uint32_t dwBegin, uint32_t dwEnd)
 //------------------------------------------------------
 {
     RECT rect1, rect2, rect, rcInt, rcUni;
@@ -1419,7 +1419,7 @@ void CViewPattern::InvalidateRow(int n)
 }
 
 
-void CViewPattern::InvalidateArea(DWORD dwBegin, DWORD dwEnd)
+void CViewPattern::InvalidateArea(uint32_t dwBegin, uint32_t dwEnd)
 //-----------------------------------------------------------
 {
     RECT rect;

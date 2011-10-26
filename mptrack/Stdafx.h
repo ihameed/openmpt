@@ -68,7 +68,7 @@ typedef struct {
         uint16_t wSamplesPerBlock;          /* valid if wBitsPerSample==0 */
         uint16_t wReserved;                 /* If neither applies, set to zero. */
     } Samples;
-    DWORD           dwChannelMask;      /* which channels are */
+    uint32_t           dwChannelMask;      /* which channels are */
                                         /* present in stream  */
     GUID            SubFormat;
 } WAVEFORMATEXTENSIBLE, *PWAVEFORMATEXTENSIBLE;
