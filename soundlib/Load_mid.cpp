@@ -36,9 +36,9 @@ typedef struct MIDIFILEHEADER
 {
     DWORD id;    	// "MThd" = 0x6468544D
     DWORD len;    	// 6
-    WORD w1;    	// 1?
-    WORD wTrks;    	// 2?
-    WORD wDivision;    // F0
+    uint16_t w1;    	// 1?
+    uint16_t wTrks;    	// 2?
+    uint16_t wDivision;    // F0
 } MIDIFILEHEADER;
 
 
@@ -57,8 +57,8 @@ typedef struct MIDITRACKHEADER
 typedef struct MODCHANNELSTATE
 {
     DWORD flags;    // Channel Flags
-    WORD idlecount;
-    WORD pitchsrc, pitchdest;    // Pitch Bend (current position/new position)
+    uint16_t idlecount;
+    uint16_t pitchsrc, pitchdest;    // Pitch Bend (current position/new position)
     uint8_t parent;    // Midi Channel parent
     uint8_t pan;    	// Channel Panning			0-255
     uint8_t note;    	// Note On # (0=available)
@@ -68,10 +68,10 @@ typedef struct MODCHANNELSTATE
 typedef struct MIDICHANNELSTATE
 {
     DWORD flags;    	// Channel Flags
-    WORD pitchbend;    	// Pitch Bend Amount (14-bits unsigned)
+    uint16_t pitchbend;    	// Pitch Bend Amount (14-bits unsigned)
     uint8_t note_on[128];    // If note=on -> MOD channel # + 1 (0 if note=off)
     uint8_t program;    	// Channel Midi Program
-    WORD bank;    		// 0-16383
+    uint16_t bank;    		// 0-16383
     // -- Controllers --------- function ---------- CC# --- range  --- init (midi) ---
     uint8_t pan;    		// Channel Panning			CC10	[0-255]		128 (64)
     uint8_t expression;    // Channel Expression		CC11	0-128		128	(127)
@@ -330,7 +330,7 @@ extern const LPCSTR szMidiPercussionNames[61] =
 };
 
 
-const WORD kMidiChannelPriority[16] =
+const uint16_t kMidiChannelPriority[16] =
 {
     0xFFFE, 0xFFFC, 0xFFF8, 0xFFF0,    0xFFE0, 0xFFC0, 0xFF80, 0xFF00,
     0xFE00, 0xFDFF, 0xF800, 0xF000,    0xE000, 0xC000, 0x8000, 0x0000,
@@ -1066,7 +1066,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
                     // E0: Pitch Bend
                     case 0xE0:
                         {
-                            pmidich->pitchbend = (WORD)(((UINT)ptrk->ptracks[1] << 7) + (ptrk->ptracks[0] & 0x7F));
+                            pmidich->pitchbend = (uint16_t)(((UINT)ptrk->ptracks[1] << 7) + (ptrk->ptracks[0] & 0x7F));
                             for (UINT i=0; i<128; i++) if (pmidich->note_on[i])
                             {
                                 UINT nchn = pmidich->note_on[i]-1;
@@ -1146,7 +1146,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
                                 }
                             }
                         }
-                        chnstate[ichn].pitchsrc = (WORD)newpitch;
+                        chnstate[ichn].pitchsrc = (uint16_t)newpitch;
 #ifdef MIDI_DETAILED_LOG
                         Log("  newpitchsrc=%5d newpitchdest=%5d\n", chnstate[ichn].pitchsrc, chnstate[ichn].pitchdest);
 #endif

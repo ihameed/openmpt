@@ -2907,7 +2907,7 @@ void CVstPlugin::MidiPitchBend(UINT nMidiCh, short newPitchBendPos) {
 
 
 //rewbs.introVST - many changes to MidiCommand, still to be refined.
-void CVstPlugin::MidiCommand(UINT nMidiCh, UINT nMidiProg, WORD wMidiBank, UINT note, UINT vol, UINT trackChannel)
+void CVstPlugin::MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChannel)
 //----------------------------------------------------------------------------------------------------------------
 {
     UINT nCh = (--nMidiCh) & 0x0f;

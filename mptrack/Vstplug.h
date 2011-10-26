@@ -50,7 +50,7 @@ typedef struct _VSTINSTCH
     //uint8_t uNoteOnMap[128/8];			rewbs.deMystifyMidiNoteMap
     uint8_t uNoteOnMap[128][MAX_CHANNELS];
     UINT nProgram;
-    WORD wMidiBank; //rewbs.MidiBank
+    uint16_t wMidiBank; //rewbs.MidiBank
 } VSTINSTCH, *PVSTINSTCH;
 
 //=================================
@@ -178,7 +178,7 @@ public:
     bool MidiSend(DWORD dwMidiCode);
     void MidiCC(UINT nMidiCh, UINT nController, UINT nParam, UINT trackChannel);
     void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel);
-    void MidiCommand(UINT nMidiCh, UINT nMidiProg, WORD wMidiBank, UINT note, UINT vol, UINT trackChan);
+    void MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChan);
     void HardAllNotesOff(); //rewbs.VSTiNoteHoldonStopFix
     bool isPlaying(UINT note, UINT midiChn, UINT trackerChn);	//rewbs.instroVST
     bool MoveNote(UINT note, UINT midiChn, UINT sourceTrackerChn, UINT destTrackerChn); //rewbs.instroVST

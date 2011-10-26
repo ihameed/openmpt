@@ -43,7 +43,7 @@ private:
     CModDoc *m_pModDoc;
     CWnd *m_wParent;
     static bool m_bCheckBoxes[CU_MAX_CLEANUP_OPTIONS]; // Checkbox state
-    static const WORD m_nCleanupIDtoDlgID[CU_MAX_CLEANUP_OPTIONS]; // Checkbox -> Control ID LUT
+    static const uint16_t m_nCleanupIDtoDlgID[CU_MAX_CLEANUP_OPTIONS]; // Checkbox -> Control ID LUT
     static const ENUM_CLEANUP_OPTIONS m_nMutuallyExclusive[CU_MAX_CLEANUP_OPTIONS]; // Options that are mutually exclusive to each other.
 
     // Actual cleanup implementations:

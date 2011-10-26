@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #define END_VIEWPATTERNS     200
 #define END_CTRLPATTERNS     400
 #define END_VIEWSAMPLES      600
@@ -79,8 +81,8 @@ public:
     bool AltPressed(void);
     bool Bypass();
     void Bypass(bool);
-    WORD GetModifierMask();
-    void SetModifierMask(WORD mask);
+    uint16_t GetModifierMask();
+    void SetModifierMask(uint16_t mask);
     CString GetCurModifierText();
     CString GetKeyTextFromCommand(CommandID c);
     CString GetMenuText(UINT id);

@@ -55,12 +55,12 @@ typedef struct WAVEFORMATHEADER
 {
     DWORD id_fmt;		// "fmt "
     DWORD hdrlen;		// 16
-    WORD format;		// 1
-    WORD channels;		// 1:mono, 2:stereo
+    uint16_t format;		// 1
+    uint16_t channels;		// 1:mono, 2:stereo
     DWORD freqHz;		// sampling freq
     DWORD bytessec;		// bytes/sec=freqHz*samplesize
-    WORD samplesize;	// sizeof(sample)
-    WORD bitspersample;	// bits per sample (8/16)
+    uint16_t samplesize;	// sizeof(sample)
+    uint16_t bitspersample;	// bits per sample (8/16)
 } WAVEFORMATHEADER;
 
 
@@ -119,10 +119,10 @@ typedef struct WAVEEXTRAHEADER
     DWORD xtra_id;	// "xtra"	-> 0x61727478
     DWORD xtra_len;
     DWORD dwFlags;
-    WORD  wPan;
-    WORD  wVolume;
-    WORD  wGlobalVol;
-    WORD  wReserved;
+    uint16_t  wPan;
+    uint16_t  wVolume;
+    uint16_t  wGlobalVol;
+    uint16_t  wReserved;
     uint8_t nVibType;
     uint8_t nVibSweep;
     uint8_t nVibDepth;

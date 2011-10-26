@@ -13,7 +13,7 @@
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
-extern WORD ProTrackerPeriodTable[6*12];
+extern uint16_t ProTrackerPeriodTable[6*12];
 
 //////////////////////////////////////////////////////////
 // ProTracker / NoiseTracker MOD/NST file support
@@ -65,7 +65,7 @@ void CSoundFile::ConvertModCommand(modplug::tracker::modcommand_t *m) const
 }
 
 
-WORD CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport) const
+uint16_t CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport) const
 //---------------------------------------------------------------------------------------------------------
 {
     UINT command = m->command, param = m->param;
@@ -193,7 +193,7 @@ WORD CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, const b
     if(command > 0x0F && !bXM)
         command = param = 0;
 
-    return (WORD)((command << 8) | (param));
+    return (uint16_t)((command << 8) | (param));
 }
 
 
@@ -202,11 +202,11 @@ WORD CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, const b
 typedef struct _MODSAMPLEHEADER
 {
     CHAR name[22];
-    WORD length;
+    uint16_t length;
     uint8_t finetune;
     uint8_t volume;
-    WORD loopstart;
-    WORD looplen;
+    uint16_t loopstart;
+    uint16_t looplen;
 } MODSAMPLEHEADER, *PMODSAMPLEHEADER;
 
 typedef struct _MODMAGIC

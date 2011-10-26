@@ -900,9 +900,10 @@ struct hooperstate_t {
         this->hwnd = hwnd;
     }
 
-    void resize(int width, int height) {
-        debug_log("resizing child to (%d, %d)", width, height);
-        SetWindowPos(graphchild, HWND_TOP, 0, 0, width, height, SWP_NOZORDER);
+    void resized(int width, int height) {
+        if (graphchild) {
+            SetWindowPos(graphchild, HWND_TOP, 0, 0, width, height, SWP_NOZORDER);
+        }
     }
 };
 

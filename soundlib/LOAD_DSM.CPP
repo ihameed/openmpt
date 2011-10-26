@@ -40,8 +40,8 @@ typedef struct DSMSAMPLE
     DWORD loopstart;
     DWORD loopend;
     DWORD reserved1;
-    WORD c2spd;
-    WORD reserved2;
+    uint16_t c2spd;
+    uint16_t reserved2;
     CHAR samplename[28];
 } DSMSAMPLE;
 
@@ -59,13 +59,13 @@ typedef struct DSMFILEHEADER
 typedef struct DSMSONG
 {
     CHAR songname[28];
-    WORD reserved1;
-    WORD flags;
+    uint16_t reserved1;
+    uint16_t flags;
     DWORD reserved2;
-    WORD numord;
-    WORD numsmp;
-    WORD numpat;
-    WORD numtrk;
+    uint16_t numord;
+    uint16_t numsmp;
+    uint16_t numpat;
+    uint16_t numtrk;
     uint8_t globalvol;
     uint8_t mastervol;
     uint8_t speed;
@@ -220,11 +220,11 @@ bool CSoundFile::ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength
             SpaceToNullStringFixed<13>(psmp->legacy_filename);
             psmp->global_volume = 64;
             psmp->c5_samplerate = pSmp->c2spd;
-            psmp->flags = (WORD)((pSmp->flags & 1) ? CHN_LOOP : 0);
+            psmp->flags = (uint16_t)((pSmp->flags & 1) ? CHN_LOOP : 0);
             psmp->length = pSmp->length;
             psmp->loop_start = pSmp->loopstart;
             psmp->loop_end = pSmp->loopend;
-            psmp->default_volume = (WORD)(pSmp->volume << 2);
+            psmp->default_volume = (uint16_t)(pSmp->volume << 2);
             if (psmp->default_volume > 256) psmp->default_volume = 256;
             UINT smptype = (pSmp->flags & 2) ? RS_PCM8S : RS_PCM8U;
             ReadSample(psmp, smptype, (LPCSTR)(lpStream+dwPos), dwMemLength - dwPos);

@@ -402,7 +402,7 @@ void CNoteMapWnd::OnMapCopySample()
     if (pIns)
     {
     	bool bModified = false;
-    	WORD n = pIns->Keyboard[m_nNote];
+    	uint16_t n = pIns->Keyboard[m_nNote];
     	for (NOTEINDEXTYPE i = 0; i < NOTE_MAX; i++) if (pIns->Keyboard[i] != n)
     	{
     		pIns->Keyboard[i] = n;
@@ -2002,7 +2002,7 @@ void CCtrlInstruments::OnMBKChanged()
     modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
     if ((!IsLocked()) && (pIns))
     {
-    	WORD w = GetDlgItemInt(IDC_EDIT11);
+    	uint16_t w = GetDlgItemInt(IDC_EDIT11);
     	if ((w >= 0) && (w <= 255))
     	{
     		if (pIns->midi_bank != w)
@@ -2701,7 +2701,7 @@ void CCtrlInstruments::OnBnClickedCheckPitchtempolock()
 
     	//Checking what value to put for the pitch_to_tempo_lock.
     	m_EditPitchTempoLock.EnableWindow();
-    	WORD ptl = pIns->pitch_to_tempo_lock;
+    	uint16_t ptl = pIns->pitch_to_tempo_lock;
     	if(ptl == 0)
     	{
     		if(m_EditPitchTempoLock.GetWindowTextLength() > 0)

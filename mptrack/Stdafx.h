@@ -64,9 +64,9 @@
 typedef struct {
     WAVEFORMATEX    Format;
     union {
-        WORD wValidBitsPerSample;       /* bits of precision  */
-        WORD wSamplesPerBlock;          /* valid if wBitsPerSample==0 */
-        WORD wReserved;                 /* If neither applies, set to zero. */
+        uint16_t wValidBitsPerSample;       /* bits of precision  */
+        uint16_t wSamplesPerBlock;          /* valid if wBitsPerSample==0 */
+        uint16_t wReserved;                 /* If neither applies, set to zero. */
     } Samples;
     DWORD           dwChannelMask;      /* which channels are */
                                         /* present in stream  */

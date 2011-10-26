@@ -18,9 +18,9 @@ typedef struct _MTHDCHUNK    // (big endian)
 {
     DWORD id;		// "MThd" = 0x6468544D
     DWORD len;		// 6
-    WORD wFmt;		// 0=single track, 1=synchro multitrack, 2=asynch multitrack 
-    WORD wTrks;		// # of tracks
-    WORD wDivision;	// PPQN
+    uint16_t wFmt;		// 0=single track, 1=synchro multitrack, 2=asynch multitrack 
+    uint16_t wTrks;		// # of tracks
+    uint16_t wDivision;	// PPQN
 } MTHDCHUNK, *PMTHDCHUNK;
 
 typedef struct _MTRKCHUNK    // (big endian)

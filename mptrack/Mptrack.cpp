@@ -2427,7 +2427,7 @@ BOOL CTrackApp::InitializeACM(BOOL bNoAcm)
             pwfx->nChannels = 2;
             pwfx->nSamplesPerSec = 44100;
             pwfx->wBitsPerSample = 16;
-            pwfx->nBlockAlign = (WORD)((pwfx->nChannels * pwfx->wBitsPerSample) / 8);
+            pwfx->nBlockAlign = (uint16_t)((pwfx->nChannels * pwfx->wBitsPerSample) / 8);
             pwfx->nAvgBytesPerSec = pwfx->nSamplesPerSec * pwfx->nBlockAlign;
             m_pfnAcmFormatEnum(NULL, &afd, AcmFormatEnumCB, NULL, ACM_FORMATENUMF_CONVERT);
         }
@@ -2483,7 +2483,7 @@ MMRESULT CTrackApp::AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMF
                 afd.pwfx = (LPWAVEFORMATEX)&wfx;
                 afd.cbwfx = sizeof(wfx);
                 wfx.wfx.wFormatTag = WAVE_FORMAT_MPEGLAYER3;
-                wfx.wfx.nChannels = (WORD)((iFmt & 0x20) ? 1 : 2);
+                wfx.wfx.nChannels = (uint16_t)((iFmt & 0x20) ? 1 : 2);
                 wfx.wfx.nSamplesPerSec = 0;
                 wfx.wfx.nBlockAlign = 1;
                 wfx.wfx.wBitsPerSample = 0;
@@ -2653,7 +2653,7 @@ MMRESULT CTrackApp::AcmStreamOpen(
             pbeCfg->beCfg.dwConfig = BE_CONFIG_MP3;
             pbeCfg->beCfg.format.mp3.dwSampleRate = pwfxDst->nSamplesPerSec; // 48000, 44100 and 32000 allowed
             pbeCfg->beCfg.format.mp3.byMode = (uint8_t)((pwfxSrc->nChannels == 2) ? BE_MP3_MODE_STEREO : BE_MP3_MODE_MONO);
-            pbeCfg->beCfg.format.mp3.wBitrate = (WORD)(pwfxDst->nAvgBytesPerSec * 8);    // 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256 and 320 allowed
+            pbeCfg->beCfg.format.mp3.wBitrate = (uint16_t)(pwfxDst->nAvgBytesPerSec * 8);    // 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256 and 320 allowed
             pbeCfg->beCfg.format.mp3.bPrivate = FALSE;
             pbeCfg->beCfg.format.mp3.bCRC = FALSE;
             pbeCfg->beCfg.format.mp3.bCopyright = FALSE;

@@ -197,8 +197,8 @@ bool CSoundFile::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrc
     modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     if (pIns)
     {
-        WORD samplemap[32];
-        WORD samplesrc[32];
+        uint16_t samplemap[32];
+        uint16_t samplesrc[32];
         UINT nSamples = 0;
         UINT nsmp = 1;
         *pIns = *pSrcSong->Instruments[nSrcInstr];
@@ -217,10 +217,10 @@ bool CSoundFile::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrc
                     while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
                     if ((nSamples < 32) && (nsmp < MAX_SAMPLES))
                     {
-                        samplesrc[nSamples] = (WORD)n;
-                        samplemap[nSamples] = (WORD)nsmp;
+                        samplesrc[nSamples] = (uint16_t)n;
+                        samplemap[nSamples] = (uint16_t)nsmp;
                         nSamples++;
-                        pIns->Keyboard[i] = (WORD)nsmp;
+                        pIns->Keyboard[i] = (uint16_t)nsmp;
                         if (m_nSamples < nsmp) m_nSamples = nsmp;
                         nsmp++;
                     } else
@@ -333,7 +333,7 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, DWORD dwFi
                 pfmt = (WAVEFORMATHEADER *)(lpMemFile + dwMemPos);
                 if (dwLen+8 >= sizeof(WAVEFORMATHEADER)+4)
                 {
-                    dwSamplesPerBlock = *((WORD *)(lpMemFile+dwMemPos+sizeof(WAVEFORMATHEADER)+2));
+                    dwSamplesPerBlock = *((uint16_t *)(lpMemFile+dwMemPos+sizeof(WAVEFORMATHEADER)+2));
                 }
             }
             break;
@@ -680,8 +680,8 @@ typedef struct GF1PATCHFILEHEADER
     uint8_t instrum;    		// Number of instruments in patch
     uint8_t voices;    		// Number of voices, usually 14
     uint8_t channels;    		// Number of wav channels that can be played concurently to the patch
-    WORD samples;    		// Total number of waveforms for all the .PAT
-    WORD volume;    		// Master volume
+    uint16_t samples;    		// Total number of waveforms for all the .PAT
+    uint16_t volume;    		// Master volume
     DWORD data_size;
     uint8_t reserved2[36];
 } GF1PATCHFILEHEADER;
@@ -689,7 +689,7 @@ typedef struct GF1PATCHFILEHEADER
 
 typedef struct GF1INSTRUMENT
 {
-    WORD id;    			// Instrument id: 0-65535
+    uint16_t id;    			// Instrument id: 0-65535
     CHAR name[16];    		// Name of instrument. Gravis doesn't seem to use it
     DWORD size;    			// Number of bytes for the instrument with header. (To skip to next instrument)
     uint8_t layers;    		// Number of layers in instrument: 1-4
@@ -704,7 +704,7 @@ typedef struct GF1SAMPLEHEADER
     DWORD length;    		// total size of wavesample. limited to 65535 now by the drivers, not the card.
     DWORD loopstart;    	// start loop position in the wavesample
     DWORD loopend;    		// end loop position in the wavesample
-    WORD freq;    			// Rate at which the wavesample has been sampled
+    uint16_t freq;    			// Rate at which the wavesample has been sampled
     DWORD low_freq, high_freq, root_freq;    // check note.h for the correspondance.
     SHORT finetune;    		// fine tune. -512 to +512, EXCLUDING 0 cause it is a multiplier. 512 is one octave off, and 1 is a neutral value
     uint8_t balance;    		// Balance: 0-15. 0=full left, 15 = full right
@@ -714,7 +714,7 @@ typedef struct GF1SAMPLEHEADER
     uint8_t vibrato_sweep, vibrato_rate, vibrato_depth;
     uint8_t flags;
     SHORT scale_frequency;
-    WORD scale_factor;
+    uint16_t scale_factor;
     uint8_t reserved[36];
 } GF1SAMPLEHEADER;
 
@@ -978,7 +978,7 @@ typedef struct S3ISAMPLESTRUCT
     uint8_t id;
     CHAR filename[12];
     uint8_t reserved1;
-    WORD offset;
+    uint16_t offset;
     DWORD length;
     DWORD loopstart;
     DWORD loopend;
@@ -1037,23 +1037,23 @@ typedef struct XIFILEHEADER
     CHAR extxi[21];    	// Extended Instrument:
     CHAR name[23];    	// Name, 1Ah
     CHAR trkname[20];    // FastTracker v2.00
-    WORD shsize;    	// 0x0102
+    uint16_t shsize;    	// 0x0102
 } XIFILEHEADER;
 
 
 typedef struct XIINSTRUMENTHEADER
 {
     uint8_t snum[96];
-    WORD venv[24];
-    WORD pIns[24];
+    uint16_t venv[24];
+    uint16_t pIns[24];
     uint8_t vnum, pnum;
     uint8_t vsustain, vloops, vloope, psustain, ploops, ploope;
     uint8_t vtype, ptype;
     uint8_t vibtype, vibsweep, vibdepth, vibrate;
-    WORD volfade;
-    WORD res;
+    uint16_t volfade;
+    uint16_t res;
     uint8_t reserved1[20];
-    WORD reserved2;
+    uint16_t reserved2;
 } XIINSTRUMENTHEADER;
 
 
@@ -1159,9 +1159,9 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
     SetDefaultInstrumentValues(pIns);
     for (UINT ienv=0; ienv<12; ienv++)
     {
-        pIns->volume_envelope.Ticks[ienv] = (WORD)pih->venv[ienv*2];
+        pIns->volume_envelope.Ticks[ienv] = (uint16_t)pih->venv[ienv*2];
         pIns->volume_envelope.Values[ienv] = (uint8_t)pih->venv[ienv*2+1];
-        pIns->panning_envelope.Ticks[ienv] = (WORD)pih->pIns[ienv*2];
+        pIns->panning_envelope.Ticks[ienv] = (uint16_t)pih->pIns[ienv*2];
         pIns->panning_envelope.Values[ienv] = (uint8_t)pih->pIns[ienv*2+1];
         if (ienv)
         {
@@ -1498,10 +1498,10 @@ typedef struct AIFFCOMM
 {
     DWORD dwCOMM;    // "COMM" -> 0x4D4D4F43
     DWORD dwLen;
-    WORD wChannels;
-    WORD wFramesHi;    // Align!
-    WORD wFramesLo;
-    WORD wSampleSize;
+    uint16_t wChannels;
+    uint16_t wFramesHi;    // Align!
+    uint16_t wFramesLo;
+    uint16_t wSampleSize;
     uint8_t xSampleRate[10];
 } AIFFCOMM;
 
@@ -1695,7 +1695,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 //----------------------------------------------------------------------------------------------
 {
     ITINSTRUMENT *pinstr = (ITINSTRUMENT *)lpMemFile;
-    WORD samplemap[NOTE_MAX];    //rewbs.noSamplePerInstroLimit (120 was 64)
+    uint16_t samplemap[NOTE_MAX];    //rewbs.noSamplePerInstroLimit (120 was 64)
     DWORD dwMemPos;
     UINT nsmp, nsamples;
 
@@ -1939,7 +1939,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     }
     // Writing Sample Data
     //rewbs.enableStereoITI
-    WORD sampleType=0;
+    uint16_t sampleType=0;
     if (itss.flags | 0x02) sampleType=RS_PCM16S; else sampleType=RS_PCM8S;    //8 or 16 bit signed
     if (itss.flags | 0x04) sampleType |= RSF_STEREO;    					//mono or stereo
     for (UINT k=0; k<iti->nos; k++)
@@ -2084,7 +2084,7 @@ typedef struct IFFVHDR
     ULONG oneShotHiSamples,    		/* # samples in the high octave 1-shot part */
             repeatHiSamples,    	/* # samples in the high octave repeat part */
             samplesPerHiCycle;    	/* # samples/cycle in high octave, else 0 */
-    WORD samplesPerSec;    			/* data sampling rate */
+    uint16_t samplesPerSec;    			/* data sampling rate */
     uint8_t    ctOctave,				/* # octaves of waveforms */
             sCompression;    		/* data compression technique used */
     DWORD Volume;
@@ -2122,7 +2122,7 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, DWORD dwFileLeng
     pSmp->sustain_start = 0;
     pSmp->sustain_end = 0;
     pSmp->flags = 0;
-    pSmp->default_volume = (WORD)(BigEndianW((WORD)pvh->Volume) >> 8);
+    pSmp->default_volume = (uint16_t)(BigEndianW((uint16_t)pvh->Volume) >> 8);
     pSmp->c5_samplerate = BigEndianW(pvh->samplesPerSec);
     pSmp->legacy_filename[0] = 0;
     if ((!pSmp->default_volume) || (pSmp->default_volume > 256)) pSmp->default_volume = 256;

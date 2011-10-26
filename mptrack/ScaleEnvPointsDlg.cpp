@@ -44,7 +44,7 @@ void CScaleEnvPointsDlg::OnOK()
     {
     	for(UINT i = 0; i < m_pEnv->num_nodes; i++)
     	{
-    		m_pEnv->Ticks[i] = static_cast<WORD>(m_fFactorX * m_pEnv->Ticks[i]);
+    		m_pEnv->Ticks[i] = static_cast<uint16_t>(m_fFactorX * m_pEnv->Ticks[i]);
 
     		// Checking that the order of points is preserved.
     		if(i > 0 && m_pEnv->Ticks[i] <= m_pEnv->Ticks[i - 1])

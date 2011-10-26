@@ -1615,7 +1615,7 @@ void CViewPattern::UpdateAllVUMeters(MPTNOTIFICATION *pnotify)
     nChn = xofs;
     while ((nChn < pSndFile->m_nChannels) && (x < rcClient.right))
     {
-        ChnVUMeters[nChn] = (WORD)pnotify->dwPos[nChn];
+        ChnVUMeters[nChn] = (uint16_t)pnotify->dwPos[nChn];
         if ((!bPlaying) || (pnotify->dwType & MPTNOTIFY_STOP)) ChnVUMeters[nChn] = 0;
         DrawChannelVUMeter(hdc, x + 1, rcClient.top + COLHDR_HEIGHT, nChn);
         nChn++;

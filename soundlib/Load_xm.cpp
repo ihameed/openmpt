@@ -23,16 +23,16 @@
 #pragma pack(1)
 typedef struct tagXMFILEHEADER
 {
-    WORD xmversion;    	// current: 0x0104
+    uint16_t xmversion;    	// current: 0x0104
     DWORD size;    		// header size
-    WORD orders;    	// number of orders
-    WORD restartpos;    // restart position
-    WORD channels;    	// number of channels
-    WORD patterns;    	// number of patterns
-    WORD instruments;    // number of instruments
-    WORD flags;    		// song flags
-    WORD speed;    		// default speed
-    WORD tempo;    		// default tempo
+    uint16_t orders;    	// number of orders
+    uint16_t restartpos;    // restart position
+    uint16_t channels;    	// number of channels
+    uint16_t patterns;    	// number of patterns
+    uint16_t instruments;    // number of instruments
+    uint16_t flags;    		// song flags
+    uint16_t speed;    		// default speed
+    uint16_t tempo;    		// default tempo
 } XMFILEHEADER;
 
 
@@ -41,7 +41,7 @@ typedef struct tagXMINSTRUMENTHEADER
     DWORD size; // size of XMINSTRUMENTHEADER + XMSAMPLEHEADER
     CHAR name[22];
     uint8_t type; // should always be 0
-    WORD samples;
+    uint16_t samples;
 } XMINSTRUMENTHEADER;
 
 
@@ -49,18 +49,18 @@ typedef struct tagXMSAMPLEHEADER
 {
     DWORD shsize; // size of XMSAMPLESTRUCT
     uint8_t snum[96];
-    WORD venv[24];
-    WORD penv[24];
+    uint16_t venv[24];
+    uint16_t penv[24];
     uint8_t vnum, pnum;
     uint8_t vsustain, vloops, vloope, psustain, ploops, ploope;
     uint8_t vtype, ptype;
     uint8_t vibtype, vibsweep, vibdepth, vibrate;
-    WORD volfade;
+    uint16_t volfade;
     // midi extensions (not read by MPT)
     uint8_t midienabled;    	// 0/1
     uint8_t midichannel;    	// 0...15
-    WORD midiprogram;    	// 0...127
-    WORD pitchwheelrange;    // 0...36 (halftones)
+    uint16_t midiprogram;    	// 0...127
+    uint16_t pitchwheelrange;    // 0...36 (halftones)
     uint8_t mutecomputer;    	// 0/1
     uint8_t reserved1[15];
 } XMSAMPLEHEADER;
@@ -123,18 +123,18 @@ DWORD ReadXMPatterns(const uint8_t *lpStream, DWORD dwMemLength, DWORD dwMemPos,
     {
         UINT ipatmap = pattern_map[ipat];
         DWORD dwSize = 0;
-        WORD rows = 64, packsize = 0;
+        uint16_t rows = 64, packsize = 0;
         dwSize = LittleEndian(*((DWORD *)(lpStream + dwMemPos)));
 
         if(xmheader->xmversion == 0x0102)
         {
             rows = *((uint8_t *)(lpStream + dwMemPos + 5)) + 1;
-            packsize = LittleEndianW(*((WORD *)(lpStream + dwMemPos + 6)));
+            packsize = LittleEndianW(*((uint16_t *)(lpStream + dwMemPos + 6)));
         }
         else
         {
-            rows = LittleEndianW(*((WORD *)(lpStream + dwMemPos + 5)));
-            packsize = LittleEndianW(*((WORD *)(lpStream + dwMemPos + 7)));
+            rows = LittleEndianW(*((uint16_t *)(lpStream + dwMemPos + 5)));
+            packsize = LittleEndianW(*((uint16_t *)(lpStream + dwMemPos + 7)));
         }
 
         if ((!rows) || (rows > MAX_PATTERN_ROWS)) rows = 64;
@@ -307,7 +307,7 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
         uint8_t flags[32];
         DWORD samplesize[32];
         UINT samplemap[32];
-        WORD nsamples;
+        uint16_t nsamples;
                 
         if (dwMemPos + sizeof(DWORD) >= dwMemLength) return true;
         DWORD ihsize = LittleEndian(*((DWORD *)(lpStream + dwMemPos)));
@@ -467,9 +467,9 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
         pIns->global_volume = 64;
         for (UINT ienv=0; ienv<12; ienv++)
         {
-            pIns->volume_envelope.Ticks[ienv] = (WORD)xmsh.venv[ienv*2];
+            pIns->volume_envelope.Ticks[ienv] = (uint16_t)xmsh.venv[ienv*2];
             pIns->volume_envelope.Values[ienv] = (uint8_t)xmsh.venv[ienv*2+1];
-            pIns->panning_envelope.Ticks[ienv] = (WORD)xmsh.penv[ienv*2];
+            pIns->panning_envelope.Ticks[ienv] = (uint16_t)xmsh.penv[ienv*2];
             pIns->panning_envelope.Values[ienv] = (uint8_t)xmsh.penv[ienv*2+1];
             if (ienv)
             {
@@ -786,8 +786,8 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     }
     if(!bCompatibilityExport) nMaxOrds = Order.GetLengthTailTrimmed(); // should really be removed at some point
 
-    xmheader.orders = LittleEndianW((WORD)nMaxOrds);
-    xmheader.patterns = LittleEndianW((WORD)nPatterns);
+    xmheader.orders = LittleEndianW((uint16_t)nMaxOrds);
+    xmheader.patterns = LittleEndianW((uint16_t)nPatterns);
     xmheader.size = LittleEndian((DWORD)(xmheader.size + nMaxOrds));
 
     if(m_nInstruments > 0)
@@ -934,7 +934,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     for (i = 1; i <= xmheader.instruments; i++)
     {
         modsample_t *pSmp;
-        WORD smptable[32];
+        uint16_t smptable[32];
         uint8_t flags[32];
 
         memset(&smptable, 0, sizeof(smptable));
@@ -1013,7 +1013,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
             xmsh.vibdepth = min(pvib->vibrato_depth, 0x0F);
             xmsh.vibrate = min(pvib->vibrato_rate, 0x3F);
         }
-        WORD samples = xmih.samples;
+        uint16_t samples = xmih.samples;
         xmih.samples = LittleEndianW(xmih.samples);
         fwrite(&xmsh, 1, sizeof(xmsh), f);
         if (!xmih.samples) continue;

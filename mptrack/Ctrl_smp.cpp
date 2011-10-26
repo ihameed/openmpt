@@ -2654,7 +2654,7 @@ void CCtrlSamples::OnVolumeChanged()
     nVol <<= 2;
     if (nVol != m_pSndFile->Samples[m_nSample].default_volume)
     {
-        m_pSndFile->Samples[m_nSample].default_volume = (WORD)nVol;
+        m_pSndFile->Samples[m_nSample].default_volume = (uint16_t)nVol;
         m_pModDoc->SetModified();
     }
 }
@@ -2669,7 +2669,7 @@ void CCtrlSamples::OnGlobalVolChanged()
     if (nVol > 64) nVol = 64;
     if (nVol != m_pSndFile->Samples[m_nSample].global_volume)
     {
-        m_pSndFile->Samples[m_nSample].global_volume = (WORD)nVol;
+        m_pSndFile->Samples[m_nSample].global_volume = (uint16_t)nVol;
         m_pModDoc->SetModified();
     }
 }
@@ -2718,7 +2718,7 @@ void CCtrlSamples::OnPanningChanged()
     //end rewbs.fix36944
     if (nPan != m_pSndFile->Samples[m_nSample].default_pan)
     {
-        m_pSndFile->Samples[m_nSample].default_pan = (WORD)nPan;
+        m_pSndFile->Samples[m_nSample].default_pan = (uint16_t)nPan;
         if (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) m_pModDoc->SetModified();
     }
 }

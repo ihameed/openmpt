@@ -1856,8 +1856,8 @@ void CViewSample::OnEditCopy()
     	{
     		pfmt->freqHz = CSoundFile::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
     	}
-    	pfmt->channels = (pSmp->flags & CHN_STEREO) ? (WORD)2 : (WORD)1;
-    	pfmt->bitspersample = (pSmp->flags & CHN_16BIT) ? (WORD)16 : (WORD)8;
+    	pfmt->channels = (pSmp->flags & CHN_STEREO) ? (uint16_t)2 : (uint16_t)1;
+    	pfmt->bitspersample = (pSmp->flags & CHN_16BIT) ? (uint16_t)16 : (uint16_t)8;
     	pfmt->samplesize = pfmt->channels*pfmt->bitspersample/8;
     	pfmt->bytessec = pfmt->freqHz*pfmt->samplesize;
     	pdata->id_data = IFFID_data;

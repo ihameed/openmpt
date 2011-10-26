@@ -70,7 +70,7 @@ extern BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength);
 
 // External decompressors
 extern void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char packcharacter);
-extern WORD MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
+extern uint16_t MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
 extern int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen);
 extern DWORD ITReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
 extern void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLength, BOOL b215);
@@ -315,20 +315,20 @@ WRITE_MPTHEADER_sized_member(    random_pan_weight, uint8_t			, PS..							)
 WRITE_MPTHEADER_sized_member(    random_volume_weight, uint8_t			, VS..							)
 WRITE_MPTHEADER_sized_member(    default_filter_cutoff					, uint8_t			, IFC.							)
 WRITE_MPTHEADER_sized_member(    default_filter_resonance, uint8_t			, IFR.							)
-WRITE_MPTHEADER_sized_member(    midi_bank, WORD			, MB..							)
+WRITE_MPTHEADER_sized_member(    midi_bank, uint16_t			, MB..							)
 WRITE_MPTHEADER_sized_member(    midi_program, uint8_t			, MP..							)
 WRITE_MPTHEADER_sized_member(    midi_channel, uint8_t			, MC..							)
 WRITE_MPTHEADER_sized_member(    midi_drum_set, uint8_t			, MDK.							)
 WRITE_MPTHEADER_sized_member(    pitch_pan_separation					, signed char	, PPS.							)
 WRITE_MPTHEADER_sized_member(    pitch_pan_center					, unsigned char	, PPC.							)
-WRITE_MPTHEADER_array_member(    volume_envelope.Ticks			, WORD			, VP[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(    panning_envelope.Ticks			, WORD			, PP[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(    pitch_envelope.Ticks			, WORD			, PiP[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(    volume_envelope.Ticks			, uint16_t			, VP[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(    panning_envelope.Ticks			, uint16_t			, PP[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(    pitch_envelope.Ticks			, uint16_t			, PiP[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(    volume_envelope.Values			, uint8_t			, VE[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(    panning_envelope.Values			, uint8_t			, PE[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(    pitch_envelope.Values			, uint8_t			, PiE[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(    NoteMap					, uint8_t			, NM[.		, 128				)
-WRITE_MPTHEADER_array_member(    Keyboard				, WORD			, K[..		, 128				)
+WRITE_MPTHEADER_array_member(    Keyboard				, uint16_t			, K[..		, 128				)
 WRITE_MPTHEADER_array_member(    name					, CHAR			, n[..		, 32				)
 WRITE_MPTHEADER_array_member(    legacy_filename, CHAR			, fn[.		, 12				)
 WRITE_MPTHEADER_sized_member(    nMixPlug				, uint8_t			, MiP.							)
@@ -340,7 +340,7 @@ WRITE_MPTHEADER_sized_member(    random_resonance_weight, uint8_t			, RS..						
 WRITE_MPTHEADER_sized_member(    default_filter_mode, uint8_t			, FM..							)
 WRITE_MPTHEADER_sized_member(    nPluginVelocityHandling	, uint8_t			, PVEH							)
 WRITE_MPTHEADER_sized_member(    nPluginVolumeHandling	, uint8_t			, PVOH							)
-WRITE_MPTHEADER_sized_member(    pitch_to_tempo_lock, WORD			, PTTL							)
+WRITE_MPTHEADER_sized_member(    pitch_to_tempo_lock, uint16_t			, PTTL							)
 WRITE_MPTHEADER_sized_member(    pitch_envelope.release_node	, uint8_t			, PERN							)
 WRITE_MPTHEADER_sized_member(    panning_envelope.release_node		, uint8_t		    , AERN							)
 WRITE_MPTHEADER_sized_member(    volume_envelope.release_node		, uint8_t			, VERN							)
@@ -398,20 +398,20 @@ GET_MPTHEADER_sized_member(    random_pan_weight				, uint8_t			, PS..							)
 GET_MPTHEADER_sized_member(    random_volume_weight				, uint8_t			, VS..							)
 GET_MPTHEADER_sized_member(    default_filter_cutoff					, uint8_t			, IFC.							)
 GET_MPTHEADER_sized_member(    default_filter_resonance					, uint8_t			, IFR.							)
-GET_MPTHEADER_sized_member(    midi_bank				, WORD			, MB..							)
+GET_MPTHEADER_sized_member(    midi_bank				, uint16_t			, MB..							)
 GET_MPTHEADER_sized_member(    midi_program			, uint8_t			, MP..							)
 GET_MPTHEADER_sized_member(    midi_channel			, uint8_t			, MC..							)
 GET_MPTHEADER_sized_member(    midi_drum_set			, uint8_t			, MDK.							)
 GET_MPTHEADER_sized_member(    pitch_pan_separation					, signed char	, PPS.							)
 GET_MPTHEADER_sized_member(    pitch_pan_center					, unsigned char	, PPC.							)
-GET_MPTHEADER_array_member(    volume_envelope.Ticks			, WORD			, VP[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(    panning_envelope.Ticks			, WORD			, PP[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(    pitch_envelope.Ticks			, WORD			, PiP[		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(    volume_envelope.Ticks			, uint16_t			, VP[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(    panning_envelope.Ticks			, uint16_t			, PP[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(    pitch_envelope.Ticks			, uint16_t			, PiP[		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(    volume_envelope.Values			, uint8_t			, VE[.		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(    panning_envelope.Values			, uint8_t			, PE[.		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(    pitch_envelope.Values			, uint8_t			, PiE[		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(    NoteMap					, uint8_t			, NM[.		, 128				)
-GET_MPTHEADER_array_member(    Keyboard				, WORD			, K[..		, 128				)
+GET_MPTHEADER_array_member(    Keyboard				, uint16_t			, K[..		, 128				)
 GET_MPTHEADER_array_member(    name					, CHAR			, n[..		, 32				)
 GET_MPTHEADER_array_member(    legacy_filename				, CHAR			, fn[.		, 12				)
 GET_MPTHEADER_sized_member(    nMixPlug				, uint8_t			, MiP.							)
@@ -421,7 +421,7 @@ GET_MPTHEADER_sized_member(    resampling_mode, UINT			, R...							)
 GET_MPTHEADER_sized_member(    random_cutoff_weight				, uint8_t			, CS..							)
 GET_MPTHEADER_sized_member(    random_resonance_weight				, uint8_t			, RS..							)
 GET_MPTHEADER_sized_member(    default_filter_mode				, uint8_t			, FM..							)
-GET_MPTHEADER_sized_member(    pitch_to_tempo_lock		, WORD			, PTTL							)
+GET_MPTHEADER_sized_member(    pitch_to_tempo_lock		, uint16_t			, PTTL							)
 GET_MPTHEADER_sized_member(    nPluginVelocityHandling	, uint8_t			, PVEH							)
 GET_MPTHEADER_sized_member(    nPluginVolumeHandling	, uint8_t			, PVOH							)
 GET_MPTHEADER_sized_member(    pitch_envelope.release_node	, uint8_t			, PERN							)
@@ -1821,7 +1821,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
 //    5 = signed 16-bit PCM data
 //    6 = unsigned 16-bit PCM data
 
-UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const WORD format)
+UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, DWORD dwMemLength, const uint16_t format)
 //---------------------------------------------------------------------------------------------------------------
 {
     if ((!pSmp) || (pSmp->length < 2) || (!lpMemFile)) return 0;

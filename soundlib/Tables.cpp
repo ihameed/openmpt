@@ -73,7 +73,7 @@ uint8_t ImpulseTrackerPortaVolCmd[16] =
 };
 
 // Period table for Protracker octaves 0-5:
-WORD ProTrackerPeriodTable[6*12] =
+uint16_t ProTrackerPeriodTable[6*12] =
 {
     1712,1616,1524,1440,1356,1280,1208,1140,1076,1016,960,907,
     856,808,762,720,678,640,604,570,538,508,480,453,
@@ -84,7 +84,7 @@ WORD ProTrackerPeriodTable[6*12] =
 };
 
 
-WORD ProTrackerTunedPeriods[16*12] = 
+uint16_t ProTrackerTunedPeriods[16*12] = 
 {
     1712,1616,1524,1440,1356,1280,1208,1140,1076,1016,960,907,
     1700,1604,1514,1430,1348,1274,1202,1134,1070,1010,954,900,
@@ -112,7 +112,7 @@ uint8_t ModEFxTable[16] =
 }; 
 
 // S3M C-4 periods
-WORD FreqS3MTable[16] = 
+uint16_t FreqS3MTable[16] = 
 {
     1712,1616,1524,1440,1356,1280,
     1208,1140,1076,1016,960,907,
@@ -120,7 +120,7 @@ WORD FreqS3MTable[16] =
 };
 
 // S3M FineTune frequencies
-WORD S3MFineTuneTable[16] = 
+uint16_t S3MFineTuneTable[16] = 
 {
     7895,7941,7985,8046,8107,8169,8232,8280,
     8363,8413,8463,8529,8581,8651,8723,8757,	// 8363*2^((i-8)/(12*8))
@@ -238,7 +238,7 @@ signed char retrigTable2[16] =
 
 
 
-WORD XMPeriodTable[104] = 
+uint16_t XMPeriodTable[104] = 
 {
     907,900,894,887,881,875,868,862,856,850,844,838,832,826,820,814,
     808,802,796,791,785,779,774,768,762,757,752,746,741,736,730,725,

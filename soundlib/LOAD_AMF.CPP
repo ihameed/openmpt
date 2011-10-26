@@ -349,7 +349,7 @@ bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength
             dwMemPos += 8;
         } else
         {
-            pSmp->loop_start = LittleEndianW(*(WORD *)(lpStream+dwMemPos));
+            pSmp->loop_start = LittleEndianW(*(uint16_t *)(lpStream+dwMemPos));
             pSmp->loop_end = pSmp->length;
             dwMemPos += 2;
         }

@@ -21,10 +21,10 @@ typedef struct DLSREGION
 {
     DWORD ulLoopStart;
     DWORD ulLoopEnd;
-    WORD nWaveLink;
-    WORD uPercEnv;
-    WORD usVolume;		// 0..256
-    WORD fuOptions;	// flags + key group
+    uint16_t nWaveLink;
+    uint16_t uPercEnv;
+    uint16_t usVolume;		// 0..256
+    uint16_t fuOptions;	// flags + key group
     SHORT sFineTune;	// 1..100
     uint8_t uKeyMin;
     uint8_t uKeyMax;
@@ -34,9 +34,9 @@ typedef struct DLSREGION
 typedef struct DLSENVELOPE
 {
     // Volume Envelope
-    WORD wVolAttack;		// Attack Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
-    WORD wVolDecay;			// Decay Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
-    WORD wVolRelease;		// Release Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
+    uint16_t wVolAttack;		// Attack Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
+    uint16_t wVolDecay;			// Decay Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
+    uint16_t wVolRelease;		// Release Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
     uint8_t nVolSustainLevel;	// Sustain Level: 0-128, 128=100%
     // Default Pan
     uint8_t nDefPan;
@@ -52,7 +52,7 @@ typedef struct DLSINSTRUMENT
     DLSREGION Regions[DLSMAXREGIONS];
     CHAR szName[32];
     // SF2 stuff (DO NOT USE! -> used internally by the SF2 loader)
-    WORD wPresetBagNdx, wPresetBagNum;
+    uint16_t wPresetBagNdx, wPresetBagNum;
 } DLSINSTRUMENT;
 
 typedef struct DLSSAMPLEEX

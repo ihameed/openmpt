@@ -148,7 +148,7 @@ static bool ReadTuningMap(istream& iStrm, map<uint16_t, string>& shortToTNameMap
 void ReadTuningMap(istream& iStrm, CSoundFile& csf, const size_t = 0)
 //-------------------------------------------------------------------
 {
-    typedef map<WORD, string> MAP;
+    typedef map<uint16_t, string> MAP;
     typedef MAP::iterator MAP_ITER;
     MAP shortToTNameMap;
     ReadTuningMap<uint16_t, uint8_t>(iStrm, shortToTNameMap);
@@ -871,8 +871,8 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
         if ((!patpos[patchk]) || ((DWORD)patpos[patchk] >= dwMemLength - 4)) 
             continue;
 
-        UINT len = *((WORD *)(lpStream+patpos[patchk]));
-        UINT rows = *((WORD *)(lpStream+patpos[patchk]+2));
+        UINT len = *((uint16_t *)(lpStream+patpos[patchk]));
+        UINT rows = *((uint16_t *)(lpStream+patpos[patchk]+2));
 
         if(rows <= ModSpecs::itEx.patternRowsMax && rows > ModSpecs::it.patternRowsMax)
         {
@@ -1074,8 +1074,8 @@ bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
             CopyPatternName(Patterns[npat], &patNames, patNamesLen);
             continue;
         }
-        UINT len = *((WORD *)(lpStream+patpos[npat]));
-        UINT rows = *((WORD *)(lpStream+patpos[npat]+2));
+        UINT len = *((uint16_t *)(lpStream+patpos[npat]));
+        UINT rows = *((uint16_t *)(lpStream+patpos[npat]+2));
         if ((rows < GetModSpecifications().patternRowsMin) || (rows > GetModSpecifications().patternRowsMax)) continue;
         if (patpos[npat]+8+len > dwMemLength) continue;
 
@@ -1369,7 +1369,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     vector<DWORD> patpos;
     DWORD smppos[MAX_SAMPLES];
     DWORD dwPos = 0, dwHdrPos = 0, dwExtra = 0;
-    WORD patinfo[4];
+    uint16_t patinfo[4];
 // -> CODE#0006
 // -> DESC="misc quantity changes"
 //    uint8_t chnmask[64];
@@ -1428,7 +1428,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     else //IT
     {
         MptVersion::VersionNum vVersion = MptVersion::num;
-        header.cwtv = LittleEndianW(0x5000 | (WORD)((vVersion >> 16) & 0x0FFF)); // format: txyy (t = tracker ID, x = version major, yy = version minor), e.g. 0x5117 (OpenMPT = 5, 117 = v1.17)
+        header.cwtv = LittleEndianW(0x5000 | (uint16_t)((vVersion >> 16) & 0x0FFF)); // format: txyy (t = tracker ID, x = version major, yy = version minor), e.g. 0x5117 (OpenMPT = 5, 117 = v1.17)
         header.cmwt = LittleEndianW(0x0214);    // Common compatible tracker :)
         // hack from schism tracker:
         for(INSTRUMENTINDEX nIns = 1; nIns <= GetNumInstruments(); nIns++)
@@ -2004,7 +2004,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     DWORD patpos[MAX_PATTERNS];
     DWORD smppos[MAX_SAMPLES];
     DWORD dwPos = 0, dwHdrPos = 0, dwExtra = 0;
-    WORD patinfo[4];
+    uint16_t patinfo[4];
 // -> CODE#0006
 // -> DESC="misc quantity changes"
     uint8_t chnmask[IT_MAX_CHANNELS];
@@ -2043,7 +2043,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     header.smpnum = m_nSamples;
 
     MptVersion::VersionNum vVersion = MptVersion::num;
-    header.cwtv = LittleEndianW(0x5000 | (WORD)((vVersion >> 16) & 0x0FFF)); // format: txyy (t = tracker ID, x = version major, yy = version minor), e.g. 0x5117 (OpenMPT = 5, 117 = v1.17)
+    header.cwtv = LittleEndianW(0x5000 | (uint16_t)((vVersion >> 16) & 0x0FFF)); // format: txyy (t = tracker ID, x = version major, yy = version minor), e.g. 0x5117 (OpenMPT = 5, 117 = v1.17)
     header.cmwt = LittleEndianW(0x0214);    // Common compatible tracker :)
     // hack from schism tracker:
     for(INSTRUMENTINDEX nIns = 1; nIns <= GetNumInstruments(); nIns++)
@@ -2559,20 +2559,20 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
         DWORD dwPos = 0;
         do
         {
-            WORD wBits = (WORD)ITReadBits(bitbuf, bitnum, pSrc, bLeft);
+            uint16_t wBits = (uint16_t)ITReadBits(bitbuf, bitnum, pSrc, bLeft);
             if (bLeft < 7)
             {
                 DWORD i = 1 << (bLeft-1);
                 DWORD j = wBits & 0xFFFF;
                 if (i != j) goto UnpackByte;
-                wBits = (WORD)(ITReadBits(bitbuf, bitnum, pSrc, 3) + 1) & 0xFF;
+                wBits = (uint16_t)(ITReadBits(bitbuf, bitnum, pSrc, 3) + 1) & 0xFF;
                 bLeft = ((uint8_t)wBits < bLeft) ? (uint8_t)wBits : (uint8_t)((wBits+1) & 0xFF);
                 goto Next;
             }
             if (bLeft < 9)
             {
-                WORD i = (0xFF >> (9 - bLeft)) + 4;
-                WORD j = i - 8;
+                uint16_t i = (0xFF >> (9 - bLeft)) + 4;
+                uint16_t j = i - 8;
                 if ((wBits <= j) || (wBits > i)) goto UnpackByte;
                 wBits -= j;
                 bLeft = ((uint8_t)(wBits & 0xFF) < bLeft) ? (uint8_t)(wBits & 0xFF) : (uint8_t)((wBits+1) & 0xFF);
@@ -2590,7 +2590,7 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
                 uint8_t shift = 8 - bLeft;
                 char c = (char)(wBits << shift);
                 c >>= shift;
-                wBits = (WORD)c;
+                wBits = (uint16_t)c;
             }
             wBits += bTemp;
             bTemp = (uint8_t)wBits;

@@ -1313,7 +1313,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     			if (dwPos >= dwMemSize) break;
     			int n2 = atoi(p+dwPos);
     			if ((n1 < oldn) || (n1 > ENVELOPE_MAX_LENGTH)) n1 = oldn + 1;
-    			pEnv->Ticks[i] = (WORD)n1;
+    			pEnv->Ticks[i] = (uint16_t)n1;
     			pEnv->Values[i] = (uint8_t)n2;
     			oldn = n1;
     			while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;

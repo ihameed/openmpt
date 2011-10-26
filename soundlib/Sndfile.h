@@ -71,7 +71,7 @@ public:
     virtual bool MidiSend(DWORD dwMidiCode) = 0;
     virtual void MidiCC(UINT nMidiCh, UINT nController, UINT nParam, UINT trackChannel) = 0;
     virtual void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel) = 0;
-    virtual void MidiCommand(UINT nMidiCh, UINT nMidiProg, WORD wMidiBank, UINT note, UINT vol, UINT trackChan) = 0;
+    virtual void MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChan) = 0;
     virtual void HardAllNotesOff() = 0;    	//rewbs.VSTCompliance
     virtual void RecalculateGain() = 0;    	
     virtual bool isPlaying(UINT note, UINT midiChn, UINT trackerChn) = 0; //rewbs.VSTiNNA
@@ -573,7 +573,7 @@ public:
     void ConvertModCommand(modplug::tracker::modcommand_t *) const;
     void S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const;
     void S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport = false) const;
-    WORD ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
+    uint16_t ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
     
     static void ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
     static void MODExx2S3MSxx(modplug::tracker::modcommand_t *m); // Convert Exx to Sxx
@@ -701,7 +701,7 @@ public:
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
     UINT PackSample(int &sample, int next);
     bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result=NULL);
-    UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const WORD format = 1);
+    UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const uint16_t format = 1);
     bool DestroySample(SAMPLEINDEX nSample);
 
 // -> CODE#0020

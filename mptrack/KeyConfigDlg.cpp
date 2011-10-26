@@ -497,7 +497,7 @@ void COptionsKeyboard::OnHotKeyChanged()
 /*    if ((m_nCurKeyboard == KEYBOARD_CUSTOM) && (m_nCurHotKey >= 0) && (m_nCurHotKey < MAX_MPTHOTKEYS))
     {
     	BOOL bChanged = FALSE;
-    	WORD wVk=0, wMod=0;
+    	uint16_t wVk=0, wMod=0;
     	
     	m_HotKey.GetHotKey(wVk, wMod);
     	DWORD dwHk = ((DWORD)wVk) | (((DWORD)wMod) << 16);

@@ -204,8 +204,8 @@ protected:
 
 private:
     uint8_t EnvGetReleaseNode();
-    WORD EnvGetReleaseNodeValue();
-    WORD EnvGetReleaseNodeTick();
+    uint16_t EnvGetReleaseNodeValue();
+    uint16_t EnvGetReleaseNodeTick();
 };
 
 

@@ -25,7 +25,7 @@ typedef struct tagS3MSAMPLESTRUCT
     uint8_t type;
     CHAR dosname[12];
     uint8_t hmem;
-    WORD memseg;
+    uint16_t memseg;
     DWORD length;
     DWORD loopbegin;
     DWORD loopend;
@@ -35,8 +35,8 @@ typedef struct tagS3MSAMPLESTRUCT
     uint8_t flags;
     DWORD finetune;
     DWORD dwReserved;
-    WORD intgp;
-    WORD int512;
+    uint16_t intgp;
+    uint16_t int512;
     DWORD lastused;
     CHAR name[28];
     CHAR scrs[4];
@@ -48,13 +48,13 @@ typedef struct tagS3MFILEHEADER
     CHAR name[28];
     uint8_t b1A;
     uint8_t type;
-    WORD reserved1;
-    WORD ordnum;
-    WORD insnum;
-    WORD patnum;
-    WORD flags;
-    WORD cwtv;
-    WORD version;
+    uint16_t reserved1;
+    uint16_t ordnum;
+    uint16_t insnum;
+    uint16_t patnum;
+    uint16_t flags;
+    uint16_t cwtv;
+    uint16_t version;
     DWORD scrm;    // "SCRM" = 0x4D524353
     uint8_t globalvol;
     uint8_t speed;
@@ -63,7 +63,7 @@ typedef struct tagS3MFILEHEADER
     uint8_t ultraclicks;
     uint8_t panning_present;
     uint8_t reserved2[8];
-    WORD special;
+    uint16_t special;
     uint8_t channels[32];
 } S3MFILEHEADER;
 
@@ -225,8 +225,8 @@ bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
     uint8_t s[1024];
     DWORD dwMemPos;
     vector<DWORD> smpdatapos;
-    vector<WORD> smppos;
-    vector<WORD> patpos;
+    vector<uint16_t> smppos;
+    vector<uint16_t> patpos;
     vector<uint8_t> insflags;
     vector<uint8_t> inspack;
     S3MFILEHEADER psfh = *(S3MFILEHEADER *)lpStream;
@@ -330,14 +330,14 @@ bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
     smppos.resize(nins, 0);
     for(UINT i = 0; i < nins; i++, dwMemPos += 2)
     {
-        WORD ptr = *((WORD *)(lpStream + dwMemPos));
+        uint16_t ptr = *((uint16_t *)(lpStream + dwMemPos));
         smppos[i] = LittleEndianW(ptr);
     }
     // Read pattern offsets
     patpos.resize(npat, 0);
     for(UINT i = 0; i < npat; i++, dwMemPos += 2)
     {
-        WORD ptr = *((WORD *)(lpStream + dwMemPos));
+        uint16_t ptr = *((uint16_t *)(lpStream + dwMemPos));
         patpos[i] = LittleEndianW(ptr);
     }
     // Read channel panning
@@ -413,7 +413,7 @@ bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
         bool fail = Patterns.Insert(iPat, 64);
         UINT nInd = ((DWORD)patpos[iPat]) * 16;
         if (nInd == 0 || nInd + 0x40 > dwMemLength) continue;
-        WORD len = LittleEndianW(*((WORD *)(lpStream + nInd)));
+        uint16_t len = LittleEndianW(*((uint16_t *)(lpStream + nInd)));
         nInd += 2;
         if ((!len) || (nInd + len > dwMemLength - 6)
          || (fail) ) continue;
@@ -552,8 +552,8 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     FILE *f;
     uint8_t header[0x60];
     UINT nbo,nbi,nbp,i;
-    WORD patptr[128];
-    WORD insptr[128];
+    uint16_t patptr[128];
+    uint16_t insptr[128];
     S3MSAMPLESTRUCT insex[128];
 
     if ((!m_nChannels) || (!lpszFileName)) return false;
@@ -622,8 +622,8 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     UINT ofs0 = 0x60 + nbo;
     UINT ofs1 = ((0x60 + nbo + nbi * 2 + nbp * 2 + 15) & 0xFFF0) + ((header[0x35] == 0xFC) ? 0x20 : 0);
     UINT ofs = ofs1;
-    for (i=0; i<nbi; i++) insptr[i] = (WORD)((ofs + i*0x50) / 16);
-    for (i=0; i<nbp; i++) patptr[i] = (WORD)((ofs + nbi*0x50) / 16);
+    for (i=0; i<nbi; i++) insptr[i] = (uint16_t)((ofs + i*0x50) / 16);
+    for (i=0; i<nbp; i++) patptr[i] = (uint16_t)((ofs + nbi*0x50) / 16);
     fwrite(insptr, nbi, 2, f);
     fwrite(patptr, nbp, 2, f);
     if (header[0x35] == 0xFC)
@@ -647,7 +647,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     ofs += nbi * 0x50;
     for (i = 0; i < nbp; i++)
     {
-        WORD len = 64;
+        uint16_t len = 64;
         vector<uint8_t> buffer(5 * 1024, 0);
         patptr[i] = ofs / 16;
         if (Patterns[i])
@@ -747,7 +747,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
         memcpy(insex[i-1].name, m_szNames[i], 28);
         memcpy(insex[i-1].scrs, "SCRS", 4);
         insex[i-1].hmem = (uint8_t)((DWORD)ofs >> 20);
-        insex[i-1].memseg = (WORD)((DWORD)ofs >> 4);
+        insex[i-1].memseg = (uint16_t)((DWORD)ofs >> 4);
         if (pSmp->sample_data)
         {
             insex[i-1].type = 1;

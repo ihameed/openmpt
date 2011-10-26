@@ -35,52 +35,52 @@
 typedef struct DBMFILEHEADER
 {
     DWORD dbm_id;		// "DBM0" = 0x304d4244
-    WORD trkver;		// Tracker version: 02.15
-    WORD reserved;
+    uint16_t trkver;		// Tracker version: 02.15
+    uint16_t reserved;
     DWORD name_id;		// "NAME" = 0x454d414e
     DWORD name_len;		// name length: always 44
     CHAR songname[44];
     DWORD info_id;		// "INFO" = 0x4f464e49
     DWORD info_len;		// 0x0a000000
-    WORD instruments;
-    WORD samples;
-    WORD songs;
-    WORD patterns;
-    WORD channels;
+    uint16_t instruments;
+    uint16_t samples;
+    uint16_t songs;
+    uint16_t patterns;
+    uint16_t channels;
     DWORD song_id;		// "SONG" = 0x474e4f53
     DWORD song_len;
     CHAR songname2[44];
-    WORD orders;
-//	WORD orderlist[0];	// orderlist[orders] in words
+    uint16_t orders;
+//	uint16_t orderlist[0];	// orderlist[orders] in words
 } DBMFILEHEADER;
 
 typedef struct DBMINSTRUMENT
 {
     CHAR name[30];
-    WORD sampleno;
-    WORD volume;
+    uint16_t sampleno;
+    uint16_t volume;
     DWORD finetune;
     DWORD loopstart;
     DWORD looplen;
-    WORD panning;
-    WORD flags;
+    uint16_t panning;
+    uint16_t flags;
 } DBMINSTRUMENT;
 
 typedef struct DBMENVELOPE
 {
-    WORD instrument;
+    uint16_t instrument;
     uint8_t flags;
     uint8_t numpoints;
     uint8_t sustain1;
     uint8_t loopbegin;
     uint8_t loopend;
     uint8_t sustain2;
-    WORD volenv[2*32];
+    uint16_t volenv[2*32];
 } DBMENVELOPE;
 
 typedef struct DBMPATTERN
 {
-    WORD rows;
+    uint16_t rows;
     DWORD packedsize;
     uint8_t patterndata[2];	// [packedsize]
 } DBMPATTERN;
@@ -205,7 +205,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
     for (UINT iOrd=0; iOrd < nOrders; iOrd++)
     {
         if (iOrd >= MAX_ORDERS) break;
-        Order[iOrd] = (PATTERNINDEX)BigEndianW(*((WORD *)(lpStream + dwMemPos + iOrd * 2)));
+        Order[iOrd] = (PATTERNINDEX)BigEndianW(*((uint16_t *)(lpStream + dwMemPos + iOrd * 2)));
     }
     dwMemPos += 2*nOrders;
     while (dwMemPos + 10 < dwMemLength)
@@ -227,7 +227,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
                 modsample_t *psmp;
                 modinstrument_t *pIns;
                 DBMINSTRUMENT *pih;
-                WORD nsmp;
+                uint16_t nsmp;
 
                 if (chunk_pos + sizeof(DBMINSTRUMENT) > dwMemPos) break;
                 if ((pIns = new modinstrument_t) == nullptr) break;

@@ -27,8 +27,8 @@ typedef struct MDLINFOBLOCK
 {
     CHAR songname[32];
     CHAR composer[20];
-    WORD norders;
-    WORD repeatpos;
+    uint16_t norders;
+    uint16_t repeatpos;
     uint8_t globalvol;
     uint8_t speed;
     uint8_t tempo;
@@ -42,7 +42,7 @@ typedef struct MDLPATTERNDATA
     uint8_t channels;
     uint8_t lastrow;    // nrows = lastrow+1
     CHAR name[16];
-    WORD data[1];
+    uint16_t data[1];
 } MDLPATTERNDATA;
 
 
@@ -121,7 +121,7 @@ void ConvertMDLCommand(modplug::tracker::modcommand_t *m, UINT eff, UINT data)
 void ConvertMDLEnvelope(const unsigned char *pMDLEnv, modplug::tracker::modenvelope_t *pMPTEnv)
 //--------------------------------------------------------------------------------
 {
-    WORD nCurTick = 1;
+    uint16_t nCurTick = 1;
     pMPTEnv->num_nodes = 15;
     for (UINT nTick = 0; nTick < 15; nTick++)
     {
@@ -145,13 +145,13 @@ void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nR
 //-------------------------------------------------------------------------------------------------
 {
     modplug::tracker::modcommand_t cmd, *m = pat;
-    UINT len = *((WORD *)lpTracks);
+    UINT len = *((uint16_t *)lpTracks);
     UINT pos = 0, row = 0, i;
     lpTracks += 2;
     for (UINT ntrk=1; ntrk<nTrack; ntrk++)
     {
         lpTracks += len;
-        len = *((WORD *)lpTracks);
+        len = *((uint16_t *)lpTracks);
         lpTracks += 2;
     }
     cmd.note = cmd.instr = 0;
@@ -234,8 +234,8 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
     MDLINFOBLOCK *pmib;
     UINT i,j, norders = 0, npatterns = 0, ntracks = 0;
     UINT ninstruments = 0, nsamples = 0;
-    WORD block;
-    WORD patterntracks[MAX_PATTERNS*32];
+    uint16_t block;
+    uint16_t patterntracks[MAX_PATTERNS*32];
     uint8_t smpinfo[MAX_SAMPLES];
     uint8_t insvolenv[MAX_INSTRUMENTS];
     uint8_t inspanenv[MAX_INSTRUMENTS];
@@ -261,7 +261,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
     m_nSamples = m_nInstruments = 0;
     while (dwMemPos+6 < dwMemLength)
     {
-        block = *((WORD *)(lpStream+dwMemPos));
+        block = *((uint16_t *)(lpStream+dwMemPos));
         blocklen = *((DWORD *)(lpStream+dwMemPos+2));
         dwMemPos += 6;
         if (blocklen > dwMemLength - dwMemPos)
@@ -320,7 +320,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
 
             for (i=0; i<npatterns; i++)
             {
-                const WORD *pdata;
+                const uint16_t *pdata;
                 UINT ch;
 
                 if (dwPos+18 >= dwMemLength) break;
@@ -335,7 +335,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
                     ch = pmpd->channels;
                 } else
                 {
-                    pdata = (const WORD *)(lpStream + dwPos);
+                    pdata = (const uint16_t *)(lpStream + dwPos);
                     //Patterns[i].Resize(64, false);
                     if (m_nChannels < 32) m_nChannels = 32;
                     dwPos += 2*32;
@@ -353,7 +353,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
             Log("track data: %d bytes\n", blocklen);
         #endif
             if (dwTrackPos) break;
-            ntracks = *((WORD *)(lpStream+dwMemPos));
+            ntracks = *((uint16_t *)(lpStream+dwMemPos));
             dwTrackPos = dwMemPos+2;
             break;
         // II: Instruments
@@ -475,7 +475,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
                     p += 4;
                 } else
                 {
-                    pSmp->c5_samplerate = *((WORD *)p);
+                    pSmp->c5_samplerate = *((uint16_t *)p);
                     p += 2;
                 }
                 pSmp->length = *((DWORD *)(p));
@@ -577,10 +577,10 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
 // MDL Sample Unpacking
 
 // MDL Huffman ReadBits compression
-WORD MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
+uint16_t MDLReadBits(DWORD &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
 //-----------------------------------------------------------------
 {
-    WORD v = (WORD)(bitbuf & ((1 << n) - 1) );
+    uint16_t v = (uint16_t)(bitbuf & ((1 << n) - 1) );
     bitbuf >>= n;
     bitnum -= n;
     if (bitnum <= 24)

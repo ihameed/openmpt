@@ -114,8 +114,8 @@ protected:
     DWORD m_dwStatus, m_dwCursor;
     DWORD m_dwBeginSel, m_dwEndSel;    	// Upper-left / Lower-right corners of selection
     DWORD m_dwStartSel, m_dwDragPos;    // Point where selection was started
-    WORD ChnVUMeters[MAX_BASECHANNELS];
-    WORD OldVUMeters[MAX_BASECHANNELS];
+    uint16_t ChnVUMeters[MAX_BASECHANNELS];
+    uint16_t OldVUMeters[MAX_BASECHANNELS];
     CListBox *ChnEffectList[MAX_BASECHANNELS]; //rewbs.patPlugName
     UINT m_nFoundInstrument;
     UINT m_nMenuOnChan;

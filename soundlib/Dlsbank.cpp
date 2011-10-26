@@ -156,8 +156,8 @@ typedef struct LISTCHUNK
 
 typedef struct DLSRGNRANGE
 {
-    WORD usLow;
-    WORD usHigh;
+    uint16_t usLow;
+    uint16_t usHigh;
 } DLSRGNRANGE;
 
 typedef struct COLHCHUNK
@@ -171,7 +171,7 @@ typedef struct VERSCHUNK
 {
     DWORD id;
     DWORD len;
-    WORD version[4];
+    uint16_t version[4];
 } VERSCHUNK;
 
 typedef struct PTBLCHUNK
@@ -198,16 +198,16 @@ typedef struct RGNHCHUNK
     DWORD len;
     DLSRGNRANGE RangeKey;
     DLSRGNRANGE RangeVelocity;
-    WORD fusOptions;
-    WORD usKeyGroup;
+    uint16_t fusOptions;
+    uint16_t usKeyGroup;
 } RGNHCHUNK;
 
 typedef struct WLNKCHUNK
 {
     DWORD id;
     DWORD len;
-    WORD fusOptions;
-    WORD usPhaseGroup;
+    uint16_t fusOptions;
+    uint16_t usPhaseGroup;
     DWORD ulChannel;
     DWORD ulTableIndex;
 } WLNKCHUNK;
@@ -222,10 +222,10 @@ typedef struct ART1CHUNK
 
 typedef struct CONNECTIONBLOCK
 {
-    WORD usSource;
-    WORD usControl;
-    WORD usDestination;
-    WORD usTransform;
+    uint16_t usSource;
+    uint16_t usControl;
+    uint16_t usDestination;
+    uint16_t usTransform;
     LONG lScale;
 } CONNECTIONBLOCK;
 
@@ -234,7 +234,7 @@ typedef struct WSMPCHUNK
     DWORD id;
     DWORD len;
     DWORD cbSize;
-    WORD usUnityNote;
+    uint16_t usUnityNote;
     signed short sFineTune;
     LONG lAttenuation;
     DWORD fulOptions;
@@ -288,9 +288,9 @@ typedef struct WSMPSAMPLELOOP
 typedef struct SFPRESETHEADER
 {
     CHAR achPresetName[20];
-    WORD wPreset;
-    WORD wBank;
-    WORD wPresetBagNdx;
+    uint16_t wPreset;
+    uint16_t wBank;
+    uint16_t wPresetBagNdx;
     DWORD dwLibrary;
     DWORD dwGenre;
     DWORD dwMorphology;
@@ -298,32 +298,32 @@ typedef struct SFPRESETHEADER
 
 typedef struct SFPRESETBAG
 {
-    WORD wGenNdx;
-    WORD wModNdx;
+    uint16_t wGenNdx;
+    uint16_t wModNdx;
 } SFPRESETBAG;
 
 typedef struct SFGENLIST
 {
-    WORD sfGenOper;
-    WORD genAmount;
+    uint16_t sfGenOper;
+    uint16_t genAmount;
 } SFGENLIST;
 
 typedef struct SFINST
 {
     CHAR achInstName[20];
-    WORD wInstBagNdx;
+    uint16_t wInstBagNdx;
 } SFINST;
 
 typedef struct SFINSTBAG
 {
-    WORD wGenNdx;
-    WORD wModNdx;
+    uint16_t wGenNdx;
+    uint16_t wModNdx;
 } SFINSTBAG;
 
 typedef struct SFINSTGENLIST
 {
-    WORD sfGenOper;
-    WORD genAmount;
+    uint16_t sfGenOper;
+    uint16_t genAmount;
 } SFINSTGENLIST;
 
 typedef struct SFSAMPLE
@@ -336,8 +336,8 @@ typedef struct SFSAMPLE
     DWORD dwSampleRate;
     uint8_t byOriginalPitch;
     CHAR chPitchCorrection;
-    WORD wSampleLink;
-    WORD sfSampleType;
+    uint16_t wSampleLink;
+    uint16_t sfSampleType;
 } SFSAMPLE;
 
 
@@ -601,7 +601,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     		{
     			DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
     			WLNKCHUNK *p = (WLNKCHUNK *)pchunk;
-    			pregion->nWaveLink = (WORD)p->ulTableIndex;
+    			pregion->nWaveLink = (uint16_t)p->ulTableIndex;
     			if ((pregion->nWaveLink < 16384) && (pregion->nWaveLink >= m_nMaxWaveLink)) m_nMaxWaveLink = pregion->nWaveLink + 1;
     			//Log("  WaveLink %d: fusOptions=0x%02X usPhaseGroup=0x%04X ", pDlsIns->nRegions, p->fusOptions, p->usPhaseGroup);
     			//Log("ulChannel=%d ulTableIndex=%4d\n", p->ulChannel, p->ulTableIndex);
@@ -619,7 +619,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     			LONG lVolume = DLS32BitRelativeGainToLinear(p->lAttenuation) / 256;
     			if (lVolume > 256) lVolume = 256;
     			if (lVolume < 4) lVolume = 4;
-    			pregion->usVolume = (WORD)lVolume;
+    			pregion->usVolume = (uint16_t)lVolume;
     			//Log("  WaveSample %d: usUnityNote=%2d sFineTune=%3d ", pDlsEnv->nRegions, p->usUnityNote, p->sFineTune);
     			//Log("fulOptions=0x%04X loops=%d\n", p->fulOptions, p->cSampleLoops);
     			if ((p->cSampleLoops) && (p->cbSize + sizeof(WSMPSAMPLELOOP) <= p->len))
@@ -683,7 +683,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     						LONG attacktime = DLS32BitTimeCentsToMilliseconds(l);
     						if (attacktime < 0) attacktime = 0;
     						if (attacktime > 20000) attacktime = 20000;
-    						if (attacktime >= 20) pDlsEnv->wVolAttack = (WORD)(attacktime / 20);
+    						if (attacktime >= 20) pDlsEnv->wVolAttack = (uint16_t)(attacktime / 20);
     						//Log("%3d: Envelope Attack Time set to %d (%d time cents)\n", (DWORD)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), attacktime, pblk->lScale);
     					}
     					break;
@@ -695,7 +695,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     					{
     						LONG decaytime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
     						if (decaytime > 20000) decaytime = 20000;
-    						if (decaytime >= 20) pDlsEnv->wVolDecay = (WORD)(decaytime / 20);
+    						if (decaytime >= 20) pDlsEnv->wVolDecay = (uint16_t)(decaytime / 20);
     						//Log("%3d: Envelope Decay Time set to %d (%d time cents)\n", (DWORD)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), decaytime, pblk->lScale);
     					}
     					break;
@@ -707,7 +707,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     					{
     						LONG releasetime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
     						if (releasetime > 20000) releasetime = 20000;
-    						if (releasetime >= 20) pDlsEnv->wVolRelease = (WORD)(releasetime / 20);
+    						if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
     						//Log("%3d: Envelope Release Time set to %d (%d time cents)\n", (DWORD)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), pDlsEnv->wVolRelease, pblk->lScale);
     					}
     					break;
@@ -785,7 +785,7 @@ BOOL CDLSBank::UpdateSF2PresetData(LPVOID pvsf2, LPVOID pvchunk, DWORD dwMaxLen)
     			pDlsIns->ulBank = (psfh->wBank >= 128) ? F_INSTRUMENT_DRUMS : (psfh->wBank << 8);
     			pDlsIns->wPresetBagNdx = psfh->wPresetBagNdx;
     			pDlsIns->wPresetBagNum = 1;
-    			if (psfh[1].wPresetBagNdx > pDlsIns->wPresetBagNdx) pDlsIns->wPresetBagNum = (WORD)(psfh[1].wPresetBagNdx - pDlsIns->wPresetBagNdx);
+    			if (psfh[1].wPresetBagNdx > pDlsIns->wPresetBagNdx) pDlsIns->wPresetBagNum = (uint16_t)(psfh[1].wPresetBagNdx - pDlsIns->wPresetBagNdx);
     		}
     	}
     	break;
@@ -943,7 +943,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     				{
     					LONG decaytime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
     					if (decaytime > 20000) decaytime = 20000;
-    					if (decaytime >= 20) dlsEnv.wVolDecay = (WORD)(decaytime / 20);
+    					if (decaytime >= 20) dlsEnv.wVolDecay = (uint16_t)(decaytime / 20);
     					//Log("  vol decay time set to %d\n", decaytime);
     				}
     				break;
@@ -951,7 +951,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     				{
     					LONG releasetime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
     					if (releasetime > 20000) releasetime = 20000;
-    					if (releasetime >= 20) dlsEnv.wVolRelease = (WORD)(releasetime / 20);
+    					if (releasetime >= 20) dlsEnv.wVolRelease = (uint16_t)(releasetime / 20);
     					//Log("  vol release time set to %d\n", releasetime);
     				}
     				break;
@@ -959,7 +959,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     				nInstrNdx = pgen->genAmount + 1;
     				break;
     			case SF2_GEN_ATTENUATION:
-    				lAttenuation = - (int)(WORD)(pgen->genAmount);
+    				lAttenuation = - (int)(uint16_t)(pgen->genAmount);
     				break;
 #if 0
     			default:
@@ -997,7 +997,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     				m_Envelopes[m_nEnvelopes] = dlsEnv;
     				pDlsEnv = &m_Envelopes[m_nEnvelopes];
     				m_nEnvelopes++;
-    				pRgn->uPercEnv = (WORD)m_nEnvelopes;
+    				pRgn->uPercEnv = (uint16_t)m_nEnvelopes;
     			}
     		} else
     		if (pDlsIns->nMelodicEnv)
@@ -1013,7 +1013,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     		{
     			if ((igenndx >= psf2->nInstGens) || (!psf2->pInstGens)) break;
     			SFINSTGENLIST *pgen = psf2->pInstGens + igenndx;
-    			WORD value = pgen->genAmount;
+    			uint16_t value = pgen->genAmount;
     			switch(pgen->sfGenOper)
     			{
     			case SF2_GEN_KEYRANGE:
@@ -1034,7 +1034,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     				{
     					LONG releasetime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
     					if (releasetime > 20000) releasetime = 20000;
-    					if (releasetime >= 20) pDlsEnv->wVolRelease = (WORD)(releasetime / 20);
+    					if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
     					//Log("  vol release time set to %d\n", releasetime);
     				}
     				break;
@@ -1077,7 +1077,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     		LONG lVolume = DLS32BitRelativeGainToLinear((lAttn/10) << 16) / 256;
     		if (lVolume < 16) lVolume = 16;
     		if (lVolume > 256) lVolume = 256;
-    		pRgn->usVolume = (WORD)lVolume;
+    		pRgn->usVolume = (uint16_t)lVolume;
     		//Log("\n");
     	}
     }
@@ -1698,7 +1698,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     pIns->default_pan = 128;		// Center Pan
     pIns->midi_program = (uint8_t)(pDlsIns->ulInstrument & 0x7F);
     pIns->midi_channel = (uint8_t)((pDlsIns->ulBank & F_INSTRUMENT_DRUMS) ? 10 : 0);
-    pIns->midi_bank = (WORD)(((pDlsIns->ulBank & 0x7F00) >> 1) | (pDlsIns->ulBank & 0x7F));
+    pIns->midi_bank = (uint16_t)(((pDlsIns->ulBank & 0x7F00) >> 1) | (pDlsIns->ulBank & 0x7F));
     pIns->pitch_pan_center = 60;		// C-5
     pIns->new_note_action = NNA_NOTEOFF;
     pIns->duplicate_check_type = DCT_NOTE;
@@ -1816,7 +1816,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     								ltime += lStartTime;
     								if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
     								{
-    									pIns->volume_envelope.Ticks[nPoint] = (WORD)ltime;
+    									pIns->volume_envelope.Ticks[nPoint] = (uint16_t)ltime;
     									pIns->volume_envelope.Values[nPoint] = (uint8_t)(lFactor / 2);
     									nPoint++;
     								}
@@ -1828,7 +1828,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     				if (lStartTime + lDecayTime > (LONG)pIns->volume_envelope.Ticks[nPoint-1])
     				{
     					pIns->volume_envelope.Values[nPoint] = (uint8_t)((part->nVolSustainLevel+1) / 2);
-    					pIns->volume_envelope.Ticks[nPoint] = (WORD)(lStartTime+lDecayTime);
+    					pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(lStartTime+lDecayTime);
     					nPoint++;
     				}
     			}
@@ -1836,7 +1836,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     		} else
     		{
     			pIns->volume_envelope.flags |= ENV_SUSTAIN;
-    			pIns->volume_envelope.Ticks[nPoint] = (WORD)(pIns->volume_envelope.Ticks[nPoint-1]+1);
+    			pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(pIns->volume_envelope.Ticks[nPoint-1]+1);
     			pIns->volume_envelope.Values[nPoint] = pIns->volume_envelope.Values[nPoint-1];
     			nPoint++;
     		}
@@ -1863,7 +1863,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     						ltime += lStartTime;
     						if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
     						{
-    							pIns->volume_envelope.Ticks[nPoint] = (WORD)ltime;
+    							pIns->volume_envelope.Ticks[nPoint] = (uint16_t)ltime;
     							pIns->volume_envelope.Values[nPoint] = (uint8_t)lFactor;
     							nPoint++;
     						}
@@ -1871,7 +1871,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     				}
     			}
     			if (lReleaseTime < 1) lReleaseTime = 1;
-    			pIns->volume_envelope.Ticks[nPoint] = (WORD)(lStartTime + lReleaseTime);
+    			pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(lStartTime + lReleaseTime);
     			pIns->volume_envelope.Values[nPoint] = ENVELOPE_MIN;
     			nPoint++;
     		} else

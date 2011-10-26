@@ -21,11 +21,11 @@
 
 // Tables defined in tables.cpp
 extern uint8_t ImpulseTrackerPortaVolCmd[16];
-extern WORD S3MFineTuneTable[16];
-extern WORD ProTrackerPeriodTable[6*12];
-extern WORD ProTrackerTunedPeriods[15*12];
-extern WORD FreqS3MTable[];
-extern WORD XMPeriodTable[96+8];
+extern uint16_t S3MFineTuneTable[16];
+extern uint16_t ProTrackerPeriodTable[6*12];
+extern uint16_t ProTrackerTunedPeriods[15*12];
+extern uint16_t FreqS3MTable[];
+extern uint16_t XMPeriodTable[96+8];
 extern UINT XMLinearTable[768];
 extern DWORD FineLinearSlideUpTable[16];
 extern DWORD FineLinearSlideDownTable[16];

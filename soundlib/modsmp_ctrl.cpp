@@ -369,7 +369,7 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
     if((modtype & (MOD_TYPE_IT | MOD_TYPE_MPT)) && (iStart == 0) && (iEnd == pSmp->length * pSmp->GetNumChannels()))
     {
     	BEGIN_CRITICAL();
-    	pSmp->global_volume = min((WORD)(pSmp->global_volume / dAmplify), 64);
+    	pSmp->global_volume = min((uint16_t)(pSmp->global_volume / dAmplify), 64);
     	for (CHANNELINDEX i = 0; i < MAX_CHANNELS; i++)
     	{
     		if(pSndFile->Chn[i].sample_data == pSmp->sample_data)

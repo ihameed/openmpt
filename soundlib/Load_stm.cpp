@@ -27,13 +27,13 @@ typedef struct tagSTMNOTE
 typedef struct tagSTMSAMPLE
 {
     CHAR filename[14];	// Can't have long comments - just legacy_filename comments :)
-    WORD reserved;		// ISA in memory when in ST 2
-    WORD length;		// Sample length
-    WORD loopbeg;		// Loop start point
-    WORD loopend;		// Loop end point
+    uint16_t reserved;		// ISA in memory when in ST 2
+    uint16_t length;		// Sample length
+    uint16_t loopbeg;		// Loop start point
+    uint16_t loopend;		// Loop end point
     uint8_t volume;		// Volume
     uint8_t reserved2;		// More reserved crap
-    WORD c2spd;			// Good old c2spd
+    uint16_t c2spd;			// Good old c2spd
     uint8_t reserved3[6];	// Yet more of PSi's reserved crap
 } STMSAMPLE;
 

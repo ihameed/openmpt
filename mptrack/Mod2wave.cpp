@@ -281,9 +281,9 @@ void CWaveConvert::OnOK()
     WaveFormat.Format.nSamplesPerSec = m_CbnSampleRate.GetItemData(m_CbnSampleRate.GetCurSel());
     if (WaveFormat.Format.nSamplesPerSec < 11025) WaveFormat.Format.nSamplesPerSec = 11025;
     if (WaveFormat.Format.nSamplesPerSec > MAX_SAMPLE_RATE) WaveFormat.Format.nSamplesPerSec = MAX_SAMPLE_RATE;
-    WaveFormat.Format.nChannels = (WORD)(dwFormat >> 8);
+    WaveFormat.Format.nChannels = (uint16_t)(dwFormat >> 8);
     if ((WaveFormat.Format.nChannels != 1) && (WaveFormat.Format.nChannels != 4)) WaveFormat.Format.nChannels = 2;
-    WaveFormat.Format.wBitsPerSample = (WORD)(dwFormat & 0xFF);
+    WaveFormat.Format.wBitsPerSample = (uint16_t)(dwFormat & 0xFF);
 
 // -> CODE#0024
 // -> DESC="wav export update"

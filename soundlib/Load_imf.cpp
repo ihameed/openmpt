@@ -260,7 +260,7 @@ static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINS
         uint16_t nTick, nValue;
         nTick = LittleEndianW(imfins->nodes[e][n].tick);
         nValue = LittleEndianW(imfins->nodes[e][n].value) >> shift;
-        env->Ticks[n] = (WORD)max(min, nTick);
+        env->Ticks[n] = (uint16_t)max(min, nTick);
         env->Values[n] = (uint8_t)min(nValue, ENVELOPE_MAX);
         min = nTick + 1;
     }
@@ -272,7 +272,7 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const DWORD dwMemLength
     DWORD dwMemPos = 0;
     IMFHEADER hdr;
     modsample_t *pSample = Samples + 1;
-    WORD firstsample = 1; // first pSample for the current instrument
+    uint16_t firstsample = 1; // first pSample for the current instrument
     uint32_t ignore_channels = 0; // bit set for each channel that's completely disabled
 
     ASSERT_CAN_READ(sizeof(IMFHEADER));

@@ -29,10 +29,10 @@ typedef struct AMSFILEHEADER
     uint8_t verlo, verhi;    // 0x??,0x01
     uint8_t chncfg;
     uint8_t samples;
-    WORD patterns;
-    WORD orders;
+    uint16_t patterns;
+    uint16_t orders;
     uint8_t vmidi;
-    WORD extra;
+    uint16_t extra;
 } AMSFILEHEADER;
 
 typedef struct AMSSAMPLEHEADER
@@ -41,7 +41,7 @@ typedef struct AMSSAMPLEHEADER
     DWORD loopstart;
     DWORD loopend;
     uint8_t finetune_and_pan;
-    WORD samplerate;    // C-2 = 8363
+    uint16_t samplerate;    // C-2 = 8363
     uint8_t volume;    	// 0-127
     uint8_t infobyte;
 } AMSSAMPLEHEADER;
@@ -160,7 +160,7 @@ bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength
     }
     
     // Read Song Comments
-    tmp = *((WORD *)(lpStream+dwMemPos));
+    tmp = *((uint16_t *)(lpStream+dwMemPos));
     dwMemPos += 2;
     if (dwMemPos + tmp >= dwMemLength) return true;
     if (tmp)
@@ -173,7 +173,7 @@ bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength
     Order.resize(pfh->orders, Order.GetInvalidPatIndex());
     for (UINT iOrd=0; iOrd < pfh->orders; iOrd++, dwMemPos += 2)
     {
-        Order[iOrd] = (PATTERNINDEX)*((WORD *)(lpStream + dwMemPos));
+        Order[iOrd] = (PATTERNINDEX)*((uint16_t *)(lpStream + dwMemPos));
     }
 
     // Read Patterns
@@ -296,7 +296,7 @@ bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength
 typedef struct AMS2FILEHEADER
 {
     DWORD dwHdr1;    	// AMShdr
-    WORD wHdr2;
+    uint16_t wHdr2;
     uint8_t b1A;    		// 0x1A
     uint8_t titlelen;    	// 30-bytes max
     CHAR szTitle[30];    // [titlelen]
@@ -304,16 +304,16 @@ typedef struct AMS2FILEHEADER
 
 typedef struct AMS2SONGHEADER
 {
-    WORD version;
+    uint16_t version;
     uint8_t instruments;
-    WORD patterns;
-    WORD orders;
-    WORD bpm;
+    uint16_t patterns;
+    uint16_t orders;
+    uint16_t bpm;
     uint8_t speed;
     uint8_t channels;
     uint8_t commands;
     uint8_t rows;
-    WORD flags;
+    uint16_t flags;
 } AMS2SONGHEADER;
 
 typedef struct AMS2INSTRUMENT
@@ -337,9 +337,9 @@ typedef struct AMS2SAMPLE
     DWORD length;
     DWORD loopstart;
     DWORD loopend;
-    WORD frequency;
+    uint16_t frequency;
     uint8_t finetune;
-    WORD nC5Speed;
+    uint16_t nC5Speed;
     CHAR transpose;
     uint8_t volume;
     uint8_t flags;
@@ -430,7 +430,7 @@ bool CSoundFile::ReadAMS2(const uint8_t * /*lpStream*/, DWORD /*dwMemLength*/)
             {
                 pIns->VolEnv.Values[i] = (uint8_t)((volenv->info[i*3+2] & 0x7F) >> 1);
                 pos += volenv->info[i*3] + ((volenv->info[i*3+1] & 1) << 8);
-                pIns->VolEnv.Ticks[i] = (WORD)pos;
+                pIns->VolEnv.Ticks[i] = (uint16_t)pos;
             }
         }
         pIns->nFadeOut = (((lpStream[dwMemPos+2] & 0x0F) << 8) | (lpStream[dwMemPos+1])) << 3;
@@ -501,7 +501,7 @@ bool CSoundFile::ReadAMS2(const uint8_t * /*lpStream*/, DWORD /*dwMemLength*/)
         Order.resize(psh->orders, Order.GetInvalidPatIndex());
         for (UINT iOrd = 0; iOrd < psh->orders; iOrd++)
         {
-            Order[iOrd] = (PATTERNINDEX)*((WORD *)(lpStream + dwMemPos));
+            Order[iOrd] = (PATTERNINDEX)*((uint16_t *)(lpStream + dwMemPos));
             dwMemPos += 2;
         }
     }

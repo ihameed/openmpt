@@ -175,7 +175,7 @@ bool CInputHandler::InterceptSpecialKeys( UINT nChar , UINT nFlags )
     		inp[0].type = inp[1].type = INPUT_KEYBOARD;
     		inp[0].ki.time = inp[1].ki.time = 0;
     		inp[0].ki.dwExtraInfo = inp[0].ki.dwExtraInfo = 0;
-    		inp[0].ki.wVk = inp[1].ki.wVk = static_cast<WORD>(nChar);
+    		inp[0].ki.wVk = inp[1].ki.wVk = static_cast<uint16_t>(nChar);
     		inp[0].ki.wScan = inp[1].ki.wScan = 0;
     		inp[0].ki.dwFlags = KEYEVENTF_KEYUP;
     		inp[1].ki.dwFlags = 0;
@@ -384,12 +384,12 @@ bool CInputHandler::Bypass()
     return m_bBypass;
 }
 
-WORD CInputHandler::GetModifierMask()
+uint16_t CInputHandler::GetModifierMask()
 {
-    return (WORD)modifierMask;
+    return (uint16_t)modifierMask;
 }
 
-void CInputHandler::SetModifierMask(WORD mask)
+void CInputHandler::SetModifierMask(uint16_t mask)
 {
     modifierMask=mask;
 }

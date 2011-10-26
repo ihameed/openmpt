@@ -21,7 +21,7 @@
 
 using namespace modplug::pervasives;
 
-extern WORD S3MFineTuneTable[16];
+extern uint16_t S3MFineTuneTable[16];
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

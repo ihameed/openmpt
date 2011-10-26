@@ -68,19 +68,19 @@ typedef struct tagMEDMODULEHEADER
     DWORD id;    	// MMD1-MMD3
     DWORD modlen;    // Size of file
     DWORD song;    	// Position in file for this song
-    WORD psecnum;
-    WORD pseq;
+    uint16_t psecnum;
+    uint16_t pseq;
     DWORD blockarr;    // Position in file for blocks
     DWORD mmdflags;
     DWORD smplarr;    // Position in file for samples
     DWORD reserved;
     DWORD expdata;    // Absolute offset in file for ExpData (0 if not present)
     DWORD reserved2;
-    WORD pstate;
-    WORD pblock;
-    WORD pline;
-    WORD pseqnum;
-    WORD actplayline;
+    uint16_t pstate;
+    uint16_t pblock;
+    uint16_t pline;
+    uint16_t pseqnum;
+    uint16_t actplayline;
     uint8_t counter;
     uint8_t extra_songs;    // # of songs - 1
 } MEDMODULEHEADER;
@@ -88,7 +88,7 @@ typedef struct tagMEDMODULEHEADER
 
 typedef struct tagMMD0SAMPLE
 {
-    WORD rep, replen;
+    uint16_t rep, replen;
     uint8_t midich;
     uint8_t midipreset;
     uint8_t svol;
@@ -100,7 +100,7 @@ typedef struct tagMMD0SAMPLE
 typedef struct tagMMDSAMPLEHEADER
 {
     DWORD length;     // length of *one* *unpacked* channel in *bytes*
-    WORD type;   
+    uint16_t type;   
                 // if non-negative
                     // bits 0-3 reserved for multi-octave instruments, not supported on the PC
                     // 0x10: 16 bit (otherwise 8 bit)
@@ -110,8 +110,8 @@ typedef struct tagMMDSAMPLEHEADER
                 // -1: Synth
                 // -2: Hybrid
     // if type indicates packed data, these fields follow, otherwise we go right to the data
-    WORD packtype;    // Only 1 = ADPCM is supported
-    WORD subtype;    // Packing subtype
+    uint16_t packtype;    // Only 1 = ADPCM is supported
+    uint16_t subtype;    // Packing subtype
         // ADPCM subtype
         // 1: g723_40
         // 2: g721
@@ -128,10 +128,10 @@ typedef struct tagMMDSAMPLEHEADER
 typedef struct tagMMD0SONGHEADER
 {
     MMD0SAMPLE sample[63];
-    WORD numblocks;    	// # of blocks
-    WORD songlen;    	// # of entries used in playseq
+    uint16_t numblocks;    	// # of blocks
+    uint16_t songlen;    	// # of entries used in playseq
     uint8_t playseq[256];    // Play sequence
-    WORD deftempo;    	// BPM tempo
+    uint16_t deftempo;    	// BPM tempo
     signed char playtransp;    // Play transpose
     uint8_t flags;    		// 0x10: Hex Volumes | 0x20: ST/NT/PT Slides | 0x40: 8 Channels song
     uint8_t flags2;    	// [b4-b0]+1: Tempo LPB, 0x20: tempo mode, 0x80: mix_conv=on
@@ -146,23 +146,23 @@ typedef struct tagMMD0SONGHEADER
 typedef struct tagMMD2SONGHEADER
 {
     MMD0SAMPLE sample[63];
-    WORD numblocks;    	// # of blocks
-    WORD numsections;    // # of sections
+    uint16_t numblocks;    	// # of blocks
+    uint16_t numsections;    // # of sections
     DWORD playseqtable;    // filepos of play sequence
-    DWORD sectiontable;    // filepos of sections table (WORD array)
+    DWORD sectiontable;    // filepos of sections table (uint16_t array)
     DWORD trackvols;    // filepos of tracks volume (uint8_t array)
-    WORD numtracks;    	// # of tracks (max 64)
-    WORD numpseqs;    	// # of play sequences
+    uint16_t numtracks;    	// # of tracks (max 64)
+    uint16_t numpseqs;    	// # of play sequences
     DWORD trackpans;    // filepos of tracks pan values (uint8_t array)
     LONG flags3;    	// 0x1:stereo_mix, 0x2:free_panning, 0x4:GM/XG compatibility
-    WORD voladj;    	// vol_adjust (set to 100 if 0)
-    WORD channels;    	// # of channels (4 if =0)
+    uint16_t voladj;    	// vol_adjust (set to 100 if 0)
+    uint16_t channels;    	// # of channels (4 if =0)
     uint8_t mix_echotype;    // 1:normal,2:xecho
     uint8_t mix_echodepth;    // 1..6
-    WORD mix_echolen;    // > 0
+    uint16_t mix_echolen;    // > 0
     signed char mix_stereosep;    // -4..4
     uint8_t pad0[223];
-    WORD deftempo;    	// BPM tempo
+    uint16_t deftempo;    	// BPM tempo
     signed char playtransp;    // play transpose
     uint8_t flags;    		// 0x1:filteron, 0x2:jumpingon, 0x4:jump8th, 0x8:instr_attached, 0x10:hex_vol, 0x20:PT_slides, 0x40:8ch_conv,0x80:hq slows playing speed
     uint8_t flags2;    	// 0x80:mix_conv=on, [b4-b0]+1:tempo LPB, 0x20:tempo_mode
@@ -195,8 +195,8 @@ typedef struct tagMMD0BLOCK
 // otherwise byte2 represents the first data byte.
 typedef struct tagMMD1BLOCK
 {
-    WORD numtracks;    // Number of tracks, may be > 64, but then that data is skipped.
-    WORD lines;    	// Stored value is 1 less than actual, so 0 -> 1 line
+    uint16_t numtracks;    // Number of tracks, may be > 64, but then that data is skipped.
+    uint16_t lines;    	// Stored value is 1 less than actual, so 0 -> 1 line
     DWORD info;    	// Offset of BlockInfo (if 0, no block_info is present)
 } MMD1BLOCK;
 
@@ -219,17 +219,17 @@ typedef struct tagMMD2PLAYSEQ
     CHAR name[32];
     DWORD command_offs;    // filepos of command table
     DWORD reserved;
-    WORD length;
-    WORD seq[512];    // skip if > 0x8000
+    uint16_t length;
+    uint16_t seq[512];    // skip if > 0x8000
 } MMD2PLAYSEQ;
 
 
 // A command table contains commands that effect a particular play sequence
 // entry.  The only commands read in are STOP or POSJUMP, all others are ignored
-// POSJUMP is presumed to have extra bytes containing a WORD for the position
+// POSJUMP is presumed to have extra bytes containing a uint16_t for the position
 typedef struct tagMMDCOMMAND
 {
-    WORD offset;    	// Offset within current sequence entry
+    uint16_t offset;    	// Offset within current sequence entry
     uint8_t cmdnumber;    	// STOP (537) or POSJUMP (538) (others skipped)
     uint8_t extra_count;
     uint8_t extra_bytes[4];// [extra_count];
@@ -240,13 +240,13 @@ typedef struct tagMMD0EXP
 {
     DWORD nextmod;    		// File offset of next Hdr
     DWORD exp_smp;    		// Pointer to extra instrument data
-    WORD s_ext_entries;    	// Number of extra instrument entries
-    WORD s_ext_entrsz;    	// Size of extra instrument data
+    uint16_t s_ext_entries;    	// Number of extra instrument entries
+    uint16_t s_ext_entrsz;    	// Size of extra instrument data
     DWORD annotxt;
     DWORD annolen;
     DWORD iinfo;    		// Instrument names
-    WORD i_ext_entries;    
-    WORD i_ext_entrsz;
+    uint16_t i_ext_entries;    
+    uint16_t i_ext_entrsz;
     DWORD jumpmask;
     DWORD rgbtable;
     uint8_t channelsplit[4];    // Only used if 8ch_conv (extra channel for every nonzero entry)
@@ -637,7 +637,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
     } else
     {
         UINT nOrders, nSections;
-        WORD nTrks = BigEndianW(pmsh2->numtracks);
+        uint16_t nTrks = BigEndianW(pmsh2->numtracks);
         if ((nTrks >= 4) && (nTrks <= 32)) m_nChannels = nTrks;
         DWORD playseqtable = BigEndian(pmsh2->playseqtable);
         UINT numplayseqs = BigEndianW(pmsh2->numpseqs);
@@ -674,7 +674,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
                     Order.resize(nOrders++);
                     for (UINT i=0; i<n; i++)
                     {
-                        WORD seqval = BigEndianW(pmps->seq[i]);
+                        uint16_t seqval = BigEndianW(pmps->seq[i]);
                         if ((seqval < wNumBlocks) && (nOrders < MAX_ORDERS-1))
                         {
                             Order[nOrders++] = (ORDERINDEX)seqval;

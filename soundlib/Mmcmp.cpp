@@ -24,13 +24,13 @@ typedef struct MMCMPFILEHEADER
 {
     DWORD id_ziRC;    // "ziRC"
     DWORD id_ONia;    // "ONia"
-    WORD hdrsize;
+    uint16_t hdrsize;
 } MMCMPFILEHEADER, *LPMMCMPFILEHEADER;
 
 typedef struct MMCMPHEADER
 {
-    WORD version;
-    WORD nblocks;
+    uint16_t version;
+    uint16_t nblocks;
     DWORD filesize;
     DWORD blktable;
     uint8_t glb_comp;
@@ -42,10 +42,10 @@ typedef struct MMCMPBLOCK
     DWORD unpk_size;
     DWORD pk_size;
     DWORD xor_chk;
-    WORD sub_blk;
-    WORD flags;
-    WORD tt_entries;
-    WORD num_bits;
+    uint16_t sub_blk;
+    uint16_t flags;
+    uint16_t tt_entries;
+    uint16_t num_bits;
 } MMCMPBLOCK, *LPMMCMPBLOCK;
 
 typedef struct MMCMPSUBBLOCK
@@ -219,7 +219,7 @@ BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength)
                     {
                         newval ^= 0x8000;
                     }
-                    pDest[dwPos++] = (WORD)newval;
+                    pDest[dwPos++] = (uint16_t)newval;
                 }
                 if (dwPos >= dwSize)
                 {

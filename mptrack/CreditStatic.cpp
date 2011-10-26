@@ -435,9 +435,9 @@ void CCreditStatic::FillGradient(CDC *pDC, CRect *m_ScrollRect, CRect *m_FillRec
     float fStep,fRStep,fGStep,fBStep;	    // How large is each band?
     int iOnBand;  // Loop index
 
-    WORD R = GetRValue(color);
-    WORD G = GetGValue(color);
-    WORD B = GetBValue(color);
+    uint16_t R = GetRValue(color);
+    uint16_t G = GetGValue(color);
+    uint16_t B = GetBValue(color);
 
     // Determine how large each band should be in order to cover the
     // client with 256 bands (one for every color intensity level)
@@ -925,7 +925,7 @@ BOOL CCreditStatic::SetBkImage(LPCTSTR lpszResourceName)
         LOGPALETTE *pLP = (LOGPALETTE *) new uint8_t[nSize];
 
         pLP->palVersion = 0x300;
-        pLP->palNumEntries = (WORD)nColors;
+        pLP->palNumEntries = (uint16_t)nColors;
 
         for( int i=0; i < nColors; i++)
         {

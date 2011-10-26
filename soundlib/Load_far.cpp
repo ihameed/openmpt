@@ -24,14 +24,14 @@ typedef struct FARHEADER1
     DWORD id;    			// file magic FAR=
     CHAR songname[40];    	// songname
     CHAR magic2[3];    		// 13,10,26
-    WORD headerlen;    		// remaining length of header in bytes
+    uint16_t headerlen;    		// remaining length of header in bytes
     uint8_t version;    		// 0xD1
     uint8_t onoff[16];
     uint8_t edit1[9];
     uint8_t speed;
     uint8_t panning[16];
     uint8_t edit2[4];
-    WORD stlen;
+    uint16_t stlen;
 } FARHEADER1;
 
 typedef struct FARHEADER2
@@ -40,7 +40,7 @@ typedef struct FARHEADER2
     uint8_t numpat;
     uint8_t snglen;
     uint8_t loopto;
-    WORD patsiz[256];
+    uint16_t patsiz[256];
 } FARHEADER2;
 
 typedef struct FARSAMPLE
@@ -125,7 +125,7 @@ bool CSoundFile::ReadFAR(const uint8_t *lpStream, const DWORD dwMemLength)
     }
     // end byteswap of pattern data
 
-    WORD *patsiz = (WORD *)pmh2->patsiz;
+    uint16_t *patsiz = (uint16_t *)pmh2->patsiz;
     for (UINT ipat=0; ipat<256; ipat++) if (patsiz[ipat])
     {
         UINT patlen = patsiz[ipat];

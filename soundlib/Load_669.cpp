@@ -19,7 +19,7 @@
 
 typedef struct tagFILEHEADER669
 {
-    WORD sig;    			// 'if' or 'JN'
+    uint16_t sig;    			// 'if' or 'JN'
     char songmessage[108];    // Song Message
     uint8_t samples;    		// number of samples (1-64)
     uint8_t patterns;    		// number of patterns (1-128)

@@ -9,21 +9,21 @@ typedef struct tagITFILEHEADER
 	CHAR songname[26];
 	uint8_t highlight_minor;
 	uint8_t highlight_major;
-	WORD ordnum;
-	WORD insnum;
-	WORD smpnum;
-	WORD patnum;
-	WORD cwtv;			// "made with" tracker
-	WORD cmwt;			// "compatible with" tracker
-	WORD flags;
-	WORD special;
+	uint16_t ordnum;
+	uint16_t insnum;
+	uint16_t smpnum;
+	uint16_t patnum;
+	uint16_t cwtv;			// "made with" tracker
+	uint16_t cmwt;			// "compatible with" tracker
+	uint16_t flags;
+	uint16_t special;
 	uint8_t globalvol;
 	uint8_t mv;			// master volume
 	uint8_t speed;
 	uint8_t tempo;
 	uint8_t sep;			// panning separation (0...128)
 	uint8_t pwd;			// pitch wheel depth
-	WORD msglength;
+	uint16_t msglength;
 	DWORD msgoffset;
 	DWORD reserved;		// ChibiTracker writes "CHBI" here. OpenMPT writes "OMPT" here in some cases, see Load_it.cpp
 	uint8_t chnpan[64];
@@ -54,15 +54,15 @@ typedef struct tagITOLDINSTRUMENT
 	uint8_t vle;
 	uint8_t sls;
 	uint8_t sle;
-	WORD reserved1;
-	WORD fadeout;
+	uint16_t reserved1;
+	uint16_t fadeout;
 	uint8_t nna;
 	uint8_t dnc;
-	WORD trkvers;
+	uint16_t trkvers;
 	uint8_t nos;
 	uint8_t reserved2;
 	CHAR name[26];
-	WORD reserved3[3];
+	uint16_t reserved3[3];
 	uint8_t keyboard[240];
 	uint8_t volenv[200];
 	uint8_t nodes[50];
@@ -78,14 +78,14 @@ typedef struct tagITINSTRUMENT
 	uint8_t nna;
 	uint8_t dct;
 	uint8_t dca;
-	WORD fadeout;
+	uint16_t fadeout;
 	signed char pps;
 	uint8_t ppc;
 	uint8_t gbv;
 	uint8_t dfp;
 	uint8_t rv;
 	uint8_t rp;
-	WORD trkvers;
+	uint16_t trkvers;
 	uint8_t nos;
 	uint8_t reserved1;
 	CHAR name[26];
@@ -93,7 +93,7 @@ typedef struct tagITINSTRUMENT
 	uint8_t ifr;
 	uint8_t mch;
 	uint8_t mpr;
-	WORD mbank;
+	uint16_t mbank;
 	uint8_t keyboard[240];
 	ITENVELOPE volenv;
 	ITENVELOPE panenv;

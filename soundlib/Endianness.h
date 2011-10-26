@@ -12,13 +12,13 @@
 #ifdef PLATFORM_BIG_ENDIAN
 // PPC
 inline DWORD LittleEndian(DWORD x)    { return ((x & 0xFF) << 24) | ((x & 0xFF00) << 8) | ((x & 0xFF0000) >> 8) | ((x & 0xFF000000) >> 24); }
-inline WORD LittleEndianW(WORD x)    { return (WORD)(((x >> 8) & 0xFF) | ((x << 8) & 0xFF00)); }
+inline uint16_t LittleEndianW(uint16_t x)    { return (uint16_t)(((x >> 8) & 0xFF) | ((x << 8) & 0xFF00)); }
 #define BigEndian(x)    			(x)
 #define BigEndianW(x)    			(x)
 #else
 // x86
 inline DWORD BigEndian(DWORD x)    { return ((x & 0xFF) << 24) | ((x & 0xFF00) << 8) | ((x & 0xFF0000) >> 8) | ((x & 0xFF000000) >> 24); }
-inline WORD BigEndianW(WORD x)    { return (WORD)(((x >> 8) & 0xFF) | ((x << 8) & 0xFF00)); }
+inline uint16_t BigEndianW(uint16_t x)    { return (uint16_t)(((x >> 8) & 0xFF) | ((x << 8) & 0xFF00)); }
 #define LittleEndian(x)    		(x)
 #define LittleEndianW(x)    	(x)
 #endif

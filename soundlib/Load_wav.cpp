@@ -103,7 +103,7 @@ bool CSoundFile::ReadWav(const uint8_t *lpStream, const DWORD dwMemLength)
     	pSmp->default_volume = 256;
     	pSmp->default_pan = 128;
     	pSmp->global_volume = 64;
-    	pSmp->flags = (WORD)((pfmt->bitspersample >= 16) ? CHN_16BIT : 0);
+    	pSmp->flags = (uint16_t)((pfmt->bitspersample >= 16) ? CHN_16BIT : 0);
     	pSmp->flags |= CHN_PANNING;
     	if (m_nSamples > 1)
     	{
@@ -111,7 +111,7 @@ bool CSoundFile::ReadWav(const uint8_t *lpStream, const DWORD dwMemLength)
     		{
     		case 0:	pSmp->default_pan = 0; break;
     		case 1:	pSmp->default_pan = 256; break;
-    		case 2: pSmp->default_pan = (WORD)((m_nSamples == 3) ? 128 : 64); pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
+    		case 2: pSmp->default_pan = (uint16_t)((m_nSamples == 3) ? 128 : 64); pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
     		case 3: pSmp->default_pan = 192; pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
     		default: pSmp->default_pan = 128; break;
     		}
@@ -151,7 +151,7 @@ bool CSoundFile::ReadWav(const uint8_t *lpStream, const DWORD dwMemLength)
 
 typedef struct IMAADPCMBLOCK
 {
-    WORD sample;
+    uint16_t sample;
     uint8_t index;
     uint8_t Reserved;
 } DVI_ADPCMBLOCKHEADER;

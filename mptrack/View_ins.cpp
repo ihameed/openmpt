@@ -287,7 +287,7 @@ bool CViewInstrument::EnvSetValue(int nPoint, int nTick, int nValue)
     		if (nTick > maxtick) nTick = maxtick;
     		if (nTick != envelope->Ticks[nPoint])
     		{
-    			envelope->Ticks[nPoint] = (WORD)nTick;
+    			envelope->Ticks[nPoint] = (uint16_t)nTick;
     			bOK = true;
     		}
     	}
@@ -973,7 +973,7 @@ uint8_t CViewInstrument::EnvGetReleaseNode()
     return envelope->release_node;
 }
 
-WORD CViewInstrument::EnvGetReleaseNodeValue()
+uint16_t CViewInstrument::EnvGetReleaseNodeValue()
 //--------------------------------------------
 {
     modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
@@ -981,7 +981,7 @@ WORD CViewInstrument::EnvGetReleaseNodeValue()
     return envelope->Values[EnvGetReleaseNode()];
 }
 
-WORD CViewInstrument::EnvGetReleaseNodeTick()
+uint16_t CViewInstrument::EnvGetReleaseNodeTick()
 //-------------------------------------------
 {
     modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
@@ -1082,7 +1082,7 @@ UINT CViewInstrument::EnvInsertPoint(int nTick, int nValue)
     				envelope->Ticks[j] = envelope->Ticks[j - 1];
     				envelope->Values[j] = envelope->Values[j - 1];
     			}
-    			envelope->Ticks[i] = (WORD)nTick;
+    			envelope->Ticks[i] = (uint16_t)nTick;
     			envelope->Values[i] = (uint8_t)nValue;
     			envelope->num_nodes++;
     			if (envelope->loop_start >= i) envelope->loop_start++;
@@ -1456,7 +1456,7 @@ void CViewInstrument::OnMouseMove(UINT, CPoint pt)
     			nRelTick = pEnv->Ticks[m_nDragItem - 1] - nRelTick;
     			for(size_t i = m_nDragItem; i < pEnv->num_nodes; i++)
     			{
-    				pEnv->Ticks[i] = (WORD)(max(0, (int)pEnv->Ticks[i] + nRelTick));
+    				pEnv->Ticks[i] = (uint16_t)(max(0, (int)pEnv->Ticks[i] + nRelTick));
     			}
     		}
     	} else
@@ -2374,7 +2374,7 @@ void CViewInstrument::EnvKbdInsertPoint()
     modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
     if(pEnv == nullptr) return;
     if(!IsDragItemEnvPoint()) m_nDragItem = pEnv->num_nodes;
-    WORD newTick = pEnv->Ticks[pEnv->num_nodes - 1] + 4;	// if last point is selected: add point after last point
+    uint16_t newTick = pEnv->Ticks[pEnv->num_nodes - 1] + 4;	// if last point is selected: add point after last point
     uint8_t newVal = pEnv->Values[pEnv->num_nodes - 1];
     // if some other point is selected: interpolate between this and next point (if there's room between them)
     if(m_nDragItem < pEnv->num_nodes && (pEnv->Ticks[m_nDragItem] - pEnv->Ticks[m_nDragItem - 1] > 1))

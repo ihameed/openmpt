@@ -470,7 +470,7 @@ VOID CModTree::RefreshDlsBanks()
     			m_tiDLS[iDls] = InsertItem(TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE,
     							szName, IMAGE_FOLDER, IMAGE_FOLDER, 0, 0, 0, TVI_ROOT, hDlsRoot);
     			// Memorize Banks
-    			WORD wBanks[16];
+    			uint16_t wBanks[16];
     			HTREEITEM hBanks[16];
     			memset(wBanks, 0, sizeof(wBanks));
     			memset(hBanks, 0, sizeof(hBanks));
@@ -541,7 +541,7 @@ VOID CModTree::RefreshDlsBanks()
     							hbank = InsertItem(TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE,
     								s, IMAGE_FOLDER, IMAGE_FOLDER, 0, 0, 0,
     								m_tiDLS[iDls], (j > 0) ? hBanks[j-1] : TVI_FIRST);
-    							wBanks[j] = (WORD)mbank;
+    							wBanks[j] = (uint16_t)mbank;
     							hBanks[j] = hbank;
     							nBanks++;
     						}
