@@ -128,8 +128,8 @@ protected:
 
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-    BYTE activeNoteChannel[NOTE_MAX + 1];
-    BYTE splitActiveNoteChannel[NOTE_MAX + 1];
+    uint8_t activeNoteChannel[NOTE_MAX + 1];
+    uint8_t splitActiveNoteChannel[NOTE_MAX + 1];
     int oldrow,oldchn,oldsplitchn;
 // -! NEW_FEATURE#0012
 
@@ -187,7 +187,7 @@ public:
 // -> CODE#0014
 // -> DESC="vst wet/dry slider"
 //    BOOL EnterNote(UINT nNote, UINT nIns=0, BOOL bCheck=FALSE, int vol=-1, BOOL bMultiCh=FALSE);
-    BYTE EnterNote(UINT nNote, UINT nIns=0, BOOL bCheck=FALSE, int vol=-1, BOOL bMultiCh=FALSE);
+    uint8_t EnterNote(UINT nNote, UINT nIns=0, BOOL bCheck=FALSE, int vol=-1, BOOL bMultiCh=FALSE);
 // -! NEW_FEATURE#0014// -> CODE#0012
     BOOL ShowEditWindow();
     UINT GetCurrentInstrument() const;

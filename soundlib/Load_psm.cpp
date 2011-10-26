@@ -123,13 +123,13 @@ struct PSMSUBSONG // For internal use (pattern conversion)
 };
 
 // Portamento effect conversion (depending on format version)
-inline BYTE convert_psm_porta(BYTE param, bool bNewFormat)
+inline uint8_t convert_psm_porta(uint8_t param, bool bNewFormat)
 //--------------------------------------------------------
 {
     return ((bNewFormat) ? (param) : ((param < 4) ? (param | 0xF0) : (param >> 2)));
 }
 
-bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;
@@ -541,7 +541,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
             while(dwRowOffset < dwPatternOffset + rowSize)
             {
                 if(dwRowOffset + 1 > dwMemLength) return false;
-                BYTE mask = lpStream[dwRowOffset];
+                uint8_t mask = lpStream[dwRowOffset];
                 // Point to the correct channel
                 modplug::tracker::modcommand_t *m = row_data + min(m_nChannels - 1, lpStream[dwRowOffset + 1]);
                 dwRowOffset += 2;
@@ -550,7 +550,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 {
                     if(dwRowOffset + 1 > dwMemLength) return false;
                     // Note present
-                    BYTE bNote = lpStream[dwRowOffset];
+                    uint8_t bNote = lpStream[dwRowOffset];
                     if(!bNewFormat)
                     {
                         if(bNote == 0xFF)
@@ -799,7 +799,7 @@ bool CSoundFile::ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                         break;
                     }
                 }
-                TryWriteEffect(endPattern, lastRow, CMD_POSITIONJUMP, (BYTE)subsongs[i].restartPos, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+                TryWriteEffect(endPattern, lastRow, CMD_POSITIONJUMP, (uint8_t)subsongs[i].restartPos, false, CHANNELINDEX_INVALID, false, weTryNextRow);
             }
         }
     }
@@ -866,7 +866,7 @@ struct PSM16PATHEADER
 #pragma pack()
 
 
-bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;
@@ -1007,7 +1007,7 @@ bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
             while(dwMemPos < dwNextPattern && iRow < phdr->numRows)
             {
                 ASSERT_CAN_READ(1);
-                BYTE bChnFlag = lpStream[dwMemPos++];
+                uint8_t bChnFlag = lpStream[dwMemPos++];
                 if(bChnFlag == 0)
                 {
                     iRow++;
@@ -1034,7 +1034,7 @@ bool CSoundFile::ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength)
                 {
                     // effect present - convert
                     ASSERT_CAN_READ(2);
-                    BYTE command = lpStream[dwMemPos++], param = lpStream[dwMemPos++];
+                    uint8_t command = lpStream[dwMemPos++], param = lpStream[dwMemPos++];
 
                     switch(command)
                     {

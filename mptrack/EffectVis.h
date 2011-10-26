@@ -79,10 +79,10 @@ public:
     int PCParamToScreenY(uint16_t param);
     int FXParamToScreenY(uint16_t param);
     uint16_t GetParam(UINT row);
-    BYTE GetCommand(UINT row);
+    uint8_t GetCommand(UINT row);
     void SetParamFromY(UINT row, long y);
-    void SetCommand(UINT row, BYTE cmd);
-    BYTE ScreenYToFXParam(int y);
+    void SetCommand(UINT row, uint8_t cmd);
+    uint8_t ScreenYToFXParam(int y);
     uint16_t ScreenYToPCParam(int y);
     UINT ScreenXToRow(int x);
     void SetPlayCursor(UINT nPat, UINT nRow);

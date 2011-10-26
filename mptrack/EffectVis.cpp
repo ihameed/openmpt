@@ -141,13 +141,13 @@ void CEffectVis::SetParamFromY(UINT row, long y)
     	// Cap the parameter value as appropriate, based on effect type (e.g. Zxx gets capped to [0x00,0x7F])
     	m_pModDoc->GetEffectFromIndex(m_pModDoc->GetIndexFromEffect(pcmd[offset].command, param), param);
     	BEGIN_CRITICAL();
-    	pcmd[offset].param = static_cast<BYTE>(param);
+    	pcmd[offset].param = static_cast<uint8_t>(param);
     	END_CRITICAL();
     }	
 }
 
 
-BYTE CEffectVis::GetCommand(UINT row)
+uint8_t CEffectVis::GetCommand(UINT row)
 {
     modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
     if (pcmd)
@@ -156,7 +156,7 @@ BYTE CEffectVis::GetCommand(UINT row)
     	return 0;
 }
 
-void CEffectVis::SetCommand(UINT row, BYTE command)
+void CEffectVis::SetCommand(UINT row, uint8_t command)
 {
     modplug::tracker::modcommand_t *pcmd = m_pSndFile->Patterns[m_nPattern];
     BEGIN_CRITICAL();
@@ -219,7 +219,7 @@ int CEffectVis::PCParamToScreenY(uint16_t param)
     return -1;
 }
 
-BYTE CEffectVis::ScreenYToFXParam(int y)
+uint8_t CEffectVis::ScreenYToFXParam(int y)
 {
     if (y<=FXParamToScreenY(0xFF))
     	return 0xFF;
@@ -227,7 +227,7 @@ BYTE CEffectVis::ScreenYToFXParam(int y)
     if (y>=FXParamToScreenY(0x00))
     	return 0x00;
 
-    return (BYTE)((m_rcDraw.bottom-y)/m_pixelsPerFXParam+0.5);
+    return (uint8_t)((m_rcDraw.bottom-y)/m_pixelsPerFXParam+0.5);
 }
 
 uint16_t CEffectVis::ScreenYToPCParam(int y)

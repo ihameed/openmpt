@@ -317,7 +317,7 @@ public:
     bool IsChannelNoFx(CHANNELINDEX nChn) const;
     bool IsChannelRecord1(CHANNELINDEX channel) const;
     bool IsChannelRecord2(CHANNELINDEX channel) const;
-    BYTE IsChannelRecord(CHANNELINDEX channel) const;
+    uint8_t IsChannelRecord(CHANNELINDEX channel) const;
     void Record1Channel(CHANNELINDEX channel, bool select = true);
     void Record2Channel(CHANNELINDEX channel, bool select = true);
     void ReinitRecordState(bool unselect = true);

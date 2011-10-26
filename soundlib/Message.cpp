@@ -53,7 +53,7 @@ void CSoundFile::FreeMessage()
 // [in]  lineEnding: line ending formatting of the text in memory.
 // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
 // [out] returns true on success.
-bool CSoundFile::ReadMessage(const BYTE *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &))
+bool CSoundFile::ReadMessage(const uint8_t *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &))
 //----------------------------------------------------------------------------------------------------------------------------
 {
     char c;
@@ -144,7 +144,7 @@ bool CSoundFile::ReadMessage(const BYTE *data, const size_t length, enmLineEndin
 // [in]  lineEndingLength: The padding space between two fixed lines. (there could for example be a null char after every line)
 // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
 // [out] returns true on success.
-bool CSoundFile::ReadFixedLineLengthMessage(const BYTE *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &))
+bool CSoundFile::ReadFixedLineLengthMessage(const uint8_t *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &))
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(lineLength == 0)
@@ -192,7 +192,7 @@ UINT CSoundFile::GetSongMessage(LPSTR s, UINT len, UINT linesize)
     if ((len > 1) && (s)) s[1] = '\n';
     while ((*p)	&& (i+2 < len))
     {
-    	BYTE c = (BYTE)*p++;
+    	uint8_t c = (uint8_t)*p++;
     	if ((c == 0x0D) || ((c == ' ') && (ln >= linesize)))
     	{ if (s) { s[i++] = '\r'; s[i++] = '\n'; } else i+= 2; ln=0; }
     	else
@@ -212,7 +212,7 @@ UINT CSoundFile::GetRawSongMessage(LPSTR s, UINT len, UINT linesize)
     UINT i = 0, ln=0;
     while ((*p)	&& (i < len-1))
     {
-    	BYTE c = (BYTE)*p++;
+    	uint8_t c = (uint8_t)*p++;
     	if ((c == 0x0D)	|| (c == 0x0A))
     	{
     		if (ln) 

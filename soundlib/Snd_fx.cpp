@@ -20,7 +20,7 @@
 #pragma warning(disable:4244)
 
 // Tables defined in tables.cpp
-extern BYTE ImpulseTrackerPortaVolCmd[16];
+extern uint8_t ImpulseTrackerPortaVolCmd[16];
 extern WORD S3MFineTuneTable[16];
 extern WORD ProTrackerPeriodTable[6*12];
 extern WORD ProTrackerTunedPeriods[15*12];
@@ -34,7 +34,7 @@ extern DWORD LinearSlideDownTable[256];
 extern signed char retrigTable1[16];
 extern signed char retrigTable2[16];
 extern short int ModRandomTable[64];
-extern BYTE ModEFxTable[16];
+extern uint8_t ModEFxTable[16];
 
 
 ////////////////////////////////////////////////////////////
@@ -105,10 +105,10 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
 // -! NEW_FEATURE#0022
     UINT nMusicSpeed = m_nDefaultSpeed, nMusicTempo = m_nDefaultTempo, nNextRow = 0;
     LONG nGlbVol = m_nDefaultGlobalVolume, nOldGlbVolSlide = 0;
-    vector<BYTE> instr(m_nChannels, 0);
+    vector<uint8_t> instr(m_nChannels, 0);
     vector<UINT> notes(m_nChannels, 0);
-    vector<BYTE> vols(m_nChannels, 0xFF);
-    vector<BYTE> oldparam(m_nChannels, 0);
+    vector<uint8_t> vols(m_nChannels, 0xFF);
+    vector<uint8_t> oldparam(m_nChannels, 0);
     vector<UINT> chnvols(m_nChannels, 64);
     vector<double> patloop(m_nChannels, 0);
     vector<ROWINDEX> patloopstart(m_nChannels, 0);
@@ -271,7 +271,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
             case CMD_TEMPO:
                 if ((adjustMode & eAdjust) && (m_nType & (MOD_TYPE_S3M | MOD_TYPE_IT | MOD_TYPE_MPT)))
                 {
-                    if (param) pChn->nOldTempo = (BYTE)param; else param = pChn->nOldTempo;
+                    if (param) pChn->nOldTempo = (uint8_t)param; else param = pChn->nOldTempo;
                 }
                 if (param >= 0x20) nMusicTempo = param; else
                 // Tempo Slide
@@ -1858,7 +1858,7 @@ BOOL CSoundFile::ProcessEffects()
             if(IsCompatibleMode(TRK_IMPULSETRACKER))
             {
                 if (param)
-                    pChn->nRetrigParam = (BYTE)(param & 0xFF);
+                    pChn->nRetrigParam = (uint8_t)(param & 0xFF);
 
                 if (volcmd == VOLCMD_OFFSET)
                     RetrigNote(nChn, pChn->nRetrigParam, vol << 3);
@@ -1868,7 +1868,7 @@ BOOL CSoundFile::ProcessEffects()
             else
             {
                 // XM Retrig
-                if (param) pChn->nRetrigParam = (BYTE)(param & 0xFF); else param = pChn->nRetrigParam;
+                if (param) pChn->nRetrigParam = (uint8_t)(param & 0xFF); else param = pChn->nRetrigParam;
                 //RetrigNote(nChn, param);
                 if (volcmd == VOLCMD_OFFSET)
                     RetrigNote(nChn, param, vol << 3);
@@ -2415,7 +2415,7 @@ void CSoundFile::ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, U
 void CSoundFile::NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int sign)
 //----------------------------------------------------------------
 {
-    BYTE x, y;
+    uint8_t x, y;
     if (m_dwSongFlags & SONG_FIRSTTICK)
     {
         x = param & 0xf0;
@@ -3174,7 +3174,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
                             pChn->m_nPlugParamValueStep = (float)((int)dwParam - pChn->m_nPlugInitialParamValue) / (float)m_nMusicSpeed;
                         }
                         //update param on all ticks
-                        pChn->nCutOff = (BYTE) (pChn->m_nPlugInitialParamValue + (m_nTickCount + 1) * pChn->m_nPlugParamValueStep + 0.5);
+                        pChn->nCutOff = (uint8_t) (pChn->m_nPlugInitialParamValue + (m_nTickCount + 1) * pChn->m_nPlugParamValueStep + 0.5);
                     }
                     pChn->nRestoreCutoffOnNewNote = 0;
                 }
@@ -3206,7 +3206,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
                         pChn->m_nPlugParamValueStep = (float)((int)dwParam - pChn->m_nPlugInitialParamValue) / (float)m_nMusicSpeed;
                     }
                     //update param on all ticks
-                    pChn->nResonance = (BYTE) (pChn->m_nPlugInitialParamValue + (m_nTickCount + 1) * pChn->m_nPlugParamValueStep + 0.5);
+                    pChn->nResonance = (uint8_t) (pChn->m_nPlugInitialParamValue + (m_nTickCount + 1) * pChn->m_nPlugParamValueStep + 0.5);
                 }
             }
                 
@@ -3499,7 +3499,7 @@ void CSoundFile::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.VolOff
 
     // Now we can also store the retrig value for IT...
     if(!IsCompatibleMode(TRK_IMPULSETRACKER))
-        pChn->nRetrigCount = (BYTE)nRetrigCount;
+        pChn->nRetrigCount = (uint8_t)nRetrigCount;
 }
 
 

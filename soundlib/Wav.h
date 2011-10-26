@@ -123,10 +123,10 @@ typedef struct WAVEEXTRAHEADER
     WORD  wVolume;
     WORD  wGlobalVol;
     WORD  wReserved;
-    BYTE nVibType;
-    BYTE nVibSweep;
-    BYTE nVibDepth;
-    BYTE nVibRate;
+    uint8_t nVibType;
+    uint8_t nVibSweep;
+    uint8_t nVibDepth;
+    uint8_t nVibRate;
 } WAVEEXTRAHEADER;
 
 

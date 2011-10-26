@@ -11,10 +11,7 @@
 #define SND_DEF_H
 
 #include <cstdint>
-
-#ifndef LPCBYTE
-typedef const BYTE * LPCBYTE;
-#endif
+#include "../mptrack/typedefs.h"
 
 typedef uint32_t ROWINDEX;
     const ROWINDEX ROWINDEX_MAX = UINT32_MAX;

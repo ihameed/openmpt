@@ -17,7 +17,7 @@
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
-void getXParam(BYTE command, UINT nPat, UINT nRow, UINT nChannel, CSoundFile *pSndFile, UINT * xparam, UINT * multiplier)
+void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, CSoundFile *pSndFile, UINT * xparam, UINT * multiplier)
 {
     if(xparam == NULL || multiplier == NULL) return;
 
@@ -1294,7 +1294,7 @@ void CChordEditor::OnBaseNoteChanged()
     int basenote = m_CbnBaseNote.GetCurSel();
     if (basenote >= 0)
     {
-    	pChords[chord].key = (BYTE)basenote;
+    	pChords[chord].key = (uint8_t)basenote;
     	UpdateKeyboard();
     }
 }
@@ -1314,7 +1314,7 @@ void CChordEditor::OnNote1Changed()
     int note = m_CbnNote1.GetCurSel();
     if (note >= 0)
     {
-    	pChords[chord].notes[0] = (BYTE)note;
+    	pChords[chord].notes[0] = (uint8_t)note;
     	UpdateKeyboard();
     }
 }
@@ -1334,7 +1334,7 @@ void CChordEditor::OnNote2Changed()
     int note = m_CbnNote2.GetCurSel();
     if (note >= 0)
     {
-    	pChords[chord].notes[1] = (BYTE)note;
+    	pChords[chord].notes[1] = (uint8_t)note;
     	UpdateKeyboard();
     }
 }
@@ -1354,7 +1354,7 @@ void CChordEditor::OnNote3Changed()
     int note = m_CbnNote3.GetCurSel();
     if (note >= 0)
     {
-    	pChords[chord].notes[2] = (BYTE)note;
+    	pChords[chord].notes[2] = (uint8_t)note;
     	UpdateKeyboard();
     }
 }

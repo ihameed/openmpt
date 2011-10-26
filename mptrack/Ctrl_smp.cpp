@@ -2289,7 +2289,7 @@ int CCtrlSamples::PitchShift(float pitch)
     if(!pSmp) return 2;
 
     // Get number of channels & sample size
-    BYTE smpsize = pSmp->GetElementarySampleSize();
+    uint8_t smpsize = pSmp->GetElementarySampleSize();
     UINT nChn = pSmp->GetNumChannels();
 
     // Get selected oversampling - quality - (also refered as FFT overlapping) factor
@@ -2392,7 +2392,7 @@ int CCtrlSamples::PitchShift(float pitch)
             }
 
             // Convert current channel's data chunk to float
-            BYTE * ptr = (BYTE *)pSmp->sample_data + pos * smpsize * nChn + i * smpsize;
+            uint8_t * ptr = (uint8_t *)pSmp->sample_data + pos * smpsize * nChn + i * smpsize;
 
             for(UINT j = 0 ; j < len ; j++){
                 switch(smpsize){
@@ -2413,7 +2413,7 @@ int CCtrlSamples::PitchShift(float pitch)
             smbPitchShift(pitch, len + finaloffset, fft, ovs, (float)lSampleRate, buffer, outbuf, false);
 
             // Restore pitched-shifted float sample into original sample buffer
-            ptr = (BYTE *)pSmp->sample_data + (pos - inneroffset) * smpsize * nChn + i * smpsize;
+            ptr = (uint8_t *)pSmp->sample_data + (pos - inneroffset) * smpsize * nChn + i * smpsize;
 
             for(UINT j = startoffset ; j < len + finaloffset ; j++){
                 // Just perform a little bit of clipping...
@@ -2425,7 +2425,7 @@ int CCtrlSamples::PitchShift(float pitch)
                         *(SHORT *)ptr = (SHORT)(v * maxSampleValue);
                         break;
                     case 1:
-                        *ptr = (BYTE)(v * maxSampleValue);
+                        *ptr = (uint8_t)(v * maxSampleValue);
                         break;
                 }
                 ptr += smpsize * nChn;
@@ -2796,7 +2796,7 @@ void CCtrlSamples::OnVibTypeChanged()
 {
     if (IsLocked()) return;
     int n = m_ComboAutoVib.GetCurSel();
-    if (n >= 0) m_pSndFile->Samples[m_nSample].vibrato_type = (BYTE)n;
+    if (n >= 0) m_pSndFile->Samples[m_nSample].vibrato_type = (uint8_t)n;
     m_pModDoc->SetModified();
 }
 
@@ -2809,7 +2809,7 @@ void CCtrlSamples::OnVibDepthChanged()
     m_SpinVibDepth.GetRange(lmin, lmax);
     int n = GetDlgItemInt(IDC_EDIT15);
     if ((n >= lmin) && (n <= lmax)) {
-        m_pSndFile->Samples[m_nSample].vibrato_depth = (BYTE)n;
+        m_pSndFile->Samples[m_nSample].vibrato_depth = (uint8_t)n;
         m_pModDoc->SetModified();
     }
 }
@@ -2823,7 +2823,7 @@ void CCtrlSamples::OnVibSweepChanged()
     m_SpinVibSweep.GetRange(lmin, lmax);
     int n = GetDlgItemInt(IDC_EDIT14);
     if ((n >= lmin) && (n <= lmax)) {
-        m_pSndFile->Samples[m_nSample].vibrato_sweep = (BYTE)n;
+        m_pSndFile->Samples[m_nSample].vibrato_sweep = (uint8_t)n;
         m_pModDoc->SetModified();
     }
 }
@@ -2837,7 +2837,7 @@ void CCtrlSamples::OnVibRateChanged()
     m_SpinVibRate.GetRange(lmin, lmax);
     int n = GetDlgItemInt(IDC_EDIT16);
     if ((n >= lmin) && (n <= lmax)) {
-        m_pSndFile->Samples[m_nSample].vibrato_rate = (BYTE)n;
+        m_pSndFile->Samples[m_nSample].vibrato_rate = (uint8_t)n;
         m_pModDoc->SetModified();
     }
 }

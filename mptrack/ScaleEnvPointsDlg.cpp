@@ -56,7 +56,7 @@ void CScaleEnvPointsDlg::OnOK()
     {
     	for(UINT i = 0; i < m_pEnv->num_nodes; i++)
     	{
-    		m_pEnv->Values[i] = CLAMP(static_cast<BYTE>((m_fFactorY * ((int)m_pEnv->Values[i] - m_nCenter)) + m_nCenter), ENVELOPE_MIN, ENVELOPE_MAX);
+    		m_pEnv->Values[i] = CLAMP(static_cast<uint8_t>((m_fFactorY * ((int)m_pEnv->Values[i] - m_nCenter)) + m_nCenter), ENVELOPE_MIN, ENVELOPE_MAX);
     	}
     }
 

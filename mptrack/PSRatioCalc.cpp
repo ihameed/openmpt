@@ -11,7 +11,7 @@
 // CPSRatioCalc dialog
 
 IMPLEMENT_DYNAMIC(CPSRatioCalc, CDialog)
-CPSRatioCalc::CPSRatioCalc(ULONGLONG samples, ULONGLONG sampleRate, UINT speed, UINT tempo, UINT rowsPerBeat, BYTE tempoMode, double ratio, CWnd* pParent /*=NULL*/)
+CPSRatioCalc::CPSRatioCalc(ULONGLONG samples, ULONGLONG sampleRate, UINT speed, UINT tempo, UINT rowsPerBeat, uint8_t tempoMode, double ratio, CWnd* pParent /*=NULL*/)
     : CDialog(CPSRatioCalc::IDD, pParent)
     , m_lSamplesOrig(samples), m_nSpeed(speed), m_nTempo(tempo), m_dRatio(ratio), m_nRowsPerBeat(rowsPerBeat), m_nTempoMode(tempoMode)
 {

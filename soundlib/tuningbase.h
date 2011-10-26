@@ -44,8 +44,8 @@ namespace srlztn {class Ssb;};
     #define CTUNINGBASE CTuningBase
 #endif
 
-#ifndef BYTE
-    typedef unsigned char BYTE;
+#ifndef uint8_t
+    typedef unsigned char uint8_t;
 #endif
 
 

@@ -92,9 +92,9 @@ struct pointd_t {
 };
 
 enum sign_t {
-    sign_zero,
-    sign_positive,
-    sign_negative
+    SIGN_ZERO,
+    SIGN_POSITIVE,
+    SIGN_NEGATIVE
 };
 
 bool rect_intersects_ideal_line(rect_t &rect, pointd_t &line_start, pointd_t &line_end) {
@@ -103,10 +103,10 @@ bool rect_intersects_ideal_line(rect_t &rect, pointd_t &line_start, pointd_t &li
                    (line_start.x - line_end.x) * test_y +
                    (line_end.x * line_start.y - line_start.x * line_end.y);
         return (val > 0) ?
-               (sign_t::sign_positive) :
+               (SIGN_POSITIVE) :
                ( (val < 0) ?
-                 (sign_t::sign_negative) :
-                 (sign_t::sign_zero) );
+                 (SIGN_NEGATIVE) :
+                 (SIGN_ZERO) );
     };
 
     sign_t sign;
@@ -122,7 +122,7 @@ bool rect_intersects_ideal_line(rect_t &rect, pointd_t &line_start, pointd_t &li
     if ( old_sign != (sign = line_test(rect.left, rect.bottom)) )
         return true;
 
-    return old_sign == sign_t::sign_zero;
+    return old_sign == SIGN_ZERO;
 }
 
 bool rect_intersects_rect(rect_t &r1, rect_t &r2) {
@@ -142,7 +142,10 @@ rect_t rect_of_relrect(const relrect_t &relrect) {
 
 template <typename point_type>
 rect_t rect_of_points(point_type p1, point_type p2) {
-    rect_t ret = {p1.x, p1.y, p2.x, p2.y};
+    rect_t ret = {
+        static_cast<int32_t>(p1.x), static_cast<int32_t>(p1.y),
+        static_cast<int32_t>(p2.x), static_cast<int32_t>(p2.y)
+    };
     return ret;
 }
 
@@ -165,7 +168,7 @@ bool rect_is_empty(rect_t &rect) {
     return !rect.bottom && !rect.left && !rect.right && !rect.top;
 }
 
-rectsize_t &rect_size(rect_t &rect) {
+rectsize_t rect_size(rect_t &rect) {
     rectsize_t ret = {rect.right - rect.left, rect.bottom - rect.top};
     return ret;
 }
@@ -175,7 +178,7 @@ rectsize_t &rect_size(rect_t &rect) {
 struct mixgraph_layout_t {
     int vertical_padding;
     int nub_height;
-    float half_nub_height;
+    int half_nub_height;
     int nub_width;
     int main_width;
 
@@ -190,7 +193,7 @@ struct mixgraph_layout_t {
     void init() {
         vertical_padding = 3;
         nub_height       = 5;
-        half_nub_height  = nub_height / 2.0;
+        half_nub_height  = nub_height / 2;
         nub_width        = 5;
         main_width       = 100;
 
@@ -221,13 +224,13 @@ struct arrow_guistate_t {
 
     void init(vertex_guistate_t *, vertex_guistate_t *, modplug::mixgraph::arrow *);
 
-    void update_headpoint(point_t &headpos) {
+    void update_headpoint(point_t headpos) {
         curve_updated = false;
         this->headpos.x = headpos.x;
         this->headpos.y = headpos.y;
     }
 
-    void update_tailpoint(point_t &tailpos) {
+    void update_tailpoint(point_t tailpos) {
         curve_updated = false;
         this->tailpos.x = tailpos.x;
         this->tailpos.y = tailpos.y;
@@ -419,7 +422,7 @@ struct mixgraph_viewstate_t {
     bool vertex_selected;
     modplug::mixgraph::id_t selected_id;
 
-    points_t mouse_offset;
+    point_t mouse_offset;
     bool hompy_selected;
     size_t hompy_idx;
 
@@ -670,7 +673,7 @@ struct mixgraph_viewstate_t {
         agg::render_scanlines(ras, sl, ren);
     }
     
-    void paint_agg(graphicsbuffer_t &gfxbuf, HDC &dc, rect_t &clipping_rect, rectsize_t &client_size) {
+    void paint_agg(graphicsbuffer_t &gfxbuf, rect_t &clipping_rect, rectsize_t &client_size) {
         agg::rendering_buffer rbuf;
         buffer_attach(rbuf, gfxbuf, y_factor);
     
@@ -788,7 +791,7 @@ struct mixgraph_viewstate_t {
 
         graphicsbuffer_t gfxbuf(buf, client_size.width, client_size.height);
     
-        paint_agg(gfxbuf, mem_dc, update_rect, client_size);
+        paint_agg(gfxbuf, update_rect, client_size);
     
 
         BitBlt(hdc,
@@ -898,6 +901,7 @@ struct hooperstate_t {
     }
 
     void resize(int width, int height) {
+        debug_log("resizing child to (%d, %d)", width, height);
         SetWindowPos(graphchild, HWND_TOP, 0, 0, width, height, SWP_NOZORDER);
     }
 };

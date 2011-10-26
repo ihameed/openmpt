@@ -21,25 +21,25 @@ typedef struct tagFILEHEADER669
 {
     WORD sig;    			// 'if' or 'JN'
     char songmessage[108];    // Song Message
-    BYTE samples;    		// number of samples (1-64)
-    BYTE patterns;    		// number of patterns (1-128)
-    BYTE restartpos;
-    BYTE orders[128];
-    BYTE tempolist[128];
-    BYTE breaks[128];
+    uint8_t samples;    		// number of samples (1-64)
+    uint8_t patterns;    		// number of patterns (1-128)
+    uint8_t restartpos;
+    uint8_t orders[128];
+    uint8_t tempolist[128];
+    uint8_t breaks[128];
 } FILEHEADER669;
 
 
 typedef struct tagSAMPLE669
 {
-    BYTE filename[13];
-    BYTE length[4];    // when will somebody think about DWORD align ???
-    BYTE loopstart[4];
-    BYTE loopend[4];
+    uint8_t filename[13];
+    uint8_t length[4];    // when will somebody think about DWORD align ???
+    uint8_t loopstart[4];
+    uint8_t loopend[4];
 } SAMPLE669;
 
 
-bool CSoundFile::Read669(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::Read669(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     BOOL b669Ext;
@@ -93,7 +93,7 @@ bool CSoundFile::Read669(const BYTE *lpStream, const DWORD dwMemLength)
     }
 
     // Song Message
-    ReadFixedLineLengthMessage((BYTE *)(&pfh->songmessage), 108, 36, 0);
+    ReadFixedLineLengthMessage((uint8_t *)(&pfh->songmessage), 108, 36, 0);
 
     // Reading Orders
     Order.ReadAsByte(pfh->orders, 128, 128);
@@ -114,7 +114,7 @@ bool CSoundFile::Read669(const BYTE *lpStream, const DWORD dwMemLength)
             break;
 
         modplug::tracker::modcommand_t *m = Patterns[npat];
-        const BYTE *p = lpStream + dwMemPos;
+        const uint8_t *p = lpStream + dwMemPos;
         for (UINT row=0; row<64; row++)
         {
             modplug::tracker::modcommand_t *mspeed = m;

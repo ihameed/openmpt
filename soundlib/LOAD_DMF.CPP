@@ -195,7 +195,7 @@ uint8_t DMFvibrato2MPT(uint8_t val, const uint8_t internalTicks)
 }
 
 
-PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, DMF_PATTERNSETTINGS &settings, CSoundFile *pSndFile)
+PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const DWORD dwMemLength, DMF_PATTERNSETTINGS &settings, CSoundFile *pSndFile)
 //----------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_PATTERN(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return nPat);
@@ -717,8 +717,8 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
         if(tempoChange)
         {
             tempoChange = false;
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_TEMPO, (BYTE)tempo, false, 0, false, weTryNextRow);
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_SPEED, (BYTE)speed, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+            pSndFile->TryWriteEffect(nPat, nRow, CMD_TEMPO, (uint8_t)tempo, false, 0, false, weTryNextRow);
+            pSndFile->TryWriteEffect(nPat, nRow, CMD_SPEED, (uint8_t)speed, false, CHANNELINDEX_INVALID, false, weTryNextRow);
         }
         // Try to put delay effects somewhere as well
         if(writeDelay & 0xF0)
@@ -740,7 +740,7 @@ PATTERNINDEX ConvertDMFPattern(const LPCBYTE lpStream, const DWORD dwMemLength, 
 }
 
 
-DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const LPCBYTE lpStream, const DWORD dwMemLength, const bool isV8, uint8_t &sampleFlags, CSoundFile *pSndFile)
+DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, const DWORD dwMemLength, const bool isV8, uint8_t &sampleFlags, CSoundFile *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_SAMPLE(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -813,7 +813,7 @@ DWORD ConvertDMFSample(const SAMPLEINDEX nSmp, const LPCBYTE lpStream, const DWO
 }
 
 
-bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadDMF(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_CHUNK(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwChunkEnd, x, break);
@@ -1006,7 +1006,7 @@ bool CSoundFile::ReadDMF(const BYTE *lpStream, const DWORD dwMemLength)
                 // Loop end?
                 if(nPat != PATTERNINDEX_INVALID && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
                 {
-                    TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (BYTE)loopStart, false, CHANNELINDEX_INVALID, false, weTryPreviousRow);
+                    TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (uint8_t)loopStart, false, CHANNELINDEX_INVALID, false, weTryPreviousRow);
                 }
             }
         }
@@ -1046,7 +1046,7 @@ typedef struct DMF_HTREE
 
 
 // DMF Huffman ReadBits
-BYTE DMFReadBits(DMF_HTREE *tree, UINT nbits)
+uint8_t DMFReadBits(DMF_HTREE *tree, UINT nbits)
 //-------------------------------------------
 {
     uint8_t x = 0, bitv = 1;

@@ -22,17 +22,17 @@
 
 typedef struct tagS3MSAMPLESTRUCT
 {
-    BYTE type;
+    uint8_t type;
     CHAR dosname[12];
-    BYTE hmem;
+    uint8_t hmem;
     WORD memseg;
     DWORD length;
     DWORD loopbegin;
     DWORD loopend;
-    BYTE vol;
-    BYTE bReserved;
-    BYTE pack;
-    BYTE flags;
+    uint8_t vol;
+    uint8_t bReserved;
+    uint8_t pack;
+    uint8_t flags;
     DWORD finetune;
     DWORD dwReserved;
     WORD intgp;
@@ -46,8 +46,8 @@ typedef struct tagS3MSAMPLESTRUCT
 typedef struct tagS3MFILEHEADER
 {
     CHAR name[28];
-    BYTE b1A;
-    BYTE type;
+    uint8_t b1A;
+    uint8_t type;
     WORD reserved1;
     WORD ordnum;
     WORD insnum;
@@ -56,15 +56,15 @@ typedef struct tagS3MFILEHEADER
     WORD cwtv;
     WORD version;
     DWORD scrm;    // "SCRM" = 0x4D524353
-    BYTE globalvol;
-    BYTE speed;
-    BYTE tempo;
-    BYTE mastervol;
-    BYTE ultraclicks;
-    BYTE panning_present;
-    BYTE reserved2[8];
+    uint8_t globalvol;
+    uint8_t speed;
+    uint8_t tempo;
+    uint8_t mastervol;
+    uint8_t ultraclicks;
+    uint8_t panning_present;
+    uint8_t reserved2[8];
     WORD special;
-    BYTE channels[32];
+    uint8_t channels[32];
 } S3MFILEHEADER;
 
 enum
@@ -216,19 +216,19 @@ void CSoundFile::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatib
 }
 
 
-bool CSoundFile::ReadS3M(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadS3M(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength <= sizeof(S3MFILEHEADER) + 64)) return false;
 
     UINT insnum, patnum, nins, npat;
-    BYTE s[1024];
+    uint8_t s[1024];
     DWORD dwMemPos;
     vector<DWORD> smpdatapos;
     vector<WORD> smppos;
     vector<WORD> patpos;
-    vector<BYTE> insflags;
-    vector<BYTE> inspack;
+    vector<uint8_t> insflags;
+    vector<uint8_t> inspack;
     S3MFILEHEADER psfh = *(S3MFILEHEADER *)lpStream;
     bool bKeepMidiMacros = false, bHasAdlibPatches = false;
 
@@ -343,7 +343,7 @@ bool CSoundFile::ReadS3M(const BYTE *lpStream, const DWORD dwMemLength)
     // Read channel panning
     if (psfh.panning_present == 0xFC)
     {
-        const BYTE *chnpan = lpStream+dwMemPos;
+        const uint8_t *chnpan = lpStream+dwMemPos;
         for (UINT i=0; i<32; i++) if (chnpan[i] & 0x20)
         {
             ChnSettings[i].nPan = ((chnpan[i] & 0x0F) << 4) + 8;
@@ -425,7 +425,7 @@ bool CSoundFile::ReadS3M(const BYTE *lpStream, const DWORD dwMemLength)
         while (row < 64) // this fixes ftp://us.aminet.net/pub/aminet/mods/8voic/s3m_hunt.lha (was: while (j < len))
         {
             if(j + nInd + 1 >= dwMemLength) break;
-            BYTE b = src[j++];
+            uint8_t b = src[j++];
             if (!b)
             {
                 if (++row >= 64) break;
@@ -539,7 +539,7 @@ bool CSoundFile::ReadS3M(const BYTE *lpStream, const DWORD dwMemLength)
 #ifndef MODPLUG_NO_FILESAVE
 #pragma warning(disable:4100) //unreferenced formal parameter
 
-static const BYTE S3MFiller[16] =
+static const uint8_t S3MFiller[16] =
 {
     0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80,
     0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80
@@ -550,7 +550,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
 //----------------------------------------------------------
 {
     FILE *f;
-    BYTE header[0x60];
+    uint8_t header[0x60];
     UINT nbo,nbi,nbp,i;
     WORD patptr[128];
     WORD insptr[128];
@@ -591,8 +591,8 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     // Most significant nibble: 1 = ST3, 2 = Orpheus, 3 = IT, 4 = Schism, 5 = MPT
     // Following: One nibble = Major version, one byte = Minor version (hex)
     MptVersion::VersionNum vVersion = MptVersion::num;
-    header[0x28] = (BYTE)((vVersion >> 16) & 0xFF); // the "17" in OpenMPT 1.17
-    header[0x29] = 0x50 | (BYTE)((vVersion >> 24) & 0x0F); // the "1." in OpenMPT 1.17 + OpenMPT Identifier 5 (works only for versions up to 9.99 :))
+    header[0x28] = (uint8_t)((vVersion >> 16) & 0xFF); // the "17" in OpenMPT 1.17
+    header[0x29] = 0x50 | (uint8_t)((vVersion >> 24) & 0x0F); // the "1." in OpenMPT 1.17 + OpenMPT Identifier 5 (works only for versions up to 9.99 :))
     header[0x2A] = 0x02; // Version = 1 => Signed samples
     header[0x2B] = 0x00;
     header[0x2C] = 'S';
@@ -628,7 +628,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     fwrite(patptr, nbp, 2, f);
     if (header[0x35] == 0xFC)
     {
-        BYTE chnpan[32];
+        uint8_t chnpan[32];
         for (i=0; i<32; i++)
         {
             UINT nPan = ((ChnSettings[i].nPan+7) < 0xF0) ? ChnSettings[i].nPan+7 : 0xF0;
@@ -648,7 +648,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     for (i = 0; i < nbp; i++)
     {
         WORD len = 64;
-        vector<BYTE> buffer(5 * 1024, 0);
+        vector<uint8_t> buffer(5 * 1024, 0);
         patptr[i] = ofs / 16;
         if (Patterns[i])
         {
@@ -746,7 +746,7 @@ bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
         memcpy(insex[i-1].dosname, pSmp->legacy_filename, 12);
         memcpy(insex[i-1].name, m_szNames[i], 28);
         memcpy(insex[i-1].scrs, "SCRS", 4);
-        insex[i-1].hmem = (BYTE)((DWORD)ofs >> 20);
+        insex[i-1].hmem = (uint8_t)((DWORD)ofs >> 20);
         insex[i-1].memseg = (WORD)((DWORD)ofs >> 4);
         if (pSmp->sample_data)
         {

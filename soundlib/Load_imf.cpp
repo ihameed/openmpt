@@ -95,7 +95,7 @@ struct IMFSAMPLE
 };
 #pragma pack()
 
-static BYTE imf_efftrans[] =
+static uint8_t imf_efftrans[] =
 {
     CMD_NONE,
     CMD_SPEED,    		// 0x01 1xx Set Tempo
@@ -261,12 +261,12 @@ static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINS
         nTick = LittleEndianW(imfins->nodes[e][n].tick);
         nValue = LittleEndianW(imfins->nodes[e][n].value) >> shift;
         env->Ticks[n] = (WORD)max(min, nTick);
-        env->Values[n] = (BYTE)min(nValue, ENVELOPE_MAX);
+        env->Values[n] = (uint8_t)min(nValue, ENVELOPE_MAX);
         min = nTick + 1;
     }
 }
 
-bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;
@@ -355,7 +355,7 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
     for(PATTERNINDEX nPat = 0; nPat < hdr.patnum; nPat++)
     {
         uint16_t length, nrows;
-        BYTE mask, channel;
+        uint8_t mask, channel;
         int row;
         unsigned int lostfx = 0;
         modplug::tracker::modcommand_t *row_data, *note, junk_note;
@@ -374,7 +374,7 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         while(row < nrows)
         {
             ASSERT_CAN_READ(1);
-            mask = *((BYTE *)(lpStream + dwMemPos));
+            mask = *((uint8_t *)(lpStream + dwMemPos));
             dwMemPos += 1;
             if (mask == 0) {
                 row++;
@@ -399,8 +399,8 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
             {
                 // read note/instrument
                 ASSERT_CAN_READ(2);
-                note->note = *((BYTE *)(lpStream + dwMemPos));
-                note->instr = *((BYTE *)(lpStream + dwMemPos + 1));
+                note->note = *((uint8_t *)(lpStream + dwMemPos));
+                note->instr = *((uint8_t *)(lpStream + dwMemPos + 1));
                 dwMemPos += 2;
 
                 if (note->note == 160)
@@ -469,8 +469,8 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
             {
                 // there's one effect, just stick it in the effect column
                 ASSERT_CAN_READ(2);
-                note->command = *((BYTE *)(lpStream + dwMemPos));
-                note->param = *((BYTE *)(lpStream + dwMemPos + 1));
+                note->command = *((uint8_t *)(lpStream + dwMemPos));
+                note->param = *((uint8_t *)(lpStream + dwMemPos + 1));
                 dwMemPos += 2;
             }
             if(note->command)
@@ -509,7 +509,7 @@ bool CSoundFile::ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength)
 
         if(imfins.smpnum)
         {
-            for(BYTE cNote = 0; cNote < 120; cNote++)
+            for(uint8_t cNote = 0; cNote < 120; cNote++)
             {
                 pIns->NoteMap[cNote] = cNote + 1;
                 pIns->Keyboard[cNote] = firstsample + imfins.map[cNote];

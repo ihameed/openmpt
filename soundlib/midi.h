@@ -7,12 +7,12 @@ using std::vector;
 
 class CMainFrame;
 
-int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const BYTE midivolume);
+int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const uint8_t midivolume);
 void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, DWORD& dwParam1);
-inline BYTE GetFromMIDIMsg_Channel(const DWORD MIDImsg) {return static_cast<BYTE>((MIDImsg & 0xF));}
-inline BYTE GetFromMIDIMsg_Event(const DWORD MIDImsg) {return static_cast<BYTE>(((MIDImsg >> 4) & 0xF));}
-inline BYTE GetFromMIDIMsg_DataByte1(const DWORD MIDImsg) {return static_cast<BYTE>(((MIDImsg >> 8) & 0xFF));}
-inline BYTE GetFromMIDIMsg_DataByte2(const DWORD MIDImsg) {return static_cast<BYTE>(((MIDImsg >> 16) & 0xFF));}
+inline uint8_t GetFromMIDIMsg_Channel(const DWORD MIDImsg) {return static_cast<uint8_t>((MIDImsg & 0xF));}
+inline uint8_t GetFromMIDIMsg_Event(const DWORD MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 4) & 0xF));}
+inline uint8_t GetFromMIDIMsg_DataByte1(const DWORD MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 8) & 0xFF));}
+inline uint8_t GetFromMIDIMsg_DataByte2(const DWORD MIDImsg) {return static_cast<uint8_t>(((MIDImsg >> 16) & 0xFF));}
 
 enum
 {
@@ -51,17 +51,17 @@ public:
     //Note: In these functions, channel value is in range [1,16],
     //GetChannel() returns 0 on 'any channel'.
     void SetChannel(const int c){if(c < 1 || c > 16) m_AnyChannel = true; else {m_ChnEvent &= ~0xF; m_ChnEvent |= c-1; m_AnyChannel = false;}}
-    BYTE GetChannel() const {return (m_AnyChannel) ? 0 : (m_ChnEvent & 0xF) + 1;} 
+    uint8_t GetChannel() const {return (m_AnyChannel) ? 0 : (m_ChnEvent & 0xF) + 1;} 
 
-    void SetEvent(BYTE e) {if(e > 15) e = 15; m_ChnEvent &= ~0xF0; m_ChnEvent |= (e << 4);}
-    BYTE GetEvent() const {return static_cast<BYTE>((m_ChnEvent >> 4) & 0xF);}
+    void SetEvent(uint8_t e) {if(e > 15) e = 15; m_ChnEvent &= ~0xF0; m_ChnEvent |= (e << 4);}
+    uint8_t GetEvent() const {return static_cast<uint8_t>((m_ChnEvent >> 4) & 0xF);}
 
-    void SetController(int controller) {if(controller > 127) controller = 127; m_MIDIByte1 = static_cast<BYTE>(controller);}
-    BYTE GetController() const {return m_MIDIByte1;}
+    void SetController(int controller) {if(controller > 127) controller = 127; m_MIDIByte1 = static_cast<uint8_t>(controller);}
+    uint8_t GetController() const {return m_MIDIByte1;}
     
     //Note: Plug index starts from 1.
-    void SetPlugIndex(const int i) {m_PluginIndex = static_cast<BYTE>(i);}
-    BYTE GetPlugIndex() const {return m_PluginIndex;}
+    void SetPlugIndex(const int i) {m_PluginIndex = static_cast<uint8_t>(i);}
+    uint8_t GetPlugIndex() const {return m_PluginIndex;}
 
     void SetParamIndex(const int i) {m_Parameter = i;}
     uint32_t GetParamIndex() const {return m_Parameter;}
@@ -72,7 +72,7 @@ public:
 
     CString ToString() const;
 
-    BYTE GetChnEvent() const {return m_ChnEvent;}
+    uint8_t GetChnEvent() const {return m_ChnEvent;}
 
 private:
     bool m_Active;
@@ -80,15 +80,15 @@ private:
     bool m_AllowPatternEdit; //When true, the mapping can be used for modifying pattern.
     bool m_AnyChannel;
     uint8_t m_ChnEvent; //0-3 channel, 4-7 event
-    BYTE m_MIDIByte1;
-    BYTE m_PluginIndex;
+    uint8_t m_MIDIByte1;
+    uint8_t m_PluginIndex;
     uint32_t m_Parameter;
 };
 
 class CSoundFile;
 inline bool operator<(const CMIDIMappingDirective& a, const CMIDIMappingDirective& b) {return a.GetController() < b.GetController();}
-inline bool operator<(const CMIDIMappingDirective& d, const BYTE& ctrlVal) {return d.GetController() < ctrlVal;}
-inline bool operator<(const BYTE& ctrlVal, const CMIDIMappingDirective& d) {return ctrlVal < d.GetController();}
+inline bool operator<(const CMIDIMappingDirective& d, const uint8_t& ctrlVal) {return d.GetController() < ctrlVal;}
+inline bool operator<(const uint8_t& ctrlVal, const CMIDIMappingDirective& d) {return ctrlVal < d.GetController();}
 
 //===============
 class CMIDIMapper
@@ -104,7 +104,7 @@ public:
     //	-paramvalue to parameter value.
     //In case of multiple mappings, these get the values from the last mapping found.
     //Returns true if MIDI was 'captured' by some directive, false otherwise.
-    bool OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32_t& paramindex, BYTE& paramvalue);
+    bool OnMIDImsg(const DWORD midimsg, uint8_t& mappedIndex, uint32_t& paramindex, uint8_t& paramvalue);
 
     //Swaps the positions of two elements. Returns true if swap was not done.
     bool Swap(const size_t a, const size_t b);
@@ -125,7 +125,7 @@ public:
 
     size_t GetSerializationSize() const;
     void Serialize(FILE* f) const;
-    bool Deserialize(const BYTE* ptr, const size_t size); //Return false if succesful, true otherwise.
+    bool Deserialize(const uint8_t* ptr, const size_t size); //Return false if succesful, true otherwise.
 
     bool AreOrderEqual(const size_t a, const size_t b) {return !(m_Directives[a] < m_Directives[b] || m_Directives[b] < m_Directives[a]);}
 

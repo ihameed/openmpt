@@ -773,7 +773,7 @@ void CViewPattern::OnGrowSelection()
             modplug::tracker::modcommand_t *dest = &p[row * pSndFile->GetNumChannels() + chn];
             modplug::tracker::modcommand_t *src  = &p[(row-offset/2) * pSndFile->GetNumChannels() + chn];
             modplug::tracker::modcommand_t *blank= &p[(row-1) * pSndFile->GetNumChannels() + chn];
-            //memcpy(dest/*+(i%5)*/, src/*+(i%5)*/, /*sizeof(modplug::tracker::modcommand_t) - (i-chn)*/ sizeof(BYTE));
+            //memcpy(dest/*+(i%5)*/, src/*+(i%5)*/, /*sizeof(modplug::tracker::modcommand_t) - (i-chn)*/ sizeof(uint8_t));
             //Log("dst: %d; src: %d; blk: %d\n", row, (row-offset/2), (row-1));
             switch(GetColTypeFromCursor(i))
             {
@@ -844,7 +844,7 @@ void CViewPattern::OnShrinkSelection()
                 }
             }
             
-            //memcpy(dest/*+(i%5)*/, src/*+(i%5)*/, /*sizeof(modplug::tracker::modcommand_t) - (i-chn)*/ sizeof(BYTE));
+            //memcpy(dest/*+(i%5)*/, src/*+(i%5)*/, /*sizeof(modplug::tracker::modcommand_t) - (i-chn)*/ sizeof(uint8_t));
             Log("dst: %d; src: %d\n", row, srcRow);
             switch(GetColTypeFromCursor(i))
             {
@@ -2069,7 +2069,7 @@ void CViewPattern::OnEditFindNext()
                     if ((m_findReplace.dwReplaceFlags & PATSEARCH_PARAM))
                     {
                         if ((bEffectEx) && (!(m_findReplace.dwReplaceFlags & PATSEARCH_COMMAND)))
-                            m->param = (BYTE)((m->param & 0xF0) | (m_findReplace.cmdReplace.param & 0x0F));
+                            m->param = (uint8_t)((m->param & 0xF0) | (m_findReplace.cmdReplace.param & 0x0F));
                         else
                             m->param = m_findReplace.cmdReplace.param;
                     }
@@ -2454,14 +2454,14 @@ void CViewPattern::Interpolate(PatternColumns type)
                 case NOTE_COLUMN:
                     if ((!pcmd->note) || (pcmd->instr == vcmd))    {
                         int note = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
-                        pcmd->note = (BYTE)note;
+                        pcmd->note = (uint8_t)note;
                         pcmd->instr = vcmd;
                     }
                     break;
                 case VOL_COLUMN:
                     if ((!pcmd->volcmd) || (pcmd->volcmd == vcmd))    {
                         int vol = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
-                        pcmd->vol = (BYTE)vol;
+                        pcmd->vol = (uint8_t)vol;
                         pcmd->volcmd = vcmd;
                     }
                     break;
@@ -2483,7 +2483,7 @@ void CViewPattern::Interpolate(PatternColumns type)
                         if ((!pcmd->command) || (pcmd->command == vcmd))
                         {
                             int val = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
-                            pcmd->param = (BYTE)val;
+                            pcmd->param = (uint8_t)val;
                             pcmd->command = vcmd;
                         }
                     }
@@ -2531,7 +2531,7 @@ BOOL CViewPattern::TransposeSelection(int transp)
                     note += transp;
                     if (note < noteMin) note = noteMin;
                     if (note > noteMax) note = noteMax;
-                    m[col].note = (BYTE)note;
+                    m[col].note = (uint8_t)note;
                 }
             }
         }
@@ -2891,7 +2891,7 @@ void CViewPattern::OnPatternAmplify()
             }
 
             // Volume memory for each channel.
-            vector<BYTE> chvol(lastChannel + 1, 64);
+            vector<uint8_t> chvol(lastChannel + 1, 64);
 
             for (ROWINDEX nRow = firstRow; nRow <= lastRow; nRow++)
             {
@@ -2924,7 +2924,7 @@ void CViewPattern::OnPatternAmplify()
                         }
                         if ((nSmp) && (nSmp <= pSndFile->m_nSamples))
                         {
-                            chvol[nChn] = (BYTE)(pSndFile->Samples[nSmp].default_volume >> 2);
+                            chvol[nChn] = (uint8_t)(pSndFile->Samples[nSmp].default_volume >> 2);
                             break;
                         }
                         else
@@ -2985,7 +2985,7 @@ void CViewPattern::OnPatternAmplify()
                             }
                         }
                     }
-                    if (m->volcmd == VOLCMD_VOLUME) chvol[nChn] = (BYTE)m->vol;
+                    if (m->volcmd == VOLCMD_VOLUME) chvol[nChn] = (uint8_t)m->vol;
                     if (((dlg.m_bFadeIn) || (dlg.m_bFadeOut)) && (m->command != CMD_VOLUME) && (!m->volcmd))
                     {
                         if(useVolCol)
@@ -3005,7 +3005,7 @@ void CViewPattern::OnPatternAmplify()
                         if (dlg.m_bFadeOut) vol = (vol * (cy+firstRow-nRow)) / cy;
                         vol = (vol + 50) / 100;
                         if (vol > 64) vol = 64;
-                        m->vol = (BYTE)vol;
+                        m->vol = (uint8_t)vol;
                     }
                     if ((((nChn << 3) | 3) >= (m_dwBeginSel & 0xFFFF)) && (((nChn << 3) | 3) <= (m_dwEndSel & 0xFFFF)))
                     {
@@ -3016,7 +3016,7 @@ void CViewPattern::OnPatternAmplify()
                             if (dlg.m_bFadeOut) vol = (vol * (cy + firstRow - nRow)) / cy;
                             vol = (vol + 50) / 100;
                             if (vol > 64) vol = 64;
-                            m->param = (BYTE)vol;
+                            m->param = (uint8_t)vol;
                         }
                     }
                 }
@@ -3168,7 +3168,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
 
         //Figure out which plug param (if any) is controllable using the active macro on this channel.
         long activePlugParam  = -1;
-        BYTE activeMacro      = pSndFile->Chn[nChn].nActiveMacro;
+        uint8_t activeMacro      = pSndFile->Chn[nChn].nActiveMacro;
         CString activeMacroString = pSndFile->m_MidiCfg.szMidiSFXExt[activeMacro];
         if (pModDoc->GetMacroType(activeMacroString) == sfx_plug)
         {
@@ -3239,7 +3239,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //--------------------------------------------------------
 {
     const DWORD dwMidiData = dwMidiDataParam;
-    static BYTE midivolume = 127;
+    static uint8_t midivolume = 127;
 
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = GetDocument();
@@ -3263,16 +3263,16 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
     //. A note-on (event=9) with velocity 0 is equivalent to a note off.
     //. Basing the event solely on the velocity as follows is incorrect,
     //  since a note-off can have a velocity too:
-    //  BYTE event  = (dwMidiData>>16) & 0x64;
+    //  uint8_t event  = (dwMidiData>>16) & 0x64;
     //. Sample- and instrumentview handle midi mesages in their own methods.
 
-    const BYTE nByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
-    const BYTE nByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
+    const uint8_t nByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
+    const uint8_t nByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
 
-    const BYTE nNote = nByte1 + 1;    			// +1 is for MPT, where middle C is 61
+    const uint8_t nNote = nByte1 + 1;    			// +1 is for MPT, where middle C is 61
     int nVol = nByte2;    						// At this stage nVol is a non linear value in [0;127]
                                                 // Need to convert to linear in [0;64] - see below
-    BYTE event = GetFromMIDIMsg_Event(dwMidiData);
+    uint8_t event = GetFromMIDIMsg_Event(dwMidiData);
 
     if ((event == MIDIEVENT_NOTEON) && !nVol) event = MIDIEVENT_NOTEOFF;    //Convert event to note-off if req'd
 
@@ -4142,7 +4142,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
 
     const CHANNELINDEX nChnCursor = GetChanFromCursor(m_dwCursor);
 
-    BYTE* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
+    uint8_t* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
     const CHANNELINDEX nChn = (activeNoteMap[note] < pSndFile->GetNumChannels()) ? activeNoteMap[note] : nChnCursor;
 
     activeNoteMap[note] = 0xFF;    //unlock channel
@@ -4348,7 +4348,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         if( pSndFile->GetModSpecifications().HasNote(note) == false )
             return;
 
-        BYTE recordGroup = pModDoc->IsChannelRecord(nChn);
+        uint8_t recordGroup = pModDoc->IsChannelRecord(nChn);
         const bool bIsLiveRecord = IsLiveRecord(*pMainFrm, *pModDoc, *pSndFile);
         const bool usePlaybackPosition = (bIsLiveRecord && (CMainFrame::m_dwPatternSetup & PATTERN_AUTODELAY) && !(pSndFile->m_dwSongFlags & SONG_STEP));
         //Param control 'note'
@@ -4539,7 +4539,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                 SetCurSel(sel, sel);
             }
 
-            BYTE* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
+            uint8_t* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
             if (newcmd.note <= NOTE_MAX)
                 activeNoteMap[newcmd.note] = nChn;
 
@@ -4583,7 +4583,7 @@ void CViewPattern::TempEnterChord(int note)
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = GetDocument();
     UINT nPlayChord = 0;
-    BYTE chordplaylist[3];
+    uint8_t chordplaylist[3];
 
     if ((pModDoc) && (pMainFrm))
     {
@@ -4630,7 +4630,7 @@ void CViewPattern::TempEnterChord(int note)
                 UINT nchordch = nChn, nchno = 0;
                 nNote = nchordnote;
                 p->note = nNote;
-                BYTE recordGroup, currentRecordGroup = 0;
+                uint8_t recordGroup, currentRecordGroup = 0;
 
                 recordGroup = pModDoc->IsChannelRecord(nChn);
 

@@ -83,11 +83,11 @@ public:
 
     // Read/write.
     size_t WriteAsByte(FILE* f, const uint16_t count);
-    size_t WriteToByteArray(BYTE* dest, const UINT numOfBytes, const UINT destSize);
-    bool ReadAsByte(const BYTE* pFrom, const int howMany, const int memLength);
+    size_t WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize);
+    bool ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength);
 
     // Deprecated function used for MPTm's created in 1.17.02.46 - 1.17.02.48.
-    DWORD Deserialize(const BYTE* const src, const DWORD memLength);
+    DWORD Deserialize(const uint8_t* const src, const DWORD memLength);
 
     //Returns true if the IT orderlist datafield is not sufficient to store orderlist information.
     bool NeedsExtraDatafield() const;

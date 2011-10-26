@@ -2526,18 +2526,18 @@ LRESULT CViewSample::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //------------------------------------------------------------
 {
     const DWORD dwMidiData = dwMidiDataParam;
-    static BYTE midivolume = 127;
+    static uint8_t midivolume = 127;
 
     CModDoc *pModDoc = GetDocument();
-    BYTE midibyte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
-    BYTE midibyte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
+    uint8_t midibyte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
+    uint8_t midibyte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
 
     CSoundFile* pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL;
     if (!pSndFile) return 0;
 
-    const BYTE nNote  = midibyte1 + 1;		// +1 is for MPT, where middle C is 61
+    const uint8_t nNote  = midibyte1 + 1;		// +1 is for MPT, where middle C is 61
     int nVol   = midibyte2;					
-    BYTE event  = GetFromMIDIMsg_Event(dwMidiData);
+    uint8_t event  = GetFromMIDIMsg_Event(dwMidiData);
     if ((event == 0x9) && !nVol) event = 0x8;	//Convert event to note-off if req'd
 
     switch(event)

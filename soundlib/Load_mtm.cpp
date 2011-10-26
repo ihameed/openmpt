@@ -48,7 +48,7 @@ typedef struct tagMTMHEADER
 #pragma pack()
 
 
-bool CSoundFile::ReadMTM(LPCBYTE lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMTM(const uint8_t * lpStream, DWORD dwMemLength)
 //-----------------------------------------------------------
 {
     DWORD dwMemPos = 66;
@@ -108,7 +108,7 @@ bool CSoundFile::ReadMTM(LPCBYTE lpStream, DWORD dwMemLength)
     dwMemPos += 128;
     // Reading Patterns
     ROWINDEX nPatRows = CLAMP(pmh->beatspertrack, 1, MAX_PATTERN_ROWS);
-    LPCBYTE pTracks = lpStream + dwMemPos;
+    const uint8_t * pTracks = lpStream + dwMemPos;
     dwMemPos += 192 * pmh->numtracks;
     LPWORD pSeq = (LPWORD)(lpStream + dwMemPos);
     for (PATTERNINDEX pat = 0; pat <= pmh->lastpattern; pat++)
@@ -116,7 +116,7 @@ bool CSoundFile::ReadMTM(LPCBYTE lpStream, DWORD dwMemLength)
         if(Patterns.Insert(pat, nPatRows)) break;
         for (UINT n=0; n<32; n++) if ((pSeq[n]) && (pSeq[n] <= pmh->numtracks) && (n < m_nChannels))
         {
-            LPCBYTE p = pTracks + 192 * (pSeq[n]-1);
+            const uint8_t * p = pTracks + 192 * (pSeq[n]-1);
             modplug::tracker::modcommand_t *m = Patterns[pat] + n;
             for (UINT i = 0; i < nPatRows; i++, m += m_nChannels, p += 3)
             {

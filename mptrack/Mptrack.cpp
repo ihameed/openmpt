@@ -133,7 +133,7 @@ BOOL CModDocManager::OnDDECommand(LPTSTR lpszCommand)
         pszData = pszCmd;
         while ((pszData[0] != '(') && (pszData[0]))
         {
-            if (((BYTE)pszData[0]) <= (BYTE)0x20) *pszData = 0;
+            if (((uint8_t)pszData[0]) <= (uint8_t)0x20) *pszData = 0;
             pszData++;
         }
         while ((*pszData) && (strchr("(){}[]\'\" ", *pszData)))
@@ -201,7 +201,7 @@ const LPCTSTR szDefaultNoteNames[NOTE_MAX] = {
     TEXT("C-9"), TEXT("C#9"), TEXT("D-9"), TEXT("D#9"), TEXT("E-9"), TEXT("F-9"), TEXT("F#9"), TEXT("G-9"), TEXT("G#9"), TEXT("A-9"), TEXT("A#9"), TEXT("B-9"),
 };
 
-const BYTE gEffectColors[MAX_EFFECTS] =
+const uint8_t gEffectColors[MAX_EFFECTS] =
 {
     0,    				0,					MODCOLOR_PITCH,		MODCOLOR_PITCH,
     MODCOLOR_PITCH,    	MODCOLOR_PITCH,		MODCOLOR_VOLUME,	MODCOLOR_VOLUME,
@@ -215,7 +215,7 @@ const BYTE gEffectColors[MAX_EFFECTS] =
     MODCOLOR_PITCH,
 };
 
-const BYTE gVolEffectColors[MAX_VOLCMDS] =
+const uint8_t gVolEffectColors[MAX_VOLCMDS] =
 {
     0,    				MODCOLOR_VOLUME,	MODCOLOR_PANNING,	MODCOLOR_VOLUME,
     MODCOLOR_VOLUME,    MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_PITCH,
@@ -1025,10 +1025,10 @@ void CTrackApp::LoadChords(PMPTCHORD pChords)
         {
             if ((chord & 0xFFFFFFC0) || (!pChords[i].notes[0]))
             {
-                pChords[i].key = (BYTE)(chord & 0x3F);
-                pChords[i].notes[0] = (BYTE)((chord >> 6) & 0x3F);
-                pChords[i].notes[1] = (BYTE)((chord >> 12) & 0x3F);
-                pChords[i].notes[2] = (BYTE)((chord >> 18) & 0x3F);
+                pChords[i].key = (uint8_t)(chord & 0x3F);
+                pChords[i].notes[0] = (uint8_t)((chord >> 6) & 0x3F);
+                pChords[i].notes[1] = (uint8_t)((chord >> 12) & 0x3F);
+                pChords[i].notes[2] = (uint8_t)((chord >> 18) & 0x3F);
             }
         }
     }
@@ -1337,7 +1337,7 @@ void CPaletteBitmap::LoadBitmap(LPCSTR lpszResource)
                 GetWindowRect(&rect);
                 SetWindowPos(NULL, 0,0, rect.Width()+n, rect.Height(), SWP_NOMOVE | SWP_NOZORDER);
             }
-            m_lpRotoZoom = new BYTE[m_nRotoWidth*m_nRotoHeight];
+            m_lpRotoZoom = new uint8_t[m_nRotoWidth*m_nRotoHeight];
             if (m_lpRotoZoom)
             {
                 memset(m_lpRotoZoom, 0, m_nRotoWidth*m_nRotoHeight);
@@ -2082,11 +2082,11 @@ void CFastBitmap::Init(LPMODPLUGDIB lpTextDib)
     m_Dib.bmiHeader.biYPelsPerMeter = 96;
     m_Dib.bmiHeader.biClrUsed = 0;
     m_Dib.bmiHeader.biClrImportant = 256; // MAX_MODPALETTECOLORS;
-    m_n4BitPalette[0] = (BYTE)m_nTextColor;
+    m_n4BitPalette[0] = (uint8_t)m_nTextColor;
     m_n4BitPalette[4] = MODCOLOR_SEPSHADOW;
     m_n4BitPalette[12] = MODCOLOR_SEPFACE;
     m_n4BitPalette[14] = MODCOLOR_SEPHILITE;
-    m_n4BitPalette[15] = (BYTE)m_nBkColor;
+    m_n4BitPalette[15] = (uint8_t)m_nBkColor;
 }
 
 
@@ -2141,9 +2141,9 @@ void CFastBitmap::SetBlendColor(COLORREF cr)
         UINT m = (m_Dib.bmiColors[i].rgbRed >> 2)
                 + (m_Dib.bmiColors[i].rgbGreen >> 1)
                 + (m_Dib.bmiColors[i].rgbBlue >> 2);
-        m_Dib.bmiColors[i|0x80].rgbRed = static_cast<BYTE>((m + r)>>1);
-        m_Dib.bmiColors[i|0x80].rgbGreen = static_cast<BYTE>((m + g)>>1);
-        m_Dib.bmiColors[i|0x80].rgbBlue = static_cast<BYTE>((m + b)>>1);
+        m_Dib.bmiColors[i|0x80].rgbRed = static_cast<uint8_t>((m + r)>>1);
+        m_Dib.bmiColors[i|0x80].rgbGreen = static_cast<uint8_t>((m + g)>>1);
+        m_Dib.bmiColors[i|0x80].rgbBlue = static_cast<uint8_t>((m + b)>>1);
     }
 }
 
@@ -2152,13 +2152,13 @@ void CFastBitmap::SetBlendColor(COLORREF cr)
 void CFastBitmap::TextBlt(int x, int y, int cx, int cy, int srcx, int srcy, LPMODPLUGDIB lpdib)
 //---------------------------------------------------------------------------------------------
 {
-    const BYTE *psrc;
-    BYTE *pdest;
+    const uint8_t *psrc;
+    uint8_t *pdest;
     UINT x1, x2;
     int srcwidth, srcinc;
     
-    m_n4BitPalette[0] = (BYTE)m_nTextColor;
-    m_n4BitPalette[15] = (BYTE)m_nBkColor;
+    m_n4BitPalette[0] = (uint8_t)m_nTextColor;
+    m_n4BitPalette[15] = (uint8_t)m_nBkColor;
     if (x < 0)
     {
         cx += x;
@@ -2414,7 +2414,7 @@ BOOL CTrackApp::InitializeACM(BOOL bNoAcm)
         if (m_pfnAcmFormatEnum)
         {
             ACMFORMATDETAILS afd;
-            BYTE wfx[256];
+            uint8_t wfx[256];
             WAVEFORMATEX *pwfx = (WAVEFORMATEX *)&wfx;
 
             MemsetZero(afd);
@@ -2652,7 +2652,7 @@ MMRESULT CTrackApp::AcmStreamOpen(
             pbeCfg->dwOutputSamples = 2048;
             pbeCfg->beCfg.dwConfig = BE_CONFIG_MP3;
             pbeCfg->beCfg.format.mp3.dwSampleRate = pwfxDst->nSamplesPerSec; // 48000, 44100 and 32000 allowed
-            pbeCfg->beCfg.format.mp3.byMode = (BYTE)((pwfxSrc->nChannels == 2) ? BE_MP3_MODE_STEREO : BE_MP3_MODE_MONO);
+            pbeCfg->beCfg.format.mp3.byMode = (uint8_t)((pwfxSrc->nChannels == 2) ? BE_MP3_MODE_STEREO : BE_MP3_MODE_MONO);
             pbeCfg->beCfg.format.mp3.wBitrate = (WORD)(pwfxDst->nAvgBytesPerSec * 8);    // 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256 and 320 allowed
             pbeCfg->beCfg.format.mp3.bPrivate = FALSE;
             pbeCfg->beCfg.format.mp3.bCRC = FALSE;

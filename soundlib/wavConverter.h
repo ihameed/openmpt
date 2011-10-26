@@ -8,7 +8,7 @@ typedef void (*DATACONV)(const char* const, char*, const double);
 typedef double MAXFINDER(const char* const, const size_t);
 //Buffer, bufferSize.
 
-template<BYTE INBYTES>
+template<uint8_t INBYTES>
 double MaxFinderSignedInt(const char* const buffer, const size_t bs)
 //----------------------------------------------------------------------
 {

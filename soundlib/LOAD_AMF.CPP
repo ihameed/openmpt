@@ -54,7 +54,7 @@ typedef struct _AMFSAMPLE
 extern void Log(LPCSTR, ...);
 #endif
 
-void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const BYTE *pTrack, UINT nRows, UINT nChannels)
+void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const uint8_t *pTrack, UINT nRows, UINT nChannels)
 //-------------------------------------------------------------------------------
 {
     UINT lastinstr = 0;
@@ -171,7 +171,7 @@ void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const BYTE *pTrack, UINT n
 
 
 
-bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     const AMFFILEHEADER *pfh = (AMFFILEHEADER *)lpStream;
@@ -372,7 +372,7 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         if (realtrackcnt < pTrackMap[iTrkMap]) realtrackcnt = pTrackMap[iTrkMap];
     }
     // Store tracks positions
-    BYTE **pTrackData = new BYTE *[realtrackcnt];
+    uint8_t **pTrackData = new uint8_t *[realtrackcnt];
     memset(pTrackData, 0, sizeof(pTrackData));
     for (UINT iTrack=0; iTrack<realtrackcnt; iTrack++) if (dwMemPos <= dwMemLength-3)
     {
@@ -380,7 +380,7 @@ bool CSoundFile::ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength)
         nTrkSize += (UINT)lpStream[dwMemPos+2] << 16;
         if (dwMemPos + nTrkSize * 3 + 3 <= dwMemLength)
         {
-            pTrackData[iTrack] = (BYTE *)(lpStream + dwMemPos);
+            pTrackData[iTrack] = (uint8_t *)(lpStream + dwMemPos);
         }
         dwMemPos += nTrkSize * 3 + 3;
     }

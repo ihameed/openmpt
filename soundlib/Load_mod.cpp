@@ -203,17 +203,17 @@ typedef struct _MODSAMPLEHEADER
 {
     CHAR name[22];
     WORD length;
-    BYTE finetune;
-    BYTE volume;
+    uint8_t finetune;
+    uint8_t volume;
     WORD loopstart;
     WORD looplen;
 } MODSAMPLEHEADER, *PMODSAMPLEHEADER;
 
 typedef struct _MODMAGIC
 {
-    BYTE nOrders;
-    BYTE nRestartPos;
-    BYTE Orders[128];
+    uint8_t nOrders;
+    uint8_t nRestartPos;
+    uint8_t Orders[128];
     char Magic[4];
 } MODMAGIC, *PMODMAGIC;
 
@@ -259,7 +259,7 @@ struct FixMODPatterns
 };
 
 
-bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMod(const uint8_t *lpStream, DWORD dwMemLength)
 //---------------------------------------------------------------
 {
     char s[1024];
@@ -450,7 +450,7 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
             size_t instrWithoutNoteCount = 0;    // For detecting PT1x mode
             vector<modplug::tracker::modcommand_t::INSTR> lastInstrument(m_nChannels, 0);
 
-            const BYTE *p = lpStream + dwMemPos;
+            const uint8_t *p = lpStream + dwMemPos;
 
             for(ROWINDEX nRow = 0; nRow < 64; nRow++)
             {
@@ -461,7 +461,7 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
                 }
                 for(CHANNELINDEX nChn = 0; nChn < nMaxChn; nChn++, m++, p += 4)
                 {
-                    BYTE A0 = p[0], A1 = p[1], A2 = p[2], A3 = p[3];
+                    uint8_t A0 = p[0], A1 = p[1], A2 = p[2], A3 = p[3];
                     UINT n = ((((UINT)A0 & 0x0F) << 8) | (A1));
                     if ((n) && (n != 0xFFF)) m->note = GetNoteFromPeriod(n << 2);
                     m->instr = ((UINT)A2 >> 4) | (A0 & 0x10);
@@ -555,10 +555,10 @@ bool CSoundFile::ReadMod(const BYTE *lpStream, DWORD dwMemLength)
 bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompatibilityExport)
 //-------------------------------------------------------------------------------------------
 {
-    BYTE insmap[32];
+    uint8_t insmap[32];
     UINT inslen[32];
-    BYTE bTab[32];
-    BYTE ord[128];
+    uint8_t bTab[32];
+    uint8_t ord[128];
     FILE *f;
 
     if ((!m_nChannels) || (!lpszFileName)) return false;
@@ -578,7 +578,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
         }
     } else
     {
-        for (UINT i=0; i<32; i++) insmap[i] = (BYTE)i;
+        for (UINT i=0; i<32; i++) insmap[i] = (uint8_t)i;
     }
     // Writing song name
     fwrite(m_szNames, 20, 1, f);
@@ -596,7 +596,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
         bTab[23] = inslen[iins] >> 1;
         if (pSmp->RelativeTone < 0) bTab[24] = 0x08; else
         if (pSmp->RelativeTone > 0) bTab[24] = 0x07; else
-        bTab[24] = (BYTE)XM2MODFineTune(pSmp->nFineTune);
+        bTab[24] = (uint8_t)XM2MODFineTune(pSmp->nFineTune);
         bTab[25] = pSmp->default_volume >> 2;
         UINT repstart = 0, replen = 2;
         if(pSmp->flags & CHN_LOOP)
@@ -642,7 +642,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
     // Writing patterns
     for (UINT ipat=0; ipat<nbp; ipat++)    	//for all patterns
     {
-        BYTE s[64*4];
+        uint8_t s[64*4];
         if (Patterns[ipat])    				//if pattern exists
         {
             modplug::tracker::modcommand_t *m = Patterns[ipat];

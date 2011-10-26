@@ -30,7 +30,7 @@ protected:
     ORDERINDEX m_nDragOrder;
     //To tell how many orders('orderboxes') to show at least
     //on both sides of current order(when updating orderslist position).
-    BYTE m_nOrderlistMargins;
+    uint8_t m_nOrderlistMargins;
     CModDoc *m_pModDoc;
     CCtrlPatterns *m_pParent;
 
@@ -38,7 +38,7 @@ public:
     COrderList();
     virtual ~COrderList() {}
 
-    static BYTE s_nDefaultMargins;
+    static uint8_t s_nDefaultMargins;
 
 public:
     BOOL Init(const CRect&, CCtrlPatterns *pParent, CModDoc *, HFONT hFont);
@@ -62,24 +62,24 @@ public:
     ORD_SELECTION GetCurSel(bool bIgnoreSelection) const;
 
     // Sets target margin value and returns the effective margin value.
-    BYTE SetMargins(int);
+    uint8_t SetMargins(int);
 
     // Returns the effective margin value.
-    BYTE GetMargins() {return GetMargins(GetMarginsMax());}
+    uint8_t GetMargins() {return GetMargins(GetMarginsMax());}
 
     // Returns the effective margin value.
-    BYTE GetMargins(const BYTE nMaxMargins) {return min(nMaxMargins, m_nOrderlistMargins);}
+    uint8_t GetMargins(const uint8_t nMaxMargins) {return min(nMaxMargins, m_nOrderlistMargins);}
 
     // Returns maximum margin value given current window width.
-    BYTE GetMarginsMax() {return GetMarginsMax(GetLength());}
+    uint8_t GetMarginsMax() {return GetMarginsMax(GetLength());}
 
     // Returns maximum margin value when shown sequence has nLength orders.
     // For example: If length is 4 orders -> maxMargins = 4/2 - 1 = 1;
     // if maximum is 5 -> maxMargins = (int)5/2 = 2
-    BYTE GetMarginsMax(const BYTE nLength) {return (nLength > 0 && nLength % 2 == 0) ? nLength/2 - 1 : nLength/2;}
+    uint8_t GetMarginsMax(const uint8_t nLength) {return (nLength > 0 && nLength % 2 == 0) ? nLength/2 - 1 : nLength/2;}
 
     // Returns the number of sequence items visible in the list.
-    BYTE GetLength();
+    uint8_t GetLength();
 
     // Return true if given order is in margins given that first shown order
     // is 'startOrder'. Begin part of the whole sequence

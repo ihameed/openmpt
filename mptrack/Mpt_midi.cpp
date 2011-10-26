@@ -14,7 +14,7 @@ HMIDIIN CMainFrame::shMidiIn = NULL;
 
 //Get Midi message(dwParam1), apply MIDI settings having effect on volume, and return
 //the volume value [0, 256]. In addition value -1 is used as 'use default value'-indicator.
-int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const BYTE midivolume)
+int ApplyVolumeRelatedMidiSettings(const DWORD& dwParam1, const uint8_t midivolume)
 //----------------------------------------------------------------
 {
     int nVol = GetFromMIDIMsg_DataByte2(dwParam1);
@@ -216,7 +216,7 @@ void CMIDIMapper::Serialize(FILE* f) const
     	if(citer->GetAllowPatternEdit()) temp8 |= (1 << 5);
     	//bits 6-7: Size: 5, 6, 8, 12
 
-    	BYTE parambytes = 4;
+    	uint8_t parambytes = 4;
     	if(temp32 <= UINT16_MAX)
     	{
     		if(temp32 <= UINT8_MAX) parambytes = 1;
@@ -233,18 +233,18 @@ void CMIDIMapper::Serialize(FILE* f) const
 }
 
 
-bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
+bool CMIDIMapper::Deserialize(const uint8_t* ptr, const size_t size)
 //----------------------------------------------------------------------------
 {
     m_Directives.clear();
-    const BYTE* endptr = ptr + size;
+    const uint8_t* endptr = ptr + size;
     while(ptr + 5 <= endptr)
     {
     	uint8_t i8 = 0;
     	uint16_t i16 = 0;
     	uint32_t i32 = 0;
     	memcpy(&i8, ptr, 1); ptr++;
-    	BYTE psize = 0;
+    	uint8_t psize = 0;
     	switch(i8 >> 6)
     	{
     		case 0: psize = 5; break;
@@ -262,11 +262,11 @@ bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
     	s.SetAllowPatternEdit((i8 & (1 << 5)) != 0);
     	memcpy(&i16, ptr, 2); ptr += 2; //Channel, event, MIDIbyte1.
     	memcpy(&i8, ptr, 1); ptr++;		//Plugindex
-    	const BYTE remainingbytes = psize - 4;
+    	const uint8_t remainingbytes = psize - 4;
     	memcpy(&i32, ptr, min(4, remainingbytes)); ptr += remainingbytes;
     	   
     	s.SetChannel(((i16 & 1) != 0) ? 0 : 1 + ((i16 >> 1) & 0xF));
-    	s.SetEvent(static_cast<BYTE>((i16 >> 5) & 0xF));
+    	s.SetEvent(static_cast<uint8_t>((i16 >> 5) & 0xF));
     	s.SetController(i16 >> 9);
     	s.SetPlugIndex(i8);
     	s.SetParamIndex(i32);
@@ -277,7 +277,7 @@ bool CMIDIMapper::Deserialize(const BYTE* ptr, const size_t size)
 }
 
 
-bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32_t& paramindex, BYTE& paramval)
+bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, uint8_t& mappedIndex, uint32_t& paramindex, uint8_t& paramval)
 //----------------------------------------------------------------------------------------------------
 {
     bool captured = false;
@@ -287,16 +287,16 @@ bool CMIDIMapper::OnMIDImsg(const DWORD midimsg, BYTE& mappedIndex, uint32_t& pa
     //no mapping will be found and thus no search is done.
     //NOTE: The event value is not checked in code below.
 
-    const BYTE controller = GetFromMIDIMsg_DataByte1(midimsg);
+    const uint8_t controller = GetFromMIDIMsg_DataByte1(midimsg);
 
     const_iterator citer = std::lower_bound(Begin(), End(), controller); 
 
-    const BYTE channel = GetFromMIDIMsg_Channel(midimsg);
+    const uint8_t channel = GetFromMIDIMsg_Channel(midimsg);
 
     for(; citer != End() && citer->GetController() == controller && !captured; citer++)
     {
     	if(!citer->IsActive()) continue;
-    	BYTE plugindex = 0;
+    	uint8_t plugindex = 0;
     	uint32_t param = 0;
     	if( citer->GetAnyChannel() || channel+1 == citer->GetChannel())
     	{

@@ -16,10 +16,10 @@
 
 typedef struct tagSTMNOTE
 {
-    BYTE note;
-    BYTE insvol;
-    BYTE volcmd;
-    BYTE cmdinf;
+    uint8_t note;
+    uint8_t insvol;
+    uint8_t volcmd;
+    uint8_t cmdinf;
 } STMNOTE;
 
 
@@ -31,10 +31,10 @@ typedef struct tagSTMSAMPLE
     WORD length;		// Sample length
     WORD loopbeg;		// Loop start point
     WORD loopend;		// Loop end point
-    BYTE volume;		// Volume
-    BYTE reserved2;		// More reserved crap
+    uint8_t volume;		// Volume
+    uint8_t reserved2;		// More reserved crap
     WORD c2spd;			// Good old c2spd
-    BYTE reserved3[6];	// Yet more of PSi's reserved crap
+    uint8_t reserved3[6];	// Yet more of PSi's reserved crap
 } STMSAMPLE;
 
 
@@ -47,19 +47,19 @@ typedef struct tagSTMHEADER
     CHAR filetype;			// 1=song, 2=module (only 2 is supported, of course) :)
     CHAR ver_major;			// Like 2
     CHAR ver_minor;			// "ditto"
-    BYTE inittempo;			// initspeed= stm inittempo>>4
-    BYTE numpat;			// number of patterns
-    BYTE globalvol;			// <- WoW! a RiGHT TRiANGLE =8*)
-    BYTE reserved[13];		// More of PSi's internal crap
+    uint8_t inittempo;			// initspeed= stm inittempo>>4
+    uint8_t numpat;			// number of patterns
+    uint8_t globalvol;			// <- WoW! a RiGHT TRiANGLE =8*)
+    uint8_t reserved[13];		// More of PSi's internal crap
     STMSAMPLE sample[31];	// STM sample data
-    BYTE patorder[128];		// Docs say 64 - actually 128
+    uint8_t patorder[128];		// Docs say 64 - actually 128
 } STMHEADER;
 
 #pragma pack()
 
 
 
-bool CSoundFile::ReadSTM(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadSTM(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     STMHEADER *phdr = (STMHEADER *)lpStream;

@@ -47,8 +47,8 @@ typedef struct _VSTPLUGINLIB
 
 typedef struct _VSTINSTCH
 {
-    //BYTE uNoteOnMap[128/8];			rewbs.deMystifyMidiNoteMap
-    BYTE uNoteOnMap[128][MAX_CHANNELS];
+    //uint8_t uNoteOnMap[128/8];			rewbs.deMystifyMidiNoteMap
+    uint8_t uNoteOnMap[128][MAX_CHANNELS];
     UINT nProgram;
     WORD wMidiBank; //rewbs.MidiBank
 } VSTINSTCH, *PVSTINSTCH;

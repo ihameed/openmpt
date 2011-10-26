@@ -333,7 +333,7 @@ void CChannelManagerDlg::OnAction1()
     				CHANNELINDEX nThisChn = pattern[nChn];
     				if(!removed[nThisChn]){
     					if(select[nThisChn]) nbSelect++;
-    					BYTE rec = pModDoc->IsChannelRecord(nThisChn);
+    					uint8_t rec = pModDoc->IsChannelRecord(nThisChn);
     					if(select[nThisChn] && rec == 1) nbOk++;
     				}
     			}
@@ -412,7 +412,7 @@ void CChannelManagerDlg::OnAction2()
     				CHANNELINDEX nThisChn = pattern[nChn];
     				if(!removed[nThisChn]){
     					if(select[nThisChn]) nbSelect++;
-    					BYTE rec = pModDoc->IsChannelRecord(nThisChn);
+    					uint8_t rec = pModDoc->IsChannelRecord(nThisChn);
     					if(select[nThisChn] && rec == 2) nbOk++;
     				}
     			}
@@ -821,7 +821,7 @@ void CChannelManagerDlg::OnPaint()
     			else FillRect(pDC.hdc,&btn,CMainFrame::brushHighLight);
     			break;
     		case 1:
-    			BYTE r;
+    			uint8_t r;
     			if(pModDoc) r = pModDoc->IsChannelRecord(nThisChn);
     			else r = 0;
     			if(r == 1) FillRect(pDC.hdc,&btn,green);
@@ -1101,7 +1101,7 @@ void CChannelManagerDlg::OnRButtonDown(UINT nFlags,CPoint point)
     LeaveCriticalSection(&applying);
 }
 
-void CChannelManagerDlg::MouseEvent(UINT nFlags,CPoint point,BYTE button)
+void CChannelManagerDlg::MouseEvent(UINT nFlags,CPoint point,uint8_t button)
 {
     CHANNELINDEX n;
     CRect client,invalidate;
@@ -1148,7 +1148,7 @@ void CChannelManagerDlg::MouseEvent(UINT nFlags,CPoint point,BYTE button)
     				pModDoc->UpdateAllViews(NULL, HINT_MODCHANNELS | ((n/CHANNELS_IN_TAB) << HINT_SHIFT_CHNTAB));
     				break;
     			case 1:
-    				BYTE rec;
+    				uint8_t rec;
     				rec = pModDoc->IsChannelRecord(n);
     				if(!rec || rec != (button == CM_BT_LEFT ? 1 : 2)){
     					if(button == CM_BT_LEFT) pModDoc->Record1Channel(n);

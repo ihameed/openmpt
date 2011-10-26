@@ -376,7 +376,7 @@ void CNoteMapWnd::OnMapCopyNote()
     if (pIns)
     {
     	bool bModified = false;
-    	BYTE n = pIns->NoteMap[m_nNote];
+    	uint8_t n = pIns->NoteMap[m_nNote];
     	for (NOTEINDEXTYPE i = 0; i < NOTE_MAX; i++) if (pIns->NoteMap[i] != n)
     	{
     		pIns->NoteMap[i] = n;
@@ -476,7 +476,7 @@ void CNoteMapWnd::MapTranspose(int nAmount)
     		if ((n > NOTE_MIN && nAmount < 0) || (n < NOTE_MAX && nAmount > 0))
     		{
     			n = CLAMP(n + nAmount, NOTE_MIN, NOTE_MAX);
-    			pIns->NoteMap[i] = (BYTE)n;
+    			pIns->NoteMap[i] = (uint8_t)n;
     			bModified = true;
     		}
     	}
@@ -1871,7 +1871,7 @@ void CCtrlInstruments::OnSetPanningChanged()
     	if(b && m_pSndFile->GetType() & MOD_TYPE_IT|MOD_TYPE_MPT)
     	{
     		bool smpPanningInUse = false;
-    		for(BYTE i = 0; i<ARRAYELEMCOUNT(pIns->Keyboard); i++)
+    		for(uint8_t i = 0; i<ARRAYELEMCOUNT(pIns->Keyboard); i++)
     		{
     			const SAMPLEINDEX smp = pIns->Keyboard[i];
     			if(smp <= m_pSndFile->GetNumSamples() && m_pSndFile->Samples[smp].flags & CHN_PANNING)
@@ -1889,7 +1889,7 @@ void CCtrlInstruments::OnSetPanningChanged()
     					_T(""),
     					MB_YESNO) == IDYES)
     			{
-    				for(BYTE i = 0; i < ARRAYELEMCOUNT(pIns->Keyboard); i++)
+    				for(uint8_t i = 0; i < ARRAYELEMCOUNT(pIns->Keyboard); i++)
     				{
     					const SAMPLEINDEX smp = pIns->Keyboard[i];
     					if(smp <= m_pSndFile->GetNumSamples())
@@ -2030,9 +2030,9 @@ void CCtrlInstruments::OnMCHChanged()
     if ((!IsLocked()) && (pIns))
     {
     	int n = m_CbnMidiCh.GetItemData(m_CbnMidiCh.GetCurSel());
-    	if (pIns->midi_channel != (BYTE)(n & 0xff))
+    	if (pIns->midi_channel != (uint8_t)(n & 0xff))
     	{
-    		pIns->midi_channel = (BYTE)(n & 0xff);
+    		pIns->midi_channel = (uint8_t)(n & 0xff);
     		SetInstrumentModified(true);
     	}
     }
@@ -2045,9 +2045,9 @@ void CCtrlInstruments::OnResamplingChanged()
     if ((!IsLocked()) && (pIns))
     {
     	int n = m_CbnResampling.GetItemData(m_CbnResampling.GetCurSel());
-    	if (pIns->resampling_mode != (BYTE)(n & 0xff))
+    	if (pIns->resampling_mode != (uint8_t)(n & 0xff))
     	{
-    		pIns->resampling_mode = (BYTE)(n & 0xff);
+    		pIns->resampling_mode = (uint8_t)(n & 0xff);
     		SetInstrumentModified(true);
     		m_pModDoc->UpdateAllViews(NULL, HINT_INSNAMES, this);
     	}
@@ -2342,7 +2342,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     			n = m_SliderVolSwing.GetPos();
     			if ((n >= 0) && (n <= 64) && (n != (int)pIns->random_volume_weight))
     			{
-    				pIns->random_volume_weight = (BYTE)n;
+    				pIns->random_volume_weight = (uint8_t)n;
     				SetInstrumentModified(true);
     			}
     		}
@@ -2352,7 +2352,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     			n = m_SliderPanSwing.GetPos();
     			if ((n >= 0) && (n <= 64) && (n != (int)pIns->random_pan_weight))
     			{
-    				pIns->random_pan_weight = (BYTE)n;
+    				pIns->random_pan_weight = (uint8_t)n;
     				SetInstrumentModified(true);
     			}
     		}
@@ -2362,7 +2362,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     			n = m_SliderCutSwing.GetPos();
     			if ((n >= 0) && (n <= 64) && (n != (int)pIns->random_cutoff_weight))
     			{
-    				pIns->random_cutoff_weight = (BYTE)n;
+    				pIns->random_cutoff_weight = (uint8_t)n;
     				SetInstrumentModified(true);
     			}
     		}
@@ -2372,7 +2372,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     			n = m_SliderResSwing.GetPos();
     			if ((n >= 0) && (n <= 64) && (n != (int)pIns->random_resonance_weight))
     			{
-    				pIns->random_resonance_weight = (BYTE)n;
+    				pIns->random_resonance_weight = (uint8_t)n;
     				SetInstrumentModified(true);
     			}
     		}
@@ -2383,7 +2383,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     			if ((n >= 0) && (n < 0x80) && (n != (int)(pIns->default_filter_cutoff & 0x7F)))
     			{
     				pIns->default_filter_cutoff &= 0x80;
-    				pIns->default_filter_cutoff |= (BYTE)n;
+    				pIns->default_filter_cutoff |= (uint8_t)n;
     				SetInstrumentModified(true);
     				UpdateFilterText();
     				filterChanger = true;
@@ -2396,7 +2396,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
     			if ((n >= 0) && (n < 0x80) && (n != (int)(pIns->default_filter_resonance & 0x7F)))
     			{
     				pIns->default_filter_resonance &= 0x80;
-    				pIns->default_filter_resonance |= (BYTE)n;
+    				pIns->default_filter_resonance |= (uint8_t)n;
     				SetInstrumentModified(true);
     				filterChanger = true;
     			}
@@ -2660,7 +2660,7 @@ void CCtrlInstruments::OnPluginVelocityHandlingChanged()
     modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
     if ((!IsLocked()) && (pIns))
     {
-    	BYTE n = static_cast<BYTE>(m_CbnPluginVelocityHandling.GetCurSel());
+    	uint8_t n = static_cast<uint8_t>(m_CbnPluginVelocityHandling.GetCurSel());
     	if(n != pIns->nPluginVelocityHandling)
     	{
     		pIns->nPluginVelocityHandling = n;
@@ -2676,7 +2676,7 @@ void CCtrlInstruments::OnPluginVolumeHandlingChanged()
     modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
     if ((!IsLocked()) && (pIns))
     {
-    	BYTE n = static_cast<BYTE>(m_CbnPluginVolumeHandling.GetCurSel());
+    	uint8_t n = static_cast<uint8_t>(m_CbnPluginVolumeHandling.GetCurSel());
     	if(n != pIns->nPluginVolumeHandling)
     	{
     		pIns->nPluginVolumeHandling = n;

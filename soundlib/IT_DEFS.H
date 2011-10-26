@@ -7,8 +7,8 @@ typedef struct tagITFILEHEADER
 {
 	DWORD id;			// 0x4D504D49
 	CHAR songname[26];
-	BYTE highlight_minor;
-	BYTE highlight_major;
+	uint8_t highlight_minor;
+	uint8_t highlight_major;
 	WORD ordnum;
 	WORD insnum;
 	WORD smpnum;
@@ -17,30 +17,30 @@ typedef struct tagITFILEHEADER
 	WORD cmwt;			// "compatible with" tracker
 	WORD flags;
 	WORD special;
-	BYTE globalvol;
-	BYTE mv;			// master volume
-	BYTE speed;
-	BYTE tempo;
-	BYTE sep;			// panning separation (0...128)
-	BYTE pwd;			// pitch wheel depth
+	uint8_t globalvol;
+	uint8_t mv;			// master volume
+	uint8_t speed;
+	uint8_t tempo;
+	uint8_t sep;			// panning separation (0...128)
+	uint8_t pwd;			// pitch wheel depth
 	WORD msglength;
 	DWORD msgoffset;
 	DWORD reserved;		// ChibiTracker writes "CHBI" here. OpenMPT writes "OMPT" here in some cases, see Load_it.cpp
-	BYTE chnpan[64];
-	BYTE chnvol[64];
+	uint8_t chnpan[64];
+	uint8_t chnvol[64];
 } ITFILEHEADER;
 
 
 typedef struct tagITENVELOPE
 {
-	BYTE flags;
-	BYTE num;
-	BYTE lpb;
-	BYTE lpe;
-	BYTE slb;
-	BYTE sle;
-	BYTE data[25*3];
-	BYTE reserved;
+	uint8_t flags;
+	uint8_t num;
+	uint8_t lpb;
+	uint8_t lpe;
+	uint8_t slb;
+	uint8_t sle;
+	uint8_t data[25*3];
+	uint8_t reserved;
 } ITENVELOPE;
 
 // Old Impulse Instrument Format (cmwt < 0x200)
@@ -48,24 +48,24 @@ typedef struct tagITOLDINSTRUMENT
 {
 	DWORD id;			// IMPI = 0x49504D49
 	CHAR filename[12];	// DOS file name
-	BYTE zero;
-	BYTE flags;
-	BYTE vls;
-	BYTE vle;
-	BYTE sls;
-	BYTE sle;
+	uint8_t zero;
+	uint8_t flags;
+	uint8_t vls;
+	uint8_t vle;
+	uint8_t sls;
+	uint8_t sle;
 	WORD reserved1;
 	WORD fadeout;
-	BYTE nna;
-	BYTE dnc;
+	uint8_t nna;
+	uint8_t dnc;
 	WORD trkvers;
-	BYTE nos;
-	BYTE reserved2;
+	uint8_t nos;
+	uint8_t reserved2;
 	CHAR name[26];
 	WORD reserved3[3];
-	BYTE keyboard[240];
-	BYTE volenv[200];
-	BYTE nodes[50];
+	uint8_t keyboard[240];
+	uint8_t volenv[200];
+	uint8_t nodes[50];
 } ITOLDINSTRUMENT;
 
 
@@ -74,31 +74,31 @@ typedef struct tagITINSTRUMENT
 {
 	DWORD id;
 	CHAR filename[12];
-	BYTE zero;
-	BYTE nna;
-	BYTE dct;
-	BYTE dca;
+	uint8_t zero;
+	uint8_t nna;
+	uint8_t dct;
+	uint8_t dca;
 	WORD fadeout;
 	signed char pps;
-	BYTE ppc;
-	BYTE gbv;
-	BYTE dfp;
-	BYTE rv;
-	BYTE rp;
+	uint8_t ppc;
+	uint8_t gbv;
+	uint8_t dfp;
+	uint8_t rv;
+	uint8_t rp;
 	WORD trkvers;
-	BYTE nos;
-	BYTE reserved1;
+	uint8_t nos;
+	uint8_t reserved1;
 	CHAR name[26];
-	BYTE ifc;
-	BYTE ifr;
-	BYTE mch;
-	BYTE mpr;
+	uint8_t ifc;
+	uint8_t ifr;
+	uint8_t mch;
+	uint8_t mpr;
 	WORD mbank;
-	BYTE keyboard[240];
+	uint8_t keyboard[240];
 	ITENVELOPE volenv;
 	ITENVELOPE panenv;
 	ITENVELOPE pitchenv;
-	BYTE dummy[4]; // was 7, but IT v2.17 saves 554 bytes
+	uint8_t dummy[4]; // was 7, but IT v2.17 saves 554 bytes
 } ITINSTRUMENT;
 
 
@@ -106,7 +106,7 @@ typedef struct tagITINSTRUMENT
 typedef struct _ITINSTRUMENTEX
 {
 	ITINSTRUMENT iti;
-	BYTE keyboardhi[120];
+	uint8_t keyboardhi[120];
 } ITINSTRUMENTEX, *PITINSTRUMENTEX;
 
 
@@ -115,13 +115,13 @@ typedef struct tagITSAMPLESTRUCT
 {
 	DWORD id;		// 0x53504D49
 	CHAR filename[12];
-	BYTE zero;
-	BYTE gvl;
-	BYTE flags;
-	BYTE vol;
+	uint8_t zero;
+	uint8_t gvl;
+	uint8_t flags;
+	uint8_t vol;
 	CHAR name[26];
-	BYTE cvt;
-	BYTE dfp;
+	uint8_t cvt;
+	uint8_t dfp;
 	DWORD length;
 	DWORD loopbegin;
 	DWORD loopend;
@@ -129,10 +129,10 @@ typedef struct tagITSAMPLESTRUCT
 	DWORD susloopbegin;
 	DWORD susloopend;
 	DWORD samplepointer;
-	BYTE vis;
-	BYTE vid;
-	BYTE vir;
-	BYTE vit;
+	uint8_t vis;
+	uint8_t vid;
+	uint8_t vir;
+	uint8_t vit;
 } ITSAMPLESTRUCT;
 
 
@@ -146,8 +146,8 @@ typedef struct tagITHISTORYSTRUCT
 
 #pragma pack()
 
-extern BYTE autovibit2xm[8];
-extern BYTE autovibxm2it[8];
+extern uint8_t autovibit2xm[8];
+extern uint8_t autovibxm2it[8];
 
 // Impulse Tracker identifcators
 #define IT_IMPM 0x4D504D49		// "IMPM" IT header magic bytes 

@@ -350,7 +350,7 @@ BOOL CLayer3Convert::OnInitDialog()
 //---------------------------------
 {
     ACMFORMATDETAILS afd;
-    BYTE wfx[256];
+    uint8_t wfx[256];
     WAVEFORMATEX *pwfx = (WAVEFORMATEX *)&wfx;
     
     CDialog::OnInitDialog();
@@ -392,7 +392,7 @@ VOID CLayer3Convert::UpdateDialog()
 //---------------------------------
 {
     ACMFORMATDETAILS afd;
-    BYTE wfx[256];
+    uint8_t wfx[256];
     WAVEFORMATEX *pwfx = (WAVEFORMATEX *)&wfx;
     
     m_CbnFormat.ResetContent();
@@ -618,7 +618,7 @@ void CDoWaveConvert::OnButton1()
     WAVEFILEHEADER header;
     WAVEDATAHEADER datahdr, fmthdr;
     MSG msg;
-    BYTE buffer[WAVECONVERTBUFSIZE];
+    uint8_t buffer[WAVECONVERTBUFSIZE];
     CHAR s[80];
     HWND progress = ::GetDlgItem(m_hWnd, IDC_PROGRESS1);
     UINT ok = IDOK, pos;
@@ -999,8 +999,8 @@ void CDoAcmConvert::OnButton1()
     // This call is useless for ACM, but required for BLADEenc/LAMEenc codecs!
     if (theApp.AcmStreamSize(hAStream, WAVECONVERTBUFSIZE, &dwDstBufSize, ACM_STREAMSIZEF_DESTINATION) != MMSYSERR_NOERROR) goto OnError;
     //if (dwDstBufSize > 0x10000) dwDstBufSize = 0x10000;
-    pcmBuffer = new BYTE[WAVECONVERTBUFSIZE];
-    dstBuffer = new BYTE[dwDstBufSize];
+    pcmBuffer = new uint8_t[WAVECONVERTBUFSIZE];
+    dstBuffer = new uint8_t[dwDstBufSize];
     if ((!dstBuffer) || (!pcmBuffer)) goto OnError;
     memset(pcmBuffer, 0, WAVECONVERTBUFSIZE);
     memset(dstBuffer, 0, dwDstBufSize);

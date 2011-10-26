@@ -31,9 +31,9 @@ bool _wao_write_envelope(Json::Value &out, const modplug::tracker::modenvelope_t
     out["sustain_end"]   = envelope.sustain_end;
     out["release_node"]  = envelope.release_node;
 
-    Json::Value &nodes = out["nodes"];
+    auto &nodes = out["nodes"];
     for (size_t nodeidx = 0; nodeidx < envelope.num_nodes; ++nodeidx) {
-        Json::Value &node = nodes.append(Json::Value());
+        auto &node = nodes.append(Json::Value());
         node["tick"]  = envelope.Ticks[nodeidx];
         node["value"] = envelope.Values[nodeidx];
     }
@@ -41,7 +41,7 @@ bool _wao_write_envelope(Json::Value &out, const modplug::tracker::modenvelope_t
 }
 
 bool _wao_write_instrument(Json::Value &out, const modplug::tracker::modinstrument_t &instrument) {
-    out["name"]            = std::string(instrument.name,     32);
+    out["name"]            = std::string(instrument.name, 32);
     out["legacy_filename"] = std::string(instrument.legacy_filename, 32);
     out["fadeout"]         = instrument.fadeout;
     out["global_volume"]   = instrument.global_volume;
@@ -118,14 +118,14 @@ bool _wao_write_pattern(Json::Value &out, const MODPATTERN &pattern) {
     out["rows_per_beat"]    = pattern.GetRowsPerBeat();
     out["rows_per_measure"] = pattern.GetRowsPerMeasure();
 
-    Json::Value &pattern_data = out["data"];
+    auto &pattern_data = out["data"];
     for (size_t rowidx = 0; rowidx < num_rows; ++rowidx) {
         const modplug::tracker::modcommand_t *command = pattern.GetpModCommand(rowidx, 0);
         if (!command) break;
 
         for (size_t chnidx = 0; chnidx < num_channels; ++chnidx) {
             if (command->IsEmpty()) continue;
-            Json::Value &note = pattern_data.append(Json::Value());
+            auto &note = pattern_data.append(Json::Value());
             note["row"]     = rowidx;
             note["channel"] = chnidx;
             note["note"]    = command->note;
@@ -145,30 +145,30 @@ bool write_wao(CPatternContainer &pattern_list, CSoundFile &kitchen_sink) {
 
     root["version"] = 1;
     root["name"] = "epanos";
-    Json::Value &message     = root["message"];
-    Json::Value &orderlist   = root["orderlist"];
-    Json::Value &patterns    = root["patterns"];
-    Json::Value &samples     = root["samples"];
-    Json::Value &instruments = root["instruments"];
-    Json::Value &graphstate  = root["graphstate"];
-    Json::Value &pluginstate = root["pluginstate"];
+    auto &message     = root["message"];
+    auto &orderlist   = root["orderlist"];
+    auto &patterns    = root["patterns"];
+    auto &samples     = root["samples"];
+    auto &instruments = root["instruments"];
+    auto &graphstate  = root["graphstate"];
+    auto &pluginstate = root["pluginstate"];
 
     for (size_t patternidx = 0; patternidx < pattern_list.Size(); ++patternidx) {
         MODPATTERN &pattern = pattern_list[patternidx];
-        Json::Value &pattern_json = patterns.append(Json::Value());
+        auto &pattern_json = patterns.append(Json::Value());
         _wao_write_pattern(pattern_json, pattern);
     }
 
     size_t num_samples = kitchen_sink.m_nSamples;
     for (size_t sampleidx = 1; sampleidx < num_samples; ++sampleidx) {
-        Json::Value &sample_json = samples.append(Json::Value());
+        auto &sample_json = samples.append(Json::Value());
         modplug::tracker::modsample_t &sample = kitchen_sink.Samples[sampleidx];
         _wao_write_sample(sample_json, sample);
     }
 
     size_t num_instruments = kitchen_sink.m_nInstruments;
     for (size_t instrumentidx = 1; instrumentidx < num_instruments; ++instrumentidx) {
-        Json::Value &instrument_json = instruments.append(Json::Value());
+        auto &instrument_json = instruments.append(Json::Value());
         modplug::tracker::modinstrument_t *instrument = kitchen_sink.Instruments[instrumentidx];
         if (!instrument) continue;
         _wao_write_instrument(instrument_json, *instrument);

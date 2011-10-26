@@ -111,7 +111,7 @@ static const RATIOTYPE TwoToPowerXOver12Table[16] =
     2.0F    	   , 2.118926188719F, 2.244924096619F, 2.3784142300054F
 };
 
-inline RATIOTYPE TwoToPowerXOver12(const BYTE i)
+inline RATIOTYPE TwoToPowerXOver12(const uint8_t i)
 //-------------------------------------------
 {
     return (i < 16) ? TwoToPowerXOver12Table[i] : 1;
@@ -920,7 +920,7 @@ BOOL CSoundFile::ReadNote()
                     if ((m_nTickCount) || (m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT)))
                     {
                         if (tremcount >= ontime) vol = 0;
-                        pChn->nTremorCount = (BYTE)(tremcount + 1);
+                        pChn->nTremorCount = (uint8_t)(tremcount + 1);
                     }
                 }
                 pChn->flags |= CHN_FASTVOLRAMP;
@@ -1106,7 +1106,7 @@ BOOL CSoundFile::ReadNote()
                     // FastTracker 2: Swedish tracker logic (TM) arpeggio
                     else if(IsCompatibleMode(TRK_FASTTRACKER2))
                     {
-                        BYTE note = pChn->nNote;
+                        uint8_t note = pChn->nNote;
                         int arpPos = 0;
 
                         if (!(m_dwSongFlags & SONG_FIRSTTICK))
@@ -1685,14 +1685,14 @@ BOOL CSoundFile::ReadNote()
 #ifdef ENABLE_STEREOVU
             UINT vul = (pChn->nRealVolume * pChn->nRealPan) >> 14;
             if (vul > 127) vul = 127;
-            if (pChn->nLeftVU > 127) pChn->nLeftVU = (BYTE)vul;
+            if (pChn->nLeftVU > 127) pChn->nLeftVU = (uint8_t)vul;
             vul >>= 1;
-            if (pChn->nLeftVU < vul) pChn->nLeftVU = (BYTE)vul;
+            if (pChn->nLeftVU < vul) pChn->nLeftVU = (uint8_t)vul;
             UINT vur = (pChn->nRealVolume * (256-pChn->nRealPan)) >> 14;
             if (vur > 127) vur = 127;
-            if (pChn->nRightVU > 127) pChn->nRightVU = (BYTE)vur;
+            if (pChn->nRightVU > 127) pChn->nRightVU = (uint8_t)vur;
             vur >>= 1;
-            if (pChn->nRightVU < vur) pChn->nRightVU = (BYTE)vur;
+            if (pChn->nRightVU < vur) pChn->nRightVU = (uint8_t)vur;
 #endif
 #ifdef MODPLUG_TRACKER
             UINT kChnMasterVol = (pChn->flags & CHN_EXTRALOUD) ? 0x100 : nMasterVol;

@@ -677,13 +677,13 @@ typedef struct GF1PATCHFILEHEADER
     CHAR version[4];    	// "100", or "110"
     CHAR id[10];    		// "ID#000002"
     CHAR copyright[60];    	// Copyright
-    BYTE instrum;    		// Number of instruments in patch
-    BYTE voices;    		// Number of voices, usually 14
-    BYTE channels;    		// Number of wav channels that can be played concurently to the patch
+    uint8_t instrum;    		// Number of instruments in patch
+    uint8_t voices;    		// Number of voices, usually 14
+    uint8_t channels;    		// Number of wav channels that can be played concurently to the patch
     WORD samples;    		// Total number of waveforms for all the .PAT
     WORD volume;    		// Master volume
     DWORD data_size;
-    BYTE reserved2[36];
+    uint8_t reserved2[36];
 } GF1PATCHFILEHEADER;
 
 
@@ -692,30 +692,30 @@ typedef struct GF1INSTRUMENT
     WORD id;    			// Instrument id: 0-65535
     CHAR name[16];    		// Name of instrument. Gravis doesn't seem to use it
     DWORD size;    			// Number of bytes for the instrument with header. (To skip to next instrument)
-    BYTE layers;    		// Number of layers in instrument: 1-4
-    BYTE reserved[40];
+    uint8_t layers;    		// Number of layers in instrument: 1-4
+    uint8_t reserved[40];
 } GF1INSTRUMENT;
 
 
 typedef struct GF1SAMPLEHEADER
 {
     CHAR name[7];    		// null terminated string. name of the wave.
-    BYTE fractions;    		// Start loop point fraction in 4 bits + End loop point fraction in the 4 other bits.
+    uint8_t fractions;    		// Start loop point fraction in 4 bits + End loop point fraction in the 4 other bits.
     DWORD length;    		// total size of wavesample. limited to 65535 now by the drivers, not the card.
     DWORD loopstart;    	// start loop position in the wavesample
     DWORD loopend;    		// end loop position in the wavesample
     WORD freq;    			// Rate at which the wavesample has been sampled
     DWORD low_freq, high_freq, root_freq;    // check note.h for the correspondance.
     SHORT finetune;    		// fine tune. -512 to +512, EXCLUDING 0 cause it is a multiplier. 512 is one octave off, and 1 is a neutral value
-    BYTE balance;    		// Balance: 0-15. 0=full left, 15 = full right
-    BYTE env_rate[6];    	// attack rates
-    BYTE env_volume[6];    	// attack volumes
-    BYTE tremolo_sweep, tremolo_rate, tremolo_depth;
-    BYTE vibrato_sweep, vibrato_rate, vibrato_depth;
-    BYTE flags;
+    uint8_t balance;    		// Balance: 0-15. 0=full left, 15 = full right
+    uint8_t env_rate[6];    	// attack rates
+    uint8_t env_volume[6];    	// attack volumes
+    uint8_t tremolo_sweep, tremolo_rate, tremolo_depth;
+    uint8_t vibrato_sweep, vibrato_rate, vibrato_depth;
+    uint8_t flags;
     SHORT scale_frequency;
     WORD scale_factor;
-    BYTE reserved[36];
+    uint8_t reserved[36];
 } GF1SAMPLEHEADER;
 
 // -- GF1 Envelopes --
@@ -750,11 +750,11 @@ typedef struct GF1SAMPLEHEADER
 
 typedef struct GF1LAYER
 {
-    BYTE previous;    		// If !=0 the wavesample to use is from the previous layer. The waveheader is still needed
-    BYTE id;    			// Layer id: 0-3
+    uint8_t previous;    		// If !=0 the wavesample to use is from the previous layer. The waveheader is still needed
+    uint8_t id;    			// Layer id: 0-3
     DWORD size;    			// data size in bytes in the layer, without the header. to skip to next layer for example:
-    BYTE samples;    		// number of wavesamples
-    BYTE reserved[40];
+    uint8_t samples;    		// number of wavesamples
+    uint8_t reserved[40];
 } GF1LAYER;
 
 #pragma pack()
@@ -919,7 +919,7 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
               && ((LONG)k <= nMaxNote)))
             {
                 if (psh->scale_factor)
-                    pIns->NoteMap[k] = (BYTE)(k+1);
+                    pIns->NoteMap[k] = (uint8_t)(k+1);
                 else
                     pIns->NoteMap[k] = 5*12+1;
                 pIns->Keyboard[k] = nFreeSmp;
@@ -956,7 +956,7 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
         // Fill note map and missing samples
         for (UINT k=0; k<NOTE_MAX; k++)
         {
-            if (!pIns->NoteMap[k]) pIns->NoteMap[k] = (BYTE)(k+1);
+            if (!pIns->NoteMap[k]) pIns->NoteMap[k] = (uint8_t)(k+1);
             if (!pIns->Keyboard[k])
             {
                 pIns->Keyboard[k] = nMinSmp;
@@ -975,17 +975,17 @@ bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, DWOR
 
 typedef struct S3ISAMPLESTRUCT
 {
-    BYTE id;
+    uint8_t id;
     CHAR filename[12];
-    BYTE reserved1;
+    uint8_t reserved1;
     WORD offset;
     DWORD length;
     DWORD loopstart;
     DWORD loopend;
-    BYTE volume;
-    BYTE reserved2;
-    BYTE pack;
-    BYTE flags;
+    uint8_t volume;
+    uint8_t reserved2;
+    uint8_t pack;
+    uint8_t flags;
     DWORD nC5Speed;
     DWORD reserved3;
     DWORD reserved4;
@@ -1043,16 +1043,16 @@ typedef struct XIFILEHEADER
 
 typedef struct XIINSTRUMENTHEADER
 {
-    BYTE snum[96];
+    uint8_t snum[96];
     WORD venv[24];
     WORD pIns[24];
-    BYTE vnum, pnum;
-    BYTE vsustain, vloops, vloope, psustain, ploops, ploope;
-    BYTE vtype, ptype;
-    BYTE vibtype, vibsweep, vibdepth, vibrate;
+    uint8_t vnum, pnum;
+    uint8_t vsustain, vloops, vloope, psustain, ploops, ploope;
+    uint8_t vtype, ptype;
+    uint8_t vibtype, vibsweep, vibdepth, vibrate;
     WORD volfade;
     WORD res;
-    BYTE reserved1[20];
+    uint8_t reserved1[20];
     WORD reserved2;
 } XIINSTRUMENTHEADER;
 
@@ -1062,12 +1062,12 @@ typedef struct XISAMPLEHEADER
     DWORD samplen;
     DWORD loopstart;
     DWORD looplen;
-    BYTE vol;
+    uint8_t vol;
     signed char finetune;
-    BYTE type;
-    BYTE pan;
+    uint8_t type;
+    uint8_t pan;
     signed char relnote;
-    BYTE res;
+    uint8_t res;
     char name[22];
 } XISAMPLEHEADER;
 
@@ -1160,9 +1160,9 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWOR
     for (UINT ienv=0; ienv<12; ienv++)
     {
         pIns->volume_envelope.Ticks[ienv] = (WORD)pih->venv[ienv*2];
-        pIns->volume_envelope.Values[ienv] = (BYTE)pih->venv[ienv*2+1];
+        pIns->volume_envelope.Values[ienv] = (uint8_t)pih->venv[ienv*2+1];
         pIns->panning_envelope.Ticks[ienv] = (WORD)pih->pIns[ienv*2];
-        pIns->panning_envelope.Values[ienv] = (BYTE)pih->pIns[ienv*2+1];
+        pIns->panning_envelope.Values[ienv] = (uint8_t)pih->pIns[ienv*2+1];
         if (ienv)
         {
             if (pIns->volume_envelope.Ticks[ienv] < pIns->volume_envelope.Ticks[ienv-1])
@@ -1297,9 +1297,9 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     if (xih.pnum > 12) xih.pnum = 12;
     for (UINT ienv=0; ienv<12; ienv++)
     {
-        xih.venv[ienv*2] = (BYTE)pIns->volume_envelope.Ticks[ienv];
+        xih.venv[ienv*2] = (uint8_t)pIns->volume_envelope.Ticks[ienv];
         xih.venv[ienv*2+1] = pIns->volume_envelope.Values[ienv];
-        xih.pIns[ienv*2] = (BYTE)pIns->panning_envelope.Ticks[ienv];
+        xih.pIns[ienv*2] = (uint8_t)pIns->panning_envelope.Ticks[ienv];
         xih.pIns[ienv*2+1] = pIns->panning_envelope.Values[ienv];
     }
     if (pIns->volume_envelope.flags & ENV_ENABLED) xih.vtype |= 1;
@@ -1308,12 +1308,12 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     if (pIns->panning_envelope.flags & ENV_ENABLED) xih.ptype |= 1;
     if (pIns->panning_envelope.flags & ENV_SUSTAIN) xih.ptype |= 2;
     if (pIns->panning_envelope.flags & ENV_LOOP) xih.ptype |= 4;
-    xih.vsustain = (BYTE)pIns->volume_envelope.sustain_start;
-    xih.vloops = (BYTE)pIns->volume_envelope.loop_start;
-    xih.vloope = (BYTE)pIns->volume_envelope.loop_end;
-    xih.psustain = (BYTE)pIns->panning_envelope.sustain_start;
-    xih.ploops = (BYTE)pIns->panning_envelope.loop_start;
-    xih.ploope = (BYTE)pIns->panning_envelope.loop_end;
+    xih.vsustain = (uint8_t)pIns->volume_envelope.sustain_start;
+    xih.vloops = (uint8_t)pIns->volume_envelope.loop_start;
+    xih.vloope = (uint8_t)pIns->volume_envelope.loop_end;
+    xih.psustain = (uint8_t)pIns->panning_envelope.sustain_start;
+    xih.ploops = (uint8_t)pIns->panning_envelope.loop_start;
+    xih.ploope = (uint8_t)pIns->panning_envelope.loop_end;
     nsamples = 0;
     for (UINT j=0; j<96; j++) if (pIns->Keyboard[j+12])
     {
@@ -1364,7 +1364,7 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
         {
             xsh.type |= (pSmp->flags & CHN_PINGPONGLOOP) ? 0x02 : 0x01;
         }
-        xsh.pan = (BYTE)pSmp->default_pan;
+        xsh.pan = (uint8_t)pSmp->default_pan;
         if (pSmp->default_pan > 0xFF) xsh.pan = 0xFF;
         if ((m_nType & MOD_TYPE_XM) || (!pSmp->c5_samplerate))
             xsh.relnote = (signed char) pSmp->RelativeTone;
@@ -1502,7 +1502,7 @@ typedef struct AIFFCOMM
     WORD wFramesHi;    // Align!
     WORD wFramesLo;
     WORD wSampleSize;
-    BYTE xSampleRate[10];
+    uint8_t xSampleRate[10];
 } AIFFCOMM;
 
 typedef struct AIFFSSND
@@ -1527,7 +1527,7 @@ static DWORD FetchLong(LPBYTE p)
 static DWORD Ext2Long(LPBYTE p)
 {
     DWORD mantissa, last=0;
-    BYTE exp;
+    uint8_t exp;
 
     mantissa = FetchLong(p+2);
     exp = 30 - p[1];
@@ -1762,7 +1762,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 
     // Rewind file pointer offset (dwMemPos) to last sample header position
     dwMemPos -= sizeof(ITSAMPLESTRUCT);
-    BYTE * ptr = (BYTE *)(lpMemFile+dwMemPos);
+    uint8_t * ptr = (uint8_t *)(lpMemFile+dwMemPos);
 
     // Update file pointer offset (dwMemPos) to match the end of the sample datas
     ITSAMPLESTRUCT *pis = (ITSAMPLESTRUCT *)ptr;
@@ -1781,7 +1781,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, DWO
 bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 //-----------------------------------------------------------------------------
 {
-    BYTE buffer[554];
+    uint8_t buffer[554];
     ITINSTRUMENT *iti = (ITINSTRUMENT *)buffer;
     ITSAMPLESTRUCT itss;
     modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
@@ -1808,8 +1808,8 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     iti->fadeout = pIns->fadeout >> 5;
     iti->pps = pIns->pitch_pan_separation;
     iti->ppc = pIns->pitch_pan_center;
-    iti->gbv = (BYTE)(pIns->global_volume << 1);
-    iti->dfp = (BYTE)pIns->default_pan >> 2;
+    iti->gbv = (uint8_t)(pIns->global_volume << 1);
+    iti->dfp = (uint8_t)pIns->default_pan >> 2;
     if (!(pIns->flags & INS_SETPANNING)) iti->dfp |= 0x80;
     iti->rv = pIns->random_volume_weight;
     iti->rp = pIns->random_pan_weight;
@@ -1840,9 +1840,9 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     if (pIns->volume_envelope.flags & ENV_LOOP) iti->volenv.flags |= 0x02;
     if (pIns->volume_envelope.flags & ENV_SUSTAIN) iti->volenv.flags |= 0x04;
     if (pIns->volume_envelope.flags & ENV_CARRY) iti->volenv.flags |= 0x08;
-    iti->volenv.num = (BYTE)pIns->volume_envelope.num_nodes;
-    iti->volenv.lpb = (BYTE)pIns->volume_envelope.loop_start;
-    iti->volenv.lpe = (BYTE)pIns->volume_envelope.loop_end;
+    iti->volenv.num = (uint8_t)pIns->volume_envelope.num_nodes;
+    iti->volenv.lpb = (uint8_t)pIns->volume_envelope.loop_start;
+    iti->volenv.lpe = (uint8_t)pIns->volume_envelope.loop_end;
     iti->volenv.slb = pIns->volume_envelope.sustain_start;
     iti->volenv.sle = pIns->volume_envelope.sustain_end;
     // Writing Panning envelope
@@ -1850,9 +1850,9 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     if (pIns->panning_envelope.flags & ENV_LOOP) iti->panenv.flags |= 0x02;
     if (pIns->panning_envelope.flags & ENV_SUSTAIN) iti->panenv.flags |= 0x04;
     if (pIns->panning_envelope.flags & ENV_CARRY) iti->panenv.flags |= 0x08;
-    iti->panenv.num = (BYTE)pIns->panning_envelope.num_nodes;
-    iti->panenv.lpb = (BYTE)pIns->panning_envelope.loop_start;
-    iti->panenv.lpe = (BYTE)pIns->panning_envelope.loop_end;
+    iti->panenv.num = (uint8_t)pIns->panning_envelope.num_nodes;
+    iti->panenv.lpb = (uint8_t)pIns->panning_envelope.loop_start;
+    iti->panenv.lpe = (uint8_t)pIns->panning_envelope.loop_end;
     iti->panenv.slb = pIns->panning_envelope.sustain_start;
     iti->panenv.sle = pIns->panning_envelope.sustain_end;
     // Writing Pitch Envelope
@@ -1861,11 +1861,11 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
     if (pIns->pitch_envelope.flags & ENV_SUSTAIN) iti->pitchenv.flags |= 0x04;
     if (pIns->pitch_envelope.flags & ENV_CARRY) iti->pitchenv.flags |= 0x08;
     if (pIns->pitch_envelope.flags & ENV_FILTER) iti->pitchenv.flags |= 0x80;
-    iti->pitchenv.num = (BYTE)pIns->pitch_envelope.num_nodes;
-    iti->pitchenv.lpb = (BYTE)pIns->pitch_envelope.loop_start;
-    iti->pitchenv.lpe = (BYTE)pIns->pitch_envelope.loop_end;
-    iti->pitchenv.slb = (BYTE)pIns->pitch_envelope.sustain_start;
-    iti->pitchenv.sle = (BYTE)pIns->pitch_envelope.sustain_end;
+    iti->pitchenv.num = (uint8_t)pIns->pitch_envelope.num_nodes;
+    iti->pitchenv.lpb = (uint8_t)pIns->pitch_envelope.loop_start;
+    iti->pitchenv.lpe = (uint8_t)pIns->pitch_envelope.loop_end;
+    iti->pitchenv.slb = (uint8_t)pIns->pitch_envelope.sustain_start;
+    iti->pitchenv.sle = (uint8_t)pIns->pitch_envelope.sustain_end;
     // Writing Envelopes data
     for (UINT ev=0; ev<25; ev++)
     {
@@ -1893,7 +1893,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
         itss.id = LittleEndian(IT_IMPS);
         memcpy(itss.filename, psmp->legacy_filename, 12);
         memcpy(itss.name, m_szNames[nsmp], 26);
-        itss.gvl = (BYTE)psmp->global_volume;
+        itss.gvl = (uint8_t)psmp->global_volume;
         itss.flags = 0x01;
         if (psmp->flags & CHN_LOOP) itss.flags |= 0x10;
         if (psmp->flags & CHN_SUSTAINLOOP) itss.flags |= 0x20;
@@ -1967,7 +1967,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 
 
 
-bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t size)
+bool IsValidSizeField(const uint8_t * const pData, const uint8_t * const pEnd, const int16_t size)
 //------------------------------------------------------------------------------
 {
     if(size < 0 || (uintptr_t)(pEnd - pData) < (uintptr_t)size)
@@ -1977,11 +1977,11 @@ bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t siz
 }
 
 
-void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32_t code, const int16_t size)
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, const uint8_t *& ptr, const int32_t code, const int16_t size)
 //------------------------------------------------------------------------------------------------------------
 {
     // get field's address in instrument's header
-    BYTE* fadr = GetInstrumentHeaderFieldPointer(pIns, code, size);
+    uint8_t* fadr = GetInstrumentHeaderFieldPointer(pIns, code, size);
      
     if(fadr && code != 'K[..')    // copy field data in instrument's header
         memcpy(fadr,ptr,size);  // (except for keyboard mapping)
@@ -1992,7 +1992,7 @@ void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBY
 }
 
 
-void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32_t code, LPCBYTE& pData, const LPCBYTE pEnd)
+void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32_t code, const uint8_t *& pData, const uint8_t * const pEnd)
 //---------------------------------------------------------------------------------------------------------------
 {
     if(pEnd < pData || uintptr_t(pEnd - pData) < 2)
@@ -2009,14 +2009,14 @@ void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, con
 }
 
 
-void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const LPCBYTE pDataStart, const size_t nMemLength)
+void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const uint8_t * const pDataStart, const size_t nMemLength)
 //--------------------------------------------------------------------------------------------------------------
 {
     if(pIns == 0 || pDataStart == 0 || nMemLength < 4)
         return;
 
-    LPCBYTE pData = pDataStart;
-    const LPCBYTE pEnd = pDataStart + nMemLength;
+    const uint8_t * pData = pDataStart;
+    const uint8_t * const pEnd = pDataStart + nMemLength;
 
     int32_t code;
     memcpy(&code, pData, sizeof(code));
@@ -2085,7 +2085,7 @@ typedef struct IFFVHDR
             repeatHiSamples,    	/* # samples in the high octave repeat part */
             samplesPerHiCycle;    	/* # samples/cycle in high octave, else 0 */
     WORD samplesPerSec;    			/* data sampling rate */
-    BYTE    ctOctave,				/* # octaves of waveforms */
+    uint8_t    ctOctave,				/* # octaves of waveforms */
             sCompression;    		/* data compression technique used */
     DWORD Volume;
 } IFFVHDR;

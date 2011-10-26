@@ -54,7 +54,7 @@ struct OKT_SAMPLEINFO
 
 
 // Parse the sample header block
-void Read_OKT_Samples(const BYTE *lpStream, const DWORD dwMemLength, vector<bool> &sample7bit, CSoundFile *pSndFile)
+void Read_OKT_Samples(const uint8_t *lpStream, const DWORD dwMemLength, vector<bool> &sample7bit, CSoundFile *pSndFile)
 //------------------------------------------------------------------------------------------------------------------
 {
     pSndFile->m_nSamples = min((SAMPLEINDEX)(dwMemLength / 32), MAX_SAMPLES - 1);	// typically 36
@@ -96,7 +96,7 @@ void Read_OKT_Samples(const BYTE *lpStream, const DWORD dwMemLength, vector<bool
 
 
 // Parse a pattern block
-void Read_OKT_Pattern(const BYTE *lpStream, const DWORD dwMemLength, const PATTERNINDEX nPat, CSoundFile *pSndFile)
+void Read_OKT_Pattern(const uint8_t *lpStream, const DWORD dwMemLength, const PATTERNINDEX nPat, CSoundFile *pSndFile)
 //-----------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_OKTPAT(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return);
@@ -266,7 +266,7 @@ void Read_OKT_Pattern(const BYTE *lpStream, const DWORD dwMemLength, const PATTE
 }
 
 
-bool CSoundFile::ReadOKT(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadOKT(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;

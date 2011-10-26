@@ -81,17 +81,17 @@ typedef struct tagMEDMODULEHEADER
     WORD pline;
     WORD pseqnum;
     WORD actplayline;
-    BYTE counter;
-    BYTE extra_songs;    // # of songs - 1
+    uint8_t counter;
+    uint8_t extra_songs;    // # of songs - 1
 } MEDMODULEHEADER;
 
 
 typedef struct tagMMD0SAMPLE
 {
     WORD rep, replen;
-    BYTE midich;
-    BYTE midipreset;
-    BYTE svol;
+    uint8_t midich;
+    uint8_t midipreset;
+    uint8_t svol;
     signed char strans;
 } MMD0SAMPLE;
 
@@ -116,11 +116,11 @@ typedef struct tagMMDSAMPLEHEADER
         // 1: g723_40
         // 2: g721
         // 3: g723_24
-    BYTE commonflags;    // flags common to all packtypes (none defined so far)
-    BYTE packerflags;    // flags for the specific packtype
+    uint8_t commonflags;    // flags common to all packtypes (none defined so far)
+    uint8_t packerflags;    // flags for the specific packtype
     ULONG leftchlen;    // packed length of left channel in bytes
     ULONG rightchlen;    // packed length of right channel in bytes (ONLY PRESENT IN STEREO SAMPLES)
-    BYTE SampleData[1];    // Sample Data
+    uint8_t SampleData[1];    // Sample Data
 } MMDSAMPLEHEADER;
 
 
@@ -130,15 +130,15 @@ typedef struct tagMMD0SONGHEADER
     MMD0SAMPLE sample[63];
     WORD numblocks;    	// # of blocks
     WORD songlen;    	// # of entries used in playseq
-    BYTE playseq[256];    // Play sequence
+    uint8_t playseq[256];    // Play sequence
     WORD deftempo;    	// BPM tempo
     signed char playtransp;    // Play transpose
-    BYTE flags;    		// 0x10: Hex Volumes | 0x20: ST/NT/PT Slides | 0x40: 8 Channels song
-    BYTE flags2;    	// [b4-b0]+1: Tempo LPB, 0x20: tempo mode, 0x80: mix_conv=on
-    BYTE tempo2;    	// tempo TPL
-    BYTE trkvol[16];    // track volumes
-    BYTE mastervol;    	// master volume
-    BYTE numsamples;    // # of samples (max=63)
+    uint8_t flags;    		// 0x10: Hex Volumes | 0x20: ST/NT/PT Slides | 0x40: 8 Channels song
+    uint8_t flags2;    	// [b4-b0]+1: Tempo LPB, 0x20: tempo mode, 0x80: mix_conv=on
+    uint8_t tempo2;    	// tempo TPL
+    uint8_t trkvol[16];    // track volumes
+    uint8_t mastervol;    	// master volume
+    uint8_t numsamples;    // # of samples (max=63)
 } MMD0SONGHEADER;
 
 
@@ -150,26 +150,26 @@ typedef struct tagMMD2SONGHEADER
     WORD numsections;    // # of sections
     DWORD playseqtable;    // filepos of play sequence
     DWORD sectiontable;    // filepos of sections table (WORD array)
-    DWORD trackvols;    // filepos of tracks volume (BYTE array)
+    DWORD trackvols;    // filepos of tracks volume (uint8_t array)
     WORD numtracks;    	// # of tracks (max 64)
     WORD numpseqs;    	// # of play sequences
-    DWORD trackpans;    // filepos of tracks pan values (BYTE array)
+    DWORD trackpans;    // filepos of tracks pan values (uint8_t array)
     LONG flags3;    	// 0x1:stereo_mix, 0x2:free_panning, 0x4:GM/XG compatibility
     WORD voladj;    	// vol_adjust (set to 100 if 0)
     WORD channels;    	// # of channels (4 if =0)
-    BYTE mix_echotype;    // 1:normal,2:xecho
-    BYTE mix_echodepth;    // 1..6
+    uint8_t mix_echotype;    // 1:normal,2:xecho
+    uint8_t mix_echodepth;    // 1..6
     WORD mix_echolen;    // > 0
     signed char mix_stereosep;    // -4..4
-    BYTE pad0[223];
+    uint8_t pad0[223];
     WORD deftempo;    	// BPM tempo
     signed char playtransp;    // play transpose
-    BYTE flags;    		// 0x1:filteron, 0x2:jumpingon, 0x4:jump8th, 0x8:instr_attached, 0x10:hex_vol, 0x20:PT_slides, 0x40:8ch_conv,0x80:hq slows playing speed
-    BYTE flags2;    	// 0x80:mix_conv=on, [b4-b0]+1:tempo LPB, 0x20:tempo_mode
-    BYTE tempo2;    	// tempo TPL
-    BYTE pad1[16];
-    BYTE mastervol;    	// master volume
-    BYTE numsamples;    // # of samples (max 63)
+    uint8_t flags;    		// 0x1:filteron, 0x2:jumpingon, 0x4:jump8th, 0x8:instr_attached, 0x10:hex_vol, 0x20:PT_slides, 0x40:8ch_conv,0x80:hq slows playing speed
+    uint8_t flags2;    	// 0x80:mix_conv=on, [b4-b0]+1:tempo LPB, 0x20:tempo_mode
+    uint8_t tempo2;    	// tempo TPL
+    uint8_t pad1[16];
+    uint8_t mastervol;    	// master volume
+    uint8_t numsamples;    // # of samples (max 63)
 } MMD2SONGHEADER;
 
 // For MMD0 the note information is held in 3 bytes, byte0, byte1, byte2.  For reference we 
@@ -181,9 +181,9 @@ typedef struct tagMMD2SONGHEADER
 // represents the first data byte.
 typedef struct tagMMD0BLOCK
 {
-    BYTE numtracks;
-    BYTE lines;    	// File value is 1 less than actual, so 0 -> 1 line
-} MMD0BLOCK;    	// BYTE data[lines+1][tracks][3];
+    uint8_t numtracks;
+    uint8_t lines;    	// File value is 1 less than actual, so 0 -> 1 line
+} MMD0BLOCK;    	// uint8_t data[lines+1][tracks][3];
 
 
 // For MMD1,MMD2,MMD3 the note information is carried in 4 bytes, byte0, byte1,
@@ -230,9 +230,9 @@ typedef struct tagMMD2PLAYSEQ
 typedef struct tagMMDCOMMAND
 {
     WORD offset;    	// Offset within current sequence entry
-    BYTE cmdnumber;    	// STOP (537) or POSJUMP (538) (others skipped)
-    BYTE extra_count;
-    BYTE extra_bytes[4];// [extra_count];
+    uint8_t cmdnumber;    	// STOP (537) or POSJUMP (538) (others skipped)
+    uint8_t extra_count;
+    uint8_t extra_bytes[4];// [extra_count];
 } MMDCOMMAND;  // Last entry has offset == 0xFFFF, cmd_number == 0 and 0 extrabytes
 
 
@@ -249,7 +249,7 @@ typedef struct tagMMD0EXP
     WORD i_ext_entrsz;
     DWORD jumpmask;
     DWORD rgbtable;
-    BYTE channelsplit[4];    // Only used if 8ch_conv (extra channel for every nonzero entry)
+    uint8_t channelsplit[4];    // Only used if 8ch_conv (extra channel for every nonzero entry)
     DWORD n_info;
     DWORD songname;    		// Song name
     DWORD songnamelen;
@@ -269,7 +269,7 @@ typedef struct tagMMD0EXP
 static void MedConvert(modplug::tracker::modcommand_t *p, const MMD0SONGHEADER *pmsh)
 //---------------------------------------------------------------
 {
-    const BYTE bpmvals[9] = { 179,164,152,141,131,123,116,110,104};
+    const uint8_t bpmvals[9] = { 179,164,152,141,131,123,116,110,104};
 
     UINT command = p->command;
     UINT param = p->param;
@@ -474,7 +474,7 @@ static void MedConvert(modplug::tracker::modcommand_t *p, const MMD0SONGHEADER *
 }
 
 
-bool CSoundFile::ReadMed(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadMed(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     const MEDMODULEHEADER *pmmh;
@@ -825,8 +825,8 @@ bool CSoundFile::ReadMed(const BYTE *lpStream, const DWORD dwMemLength)
             {
                 for (UINT x=0; x<tracks; x++, s+=3) if (x < m_nChannels)
                 {
-                    BYTE note = s[0] & 0x3F;
-                    BYTE instr = s[1] >> 4;
+                    uint8_t note = s[0] & 0x3F;
+                    uint8_t instr = s[1] >> 4;
                     if (s[0] & 0x80) instr |= 0x10;
                     if (s[0] & 0x40) instr |= 0x20;
                     if ((note) && (note <= 132)) p->note = note + playtransp;
@@ -847,7 +847,7 @@ bool CSoundFile::ReadMed(const BYTE *lpStream, const DWORD dwMemLength)
                 BigEndianW(pmb->lines), BigEndianW(pmb->numtracks), BigEndian(pmb->info));
         #endif
             MMD1BLOCKINFO *pbi = NULL;
-            BYTE *pcmdext = NULL;
+            uint8_t *pcmdext = NULL;
             lines = (pmb->lines >> 8) + 1;
             tracks = pmb->numtracks >> 8;
             if (!tracks) tracks = m_nChannels;
@@ -877,7 +877,7 @@ bool CSoundFile::ReadMed(const BYTE *lpStream, const DWORD dwMemLength)
                         cmdexttable = BigEndian(*(DWORD *)(lpStream + cmdexttable));
                         if ((cmdexttable) && (cmdexttable <= dwMemLength - lines*tracks))
                         {
-                            pcmdext = (BYTE *)(lpStream + cmdexttable);
+                            pcmdext = (uint8_t *)(lpStream + cmdexttable);
                         }
                     }
                 }
@@ -890,13 +890,13 @@ bool CSoundFile::ReadMed(const BYTE *lpStream, const DWORD dwMemLength)
             {
                 for (UINT x=0; x<tracks; x++, s+=4) if (x < m_nChannels)
                 {
-                    BYTE note = s[0];
+                    uint8_t note = s[0];
                     if ((note) && (note <= 132))
                     {
                         int rnote = note + playtransp;
                         if (rnote < 1) rnote = 1;
                         if (rnote > NOTE_MAX) rnote = NOTE_MAX;
-                        p->note = (BYTE)rnote;
+                        p->note = (uint8_t)rnote;
                     }
                     p->instr = s[1];
                     p->command = s[2];

@@ -465,7 +465,7 @@ public:
     static LONG slSampleSize, sdwSamplesPerSec, sdwAudioBufferSize;
     //rewbs.resamplerConf
     static double gdWFIRCutoff;
-    static BYTE gbWFIRType;
+    static uint8_t gbWFIRType;
     static long glVolumeRampInSamples;
     static long glVolumeRampOutSamples;
     //end rewbs.resamplerConf

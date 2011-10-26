@@ -25,21 +25,21 @@ typedef struct FARHEADER1
     CHAR songname[40];    	// songname
     CHAR magic2[3];    		// 13,10,26
     WORD headerlen;    		// remaining length of header in bytes
-    BYTE version;    		// 0xD1
-    BYTE onoff[16];
-    BYTE edit1[9];
-    BYTE speed;
-    BYTE panning[16];
-    BYTE edit2[4];
+    uint8_t version;    		// 0xD1
+    uint8_t onoff[16];
+    uint8_t edit1[9];
+    uint8_t speed;
+    uint8_t panning[16];
+    uint8_t edit2[4];
     WORD stlen;
 } FARHEADER1;
 
 typedef struct FARHEADER2
 {
-    BYTE orders[256];
-    BYTE numpat;
-    BYTE snglen;
-    BYTE loopto;
+    uint8_t orders[256];
+    uint8_t numpat;
+    uint8_t snglen;
+    uint8_t loopto;
     WORD patsiz[256];
 } FARHEADER2;
 
@@ -47,18 +47,18 @@ typedef struct FARSAMPLE
 {
     CHAR samplename[32];
     DWORD length;
-    BYTE finetune;
-    BYTE volume;
+    uint8_t finetune;
+    uint8_t volume;
     DWORD reppos;
     DWORD repend;
-    BYTE type;
-    BYTE loop;
+    uint8_t type;
+    uint8_t loop;
 } FARSAMPLE;
 
 #pragma pack()
 
 
-bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadFAR(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     if(dwMemLength < sizeof(FARHEADER1))
@@ -70,7 +70,7 @@ bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
     FARHEADER2 *pmh2 = 0;
     DWORD dwMemPos = sizeof(FARHEADER1);
     UINT headerlen;
-    BYTE samplemap[8];
+    uint8_t samplemap[8];
 
     if ((!lpStream) || (dwMemLength < 1024) || (LittleEndian(pmh1->id) != FARFILEMAGIC)
      || (pmh1->magic2[0] != 13) || (pmh1->magic2[1] != 10) || (pmh1->magic2[2] != 26)) return false;
@@ -146,15 +146,15 @@ bool CSoundFile::ReadFAR(const BYTE *lpStream, const DWORD dwMemLength)
         if(Patterns.Insert(ipat, rows)) return true;
         modplug::tracker::modcommand_t *m = Patterns[ipat];
         UINT patbrk = lpStream[dwMemPos];
-        const BYTE *p = lpStream + dwMemPos + 2;
+        const uint8_t *p = lpStream + dwMemPos + 2;
         UINT max = rows*16*4;
         if (max > patlen-2) max = patlen-2;
         for (UINT len=0; len<max; len += 4, m++)
         {
-            BYTE note = p[len];
-            BYTE ins = p[len+1];
-            BYTE vol = p[len+2];
-            BYTE eff = p[len+3];
+            uint8_t note = p[len];
+            uint8_t ins = p[len+1];
+            uint8_t vol = p[len+2];
+            uint8_t eff = p[len+3];
             if (note)
             {
                 m->instr = ins + 1;

@@ -38,7 +38,7 @@ typedef struct _DYNMIDITRACK
     UINT nMidiChannel;
     UINT nMidiProgram;
     UINT nInstrument;
-    BYTE NoteOn[128]; // ch of note + 1
+    uint8_t NoteOn[128]; // ch of note + 1
     // Functions
     void Write(const void *, unsigned long nBytes);
     void WriteLen(unsigned long len);
@@ -69,16 +69,16 @@ void DYNMIDITRACK::Write(const void *pBuffer, unsigned long nBytes)
 void DYNMIDITRACK::WriteLen(unsigned long len)
 //--------------------------------------------
 {
-    BYTE b;
+    uint8_t b;
     for (int n=4; n>0; n--)
     {
     	if (len >= (UINT)(1<<(n*7)))
     	{
-    		b = (BYTE)(((len >> (n*7)) & 0x7f) | 0x80);
+    		b = (uint8_t)(((len >> (n*7)) & 0x7f) | 0x80);
     		Write(&b, 1);
     	}
     }
-    b = (BYTE)(len & 0x7f);
+    b = (uint8_t)(len & 0x7f);
     Write(&b, 1);
 }
 
@@ -345,7 +345,7 @@ BOOL CModToMidi::DoConvert()
     MTRKCHUNK mtrk;
     DYNMIDITRACK Tracks[64];
     UINT nMidiChCurPrg[16];
-    BYTE tmp[256];
+    uint8_t tmp[256];
     CHAR s[256];
     UINT nPPQN, nTickMultiplier, nClock, nOrder, nRow;
     UINT nSpeed;
@@ -496,7 +496,7 @@ BOOL CModToMidi::DoConvert()
     					if (m->command == CMD_VOLUME) vol = m->param*4;
     					vol = LinearToDLSMidiVolume(vol<<8);
     					if (vol > 0x7f) vol = 0x7f;
-    					tmp[len+2] = (BYTE)vol;
+    					tmp[len+2] = (uint8_t)vol;
     					tmp[len+3] = 0;
     					len += 4;
     				}

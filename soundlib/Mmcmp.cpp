@@ -17,8 +17,8 @@ extern void Log(LPCSTR s, ...);
 #endif
 
 
-BOOL XPK_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength);
-BOOL PP20_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength);
+BOOL XPK_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength);
+BOOL PP20_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength);
 
 typedef struct MMCMPFILEHEADER
 {
@@ -33,8 +33,8 @@ typedef struct MMCMPHEADER
     WORD nblocks;
     DWORD filesize;
     DWORD blktable;
-    BYTE glb_comp;
-    BYTE fmt_comp;
+    uint8_t glb_comp;
+    uint8_t fmt_comp;
 } MMCMPHEADER, *LPMMCMPHEADER;
 
 typedef struct MMCMPBLOCK
@@ -65,8 +65,8 @@ typedef struct MMCMPBITBUFFER
 {
     UINT bitcount;
     DWORD bitbuffer;
-    LPCBYTE pSrc;
-    LPCBYTE pEnd;
+    const uint8_t * pSrc;
+    const uint8_t * pEnd;
 
     DWORD GetBits(UINT nBits);
 } MMCMPBITBUFFER;
@@ -111,11 +111,11 @@ const UINT MMCMP16BitFetch[16] =
 };
 
 
-BOOL MMCMP_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength)
+BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength)
 //---------------------------------------------------------
 {
     DWORD dwMemLength = *pdwMemLength;
-    LPCBYTE lpMemFile = *ppMemFile;
+    const uint8_t * lpMemFile = *ppMemFile;
     LPBYTE pBuffer;
     LPMMCMPFILEHEADER pmfh = (LPMMCMPFILEHEADER)(lpMemFile);
     LPMMCMPHEADER pmmh = (LPMMCMPHEADER)(lpMemFile+10);
@@ -238,7 +238,7 @@ BOOL MMCMP_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength)
             DWORD dwPos = 0;
             UINT numbits = pblk->num_bits;
             UINT subblk = 0, oldval = 0;
-            LPCBYTE ptable = lpMemFile+dwMemPos;
+            const uint8_t * ptable = lpMemFile+dwMemPos;
 
             bb.bitcount = 0;
             bb.bitbuffer = 0;
@@ -279,7 +279,7 @@ BOOL MMCMP_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength)
                         n += oldval;
                         oldval = n;
                     }
-                    pDest[dwPos++] = (BYTE)n;
+                    pDest[dwPos++] = (uint8_t)n;
                 }
                 if (dwPos >= dwSize)
                 {
@@ -317,7 +317,7 @@ typedef struct _XPKFILEHEADER
 #pragma pack(pop)
 
 
-static int bfextu(const BYTE *p,int bo,int bc)
+static int bfextu(const uint8_t *p,int bo,int bc)
 {
   int r;
   
@@ -334,7 +334,7 @@ static int bfextu(const BYTE *p,int bo,int bc)
   return r;
 }
 
-static int bfexts(const BYTE *p,int bo,int bc)
+static int bfexts(const uint8_t *p,int bo,int bc)
 {
   int r;
   
@@ -351,15 +351,15 @@ static int bfexts(const BYTE *p,int bo,int bc)
 }
 
 
-VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
+VOID XPK_DoUnpack(const uint8_t *src, UINT, uint8_t *dst, int len)
 {
-    static BYTE xpk_table[] = { 2,3,4,5,6,7,8,0,3,2,4,5,6,7,8,0,4,3,5,2,6,7,8,0,5,4,
+    static uint8_t xpk_table[] = { 2,3,4,5,6,7,8,0,3,2,4,5,6,7,8,0,4,3,5,2,6,7,8,0,5,4,
         6,2,3,7,8,0,6,5,7,2,3,4,8,0,7,6,8,2,3,4,5,0,8,7,6,2,3,4,5,0 };
     int d0,d1,d2,d3,d4,d5,d6,a2,a5;
     int cp, cup1, type;
-    const BYTE *c;
-    BYTE *phist;
-    BYTE *dstmax = dst + len;
+    const uint8_t *c;
+    uint8_t *phist;
+    uint8_t *dstmax = dst + len;
    
     c = src;
     while (len > 0)
@@ -393,7 +393,7 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
 
         d0 = d1 = d2 = a2 = 0;
         d3 = *(src++);
-        *dst = (BYTE)d3;
+        *dst = (uint8_t)d3;
         if (dst < dstmax) dst++;
         cup1--;
 
@@ -453,7 +453,7 @@ VOID XPK_DoUnpack(const BYTE *src, UINT, BYTE *dst, int len)
                 d4 = bfexts(src,d0,d6);
                 d0 += d6;
                 d3 -= d4;
-                *dst = (BYTE)d3;
+                *dst = (uint8_t)d3;
                 if (dst < dstmax) dst++;
                 cup1--;
                 d5--;
@@ -541,7 +541,7 @@ l7ca:
     while ((d6 >= 0) && (cup1 > 0))
     {
         d3 = *phist++;
-        *dst = (BYTE)d3;
+        *dst = (uint8_t)d3;
         if (dst < dstmax) dst++;
         cup1--;
         d6--;
@@ -550,10 +550,10 @@ l7ca:
 }
 
 
-BOOL XPK_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength)
+BOOL XPK_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength)
 {
     DWORD dwMemLength = *pdwMemLength;
-    LPCBYTE lpMemFile = *ppMemFile;
+    const uint8_t * lpMemFile = *ppMemFile;
     PXPKFILEHEADER pxfh = (PXPKFILEHEADER)lpMemFile;
     DWORD dwSrcLen, dwDstLen;
     LPBYTE pBuffer;
@@ -583,8 +583,8 @@ typedef struct _PPBITBUFFER
 {
     UINT bitcount;
     ULONG bitbuffer;
-    LPCBYTE pStart;
-    LPCBYTE pSrc;
+    const uint8_t * pStart;
+    const uint8_t * pSrc;
 
     ULONG GetBits(UINT n);
 } PPBITBUFFER;
@@ -610,7 +610,7 @@ ULONG PPBITBUFFER::GetBits(UINT n)
 }
 
 
-VOID PP20_DoUnpack(const BYTE *pSrc, UINT nSrcLen, BYTE *pDst, UINT nDstLen)
+VOID PP20_DoUnpack(const uint8_t *pSrc, UINT nSrcLen, uint8_t *pDst, UINT nDstLen)
 {
     PPBITBUFFER BitBuffer;
     ULONG nBytesLeft;
@@ -634,7 +634,7 @@ VOID PP20_DoUnpack(const BYTE *pSrc, UINT nSrcLen, BYTE *pDst, UINT nDstLen)
             }
             for (UINT i=0; i<n; i++)
             {
-                pDst[--nBytesLeft] = (BYTE)BitBuffer.GetBits(8);
+                pDst[--nBytesLeft] = (uint8_t)BitBuffer.GetBits(8);
             }
             if (!nBytesLeft) break;
         }
@@ -665,10 +665,10 @@ VOID PP20_DoUnpack(const BYTE *pSrc, UINT nSrcLen, BYTE *pDst, UINT nDstLen)
 }
 
 
-BOOL PP20_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength)
+BOOL PP20_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength)
 {
     DWORD dwMemLength = *pdwMemLength;
-    LPCBYTE lpMemFile = *ppMemFile;
+    const uint8_t * lpMemFile = *ppMemFile;
     DWORD dwDstLen;
     LPBYTE pBuffer;
 

@@ -296,7 +296,7 @@ bool CViewInstrument::EnvSetValue(int nPoint, int nTick, int nValue)
     		if (nValue > 64) nValue = 64;
     		if (nValue != envelope->Values[nPoint])
     		{
-    			envelope->Values[nPoint] = (BYTE)nValue;
+    			envelope->Values[nPoint] = (uint8_t)nValue;
     			bOK = true;
     		}
     	}
@@ -414,8 +414,8 @@ bool CViewInstrument::EnvSetLoopStart(int nPoint)
 
     if (nPoint != envelope->loop_start)
     {
-    	envelope->loop_start = (BYTE)nPoint;
-    	if (envelope->loop_end < nPoint) envelope->loop_end = (BYTE)nPoint;
+    	envelope->loop_start = (uint8_t)nPoint;
+    	if (envelope->loop_end < nPoint) envelope->loop_end = (uint8_t)nPoint;
     	return true;
     } else
     {
@@ -433,8 +433,8 @@ bool CViewInstrument::EnvSetLoopEnd(int nPoint)
 
     if (nPoint != envelope->loop_end)
     {
-    	envelope->loop_end = (BYTE)nPoint;
-    	if (envelope->loop_start > nPoint) envelope->loop_start = (BYTE)nPoint;
+    	envelope->loop_end = (uint8_t)nPoint;
+    	if (envelope->loop_start > nPoint) envelope->loop_start = (uint8_t)nPoint;
     	return true;
     } else
     {
@@ -455,8 +455,8 @@ bool CViewInstrument::EnvSetSustainStart(int nPoint)
 
     if (nPoint != envelope->sustain_start)
     {
-    	envelope->sustain_start = (BYTE)nPoint;
-    	if ((envelope->sustain_end < nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->sustain_end = (BYTE)nPoint;
+    	envelope->sustain_start = (uint8_t)nPoint;
+    	if ((envelope->sustain_end < nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->sustain_end = (uint8_t)nPoint;
     	return true;
     } else
     {
@@ -477,8 +477,8 @@ bool CViewInstrument::EnvSetSustainEnd(int nPoint)
 
     if (nPoint != envelope->sustain_end)
     {
-    	envelope->sustain_end = (BYTE)nPoint;
-    	if ((envelope->sustain_start > nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->sustain_start = (BYTE)nPoint;
+    	envelope->sustain_end = (uint8_t)nPoint;
+    	if ((envelope->sustain_start > nPoint) || (pSndFile->m_nType & MOD_TYPE_XM)) envelope->sustain_start = (uint8_t)nPoint;
     	return true;
     } else
     {
@@ -510,7 +510,7 @@ bool CViewInstrument::EnvToggleReleaseNode(int nPoint)
     	envelope->release_node = ENV_RELEASE_NODE_UNSET;
     } else
     {
-    	envelope->release_node = static_cast<BYTE>(nPoint);
+    	envelope->release_node = static_cast<uint8_t>(nPoint);
     }
     return true;
 }
@@ -540,7 +540,7 @@ bool CViewInstrument::EnvSetFlag(const DWORD dwFlag, const bool bEnable) const
 }
 
 
-bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, BYTE cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags)
+bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(pEnv == nullptr) return false;
@@ -965,7 +965,7 @@ void CViewInstrument::OnDraw(CDC *pDC)
 // -! NEW_FEATURE#0015
 }
 
-BYTE CViewInstrument::EnvGetReleaseNode()
+uint8_t CViewInstrument::EnvGetReleaseNode()
 //---------------------------------------
 {
     modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
@@ -1049,7 +1049,7 @@ UINT CViewInstrument::EnvInsertPoint(int nTick, int nValue)
 
     		modplug::tracker::modenvelope_t *envelope = GetEnvelopePtr();
     		if(envelope == nullptr) return 0;
-    		BYTE cDefaultValue;
+    		uint8_t cDefaultValue;
 
     		switch(m_nEnv)
     		{
@@ -1083,7 +1083,7 @@ UINT CViewInstrument::EnvInsertPoint(int nTick, int nValue)
     				envelope->Values[j] = envelope->Values[j - 1];
     			}
     			envelope->Ticks[i] = (WORD)nTick;
-    			envelope->Values[i] = (BYTE)nValue;
+    			envelope->Values[i] = (uint8_t)nValue;
     			envelope->num_nodes++;
     			if (envelope->loop_start >= i) envelope->loop_start++;
     			if (envelope->loop_end >= i) envelope->loop_end++;
@@ -2097,21 +2097,21 @@ LRESULT CViewInstrument::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //-----------------------------------------------------------
 {
     const DWORD dwMidiData = dwMidiDataParam;
-    static BYTE midivolume = 127;
+    static uint8_t midivolume = 127;
 
     CModDoc *pModDoc = GetDocument();
-    BYTE midiByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
-    BYTE midiByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
+    uint8_t midiByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
+    uint8_t midiByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
 
     CSoundFile* pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL;
     if (!pSndFile) return 0;
 
-    const BYTE nNote  = midiByte1 + 1;		// +1 is for MPT, where middle C is 61
+    const uint8_t nNote  = midiByte1 + 1;		// +1 is for MPT, where middle C is 61
     int nVol   = midiByte2;					
-    BYTE event  = GetFromMIDIMsg_Event(dwMidiData);
+    uint8_t event  = GetFromMIDIMsg_Event(dwMidiData);
     if ((event == 0x9) && !nVol) event = 0x8;	//Convert event to note-off if req'd
 
-    BYTE mappedIndex = 0, paramValue = 0;
+    uint8_t mappedIndex = 0, paramValue = 0;
     uint32_t paramIndex = 0;
     if(pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue)) 
     	return 0;
@@ -2339,7 +2339,7 @@ void CViewInstrument::EnvKbdMovePointRight()
 }
 
 
-void CViewInstrument::EnvKbdMovePointUp(BYTE stepsize)
+void CViewInstrument::EnvKbdMovePointUp(uint8_t stepsize)
 //----------------------------------------------------
 {
     modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
@@ -2354,7 +2354,7 @@ void CViewInstrument::EnvKbdMovePointUp(BYTE stepsize)
 }
 
 
-void CViewInstrument::EnvKbdMovePointDown(BYTE stepsize)
+void CViewInstrument::EnvKbdMovePointDown(uint8_t stepsize)
 //------------------------------------------------------
 {
     modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
@@ -2375,7 +2375,7 @@ void CViewInstrument::EnvKbdInsertPoint()
     if(pEnv == nullptr) return;
     if(!IsDragItemEnvPoint()) m_nDragItem = pEnv->num_nodes;
     WORD newTick = pEnv->Ticks[pEnv->num_nodes - 1] + 4;	// if last point is selected: add point after last point
-    BYTE newVal = pEnv->Values[pEnv->num_nodes - 1];
+    uint8_t newVal = pEnv->Values[pEnv->num_nodes - 1];
     // if some other point is selected: interpolate between this and next point (if there's room between them)
     if(m_nDragItem < pEnv->num_nodes && (pEnv->Ticks[m_nDragItem] - pEnv->Ticks[m_nDragItem - 1] > 1))
     {

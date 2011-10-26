@@ -12,7 +12,7 @@
 #define MODMAGIC_OFFSET    (20+31*30+130)
 
 
-bool CSoundFile::ReadUMX(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadUMX(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength < 0x800)) return false;

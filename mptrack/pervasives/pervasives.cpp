@@ -33,7 +33,7 @@ DAMAGE.
 #include <string>
 #include <locale>
 
-#include <Windows.h>
+#include <windows.h>
 #include <strsafe.h>
 
 namespace modplug {

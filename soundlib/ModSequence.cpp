@@ -452,7 +452,7 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
     					{
     						if(m->command == CMD_POSITIONJUMP && m->param >= startOrd)
     						{
-    							m->param = static_cast<BYTE>(m->param - startOrd);
+    							m->param = static_cast<uint8_t>(m->param - startOrd);
     						}
     					}
     				}
@@ -538,7 +538,7 @@ bool ModSequenceSet::MergeSequences()
     							m_pSndFile->GetpModDoc()->AddToLog(s);
     					}
     				}
-    				m->param  = static_cast<BYTE>(m->param + nFirstOrder);
+    				m->param  = static_cast<uint8_t>(m->param + nFirstOrder);
     				patternsFixed[nPat] = removedSequences;
     			}
     		}
@@ -560,7 +560,7 @@ bool ModSequenceSet::MergeSequences()
 /////////////////////////////////////
 
 
-DWORD ModSequence::Deserialize(const BYTE* const src, const DWORD memLength)
+DWORD ModSequence::Deserialize(const uint8_t* const src, const DWORD memLength)
 //--------------------------------------------------------------------------
 {
     if(memLength < 2 + 4) return 0;
@@ -590,7 +590,7 @@ DWORD ModSequence::Deserialize(const BYTE* const src, const DWORD memLength)
 }
 
 
-size_t ModSequence::WriteToByteArray(BYTE* dest, const UINT numOfBytes, const UINT destSize)
+size_t ModSequence::WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize)
 //-----------------------------------------------------------------------------
 {
     if(numOfBytes > destSize || numOfBytes > MAX_ORDERS) return true;
@@ -598,7 +598,7 @@ size_t ModSequence::WriteToByteArray(BYTE* dest, const UINT numOfBytes, const UI
     UINT i = 0;
     for(i = 0; i<numOfBytes; i++)
     {
-    	dest[i] = static_cast<BYTE>((*this)[i]);
+    	dest[i] = static_cast<uint8_t>((*this)[i]);
     }
     return i; //Returns the number of bytes written.
 }
@@ -614,7 +614,7 @@ size_t ModSequence::WriteAsByte(FILE* f, const uint16_t count)
     for(i = 0; i<count; i++)
     {
     	const PATTERNINDEX pat = (*this)[i];
-    	BYTE temp = static_cast<BYTE>((*this)[i]);
+    	uint8_t temp = static_cast<uint8_t>((*this)[i]);
 
     	if(pat > 0xFD)
     	{
@@ -627,7 +627,7 @@ size_t ModSequence::WriteAsByte(FILE* f, const uint16_t count)
 }
 
 
-bool ModSequence::ReadAsByte(const BYTE* pFrom, const int howMany, const int memLength)
+bool ModSequence::ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength)
 //-------------------------------------------------------------------------------------
 {
     if(howMany < 0 || howMany > memLength) return true;

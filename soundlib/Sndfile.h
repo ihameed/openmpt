@@ -40,7 +40,7 @@ typedef intptr_t VstIntPtr;
 // MODULAR modplug::tracker::modinstrument_t FIELD ACCESS : body content at the (near) top of Sndfile.cpp !!!
 // -----------------------------------------------------------------------------------------
 extern void WriteInstrumentHeaderStruct(modplug::tracker::modinstrument_t * input, FILE * file);
-extern BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize);
+extern uint8_t * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize);
 
 // -! NEW_FEATURE#0027
 
@@ -283,9 +283,9 @@ enum writeEffectAllowRowChange
 
 //Note: These are bit indeces. MSF <-> Mod(Specific)Flag.
 //If changing these, ChangeModTypeTo() might need modification.
-const BYTE MSF_COMPATIBLE_PLAY    	= 0;		//IT/MPT/XM
-const BYTE MSF_OLDVOLSWING    		= 1;		//IT/MPT
-const BYTE MSF_MIDICC_BUGEMULATION    = 2;		//IT/MPT/XM
+const uint8_t MSF_COMPATIBLE_PLAY    	= 0;		//IT/MPT/XM
+const uint8_t MSF_OLDVOLSWING    		= 1;		//IT/MPT
+const uint8_t MSF_MIDICC_BUGEMULATION    = 2;		//IT/MPT/XM
 
 
 class CTuningCollection;
@@ -307,8 +307,8 @@ public: //Misc
 
     uint16_t GetModFlags() const {return m_ModFlags;}
     void SetModFlags(const uint16_t v) {m_ModFlags = v;}
-    bool GetModFlag(BYTE i) const {return ((m_ModFlags & (1<<i)) != 0);}
-    void SetModFlag(BYTE i, bool val) {if(i < 8*sizeof(m_ModFlags)) {m_ModFlags = (val) ? m_ModFlags |= (1 << i) : m_ModFlags &= ~(1 << i);}}
+    bool GetModFlag(uint8_t i) const {return ((m_ModFlags & (1<<i)) != 0);}
+    void SetModFlag(uint8_t i, bool val) {if(i < 8*sizeof(m_ModFlags)) {m_ModFlags = (val) ? m_ModFlags |= (1 << i) : m_ModFlags &= ~(1 << i);}}
 
     // Is compatible mode for a specific tracker turned on?
     // Hint 1: No need to poll for MOD_TYPE_MPT, as it will automatically be linked with MOD_TYPE_IT when using TRK_IMPULSETRACKER
@@ -399,8 +399,8 @@ public:    // for Editing
     UINT m_nSamplesPerTick;    	// rewbs.betterBPM
     ROWINDEX m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;    // default rows per beat and measure for this module // rewbs.betterBPM
     ROWINDEX m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;    // current rows per beat and measure for this module
-    BYTE m_nTempoMode;    		// rewbs.betterBPM
-    BYTE m_nMixLevels;
+    uint8_t m_nTempoMode;    		// rewbs.betterBPM
+    uint8_t m_nMixLevels;
     UINT m_nMusicSpeed, m_nMusicTempo;
     ROWINDEX m_nNextRow, m_nRow;
     ROWINDEX m_nNextPatStartRow; // for FT2's E60 bug
@@ -452,7 +452,7 @@ public:
     ~CSoundFile();
 
 public:
-    BOOL Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength=0);
+    BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, DWORD dwMemLength=0);
     BOOL Destroy();
     MODTYPE GetType() const { return m_nType; }
     inline bool TypeIsIT_MPT() const { return (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) != 0; }
@@ -510,41 +510,41 @@ public:
     void SetupITBidiMode();
 
     bool InitChannel(CHANNELINDEX nChn);
-    void ResetChannelState(CHANNELINDEX chn, BYTE resetStyle);
+    void ResetChannelState(CHANNELINDEX chn, uint8_t resetStyle);
 
     // Module Loaders
-    bool ReadXM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadS3M(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMod(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMed(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMTM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadSTM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength);
-    //bool ReadMPT(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadITProject(const LPCBYTE lpStream, const DWORD dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
-    bool Read669(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadUlt(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadWav(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadDSM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadFAR(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadAMS2(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMDL(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadOKT(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadDMF(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadPTM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadDBM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadAMF(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMT2(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadPSM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadPSM16(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadUMX(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMO3(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadGDM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadIMF(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadJ2B(const LPCBYTE lpStream, const DWORD dwMemLength);
-    bool ReadMID(const LPCBYTE lpStream, DWORD dwMemLength);
+    bool ReadXM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadS3M(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMod(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMed(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMTM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadSTM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength);
+    //bool ReadMPT(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadITProject(const uint8_t * const lpStream, const DWORD dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
+    bool Read669(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadUlt(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadWav(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadFAR(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadAMS2(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMDL(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadOKT(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadDMF(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadPTM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadDBM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadAMF(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMT2(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadPSM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadPSM16(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadUMX(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMO3(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadGDM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadIMF(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadJ2B(const uint8_t * const lpStream, const DWORD dwMemLength);
+    bool ReadMID(const uint8_t * const lpStream, DWORD dwMemLength);
 
     // Save Functions
 #ifndef MODPLUG_NO_FILESAVE
@@ -559,13 +559,13 @@ public:
     void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::tracker::modinstrument_t* instruments[], UINT nInstruments);
     void SaveExtendedInstrumentProperties(modplug::tracker::modinstrument_t *instruments[], UINT nInstruments, FILE* f);
     void SaveExtendedSongProperties(FILE* f);
-    void LoadExtendedSongProperties(const MODTYPE modtype, LPCBYTE ptr, const LPCBYTE startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
+    void LoadExtendedSongProperties(const MODTYPE modtype, const uint8_t * ptr, const uint8_t * const startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
 #endif // MODPLUG_NO_FILESAVE
 
     // Reads extended instrument properties(XM/IT/MPTM). 
     // If no errors occur and song extension tag is found, returns pointer to the beginning
     // of the tag, else returns NULL.
-    LPCBYTE LoadExtendedInstrumentProperties(const LPCBYTE pStart, const LPCBYTE pEnd, bool* pInterpretMptMade = nullptr);
+    const uint8_t * LoadExtendedInstrumentProperties(const uint8_t * const pStart, const uint8_t * const pEnd, bool* pInterpretMptMade = nullptr);
 
     // MOD Convert function
     MODTYPE GetBestSaveFormat() const;
@@ -695,12 +695,12 @@ private:
     UINT GetNumTicksOnCurrentRow() const { return m_nMusicSpeed * (m_nPatternDelay + 1) + m_nFrameDelay; };
 public:
     // Write pattern effect functions
-    bool TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, BYTE nEffect, BYTE nParam, bool bIsVolumeEffect, CHANNELINDEX nChn = CHANNELINDEX_INVALID, bool bAllowMultipleEffects = true, writeEffectAllowRowChange allowRowChange = weIgnore, bool bRetry = true);
+    bool TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn = CHANNELINDEX_INVALID, bool bAllowMultipleEffects = true, writeEffectAllowRowChange allowRowChange = weIgnore, bool bRetry = true);
     
     // Read/Write sample functions
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
     UINT PackSample(int &sample, int next);
-    bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *result=NULL);
+    bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result=NULL);
     UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, DWORD dwMemLength, const WORD format = 1);
     bool DestroySample(SAMPLEINDEX nSample);
 
@@ -797,7 +797,7 @@ protected:
     // [in]  lineEnding: line ending formatting of the text in memory.
     // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
     // [out] returns true on success.
-    bool ReadMessage(const BYTE *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &) = nullptr);
+    bool ReadMessage(const uint8_t *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &) = nullptr);
 
     // Read comments with fixed line length from a mapped file.
     // [in]  data: pointer to the data in memory that is going to be read
@@ -806,7 +806,7 @@ protected:
     // [in]  lineEndingLength: The padding space between two fixed lines. (there could for example be a null char after every line)
     // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
     // [out] returns true on success.
-    bool ReadFixedLineLengthMessage(const BYTE *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &) = nullptr);
+    bool ReadFixedLineLengthMessage(const uint8_t *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &) = nullptr);
 
     // Currently unused (and the code doesn't look very nice :)
     UINT GetSongMessage(LPSTR s, UINT cbsize, UINT linesize=32);
@@ -916,17 +916,17 @@ extern MODFORMATINFO gModFormatInfo[];
 
 
 // Used in instrument/song extension reading to make sure the size field is valid.
-bool IsValidSizeField(const LPCBYTE pData, const LPCBYTE pEnd, const int16_t size);
+bool IsValidSizeField(const uint8_t * const pData, const uint8_t * const pEnd, const int16_t size);
 
 // Read instrument property with 'code' and 'size' from 'ptr' to instrument 'pIns'.
 // Note: (ptr, size) pair must be valid (e.g. can read 'size' bytes from 'ptr')
-void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, LPCBYTE& ptr, const int32_t code, const int16_t size);
+void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, const uint8_t *& ptr, const int32_t code, const int16_t size);
 
 // Read instrument property with 'code' from 'pData' to instrument 'pIns'.
-void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32_t code, LPCBYTE& pData, const LPCBYTE pEnd);
+void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, const int32_t code, const uint8_t *& pData, const uint8_t * const pEnd);
 
 // Read extended instrument properties from 'pDataStart' to instrument 'pIns'.
-void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const LPCBYTE pDataStart, const size_t nMemLength);
+void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, const uint8_t * const pDataStart, const size_t nMemLength);
 
 // Convert instrument flags which were read from 'dF..' extension to proper internal representation.
 void ConvertReadExtendedFlags(modplug::tracker::modinstrument_t* pIns);

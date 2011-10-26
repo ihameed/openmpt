@@ -344,11 +344,11 @@ UINT CSoundFile::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, DWORD lmax24,
         l /= lMax;
         if (dwByteInc > 1)
         {
-            pbuffer[i] = (BYTE)(l & 0xFF);
-            pbuffer[i+1] = (BYTE)(l >> 8);
+            pbuffer[i] = (uint8_t)(l & 0xFF);
+            pbuffer[i+1] = (uint8_t)(l >> 8);
         } else
         {
-            pbuffer[i] = (BYTE)((l + 0x8000) >> 8);
+            pbuffer[i] = (uint8_t)((l + 0x8000) >> 8);
         }
     }
     return i;

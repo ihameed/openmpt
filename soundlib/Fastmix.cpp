@@ -2010,7 +2010,7 @@ noiseloop:
     int a = 0, b = 0;
     for (UINT i=0; i<len; i++)
     {
-        a = (a << 1) | (((DWORD)a) >> (BYTE)31);
+        a = (a << 1) | (((DWORD)a) >> (uint8_t)31);
         a ^= 0x10204080;
         a += 0x78649E7D + (b << 2);
         b += ((a << 16) | (a >> 16)) * 5;

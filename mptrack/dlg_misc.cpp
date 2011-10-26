@@ -1151,8 +1151,8 @@ void CMidiMacroSetup::ToggleBoxes(UINT sfx_preset, UINT sfx)
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Keyboard Control
 
-const BYTE whitetab[7] = {0,2,4,5,7,9,11};
-const BYTE blacktab[7] = {0xff,1,3,0xff,6,8,10};
+const uint8_t whitetab[7] = {0,2,4,5,7,9,11};
+const uint8_t blacktab[7] = {0xff,1,3,0xff,6,8,10};
 
 BEGIN_MESSAGE_MAP(CKeyboardControl, CWnd)
     ON_WM_PAINT()

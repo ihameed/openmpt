@@ -676,7 +676,7 @@ bool CModCleanupDlg::RearrangeSamples()
     		modplug::tracker::modcommand_t *m = pSndFile->Patterns[nPat];
     		for(UINT len = pSndFile->Patterns[nPat].GetNumRows() * pSndFile->GetNumChannels(); len; m++, len--)
     		{
-    			if(!m->IsPcNote() &&  m->instr <= pSndFile->GetNumSamples()) m->instr = (BYTE)nSampleMap[m->instr];
+    			if(!m->IsPcNote() &&  m->instr <= pSndFile->GetNumSamples()) m->instr = (uint8_t)nSampleMap[m->instr];
     		}
     	}
     }

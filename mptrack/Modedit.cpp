@@ -25,7 +25,7 @@ const size_t Pow10Table[10] = {1, 10, 100, 1000, 10000, 100000, 1000000, 1000000
 // GetDigit<0>(123) == '3'
 // GetDigit<1>(123) == '2'
 // GetDigit<2>(123) == '1'
-template<BYTE D>
+template<uint8_t D>
 inline TCHAR GetDigit(const size_t val)
 {
     return (D > 9) ? '0' : 48 + ((val / Pow10Table[D]) % 10);
@@ -1314,7 +1314,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     			int n2 = atoi(p+dwPos);
     			if ((n1 < oldn) || (n1 > ENVELOPE_MAX_LENGTH)) n1 = oldn + 1;
     			pEnv->Ticks[i] = (WORD)n1;
-    			pEnv->Values[i] = (BYTE)n2;
+    			pEnv->Values[i] = (uint8_t)n2;
     			oldn = n1;
     			while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;
     			if (dwPos >= dwMemSize) break;
@@ -1323,7 +1323,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     		//Read releasenode information.
     		if(dwPos < dwMemSize)
     		{
-    			BYTE r = static_cast<BYTE>(atoi(p + dwPos));
+    			uint8_t r = static_cast<uint8_t>(atoi(p + dwPos));
     			if(r == 0 || r >= nPoints || !m_SndFile.GetModSpecifications().hasReleaseNode)
     				r = ENV_RELEASE_NODE_UNSET;
     			pEnv->release_node = r;

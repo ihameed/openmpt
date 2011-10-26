@@ -579,7 +579,7 @@ void COptionsPlayer::OnHScroll(UINT nSBCode, UINT, CScrollBar *psb)
 //rewbs.resamplerConf
 void COptionsPlayer::OnWFIRTypeChanged()
 {
-    CMainFrame::gbWFIRType = static_cast<BYTE>(m_CbnWFIRType.GetCurSel());
+    CMainFrame::gbWFIRType = static_cast<uint8_t>(m_CbnWFIRType.GetCurSel());
     OnSettingsChanged();
 }
 

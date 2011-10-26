@@ -39,7 +39,7 @@ MPTM version history for cwtv-field in "IT" header (only for MPTM files!):
                        0x88A->0x88B. Now extended orderlist is saved as extension.
 0x88C(1.17.02.48) -> 0x88D(1.17.02.49): Some tuning related changes - that part fails to read on older versions.
 0x88B -> 0x88C: Changed type in which tuning number is printed to file: size_t -> uint16_t.
-0x88A -> 0x88B: Changed order-to-pattern-index table type from BYTE-array to vector<UINT>.
+0x88A -> 0x88B: Changed order-to-pattern-index table type from uint8_t-array to vector<UINT>.
 */
 
 
@@ -221,10 +221,10 @@ void ReadTuningMap(istream& iStrm, CSoundFile& csf, const size_t = 0)
 
 #pragma warning(disable:4244) //conversion from 'type1' to 'type2', possible loss of data
 
-BYTE autovibit2xm[8] =
+uint8_t autovibit2xm[8] =
 { 0, 3, 1, 4, 2, 0, 0, 0 };
 
-BYTE autovibxm2it[8] =
+uint8_t autovibxm2it[8] =
 { 0, 2, 4, 1, 3, 0, 0, 0 };
 
 //////////////////////////////////////////////////////////
@@ -239,18 +239,18 @@ static inline UINT ConvertVolParam(UINT value)
 
 
 // Convert MPT's internal envelope format into an IT/MPTM envelope.
-void MPTEnvToIT(const modplug::tracker::modenvelope_t *mptEnv, ITENVELOPE *itEnv, const BYTE envOffset, const BYTE envDefault)
+void MPTEnvToIT(const modplug::tracker::modenvelope_t *mptEnv, ITENVELOPE *itEnv, const uint8_t envOffset, const uint8_t envDefault)
 //---------------------------------------------------------------------------------------------------------------
 {
     if(mptEnv->flags & ENV_ENABLED)    itEnv->flags |= 1;
     if(mptEnv->flags & ENV_LOOP)    	itEnv->flags |= 2;
     if(mptEnv->flags & ENV_SUSTAIN)    itEnv->flags |= 4;
     if(mptEnv->flags & ENV_CARRY)    	itEnv->flags |= 8;
-    itEnv->num = (BYTE)min(mptEnv->num_nodes, 25);
-    itEnv->lpb = (BYTE)mptEnv->loop_start;
-    itEnv->lpe = (BYTE)mptEnv->loop_end;
-    itEnv->slb = (BYTE)mptEnv->sustain_start;
-    itEnv->sle = (BYTE)mptEnv->sustain_end;
+    itEnv->num = (uint8_t)min(mptEnv->num_nodes, 25);
+    itEnv->lpb = (uint8_t)mptEnv->loop_start;
+    itEnv->lpe = (uint8_t)mptEnv->loop_end;
+    itEnv->slb = (uint8_t)mptEnv->sustain_start;
+    itEnv->sle = (uint8_t)mptEnv->sustain_end;
 
     if(mptEnv->num_nodes > 0)
     {
@@ -273,7 +273,7 @@ void MPTEnvToIT(const modplug::tracker::modenvelope_t *mptEnv, ITENVELOPE *itEnv
 
 
 // Convert IT/MPTM envelope data into MPT's internal envelope format - To be used by ITInstrToMPT()
-void ITEnvToMPT(const ITENVELOPE *itEnv, modplug::tracker::modenvelope_t *mptEnv, const BYTE envOffset, const int iEnvMax)
+void ITEnvToMPT(const ITENVELOPE *itEnv, modplug::tracker::modenvelope_t *mptEnv, const uint8_t envOffset, const int iEnvMax)
 //-----------------------------------------------------------------------------------------------------------
 {
     if(itEnv->flags & 1) mptEnv->flags |= ENV_ENABLED;
@@ -388,11 +388,11 @@ long CSoundFile::ITInstrToMPT(const void *p, modinstrument_t *pIns, UINT trkvers
         }
         //rewbs.modularInstData  
         //find end of standard header
-        BYTE* pEndInstHeader;
+        uint8_t* pEndInstHeader;
         if (*((int *)pis->dummy) == 'MPTX')
-            pEndInstHeader=(BYTE*)pis+sizeof(ITINSTRUMENTEX);
+            pEndInstHeader=(uint8_t*)pis+sizeof(ITINSTRUMENTEX);
         else
-            pEndInstHeader=(BYTE*)pis+sizeof(ITINSTRUMENT);
+            pEndInstHeader=(uint8_t*)pis+sizeof(ITINSTRUMENT);
 
         //If the next piece of data is 'INSM' we have modular extensions to our instrument...
         if ( *( (UINT*)pEndInstHeader ) == 'INSM' )
@@ -401,7 +401,7 @@ long CSoundFile::ITInstrToMPT(const void *p, modinstrument_t *pIns, UINT trkvers
             long modularInstSize = *((long *)(pEndInstHeader+4));
             
             //handle chunks
-            BYTE* pModularInst = (BYTE*)(pEndInstHeader+4+sizeof(modularInstSize)); //4 is for 'INSM'
+            uint8_t* pModularInst = (uint8_t*)(pEndInstHeader+4+sizeof(modularInstSize)); //4 is for 'INSM'
             pEndInstHeader+=4+sizeof(modularInstSize)+modularInstSize;
             while  (pModularInst<pEndInstHeader) //4 is for 'INSM'
             {
@@ -477,7 +477,7 @@ void CopyPatternName(CPattern &pattern, char **patNames, UINT &patNamesLen)
 }
 
 
-bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadIT(const uint8_t * const lpStream, const DWORD dwMemLength)
 //----------------------------------------------------------------------
 {
     ITFILEHEADER *pifh = (ITFILEHEADER *)lpStream;
@@ -489,9 +489,9 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
 // Using eric's code here to take care of NNAs etc..
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-//    BYTE chnmask[64], channels_used[64];
+//    uint8_t chnmask[64], channels_used[64];
 //    modplug::tracker::modcommand_t lastvalue[64];
-    BYTE chnmask[MAX_BASECHANNELS], channels_used[MAX_BASECHANNELS];
+    uint8_t chnmask[MAX_BASECHANNELS], channels_used[MAX_BASECHANNELS];
     modplug::tracker::modcommand_t lastvalue[MAX_BASECHANNELS];
 // -! BEHAVIOUR_CHANGE#0006
 
@@ -887,13 +887,13 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
             continue;
 
         UINT i = 0;
-        const BYTE *p = lpStream+patpos[patchk]+8;
+        const uint8_t *p = lpStream+patpos[patchk]+8;
         UINT nrow = 0;
         
         while (nrow<rows)
         {
             if (i >= len) break;
-            BYTE b = p[i++]; // p is the bytestream offset at current pattern_position
+            uint8_t b = p[i++]; // p is the bytestream offset at current pattern_position
             if (!b)
             {
                 nrow++;
@@ -1048,7 +1048,7 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
         {
             m_nMixLevels = mixLevels_original;
         }
-        LPCBYTE ptr = LoadExtendedInstrumentProperties(lpStream + dwMemPos, lpStream + mptStartPos, &interpretModPlugMade);
+        const uint8_t * ptr = LoadExtendedInstrumentProperties(lpStream + dwMemPos, lpStream + mptStartPos, &interpretModPlugMade);
         LoadExtendedSongProperties(GetType(), ptr, lpStream, mptStartPos, &interpretModPlugMade);
     }
         
@@ -1088,12 +1088,12 @@ bool CSoundFile::ReadIT(const LPCBYTE lpStream, const DWORD dwMemLength)
         memset(chnmask, 0, sizeof(chnmask));
         modplug::tracker::modcommand_t *m = Patterns[npat];
         UINT i = 0;
-        const BYTE *p = lpStream+patpos[npat]+8;
+        const uint8_t *p = lpStream+patpos[npat]+8;
         UINT nrow = 0;
         while (nrow<rows)
         {
             if (i >= len) break;
-            BYTE b = p[i++];
+            uint8_t b = p[i++];
             if (!b)
             {
                 nrow++;
@@ -1372,12 +1372,12 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     WORD patinfo[4];
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-//    BYTE chnmask[64];
+//    uint8_t chnmask[64];
 //    modplug::tracker::modcommand_t lastvalue[64];
-    BYTE chnmask[MAX_BASECHANNELS];
+    uint8_t chnmask[MAX_BASECHANNELS];
     modplug::tracker::modcommand_t lastvalue[MAX_BASECHANNELS];
 // -! BEHAVIOUR_CHANGE#0006
-    BYTE buf[8 * MAX_BASECHANNELS];
+    uint8_t buf[8 * MAX_BASECHANNELS];
     FILE *f;
 
 
@@ -1393,8 +1393,8 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     header.id = LittleEndian(IT_IMPM);
     copy_with_padding(header.songname, 26, this->song_name);
 
-    header.highlight_minor = (BYTE)min(m_nDefaultRowsPerBeat, 0xFF);
-    header.highlight_major = (BYTE)min(m_nDefaultRowsPerMeasure, 0xFF);
+    header.highlight_minor = (uint8_t)min(m_nDefaultRowsPerBeat, 0xFF);
+    header.highlight_major = (uint8_t)min(m_nDefaultRowsPerMeasure, 0xFF);
 
     if(GetType() == MOD_TYPE_MPT)
     {
@@ -1552,7 +1552,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     for (UINT nins=1; nins<=header.insnum; nins++)
     {
         bool bKbdEx = false;    // extended sample map (for samples > 255)
-        BYTE keyboardex[NOTE_MAX];
+        uint8_t keyboardex[NOTE_MAX];
 
         memset(&iti, 0, sizeof(iti));
         iti.id = LittleEndian(IT_IMPI);    // "IMPI"
@@ -1581,8 +1581,8 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
             iti.fadeout = min(pIns->fadeout >> 5, 256);
             iti.pps = pIns->pitch_pan_separation;
             iti.ppc = pIns->pitch_pan_center;
-            iti.gbv = (BYTE)(pIns->global_volume << 1);
-            iti.dfp = (BYTE)(pIns->default_pan >> 2);
+            iti.gbv = (uint8_t)(pIns->global_volume << 1);
+            iti.dfp = (uint8_t)(pIns->default_pan >> 2);
             if (!(pIns->flags & INS_SETPANNING)) iti.dfp |= 0x80;
             iti.rv = pIns->random_volume_weight;
             iti.rp = pIns->random_pan_weight;
@@ -1645,8 +1645,8 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                 ID='PLUG';
                 fwrite(&ID, 1, sizeof(int), f);
                 modinstrument_t *pIns = Instruments[nins];
-                fwrite(&(pIns->nMixPlug), 1, sizeof(BYTE), f);
-                modularInstSize += sizeof(int)+sizeof(BYTE);
+                fwrite(&(pIns->nMixPlug), 1, sizeof(uint8_t), f);
+                modularInstSize += sizeof(int)+sizeof(uint8_t);
             }
             //How to save your own modular instrument chunk:
     /*    	{
@@ -1714,7 +1714,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                 if(GetType() == MOD_TYPE_MPT && (m->IsPcNote()))
                     {bNeedsMptPatSave = true; continue;}
 
-                BYTE b = 0;
+                uint8_t b = 0;
                 UINT command = m->command;
                 UINT param = m->param;
                 UINT vol = 0xFF;
@@ -1856,7 +1856,7 @@ bool CSoundFile::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         memcpy(itss.filename, psmp->legacy_filename, 12);
         memcpy(itss.name, m_szNames[nsmp], 26);
         itss.id = LittleEndian(IT_IMPS);
-        itss.gvl = (BYTE)psmp->global_volume;
+        itss.gvl = (uint8_t)psmp->global_volume;
         
         UINT flags = RS_PCM8S;
         if(psmp->length && psmp->sample_data)
@@ -2007,11 +2007,11 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     WORD patinfo[4];
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-    BYTE chnmask[IT_MAX_CHANNELS];
+    uint8_t chnmask[IT_MAX_CHANNELS];
     modplug::tracker::modcommand_t lastvalue[IT_MAX_CHANNELS];
     UINT nChannels = min(m_nChannels, IT_MAX_CHANNELS);
 // -! BEHAVIOUR_CHANGE#0006
-    BYTE buf[512];
+    uint8_t buf[512];
     FILE *f;
 
 
@@ -2026,8 +2026,8 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     header.id = LittleEndian(IT_IMPM);
     copy_with_padding(header.songname, 26, this->song_name);
 
-    header.highlight_minor = (BYTE)min(m_nDefaultRowsPerBeat, 0xFF);
-    header.highlight_major = (BYTE)min(m_nDefaultRowsPerMeasure, 0xFF);
+    header.highlight_minor = (uint8_t)min(m_nDefaultRowsPerBeat, 0xFF);
+    header.highlight_major = (uint8_t)min(m_nDefaultRowsPerMeasure, 0xFF);
 
     // An additional "---" pattern is appended so Impulse Tracker won't ignore the last order item.
     // Interestingly, this can exceed IT's 256 order limit. Also, IT will always save at least two orders.
@@ -2155,7 +2155,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
     for (UINT nins=1; nins<=header.insnum; nins++)
     {
         bool bKbdEx = false;    // extended sample map (for samples > 255)
-        BYTE keyboardex[NOTE_MAX];
+        uint8_t keyboardex[NOTE_MAX];
 
         memset(&iti, 0, sizeof(iti));
         iti.id = LittleEndian(IT_IMPI);    // "IMPI"
@@ -2175,8 +2175,8 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
             iti.fadeout = min(pIns->fadeout >> 5 , 256);
             iti.pps = pIns->pitch_pan_separation;
             iti.ppc = pIns->pitch_pan_center;
-            iti.gbv = (BYTE)(pIns->global_volume << 1);
-            iti.dfp = (BYTE)(pIns->default_pan >> 2);
+            iti.gbv = (uint8_t)(pIns->global_volume << 1);
+            iti.dfp = (uint8_t)(pIns->default_pan >> 2);
             if (!(pIns->flags & INS_SETPANNING)) iti.dfp |= 0x80;
             iti.rv = pIns->random_volume_weight;
             iti.rp = pIns->random_pan_weight;
@@ -2239,8 +2239,8 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
                 ID='PLUG';
                 fwrite(&ID, 1, sizeof(int), f);
                 modinstrument_t *pIns = Instruments[nins];
-                fwrite(&(pIns->nMixPlug), 1, sizeof(BYTE), f);
-                modularInstSize += sizeof(int)+sizeof(BYTE);
+                fwrite(&(pIns->nMixPlug), 1, sizeof(uint8_t), f);
+                modularInstSize += sizeof(int)+sizeof(uint8_t);
             }
 */    		//How to save your own modular instrument chunk:
     /*    	{
@@ -2302,7 +2302,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
             for (UINT ch = 0; ch < m_nChannels; ch++, m++)
             {
                 if(ch >= nChannels) continue;
-                BYTE b = 0;
+                uint8_t b = 0;
                 UINT command = m->command;
                 UINT param = m->param;
                 UINT vol = 0xFF;
@@ -2433,7 +2433,7 @@ bool CSoundFile::SaveCompatIT(LPCSTR lpszFileName)
         memcpy(itss.name, m_szNames[nsmp], 26);
         SetNullTerminator(itss.name);
         itss.id = LittleEndian(IT_IMPS);
-        itss.gvl = (BYTE)psmp->global_volume;
+        itss.gvl = (uint8_t)psmp->global_volume;
 
         UINT flags = RS_PCM8S;
         if(psmp->length && psmp->sample_data)
@@ -2540,7 +2540,7 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
     DWORD wCount = 0;
     DWORD bitbuf = 0;
     UINT bitnum = 0;
-    BYTE bLeft = 0, bTemp = 0, bTemp2 = 0;
+    uint8_t bLeft = 0, bTemp = 0, bTemp2 = 0;
 
     while (dwLen)
     {
@@ -2566,7 +2566,7 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
                 DWORD j = wBits & 0xFFFF;
                 if (i != j) goto UnpackByte;
                 wBits = (WORD)(ITReadBits(bitbuf, bitnum, pSrc, 3) + 1) & 0xFF;
-                bLeft = ((BYTE)wBits < bLeft) ? (BYTE)wBits : (BYTE)((wBits+1) & 0xFF);
+                bLeft = ((uint8_t)wBits < bLeft) ? (uint8_t)wBits : (uint8_t)((wBits+1) & 0xFF);
                 goto Next;
             }
             if (bLeft < 9)
@@ -2575,25 +2575,25 @@ void ITUnpack8Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLengt
                 WORD j = i - 8;
                 if ((wBits <= j) || (wBits > i)) goto UnpackByte;
                 wBits -= j;
-                bLeft = ((BYTE)(wBits & 0xFF) < bLeft) ? (BYTE)(wBits & 0xFF) : (BYTE)((wBits+1) & 0xFF);
+                bLeft = ((uint8_t)(wBits & 0xFF) < bLeft) ? (uint8_t)(wBits & 0xFF) : (uint8_t)((wBits+1) & 0xFF);
                 goto Next;
             }
             if (bLeft >= 10) goto SkipByte;
             if (wBits >= 256)
             {
-                bLeft = (BYTE)(wBits + 1) & 0xFF;
+                bLeft = (uint8_t)(wBits + 1) & 0xFF;
                 goto Next;
             }
         UnpackByte:
             if (bLeft < 8)
             {
-                BYTE shift = 8 - bLeft;
+                uint8_t shift = 8 - bLeft;
                 char c = (char)(wBits << shift);
                 c >>= shift;
                 wBits = (WORD)c;
             }
             wBits += bTemp;
-            bTemp = (BYTE)wBits;
+            bTemp = (uint8_t)wBits;
             bTemp2 += bTemp;
 #ifdef IT215_SUPPORT
             pDst[dwPos] = (b215) ? bTemp2 : bTemp;
@@ -2622,7 +2622,7 @@ void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLeng
     DWORD wCount = 0;
     DWORD bitbuf = 0;
     UINT bitnum = 0;
-    BYTE bLeft = 0;
+    uint8_t bLeft = 0;
     signed short wTemp = 0, wTemp2 = 0;
 
     while (dwLen)
@@ -2649,7 +2649,7 @@ void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLeng
                 DWORD j = dwBits;
                 if (i != j) goto UnpackByte;
                 dwBits = ITReadBits(bitbuf, bitnum, pSrc, 4) + 1;
-                bLeft = ((BYTE)(dwBits & 0xFF) < bLeft) ? (BYTE)(dwBits & 0xFF) : (BYTE)((dwBits+1) & 0xFF);
+                bLeft = ((uint8_t)(dwBits & 0xFF) < bLeft) ? (uint8_t)(dwBits & 0xFF) : (uint8_t)((dwBits+1) & 0xFF);
                 goto Next;
             }
             if (bLeft < 17)
@@ -2658,19 +2658,19 @@ void ITUnpack16Bit(LPSTR pSample, DWORD dwLen, LPBYTE lpMemFile, DWORD dwMemLeng
                 DWORD j = (i - 16) & 0xFFFF;
                 if ((dwBits <= j) || (dwBits > (i & 0xFFFF))) goto UnpackByte;
                 dwBits -= j;
-                bLeft = ((BYTE)(dwBits & 0xFF) < bLeft) ? (BYTE)(dwBits & 0xFF) : (BYTE)((dwBits+1) & 0xFF);
+                bLeft = ((uint8_t)(dwBits & 0xFF) < bLeft) ? (uint8_t)(dwBits & 0xFF) : (uint8_t)((dwBits+1) & 0xFF);
                 goto Next;
             }
             if (bLeft >= 18) goto SkipByte;
             if (dwBits >= 0x10000)
             {
-                bLeft = (BYTE)(dwBits + 1) & 0xFF;
+                bLeft = (uint8_t)(dwBits + 1) & 0xFF;
                 goto Next;
             }
         UnpackByte:
             if (bLeft < 16)
             {
-                BYTE shift = 16 - bLeft;
+                uint8_t shift = 16 - bLeft;
                 signed short c = (signed short)(dwBits << shift);
                 c >>= shift;
                 dwBits = (DWORD)c;
@@ -2821,7 +2821,7 @@ UINT CSoundFile::SaveMixPlugins(FILE *f, BOOL bUpdate)
 UINT CSoundFile::LoadMixPlugins(const void *pData, UINT nLen)
 //-----------------------------------------------------------
 {
-    const BYTE *p = (const BYTE *)pData;
+    const uint8_t *p = (const uint8_t *)pData;
     UINT nPos = 0;
 
     while (nPos+8 < nLen)    // read 4 magic bytes + size
@@ -3000,7 +3000,7 @@ void CSoundFile::WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16
     fwrite(&code, 1, sizeof(__int32), f);    	//write code
     fwrite(&size, 1, sizeof(__int16), f);    	//write size
     for (UINT nins = 1; nins <= nInstruments; nins++) {  //for all instruments...
-        BYTE* pField;
+        uint8_t* pField;
         if (instruments[nins]) {
             pField = GetInstrumentHeaderFieldPointer(instruments[nins], code, size); //get ptr to field
         } else {
@@ -3049,7 +3049,7 @@ void CSoundFile::SaveExtendedSongProperties(FILE* f)
         fwrite(&size, 1, sizeof(__int16), f);
         for(UINT ich = 64; ich < m_nChannels; ich++)
         {
-            BYTE panvol[2];
+            uint8_t panvol[2];
             panvol[0] = ChnSettings[ich].nPan >> 2;
             if (ChnSettings[ich].dwFlags & CHN_SURROUND) panvol[0] = 100;
             if (ChnSettings[ich].dwFlags & CHN_MUTE) panvol[0] |= 0x80;
@@ -3142,8 +3142,8 @@ void CSoundFile::SaveExtendedSongProperties(FILE* f)
     return;
 }
 
-LPCBYTE CSoundFile::LoadExtendedInstrumentProperties(const LPCBYTE pStart,
-                                                     const LPCBYTE pEnd,
+const uint8_t * CSoundFile::LoadExtendedInstrumentProperties(const uint8_t * const pStart,
+                                                     const uint8_t * const pEnd,
                                                      bool* pInterpretMptMade)
 //---------------------------------------------------------------------------
 {
@@ -3152,7 +3152,7 @@ LPCBYTE CSoundFile::LoadExtendedInstrumentProperties(const LPCBYTE pStart,
 
     int32_t code = 0;
     int16_t size = 0;
-    LPCBYTE ptr = pStart;
+    const uint8_t * ptr = pStart;
 
     memcpy(&code, ptr, sizeof(code));
 
@@ -3193,8 +3193,8 @@ LPCBYTE CSoundFile::LoadExtendedInstrumentProperties(const LPCBYTE pStart,
 
 
 void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
-                                            LPCBYTE ptr,
-                                            const LPCBYTE lpStream,
+                                            const uint8_t * ptr,
+                                            const uint8_t * const lpStream,
                                             const size_t searchlimit,
                                             bool* pInterpretMptMade)
 //-------------------------------------------------------------------
@@ -3202,7 +3202,7 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
     if(searchlimit < 6 || ptr == NULL || ptr < lpStream || uintptr_t(ptr - lpStream) > searchlimit - 4)
         return;
 
-    const LPCBYTE pEnd = lpStream + searchlimit;
+    const uint8_t * const pEnd = lpStream + searchlimit;
 
     int32_t code = 0;
     int16_t size = 0;
@@ -3221,9 +3221,9 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
 
     // Case macros. 
     #define CASE(id, data)    \
-        case id: fadr = reinterpret_cast<BYTE*>(&data); nMaxReadCount = min(size, sizeof(data)); break;
+        case id: fadr = reinterpret_cast<uint8_t*>(&data); nMaxReadCount = min(size, sizeof(data)); break;
     #define CASE_NOTXM(id, data) \
-        case id: if(modtype != MOD_TYPE_XM) {fadr = reinterpret_cast<BYTE*>(&data); nMaxReadCount = min(size, sizeof(data));} break;
+        case id: if(modtype != MOD_TYPE_XM) {fadr = reinterpret_cast<uint8_t*>(&data); nMaxReadCount = min(size, sizeof(data));} break;
 
     ptr += sizeof(code); // jump extension header code
     while( uintptr_t(ptr - lpStream) <= searchlimit-6 ) //Loop until given limit.
@@ -3237,7 +3237,7 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
             break;
 
         size_t nMaxReadCount = 0;
-        BYTE * fadr = NULL;
+        uint8_t * fadr = NULL;
 
         switch (code)    				// interpret field code
         {
@@ -3258,7 +3258,7 @@ void CSoundFile::LoadExtendedSongProperties(const MODTYPE modtype,
             case 'ChnS': 
                 if( (size <= 63*2) && (size % 2 == 0) )
                 {
-                    const BYTE* pData = ptr;
+                    const uint8_t* pData = ptr;
                     STATIC_ASSERT(ARRAYELEMCOUNT(ChnSettings) >= 64);
                     const __int16 nLoopLimit = min(size/2, ARRAYELEMCOUNT(ChnSettings) - 64);
                     for(__int16 i = 0; i<nLoopLimit; i++, pData += 2) if(pData[0] != 0xFF)

@@ -802,7 +802,7 @@ void CTuningDialog::OnEnKillfocusEditFinetunesteps()
 {
     if(m_pActiveTuning)
     {
-    	const BYTE BS = 5;
+    	const uint8_t BS = 5;
     	char buffer[BS];
     	m_EditFineTuneSteps.GetWindowText(buffer, BS);
     	m_EditFineTuneSteps.SetWindowText(Stringify(m_pActiveTuning->SetFineStepCount(ConvertStrTo<CTuning::USTEPINDEXTYPE>(buffer))).c_str());

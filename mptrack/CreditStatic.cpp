@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "CreditStatic.h"
+#include <cstdint>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -540,8 +541,8 @@ void CCreditStatic::MoveCredit(CDC* pDC, CRect& m_ScrollRect, CRect& m_ClientRec
     CFont* pOldFont = NULL;
     BOOL bSuccess = FALSE;
     
-    BYTE bUnderline;
-    BYTE bItalic;
+    uint8_t bUnderline;
+    uint8_t bItalic;
     int rmcode = 0;
 
     if (!m_szWork.IsEmpty()) {
@@ -738,8 +739,8 @@ void CCreditStatic::DrawCredit(CDC* pDC, CRect& m_ScrollRect)
     	BOOL bSuccess = FALSE;
     	BOOL bIsBitmap = FALSE;
     	
-    	BYTE bUnderline;
-    	BYTE bItalic;
+    	uint8_t bUnderline;
+    	uint8_t bItalic;
     	int rmcode = 0;
         CBitmap bitmap;
 
@@ -921,7 +922,7 @@ BOOL CCreditStatic::SetBkImage(LPCTSTR lpszResourceName)
         ::GetDIBColorTable( memDC, 0, nColors, pRGB );
 
         UINT nSize = sizeof(LOGPALETTE) + (sizeof(PALETTEENTRY) * nColors);
-        LOGPALETTE *pLP = (LOGPALETTE *) new BYTE[nSize];
+        LOGPALETTE *pLP = (LOGPALETTE *) new uint8_t[nSize];
 
         pLP->palVersion = 0x300;
         pLP->palNumEntries = (WORD)nColors;

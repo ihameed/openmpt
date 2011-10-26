@@ -703,8 +703,8 @@ BOOL CModControlBar::AddButton(UINT nID, int iImage, UINT nStyle, UINT nState)
 
     btn.iBitmap = iImage;
     btn.idCommand = nID;
-    btn.fsStyle = (BYTE)nStyle;
-    btn.fsState = (BYTE)nState;
+    btn.fsStyle = (uint8_t)nStyle;
+    btn.fsState = (uint8_t)nState;
     btn.dwData = 0;
     btn.iString = 0;
     return AddButtons(1, &btn);

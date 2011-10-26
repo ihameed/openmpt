@@ -781,7 +781,7 @@ bool CAbstractVstEditor::CreateInstrument()
     pIns->midi_channel = 1;
     // People will forget to change this anyway, so the following lines can lead to some bad surprises after re-opening the module.
     //pIns->wMidiBank = (WORD)((m_pVstPlugin->GetCurrentProgram() >> 7) + 1);
-    //pIns->nMidiProgram = (BYTE)((m_pVstPlugin->GetCurrentProgram() & 0x7F) + 1);
+    //pIns->nMidiProgram = (uint8_t)((m_pVstPlugin->GetCurrentProgram() & 0x7F) + 1);
 
     pModDoc->UpdateAllViews(NULL, (nIns << HINT_SHIFT_INS) | HINT_INSTRUMENT | HINT_INSNAMES | HINT_ENVELOPE | (bFirst ? HINT_MODTYPE : 0));
     if(pSndFile->GetModSpecifications().supportsPlugins)

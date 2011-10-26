@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////
 // WAV file support
 
-bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadWav(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;
@@ -86,7 +86,7 @@ bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
     // Setting up speed command
     modplug::tracker::modcommand_t *pcmd = Patterns[0];
     pcmd[0].command = CMD_SPEED;
-    pcmd[0].param = (BYTE)m_nDefaultSpeed;
+    pcmd[0].param = (uint8_t)m_nDefaultSpeed;
     pcmd[0].note = 5*12+1;
     pcmd[0].instr = 1;
     pcmd[1].note = pcmd[0].note;
@@ -97,7 +97,7 @@ bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
     {
     	modsample_t *pSmp = &Samples[nChn+1];
     	pcmd[nChn].note = pcmd[0].note;
-    	pcmd[nChn].instr = (BYTE)(nChn+1);
+    	pcmd[nChn].instr = (uint8_t)(nChn+1);
     	pSmp->length = len;
     	pSmp->c5_samplerate = pfmt->freqHz;
     	pSmp->default_volume = 256;
@@ -152,8 +152,8 @@ bool CSoundFile::ReadWav(const BYTE *lpStream, const DWORD dwMemLength)
 typedef struct IMAADPCMBLOCK
 {
     WORD sample;
-    BYTE index;
-    BYTE Reserved;
+    uint8_t index;
+    uint8_t Reserved;
 } DVI_ADPCMBLOCKHEADER;
 
 #pragma pack()
@@ -195,14 +195,14 @@ BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, DWORD dwBytes
     	pdest[nPos++] = (short int)value;
     	for (UINT i=0; ((i<(pkBlkAlign-4)*2) && (nPos < nLen) && (dwBytes)); i++)
     	{
-    		BYTE delta;
+    		uint8_t delta;
     		if (i & 1)
     		{
-    			delta = (BYTE)(((*(psrc++)) >> 4) & 0x0F);
+    			delta = (uint8_t)(((*(psrc++)) >> 4) & 0x0F);
     			dwBytes--;
     		} else
     		{
-    			delta = (BYTE)((*psrc) & 0x0F);
+    			delta = (uint8_t)((*psrc) & 0x0F);
     		}
     		int v = gIMAUnpackTable[nIndex] >> 3;
     		if (delta & 1) v += gIMAUnpackTable[nIndex] >> 2;

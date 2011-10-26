@@ -26,12 +26,12 @@
 typedef struct AMSFILEHEADER
 {
     char szHeader[7];    // "Extreme"
-    BYTE verlo, verhi;    // 0x??,0x01
-    BYTE chncfg;
-    BYTE samples;
+    uint8_t verlo, verhi;    // 0x??,0x01
+    uint8_t chncfg;
+    uint8_t samples;
     WORD patterns;
     WORD orders;
-    BYTE vmidi;
+    uint8_t vmidi;
     WORD extra;
 } AMSFILEHEADER;
 
@@ -40,10 +40,10 @@ typedef struct AMSSAMPLEHEADER
     DWORD length;
     DWORD loopstart;
     DWORD loopend;
-    BYTE finetune_and_pan;
+    uint8_t finetune_and_pan;
     WORD samplerate;    // C-2 = 8363
-    BYTE volume;    	// 0-127
-    BYTE infobyte;
+    uint8_t volume;    	// 0-127
+    uint8_t infobyte;
 } AMSSAMPLEHEADER;
 
 
@@ -72,10 +72,10 @@ void Convert_AMS_Text_Chars(char &c)
 }
 
 
-bool CSoundFile::ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
-    BYTE pkinf[MAX_SAMPLES];
+    uint8_t pkinf[MAX_SAMPLES];
     AMSFILEHEADER *pfh = (AMSFILEHEADER *)lpStream;
     DWORD dwMemPos;
     UINT tmp, tmp2;
@@ -135,7 +135,7 @@ bool CSoundFile::ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength)
     for (UINT cNam=0; cNam<m_nChannels; cNam++)
     {
         if (dwMemPos + 32 >= dwMemLength) return true;
-        BYTE chnnamlen = lpStream[dwMemPos++];
+        uint8_t chnnamlen = lpStream[dwMemPos++];
         if ((chnnamlen) && (chnnamlen < MAX_CHANNELNAME))
         {
             memcpy(ChnSettings[cNam].szName, lpStream + dwMemPos, chnnamlen);
@@ -186,13 +186,13 @@ bool CSoundFile::ReadAMS(const LPCBYTE lpStream, const DWORD dwMemLength)
         // Pattern has been inserted when reading pattern names
         modplug::tracker::modcommand_t* m = Patterns[iPat];
         if (!m) return true;
-        const BYTE *p = lpStream + dwMemPos;
+        const uint8_t *p = lpStream + dwMemPos;
         UINT row = 0, i = 0;
         while ((row < Patterns[iPat].GetNumRows()) && (i+2 < len))
         {
-            BYTE b0 = p[i++];
-            BYTE b1 = p[i++];
-            BYTE b2 = 0;
+            uint8_t b0 = p[i++];
+            uint8_t b1 = p[i++];
+            uint8_t b2 = 0;
             UINT ch = b0 & 0x3F;
             // Note+Instr
             if (!(b0 & 0x40))
@@ -297,39 +297,39 @@ typedef struct AMS2FILEHEADER
 {
     DWORD dwHdr1;    	// AMShdr
     WORD wHdr2;
-    BYTE b1A;    		// 0x1A
-    BYTE titlelen;    	// 30-bytes max
+    uint8_t b1A;    		// 0x1A
+    uint8_t titlelen;    	// 30-bytes max
     CHAR szTitle[30];    // [titlelen]
 } AMS2FILEHEADER;
 
 typedef struct AMS2SONGHEADER
 {
     WORD version;
-    BYTE instruments;
+    uint8_t instruments;
     WORD patterns;
     WORD orders;
     WORD bpm;
-    BYTE speed;
-    BYTE channels;
-    BYTE commands;
-    BYTE rows;
+    uint8_t speed;
+    uint8_t channels;
+    uint8_t commands;
+    uint8_t rows;
     WORD flags;
 } AMS2SONGHEADER;
 
 typedef struct AMS2INSTRUMENT
 {
-    BYTE samples;
-    BYTE notemap[NOTE_MAX];
+    uint8_t samples;
+    uint8_t notemap[NOTE_MAX];
 } AMS2INSTRUMENT;
 
 typedef struct AMS2ENVELOPE
 {
-    BYTE speed;
-    BYTE sustain;
-    BYTE loopbegin;
-    BYTE loopend;
-    BYTE points;
-    BYTE info[3];
+    uint8_t speed;
+    uint8_t sustain;
+    uint8_t loopbegin;
+    uint8_t loopend;
+    uint8_t points;
+    uint8_t info[3];
 } AMS2ENVELOPE;
 
 typedef struct AMS2SAMPLE
@@ -338,18 +338,18 @@ typedef struct AMS2SAMPLE
     DWORD loopstart;
     DWORD loopend;
     WORD frequency;
-    BYTE finetune;
+    uint8_t finetune;
     WORD nC5Speed;
     CHAR transpose;
-    BYTE volume;
-    BYTE flags;
+    uint8_t volume;
+    uint8_t flags;
 } AMS2SAMPLE;
 
 
 #pragma pack()
 
 
-bool CSoundFile::ReadAMS2(LPCBYTE /*lpStream*/, DWORD /*dwMemLength*/)
+bool CSoundFile::ReadAMS2(const uint8_t * /*lpStream*/, DWORD /*dwMemLength*/)
 //------------------------------------------------------------
 {
     return false;
@@ -357,8 +357,8 @@ bool CSoundFile::ReadAMS2(LPCBYTE /*lpStream*/, DWORD /*dwMemLength*/)
     const AMS2FILEHEADER *pfh = (AMS2FILEHEADER *)lpStream;
     AMS2SONGHEADER *psh;
     DWORD dwMemPos;
-    BYTE smpmap[16];
-    BYTE packedsamples[MAX_SAMPLES];
+    uint8_t smpmap[16];
+    uint8_t packedsamples[MAX_SAMPLES];
 
     if ((pfh->dwHdr1 != 0x68534D41) || (pfh->wHdr2 != 0x7264)
      || (pfh->b1A != 0x1A) || (pfh->titlelen > 30)) return false;
@@ -428,7 +428,7 @@ bool CSoundFile::ReadAMS2(LPCBYTE /*lpStream*/, DWORD /*dwMemLength*/)
             pIns->VolEnv.nLoopEnd = volenv->loopend;
             for (UINT i=0; i<pIns->VolEnv.nNodes; i++)
             {
-                pIns->VolEnv.Values[i] = (BYTE)((volenv->info[i*3+2] & 0x7F) >> 1);
+                pIns->VolEnv.Values[i] = (uint8_t)((volenv->info[i*3+2] & 0x7F) >> 1);
                 pos += volenv->info[i*3] + ((volenv->info[i*3+1] & 1) << 8);
                 pIns->VolEnv.Ticks[i] = (WORD)pos;
             }
@@ -526,7 +526,7 @@ bool CSoundFile::ReadAMS2(LPCBYTE /*lpStream*/, DWORD /*dwMemLength*/)
             }
             if(Patterns.Insert(ipat, numrows)) return true;
             // Unpack Pattern Data
-            LPCBYTE psrc = lpStream + dwMemPos;
+            const uint8_t * psrc = lpStream + dwMemPos;
             UINT pos = 3 + patnamlen;
             UINT row = 0;
             while ((pos < packedlen) && (row < numrows))
@@ -613,7 +613,7 @@ void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char pac
             signed char ch = psrc[i++];
             if (ch == packcharacter)
             {
-                BYTE ch2 = psrc[i++];
+                uint8_t ch2 = psrc[i++];
                 if (ch2)
                 {
                     ch = psrc[i++];
@@ -633,7 +633,7 @@ void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char pac
         UINT k=0;
         for (UINT i=0; i<dmax; i++)
         {
-            BYTE al = *p++;
+            uint8_t al = *p++;
             dh = 0;
             for (UINT count=0; count<8; count++)
             {

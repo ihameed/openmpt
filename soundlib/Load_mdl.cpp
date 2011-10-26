@@ -19,7 +19,7 @@
 typedef struct MDLSONGHEADER
 {
     DWORD id;    // "DMDL" = 0x4C444D44
-    BYTE version;
+    uint8_t version;
 } MDLSONGHEADER;
 
 
@@ -29,18 +29,18 @@ typedef struct MDLINFOBLOCK
     CHAR composer[20];
     WORD norders;
     WORD repeatpos;
-    BYTE globalvol;
-    BYTE speed;
-    BYTE tempo;
-    BYTE channelinfo[32];
-    BYTE seq[256];
+    uint8_t globalvol;
+    uint8_t speed;
+    uint8_t tempo;
+    uint8_t channelinfo[32];
+    uint8_t seq[256];
 } MDLINFOBLOCK;
 
 
 typedef struct MDLPATTERNDATA
 {
-    BYTE channels;
-    BYTE lastrow;    // nrows = lastrow+1
+    uint8_t channels;
+    uint8_t lastrow;    // nrows = lastrow+1
     CHAR name[16];
     WORD data[1];
 } MDLPATTERNDATA;
@@ -141,7 +141,7 @@ void ConvertMDLEnvelope(const unsigned char *pMDLEnv, modplug::tracker::modenvel
 }
 
 
-void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nRows, UINT nTrack, const BYTE *lpTracks)
+void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nRows, UINT nTrack, const uint8_t *lpTracks)
 //-------------------------------------------------------------------------------------------------
 {
     modplug::tracker::modcommand_t cmd, *m = pat;
@@ -160,7 +160,7 @@ void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nR
     while ((row < nRows) && (pos < len))
     {
         UINT xx;
-        BYTE b = lpTracks[pos++];
+        uint8_t b = lpTracks[pos++];
         xx = b >> 2;
         switch(b & 0x03)
         {
@@ -226,7 +226,7 @@ void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nR
 
 
 
-bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadMDL(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     DWORD dwMemPos, dwPos, blocklen, dwTrackPos;
@@ -236,10 +236,12 @@ bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
     UINT ninstruments = 0, nsamples = 0;
     WORD block;
     WORD patterntracks[MAX_PATTERNS*32];
-    BYTE smpinfo[MAX_SAMPLES];
-    BYTE insvolenv[MAX_INSTRUMENTS];
-    BYTE inspanenv[MAX_INSTRUMENTS];
-    LPCBYTE pvolenv, ppanenv, ppitchenv;
+    uint8_t smpinfo[MAX_SAMPLES];
+    uint8_t insvolenv[MAX_INSTRUMENTS];
+    uint8_t inspanenv[MAX_INSTRUMENTS];
+    const uint8_t *pvolenv;
+    const uint8_t *ppanenv;
+    const uint8_t *ppitchenv;
     UINT nvolenv, npanenv, npitchenv;
     vector<ROWINDEX> patternLength;
 
@@ -380,7 +382,7 @@ bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
                     SetDefaultInstrumentValues(pIns);
                     for (j=0; j<lpStream[dwPos+1]; j++)
                     {
-                        const BYTE *ps = lpStream+dwPos+34+14*j;
+                        const uint8_t *ps = lpStream+dwPos+34+14*j;
                         while ((note < (UINT)(ps[1]+12)) && (note < NOTE_MAX))
                         {
                             pIns->NoteMap[note] = note+1;
@@ -466,7 +468,7 @@ bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
                 memcpy(pSmp->legacy_filename, lpStream+dwPos+33, 8);
                 SpaceToNullStringFixed<31>(m_szNames[nins]);
                 SpaceToNullStringFixed<8>(pSmp->legacy_filename);
-                const BYTE *p = lpStream+dwPos+41;
+                const uint8_t *p = lpStream+dwPos+41;
                 if (pmsh->version > 0)
                 {
                     pSmp->c5_samplerate = *((DWORD *)p);
@@ -547,7 +549,7 @@ bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
         // Setup volume envelope
         if ((nvolenv) && (pvolenv) && (insvolenv[iIns]))
         {
-            LPCBYTE pve = pvolenv;
+            const uint8_t * pve = pvolenv;
             for (UINT nve = 0; nve < nvolenv; nve++, pve += 33)
             {
                 if (pve[0] + 1 == insvolenv[iIns])
@@ -557,7 +559,7 @@ bool CSoundFile::ReadMDL(const BYTE *lpStream, const DWORD dwMemLength)
         // Setup panning envelope
         if ((npanenv) && (ppanenv) && (inspanenv[iIns]))
         {
-            LPCBYTE ppe = ppanenv;
+            const uint8_t * ppe = ppanenv;
             for (UINT npe = 0; npe < npanenv; npe++, ppe += 33)
             {
                 if (ppe[0] + 1 == inspanenv[iIns])

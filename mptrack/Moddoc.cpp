@@ -915,7 +915,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         pChn->nResonance = 0;
         pChn->nVolume = 256;
         pChn->parent_channel = 0; // remove NNA association
-        pChn->nNewNote = static_cast<BYTE>(note);
+        pChn->nNewNote = static_cast<uint8_t>(note);
 
         if (nins)    								// Set instrument
         {
@@ -1205,7 +1205,7 @@ bool CModDoc::IsChannelRecord2(CHANNELINDEX channel) const
     return m_bsMultiSplitRecordMask[channel];
 }
 
-BYTE CModDoc::IsChannelRecord(CHANNELINDEX channel) const
+uint8_t CModDoc::IsChannelRecord(CHANNELINDEX channel) const
 //-------------------------------------------------------
 {
     if(IsChannelRecord1(channel)) return 1;
@@ -2787,7 +2787,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
     case CMD_TREMOR:
         if(param)
         {
-            BYTE ontime = (BYTE)(param >> 4), offtime = (BYTE)(param & 0x0F);
+            uint8_t ontime = (uint8_t)(param >> 4), offtime = (uint8_t)(param & 0x0F);
             if(m_SndFile.m_dwSongFlags & SONG_ITOLDEFFECTS)
             {
                 ontime++;

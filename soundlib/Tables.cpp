@@ -66,7 +66,7 @@ MODFORMATINFO gModFormatInfo[] =
 
 ///////////////////////////////////////////////////////////////////////
 
-BYTE ImpulseTrackerPortaVolCmd[16] =
+uint8_t ImpulseTrackerPortaVolCmd[16] =
 {
     0x00, 0x01, 0x04, 0x08, 0x10, 0x20, 0x40, 0x60,
     0x80, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
@@ -105,7 +105,7 @@ WORD ProTrackerTunedPeriods[16*12] =
 };
 
 // Table for Invert Loop and Funk Repeat effects (EFx, .MOD only)
-BYTE ModEFxTable[16] =
+uint8_t ModEFxTable[16] =
 {
      0,  5,  6,  7,  8, 10, 11, 13,
     16, 19, 22, 26, 32, 43, 64, 128

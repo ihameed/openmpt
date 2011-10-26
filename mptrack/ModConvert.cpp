@@ -338,7 +338,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             {
                 for (UINT k = 0; k < NOTE_MAX; k++)
                 {
-                    if ((pIns->NoteMap[k]) && (pIns->NoteMap[k] != (BYTE)(k+1)))
+                    if ((pIns->NoteMap[k]) && (pIns->NoteMap[k] != (uint8_t)(k+1)))
                     {
                         CHANGEMODTYPE_WARNING(wBrokenNoteMap);
                         break;

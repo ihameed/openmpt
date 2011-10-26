@@ -49,7 +49,7 @@ protected:
     int mx,my;
 
     bool ButtonHit(CPoint point, CHANNELINDEX * id, CRect * invalidate);
-    void MouseEvent(UINT nFlags,CPoint point, BYTE button);
+    void MouseEvent(UINT nFlags,CPoint point, uint8_t button);
     void ResetState(bool bSelection = true, bool bMove = true, bool bButton = true, bool bInternal = true, bool bOrder = false);
 
     //{{AFX_VIRTUAL(CChannelManagerDlg)

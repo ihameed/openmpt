@@ -59,7 +59,7 @@ END_MESSAGE_MAP()
 LRESULT CMIDIMappingDialog::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 //-------------------------------------------------------------------
 {
-    const BYTE event = GetFromMIDIMsg_Event(dwMidiDataParam);
+    const uint8_t event = GetFromMIDIMsg_Event(dwMidiDataParam);
     if(event == 0xB && IsDlgButtonChecked(IDC_CHECK_MIDILEARN))
     {
     	m_ChannelCBox.SetCurSel(1+GetFromMIDIMsg_Channel(dwMidiDataParam));
@@ -314,7 +314,7 @@ CString CMIDIMappingDialog::CreateListString(const CMIDIMappingDirective& s)
     CString str;
     str.Preallocate(100);
     str = s.ToString();
-    const BYTE plugindex = s.GetPlugIndex();
+    const uint8_t plugindex = s.GetPlugIndex();
 
     //Short ID name
     while(str.GetLength() < 19) str.AppendChar('.');

@@ -21,7 +21,7 @@ typedef int (WINAPI * UNMO3_DECODE)(void **data, int *len);
 typedef void (WINAPI * UNMO3_FREE)(void *data);
 
 
-bool CSoundFile::ReadMO3(LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadMO3(const uint8_t * lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------
 {
     // no valid MO3 file (magic bytes: "MO3")
@@ -75,13 +75,13 @@ bool CSoundFile::ReadMO3(LPCBYTE lpStream, const DWORD dwMemLength)
     			if(iLen > 0)
     			{
     				bResult = true;
-    				if ((!ReadXM((const BYTE *)*mo3Stream, (DWORD)iLen))
-    				&& (!ReadIT((const BYTE *)*mo3Stream, (DWORD)iLen))
-    				&& (!ReadS3M((const BYTE *)*mo3Stream, (DWORD)iLen))
+    				if ((!ReadXM((const uint8_t *)*mo3Stream, (DWORD)iLen))
+    				&& (!ReadIT((const uint8_t *)*mo3Stream, (DWORD)iLen))
+    				&& (!ReadS3M((const uint8_t *)*mo3Stream, (DWORD)iLen))
     				#ifndef FASTSOUNDLIB
-    				&& (!ReadMTM((const BYTE *)*mo3Stream, (DWORD)iLen))
+    				&& (!ReadMTM((const uint8_t *)*mo3Stream, (DWORD)iLen))
     				#endif // FASTSOUNDLIB
-    				&& (!ReadMod((const BYTE *)*mo3Stream, (DWORD)iLen))) bResult = false;
+    				&& (!ReadMod((const uint8_t *)*mo3Stream, (DWORD)iLen))) bResult = false;
     			}
     			
     			UNMO3_Free(*mo3Stream);

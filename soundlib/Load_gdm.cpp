@@ -76,7 +76,7 @@ static MODTYPE GDMHeader_Origin[] =
     MOD_TYPE_NONE, MOD_TYPE_MOD, MOD_TYPE_MTM, MOD_TYPE_S3M, MOD_TYPE_669, MOD_TYPE_FAR, MOD_TYPE_ULT, MOD_TYPE_STM, MOD_TYPE_MED
 };
 
-bool CSoundFile::ReadGDM(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength < sizeof(GDMHEADER))) return false;
@@ -268,7 +268,7 @@ bool CSoundFile::ReadGDM(const LPCBYTE lpStream, const DWORD dwMemLength)
             {
                 if(iPatternPos + 1 > dwMemLength) break;
 
-                BYTE bChannel = lpStream[iPatternPos++];
+                uint8_t bChannel = lpStream[iPatternPos++];
 
                 if(bChannel == 0) break; // next row, please!
 
@@ -281,8 +281,8 @@ bool CSoundFile::ReadGDM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 {
                     // note and sample follows
                     if(iPatternPos + 2 > dwMemLength) break;
-                    BYTE bNote = lpStream[iPatternPos++];
-                    BYTE bSample = lpStream[iPatternPos++];
+                    uint8_t bNote = lpStream[iPatternPos++];
+                    uint8_t bSample = lpStream[iPatternPos++];
 
                     bNote = (bNote & 0x7F) - 1; // this format doesn't have note cuts
                     if(bNote < 0xF0) bNote = (bNote & 0x0F) + 12 * (bNote >> 4) + 13;
@@ -302,11 +302,11 @@ bool CSoundFile::ReadGDM(const LPCBYTE lpStream, const DWORD dwMemLength)
                     while(true)
                     {
                         if(iPatternPos + 2 > dwMemLength) break;
-                        BYTE bEffect = lpStream[iPatternPos++];
-                        BYTE bEffectData = lpStream[iPatternPos++];
+                        uint8_t bEffect = lpStream[iPatternPos++];
+                        uint8_t bEffectData = lpStream[iPatternPos++];
 
-                        BYTE command = bEffect & 0x1F, param = bEffectData;
-                        BYTE volcommand = CMD_NONE, volparam = param;
+                        uint8_t command = bEffect & 0x1F, param = bEffectData;
+                        uint8_t volcommand = CMD_NONE, volparam = param;
 
                         switch(command)
                         {

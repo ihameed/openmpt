@@ -118,7 +118,7 @@ void CCtrlComments::UpdateView(DWORD dwHint, CObject *pHint)
     	{
     		if ((ln >= LINE_LENGTH-1) || (!*p))
     		{
-    			if (((BYTE)c) > ' ') s[ln++] = c;
+    			if (((uint8_t)c) > ' ') s[ln++] = c;
     			c = 0x0D;
     		}
     		if (c == 0x0D)
@@ -131,7 +131,7 @@ void CCtrlComments::UpdateView(DWORD dwHint, CObject *pHint)
     			ln = 0;
     		} else
     		{
-    			if (((BYTE)c) < ' ') c = ' ';
+    			if (((uint8_t)c) < ' ') c = ' ';
     			s[ln++] = c;
     		}
     	}
@@ -174,7 +174,7 @@ void CCtrlComments::OnCommentsChanged()
     		if (ln < 0) ln = 0;
     		if (ln > LINE_LENGTH-1) ln = LINE_LENGTH-1;
     		s[ln] = 0;
-    		while ((ln > 0) && (((BYTE)s[ln-1]) <= ' ')) s[--ln] = 0;
+    		while ((ln > 0) && (((uint8_t)s[ln-1]) <= ' ')) s[--ln] = 0;
     		if (i+1 < n) strcat(s, "\r");
     		strcat(p, s);
     	}

@@ -65,8 +65,8 @@ class CDLSBank;
 
 typedef struct MPTCHORD
 {
-    BYTE key;
-    BYTE notes[3];
+    uint8_t key;
+    uint8_t notes[3];
 } MPTCHORD, *PMPTCHORD;
 
 
@@ -329,7 +329,7 @@ typedef struct MODPLUGFASTDIB
 {
     BITMAPINFOHEADER bmiHeader;
     RGBQUAD bmiColors[256];
-    BYTE DibBits[FASTBMP_MAXWIDTH*FASTBMP_MAXHEIGHT];
+    uint8_t DibBits[FASTBMP_MAXWIDTH*FASTBMP_MAXHEIGHT];
 } MODPLUGFASTDIB, *LPMODPLUGFASTDIB;
 
 //===============
@@ -340,8 +340,8 @@ protected:
     MODPLUGFASTDIB m_Dib;
     UINT m_nTextColor, m_nBkColor;
     LPMODPLUGDIB m_pTextDib;
-    BYTE m_nBlendOffset;
-    BYTE m_n4BitPalette[16];
+    uint8_t m_nBlendOffset;
+    uint8_t m_n4BitPalette[16];
 
 public:
     CFastBitmap() {}
@@ -355,7 +355,7 @@ public:
     void SetColor(UINT nIndex, COLORREF cr);
     void SetAllColors(UINT nBaseIndex, UINT nColors, COLORREF *pcr);
     void TextBlt(int x, int y, int cx, int cy, int srcx, int srcy, LPMODPLUGDIB lpdib=NULL);
-    void SetBlendMode(BYTE nBlendOfs) { m_nBlendOffset = nBlendOfs; }
+    void SetBlendMode(uint8_t nBlendOfs) { m_nBlendOffset = nBlendOfs; }
     void SetBlendColor(COLORREF cr);
 };
 
@@ -395,8 +395,8 @@ LPCTSTR GetNoteStr(const modplug::tracker::modcommand_t::NOTE);
 ///////////////////////////////////////////////////
 // Tables
 
-extern const BYTE gEffectColors[MAX_EFFECTS];
-extern const BYTE gVolEffectColors[MAX_VOLCMDS];
+extern const uint8_t gEffectColors[MAX_EFFECTS];
+extern const uint8_t gVolEffectColors[MAX_VOLCMDS];
 extern const LPCSTR szNoteNames[12];
 extern const LPCTSTR szDefaultNoteNames[NOTE_MAX];
 //const LPCTSTR szSpecialNoteNames[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("PCs"), TEXT("PC"), TEXT("~~"), TEXT("^^"), TEXT("==")};

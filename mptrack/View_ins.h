@@ -91,7 +91,7 @@ protected:
     bool EnvToggleReleaseNode(int nPoint);
 
     // Set envelope status
-    bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, BYTE cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags = 0);
+    bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, DWORD dwChanFlag, DWORD dwExtraFlags = 0);
     bool EnvSetVolEnv(bool bEnable);
     bool EnvSetPanEnv(bool bEnable);
     bool EnvSetPitchEnv(bool bEnable);
@@ -102,8 +102,8 @@ protected:
     void EnvKbdSelectNextPoint();
     void EnvKbdMovePointLeft();
     void EnvKbdMovePointRight();
-    void EnvKbdMovePointUp(BYTE stepsize = 1);
-    void EnvKbdMovePointDown(BYTE stepsize = 1);
+    void EnvKbdMovePointUp(uint8_t stepsize = 1);
+    void EnvKbdMovePointDown(uint8_t stepsize = 1);
     void EnvKbdInsertPoint();
     void EnvKbdRemovePoint();
     void EnvKbdSetLoopStart();
@@ -203,7 +203,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 private:
-    BYTE EnvGetReleaseNode();
+    uint8_t EnvGetReleaseNode();
     WORD EnvGetReleaseNodeValue();
     WORD EnvGetReleaseNodeTick();
 };

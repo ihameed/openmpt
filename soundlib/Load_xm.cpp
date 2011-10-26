@@ -40,7 +40,7 @@ typedef struct tagXMINSTRUMENTHEADER
 {
     DWORD size; // size of XMINSTRUMENTHEADER + XMSAMPLEHEADER
     CHAR name[22];
-    BYTE type; // should always be 0
+    uint8_t type; // should always be 0
     WORD samples;
 } XMINSTRUMENTHEADER;
 
@@ -48,21 +48,21 @@ typedef struct tagXMINSTRUMENTHEADER
 typedef struct tagXMSAMPLEHEADER
 {
     DWORD shsize; // size of XMSAMPLESTRUCT
-    BYTE snum[96];
+    uint8_t snum[96];
     WORD venv[24];
     WORD penv[24];
-    BYTE vnum, pnum;
-    BYTE vsustain, vloops, vloope, psustain, ploops, ploope;
-    BYTE vtype, ptype;
-    BYTE vibtype, vibsweep, vibdepth, vibrate;
+    uint8_t vnum, pnum;
+    uint8_t vsustain, vloops, vloope, psustain, ploops, ploope;
+    uint8_t vtype, ptype;
+    uint8_t vibtype, vibsweep, vibdepth, vibrate;
     WORD volfade;
     // midi extensions (not read by MPT)
-    BYTE midienabled;    	// 0/1
-    BYTE midichannel;    	// 0...15
+    uint8_t midienabled;    	// 0/1
+    uint8_t midichannel;    	// 0...15
     WORD midiprogram;    	// 0...127
     WORD pitchwheelrange;    // 0...36 (halftones)
-    BYTE mutecomputer;    	// 0/1
-    BYTE reserved1[15];
+    uint8_t mutecomputer;    	// 0/1
+    uint8_t reserved1[15];
 } XMSAMPLEHEADER;
 
 typedef struct tagXMSAMPLESTRUCT
@@ -70,23 +70,23 @@ typedef struct tagXMSAMPLESTRUCT
     DWORD samplen;
     DWORD loopstart;
     DWORD looplen;
-    BYTE vol;
+    uint8_t vol;
     signed char finetune;
-    BYTE type;
-    BYTE pan;
+    uint8_t type;
+    uint8_t pan;
     signed char relnote;
-    BYTE res;
+    uint8_t res;
     char name[22];
 } XMSAMPLESTRUCT;
 #pragma pack()
 
 
 // Read .XM patterns
-DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XMFILEHEADER *xmheader, CSoundFile *pSndFile)
+DWORD ReadXMPatterns(const uint8_t *lpStream, DWORD dwMemLength, DWORD dwMemPos, XMFILEHEADER *xmheader, CSoundFile *pSndFile)
 //-------------------------------------------------------------------------------------------------------------------------
 {
-    BYTE patterns_used[256];
-    BYTE pattern_map[256];
+    uint8_t patterns_used[256];
+    uint8_t pattern_map[256];
 
     memset(patterns_used, 0, sizeof(patterns_used));
     if (xmheader->patterns > MAX_PATTERNS)
@@ -128,7 +128,7 @@ DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XM
 
         if(xmheader->xmversion == 0x0102)
         {
-            rows = *((BYTE *)(lpStream + dwMemPos + 5)) + 1;
+            rows = *((uint8_t *)(lpStream + dwMemPos + 5)) + 1;
             packsize = LittleEndianW(*((WORD *)(lpStream + dwMemPos + 6)));
         }
         else
@@ -150,7 +150,7 @@ DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XM
             if (!packsize) continue;
             p = pSndFile->Patterns[ipatmap];
         } else p = NULL;
-        const BYTE *src = lpStream+dwMemPos;
+        const uint8_t *src = lpStream+dwMemPos;
         UINT j=0;
         for (UINT row=0; row<rows; row++)
         {
@@ -158,7 +158,7 @@ DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XM
             {
                 if ((p) && (j < packsize))
                 {
-                    BYTE b = src[j++];
+                    uint8_t b = src[j++];
                     UINT vol = 0;
                     if (b & 0x80)
                     {
@@ -217,7 +217,7 @@ DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XM
                 } else
                 if (j < packsize)
                 {
-                    BYTE b = src[j++];
+                    uint8_t b = src[j++];
                     if (b & 0x80)
                     {
                         if (b & 1) j++;
@@ -234,7 +234,7 @@ DWORD ReadXMPatterns(const BYTE *lpStream, DWORD dwMemLength, DWORD dwMemPos, XM
     return dwMemPos;
 }
 
-bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadXM(const uint8_t *lpStream, const DWORD dwMemLength)
 //--------------------------------------------------------------------
 {
     XMFILEHEADER xmheader;
@@ -304,7 +304,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
     for (INSTRUMENTINDEX iIns = 1; iIns <= m_nInstruments; iIns++)
     {
         XMINSTRUMENTHEADER pih;
-        BYTE flags[32];
+        uint8_t flags[32];
         DWORD samplesize[32];
         UINT samplemap[32];
         WORD nsamples;
@@ -468,9 +468,9 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
         for (UINT ienv=0; ienv<12; ienv++)
         {
             pIns->volume_envelope.Ticks[ienv] = (WORD)xmsh.venv[ienv*2];
-            pIns->volume_envelope.Values[ienv] = (BYTE)xmsh.venv[ienv*2+1];
+            pIns->volume_envelope.Values[ienv] = (uint8_t)xmsh.venv[ienv*2+1];
             pIns->panning_envelope.Ticks[ienv] = (WORD)xmsh.penv[ienv*2];
-            pIns->panning_envelope.Values[ienv] = (BYTE)xmsh.penv[ienv*2+1];
+            pIns->panning_envelope.Values[ienv] = (uint8_t)xmsh.penv[ienv*2+1];
             if (ienv)
             {
                 if (pIns->volume_envelope.Ticks[ienv] < pIns->volume_envelope.Ticks[ienv-1])
@@ -703,7 +703,7 @@ bool CSoundFile::ReadXM(const BYTE *lpStream, const DWORD dwMemLength)
     if(dwMemPos >= dwMemLength) return true;
 
     bool bInterpretOpenMPTMade = false; // specific for OpenMPT 1.17+ (bMadeWithModPlug is also for MPT 1.16)
-    LPCBYTE ptr = lpStream + dwMemPos;
+    const uint8_t * ptr = lpStream + dwMemPos;
     if(m_nInstruments)
         ptr = LoadExtendedInstrumentProperties(ptr, lpStream+dwMemLength, &bInterpretOpenMPTMade);
 
@@ -736,13 +736,13 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
         break; \
     }
 
-    //BYTE s[64*64*5];
-    vector<BYTE> s(64*64*5, 0);
+    //uint8_t s[64*64*5];
+    vector<uint8_t> s(64*64*5, 0);
     XMFILEHEADER xmheader;
     XMINSTRUMENTHEADER xmih;
     XMSAMPLEHEADER xmsh;
     XMSAMPLESTRUCT xmss;
-    BYTE xmph[9];
+    uint8_t xmph[9];
     FILE *f;
     int i;
     bool bAddChannel = false; // avoid odd channel count for FT2 compatibility 
@@ -811,8 +811,8 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     {
         if(Patterns.IsValidIndex(Order[nOrd]) || !bCompatibilityExport) 
         {
-            BYTE nOrdval = static_cast<BYTE>(Order[nOrd]);
-            fwrite(&nOrdval, 1, sizeof(BYTE), f);
+            uint8_t nOrdval = static_cast<uint8_t>(Order[nOrd]);
+            fwrite(&nOrdval, 1, sizeof(uint8_t), f);
         }
     }
 
@@ -826,8 +826,8 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
 
         memset(&xmph, 0, sizeof(xmph));
         xmph[0] = 9;
-        xmph[5] = (BYTE)(Patterns[i].GetNumRows() & 0xFF);
-        xmph[6] = (BYTE)(Patterns[i].GetNumRows() >> 8);
+        xmph[5] = (uint8_t)(Patterns[i].GetNumRows() & 0xFF);
+        xmph[6] = (uint8_t)(Patterns[i].GetNumRows() >> 8);
         for (UINT j = m_nChannels * Patterns[i].GetNumRows(); j > 0; j--, p++)
         {
             // Don't write more than 32 channels
@@ -895,7 +895,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
                 s[len++] = param;
             } else
             {
-                BYTE b = 0x80;
+                uint8_t b = 0x80;
                 if (note) b |= 0x01;
                 if (p->instr) b |= 0x02;
                 if (vol >= 0x10) b |= 0x04;
@@ -918,16 +918,16 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
             ASSERT_CAN_WRITE(5);
 
         }
-        xmph[7] = (BYTE)(len & 0xFF);
-        xmph[8] = (BYTE)(len >> 8);
+        xmph[7] = (uint8_t)(len & 0xFF);
+        xmph[8] = (uint8_t)(len >> 8);
         fwrite(xmph, 1, 9, f);
         fwrite(&s[0], 1, len, f);
     } else
     {
         memset(&xmph, 0, sizeof(xmph));
         xmph[0] = 9;
-        xmph[5] = (BYTE)(Patterns[i].GetNumRows() & 0xFF);
-        xmph[6] = (BYTE)(Patterns[i].GetNumRows() >> 8);
+        xmph[5] = (uint8_t)(Patterns[i].GetNumRows() & 0xFF);
+        xmph[6] = (uint8_t)(Patterns[i].GetNumRows() >> 8);
         fwrite(xmph, 1, 9, f);
     }
     // Writing instruments
@@ -935,7 +935,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     {
         modsample_t *pSmp;
         WORD smptable[32];
-        BYTE flags[32];
+        uint8_t flags[32];
 
         memset(&smptable, 0, sizeof(smptable));
         memset(&xmih, 0, sizeof(xmih));
@@ -952,8 +952,8 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
                 memcpy(xmih.name, pIns->name, 22);
                 xmih.type = pIns->midi_program;
                 xmsh.volfade = LittleEndianW(min(pIns->fadeout, 0x7FFF)); // FFF is maximum in the FT2 GUI, but it can also accept other values. MilkyTracker just allows 0...4095 and 32767 ("cut")
-                xmsh.vnum = (BYTE)pIns->volume_envelope.num_nodes;
-                xmsh.pnum = (BYTE)pIns->panning_envelope.num_nodes;
+                xmsh.vnum = (uint8_t)pIns->volume_envelope.num_nodes;
+                xmsh.pnum = (uint8_t)pIns->panning_envelope.num_nodes;
                 if (xmsh.vnum > 12) xmsh.vnum = 12;
                 if (xmsh.pnum > 12) xmsh.pnum = 12;
                 for (UINT ienv=0; ienv<12; ienv++)
@@ -969,12 +969,12 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
                 if (pIns->panning_envelope.flags & ENV_ENABLED) xmsh.ptype |= 1;
                 if (pIns->panning_envelope.flags & ENV_SUSTAIN) xmsh.ptype |= 2;
                 if (pIns->panning_envelope.flags & ENV_LOOP) xmsh.ptype |= 4;
-                xmsh.vsustain = (BYTE)pIns->volume_envelope.sustain_start;
-                xmsh.vloops = (BYTE)pIns->volume_envelope.loop_start;
-                xmsh.vloope = (BYTE)pIns->volume_envelope.loop_end;
-                xmsh.psustain = (BYTE)pIns->panning_envelope.sustain_start;
-                xmsh.ploops = (BYTE)pIns->panning_envelope.loop_start;
-                xmsh.ploope = (BYTE)pIns->panning_envelope.loop_end;
+                xmsh.vsustain = (uint8_t)pIns->volume_envelope.sustain_start;
+                xmsh.vloops = (uint8_t)pIns->volume_envelope.loop_start;
+                xmsh.vloope = (uint8_t)pIns->volume_envelope.loop_end;
+                xmsh.psustain = (uint8_t)pIns->panning_envelope.sustain_start;
+                xmsh.ploops = (uint8_t)pIns->panning_envelope.loop_start;
+                xmsh.ploope = (uint8_t)pIns->panning_envelope.loop_end;
                 for (UINT j=0; j<96; j++) if (pIns->Keyboard[j+12]) // for all notes
                 {
                     UINT k;
@@ -1060,7 +1060,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
                 }
             }
             xmss.pan = 255;
-            if (pSmp->default_pan < 256) xmss.pan = (BYTE)pSmp->default_pan;
+            if (pSmp->default_pan < 256) xmss.pan = (uint8_t)pSmp->default_pan;
             xmss.relnote = (signed char)pSmp->RelativeTone;
             xmss.samplen = LittleEndianW(xmss.samplen);
             xmss.loopstart = LittleEndianW(xmss.loopstart);

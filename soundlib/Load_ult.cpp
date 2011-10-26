@@ -141,7 +141,7 @@ static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
     *pp = p;
 }
 
-static int ReadULTEvent(modplug::tracker::modcommand_t *note, const BYTE *lpStream, DWORD *dwMP, const DWORD dwMemLength)
+static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpStream, DWORD *dwMP, const DWORD dwMemLength)
 //---------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_ULTENV(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -304,7 +304,7 @@ struct PostFixUltCommands
 };
 
 
-bool CSoundFile::ReadUlt(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadUlt(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;

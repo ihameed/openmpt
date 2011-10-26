@@ -24,7 +24,7 @@
 
 typedef struct DSMNOTE
 {
-    BYTE note,ins,vol,cmd,inf;
+    uint8_t note,ins,vol,cmd,inf;
 } DSMNOTE;
 
 
@@ -33,9 +33,9 @@ typedef struct DSMSAMPLE
     DWORD id_INST;
     DWORD inst_len;
     CHAR filename[13];
-    BYTE flags;
-    BYTE flags2;
-    BYTE volume;
+    uint8_t flags;
+    uint8_t flags2;
+    uint8_t volume;
     DWORD length;
     DWORD loopstart;
     DWORD loopend;
@@ -66,26 +66,26 @@ typedef struct DSMSONG
     WORD numsmp;
     WORD numpat;
     WORD numtrk;
-    BYTE globalvol;
-    BYTE mastervol;
-    BYTE speed;
-    BYTE bpm;
-    BYTE panpos[16];
-    BYTE orders[128];
+    uint8_t globalvol;
+    uint8_t mastervol;
+    uint8_t speed;
+    uint8_t bpm;
+    uint8_t panpos[16];
+    uint8_t orders[128];
 } DSMSONG;
 
 typedef struct DSMPATT
 {
     DWORD id_PATT;
     DWORD patt_len;
-    BYTE dummy1;
-    BYTE dummy2;
+    uint8_t dummy1;
+    uint8_t dummy2;
 } DSMPATT;
 
 #pragma pack()
 
 
-bool CSoundFile::ReadDSM(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadDSM(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     DSMFILEHEADER *pfh = (DSMFILEHEADER *)lpStream;
@@ -151,7 +151,7 @@ bool CSoundFile::ReadDSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                         if (note)
                         {
                             if (note <= 12*9) note += 12;
-                            m[ch].note = (BYTE)note;
+                            m[ch].note = (uint8_t)note;
                         }
                     }
                     if (flag & 0x40)
@@ -195,8 +195,8 @@ bool CSoundFile::ReadDSM(const LPCBYTE lpStream, const DWORD dwMemLength)
                             // Volume + Offset (?)
                             command = ((command & 0xF0) == 0x20) ? 0x09 : 0;
                         }
-                        m[ch].command = (BYTE)command;
-                        m[ch].param = (BYTE)param;
+                        m[ch].command = (uint8_t)command;
+                        m[ch].param = (uint8_t)param;
                         if (command) ConvertModCommand(&m[ch]);
                     }
                 } else

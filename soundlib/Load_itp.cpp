@@ -23,7 +23,7 @@
 #define ITP_FILE_ID 0x2e697470    // .itp ASCII
 
 
-bool CSoundFile::ReadITProject(LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadITProject(const uint8_t * lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     UINT i,n,nsmp;
@@ -401,7 +401,7 @@ bool CSoundFile::ReadITProject(LPCBYTE lpStream, const DWORD dwMemLength)
     // Extra info data
 
     __int32 fcode = 0;
-    LPCBYTE ptr = lpStream + min(dwMemPos, dwMemLength);
+    const uint8_t * ptr = lpStream + min(dwMemPos, dwMemLength);
 
     if (dwMemPos <= dwMemLength - 4) {
         fcode = (*((__int32 *)ptr));
@@ -667,7 +667,7 @@ bool CSoundFile::SaveITProject(LPCSTR lpszFileName)
             memcpy(itss.name, m_szNames[nsmp], 26);
 
             itss.id = LittleEndian(IT_IMPS);
-            itss.gvl = (BYTE)psmp->global_volume;
+            itss.gvl = (uint8_t)psmp->global_volume;
             itss.flags = 0x00;
 
             if(psmp->flags & CHN_LOOP) itss.flags |= 0x10;
@@ -681,8 +681,8 @@ bool CSoundFile::SaveITProject(LPCSTR lpszFileName)
             itss.loopend = psmp->loop_end;
             itss.susloopbegin = psmp->sustain_start;
             itss.susloopend = psmp->sustain_end;
-            itss.vol = (BYTE)(psmp->default_volume >> 2);
-            itss.dfp = (BYTE)(psmp->default_pan >> 2);
+            itss.vol = (uint8_t)(psmp->default_volume >> 2);
+            itss.dfp = (uint8_t)(psmp->default_pan >> 2);
             itss.vit = autovibxm2it[psmp->vibrato_type & 7];
             itss.vis = min(psmp->vibrato_rate, 64);
             itss.vid = min(psmp->vibrato_depth, 32);

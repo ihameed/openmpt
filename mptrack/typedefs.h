@@ -14,7 +14,6 @@
 
 //Compile time assert. 
 #define STATIC_ASSERT(expr)    		C_ASSERT(expr)
-#define static_assert(expr, msg)    C_ASSERT(expr)
 
 
 typedef float float32;

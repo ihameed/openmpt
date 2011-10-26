@@ -363,7 +363,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
     				case INSLIST_SAMPLES:
     					if (pIns)
     					{
-    						BYTE smp_tb[(MAX_SAMPLES+7)/8];
+    						uint8_t smp_tb[(MAX_SAMPLES+7)/8];
     						memset(smp_tb, 0, sizeof(smp_tb));
     						for (UINT i=0; i<NOTE_MAX; i++)
     						{

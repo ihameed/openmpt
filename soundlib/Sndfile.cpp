@@ -65,7 +65,7 @@ LPCSTR glpszModExtensions = "mod|s3m|xm|it|stm|nst|ult|669|wow|mtm|med|far|mdl|a
 #endif
 
 #ifdef MMCMP_SUPPORT
-extern BOOL MMCMP_Unpack(LPCBYTE *ppMemFile, LPDWORD pdwMemLength);
+extern BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, LPDWORD pdwMemLength);
 #endif
 
 // External decompressors
@@ -107,7 +107,7 @@ MODULAR (in/out) modplug::tracker::modinstrument_t :
 - both following functions need to be updated when adding a new member in modplug::tracker::modinstrument_t :
 
 void WriteInstrumentHeaderStruct(modplug::tracker::modinstrument_t * input, FILE * file);
-BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize);
+uint8_t * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize);
 
 - see below for body declaration.
 
@@ -296,54 +296,54 @@ WRITE_MPTHEADER_sized_member(    default_pan, UINT			, P...							)
 WRITE_MPTHEADER_sized_member(    volume_envelope.num_nodes			, UINT			, VE..							)
 WRITE_MPTHEADER_sized_member(    panning_envelope.num_nodes			, UINT			, PE..							)
 WRITE_MPTHEADER_sized_member(    pitch_envelope.num_nodes			, UINT			, PiE.							)
-WRITE_MPTHEADER_sized_member(    volume_envelope.loop_start		, BYTE			, VLS.							)
-WRITE_MPTHEADER_sized_member(    volume_envelope.loop_end			, BYTE			, VLE.							)
-WRITE_MPTHEADER_sized_member(    volume_envelope.sustain_start	, BYTE			, VSB.							)
-WRITE_MPTHEADER_sized_member(    volume_envelope.sustain_end		, BYTE			, VSE.							)
-WRITE_MPTHEADER_sized_member(    panning_envelope.loop_start		, BYTE			, PLS.							)
-WRITE_MPTHEADER_sized_member(    panning_envelope.loop_end			, BYTE			, PLE.							)
-WRITE_MPTHEADER_sized_member(    panning_envelope.sustain_start	, BYTE			, PSB.							)
-WRITE_MPTHEADER_sized_member(    panning_envelope.sustain_end		, BYTE			, PSE.							)
-WRITE_MPTHEADER_sized_member(    pitch_envelope.loop_start		, BYTE			, PiLS							)
-WRITE_MPTHEADER_sized_member(    pitch_envelope.loop_end		, BYTE			, PiLE							)
-WRITE_MPTHEADER_sized_member(    pitch_envelope.sustain_start	, BYTE			, PiSB							)
-WRITE_MPTHEADER_sized_member(    pitch_envelope.sustain_end	, BYTE			, PiSE							)
-WRITE_MPTHEADER_sized_member(    new_note_action, BYTE			, NNA.							)
-WRITE_MPTHEADER_sized_member(    duplicate_check_type, BYTE			, DCT.							)
-WRITE_MPTHEADER_sized_member(    duplicate_note_action, BYTE			, DNA.							)
-WRITE_MPTHEADER_sized_member(    random_pan_weight, BYTE			, PS..							)
-WRITE_MPTHEADER_sized_member(    random_volume_weight, BYTE			, VS..							)
-WRITE_MPTHEADER_sized_member(    default_filter_cutoff					, BYTE			, IFC.							)
-WRITE_MPTHEADER_sized_member(    default_filter_resonance, BYTE			, IFR.							)
+WRITE_MPTHEADER_sized_member(    volume_envelope.loop_start		, uint8_t			, VLS.							)
+WRITE_MPTHEADER_sized_member(    volume_envelope.loop_end			, uint8_t			, VLE.							)
+WRITE_MPTHEADER_sized_member(    volume_envelope.sustain_start	, uint8_t			, VSB.							)
+WRITE_MPTHEADER_sized_member(    volume_envelope.sustain_end		, uint8_t			, VSE.							)
+WRITE_MPTHEADER_sized_member(    panning_envelope.loop_start		, uint8_t			, PLS.							)
+WRITE_MPTHEADER_sized_member(    panning_envelope.loop_end			, uint8_t			, PLE.							)
+WRITE_MPTHEADER_sized_member(    panning_envelope.sustain_start	, uint8_t			, PSB.							)
+WRITE_MPTHEADER_sized_member(    panning_envelope.sustain_end		, uint8_t			, PSE.							)
+WRITE_MPTHEADER_sized_member(    pitch_envelope.loop_start		, uint8_t			, PiLS							)
+WRITE_MPTHEADER_sized_member(    pitch_envelope.loop_end		, uint8_t			, PiLE							)
+WRITE_MPTHEADER_sized_member(    pitch_envelope.sustain_start	, uint8_t			, PiSB							)
+WRITE_MPTHEADER_sized_member(    pitch_envelope.sustain_end	, uint8_t			, PiSE							)
+WRITE_MPTHEADER_sized_member(    new_note_action, uint8_t			, NNA.							)
+WRITE_MPTHEADER_sized_member(    duplicate_check_type, uint8_t			, DCT.							)
+WRITE_MPTHEADER_sized_member(    duplicate_note_action, uint8_t			, DNA.							)
+WRITE_MPTHEADER_sized_member(    random_pan_weight, uint8_t			, PS..							)
+WRITE_MPTHEADER_sized_member(    random_volume_weight, uint8_t			, VS..							)
+WRITE_MPTHEADER_sized_member(    default_filter_cutoff					, uint8_t			, IFC.							)
+WRITE_MPTHEADER_sized_member(    default_filter_resonance, uint8_t			, IFR.							)
 WRITE_MPTHEADER_sized_member(    midi_bank, WORD			, MB..							)
-WRITE_MPTHEADER_sized_member(    midi_program, BYTE			, MP..							)
-WRITE_MPTHEADER_sized_member(    midi_channel, BYTE			, MC..							)
-WRITE_MPTHEADER_sized_member(    midi_drum_set, BYTE			, MDK.							)
+WRITE_MPTHEADER_sized_member(    midi_program, uint8_t			, MP..							)
+WRITE_MPTHEADER_sized_member(    midi_channel, uint8_t			, MC..							)
+WRITE_MPTHEADER_sized_member(    midi_drum_set, uint8_t			, MDK.							)
 WRITE_MPTHEADER_sized_member(    pitch_pan_separation					, signed char	, PPS.							)
 WRITE_MPTHEADER_sized_member(    pitch_pan_center					, unsigned char	, PPC.							)
 WRITE_MPTHEADER_array_member(    volume_envelope.Ticks			, WORD			, VP[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(    panning_envelope.Ticks			, WORD			, PP[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
 WRITE_MPTHEADER_array_member(    pitch_envelope.Ticks			, WORD			, PiP[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(    volume_envelope.Values			, BYTE			, VE[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(    panning_envelope.Values			, BYTE			, PE[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(    pitch_envelope.Values			, BYTE			, PiE[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
-WRITE_MPTHEADER_array_member(    NoteMap					, BYTE			, NM[.		, 128				)
+WRITE_MPTHEADER_array_member(    volume_envelope.Values			, uint8_t			, VE[.		, ((input->volume_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(    panning_envelope.Values			, uint8_t			, PE[.		, ((input->panning_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(    pitch_envelope.Values			, uint8_t			, PiE[		, ((input->pitch_envelope.num_nodes > 32) ? MAX_ENVPOINTS : 32))
+WRITE_MPTHEADER_array_member(    NoteMap					, uint8_t			, NM[.		, 128				)
 WRITE_MPTHEADER_array_member(    Keyboard				, WORD			, K[..		, 128				)
 WRITE_MPTHEADER_array_member(    name					, CHAR			, n[..		, 32				)
 WRITE_MPTHEADER_array_member(    legacy_filename, CHAR			, fn[.		, 12				)
-WRITE_MPTHEADER_sized_member(    nMixPlug				, BYTE			, MiP.							)
+WRITE_MPTHEADER_sized_member(    nMixPlug				, uint8_t			, MiP.							)
 WRITE_MPTHEADER_sized_member(    volume_ramp_up, USHORT		, VR..							)
 WRITE_MPTHEADER_sized_member(    volume_ramp_down			, USHORT		, VRD.							)
 WRITE_MPTHEADER_sized_member(    resampling_mode, USHORT		, R...							)
-WRITE_MPTHEADER_sized_member(    random_cutoff_weight, BYTE			, CS..							)
-WRITE_MPTHEADER_sized_member(    random_resonance_weight, BYTE			, RS..							)
-WRITE_MPTHEADER_sized_member(    default_filter_mode, BYTE			, FM..							)
-WRITE_MPTHEADER_sized_member(    nPluginVelocityHandling	, BYTE			, PVEH							)
-WRITE_MPTHEADER_sized_member(    nPluginVolumeHandling	, BYTE			, PVOH							)
+WRITE_MPTHEADER_sized_member(    random_cutoff_weight, uint8_t			, CS..							)
+WRITE_MPTHEADER_sized_member(    random_resonance_weight, uint8_t			, RS..							)
+WRITE_MPTHEADER_sized_member(    default_filter_mode, uint8_t			, FM..							)
+WRITE_MPTHEADER_sized_member(    nPluginVelocityHandling	, uint8_t			, PVEH							)
+WRITE_MPTHEADER_sized_member(    nPluginVolumeHandling	, uint8_t			, PVOH							)
 WRITE_MPTHEADER_sized_member(    pitch_to_tempo_lock, WORD			, PTTL							)
-WRITE_MPTHEADER_sized_member(    pitch_envelope.release_node	, BYTE			, PERN							)
-WRITE_MPTHEADER_sized_member(    panning_envelope.release_node		, BYTE		    , AERN							)
-WRITE_MPTHEADER_sized_member(    volume_envelope.release_node		, BYTE			, VERN							)
+WRITE_MPTHEADER_sized_member(    pitch_envelope.release_node	, uint8_t			, PERN							)
+WRITE_MPTHEADER_sized_member(    panning_envelope.release_node		, uint8_t		    , AERN							)
+WRITE_MPTHEADER_sized_member(    volume_envelope.release_node		, uint8_t			, VERN							)
 WRITE_MPTHEADER_sized_member(    pitch_envelope.flags		, DWORD			, PFLG							)
 WRITE_MPTHEADER_sized_member(    panning_envelope.flags			, DWORD		    , AFLG							)
 WRITE_MPTHEADER_sized_member(    volume_envelope.flags			, DWORD			, VFLG							)
@@ -354,7 +354,7 @@ WRITE_MPTHEADER_sized_member(    volume_envelope.flags			, DWORD			, VFLG							
 // --------------------------------------------------------------------------------------------
 #define GET_MPTHEADER_sized_member(name,type,code) \
 case( #@code ):\
-if( fsize <= sizeof( type ) ) pointer = (BYTE *)&input-> name ;\
+if( fsize <= sizeof( type ) ) pointer = (uint8_t *)&input-> name ;\
 break;
 
 // --------------------------------------------------------------------------------------------
@@ -362,14 +362,14 @@ break;
 // --------------------------------------------------------------------------------------------
 #define GET_MPTHEADER_array_member(name,type,code,arraysize) \
 case( #@code ):\
-if( fsize <= sizeof( type ) * arraysize ) pointer = (BYTE *)&input-> name ;\
+if( fsize <= sizeof( type ) * arraysize ) pointer = (uint8_t *)&input-> name ;\
 break;
 
 // Return a pointer on the wanted field in 'input' modplug::tracker::modinstrument_t given field code & size
-BYTE * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize)
+uint8_t * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * input, __int32 fcode, __int16 fsize)
 {
 if(input == NULL) return NULL;
-BYTE * pointer = NULL;
+uint8_t * pointer = NULL;
 
 switch(fcode){
 GET_MPTHEADER_sized_member(    fadeout				, UINT			, FO..							)
@@ -379,54 +379,54 @@ GET_MPTHEADER_sized_member(    default_pan					, UINT			, P...							)
 GET_MPTHEADER_sized_member(    volume_envelope.num_nodes			, UINT			, VE..							)
 GET_MPTHEADER_sized_member(    panning_envelope.num_nodes			, UINT			, PE..							)
 GET_MPTHEADER_sized_member(    pitch_envelope.num_nodes			, UINT			, PiE.							)
-GET_MPTHEADER_sized_member(    volume_envelope.loop_start		, BYTE			, VLS.							)
-GET_MPTHEADER_sized_member(    volume_envelope.loop_end			, BYTE			, VLE.							)
-GET_MPTHEADER_sized_member(    volume_envelope.sustain_start	, BYTE			, VSB.							)
-GET_MPTHEADER_sized_member(    volume_envelope.sustain_end		, BYTE			, VSE.							)
-GET_MPTHEADER_sized_member(    panning_envelope.loop_start		, BYTE			, PLS.							)
-GET_MPTHEADER_sized_member(    panning_envelope.loop_end			, BYTE			, PLE.							)
-GET_MPTHEADER_sized_member(    panning_envelope.sustain_start	, BYTE			, PSB.							)
-GET_MPTHEADER_sized_member(    panning_envelope.sustain_end		, BYTE			, PSE.							)
-GET_MPTHEADER_sized_member(    pitch_envelope.loop_start		, BYTE			, PiLS							)
-GET_MPTHEADER_sized_member(    pitch_envelope.loop_end		, BYTE			, PiLE							)
-GET_MPTHEADER_sized_member(    pitch_envelope.sustain_start	, BYTE			, PiSB							)
-GET_MPTHEADER_sized_member(    pitch_envelope.sustain_end	, BYTE			, PiSE							)
-GET_MPTHEADER_sized_member(    new_note_action					, BYTE			, NNA.							)
-GET_MPTHEADER_sized_member(    duplicate_check_type					, BYTE			, DCT.							)
-GET_MPTHEADER_sized_member(    duplicate_note_action					, BYTE			, DNA.							)
-GET_MPTHEADER_sized_member(    random_pan_weight				, BYTE			, PS..							)
-GET_MPTHEADER_sized_member(    random_volume_weight				, BYTE			, VS..							)
-GET_MPTHEADER_sized_member(    default_filter_cutoff					, BYTE			, IFC.							)
-GET_MPTHEADER_sized_member(    default_filter_resonance					, BYTE			, IFR.							)
+GET_MPTHEADER_sized_member(    volume_envelope.loop_start		, uint8_t			, VLS.							)
+GET_MPTHEADER_sized_member(    volume_envelope.loop_end			, uint8_t			, VLE.							)
+GET_MPTHEADER_sized_member(    volume_envelope.sustain_start	, uint8_t			, VSB.							)
+GET_MPTHEADER_sized_member(    volume_envelope.sustain_end		, uint8_t			, VSE.							)
+GET_MPTHEADER_sized_member(    panning_envelope.loop_start		, uint8_t			, PLS.							)
+GET_MPTHEADER_sized_member(    panning_envelope.loop_end			, uint8_t			, PLE.							)
+GET_MPTHEADER_sized_member(    panning_envelope.sustain_start	, uint8_t			, PSB.							)
+GET_MPTHEADER_sized_member(    panning_envelope.sustain_end		, uint8_t			, PSE.							)
+GET_MPTHEADER_sized_member(    pitch_envelope.loop_start		, uint8_t			, PiLS							)
+GET_MPTHEADER_sized_member(    pitch_envelope.loop_end		, uint8_t			, PiLE							)
+GET_MPTHEADER_sized_member(    pitch_envelope.sustain_start	, uint8_t			, PiSB							)
+GET_MPTHEADER_sized_member(    pitch_envelope.sustain_end	, uint8_t			, PiSE							)
+GET_MPTHEADER_sized_member(    new_note_action					, uint8_t			, NNA.							)
+GET_MPTHEADER_sized_member(    duplicate_check_type					, uint8_t			, DCT.							)
+GET_MPTHEADER_sized_member(    duplicate_note_action					, uint8_t			, DNA.							)
+GET_MPTHEADER_sized_member(    random_pan_weight				, uint8_t			, PS..							)
+GET_MPTHEADER_sized_member(    random_volume_weight				, uint8_t			, VS..							)
+GET_MPTHEADER_sized_member(    default_filter_cutoff					, uint8_t			, IFC.							)
+GET_MPTHEADER_sized_member(    default_filter_resonance					, uint8_t			, IFR.							)
 GET_MPTHEADER_sized_member(    midi_bank				, WORD			, MB..							)
-GET_MPTHEADER_sized_member(    midi_program			, BYTE			, MP..							)
-GET_MPTHEADER_sized_member(    midi_channel			, BYTE			, MC..							)
-GET_MPTHEADER_sized_member(    midi_drum_set			, BYTE			, MDK.							)
+GET_MPTHEADER_sized_member(    midi_program			, uint8_t			, MP..							)
+GET_MPTHEADER_sized_member(    midi_channel			, uint8_t			, MC..							)
+GET_MPTHEADER_sized_member(    midi_drum_set			, uint8_t			, MDK.							)
 GET_MPTHEADER_sized_member(    pitch_pan_separation					, signed char	, PPS.							)
 GET_MPTHEADER_sized_member(    pitch_pan_center					, unsigned char	, PPC.							)
 GET_MPTHEADER_array_member(    volume_envelope.Ticks			, WORD			, VP[.		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(    panning_envelope.Ticks			, WORD			, PP[.		, MAX_ENVPOINTS		)
 GET_MPTHEADER_array_member(    pitch_envelope.Ticks			, WORD			, PiP[		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(    volume_envelope.Values			, BYTE			, VE[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(    panning_envelope.Values			, BYTE			, PE[.		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(    pitch_envelope.Values			, BYTE			, PiE[		, MAX_ENVPOINTS		)
-GET_MPTHEADER_array_member(    NoteMap					, BYTE			, NM[.		, 128				)
+GET_MPTHEADER_array_member(    volume_envelope.Values			, uint8_t			, VE[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(    panning_envelope.Values			, uint8_t			, PE[.		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(    pitch_envelope.Values			, uint8_t			, PiE[		, MAX_ENVPOINTS		)
+GET_MPTHEADER_array_member(    NoteMap					, uint8_t			, NM[.		, 128				)
 GET_MPTHEADER_array_member(    Keyboard				, WORD			, K[..		, 128				)
 GET_MPTHEADER_array_member(    name					, CHAR			, n[..		, 32				)
 GET_MPTHEADER_array_member(    legacy_filename				, CHAR			, fn[.		, 12				)
-GET_MPTHEADER_sized_member(    nMixPlug				, BYTE			, MiP.							)
+GET_MPTHEADER_sized_member(    nMixPlug				, uint8_t			, MiP.							)
 GET_MPTHEADER_sized_member(    volume_ramp_up				, USHORT		, VR..							)
 GET_MPTHEADER_sized_member(    volume_ramp_down			, USHORT		, VRD.							)
 GET_MPTHEADER_sized_member(    resampling_mode, UINT			, R...							)
-GET_MPTHEADER_sized_member(    random_cutoff_weight				, BYTE			, CS..							)
-GET_MPTHEADER_sized_member(    random_resonance_weight				, BYTE			, RS..							)
-GET_MPTHEADER_sized_member(    default_filter_mode				, BYTE			, FM..							)
+GET_MPTHEADER_sized_member(    random_cutoff_weight				, uint8_t			, CS..							)
+GET_MPTHEADER_sized_member(    random_resonance_weight				, uint8_t			, RS..							)
+GET_MPTHEADER_sized_member(    default_filter_mode				, uint8_t			, FM..							)
 GET_MPTHEADER_sized_member(    pitch_to_tempo_lock		, WORD			, PTTL							)
-GET_MPTHEADER_sized_member(    nPluginVelocityHandling	, BYTE			, PVEH							)
-GET_MPTHEADER_sized_member(    nPluginVolumeHandling	, BYTE			, PVOH							)
-GET_MPTHEADER_sized_member(    pitch_envelope.release_node	, BYTE			, PERN							)
-GET_MPTHEADER_sized_member(    panning_envelope.release_node		, BYTE		    , AERN							)
-GET_MPTHEADER_sized_member(    volume_envelope.release_node		, BYTE			, VERN							)
+GET_MPTHEADER_sized_member(    nPluginVelocityHandling	, uint8_t			, PVEH							)
+GET_MPTHEADER_sized_member(    nPluginVolumeHandling	, uint8_t			, PVOH							)
+GET_MPTHEADER_sized_member(    pitch_envelope.release_node	, uint8_t			, PERN							)
+GET_MPTHEADER_sized_member(    panning_envelope.release_node		, uint8_t		    , AERN							)
+GET_MPTHEADER_sized_member(    volume_envelope.release_node		, uint8_t			, VERN							)
 GET_MPTHEADER_sized_member(    pitch_envelope.flags     	, DWORD			, PFLG							)
 GET_MPTHEADER_sized_member(    panning_envelope.flags     		, DWORD		    , AFLG							)
 GET_MPTHEADER_sized_member(    volume_envelope.flags     		, DWORD			, VFLG							)
@@ -523,7 +523,7 @@ CSoundFile::~CSoundFile()
 }
 
 
-BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
+BOOL CSoundFile::Create(const uint8_t * lpStream, CModDoc *pModDoc, DWORD dwMemLength)
 //----------------------------------------------------------------------------
 {
     m_pModDoc = pModDoc;
@@ -688,7 +688,7 @@ BOOL CSoundFile::Create(LPCBYTE lpStream, CModDoc *pModDoc, DWORD dwMemLength)
         while ((j>=0) && (p[j]<=' ')) p[j--] = 0;
         while (j>=0)
         {
-            if (((BYTE)p[j]) < ' ') p[j] = ' ';
+            if (((uint8_t)p[j]) < ' ') p[j] = ' ';
             j--;
         }
     }
@@ -1099,7 +1099,7 @@ void CSoundFile::SetCurrentPos(UINT nPos)
 //---------------------------------------
 {
     ORDERINDEX nPattern;
-    BYTE resetMask = (!nPos) ? CHNRESET_SETPOS_FULL : CHNRESET_SETPOS_BASIC;
+    uint8_t resetMask = (!nPos) ? CHNRESET_SETPOS_FULL : CHNRESET_SETPOS_BASIC;
 
     for (CHANNELINDEX i=0; i<MAX_CHANNELS; i++)
         ResetChannelState(i, resetMask);
@@ -1450,7 +1450,7 @@ bool CSoundFile::InitChannel(CHANNELINDEX nChn)
     return false;
 }
 
-void CSoundFile::ResetChannelState(CHANNELINDEX i, BYTE resetMask)
+void CSoundFile::ResetChannelState(CHANNELINDEX i, uint8_t resetMask)
 //----------------------------------------------------------------
 {
     if(i >= MAX_CHANNELS) return;
@@ -1545,7 +1545,7 @@ UINT CSoundFile::PackSample(int &sample, int next)
 }
 
 
-bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *result/*=NULL*/)
+bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result/*=NULL*/)
 //--------------------------------------------------------------------------------------------
 {
     int pos, old, oldpos, besttable = 0;
@@ -1581,7 +1581,7 @@ bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, BYTE *re
     memcpy(CompressionTable, UnpackTable[besttable], 16);
     if (result)
     {
-        if (dwResult > 100) *result    = 100; else *result = (BYTE)dwResult;
+        if (dwResult > 100) *result    = 100; else *result = (uint8_t)dwResult;
     }
     return (dwResult >= nPacking) ? true : false;
 }
@@ -1617,7 +1617,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
             pos = 0;
             for (UINT j=0; j<len; j++)
             {
-                BYTE b;
+                uint8_t b;
                 // Sample #1
                 b = PackSample(pos, (int)pSample[j*2]);
                 // Sample #2
@@ -1899,8 +1899,8 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
             char delta = 0;
             for (UINT j=0; j<len; j++)
             {
-                BYTE b0 = (BYTE)lpMemFile[j];
-                BYTE b1 = (BYTE)(lpMemFile[j] >> 4);
+                uint8_t b0 = (uint8_t)lpMemFile[j];
+                uint8_t b1 = (uint8_t)(lpMemFile[j] >> 4);
                 delta = (char)GetDeltaValue((int)delta, b0);
                 pSample[0] = delta;
                 delta = (char)GetDeltaValue((int)delta, b1);
@@ -2144,17 +2144,17 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
             LPBYTE ibuf = (LPBYTE)lpMemFile;
             DWORD bitbuf = *((DWORD *)ibuf);
             UINT bitnum = 32;
-            BYTE dlt = 0, lowbyte = 0;
+            uint8_t dlt = 0, lowbyte = 0;
             ibuf += 4;
             for (UINT j=0; j<pSmp->length; j++)
             {
-                BYTE hibyte;
-                BYTE sign;
-                if (nFlags == RS_MDL16) lowbyte = (BYTE)MDLReadBits(bitbuf, bitnum, ibuf, 8);
-                sign = (BYTE)MDLReadBits(bitbuf, bitnum, ibuf, 1);
+                uint8_t hibyte;
+                uint8_t sign;
+                if (nFlags == RS_MDL16) lowbyte = (uint8_t)MDLReadBits(bitbuf, bitnum, ibuf, 8);
+                sign = (uint8_t)MDLReadBits(bitbuf, bitnum, ibuf, 1);
                 if (MDLReadBits(bitbuf, bitnum, ibuf, 1))
                 {
-                    hibyte = (BYTE)MDLReadBits(bitbuf, bitnum, ibuf, 3);
+                    hibyte = (uint8_t)MDLReadBits(bitbuf, bitnum, ibuf, 3);
                 } else
                 {
                     hibyte = 8;
@@ -2264,7 +2264,7 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
         {
             len = pSmp->length;
             if (len*4 > dwMemLength) len = dwMemLength >> 2;
-            LPCBYTE psrc = (LPCBYTE)lpMemFile;
+            const uint8_t * psrc = (const uint8_t *)lpMemFile;
             short int *pSample = (short int *)pSmp->sample_data;
             for (UINT j=0; j<len; j++)
             {

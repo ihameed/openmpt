@@ -109,7 +109,7 @@ inline PCPATTERNFONT GetCurrentPatternFont()
 }
 
 
-static BYTE hilightcolor(int c0, int c1)
+static uint8_t hilightcolor(int c0, int c1)
 //--------------------------------------
 {
     int cf0, cf1;
@@ -118,14 +118,14 @@ static BYTE hilightcolor(int c0, int c1)
     if (cf0 < 0x40) cf0 = 0x40;
     if (cf0 > 0xC0) cf0 = 0xC0;
     cf1 = 0x100 - cf0;
-    return (BYTE)((c0*cf0+c1*cf1)>>8);
+    return (uint8_t)((c0*cf0+c1*cf1)>>8);
 }
 
 
 void CViewPattern::UpdateColors()
 //-------------------------------
 {
-    BYTE r,g,b;
+    uint8_t r,g,b;
 
     m_Dib.SetAllColors(0, MAX_MODCOLORS, CMainFrame::rgbCustomColors);
     r = hilightcolor(GetRValue(CMainFrame::rgbCustomColors[MODCOLOR_BACKHILIGHT]),
@@ -483,7 +483,7 @@ void CViewPattern::OnDraw(CDC *pDC)
                 const char *pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]? "[Channel %d]" : "Channel %d";
 //    			const char *pszfmt = pModDoc->IsChannelRecord(ncolhdr) ? "Channel %d " : "Channel %d";
 // -! NEW_FEATURE#0012
-                if ((pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) && ((BYTE)pSndFile->ChnSettings[ncolhdr].szName[0] >= ' '))
+                if ((pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) && ((uint8_t)pSndFile->ChnSettings[ncolhdr].szName[0] >= ' '))
                     pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]?"%d: [%s]":"%d: %s";
                 else if (m_nDetailLevel < 2) pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]?"[Ch%d]":"Ch%d";
                 else if (m_nDetailLevel < 3) pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]?"[Chn %d]":"Chn %d";
@@ -698,7 +698,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPatte
                         BOOL bPlaying, UINT yofs, UINT nrows, UINT xofs, CRect &rcClient, int *pypaint)
 //-----------------------------------------------------------------------------------------------------
 {
-    BYTE bColSel[MAX_BASECHANNELS];
+    uint8_t bColSel[MAX_BASECHANNELS];
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
     modplug::tracker::modcommand_t m0, *pPattern = pSndFile->Patterns[nPattern];
     CHAR s[256];

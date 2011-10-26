@@ -40,8 +40,8 @@ struct CModSpecifications
     uint16_t instrFilenameLengthMax;	// Dito
     SAMPLEINDEX samplesMax;
     INSTRUMENTINDEX instrumentsMax;
-    BYTE defaultMixLevels;
-    BYTE MIDIMappingDirectivesMax;
+    uint8_t defaultMixLevels;
+    uint8_t MIDIMappingDirectivesMax;
     UINT speedMin;					// Minimum ticks per frame
     UINT speedMax;					// Maximum ticks per frame
     bool hasComments;				// True if format has a comments field

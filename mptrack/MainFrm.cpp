@@ -150,7 +150,7 @@ DWORD CMainFrame::gnHotKeyMask = 0;
 long CMainFrame::glVolumeRampInSamples = 0;
 long CMainFrame::glVolumeRampOutSamples = 42;
 double CMainFrame::gdWFIRCutoff = 0.97;
-BYTE  CMainFrame::gbWFIRType = 7; //WFIR_KAISER4T;
+uint8_t  CMainFrame::gbWFIRType = 7; //WFIR_KAISER4T;
 //end rewbs.resamplerConf
 UINT CMainFrame::gnAutoChordWaitTime = 60;
 
@@ -331,23 +331,23 @@ CMainFrame::CMainFrame()
     MemsetZero(Chords);
     for (UINT ichord=0; ichord<3*12; ichord++)
     {
-        Chords[ichord].key = (BYTE)ichord;
+        Chords[ichord].key = (uint8_t)ichord;
         Chords[ichord].notes[0] = 0;
         Chords[ichord].notes[1] = 0;
         Chords[ichord].notes[2] = 0;
         // Major Chords
         if (ichord < 12)
         {
-            Chords[ichord].notes[0] = (BYTE)(ichord+5);
-            Chords[ichord].notes[1] = (BYTE)(ichord+8);
-            Chords[ichord].notes[2] = (BYTE)(ichord+11);
+            Chords[ichord].notes[0] = (uint8_t)(ichord+5);
+            Chords[ichord].notes[1] = (uint8_t)(ichord+8);
+            Chords[ichord].notes[2] = (uint8_t)(ichord+11);
         } else
         // Minor Chords
         if (ichord < 24)
         {
-            Chords[ichord].notes[0] = (BYTE)(ichord-8);
-            Chords[ichord].notes[1] = (BYTE)(ichord-4);
-            Chords[ichord].notes[2] = (BYTE)(ichord-1);
+            Chords[ichord].notes[0] = (uint8_t)(ichord-8);
+            Chords[ichord].notes[1] = (uint8_t)(ichord-4);
+            Chords[ichord].notes[2] = (uint8_t)(ichord-1);
         }
     }
 
@@ -393,7 +393,7 @@ void CMainFrame::LoadIniSettings()
         // No GUID found in INI file - generate one.
         GUID guid;
         CoCreateGuid(&guid);
-        BYTE* Str;
+        uint8_t* Str;
         UuidToString((UUID*)&guid, &Str);
         gcsInstallGUID.Format("%s", (LPTSTR)Str);
         RpcStringFree(&Str);
@@ -489,7 +489,7 @@ void CMainFrame::LoadIniSettings()
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
     CSoundFile::m_nStereoSeparation = GetPrivateProfileLong("Sound Settings", "StereoSeparation", 128, iniFile);
     CSoundFile::m_nMaxMixChannels = GetPrivateProfileLong("Sound Settings", "MixChannels", MAX_CHANNELS, iniFile);
-    gbWFIRType = static_cast<BYTE>(GetPrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", 7, iniFile));
+    gbWFIRType = static_cast<uint8_t>(GetPrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", 7, iniFile));
     gdWFIRCutoff = static_cast<double>(GetPrivateProfileLong("Sound Settings", "ResamplerWFIRCutoff", 97, iniFile))/100.0;
     //XXXih: kill the old registry entry or something
     glVolumeRampInSamples = GetPrivateProfileLong("Sound Settings", "VolumeRampInSamples", 0, iniFile);
@@ -518,7 +518,7 @@ void CMainFrame::LoadIniSettings()
     gbPatternPluginNames = GetPrivateProfileDWord("Pattern Editor", "Plugin-Names", true, iniFile);    
     gbPatternRecord = GetPrivateProfileDWord("Pattern Editor", "Record", true, iniFile);    
     gnAutoChordWaitTime = GetPrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", 60, iniFile);    
-    COrderList::s_nDefaultMargins = static_cast<BYTE>(GetPrivateProfileInt("Pattern Editor", "DefaultSequenceMargins", 2, iniFile));
+    COrderList::s_nDefaultMargins = static_cast<uint8_t>(GetPrivateProfileInt("Pattern Editor", "DefaultSequenceMargins", 2, iniFile));
     gbShowHackControls = (0 != GetPrivateProfileDWord("Misc", "ShowHackControls", 0, iniFile));
     CSoundFile::s_DefaultPlugVolumeHandling = static_cast<uint8_t>(GetPrivateProfileInt("Misc", "DefaultPlugVolumeHandling", PLUGIN_VOLUMEHANDLING_IGNORE, iniFile));
     if(CSoundFile::s_DefaultPlugVolumeHandling > 2) CSoundFile::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
@@ -2161,9 +2161,9 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
     {
         if (!nNote) nNote = NOTE_MIDDLEC;
         modplug::tracker::modcommand_t *m = m_WaveFile.Patterns[0];
-        m[0].note = (BYTE)nNote;
+        m[0].note = (uint8_t)nNote;
         m[0].instr = 1;
-        m[1].note = (BYTE)nNote;
+        m[1].note = (uint8_t)nNote;
         m[1].instr = 1;
     }
     if (lpszFileName)
@@ -2235,9 +2235,9 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSong, UINT nInstrument, UINT nSample
     {
         if (!nNote) nNote = 5*12+1;
         modplug::tracker::modcommand_t *m = m_WaveFile.Patterns[0];
-        m[0].note = (BYTE)nNote;
+        m[0].note = (uint8_t)nNote;
         m[0].instr = 1;
-        m[1].note = (BYTE)nNote;
+        m[1].note = (uint8_t)nNote;
         m[1].instr = 1;
         m = m_WaveFile.Patterns[1];
         m[32*4].note = NOTE_FADE;

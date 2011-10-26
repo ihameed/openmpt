@@ -59,9 +59,9 @@ typedef struct MODCHANNELSTATE
     DWORD flags;    // Channel Flags
     WORD idlecount;
     WORD pitchsrc, pitchdest;    // Pitch Bend (current position/new position)
-    BYTE parent;    // Midi Channel parent
-    BYTE pan;    	// Channel Panning			0-255
-    BYTE note;    	// Note On # (0=available)
+    uint8_t parent;    // Midi Channel parent
+    uint8_t pan;    	// Channel Panning			0-255
+    uint8_t note;    	// Note On # (0=available)
 } MODCHANNELSTATE;
 
 // MIDI Channel State (Midi Channels 0-15)
@@ -69,20 +69,21 @@ typedef struct MIDICHANNELSTATE
 {
     DWORD flags;    	// Channel Flags
     WORD pitchbend;    	// Pitch Bend Amount (14-bits unsigned)
-    BYTE note_on[128];    // If note=on -> MOD channel # + 1 (0 if note=off)
-    BYTE program;    	// Channel Midi Program
+    uint8_t note_on[128];    // If note=on -> MOD channel # + 1 (0 if note=off)
+    uint8_t program;    	// Channel Midi Program
     WORD bank;    		// 0-16383
     // -- Controllers --------- function ---------- CC# --- range  --- init (midi) ---
-    BYTE pan;    		// Channel Panning			CC10	[0-255]		128 (64)
-    BYTE expression;    // Channel Expression		CC11	0-128		128	(127)
-    BYTE volume;    	// Channel Volume			CC7		0-128		80	(100)
-    BYTE modulation;    // Modulation				CC1		0-127		0
-    BYTE pitchbendrange;// Pitch Bend Range    							64
+    uint8_t pan;    		// Channel Panning			CC10	[0-255]		128 (64)
+    uint8_t expression;    // Channel Expression		CC11	0-128		128	(127)
+    uint8_t volume;    	// Channel Volume			CC7		0-128		80	(100)
+    uint8_t modulation;    // Modulation				CC1		0-127		0
+    uint8_t pitchbendrange;// Pitch Bend Range    							64
 } MIDICHANNELSTATE;
 
 typedef struct MIDITRACK
 {
-    LPCBYTE ptracks, ptrmax;
+    const uint8_t *ptracks;
+    const uint8_t *ptrmax;
     DWORD status;
     LONG nexteventtime;
 } MIDITRACK;
@@ -339,7 +340,7 @@ const WORD kMidiChannelPriority[16] =
 ///////////////////////////////////////////////////////////////////////////
 // Helper functions
 
-static LONG __fastcall getmidilong(LPCBYTE &p, LPCBYTE pmax)
+static LONG __fastcall getmidilong(const uint8_t * &p, const uint8_t * pmax)
 //----------------------------------------------------------
 {
     DWORD n;
@@ -439,7 +440,7 @@ UINT CSoundFile::MapMidiInstrument(DWORD dwBankProgram, UINT nChannel, UINT nNot
             if (mapnote > 120) mapnote = 120;*/
         }
         pIns->Keyboard[j] = m_nSamples;
-        pIns->NoteMap[j] = (BYTE)mapnote;
+        pIns->NoteMap[j] = (uint8_t)mapnote;
     }
     pIns->volume_envelope.flags |= ENV_ENABLED;
     if (nChannel != MIDI_DRUMCHANNEL) pIns->volume_envelope.flags |= ENV_SUSTAIN;
@@ -485,7 +486,7 @@ UINT CSoundFile::MapMidiInstrument(DWORD dwBankProgram, UINT nChannel, UINT nNot
 #define MIDIGLOBAL_XGSYSTEMON    	0x0200
 
 
-bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMID(const uint8_t *lpStream, DWORD dwMemLength)
 //---------------------------------------------------------------
 {
     const MIDIFILEHEADER *pmfh = (const MIDIFILEHEADER *)lpStream;
@@ -885,7 +886,7 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                                 vol = (vol * (LONG)pmidich->volume * (LONG)pmidich->expression) >> 13;
                                 if (vol > 256) vol = 256;
                                 if (vol < 4) vol = 4;
-                                m[nchn].vol = (BYTE)(vol>>2);
+                                m[nchn].vol = (uint8_t)(vol>>2);
                                 // Channel Panning
                                 if ((!m[nchn].command) && (pmidich->pan != chnstate[nchn].pan))
                                 {
@@ -952,11 +953,11 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                                 break;
                             // Bn.07.xx: Volume
                             case 0x07:
-                                pmidich->volume = (BYTE)(CDLSBank::DLSMidiVolumeToLinear(value) >> 9);
+                                pmidich->volume = (uint8_t)(CDLSBank::DLSMidiVolumeToLinear(value) >> 9);
                                 break;
                             // Bn.0B.xx: Expression
                             case 0x0B:
-                                pmidich->expression = (BYTE)(CDLSBank::DLSMidiVolumeToLinear(value) >> 9);
+                                pmidich->expression = (uint8_t)(CDLSBank::DLSMidiVolumeToLinear(value) >> 9);
                                 break;
                             // Bn.0A.xx: Pan
                             case 0x0A:
@@ -1131,7 +1132,7 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                                 if (param >= 0x80) param = 0x80;
                                 if (param > 0)
                                 {
-                                    m[ichn].param = (BYTE)param;
+                                    m[ichn].param = (uint8_t)param;
                                     m[ichn].command = CMD_PORTAMENTODOWN;
                                 }
                             } else
@@ -1140,7 +1141,7 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                                 if (param >= 0x80) param = 0x80;
                                 if (param > 0)
                                 {
-                                    m[ichn].param = (BYTE)param;
+                                    m[ichn].param = (uint8_t)param;
                                     m[ichn].command = CMD_PORTAMENTOUP;
                                 }
                             }
@@ -1154,7 +1155,7 @@ bool CSoundFile::ReadMID(const BYTE *lpStream, DWORD dwMemLength)
                     if (dwGlobalFlags & MIDIGLOBAL_UPDATETEMPO)
                     {
                         m[ichn].command = CMD_TEMPO;
-                        m[ichn].param = (BYTE)tempo;
+                        m[ichn].param = (uint8_t)tempo;
                         dwGlobalFlags &= ~MIDIGLOBAL_UPDATETEMPO;
                     } else
                     if (dwGlobalFlags & MIDIGLOBAL_UPDATEMASTERVOL)

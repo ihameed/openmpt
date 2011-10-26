@@ -334,7 +334,7 @@ typedef struct SFSAMPLE
     DWORD dwStartloop;
     DWORD dwEndloop;
     DWORD dwSampleRate;
-    BYTE byOriginalPitch;
+    uint8_t byOriginalPitch;
     CHAR chPitchCorrection;
     WORD wSampleLink;
     WORD sfSampleType;
@@ -587,9 +587,9 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     		{
     			RGNHCHUNK *p = (RGNHCHUNK *)pchunk;
     			DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
-    			pregion->uKeyMin = (BYTE)p->RangeKey.usLow;
-    			pregion->uKeyMax = (BYTE)p->RangeKey.usHigh;
-    			pregion->fuOptions = (BYTE)(p->usKeyGroup & DLSREGION_KEYGROUPMASK);
+    			pregion->uKeyMin = (uint8_t)p->RangeKey.usLow;
+    			pregion->uKeyMax = (uint8_t)p->RangeKey.usHigh;
+    			pregion->fuOptions = (uint8_t)(p->usKeyGroup & DLSREGION_KEYGROUPMASK);
     			if (p->fusOptions & F_RGN_OPTION_SELFNONEXCLUSIVE) pregion->fuOptions |= DLSREGION_SELFNONEXCLUSIVE;
     			//Log("  Region %d: fusOptions=0x%02X usKeyGroup=0x%04X ", pDlsIns->nRegions, p->fusOptions, p->usKeyGroup);
     			//Log("KeyRange[%3d,%3d] ", p->RangeKey.usLow, p->RangeKey.usHigh);
@@ -614,7 +614,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     			DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
     			WSMPCHUNK *p = (WSMPCHUNK *)pchunk;
     			pregion->fuOptions |= DLSREGION_OVERRIDEWSMP;
-    			pregion->uUnityNote = (BYTE)p->usUnityNote;
+    			pregion->uUnityNote = (uint8_t)p->usUnityNote;
     			pregion->sFineTune = p->sFineTune;
     			LONG lVolume = DLS32BitRelativeGainToLinear(p->lAttenuation) / 256;
     			if (lVolume > 256) lVolume = 256;
@@ -669,7 +669,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     						LONG pan = 128 + pblk->lScale / (65536000/128);
     						if (pan < 0) pan = 0;
     						if (pan > 255) pan = 255;
-    						pDlsEnv->nDefPan = (BYTE)pan;
+    						pDlsEnv->nDefPan = (uint8_t)pan;
     					}
     					break;
 
@@ -717,7 +717,7 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     					if (pblk->lScale >= 0)
     					{
     						LONG l = pblk->lScale / (1000*512);
-    						if ((l >= 0) || (l <= 128)) pDlsEnv->nVolSustainLevel = (BYTE)l;
+    						if ((l >= 0) || (l <= 128)) pDlsEnv->nVolSustainLevel = (uint8_t)l;
     						//Log("%3d: Envelope Sustain Level set to %d (%d)\n", (DWORD)(pDlsIns->ulInstrument & 0x7F)|((pDlsIns->ulBank >> 16) & 0x8000), l, pblk->lScale);
     					}
     					break;
@@ -1017,18 +1017,18 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     			switch(pgen->sfGenOper)
     			{
     			case SF2_GEN_KEYRANGE:
-    				pRgn->uKeyMin = (BYTE)(value & 0xFF);
-    				pRgn->uKeyMax = (BYTE)(value >> 8);
+    				pRgn->uKeyMin = (uint8_t)(value & 0xFF);
+    				pRgn->uKeyMax = (uint8_t)(value >> 8);
     				if (pRgn->uKeyMin > pRgn->uKeyMax)
     				{
-    					BYTE b = pRgn->uKeyMax;
+    					uint8_t b = pRgn->uKeyMax;
     					pRgn->uKeyMax = pRgn->uKeyMin;
     					pRgn->uKeyMin = b;
     				}
     				//if (nIns == 9) Log("  keyrange: %d-%d\n", pRgn->uKeyMin, pRgn->uKeyMax);
     				break;
     			case SF2_GEN_UNITYNOTE:
-    				if (value < 128) pRgn->uUnityNote = (BYTE)value;
+    				if (value < 128) pRgn->uUnityNote = (uint8_t)value;
     				break;
     			case SF2_GEN_RELEASEVOLENV:
     				{
@@ -1044,7 +1044,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     					pan = (((pan + 500) * 127) / 500) + 128;
     					if (pan < 0) pan = 0;
     					if (pan > 255) pan = 255;
-    					pDlsEnv->nDefPan = (BYTE)pan;
+    					pDlsEnv->nDefPan = (uint8_t)pan;
     				}
     				break;
     			case SF2_GEN_ATTENUATION:
@@ -1068,7 +1068,7 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     				pRgn->fuOptions |= DLSREGION_OVERRIDEWSMP;
     				break;
     			case SF2_GEN_KEYGROUP:
-    				pRgn->fuOptions |= (BYTE)(value & DLSREGION_KEYGROUPMASK);
+    				pRgn->fuOptions |= (uint8_t)(value & DLSREGION_KEYGROUPMASK);
     				break;
     			//default:
     			//	Log("    gen=%d value=%04X\n", pgen->sfGenOper, pgen->genAmount);
@@ -1092,7 +1092,7 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
 //--------------------------------------
 {
     SF2LOADERINFO sf2info;
-    const BYTE *lpMemFile;	// Pointer to memory-mapped file
+    const uint8_t *lpMemFile;	// Pointer to memory-mapped file
     RIFFCHUNKID *priff;
     DWORD dwMemPos, dwMemLength;
     UINT nInsDef;
@@ -1577,7 +1577,7 @@ BOOL CDLSBank::ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT
     		psmp->c5_samplerate = CSoundFile::TransposeToFrequency(psmp->RelativeTone, psmp->nFineTune);
     		if (lVolume > 256) lVolume = 256;
     		if (lVolume < 16) lVolume = 16;
-    		psmp->global_volume = (BYTE)(lVolume / 4);	// 0-64
+    		psmp->global_volume = (uint8_t)(lVolume / 4);	// 0-64
     	}
     	if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
     	{
@@ -1605,7 +1605,7 @@ BOOL CDLSBank::ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT
 BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, UINT nDrumRgn)
 //-------------------------------------------------------------------------------------------
 {
-    BYTE RgnToSmp[DLSMAXREGIONS];
+    uint8_t RgnToSmp[DLSMAXREGIONS];
     DLSINSTRUMENT *pDlsIns;
     modplug::tracker::modinstrument_t *pIns;
     UINT nSample, nRgnMin, nRgnMax, nEnv;
@@ -1679,13 +1679,13 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     int nTranspose = 0;
     for (UINT iNoteMap=0; iNoteMap<NOTE_MAX; iNoteMap++)
     {
-    	pIns->NoteMap[iNoteMap] = (BYTE)(iNoteMap+1);
+    	pIns->NoteMap[iNoteMap] = (uint8_t)(iNoteMap+1);
     	if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
     	{
     		if (pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_MID|MOD_TYPE_MPT))
     		{
-    			if (iNoteMap < pDlsIns->Regions[nDrumRgn].uKeyMin) pIns->NoteMap[iNoteMap] = (BYTE)(pDlsIns->Regions[nDrumRgn].uKeyMin + 1);
-    			if (iNoteMap > pDlsIns->Regions[nDrumRgn].uKeyMax) pIns->NoteMap[iNoteMap] = (BYTE)(pDlsIns->Regions[nDrumRgn].uKeyMax + 1);
+    			if (iNoteMap < pDlsIns->Regions[nDrumRgn].uKeyMin) pIns->NoteMap[iNoteMap] = (uint8_t)(pDlsIns->Regions[nDrumRgn].uKeyMin + 1);
+    			if (iNoteMap > pDlsIns->Regions[nDrumRgn].uKeyMax) pIns->NoteMap[iNoteMap] = (uint8_t)(pDlsIns->Regions[nDrumRgn].uKeyMax + 1);
     		} else
     		if (iNoteMap == pDlsIns->Regions[nDrumRgn].uKeyMin)
     		{
@@ -1696,8 +1696,8 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     pIns->fadeout = 1024;
     pIns->global_volume = 64;	// Maximum
     pIns->default_pan = 128;		// Center Pan
-    pIns->midi_program = (BYTE)(pDlsIns->ulInstrument & 0x7F);
-    pIns->midi_channel = (BYTE)((pDlsIns->ulBank & F_INSTRUMENT_DRUMS) ? 10 : 0);
+    pIns->midi_program = (uint8_t)(pDlsIns->ulInstrument & 0x7F);
+    pIns->midi_channel = (uint8_t)((pDlsIns->ulBank & F_INSTRUMENT_DRUMS) ? 10 : 0);
     pIns->midi_bank = (WORD)(((pDlsIns->ulBank & 0x7F00) >> 1) | (pDlsIns->ulBank & 0x7F));
     pIns->pitch_pan_center = 60;		// C-5
     pIns->new_note_action = NNA_NOTEOFF;
@@ -1751,7 +1751,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     			nLoadedSmp++;
     		}
     	}
-    	RgnToSmp[nRgn] = (BYTE)nSmp;
+    	RgnToSmp[nRgn] = (uint8_t)nSmp;
     	// Map all notes to the right sample
     	if (nSmp)
     	{
@@ -1759,7 +1759,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     		{
     			if ((nRgn == nRgnMin) || ((iKey >= pRgn->uKeyMin) && (iKey <= pRgn->uKeyMax)))
     			{
-    				pIns->Keyboard[iKey] = (BYTE)nSmp;
+    				pIns->Keyboard[iKey] = (uint8_t)nSmp;
     			}
     		}
     		// Load the sample
@@ -1781,7 +1781,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     		pIns->volume_envelope.Ticks[nPoint] = 0;
     		if (part->wVolAttack)
     		{
-    			pIns->volume_envelope.Values[nPoint] = (BYTE)(ENVELOPE_MAX / (part->wVolAttack / 2 + 2) + 8);   //	/-----
+    			pIns->volume_envelope.Values[nPoint] = (uint8_t)(ENVELOPE_MAX / (part->wVolAttack / 2 + 2) + 8);   //	/-----
     			pIns->volume_envelope.Ticks[nPoint+1] = part->wVolAttack;                                       //	|
     		} else
     		{
@@ -1817,7 +1817,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     								if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
     								{
     									pIns->volume_envelope.Ticks[nPoint] = (WORD)ltime;
-    									pIns->volume_envelope.Values[nPoint] = (BYTE)(lFactor / 2);
+    									pIns->volume_envelope.Values[nPoint] = (uint8_t)(lFactor / 2);
     									nPoint++;
     								}
     							}
@@ -1827,7 +1827,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
 
     				if (lStartTime + lDecayTime > (LONG)pIns->volume_envelope.Ticks[nPoint-1])
     				{
-    					pIns->volume_envelope.Values[nPoint] = (BYTE)((part->nVolSustainLevel+1) / 2);
+    					pIns->volume_envelope.Values[nPoint] = (uint8_t)((part->nVolSustainLevel+1) / 2);
     					pIns->volume_envelope.Ticks[nPoint] = (WORD)(lStartTime+lDecayTime);
     					nPoint++;
     				}
@@ -1840,7 +1840,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     			pIns->volume_envelope.Values[nPoint] = pIns->volume_envelope.Values[nPoint-1];
     			nPoint++;
     		}
-    		pIns->volume_envelope.sustain_start = pIns->volume_envelope.sustain_end = (BYTE)(nPoint - 1);
+    		pIns->volume_envelope.sustain_start = pIns->volume_envelope.sustain_end = (uint8_t)(nPoint - 1);
     		// Release section
     		if ((part->wVolRelease) && (pIns->volume_envelope.Values[nPoint-1] > 1))
     		{
@@ -1864,7 +1864,7 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     						if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
     						{
     							pIns->volume_envelope.Ticks[nPoint] = (WORD)ltime;
-    							pIns->volume_envelope.Values[nPoint] = (BYTE)lFactor;
+    							pIns->volume_envelope.Values[nPoint] = (uint8_t)lFactor;
     							nPoint++;
     						}
     					}
@@ -1876,11 +1876,11 @@ BOOL CDLSBank::ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, U
     			nPoint++;
     		} else
     		{
-    			pIns->volume_envelope.Ticks[nPoint] = (BYTE)(pIns->volume_envelope.Ticks[nPoint-1] + 1);
+    			pIns->volume_envelope.Ticks[nPoint] = (uint8_t)(pIns->volume_envelope.Ticks[nPoint-1] + 1);
     			pIns->volume_envelope.Values[nPoint] = ENVELOPE_MIN;
     			nPoint++;
     		}
-    		pIns->volume_envelope.num_nodes = (BYTE)nPoint;
+    		pIns->volume_envelope.num_nodes = (uint8_t)nPoint;
     	}
     }
     if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)

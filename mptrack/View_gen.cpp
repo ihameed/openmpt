@@ -1406,7 +1406,7 @@ bool CViewGlobals::MovePlug(PLUGINDEX src, PLUGINDEX dest, bool bAdjustPat)
     for (PLUGINDEX nPlug=0; nPlug<src; nPlug++) {
     	if (pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting & 0x80) {
     		if ((pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting & 0x7f) == src) {
-    			pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting = ((BYTE)dest)|0x80;
+    			pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting = ((uint8_t)dest)|0x80;
     		}
     	}
     }
@@ -1420,7 +1420,7 @@ bool CViewGlobals::MovePlug(PLUGINDEX src, PLUGINDEX dest, bool bAdjustPat)
     // Update instruments
     for (INSTRUMENTINDEX nIns=1; nIns<=pSndFile->m_nInstruments; nIns++) {
     	if (pSndFile->Instruments[nIns] && (pSndFile->Instruments[nIns]->nMixPlug == src+1)) {
-    		pSndFile->Instruments[nIns]->nMixPlug = static_cast<BYTE>(dest+1);
+    		pSndFile->Instruments[nIns]->nMixPlug = static_cast<uint8_t>(dest+1);
     	}
     }
 

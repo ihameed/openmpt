@@ -49,7 +49,7 @@ UINT32 CalculateCRC32fromFilename(const char * s)
     fn[sizeof(fn)-1] = 0;
     int f;
     for(f = 0; fn[f] != 0; f++) fn[f] = toupper(fn[f]);
-    return crc32(0, (BYTE *)fn, f);
+    return crc32(0, (uint8_t *)fn, f);
 
 }
 #endif // VST_USE_ALTERNATIVE_MAGIC
@@ -2166,7 +2166,7 @@ bool CVstPlugin::LoadProgram(CString fileName)
     }
     else if (fxp.fxMagic == chunkPresetMagic)
     {    		
-        Dispatch(effSetChunk, 1, fxp.chunkSize, (BYTE*)fxp.chunk, 0);
+        Dispatch(effSetChunk, 1, fxp.chunkSize, (uint8_t*)fxp.chunk, 0);
     }
 
     return true;
@@ -2876,8 +2876,8 @@ short CVstPlugin::getMIDI14bitValueFromShort(short value)
 
     // pre: 0 <= value <= 16383
 
-    BYTE byte1 = value >> 7;    		// get last   7 bytes only
-    BYTE byte2 = value & 0x7F;    		// get first  7 bytes only
+    uint8_t byte1 = value >> 7;    		// get last   7 bytes only
+    uint8_t byte2 = value & 0x7F;    		// get first  7 bytes only
     short converted = byte1<<8 | byte2; // merge
 
     return converted;
@@ -3108,7 +3108,7 @@ void CVstPlugin::SaveAllParameters()
                 if (m_pMixStruct->pPluginData)
                 {
                     *(ULONG *)m_pMixStruct->pPluginData = 'NvEf';
-                    memcpy(((BYTE*)m_pMixStruct->pPluginData)+4, p, nByteSize);
+                    memcpy(((uint8_t*)m_pMixStruct->pPluginData)+4, p, nByteSize);
                     return;
                 }
             }
@@ -3161,10 +3161,10 @@ void CVstPlugin::RestoreAllParameters(long nProgram)
             Dispatch(effGetChunk, 0,0, &p, 0); //init plug for chunk reception
             
             if ((nProgram>=0) && (nProgram < m_pEffect->numPrograms)) { // Bank:
-                Dispatch(effSetChunk, 0, m_pMixStruct->nPluginDataSize-4, ((BYTE *)m_pMixStruct->pPluginData)+4, 0);
+                Dispatch(effSetChunk, 0, m_pMixStruct->nPluginDataSize-4, ((uint8_t *)m_pMixStruct->pPluginData)+4, 0);
                 SetCurrentProgram(nProgram);
             } else { // Program:
-                Dispatch(effSetChunk, 1, m_pMixStruct->nPluginDataSize-4, ((BYTE *)m_pMixStruct->pPluginData)+4, 0);
+                Dispatch(effSetChunk, 1, m_pMixStruct->nPluginDataSize-4, ((uint8_t *)m_pMixStruct->pPluginData)+4, 0);
             }
 
         } else

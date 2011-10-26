@@ -17,12 +17,12 @@ typedef struct _MT2FILEHEADER
     WORD wPatterns;
     WORD wChannels;
     WORD wSamplesPerTick;
-    BYTE bTicksPerLine;
-    BYTE bLinesPerBeat;
+    uint8_t bTicksPerLine;
+    uint8_t bLinesPerBeat;
     DWORD fulFlags; // b0=packed patterns
     WORD wInstruments;
     WORD wSamples;
-    BYTE Orders[256];
+    uint8_t Orders[256];
 } MT2FILEHEADER;
 
 typedef struct _MT2PATTERN
@@ -33,20 +33,20 @@ typedef struct _MT2PATTERN
 
 typedef struct _MT2COMMAND
 {
-    BYTE note;    // 0=nothing, 97=note off
-    BYTE instr;
-    BYTE vol;
-    BYTE pan;
-    BYTE fxcmd;
-    BYTE fxparam1;
-    BYTE fxparam2;
+    uint8_t note;    // 0=nothing, 97=note off
+    uint8_t instr;
+    uint8_t vol;
+    uint8_t pan;
+    uint8_t fxcmd;
+    uint8_t fxparam1;
+    uint8_t fxparam2;
 } MT2COMMAND;
 
 typedef struct _MT2DRUMSDATA
 {
     WORD wDrumPatterns;
     WORD wDrumSamples[8];
-    BYTE DrumPatternOrder[256];
+    uint8_t DrumPatternOrder[256];
 } MT2DRUMSDATA;
 
 typedef struct _MT2AUTOMATION
@@ -61,11 +61,11 @@ typedef struct _MT2INSTRUMENT
     CHAR szName[32];
     DWORD dwDataLen;
     WORD wSamples;
-    BYTE GroupsMapping[96];
-    BYTE bVibType;
-    BYTE bVibSweep;
-    BYTE bVibDepth;
-    BYTE bVibRate;
+    uint8_t GroupsMapping[96];
+    uint8_t bVibType;
+    uint8_t bVibSweep;
+    uint8_t bVibDepth;
+    uint8_t bVibRate;
     WORD wFadeOut;
     WORD wNNA;
     WORD wInstrFlags;
@@ -75,24 +75,24 @@ typedef struct _MT2INSTRUMENT
 
 typedef struct _MT2ENVELOPE
 {
-    BYTE nFlags;
-    BYTE nPoints;
-    BYTE nSustainPos;
-    BYTE nLoopStart;
-    BYTE nLoopEnd;
-    BYTE bReserved[3];
-    BYTE EnvData[64];
+    uint8_t nFlags;
+    uint8_t nPoints;
+    uint8_t nSustainPos;
+    uint8_t nLoopStart;
+    uint8_t nLoopEnd;
+    uint8_t bReserved[3];
+    uint8_t EnvData[64];
 } MT2ENVELOPE;
 
 typedef struct _MT2SYNTH
 {
-    BYTE nSynthId;
-    BYTE nFxId;
+    uint8_t nSynthId;
+    uint8_t nFxId;
     WORD wCutOff;
-    BYTE nResonance;
-    BYTE nAttack;
-    BYTE nDecay;
-    BYTE bReserved[25];
+    uint8_t nResonance;
+    uint8_t nAttack;
+    uint8_t nDecay;
+    uint8_t bReserved[25];
 } MT2SYNTH;
 
 typedef struct _MT2SAMPLE
@@ -101,24 +101,24 @@ typedef struct _MT2SAMPLE
     DWORD dwDataLen;
     DWORD dwLength;
     DWORD dwFrequency;
-    BYTE nQuality;
-    BYTE nChannels;
-    BYTE nFlags;
-    BYTE nLoop;
+    uint8_t nQuality;
+    uint8_t nChannels;
+    uint8_t nFlags;
+    uint8_t nLoop;
     DWORD dwLoopStart;
     DWORD dwLoopEnd;
     WORD wVolume;
-    BYTE nPan;
-    BYTE nBaseNote;
+    uint8_t nPan;
+    uint8_t nBaseNote;
     WORD wSamplesPerBeat;
 } MT2SAMPLE;
 
 typedef struct _MT2GROUP
 {
-    BYTE nSmpNo;
-    BYTE nVolume;    // 0-128
-    BYTE nFinePitch;
-    BYTE Reserved[5];
+    uint8_t nSmpNo;
+    uint8_t nVolume;    // 0-128
+    uint8_t nFinePitch;
+    uint8_t Reserved[5];
 } MT2GROUP;
 
 #pragma pack()
@@ -181,7 +181,7 @@ static void ConvertMT2Command(CSoundFile *that, modplug::tracker::modcommand_t *
 }
 
 
-bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
+bool CSoundFile::ReadMT2(const uint8_t * lpStream, DWORD dwMemLength)
 //-----------------------------------------------------------
 {
     MT2FILEHEADER *pfh = (MT2FILEHEADER *)lpStream;
@@ -286,7 +286,7 @@ bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
             UINT len = wDataLen;
             if (pfh->fulFlags & 1) // Packed Patterns
             {
-                BYTE *p = (BYTE *)(lpStream+dwMemPos);
+                uint8_t *p = (uint8_t *)(lpStream+dwMemPos);
                 UINT pos = 0, row=0, ch=0;
                 while (pos < len)
                 {
@@ -409,7 +409,7 @@ bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
                 SpaceToNullStringFixed<31>(pIns->name);
                 pIns->global_volume = 64;
                 pIns->default_pan = 128;
-                for (BYTE i = 0; i < NOTE_MAX; i++)
+                for (uint8_t i = 0; i < NOTE_MAX; i++)
                 {
                     pIns->NoteMap[i] = i+1;
                 }
@@ -461,7 +461,7 @@ bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
                     MT2ENVELOPE *pme = pehdr[iEnv];
                     modplug::tracker::modenvelope_t *pEnv;
                 #ifdef MT2DEBUG
-                    Log("  Env %d.%d @%04X: %d points\n", iIns, iEnv, (UINT)(((BYTE *)pme)-lpStream), pme->nPoints);
+                    Log("  Env %d.%d @%04X: %d points\n", iIns, iEnv, (UINT)(((uint8_t *)pme)-lpStream), pme->nPoints);
                 #endif
 
                     switch(iEnv)
@@ -492,7 +492,7 @@ bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
                         for (UINT i=0; i<16; i++)
                         {
                             pEnv->Ticks[i] = psrc[i*2];
-                            pEnv->Values[i] = (BYTE)psrc[i*2+1];
+                            pEnv->Values[i] = (uint8_t)psrc[i*2+1];
                         }
                     }
                 }
@@ -567,7 +567,7 @@ bool CSoundFile::ReadMT2(LPCBYTE lpStream, DWORD dwMemLength)
                     if (pmi->GroupsMapping[i] == iGrp)
                     {
                         UINT nSmp = pmg->nSmpNo+1;
-                        pIns->Keyboard[i+12] = (BYTE)nSmp;
+                        pIns->Keyboard[i+12] = (uint8_t)nSmp;
                         if (nSmp <= m_nSamples)
                         {
                             Samples[nSmp].vibrato_type = pmi->bVibType;

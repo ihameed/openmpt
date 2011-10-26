@@ -26,9 +26,9 @@ typedef struct DLSREGION
     WORD usVolume;		// 0..256
     WORD fuOptions;	// flags + key group
     SHORT sFineTune;	// 1..100
-    BYTE uKeyMin;
-    BYTE uKeyMax;
-    BYTE uUnityNote;
+    uint8_t uKeyMin;
+    uint8_t uKeyMax;
+    uint8_t uUnityNote;
 } DLSREGION;
 
 typedef struct DLSENVELOPE
@@ -37,9 +37,9 @@ typedef struct DLSENVELOPE
     WORD wVolAttack;		// Attack Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
     WORD wVolDecay;			// Decay Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
     WORD wVolRelease;		// Release Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
-    BYTE nVolSustainLevel;	// Sustain Level: 0-128, 128=100%
+    uint8_t nVolSustainLevel;	// Sustain Level: 0-128, 128=100%
     // Default Pan
-    BYTE nDefPan;
+    uint8_t nDefPan;
 } DLSENVELOPE;
 
 // Special Bank bits
@@ -62,7 +62,7 @@ typedef struct DLSSAMPLEEX
     DWORD dwStartloop;
     DWORD dwEndloop;
     DWORD dwSampleRate;
-    BYTE byOriginalPitch;
+    uint8_t byOriginalPitch;
     CHAR chPitchCorrection;
 } DLSSAMPLEEX;
 

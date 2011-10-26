@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
+#include <cstdint>
 
 #define ENABLE_LOGGING 0
 
@@ -1370,10 +1371,10 @@ DWORD CCommandSet::GetKeymapLabel(InputTargetContext ctx, UINT mod, UINT code, K
     ASSERT((long)code<0xFF);
     ASSERT((long)ke<0xFF);
 
-    BYTE ctxCode  = (BYTE)ctx;
-    BYTE modCode  = (BYTE)mod;
-    BYTE codeCode = (BYTE)code;
-    //BYTE keCode   = (BYTE)ke;
+    uint8_t ctxCode  = (uint8_t)ctx;
+    uint8_t modCode  = (uint8_t)mod;
+    uint8_t codeCode = (uint8_t)code;
+    //uint8_t keCode   = (uint8_t)ke;
 
     DWORD label = ctxCode | (modCode<<8) | (codeCode<<16) | (ke<<24);
 

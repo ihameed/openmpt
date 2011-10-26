@@ -209,7 +209,7 @@ static uint8_t riffam_autovibtrans[] =
 
 
 // Convert RIFF AM(FF) pattern data to MPT pattern data.
-bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const LPCBYTE lpStream, const DWORD dwMemLength, const bool bIsAM, CSoundFile *pSndFile)
+bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpStream, const DWORD dwMemLength, const bool bIsAM, CSoundFile *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 {
     // version false = AMFF, true = AM
@@ -426,13 +426,13 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
         switch(env)
         {
         case ENV_VOLUME:    // 0....32767
-            pMPTEnv->Values[i] = (BYTE)((val + 1) >> 9);
+            pMPTEnv->Values[i] = (uint8_t)((val + 1) >> 9);
             break;
         case ENV_PITCH:    	// -4096....4096
-            pMPTEnv->Values[i] = (BYTE)((((int16_t)val) + 0x1001) >> 7);
+            pMPTEnv->Values[i] = (uint8_t)((((int16_t)val) + 0x1001) >> 7);
             break;
         case ENV_PANNING:    // -32768...32767
-            pMPTEnv->Values[i] = (BYTE)((((int16_t)val) + 0x8001) >> 10);
+            pMPTEnv->Values[i] = (uint8_t)((((int16_t)val) + 0x8001) >> 10);
             break;
         }
         pMPTEnv->Values[i] = CLAMP(pMPTEnv->Values[i], ENVELOPE_MIN, ENVELOPE_MAX);
@@ -440,7 +440,7 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
 }
 
 
-bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadAM(const uint8_t * const lpStream, const DWORD dwMemLength)
 //----------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_CHUNK(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwChunkEnd, x, break);
@@ -533,7 +533,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
         case AMCHUNKID_PATT: // "PATT" - Pattern data for one pattern
             ASSERT_CAN_READ_CHUNK(5);
-            Convert_RIFF_AM_Pattern(lpStream[dwMemPos], (LPCBYTE)(lpStream + dwMemPos + 5), LittleEndian(*(DWORD *)(lpStream + dwMemPos + 1)), bIsAM, this);
+            Convert_RIFF_AM_Pattern(lpStream[dwMemPos], (const uint8_t *)(lpStream + dwMemPos + 5), LittleEndian(*(DWORD *)(lpStream + dwMemPos + 1)), bIsAM, this);
             break;
 
         case AMCHUNKID_INST: // "INST" - Instrument (only in RIFF AMFF)
@@ -562,7 +562,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 memcpy(pIns->name, instheader->name, 28);
                 SpaceToNullStringFixed<28>(pIns->name);
 
-                for(BYTE i = 0; i < 128; i++)
+                for(uint8_t i = 0; i < 128; i++)
                 {
                     pIns->NoteMap[i] = i + 1;
                     pIns->Keyboard[i] = instheader->samplemap[i] + m_nSamples + 1;
@@ -613,9 +613,9 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
                     if(instheader->autovib_type < ARRAYELEMCOUNT(riffam_autovibtrans))
                         Samples[nSmp].vibrato_type = riffam_autovibtrans[instheader->autovib_type];
-                    Samples[nSmp].vibrato_sweep = (BYTE)(LittleEndianW(instheader->autovib_sweep));
-                    Samples[nSmp].vibrato_rate = (BYTE)(LittleEndianW(instheader->autovib_rate) >> 4);
-                    Samples[nSmp].vibrato_depth = (BYTE)(LittleEndianW(instheader->autovib_depth) >> 2);
+                    Samples[nSmp].vibrato_sweep = (uint8_t)(LittleEndianW(instheader->autovib_sweep));
+                    Samples[nSmp].vibrato_rate = (uint8_t)(LittleEndianW(instheader->autovib_rate) >> 4);
+                    Samples[nSmp].vibrato_depth = (uint8_t)(LittleEndianW(instheader->autovib_depth) >> 2);
 
                     const uint16_t flags = LittleEndianW(smpchunk->flags);
                     if(flags & AMSMP_16BIT)
@@ -673,7 +673,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
                 memcpy(pIns->name, instheader->name, 32);
                 SpaceToNullStringFixed<31>(pIns->name);
 
-                for(BYTE i = 0; i < 128; i++)
+                for(uint8_t i = 0; i < 128; i++)
                 {
                     pIns->NoteMap[i] = i + 1;
                     pIns->Keyboard[i] = instheader->samplemap[i] + m_nSamples + 1;
@@ -740,9 +740,9 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
 
                     if(instheader->autovib_type < ARRAYELEMCOUNT(riffam_autovibtrans))
                         Samples[nSmp].vibrato_type = riffam_autovibtrans[instheader->autovib_type];
-                    Samples[nSmp].vibrato_sweep = (BYTE)(LittleEndianW(instheader->autovib_sweep));
-                    Samples[nSmp].vibrato_rate = (BYTE)(LittleEndianW(instheader->autovib_rate) >> 4);
-                    Samples[nSmp].vibrato_depth = (BYTE)(LittleEndianW(instheader->autovib_depth) >> 2);
+                    Samples[nSmp].vibrato_sweep = (uint8_t)(LittleEndianW(instheader->autovib_sweep));
+                    Samples[nSmp].vibrato_rate = (uint8_t)(LittleEndianW(instheader->autovib_rate) >> 4);
+                    Samples[nSmp].vibrato_depth = (uint8_t)(LittleEndianW(instheader->autovib_depth) >> 2);
 
                     const uint16_t flags = LittleEndianW(smpchunk->flags);
                     if(flags & AMSMP_16BIT)
@@ -778,7 +778,7 @@ bool CSoundFile::ReadAM(const LPCBYTE lpStream, const DWORD dwMemLength)
     #undef ASSERT_CAN_READ_CHUNK
 }
 
-bool CSoundFile::ReadJ2B(const LPCBYTE lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadJ2B(const uint8_t * const lpStream, const DWORD dwMemLength)
 //-----------------------------------------------------------------------
 {
     DWORD dwMemPos = 0;

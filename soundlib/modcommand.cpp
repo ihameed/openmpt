@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "Sndfile.h"
 
-extern BYTE ImpulseTrackerPortaVolCmd[16];
+extern uint8_t ImpulseTrackerPortaVolCmd[16];
 
 
 // Convert an Exx command (MOD) to Sxx command (S3M)
@@ -116,7 +116,7 @@ void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldT
     			newcommand = CMD_NONE;
     		}
 
-    		m->param = (BYTE)(min(modplug::tracker::modcommand_t::maxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modcommand_t::maxColumnValue);
+    		m->param = (uint8_t)(min(modplug::tracker::modcommand_t::maxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modcommand_t::maxColumnValue);
     		m->command = newcommand; // might be removed later
     		m->volcmd = VOLCMD_NONE;
     		m->note = NOTE_NONE;
@@ -678,7 +678,7 @@ uint16_t CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd
     	  bRetry - For internal use only. Indicates whether an effect "rewrite" has already taken place (for recursive calls)
    NOTE: Effect remapping is only implemented for a few basic effects.
 */ 
-bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, BYTE nEffect, BYTE nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
+bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     // First, reject invalid parameters.
@@ -769,7 +769,7 @@ bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, BYTE nEffect, 
     	}
 
     	// Let's try it again by writing into the "other" effect column.
-    	BYTE nNewEffect = CMD_NONE;
+    	uint8_t nNewEffect = CMD_NONE;
     	if(bIsVolumeEffect)
     	{
     		switch(nEffect)

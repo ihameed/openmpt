@@ -68,12 +68,12 @@ BEGIN_MESSAGE_MAP(COrderList, CWnd)
 END_MESSAGE_MAP()
 
 
-BYTE COrderList::s_nDefaultMargins = 0;
+uint8_t COrderList::s_nDefaultMargins = 0;
 
 bool COrderList::IsOrderInMargins(int order, int startOrder)
 //----------------------------------------------------------
 {
-    const BYTE nMargins = GetMargins();
+    const uint8_t nMargins = GetMargins();
     return ((startOrder != 0 && order - startOrder < nMargins) || 
     	    order - startOrder >= GetLength() - nMargins);
 }
@@ -225,17 +225,17 @@ void COrderList::InvalidateSelection() const
 }
 
 
-BYTE COrderList::GetLength()
+uint8_t COrderList::GetLength()
 //--------------------------
 {
     CRect rcClient;
     GetClientRect(&rcClient);
     if(m_cxFont > 0)
-    	return static_cast<BYTE>(rcClient.right / m_cxFont);
+    	return static_cast<uint8_t>(rcClient.right / m_cxFont);
     else
     {
     	const int nFontWidth = GetFontWidth();
-    	return (nFontWidth > 0) ? static_cast<BYTE>(rcClient.right / nFontWidth) : 0;
+    	return (nFontWidth > 0) ? static_cast<uint8_t>(rcClient.right / nFontWidth) : 0;
     }
 }
 
@@ -268,12 +268,12 @@ bool COrderList::SetCurSel(ORDERINDEX sel, bool bEdit, bool bShiftClick, bool bI
 
     if ((sel < 0) || (sel >= pSndFile->Order.GetLength()) || (!m_pParent) || (!pMainFrm)) return false;
     if (!bIgnoreCurSel && sel == *nOrder) return true;
-    const BYTE nShownLength = GetLength();
+    const uint8_t nShownLength = GetLength();
     InvalidateSelection();
     *nOrder = sel;
     if (!m_bScrolling)
     {
-    	const BYTE nMargins = GetMargins(GetMarginsMax(nShownLength));
+    	const uint8_t nMargins = GetMargins(GetMarginsMax(nShownLength));
     	if ((*nOrder < m_nXScroll + nMargins) || (!m_cxFont) || (!m_cyFont))
     	{   // Must move first shown sequence item to left in order to show
     		// the new active order.
@@ -1382,10 +1382,10 @@ LRESULT COrderList::OnDragonDropping(WPARAM bDoDrop, LPARAM lParam)
 }
 
 
-BYTE COrderList::SetMargins(int i)
+uint8_t COrderList::SetMargins(int i)
 //--------------------------------
 {
-    m_nOrderlistMargins = static_cast<BYTE>(i);
+    m_nOrderlistMargins = static_cast<uint8_t>(i);
     return GetMargins();
 }
 

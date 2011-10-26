@@ -69,12 +69,12 @@ typedef struct DBMINSTRUMENT
 typedef struct DBMENVELOPE
 {
     WORD instrument;
-    BYTE flags;
-    BYTE numpoints;
-    BYTE sustain1;
-    BYTE loopbegin;
-    BYTE loopend;
-    BYTE sustain2;
+    uint8_t flags;
+    uint8_t numpoints;
+    uint8_t sustain1;
+    uint8_t loopbegin;
+    uint8_t loopend;
+    uint8_t sustain2;
     WORD volenv[2*32];
 } DBMENVELOPE;
 
@@ -82,14 +82,14 @@ typedef struct DBMPATTERN
 {
     WORD rows;
     DWORD packedsize;
-    BYTE patterndata[2];	// [packedsize]
+    uint8_t patterndata[2];	// [packedsize]
 } DBMPATTERN;
 
 typedef struct DBMSAMPLE
 {
     DWORD flags;
     DWORD samplesize;
-    BYTE sampledata[2];		// [samplesize]
+    uint8_t sampledata[2];		// [samplesize]
 } DBMSAMPLE;
 
 #pragma pack()
@@ -181,7 +181,7 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
 }
 
 
-bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
+bool CSoundFile::ReadDBM(const uint8_t *lpStream, const DWORD dwMemLength)
 //---------------------------------------------------------------------
 {
     const DBMFILEHEADER *pfh = (DBMFILEHEADER *)lpStream;
@@ -255,7 +255,7 @@ bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
                     pIns->default_pan = 128;
                 pIns->pitch_pan_center = 5 * 12;
 
-                for (BYTE i = 0; i < NOTE_MAX; i++)
+                for (uint8_t i = 0; i < NOTE_MAX; i++)
                 {
                     pIns->Keyboard[i] = nsmp;
                     pIns->NoteMap[i] = i + 1;
@@ -313,7 +313,7 @@ bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
                     for (UINT i=0; i<pIns->volume_envelope.num_nodes; i++)
                     {
                         pIns->volume_envelope.Ticks[i] = BigEndianW(peh->volenv[i*2]);
-                        pIns->volume_envelope.Values[i] = (BYTE)BigEndianW(peh->volenv[i*2+1]);
+                        pIns->volume_envelope.Values[i] = (uint8_t)BigEndianW(peh->volenv[i*2+1]);
                     }
                 }
                 chunk_pos += sizeof(DBMENVELOPE);
@@ -350,7 +350,7 @@ bool CSoundFile::ReadDBM(const BYTE *lpStream, const DWORD dwMemLength)
 
                             if (ch)
                             {
-                                BYTE b = pkdata[i++];
+                                uint8_t b = pkdata[i++];
                                 ch--;
                                 if (ch < m_nChannels)
                                 {

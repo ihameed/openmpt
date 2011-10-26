@@ -85,7 +85,7 @@ public:
     bool Shrink();
 
     bool WriteITPdata(FILE* f) const;
-    bool ReadITPdata(const BYTE* const lpStream, DWORD& streamPos, const DWORD datasize, const DWORD dwMemLength);
+    bool ReadITPdata(const uint8_t* const lpStream, DWORD& streamPos, const DWORD datasize, const DWORD dwMemLength);
     //Parameters:
     //1. Pointer to the beginning of the stream
     //2. Tells where to start(lpStream+streamPos) and number of bytes read is added to it.

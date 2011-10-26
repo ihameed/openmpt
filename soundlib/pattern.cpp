@@ -281,7 +281,7 @@ bool CPattern::WriteITPdata(FILE* f) const
     return false;
 }
 
-bool CPattern::ReadITPdata(const BYTE* const lpStream, DWORD& streamPos, const DWORD datasize, const DWORD dwMemLength)
+bool CPattern::ReadITPdata(const uint8_t* const lpStream, DWORD& streamPos, const DWORD datasize, const DWORD dwMemLength)
 //-----------------------------------------------------------------------------------------------
 {
     if(streamPos > dwMemLength || datasize >= dwMemLength - streamPos || datasize < sizeof(modplug::tracker::modcommand_t))
