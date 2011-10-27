@@ -2354,7 +2354,7 @@ void CViewPattern::Interpolate(PatternColumns type)
         CArray<UINT,UINT> moreValidChans;
         ListChansWhereColSelected(EFFECT_COLUMN, validChans);
         ListChansWhereColSelected(PARAM_COLUMN, moreValidChans);
-        //CArrayUtils<UINT>::Merge(validChans, moreValidChans); //Causes unresolved external, not sure why yet.
+        //CArrayUtils<UINT>::Merge(validChans, moreValidChans); //Causes unresolved external, not sure why yet. //XXXih: ugh
         validChans.Append(moreValidChans);    					//for now we'll just interpolate the same data several times. :)
     } else
     {
