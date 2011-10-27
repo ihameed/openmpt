@@ -63,8 +63,8 @@ bool _wao_write_instrument(Json::Value &out, const modplug::tracker::modinstrume
 
     out["default_filter_cutoff"]    = instrument.default_filter_cutoff & 0x7f;
     out["default_filter_resonance"] = instrument.default_filter_resonance & 0x7f;
-    out["default_filter_cutoff_enabled"]    = static_cast<bool>(instrument.default_filter_cutoff & 0x80);
-    out["default_filter_resonance_enabled"] = static_cast<bool>(instrument.default_filter_resonance & 0x80);
+    out["default_filter_cutoff_enabled"]    = static_cast<bool>((instrument.default_filter_cutoff & 0x80) != 0);
+    out["default_filter_resonance_enabled"] = static_cast<bool>((instrument.default_filter_resonance & 0x80) != 0);
 
     out["midi_bank"]     = instrument.midi_bank;
     out["midi_program"]  = instrument.midi_program;

@@ -172,7 +172,6 @@
     <ClInclude Include="fxp.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="KeyboardSettings.h" />
     <ClInclude Include="KeyConfigDlg.h" />
     <ClInclude Include="mainbar.h" />
     <ClInclude Include="MainFrm.h" />
@@ -295,7 +294,6 @@
     <None Include="res\defaultKeybindings.mkb" />
     <None Include="mptrack.reg" />
     <None Include="VTune\mptrack.vpj" />
-    <None Include="..\extlib\msgpack-0.5.4\msgpack_vc8.vcproj" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="mixer">

@@ -389,7 +389,6 @@
     <ClInclude Include="fxp.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="KeyboardSettings.h" />
     <ClInclude Include="KeyConfigDlg.h" />
     <ClInclude Include="mainbar.h" />
     <ClInclude Include="MainFrm.h" />
@@ -435,7 +434,6 @@
     <ClInclude Include="test\test.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\extlib\msgpack-0.5.4\msgpack_vc8.vcproj" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\colors.bmp" />
     <None Include="res\dragging.cur" />

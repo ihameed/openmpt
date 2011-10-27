@@ -3,7 +3,6 @@
 #include "CommandSet.h"
 #include "inputhandler.h"
 #include "Resource.h"
-//#include "KeyboardSettings.h"
 #include "mptrack.h"
 #include "mainfrm.h"
 #include <direct.h>
