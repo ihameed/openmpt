@@ -1,0 +1,368 @@
+/*
+ * OpenMPT
+ *
+ * Mmx_mix.cpp
+ *
+ * Authors: Olivier Lapicque <olivierl@jps.net>
+ *          OpenMPT devs
+ *
+ * Name                 Date             Description
+ * Olivier Lapicque     --/--/--         Creation
+ * Trevor Nunes         26/01/04         encapsulated MMX,AMD,SSE with #define flags
+ *                                       moved X86_xxx functions to end of file.
+*/
+
+////////////////////////////////////////////////////////////////////////
+//
+// x86 ( AMD/INTEL ) based low level based mixing functions:
+// This file contains critical code. The basic X86 functions are
+// defined at the bottom of the file. #define's are used to isolate
+// the different flavours of functionality:
+// ENABLE_MMX, ENABLE_AMDNOW, ENABLE_SSE flags must be set to
+// to compile the optimized sections of the code. In both cases the 
+// X86_xxxxxx functions will compile. 
+//
+////////////////////////////////////////////////////////////////////////
+#include "stdafx.h"
+#include "../mixgraph/constants.h"
+#include "sndfile.h"
+
+extern short int gFastSinc[];
+extern short int gKaiserSinc[];
+extern short int gDownsample13x[];
+extern short int gDownsample2x[];
+
+#define PROCSUPPORT_CPUID    0x01
+#define PROCSUPPORT_MMX    	0x02
+#define PROCSUPPORT_MMXEX    0x04
+#define PROCSUPPORT_3DNOW    0x08
+#define PROCSUPPORT_SSE    	0x10
+
+
+#pragma warning (disable:4100)
+
+
+extern int SpectrumSinusTable[256*2];
+
+// -> CODE#0024 UPDATE#04
+// -> DESC="wav export update"
+//const float _f2ic = (float)(1 << 28);
+//const float _i2fc = (float)(1.0 / (1 << 28));
+//const float _f2ic = (float)0x7fffffff;
+//const float _i2fc = (float)(1.0 / 0x7fffffff);
+//const float _f2ic = (float)MIXING_CLIPMAX;
+//const float _i2fc = (float)(1.0/MIXING_CLIPMAX);
+// -! NEW_FEATURE#0024
+
+static unsigned int QueryProcessorExtensions()
+{
+    static unsigned int fProcessorExtensions = 0;
+    static bool bMMXChecked = false;
+
+    if (!bMMXChecked)
+    {
+        _asm 
+        {
+            pushfd                      // Store original EFLAGS on stack
+            pop     eax                 // Get original EFLAGS in EAX
+            mov     ecx, eax            // Duplicate original EFLAGS in ECX for toggle check
+            xor     eax, 0x00200000L    // Flip ID bit in EFLAGS
+            push    eax                 // Save new EFLAGS value on stack
+            popfd                       // Replace current EFLAGS value
+            pushfd                      // Store new EFLAGS on stack
+            pop     eax                 // Get new EFLAGS in EAX
+            xor     eax, ecx            // Can we toggle ID bit?
+            jz      Done                // Jump if no, Processor is older than a Pentium so CPU_ID is not supported
+            mov    	fProcessorExtensions, PROCSUPPORT_CPUID
+            mov     eax, 1              // Set EAX to tell the CPUID instruction what to return
+            push    ebx
+            cpuid                       // Get family/model/stepping/features
+            pop    	ebx
+            test    edx, 0x00800000L    // Check if mmx technology available
+            jz      Done                // Jump if no
+            // Tests have passed, this machine supports the Intel MultiMedia Instruction Set!
+            or    	fProcessorExtensions, PROCSUPPORT_MMX
+            // Check for SSE: PROCSUPPORT_SSE
+            test    edx, 0x02000000L    // check if SSE is present (bit 25)
+            jz      nosse               // done if no
+            // else set the correct bit in fProcessorExtensions
+            or      fProcessorExtensions, (PROCSUPPORT_MMXEX|PROCSUPPORT_SSE)
+            jmp     Done
+        nosse:
+            // Check for AMD 3DNow!
+            mov eax, 0x80000000
+            cpuid
+            cmp eax, 0x80000000
+            jbe Done
+            mov eax, 0x80000001
+            cpuid // CPU_ID
+            test edx, 0x80000000
+            jz Done
+            or      fProcessorExtensions, PROCSUPPORT_3DNOW    // 3DNow! supported
+            test edx, (1<<22) // Bit 22: AMD MMX extensions
+            jz Done
+            or      fProcessorExtensions, PROCSUPPORT_MMXEX    // MMX extensions supported
+        }
+Done:
+        bMMXChecked = true;
+    }
+    return fProcessorExtensions;
+}
+
+
+uint32_t CSoundFile::InitSysInfo()
+//-----------------------------
+{
+    OSVERSIONINFO osvi;
+    uint32_t d = 0;
+
+#ifdef _DEBUG
+    // Must be aligned on 32 bytes for best performance
+    if (sizeof(modplug::tracker::modchannel_t) & 0x1F)
+    {
+        CHAR s[64];
+        wsprintf(s, "modplug::tracker::modchannel_t not aligned: sizeof(modplug::tracker::modchannel_t) = %d", sizeof(modplug::tracker::modchannel_t));
+        ::MessageBox(NULL, s, NULL, MB_OK|MB_ICONEXCLAMATION); //disabled by rewbs
+    }
+    uint32_t dwFastSinc = (uint32_t)(LPVOID)gFastSinc;
+    if (dwFastSinc & 7)
+    {
+        CHAR s[64];
+        wsprintf(s, "gFastSinc is not aligned (%08X)!", dwFastSinc);
+        ::MessageBox(NULL, s, NULL, MB_OK|MB_ICONEXCLAMATION);
+    }
+#endif
+    memset(&osvi, 0, sizeof(osvi));
+    osvi.dwOSVersionInfoSize = sizeof(osvi);
+    GetVersionEx(&osvi);
+    uint32_t dwProcSupport = QueryProcessorExtensions();
+    switch(osvi.dwPlatformId)
+    {
+    // Don't use MMX for Windows 3.1
+    case VER_PLATFORM_WIN32s:
+        dwProcSupport &= PROCSUPPORT_CPUID;
+        break;
+    // XMM requires Windows 98
+    case VER_PLATFORM_WIN32_WINDOWS:
+        if ((osvi.dwMajorVersion < 4) || ((osvi.dwMajorVersion==4) && (!osvi.dwMinorVersion)))
+        {
+            dwProcSupport &= PROCSUPPORT_CPUID|PROCSUPPORT_MMX|PROCSUPPORT_3DNOW|PROCSUPPORT_MMXEX;
+        }
+        break;
+    // XMM requires Windows 2000
+    case VER_PLATFORM_WIN32_NT:
+        if (osvi.dwMajorVersion < 5)
+        {
+            dwProcSupport &= PROCSUPPORT_CPUID|PROCSUPPORT_MMX|PROCSUPPORT_3DNOW|PROCSUPPORT_MMXEX;
+        }
+    }
+    if (dwProcSupport & PROCSUPPORT_MMX) d |= (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU);
+    if (dwProcSupport & PROCSUPPORT_MMXEX) d |= SYSMIX_MMXEX;
+    if (dwProcSupport & PROCSUPPORT_3DNOW) d |= SYSMIX_3DNOW;
+    if (dwProcSupport & PROCSUPPORT_SSE) d |= SYSMIX_SSE;
+    if (!(dwProcSupport & PROCSUPPORT_CPUID)) d |= SYSMIX_SLOWCPU;
+    gdwSysInfo = d;
+    return d;
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////
+// 3DNow! optimizations
+
+#ifdef ENABLE_AMDNOW
+
+// Convert integer mix to floating-point
+void AMD_StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount, const float _i2fc)
+//----------------------------------------------------------------------------------------------------
+{
+    _asm {
+    movd mm0, _i2fc
+    mov edx, pSrc
+    mov edi, pOut1
+    mov ebx, pOut2
+    mov ecx, nCount
+    punpckldq mm0, mm0
+    inc ecx
+    shr ecx, 1
+mainloop:
+    movq mm1, qword ptr [edx]
+    movq mm2, qword ptr [edx+8]
+    add edi, 8
+    pi2fd mm1, mm1
+    pi2fd mm2, mm2
+    add ebx, 8
+    pfmul mm1, mm0
+    pfmul mm2, mm0
+    add edx, 16
+    movq mm3, mm1
+    punpckldq mm3, mm2
+    punpckhdq mm1, mm2
+    dec ecx
+    movq qword ptr [edi-8], mm3
+    movq qword ptr [ebx-8], mm1
+    jnz mainloop
+    emms
+    }
+}
+
+void AMD_FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount, const float _f2ic)
+//--------------------------------------------------------------------------------------------------------
+{
+    _asm {
+    movd mm0, _f2ic
+    mov eax, pIn1
+    mov ebx, pIn2
+    mov edx, pOut
+    mov ecx, nCount
+    punpckldq mm0, mm0
+    inc ecx
+    shr ecx, 1
+    sub edx, 16
+mainloop:
+    movq mm1, [eax]
+    movq mm2, [ebx]
+    add edx, 16
+    movq mm3, mm1
+    punpckldq mm1, mm2
+    punpckhdq mm3, mm2
+    add eax, 8
+    pfmul mm1, mm0
+    pfmul mm3, mm0
+    add ebx, 8
+    pf2id mm1, mm1
+    pf2id mm3, mm3
+    dec ecx
+    movq qword ptr [edx], mm1
+    movq qword ptr [edx+8], mm3
+    jnz mainloop
+    emms
+    }
+}
+
+
+void AMD_FloatToMonoMix(const float *pIn, int *pOut, UINT nCount, const float _f2ic)
+//----------------------------------------------------------------------------------
+{
+    _asm {
+    movd mm0, _f2ic
+    mov eax, pIn
+    mov edx, pOut
+    mov ecx, nCount
+    punpckldq mm0, mm0
+    add ecx, 3
+    shr ecx, 2
+    sub edx, 16
+mainloop:
+    movq mm1, [eax]
+    movq mm2, [eax+8]
+    add edx, 16
+    pfmul mm1, mm0
+    pfmul mm2, mm0
+    add eax, 16
+    pf2id mm1, mm1
+    pf2id mm2, mm2
+    dec ecx
+    movq qword ptr [edx], mm1
+    movq qword ptr [edx+8], mm2
+    jnz mainloop
+    emms
+    }
+}
+
+
+void AMD_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc)
+//-----------------------------------------------------------------------------------
+{
+    _asm {
+    movd mm0, _i2fc
+    mov eax, pSrc
+    mov edx, pOut
+    mov ecx, nCount
+    punpckldq mm0, mm0
+    add ecx, 3
+    shr ecx, 2
+    sub edx, 16
+mainloop:
+    movq mm1, qword ptr [eax]
+    movq mm2, qword ptr [eax+8]
+    add edx, 16
+    pi2fd mm1, mm1
+    pi2fd mm2, mm2
+    add eax, 16
+    pfmul mm1, mm0
+    pfmul mm2, mm0
+    dec ecx
+    movq qword ptr [edx], mm1
+    movq qword ptr [edx+8], mm2
+    jnz mainloop
+    emms
+    }
+}
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////////////
+// SSE Optimizations
+
+#ifdef ENABLE_SSE
+
+void SSE_StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount, const float _i2fc)
+//----------------------------------------------------------------------------------------------------
+{
+    _asm {
+    movss xmm0, _i2fc
+    mov edx, pSrc
+    mov eax, pOut1
+    mov ebx, pOut2
+    mov ecx, nCount
+    shufps xmm0, xmm0, 0x00
+    xorps xmm1, xmm1
+    xorps xmm2, xmm2
+    inc ecx
+    shr ecx, 1
+mainloop:
+    cvtpi2ps xmm1, [edx]
+    cvtpi2ps xmm2, [edx+8]
+    add eax, 8
+    add ebx, 8
+    movlhps xmm1, xmm2
+    mulps xmm1, xmm0
+    add edx, 16
+    shufps xmm1, xmm1, 0xD8
+    dec ecx
+    movlps qword ptr [eax-8], xmm1
+    movhps qword ptr [ebx-8], xmm1
+    jnz mainloop
+    }
+}
+
+
+void SSE_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc)
+//-----------------------------------------------------------------------------------
+{
+    _asm {
+    movss xmm0, _i2fc
+    mov edx, pSrc
+    mov eax, pOut
+    mov ecx, nCount
+    shufps xmm0, xmm0, 0x00
+    xorps xmm1, xmm1
+    xorps xmm2, xmm2
+    add ecx, 3
+    shr ecx, 2
+mainloop:
+    cvtpi2ps xmm1, [edx]
+    cvtpi2ps xmm2, [edx+8]
+    add eax, 16
+    movlhps xmm1, xmm2
+    mulps xmm1, xmm0
+    add edx, 16
+    dec ecx
+    movups [eax-16], xmm1
+    jnz mainloop
+    }
+}
+
+#endif

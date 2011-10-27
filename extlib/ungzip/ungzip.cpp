@@ -7,7 +7,7 @@
  */
 
 #include "ungzip.h"
-#include "../../soundlib/Endianness.h"
+#include "../../src/legacy_soundlib/Endianness.h"
 
 
 CGzipArchive::CGzipArchive(LPBYTE lpStream, DWORD dwMemLength)

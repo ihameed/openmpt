@@ -1,0 +1,550 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>mptrack</ProjectName>
+    <ProjectGuid>{21D95071-FB97-4E69-B3B1-050D0D4A5021}</ProjectGuid>
+    <RootNamespace>mptrack</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Static</UseOfMfc>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner></SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug/mptrack.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /Zc:auto %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;ENABLE_MMX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug/mptrack.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner></SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\Debug/mptrack.exe</OutputFile>
+      <Version>5.0</Version>
+      <SuppressStartupBanner></SuppressStartupBanner>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>OpenMPT_SoundTouch_i16.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+      <ProgramDatabaseFile>.\Debug/mptrack.pdb</ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>.\Debug/mptrack.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <Profile>true</Profile>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner></SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Bin/mptrack.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHsc /O2 /Zc:auto %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENABLE_MMX;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/mptrack.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner></SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <Version>5.0</Version>
+      <SuppressStartupBanner></SuppressStartupBanner>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>OpenMPT_SoundTouch_i16.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>.\Release/mptrack.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\extlib\agg-2.4\font_win32_tt\agg_font_win32_tt.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_arc.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_arrowhead.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_bezier_arc.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_bspline.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_curves.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_embedded_raster_fonts.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_gsv_text.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_image_filters.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_aa_basics.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_profile_aa.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_rounded_rect.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_sqrt_tables.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_affine.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_double_path.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_single_path.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_warp_magnifier.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_bspline.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_contour.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_dash.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_markers_term.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_smooth_poly1.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_stroke.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polygon.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polyline.cpp" />
+    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_segmentator.cpp" />
+    <ClCompile Include="AbstractVstEditor.cpp" />
+    <ClCompile Include="ArrayUtils.cpp" />
+    <ClCompile Include="AutoSaver.cpp" />
+    <ClCompile Include="ChannelManagerDlg.cpp" />
+    <ClCompile Include="ChildFrm.cpp" />
+    <ClCompile Include="CleanupSong.cpp" />
+    <ClCompile Include="ColourEdit.cpp" />
+    <ClCompile Include="CommandSet.cpp" />
+    <ClCompile Include="CreditStatic.cpp" />
+    <ClCompile Include="ctrl_com.cpp" />
+    <ClCompile Include="ctrl_gen.cpp" />
+    <ClCompile Include="ctrl_ins.cpp" />
+    <ClCompile Include="ctrl_pat.cpp" />
+    <ClCompile Include="ctrl_seq.cpp" />
+    <ClCompile Include="ctrl_smp.cpp" />
+    <ClCompile Include="DefaultVstEditor.cpp" />
+    <ClCompile Include="dlg_misc.cpp" />
+    <ClCompile Include="draw_pat.cpp" />
+    <ClCompile Include="EffectVis.cpp" />
+    <ClCompile Include="fxp.cpp" />
+    <ClCompile Include="globals.cpp" />
+    <ClCompile Include="gui\mixgraph_view.cpp" />
+    <ClCompile Include="legacy_soundlib\Dlsbank.cpp" />
+    <ClCompile Include="legacy_soundlib\Fastmix.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_669.cpp" />
+    <ClCompile Include="legacy_soundlib\LOAD_AMF.CPP" />
+    <ClCompile Include="legacy_soundlib\Load_ams.cpp" />
+    <ClCompile Include="legacy_soundlib\LOAD_DBM.CPP" />
+    <ClCompile Include="legacy_soundlib\LOAD_DMF.CPP" />
+    <ClCompile Include="legacy_soundlib\LOAD_DSM.CPP" />
+    <ClCompile Include="legacy_soundlib\Load_far.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_gdm.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_imf.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_it.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_itp.cpp" />
+    <ClCompile Include="legacy_soundlib\load_j2b.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_mdl.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_med.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_mid.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_mo3.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_mod.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_mt2.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_mtm.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_okt.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_psm.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_ptm.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_s3m.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_stm.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_ult.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_umx.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_wav.cpp" />
+    <ClCompile Include="legacy_soundlib\Load_xm.cpp" />
+    <ClCompile Include="legacy_soundlib\Message.cpp" />
+    <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
+    <ClCompile Include="legacy_soundlib\Mmx_mix.cpp" />
+    <ClCompile Include="legacy_soundlib\modcommand.cpp" />
+    <ClCompile Include="legacy_soundlib\ModSequence.cpp" />
+    <ClCompile Include="legacy_soundlib\modsmp_ctrl.cpp" />
+    <ClCompile Include="legacy_soundlib\mod_specifications.cpp" />
+    <ClCompile Include="legacy_soundlib\pattern.cpp" />
+    <ClCompile Include="legacy_soundlib\patternContainer.cpp" />
+    <ClCompile Include="legacy_soundlib\PlaybackEventer.cpp" />
+    <ClCompile Include="legacy_soundlib\Sampleio.cpp" />
+    <ClCompile Include="legacy_soundlib\Snddev.cpp" />
+    <ClCompile Include="legacy_soundlib\Sndfile.cpp" />
+    <ClCompile Include="legacy_soundlib\Sndmix.cpp" />
+    <ClCompile Include="legacy_soundlib\Snd_dsp.cpp" />
+    <ClCompile Include="legacy_soundlib\Snd_eq.cpp" />
+    <ClCompile Include="legacy_soundlib\Snd_flt.cpp" />
+    <ClCompile Include="legacy_soundlib\Snd_fx.cpp" />
+    <ClCompile Include="legacy_soundlib\Snd_rvb.cpp" />
+    <ClCompile Include="legacy_soundlib\Tables.cpp" />
+    <ClCompile Include="legacy_soundlib\tuning.cpp" />
+    <ClCompile Include="legacy_soundlib\tuningbase.cpp" />
+    <ClCompile Include="legacy_soundlib\tuningCollection.cpp" />
+    <ClCompile Include="legacy_soundlib\Waveform.cpp" />
+    <ClCompile Include="legacy_soundlib\WindowedFIR.cpp" />
+    <ClCompile Include="mixgraph\core.cpp" />
+    <ClCompile Include="mixgraph\mixer.cpp" />
+    <ClCompile Include="mixgraph\vertex.cpp" />
+    <ClCompile Include="mixgraph\source_vertex.cpp" />
+    <ClCompile Include="mixgraph\vst_vertex.cpp" />
+    <ClCompile Include="HyperEdit.cpp" />
+    <ClCompile Include="HyperEdit2.cpp" />
+    <ClCompile Include="HyperEdit3.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="KeyConfigDlg.cpp" />
+    <ClCompile Include="mainbar.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MIDIMappingDialog.cpp" />
+    <ClCompile Include="misc_util.cpp" />
+    <ClCompile Include="mixer\mixutil.cpp" />
+    <ClCompile Include="mod2midi.cpp" />
+    <ClCompile Include="Mod2wave.cpp" />
+    <ClCompile Include="ModConvert.cpp" />
+    <ClCompile Include="Moddoc.cpp" />
+    <ClCompile Include="Modedit.cpp" />
+    <ClCompile Include="Moptions.cpp" />
+    <ClCompile Include="MoveFXSlotDialog.cpp" />
+    <ClCompile Include="Mpdlgs.cpp" />
+    <ClCompile Include="mpt_midi.cpp" />
+    <ClCompile Include="MPTHacks.cpp" />
+    <ClCompile Include="mptrack.cpp" />
+    <ClCompile Include="PatternEditorDialogs.cpp" />
+    <ClCompile Include="PatternGotoDialog.cpp" />
+    <ClCompile Include="PerformanceCounter.cpp" />
+    <ClCompile Include="pervasives\pervasives.cpp" />
+    <ClCompile Include="PSRatioCalc.cpp" />
+    <ClCompile Include="SampleEditorDialogs.cpp" />
+    <ClCompile Include="ScaleEnvPointsDlg.cpp" />
+    <ClCompile Include="serialization_utils.cpp" />
+    <ClCompile Include="serializers\wao.cpp" />
+    <ClCompile Include="SoundFilePlayConfig.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="tagging.cpp" />
+    <ClCompile Include="Undo.cpp" />
+    <ClCompile Include="UpdateCheck.cpp" />
+    <ClCompile Include="view_com.cpp" />
+    <ClCompile Include="view_gen.cpp" />
+    <ClCompile Include="view_ins.cpp" />
+    <ClCompile Include="view_pat.cpp" />
+    <ClCompile Include="view_smp.cpp" />
+    <ClCompile Include="view_tre.cpp" />
+    <ClCompile Include="VSTEditor.cpp" />
+    <ClCompile Include="vstplug.cpp" />
+    <ClCompile Include="PatternRandomizer.cpp" />
+    <ClCompile Include="PatternRandomizerGUI.cpp" />
+    <ClCompile Include="PatternRandomizerGUIEffect.cpp" />
+    <ClCompile Include="PatternRandomizerGUIInstrument.cpp" />
+    <ClCompile Include="PatternRandomizerGUINote.cpp" />
+    <ClCompile Include="PatternRandomizerGUIVolCmd.cpp" />
+    <ClCompile Include="TuningDialog.cpp" />
+    <ClCompile Include="tuningRatioMapWnd.cpp" />
+    <ClCompile Include="test\test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="mptrack.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gui\mixgraph_view.h" />
+    <ClInclude Include="gui\widget.h" />
+    <ClInclude Include="legacy_soundlib\Dlsbank.h" />
+    <ClInclude Include="legacy_soundlib\Endianness.h" />
+    <ClInclude Include="legacy_soundlib\IT_DEFS.H" />
+    <ClInclude Include="legacy_soundlib\Loaders.h" />
+    <ClInclude Include="legacy_soundlib\midi.h" />
+    <ClInclude Include="legacy_soundlib\modcommand.h" />
+    <ClInclude Include="legacy_soundlib\ModSequence.h" />
+    <ClInclude Include="legacy_soundlib\modsmp_ctrl.h" />
+    <ClInclude Include="legacy_soundlib\mod_specifications.h" />
+    <ClInclude Include="legacy_soundlib\pattern.h" />
+    <ClInclude Include="legacy_soundlib\patternContainer.h" />
+    <ClInclude Include="legacy_soundlib\PlaybackEventer.h" />
+    <ClInclude Include="legacy_soundlib\SNDDEV.H" />
+    <ClInclude Include="legacy_soundlib\SNDDEVX.H" />
+    <ClInclude Include="legacy_soundlib\Sndfile.h" />
+    <ClInclude Include="legacy_soundlib\Snd_defs.h" />
+    <ClInclude Include="legacy_soundlib\snd_rvb.h" />
+    <ClInclude Include="legacy_soundlib\tuning.h" />
+    <ClInclude Include="legacy_soundlib\tuningbase.h" />
+    <ClInclude Include="legacy_soundlib\tuningcollection.h" />
+    <ClInclude Include="legacy_soundlib\Wav.h" />
+    <ClInclude Include="legacy_soundlib\wavConverter.h" />
+    <ClInclude Include="legacy_soundlib\WindowedFIR.h" />
+    <ClInclude Include="mixgraph\mixer.h" />
+    <ClInclude Include="mixgraph\source_vertex.h" />
+    <ClInclude Include="mixgraph\constants.h" />
+    <ClInclude Include="mixgraph\core.h" />
+    <ClInclude Include="mixgraph\vertex.h" />
+    <ClInclude Include="mixgraph\vst_vertex.h" />
+    <ClInclude Include="mixer\mixutil.h" />
+    <ClInclude Include="PatternRandomizer.h" />
+    <ClInclude Include="PatternRandomizerGUI.h" />
+    <ClInclude Include="PatternRandomizerGUIEffect.h" />
+    <ClInclude Include="PatternRandomizerGUIInstrument.h" />
+    <ClInclude Include="PatternRandomizerGUINote.h" />
+    <ClInclude Include="PatternRandomizerGUIVolCmd.h" />
+    <ClInclude Include="AbstractVstEditor.h" />
+    <ClInclude Include="ArrayUtils.h" />
+    <ClInclude Include="AutoSaver.h" />
+    <ClInclude Include="ChannelManagerDlg.h" />
+    <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="CleanupSong.h" />
+    <ClInclude Include="ColourEdit.h" />
+    <ClInclude Include="CommandSet.h" />
+    <ClInclude Include="CreditStatic.h" />
+    <ClInclude Include="ctrl_com.h" />
+    <ClInclude Include="ctrl_gen.h" />
+    <ClInclude Include="ctrl_ins.h" />
+    <ClInclude Include="ctrl_pat.h" />
+    <ClInclude Include="ctrl_smp.h" />
+    <ClInclude Include="DefaultVstEditor.h" />
+    <ClInclude Include="dlg_misc.h" />
+    <ClInclude Include="EffectVis.h" />
+    <ClInclude Include="fxp.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="KeyboardSettings.h" />
+    <ClInclude Include="KeyConfigDlg.h" />
+    <ClInclude Include="mainbar.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MIDIMappingDialog.h" />
+    <ClInclude Include="misc_util.h" />
+    <ClInclude Include="mod2midi.h" />
+    <ClInclude Include="mod2wave.h" />
+    <ClInclude Include="ModConvert.h" />
+    <ClInclude Include="moddoc.h" />
+    <ClInclude Include="Moptions.h" />
+    <ClInclude Include="MoveFXSlotDialog.h" />
+    <ClInclude Include="Mpdlgs.h" />
+    <ClInclude Include="mptrack.h" />
+    <ClInclude Include="PatternEditorDialogs.h" />
+    <ClInclude Include="PatternGotoDialog.h" />
+    <ClInclude Include="PerformanceCounter.h" />
+    <ClInclude Include="pervasives\pervasives.h" />
+    <ClInclude Include="PSRatioCalc.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="SampleEditorDialogs.h" />
+    <ClInclude Include="SampleGenerator.h" />
+    <ClInclude Include="ScaleEnvPointsDlg.h" />
+    <ClInclude Include="serialization_utils.h" />
+    <ClInclude Include="serializers\wao.h" />
+    <ClInclude Include="SoundFilePlayConfig.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="tagging.h" />
+    <ClInclude Include="tracker\modcommand.h" />
+    <ClInclude Include="tracker\tracker.h" />
+    <ClInclude Include="typedefs.h" />
+    <ClInclude Include="Undo.h" />
+    <ClInclude Include="UpdateCheck.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="view_com.h" />
+    <ClInclude Include="view_gen.h" />
+    <ClInclude Include="view_ins.h" />
+    <ClInclude Include="view_pat.h" />
+    <ClInclude Include="view_smp.h" />
+    <ClInclude Include="view_tre.h" />
+    <ClInclude Include="VSTEditor.h" />
+    <ClInclude Include="vstplug.h" />
+    <ClInclude Include="TuningDialog.h" />
+    <ClInclude Include="tuningRatioMapWnd.h" />
+    <ClInclude Include="test\test.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\extlib\msgpack-0.5.4\msgpack_vc8.vcproj" />
+    <None Include="res\bitmap1.bmp" />
+    <None Include="res\colors.bmp" />
+    <None Include="res\dragging.cur" />
+    <None Include="Res\envbar.bmp" />
+    <None Include="res\img_list.bmp" />
+    <None Include="res\mainbar.bmp" />
+    <None Include="res\moddoc.ico" />
+    <None Include="res\MPTRACK.bmp" />
+    <None Include="res\mptrack.ico" />
+    <None Include="res\mptrack.rc2" />
+    <None Include="Res\nodrag.cur" />
+    <None Include="res\nodrop.cur" />
+    <None Include="res\patterns.bmp" />
+    <None Include="res\rt_manif.bin" />
+    <None Include="Res\smptoolb.bmp" />
+    <None Include="res\splashno.bmp" />
+    <None Include="res\view_pat.bmp" />
+    <None Include="res\visnode1.bmp" />
+    <None Include="res\vispcnode.bmp" />
+    <None Include="res\vumeters.bmp" />
+    <None Include="res\built-inTunings.tc" />
+    <None Include="res\defaultKeybindings.mkb" />
+    <None Include="mptrack.reg" />
+    <None Include="VTune\mptrack.vpj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj">
+      <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\soundtouch\soundtouch_10.vcxproj">
+      <Project>{cf3c2ca5-5d45-4635-bba4-c1f435e10896}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\ungzip\ungzip_10.vcxproj">
+      <Project>{94cd7910-649a-4075-9f33-7ebee614fd45}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\unlha\unlha_10.vcxproj">
+      <Project>{fae39936-1dc7-40bb-ad3f-3b5b9e9ab0e8}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\unrar\unrar_10.vcxproj">
+      <Project>{ff541ce2-daa1-4f84-9883-0a0f111baa0b}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\unzip\unzip_10.vcxproj">
+      <Project>{44316f22-904e-48aa-b841-5a3a6ac77319}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\zlib-1.2.5\contrib\vstudio\vc10\zlibstat.vcxproj">
+      <Project>{745dec58-ebb3-47a9-a9b8-4c6627c01bf8}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="mptrack.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
