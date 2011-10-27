@@ -13,9 +13,9 @@
 #include <math.h>
 #endif
 
-#include "mixgraph/constants.h"
-#include "mixgraph/mixer.h"
-#include "mixer/mixutil.h"
+#include "../mptrack/mixgraph/constants.h"
+#include "../mptrack/mixgraph/mixer.h"
+#include "../mptrack/mixer/mixutil.h"
 
 // rewbs.resamplerConf
 #include "../mptrack/mptrack.h"

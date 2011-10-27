@@ -15,7 +15,7 @@
 #ifndef ZLIB_WINAPI
 #define ZLIB_WINAPI
 #endif // ZLIB_WINAPI
-#include "../zlib/zlib.h"
+#include <zlib.h>
 
 // 32-Bit J2B header identifiers
 #define J2BHEAD_MUSE     0x4553554D

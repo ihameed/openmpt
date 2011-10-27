@@ -9,9 +9,9 @@
 #include "SampleEditorDialogs.h"
 #include "dlg_misc.h"
 #include "PSRatioCalc.h" //rewbs.timeStretchMods
-#include "soundtouch/SoundTouch.h"
-#include "soundtouch/TDStretch.h"
-#include "soundtouch/SoundTouchDLL.h"
+#include "SoundTouch.h"
+#include "TDStretch.h"
+#include "SoundTouchDLL.h"
 #include "modsmp_ctrl.h"
 #include <Shlwapi.h>
 

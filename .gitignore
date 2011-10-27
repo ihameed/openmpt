@@ -50,3 +50,7 @@ plan
 UpgradeLog*.XML
 _UpgradeReport_*
 test.saved.mptm
+
+
+
+!extlib/zlib-1.2.5/contrib/masmx86/*

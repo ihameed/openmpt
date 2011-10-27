@@ -2,7 +2,7 @@
 #define PATTERN_H
 
 #include <vector>
-#include "tracker/tracker.h"
+#include "../mptrack/tracker/tracker.h"
 #include "Snd_defs.h"
 
 using std::vector;
