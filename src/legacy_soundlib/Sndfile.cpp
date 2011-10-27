@@ -1420,7 +1420,7 @@ CString CSoundFile::GetInstrumentName(UINT nInstr) const
     const size_t nSize = ARRAYELEMCOUNT(Instruments[nInstr]->name);
     CString str;
     LPTSTR p = str.GetBuffer(nSize + 1);
-    ArrayCopy(p, Instruments[nInstr]->name, nSize);
+    std::copy_n(Instruments[nInstr]->name, nSize, p);
     p[nSize] = 0;
     str.ReleaseBuffer();
     return str;

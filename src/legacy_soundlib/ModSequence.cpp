@@ -232,7 +232,7 @@ void ModSequence::resize(ORDERINDEX nNewSize, PATTERNINDEX nFill)
     	const PATTERNINDEX* const pOld = m_pArray;
     	m_nCapacity = nNewSize + 100;
     	m_pArray = new PATTERNINDEX[m_nCapacity];
-    	ArrayCopy(m_pArray, pOld, m_nSize);
+        std::copy_n(pOld, m_nSize, m_pArray);
     	std::fill(m_pArray + m_nSize, m_pArray + nNewSize, nFill);
     	m_nSize = nNewSize;
     	if (m_bDeletableArray)
@@ -257,7 +257,7 @@ ModSequence& ModSequence::operator=(const ModSequence& seq)
     m_nIgnoreIndex = seq.m_nIgnoreIndex;
     m_nInvalidIndex = seq.m_nInvalidIndex;
     resize(seq.GetLength());
-    ArrayCopy(begin(), seq.begin(), m_nSize);
+    std::copy_n(seq.begin(), m_nSize, begin());
     m_sName = seq.m_sName;
     return *this;
 }
@@ -316,7 +316,7 @@ void ModSequenceSet::CopyStorageToCache()
     	m_nSize = rSeq.GetLength();
     	m_nCapacity = s_nCacheSize;
     	m_sName = rSeq.m_sName;
-    	ArrayCopy(m_pArray, rSeq.m_pArray, m_nSize);
+        std::copy_n(rSeq.m_pArray, m_nSize, m_pArray);
     	if (m_bDeletableArray)
     		delete[] pOld;
     	m_bDeletableArray = false;
