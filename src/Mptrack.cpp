@@ -16,7 +16,6 @@
 #include "version.h"
 #include "test/test.h"
 #include <shlwapi.h>
-#include "UpdateCheck.h"
 
 // rewbs.memLeak
 #define _CRTDBG_MAP_ALLOC
@@ -926,12 +925,6 @@ BOOL CTrackApp::InitInstance()
 
     m_dwTimeStarted = timeGetTime();
     m_bInitialized = TRUE;
-
-    if (CUpdateCheck::GetUpdateCheckPeriod() != 0)
-    {
-        CUpdateCheck *updateCheck = CUpdateCheck::Create(true);
-        updateCheck->DoUpdateCheck();
-    }
 
     // Open settings if the previous execution was with an earlier version.
     if (!cmdInfo.m_bNoSettingsOnNewVersion && MptVersion::ToNum(CMainFrame::gcsPreviousVersion) < MptVersion::num) {

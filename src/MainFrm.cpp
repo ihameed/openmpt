@@ -24,7 +24,6 @@
 #include <direct.h>
 #include "version.h"
 #include "ctrl_pat.h"
-#include "UpdateCheck.h"
 
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
@@ -110,7 +109,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_MESSAGE(WM_MOD_INVALIDATEPATTERNS,    OnInvalidatePatterns)
     ON_MESSAGE(WM_MOD_SPECIALKEY,    		OnSpecialKey)
     ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg) //rewbs.customKeys
-    ON_COMMAND(ID_INTERNETUPDATE,    		OnInternetUpdate)
     //}}AFX_MSG_MAP
     ON_WM_INITMENU()
     ON_WM_KILLFOCUS() //rewbs.fix3116
@@ -417,31 +415,6 @@ void CMainFrame::LoadIniSettings()
     gnPlugWindowHeight = GetPrivateProfileInt("Display", "PlugSelectWindowHeight", 332, iniFile);
     gnPlugWindowLast = GetPrivateProfileDWord("Display", "PlugSelectWindowLast", 0, iniFile);
     gnMsgBoxVisiblityFlags = GetPrivateProfileDWord("Display", "MsgBoxVisibilityFlags", UINT32_MAX, iniFile);
-
-    // Internet Update
-    {
-        tm lastUpdate;
-        MemsetZero(lastUpdate);
-        CString s = GetPrivateProfileCString("Update", "LastUpdateCheck", "1970-01-01 00:00", iniFile);
-        if(sscanf(s, "%04d-%02d-%02d %02d:%02d", &lastUpdate.tm_year, &lastUpdate.tm_mon, &lastUpdate.tm_mday, &lastUpdate.tm_hour, &lastUpdate.tm_min) == 5)
-        {
-            lastUpdate.tm_year -= 1900;
-            lastUpdate.tm_mon--;
-        }
-
-        time_t outTime = Util::sdTime::MakeGmTime(lastUpdate);
-        
-        if(outTime < 0) outTime = 0;
-
-        CUpdateCheck::SetUpdateSettings
-        (
-            outTime,
-            GetPrivateProfileInt("Update", "UpdateCheckPeriod", CUpdateCheck::GetUpdateCheckPeriod(), iniFile),
-            GetPrivateProfileCString("Update", "UpdateURL", CUpdateCheck::GetUpdateURL(), iniFile),
-            GetPrivateProfileInt("Update", "SendGUID", CUpdateCheck::GetSendGUID() ? 1 : 0, iniFile) ? true : false,
-            GetPrivateProfileInt("Update", "ShowUpdateHint", CUpdateCheck::GetShowUpdateHint() ? 1 : 0, iniFile) ? true : false
-        );
-    }
 
     CHAR s[16];
     for (int ncol = 0; ncol < MAX_MODCOLORS; ncol++)
@@ -1035,22 +1008,6 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileLong("Display", "PlugSelectWindowHeight", gnPlugWindowHeight, iniFile);
     WritePrivateProfileLong("Display", "PlugSelectWindowLast", gnPlugWindowLast, iniFile);
     WritePrivateProfileDWord("Display", "MsgBoxVisibilityFlags", gnMsgBoxVisiblityFlags, iniFile);
-
-    // Internet Update
-    {
-        CString outDate;
-        const time_t t = CUpdateCheck::GetLastUpdateCheck();
-        const tm* const lastUpdate = gmtime(&t);
-        if(lastUpdate != nullptr)
-        {
-            outDate.Format("%04d-%02d-%02d %02d:%02d", lastUpdate->tm_year + 1900, lastUpdate->tm_mon + 1, lastUpdate->tm_mday, lastUpdate->tm_hour, lastUpdate->tm_min);
-        }
-        WritePrivateProfileString("Update", "LastUpdateCheck", outDate, iniFile);
-        WritePrivateProfileLong("Update", "UpdateCheckPeriod", CUpdateCheck::GetUpdateCheckPeriod(), iniFile);
-        WritePrivateProfileString("Update", "UpdateURL", CUpdateCheck::GetUpdateURL(), iniFile);
-        WritePrivateProfileLong("Update", "SendGUID", CUpdateCheck::GetSendGUID() ? 1 : 0, iniFile);
-        WritePrivateProfileLong("Update", "ShowUpdateHint", CUpdateCheck::GetShowUpdateHint() ? 1 : 0, iniFile);
-    }
 
     CHAR s[16];
     for (int ncol = 0; ncol < MAX_MODCOLORS; ncol++)
@@ -2488,7 +2445,6 @@ void CMainFrame::OnViewOptions()
     CMidiSetupDlg mididlg(m_dwMidiSetup, m_nMidiDevice);
     CEQSetupDlg eqdlg(&m_EqSettings);
     CAutoSaverGUI autosavedlg(m_pAutoSaver); //rewbs.AutoSaver
-    CUpdateSetupDlg updatedlg;
     dlg.AddPage(&general);
     dlg.AddPage(&sounddlg);
     dlg.AddPage(&playerdlg);
@@ -2497,7 +2453,6 @@ void CMainFrame::OnViewOptions()
     dlg.AddPage(&colors);
     dlg.AddPage(&mididlg);
     dlg.AddPage(&autosavedlg);
-    dlg.AddPage(&updatedlg);
     m_bOptionsLocked=true;    //rewbs.customKeys
     dlg.DoModal();
     m_bOptionsLocked=false;    //rewbs.customKeys
@@ -3147,14 +3102,6 @@ void CMainFrame::OnViewEditHistory()
     {
         pModDoc->OnViewEditHistory();
     }
-}
-
-
-void CMainFrame::OnInternetUpdate()
-//---------------------------------
-{
-    CUpdateCheck *updateCheck = CUpdateCheck::Create(false);
-    updateCheck->DoUpdateCheck();
 }
 
 

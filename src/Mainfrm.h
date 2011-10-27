@@ -698,7 +698,6 @@ protected:
     afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM);
     afx_msg void OnViewMIDIMapping();
     afx_msg void OnViewEditHistory();
-    afx_msg void OnInternetUpdate();
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 public:

@@ -53,7 +53,6 @@
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="tagging.cpp" />
     <ClCompile Include="Undo.cpp" />
-    <ClCompile Include="UpdateCheck.cpp" />
     <ClCompile Include="view_com.cpp" />
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_ins.cpp" />
@@ -203,7 +202,6 @@
     <ClInclude Include="tagging.h" />
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="Undo.h" />
-    <ClInclude Include="UpdateCheck.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="view_com.h" />
     <ClInclude Include="view_gen.h" />
