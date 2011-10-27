@@ -82,7 +82,7 @@
       <CompileAs>Default</CompileAs>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
-      <AdditionalIncludeDirectories>..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -176,7 +176,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
@@ -492,21 +492,51 @@
     </ProjectReference>
     <ProjectReference Include="..\extlib\soundtouch\soundtouch_10.vcxproj">
       <Project>{cf3c2ca5-5d45-4635-bba4-c1f435e10896}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\extlib\ungzip\ungzip_10.vcxproj">
       <Project>{94cd7910-649a-4075-9f33-7ebee614fd45}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\extlib\unlha\unlha_10.vcxproj">
       <Project>{fae39936-1dc7-40bb-ad3f-3b5b9e9ab0e8}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\extlib\unrar\unrar_10.vcxproj">
       <Project>{ff541ce2-daa1-4f84-9883-0a0f111baa0b}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\extlib\unzip\unzip_10.vcxproj">
       <Project>{44316f22-904e-48aa-b841-5a3a6ac77319}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\extlib\zlib-1.2.5\contrib\vstudio\vc10\zlibstat.vcxproj">
       <Project>{745dec58-ebb3-47a9-a9b8-4c6627c01bf8}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
