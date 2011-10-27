@@ -13,7 +13,6 @@
 #include "EffectVis.h"    	//rewbs.fxvis
 #include "PatternGotoDialog.h"
 #include "PatternRandomizer.h"
-#include "arrayutils.h"
 #include "view_pat.h"
 #include "View_gen.h"
 #include "misc_util.h"

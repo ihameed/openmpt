@@ -96,7 +96,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>5.0</Version>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
@@ -160,7 +160,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>5.0</Version>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
@@ -188,11 +188,11 @@
     <Link />
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractVstEditor.cpp" />
-    <ClCompile Include="ArrayUtils.cpp" />
     <ClCompile Include="AutoSaver.cpp" />
     <ClCompile Include="ChannelManagerDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
@@ -371,7 +371,6 @@
     <ClInclude Include="PatternRandomizerGUINote.h" />
     <ClInclude Include="PatternRandomizerGUIVolCmd.h" />
     <ClInclude Include="AbstractVstEditor.h" />
-    <ClInclude Include="ArrayUtils.h" />
     <ClInclude Include="AutoSaver.h" />
     <ClInclude Include="ChannelManagerDlg.h" />
     <ClInclude Include="ChildFrm.h" />
