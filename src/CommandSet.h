@@ -59,7 +59,7 @@ enum CommandID
     kcFileSave,
     kcFileSaveAs,
     kcFileSaveAsWave,
-    kcFileSaveAsMP3,
+    kcFileSaveAsMP3, //XXXih: trace this
     kcFileSaveMidi,
     kcFileExportCompat,
     kcPrevDocument,

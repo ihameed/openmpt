@@ -44,7 +44,6 @@ IMPLEMENT_SERIAL(CModDoc, CDocument, 0 /* schema number*/ )
 BEGIN_MESSAGE_MAP(CModDoc, CDocument)
     //{{AFX_MSG_MAP(CModDoc)
     ON_COMMAND(ID_FILE_SAVEASWAVE,    	OnFileWaveConvert)
-    ON_COMMAND(ID_FILE_SAVEASMP3,    	OnFileMP3Convert)
     ON_COMMAND(ID_FILE_SAVEMIDI,    	OnFileMidiConvert)
     ON_COMMAND(ID_FILE_SAVECOMPAT,    	OnFileCompatibilitySave)
     ON_COMMAND(ID_PLAYER_PLAY,    		OnPlayerPlay)
@@ -1680,63 +1679,6 @@ void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
         }
     }
 
-    m_SndFile.SetCurrentPos(pos);
-    CMainFrame::UpdateAudioParameters(TRUE);
-}
-
-
-void CModDoc::OnFileMP3Convert()
-//------------------------------
-{
-    int nFilterIndex = 0;
-    TCHAR sFName[_MAX_FNAME] = "";
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-
-    if ((!pMainFrm) || (!m_SndFile.GetType())) return;
-    _splitpath(GetPathName(), NULL, NULL, sFName, NULL);
-
-    FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(false, "mp3", sFName,
-        "MPEG Layer III Files (*.mp3)|*.mp3|Layer3 Wave Files (*.wav)|*.wav||",
-        CMainFrame::GetWorkingDirectory(DIR_EXPORT),
-        false,
-        &nFilterIndex);
-    if(files.abort) return;
-
-    MPEGLAYER3WAVEFORMAT wfx;
-    HACMDRIVERID hadid;
-
-    // will set default dir here because there's no setup option for export dir yet (feel free to add one...)
-    pMainFrm->SetDefaultDirectory(files.workingDirectory.c_str(), DIR_EXPORT, true);
-
-    TCHAR s[_MAX_PATH], fext[_MAX_EXT];
-    strcpy(s, files.first_file.c_str());
-    _splitpath(s, NULL, NULL, NULL, fext);
-    if (strlen(fext) <= 1)
-    {
-        int l = strlen(s) - 1;
-        if ((l >= 0) && (s[l] == '.')) s[l] = 0;
-        strcpy(fext, (nFilterIndex == 2) ? ".wav" : ".mp3");
-        strcat(s, fext);
-    }
-    CLayer3Convert wsdlg(&m_SndFile, pMainFrm);
-    if (!m_SndFile.song_name.empty()) wsdlg.m_bSaveInfoField = TRUE;
-    if (wsdlg.DoModal() != IDOK) return;
-    wsdlg.GetFormat(&wfx, &hadid);
-    // Saving as mpeg file
-    BOOL bplaying = FALSE;
-    UINT pos = m_SndFile.GetCurrentPos();
-    bplaying = TRUE;
-    pMainFrm->PauseMod();
-    m_SndFile.SetCurrentPos(0);
-
-    m_SndFile.m_dwSongFlags &= ~SONG_PATTERNLOOP;
-
-    // Saving file
-    CFileTagging *pTag = (wsdlg.m_bSaveInfoField) ? &wsdlg.m_FileTags : NULL;
-    CDoAcmConvert dwcdlg(&m_SndFile, s, &wfx.wfx, hadid, pTag, pMainFrm);
-    dwcdlg.m_dwFileLimit = wsdlg.m_dwFileLimit;
-    dwcdlg.m_dwSongLimit = wsdlg.m_dwSongLimit;
-    dwcdlg.DoModal();
     m_SndFile.SetCurrentPos(pos);
     CMainFrame::UpdateAudioParameters(TRUE);
 }
@@ -3595,7 +3537,6 @@ LRESULT CModDoc::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcViewSongProperties: SongProperties(); break;
 
         case kcFileSaveAsWave:    OnFileWaveConvert(); break;
-        case kcFileSaveAsMP3:    OnFileMP3Convert(); break;
         case kcFileSaveMidi:    OnFileMidiConvert(); break;
         case kcFileExportCompat:  OnFileCompatibilitySave(); break;
         case kcEstimateSongLength: OnEstimateSongLength(); break;

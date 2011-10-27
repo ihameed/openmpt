@@ -410,7 +410,6 @@ public:
 public:
     //{{AFX_MSG(CModDoc)
     afx_msg void OnFileWaveConvert();
-    afx_msg void OnFileMP3Convert();
     afx_msg void OnFileMidiConvert();
     afx_msg void OnFileCompatibilitySave();
     afx_msg void OnPlayerPlay();

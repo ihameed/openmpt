@@ -45,7 +45,6 @@
 #pragma warning(disable:4201)
 #include <mmsystem.h>
 #include <mmreg.h>
-#include <msacm.h>
 #include <afxdlgs.h>
 //#include <afxdhtml.h>
 #pragma warning(default:4201)

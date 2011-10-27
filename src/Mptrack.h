@@ -19,19 +19,6 @@
 class CModDoc;
 class CVstPluginManager;
 
-/////////////////////////////////////////////////////////////////////////////
-// ACM Functions (for dynamic linking)
-
-typedef VOID (ACMAPI *PFNACMMETRICS)(HACMOBJ, UINT, LPVOID);
-typedef MMRESULT (ACMAPI *PFNACMFORMATENUM)(HACMDRIVER, LPACMFORMATDETAILSA, ACMFORMATENUMCBA, uint32_t dwInstance, uint32_t fdwEnum);
-typedef MMRESULT (ACMAPI *PFNACMDRIVEROPEN)(LPHACMDRIVER, HACMDRIVERID, uint32_t);
-typedef MMRESULT (ACMAPI *PFNACMDRIVERCLOSE)(HACMDRIVER, uint32_t);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMOPEN)(LPHACMSTREAM, HACMDRIVER, LPWAVEFORMATEX, LPWAVEFORMATEX, LPWAVEFILTER, DWORD, DWORD, DWORD);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMCLOSE)(HACMSTREAM, uint32_t);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMSIZE)(HACMSTREAM, uint32_t, LPDWORD, uint32_t);
-typedef MMRESULT (ACMAPI *PFNACMSTREAMCONVERT)(HACMSTREAM, LPACMSTREAMHEADER, uint32_t);
-typedef MMRESULT (ACMAPI *PFNACMDRIVERDETAILS)(HACMDRIVERID, LPACMDRIVERDETAILS, uint32_t);
-
 
 /////////////////////////////////////////////////////////////////////////////
 // 16-colors DIB
@@ -130,7 +117,10 @@ public:
 protected:
     CMultiDocTemplate *m_pModTemplate;
     CVstPluginManager *m_pPluginManager;
-    BOOL m_bInitialized, m_bLayer3Present, m_bExWaveSupport, m_bDebugMode;
+    BOOL m_bInitialized;
+    BOOL m_bLayer3Present; //XXXih: trace this!
+    BOOL m_bExWaveSupport;
+    BOOL m_bDebugMode;
     uint32_t m_dwTimeStarted, m_dwLastPluginIdleCall;
     HANDLE m_hAlternateResourceHandle;
     // Default macro configuration
@@ -194,31 +184,9 @@ public:
     VOID ImportLocalizedStrings();
     BOOL GetLocalizedString(LPCSTR pszName, LPSTR pszStr, UINT cbSize);
 
-// ACM and MPEG Layer3 support
-protected:
-    HINSTANCE m_hACMInst;
-    HINSTANCE m_hBladeEnc, m_hLameEnc;
-    PFNACMFORMATENUM m_pfnAcmFormatEnum;
-    
 public:
-    BOOL InitializeACM(BOOL bNoAcm=FALSE);
-    BOOL UninitializeACM();
     BOOL InitializeDXPlugins();
     BOOL UninitializeDXPlugins();
-    static void AcmExceptionHandler();
-    MMRESULT AcmFormatEnum(HACMDRIVER had, LPACMFORMATDETAILSA pafd, ACMFORMATENUMCBA fnCallback, uint32_t dwInstance, uint32_t fdwEnum);
-    MMRESULT AcmDriverOpen(LPHACMDRIVER, HACMDRIVERID, uint32_t);
-    MMRESULT AcmDriverDetails(HACMDRIVERID hadid, LPACMDRIVERDETAILS padd, uint32_t fdwDetails);
-    MMRESULT AcmDriverClose(HACMDRIVER, uint32_t);
-    MMRESULT AcmStreamOpen(LPHACMSTREAM, HACMDRIVER, LPWAVEFORMATEX, LPWAVEFORMATEX, LPWAVEFILTER pwfltr, DWORD dwCallback, DWORD dwInstance, DWORD fdwOpen);
-    MMRESULT AcmStreamClose(HACMSTREAM, uint32_t);
-    MMRESULT AcmStreamSize(HACMSTREAM has, uint32_t cbInput, LPDWORD pdwOutputBytes, uint32_t fdwSize);
-    MMRESULT AcmStreamPrepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwPrepare);
-    MMRESULT AcmStreamUnprepareHeader(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwUnprepare);
-    MMRESULT AcmStreamConvert(HACMSTREAM has, LPACMSTREAMHEADER pash, uint32_t fdwConvert);
-
-protected:
-    static BOOL CALLBACK AcmFormatEnumCB(HACMDRIVERID, LPACMFORMATDETAILS, DWORD, DWORD);
 
 // Overrides
 public:
