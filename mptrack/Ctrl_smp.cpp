@@ -12,9 +12,6 @@
 #include "soundtouch/SoundTouch.h"
 #include "soundtouch/TDStretch.h"
 #include "soundtouch/SoundTouchDLL.h"
-#pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
-#include "smbPitchShift.cpp"
-#pragma warning(default:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 #include "modsmp_ctrl.h"
 #include <Shlwapi.h>
 
@@ -298,7 +295,8 @@ BOOL CCtrlSamples::OnInitDialog()
     combo = (CComboBox *)GetDlgItem(IDC_COMBO6);
     if(combo){
         // Deduce exponent from equation : MAX_FRAME_LENGTH = 2^exponent
-        int exponent = PowerOf2Exponent(MAX_FRAME_LENGTH);
+        //XXXih: deleted secret rabbit code; fix this
+        int exponent = 2; //PowerOf2Exponent(MAX_FRAME_LENGTH);
         // Allow FFT size from 2^8 (256) to 2^exponent (MAX_FRAME_LENGTH)
         for(int i = 8 ; i <= exponent ; i++){
             wsprintf(str,"%d",1<<i);
@@ -2388,7 +2386,8 @@ int CCtrlSamples::PitchShift(float pitch)
             // Re-initialize pitch-shifter with blank FFT before processing 1st chunk of current channel
             if(bufstart){
                 for(UINT j = 0 ; j < fft ; j++) buffer[j] = 0.0f;
-                smbPitchShift(pitch, fft, fft, ovs, (float)lSampleRate, buffer, outbuf, true);
+                //XXXih: deleted secret rabbit code; fix this
+                //smbPitchShift(pitch, fft, fft, ovs, (float)lSampleRate, buffer, outbuf, true);
             }
 
             // Convert current channel's data chunk to float
@@ -2410,7 +2409,8 @@ int CCtrlSamples::PitchShift(float pitch)
             if(bufend) for(UINT j = len ; j < len + finaloffset ; j++) buffer[j] = 0.0f;
 
             // Apply pitch shifting
-            smbPitchShift(pitch, len + finaloffset, fft, ovs, (float)lSampleRate, buffer, outbuf, false);
+            //XXXih: deleted secret rabbit code; fix this
+            //smbPitchShift(pitch, len + finaloffset, fft, ovs, (float)lSampleRate, buffer, outbuf, false);
 
             // Restore pitched-shifted float sample into original sample buffer
             ptr = (uint8_t *)pSmp->sample_data + (pos - inneroffset) * smpsize * nChn + i * smpsize;
