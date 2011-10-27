@@ -13,7 +13,6 @@
 //          http://www.antigrain.com
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "agg_math.h"
 #include "agg_trans_double_path.h"
 

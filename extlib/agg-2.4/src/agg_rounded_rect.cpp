@@ -17,7 +17,6 @@
 //
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include <math.h>
 #include "agg_rounded_rect.h"
 

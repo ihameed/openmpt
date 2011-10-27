@@ -13,7 +13,6 @@
 //          http://www.antigrain.com
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "agg_vcgen_bspline.h"
 
 namespace agg

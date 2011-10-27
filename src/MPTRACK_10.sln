@@ -4,7 +4,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mptrack", "mptrack_10.vcxpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib_json", "..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj", "{B84F7231-16CE-41D8-8C08-7B523FF4225B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "soundtouch", "..\extlib\soundtouch\soundtouch_10.vcxproj", "{CF3C2CA5-5D45-4635-BBA4-C1F435E10896}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoundTouch", "..\extlib\soundtouch\soundtouch_10.vcxproj", "{CF3C2CA5-5D45-4635-BBA4-C1F435E10896}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ungzip", "..\extlib\ungzip\ungzip_10.vcxproj", "{94CD7910-649A-4075-9F33-7EBEE614FD45}"
 EndProject
@@ -15,6 +15,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unzip", "..\extlib\unzip\unzip_10.vcxproj", "{44316F22-904E-48AA-B841-5A3A6AC77319}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlibstat", "..\extlib\zlib-1.2.5\contrib\vstudio\vc10\zlibstat.vcxproj", "{745DEC58-EBB3-47A9-A9B8-4C6627C01BF8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "agg-2.4", "..\extlib\agg-2.4\makefiles\windows\vs2010\agg-2.4\agg-2.4.vcxproj", "{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +129,18 @@ Global
 		{745DEC58-EBB3-47A9-A9B8-4C6627C01BF8}.ReleaseWithoutAsm|Win32.Build.0 = ReleaseWithoutAsm|Win32
 		{745DEC58-EBB3-47A9-A9B8-4C6627C01BF8}.ReleaseWithoutAsm|x64.ActiveCfg = ReleaseWithoutAsm|x64
 		{745DEC58-EBB3-47A9-A9B8-4C6627C01BF8}.ReleaseWithoutAsm|x64.Build.0 = ReleaseWithoutAsm|x64
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.Debug|Win32.Build.0 = Debug|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.Debug|x64.ActiveCfg = Debug|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.dummy|Win32.ActiveCfg = Debug|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.dummy|Win32.Build.0 = Debug|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.dummy|x64.ActiveCfg = Debug|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.Release|Win32.ActiveCfg = Release|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.Release|Win32.Build.0 = Release|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.Release|x64.ActiveCfg = Release|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.ReleaseWithoutAsm|Win32.ActiveCfg = Release|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.ReleaseWithoutAsm|Win32.Build.0 = Release|Win32
+		{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}.ReleaseWithoutAsm|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

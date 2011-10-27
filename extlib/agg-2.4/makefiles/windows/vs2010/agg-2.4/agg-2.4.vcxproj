@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8787FAE9-BB59-4076-B9F8-2E45DF7E512E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>agg24</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExceptionHandling>false</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>false</ExceptionHandling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\font_win32_tt\agg_font_win32_tt.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_arc.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_arrowhead.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_bezier_arc.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_bspline.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_curves.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_embedded_raster_fonts.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_gsv_text.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_image_filters.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_line_aa_basics.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_line_profile_aa.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_rounded_rect.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_sqrt_tables.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_trans_affine.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_trans_double_path.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_trans_single_path.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_trans_warp_magnifier.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vcgen_bspline.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vcgen_contour.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vcgen_dash.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vcgen_markers_term.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vcgen_smooth_poly1.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vcgen_stroke.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vpgen_clip_polygon.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vpgen_clip_polyline.cpp" />
+    <ClCompile Include="..\..\..\..\src\agg_vpgen_segmentator.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

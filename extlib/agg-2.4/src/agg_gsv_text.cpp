@@ -16,7 +16,6 @@
 // Class gsv_text
 //
 //----------------------------------------------------------------------------
-#include "stdafx.h"
 #include <string.h>
 #include <stdio.h>
 #include "agg_gsv_text.h"

@@ -13,8 +13,6 @@
 //          http://www.antigrain.com
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
-
 #include <stdio.h>
 #include "agg_font_win32_tt.h"
 #include "agg_bitset_iterator.h"
@@ -471,7 +469,7 @@ namespace agg
             }
             else
             {
-                m_cur_font = ::CreateFont(-h,                     // height of font
+                m_cur_font = ::CreateFontA(-h,                     // height of font
                                           w,                      // average character width
                                           0,                      // angle of escapement
                                           0,                      // base-line orientation angle

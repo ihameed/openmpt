@@ -13,7 +13,6 @@
 //          http://www.antigrain.com
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include <math.h>
 #include "agg_vpgen_segmentator.h"
 

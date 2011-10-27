@@ -17,7 +17,6 @@
 //
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "agg_arrowhead.h"
 
 namespace agg

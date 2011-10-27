@@ -16,7 +16,6 @@
 // Affine transformations
 //
 //----------------------------------------------------------------------------
-#include "stdafx.h"
 #include "agg_trans_affine.h"
 
 

@@ -191,32 +191,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\extlib\agg-2.4\font_win32_tt\agg_font_win32_tt.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_arc.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_arrowhead.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_bezier_arc.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_bspline.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_curves.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_embedded_raster_fonts.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_gsv_text.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_image_filters.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_aa_basics.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_line_profile_aa.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_rounded_rect.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_sqrt_tables.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_affine.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_double_path.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_single_path.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_trans_warp_magnifier.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_bspline.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_contour.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_dash.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_markers_term.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_smooth_poly1.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vcgen_stroke.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polygon.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_clip_polyline.cpp" />
-    <ClCompile Include="..\extlib\agg-2.4\src\agg_vpgen_segmentator.cpp" />
     <ClCompile Include="AbstractVstEditor.cpp" />
     <ClCompile Include="ArrayUtils.cpp" />
     <ClCompile Include="AutoSaver.cpp" />
@@ -491,6 +465,14 @@
     <None Include="VTune\mptrack.vpj" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\extlib\agg-2.4\makefiles\windows\vs2010\agg-2.4\agg-2.4.vcxproj">
+      <Project>{8787fae9-bb59-4076-b9f8-2e45df7e512e}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
     <ProjectReference Include="..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj">
       <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
       <Private>true</Private>

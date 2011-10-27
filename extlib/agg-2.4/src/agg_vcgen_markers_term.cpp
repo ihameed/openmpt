@@ -17,7 +17,6 @@
 //
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "agg_vcgen_markers_term.h"
 
 namespace agg

@@ -17,7 +17,6 @@
 //
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "agg_vcgen_smooth_poly1.h"
 
 namespace agg

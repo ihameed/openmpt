@@ -17,7 +17,6 @@
 //
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include <math.h>
 #include "agg_vcgen_contour.h"
 

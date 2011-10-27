@@ -13,7 +13,6 @@
 //          http://www.antigrain.com
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include <math.h>
 #include "agg_trans_warp_magnifier.h"
 

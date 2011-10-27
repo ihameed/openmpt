@@ -13,7 +13,6 @@
 //          http://www.antigrain.com
 //----------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "agg_vpgen_clip_polygon.h"
 #include "agg_clip_liang_barsky.h"
 
