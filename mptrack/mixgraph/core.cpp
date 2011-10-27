@@ -134,6 +134,7 @@ core::~core() {
     for (size_t idx = 0; idx < modplug::mixgraph::MAX_PHYSICAL_CHANNELS; ++idx) {
         channel_vertices[idx] = nullptr;
     }
+    channel_bypass = nullptr;
 
     debug_log("destroyed core");
 }
