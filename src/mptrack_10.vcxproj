@@ -44,12 +44,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\bin\$(Configuration)\</OutDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\bin\$(Configuration)\</OutDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)..\bin\build\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)..\bin\build\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(ProjectDir)..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(ProjectDir)..\bin\build\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -72,10 +74,10 @@
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Debug/mptrack.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)..\bin\build\$(Configuration)\mptrack.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(ProjectDir)..\bin\build\$(Configuration)\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)..\bin\build\$(Configuration)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)..\bin\build\$(Configuration)\</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>
@@ -86,6 +88,7 @@
       <PreprocessKeepComments>false</PreprocessKeepComments>
       <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -94,7 +97,6 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\Debug/mptrack.exe</OutputFile>
       <Version>5.0</Version>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
@@ -102,9 +104,6 @@
       <DelayLoadDLLs>OpenMPT_SoundTouch_i16.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
-      <ProgramDatabaseFile>.\Debug/mptrack.pdb</ProgramDatabaseFile>
-      <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>.\Debug/mptrack.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -114,6 +113,9 @@
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+    <BuildLog>
+      <Path>$(ProjectDir)..\bin\build\$(Configuration)\$(MSBuildProjectName).log</Path>
+    </BuildLog>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -137,10 +139,10 @@
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Release/mptrack.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)..\bin\build\$(Configuration)\mptrack.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(ProjectDir)..\bin\build\$(Configuration)\</AssemblerListingLocation>
+      <ObjectFileName>$(ProjectDir)..\bin\build\$(Configuration)\</ObjectFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)..\bin\build\$(Configuration)\</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
@@ -150,7 +152,6 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
@@ -160,15 +161,12 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <Version>5.0</Version>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>OpenMPT_SoundTouch_i16.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>.\Release/mptrack.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -179,16 +177,17 @@
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+    <BuildLog>
+      <Path>$(ProjectDir)..\bin\build\$(Configuration)\$(MSBuildProjectName).log</Path>
+    </BuildLog>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <WarningLevel>Level3</WarningLevel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
+    <Link />
     <Link>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>OpenMPT_SoundTouch_i16.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

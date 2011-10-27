@@ -424,7 +424,7 @@ void TestLoadSaveFile()
     if(theFile.Mid(theFile.GetLength() - 6, 5) != "Debug")
     	return;
     theFile.Delete(theFile.GetLength() - 6, 6);
-    theFile.Append("test/test.");
+    theFile.Append("../test/test.");
 
     // Test file loading
     CModDoc *pModDoc = (CModDoc *)theApp.OpenDocumentFile(theFile + "mptm");
