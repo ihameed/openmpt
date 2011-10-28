@@ -174,11 +174,6 @@ public:
     LPCSTR GetConfigPath() const { return m_szConfigDirectory; }
     void SetupPaths();
 
-// Splash Screen
-protected:
-    VOID StartSplashScreen();
-    VOID StopSplashScreen();
-
 // Localized strings
 public:
     VOID ImportLocalizedStrings();

@@ -314,11 +314,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 267, 254
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "About OpenMPT"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_BITMAP1,"Static",SS_BLACKRECT | SS_NOTIFY | SS_CENTERIMAGE,5,3,256,81,WS_EX_CLIENTEDGE
     CTEXT           "",IDC_CREDITS,5,116,256,72,0,WS_EX_STATICEDGE
     DEFPUSHBUTTON   "OK",IDOK,229,235,32,14,WS_GROUP
     EDITTEXT        IDC_EDIT1,5,194,221,55,ES_CENTER | ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL,WS_EX_STATICEDGE
@@ -1971,7 +1970,6 @@ IDR_MODULETYPE          ICON                    "res\\moddoc.ico"
 // Bitmap
 //
 
-IDB_MPTRACK             BITMAP                  "res\\mptrack.bmp"
 IDB_IMAGELIST           BITMAP                  "res\\img_list.bmp"
 IDB_PATTERNS            BITMAP                  "res\\patterns.bmp"
 IDB_PATTERNVIEW         BITMAP                  "res\\view_pat.bmp"
@@ -2792,7 +2790,6 @@ END
 // Bitmap
 //
 
-IDB_SPLASHNOFOLDFIN     BITMAP                  "res\\splashno.bmp"
 IDB_MAINBAR             BITMAP                  "res\\MAINBAR.BMP"
 
 /////////////////////////////////////////////////////////////////////////////

@@ -232,7 +232,9 @@ void ModSequence::resize(ORDERINDEX nNewSize, PATTERNINDEX nFill)
     	const PATTERNINDEX* const pOld = m_pArray;
     	m_nCapacity = nNewSize + 100;
     	m_pArray = new PATTERNINDEX[m_nCapacity];
-        std::copy_n(pOld, m_nSize, m_pArray);
+        if (m_nSize) {
+            std::copy_n(pOld, m_nSize, m_pArray);
+        }
     	std::fill(m_pArray + m_nSize, m_pArray + nNewSize, nFill);
     	m_nSize = nNewSize;
     	if (m_bDeletableArray)

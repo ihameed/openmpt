@@ -71,7 +71,6 @@
 #define IDB_IMAGELIST                   301
 #define IDB_PATTERNS                    302
 #define IDB_PATTERNVIEW                 303
-#define IDB_MPTRACK                     304
 #define IDB_COLORSETUP                  305
 #define IDB_VUMETERS                    306
 #define IDB_SPLASHSCREEN                307
@@ -101,7 +100,6 @@
 #define IDD_EFFECTVISUALIZER            426
 #define IDB_VISNODE                     427
 #define IDB_SPLASHTEST                  432
-#define IDB_SPLASHNOFOLDFIN             435
 #define IDR_VSTMENU                     436
 #define IDB_VISPCNODE                   437
 #define IDD_DEFAULTPLUGINEDITOR         438
