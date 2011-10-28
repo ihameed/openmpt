@@ -137,7 +137,6 @@ protected:
 // -> DESC="route PC keyboard inputs to midi in mechanism"
     int ignorekey;
 // -! BEHAVIOUR_CHANGE#0018
-    CPatternRandomizer *m_pRandomizer;    //rewbs.fxVis
 public:
     CEffectVis    *m_pEffectVis;    //rewbs.fxVis
     COpenGLEditor *m_pOpenGLEditor;    //rewbs.fxVis
@@ -308,7 +307,6 @@ protected:
     afx_msg void OnInterpolateEffect();
     afx_msg void OnInterpolateNote();
     afx_msg void OnVisualizeEffect();    	//rewbs.fxvis
-    afx_msg void OnOpenRandomizer();    	//rewbs.fxvis
     afx_msg void OnTransposeUp();
     afx_msg void OnTransposeDown();
     afx_msg void OnTransposeOctUp();

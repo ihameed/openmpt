@@ -255,7 +255,7 @@ enum CommandID
     kcPatternInterpolateVol,
     kcPatternInterpolateEffect,
     kcPatternVisualizeEffect,
-    kcPatternOpenRandomizer,
+    kcPatternOpenRandomizer, //XXXih: delete me!
     kcPatternGoto,
     kcPatternSetInstrument,
     kcPatternGrowSelection,

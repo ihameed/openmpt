@@ -318,12 +318,6 @@
     <ClCompile Include="view_tre.cpp" />
     <ClCompile Include="VSTEditor.cpp" />
     <ClCompile Include="vstplug.cpp" />
-    <ClCompile Include="PatternRandomizer.cpp" />
-    <ClCompile Include="PatternRandomizerGUI.cpp" />
-    <ClCompile Include="PatternRandomizerGUIEffect.cpp" />
-    <ClCompile Include="PatternRandomizerGUIInstrument.cpp" />
-    <ClCompile Include="PatternRandomizerGUINote.cpp" />
-    <ClCompile Include="PatternRandomizerGUIVolCmd.cpp" />
     <ClCompile Include="TuningDialog.cpp" />
     <ClCompile Include="tuningRatioMapWnd.cpp" />
     <ClCompile Include="test\test.cpp" />
@@ -364,12 +358,6 @@
     <ClInclude Include="mixgraph\vertex.h" />
     <ClInclude Include="mixgraph\vst_vertex.h" />
     <ClInclude Include="mixer\mixutil.h" />
-    <ClInclude Include="PatternRandomizer.h" />
-    <ClInclude Include="PatternRandomizerGUI.h" />
-    <ClInclude Include="PatternRandomizerGUIEffect.h" />
-    <ClInclude Include="PatternRandomizerGUIInstrument.h" />
-    <ClInclude Include="PatternRandomizerGUINote.h" />
-    <ClInclude Include="PatternRandomizerGUIVolCmd.h" />
     <ClInclude Include="AbstractVstEditor.h" />
     <ClInclude Include="AutoSaver.h" />
     <ClInclude Include="ChannelManagerDlg.h" />

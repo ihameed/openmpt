@@ -12,7 +12,6 @@
 
 #include "EffectVis.h"    	//rewbs.fxvis
 #include "PatternGotoDialog.h"
-#include "PatternRandomizer.h"
 #include "view_pat.h"
 #include "View_gen.h"
 #include "misc_util.h"
@@ -101,7 +100,6 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_COMMAND(ID_PATTERN_INTERPOLATE_EFFECT,    OnInterpolateEffect)
     ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,    	OnInterpolateNote)
     ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,    	OnVisualizeEffect)		//rewbs.fxvis
-    ON_COMMAND(ID_PATTERN_OPEN_RANDOMIZER,    	OnOpenRandomizer)
     ON_COMMAND(ID_GROW_SELECTION,    			OnGrowSelection)
     ON_COMMAND(ID_SHRINK_SELECTION,    			OnShrinkSelection)
     ON_COMMAND(ID_PATTERN_SETINSTRUMENT,    	OnSetSelInstrument)
@@ -136,7 +134,6 @@ CViewPattern::CViewPattern()
 {
     m_pOpenGLEditor = NULL; //rewbs.fxvis
     m_pEffectVis = NULL; //rewbs.fxvis
-    m_pRandomizer = NULL;
     m_bLastNoteEntryBlocked=false;
 
     m_nMenuOnChan = 0;
@@ -704,11 +701,6 @@ void CViewPattern::OnDestroy()
         m_pGotoWnd->DestroyWindow();
         delete m_pGotoWnd;
         m_pGotoWnd = NULL;
-    }
-
-    if (m_pRandomizer) {
-        delete m_pRandomizer;
-        m_pRandomizer=NULL;
     }
 
     CModScrollView::OnDestroy();
@@ -2261,28 +2253,6 @@ void CViewPattern::OnInterpolateVolume()
     Interpolate(VOL_COLUMN);
 }
 
-void CViewPattern::OnOpenRandomizer()
-//--------------------------------------
-{
-    CModDoc *pModDoc = GetDocument();
-    if (pModDoc) {
-        if (m_pRandomizer) {
-            if (m_pRandomizer->isGUIVisible()) { //window already there, update data
-                //m_pRandomizer->UpdateSelection(rowStart, rowEnd, nchn, pModDoc, m_nPattern);
-            } else {
-                m_pRandomizer->showGUI();
-            }
-        }
-        else {
-            //Open window & send data
-            m_pRandomizer = new CPatternRandomizer(this);
-            if (m_pRandomizer) {
-                m_pRandomizer->showGUI();
-            }
-        }
-    }
-}
-
 //begin rewbs.fxvis
 void CViewPattern::OnVisualizeEffect()
 //--------------------------------------
@@ -3646,7 +3616,6 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcPatternInterpolateVol:    	OnInterpolateVolume(); return wParam;
         case kcPatternInterpolateEffect:    OnInterpolateEffect(); return wParam;
         case kcPatternVisualizeEffect:    	OnVisualizeEffect(); return wParam;
-        case kcPatternOpenRandomizer:    	OnOpenRandomizer(); return wParam;
         case kcPatternGrowSelection:    	OnGrowSelection(); return wParam;
         case kcPatternShrinkSelection:    	OnShrinkSelection(); return wParam;
 
