@@ -10,8 +10,6 @@
 #include "legacy_soundlib/dlsbank.h"
 #include "legacy_soundlib/snddev.h"
 #include "vstplug.h"
-#include "CreditStatic.h"
-#include "hyperEdit.h"
 #include "commctrl.h"
 #include "version.h"
 #include "test/test.h"
@@ -1203,10 +1201,6 @@ void CTrackApp::OnHelpSearch()
 class CAboutDlg: public CDialog
 //=============================
 {
-protected:
-    CCreditStatic m_static;
-    CHyperEdit m_heContact;
-
 public:
     CAboutDlg() {}
     ~CAboutDlg();
@@ -1216,7 +1210,6 @@ protected:
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     virtual void OnCancel();
-    virtual void DoDataExchange(CDataExchange* pDX);
 };
 
 static CAboutDlg *gpAboutDlg = NULL;
@@ -1226,15 +1219,6 @@ CAboutDlg::~CAboutDlg()
 //---------------------
 {
     gpAboutDlg = NULL;
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-//------------------------------------------------------
-{
-    CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CModTypeDlg)
-    DDX_Control(pDX, IDC_EDIT1,    		m_heContact);
-    //}}AFX_DATA_MAP
 }
 
 void CAboutDlg::OnOK()
@@ -1262,71 +1246,57 @@ BOOL CAboutDlg::OnInitDialog()
     SetDlgItemText(IDC_EDIT2, s);
     SetDlgItemText(IDC_EDIT3, CString("OpenMPT ") + MptVersion::str + " (development build)");
 
-    m_heContact.SetWindowText(
-        "Contact / Discussion:\r\n"
-        "http://forum.openmpt.org/\r\n"
-        "\r\nUpdates:\r\n"
-        "http://sourceforge.net/projects/modplug/");
-
-    const char* const pArrCredit = { 
-        "OpenMPT / ModPlug Tracker|"
-        "Copyright � 2004-2011 Contributors|"
-        "Copyright � 1997-2003 Olivier Lapicque (olivier@modplug.com)|"
-        "|"
-        "Contributors:|"
-        "Ahti Lepp�nen (2005-2011)|"
-        "Johannes Schultz (2008-2011)|"
-        "Robin Fernandes (2004-2007)|"
-        "Sergiy Pylypenko (2007)|"
-        "Eric Chavanon (2004-2005)|"
-        "Trevor Nunes (2004)|"
-        "Olivier Lapicque (1997-2003)|"
-        "|"
-        "Thanks to:||"
-        "Konstanty for the XMMS-ModPlug resampling implementation |"
-        "http://modplug-xmms.sourceforge.net/|"
-        "Stephan M. Bernsee for pitch shifting source code|"
-        "http://www.dspdimension.com|"
-        "Olli Parviainen for SoundTouch Library (time stretching)|"
-        "http://www.surina.net/soundtouch/|"
-        "Hermann Seib for his example VST Host implementation|"
-        "http://www.hermannseib.com/english/vsthost.htm|"
-        "Ian Luck for UNMO3|"
-        "http://www.un4seen.com/mo3.html|"
-        "Jean-loup Gailly and Mark Adler for zlib|"
-        "http://zlib.net/|"
-        "coda for sample drawing code|"
-        "http://coda.s3m.us/|"
-        "Storlek for all the IT compatibility hints and testcases|"
-        "as well as the IMF, OKT and ULT loaders|"
-        "http://schismtracker.org/|"
-        "kode54 for the PSM and J2B loaders|"
-        "http://kode54.foobar2000.org/|"
-        "Pel K. Txnder for the scrolling credits control :)|"
-        "http://tinyurl.com/4yze8|"
-        "|The people at ModPlug forums for crucial contribution|"
-        "in the form of ideas, testing and support; thanks|"
-        "particularly to:|"
-        "33, Anboi, BooT-SectoR-ViruZ, Bvanoudtshoorn|"
-        "christofori, Diamond, Ganja, Georg, Goor00|"
-        "KrazyKatz, LPChip, Nofold, Rakib, Sam Zen|"
-        "Skaven, Skilletaudio, Snu, Squirrel Havoc, Waxhead|"
-        "|||||||"
-        "VST PlugIn Technology by Steinberg Media Technologies GmbH|"
-        "ASIO Technology by Steinberg Media Technologies GmbH|"
-        "||||||" 
+    const char* const credits_and_authors = {
+        "Find the source at: http://github.com/xaimus/openmpt/\r\n"
+        "OpenMPT / ModPlug Tracker\r\n"
+        "Copyright (c) 2004-2011 Contributors\r\n"
+        "Copyright (c) 1997-2003 Olivier Lapicque (olivier@modplug.com)\r\n"
+        "\r\n"
+        "Contributors:\r\n"
+        "Ahti Leppanen (2005-2011)\r\n"
+        "Johannes Schultz (2008-2011)\r\n"
+        "Robin Fernandes (2004-2007)\r\n"
+        "Sergiy Pylypenko (2007)\r\n"
+        "Eric Chavanon (2004-2005)\r\n"
+        "Trevor Nunes (2004)\r\n"
+        "Olivier Lapicque (1997-2003)\r\n"
+        "\r\n"
+        "Thanks to:\r\n\r\n"
+        "Konstanty for the XMMS-ModPlug resampling implementation\r\n"
+        "http://modplug-xmms.sourceforge.net/\r\n"
+        "Stephan M. Bernsee for pitch shifting source code\r\n"
+        "http://www.dspdimension.com\r\n"
+        "Olli Parviainen for SoundTouch Library (time stretching)\r\n"
+        "http://www.surina.net/soundtouch/\r\n"
+        "Hermann Seib for his example VST Host implementation\r\n"
+        "http://www.hermannseib.com/english/vsthost.htm\r\n"
+        "Ian Luck for UNMO3\r\n"
+        "http://www.un4seen.com/mo3.html\r\n"
+        "Jean-loup Gailly and Mark Adler for zlib\r\n"
+        "http://zlib.net/\r\n"
+        "coda for sample drawing code\r\n"
+        "http://coda.s3m.us/\r\n"
+        "Storlek for all the IT compatibility hints and testcases\r\n"
+        "as well as the IMF, OKT and ULT loaders\r\n"
+        "http://schismtracker.org/\r\n"
+        "kode54 for the PSM and J2B loaders\r\n"
+        "http://kode54.foobar2000.org/\r\n"
+        "Pel K. Txnder for the scrolling credits control :)\r\n"
+        "http://tinyurl.com/4yze8\r\n"
+        "\r\nThe people at ModPlug forums for crucial contribution\r\n"
+        "in the form of ideas, testing and support; thanks\r\n"
+        "particularly to:\r\n"
+        "33, Anboi, BooT-SectoR-ViruZ, Bvanoudtshoorn\r\n"
+        "christofori, Diamond, Ganja, Georg, Goor00\r\n"
+        "KrazyKatz, LPChip, Nofold, Rakib, Sam Zen\r\n"
+        "Skaven, Skilletaudio, Snu, Squirrel Havoc, Waxhead\r\n"
+        "\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+        "VST PlugIn Technology by Steinberg Media Technologies GmbH\r\n"
+        "ASIO Technology by Steinberg Media Technologies GmbH\r\n"
+        "\r\n\r\n\r\n\r\n\r\n\r\n" 
     };
-
-    m_static.SubclassDlgItem(IDC_CREDITS,this);
-    m_static.SetCredits(pArrCredit);
-    m_static.SetSpeed(DISPLAY_SLOW);
-    m_static.SetColor(BACKGROUND_COLOR, RGB(138, 165, 219)); // Background Colour
-    m_static.SetTransparent(); // Set parts of bitmaps with RGB(192,192,192) transparent
-    m_static.SetGradient(GRADIENT_LEFT_DARK);  // Background goes from blue to black from left to right
-    // m_static.SetBkImage(IDB_BITMAP1); // Background image
-    m_static.StartScrolling();
-    return TRUE;  // return TRUE unless you set the focus to a control
-                    // EXCEPTION: OCX Property Pages should return FALSE
+    SetDlgItemText(IDC_HERPDERP, credits_and_authors);
+    return TRUE;
 }
 
 

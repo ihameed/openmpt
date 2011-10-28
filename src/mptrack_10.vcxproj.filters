@@ -8,7 +8,6 @@
     <ClCompile Include="CleanupSong.cpp" />
     <ClCompile Include="ColourEdit.cpp" />
     <ClCompile Include="CommandSet.cpp" />
-    <ClCompile Include="CreditStatic.cpp" />
     <ClCompile Include="ctrl_com.cpp" />
     <ClCompile Include="ctrl_gen.cpp" />
     <ClCompile Include="ctrl_ins.cpp" />
@@ -21,9 +20,6 @@
     <ClCompile Include="EffectVis.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
-    <ClCompile Include="HyperEdit.cpp" />
-    <ClCompile Include="HyperEdit2.cpp" />
-    <ClCompile Include="HyperEdit3.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="KeyConfigDlg.cpp" />
     <ClCompile Include="mainbar.cpp" />
@@ -148,7 +144,6 @@
     <ClInclude Include="CleanupSong.h" />
     <ClInclude Include="ColourEdit.h" />
     <ClInclude Include="CommandSet.h" />
-    <ClInclude Include="CreditStatic.h" />
     <ClInclude Include="ctrl_com.h" />
     <ClInclude Include="ctrl_gen.h" />
     <ClInclude Include="ctrl_ins.h" />

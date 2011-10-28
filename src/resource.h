@@ -939,6 +939,7 @@
 #define IDC_INSTR_RAMPDOWN              2438
 #define IDC_CUSTOM1                     2438
 #define IDC_INSTR_RAMPDOWN_SPIN         2439
+#define IDC_HERPDERP                    2446
 #define ID_FILE_NEWMOD                  32771
 #define ID_FILE_NEWXM                   32772
 #define ID_FILE_NEWS3M                  32773
@@ -1205,7 +1206,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        531
 #define _APS_NEXT_COMMAND_VALUE         60460
-#define _APS_NEXT_CONTROL_VALUE         2439
+#define _APS_NEXT_CONTROL_VALUE         2447
 #define _APS_NEXT_SYMED_VALUE           901
 #endif
 #endif
