@@ -8,6 +8,8 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include <portaudiocpp/PortAudioCpp.hxx>
+
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
 #include "inputhandler.h"
@@ -454,6 +456,8 @@ public:
 
     // Low-Level Audio
 public:
+    portaudio::AutoSystem pa_auto_system;
+    portaudio::System &pa_system;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;

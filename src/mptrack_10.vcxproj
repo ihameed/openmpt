@@ -88,7 +88,7 @@
       <CompileAs>Default</CompileAs>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessKeepComments>false</PreprocessKeepComments>
-      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\extlib\pa_stable_v19_20111121\include;..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -101,7 +101,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>5.0</Version>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
@@ -135,7 +135,7 @@
       <AdditionalOptions>/EHsc /O2 /Zc:auto %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\extlib\pa_stable_v19_20111121\include;..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;ENABLE_MMX;ENABLE_EQ;MODPLUG_TRACKER;NO_PACKING;HAVE_DOT_NET;ENABLE_AMD;ENABLE_SSE;ENABLE_AMDNOW;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -168,7 +168,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>5.0</Version>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
@@ -193,11 +193,12 @@
     <ClCompile>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <ExceptionHandling>Sync</ExceptionHandling>
+      <AdditionalIncludeDirectories>..\extlib\zlib-1.2.5;..\extlib\agg-2.4\font_win32_tt;..\extlib\agg-2.4\include;..\extlib\jsoncpp-src-0.5.0\include;..\extlib\WDL\include;..\extlib\unlha;..\extlib\unzip;..\extlib\soundtouch;..\extlib\unrar;..\extlib\pa_stable_v19_20111121\include;..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\soundlib;..\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link />
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;strmiids.lib;dmoguids.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;version.lib;opengl32.lib;glu32.lib;Rpcrt4.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -462,6 +463,22 @@
     </ProjectReference>
     <ProjectReference Include="..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj">
       <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\pa_stable_v19_20111121\bindings\cpp\build\vc7_1\static_library.vcxproj">
+      <Project>{d18ea0c9-8c65-441d-884c-55eb43a84f2a}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\extlib\pa_stable_v19_20111121\build\msvc\portaudio.vcxproj">
+      <Project>{0a18a071-125e-442f-aff7-a3f68abecf99}</Project>
       <Private>true</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>

@@ -294,7 +294,8 @@ static UINT indicators[] =
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame construction/destruction
 //#include <direct.h>
-CMainFrame::CMainFrame()
+CMainFrame::CMainFrame() :
+    pa_auto_system(), pa_system(portaudio::System::instance())
 //----------------------
 {
     m_bModTreeHasFocus = false;    //rewbs.customKeys

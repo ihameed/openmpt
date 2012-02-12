@@ -446,7 +446,7 @@ struct mixgraph_viewstate_t {
 
         selection_state.active = false;
 
-        font_manager.init("Helvetica LT Std", flip_y);
+        font_manager.init("HelveticaNeueLt Std Lt", flip_y);
         //font_manager.init("Tahoma", flip_y);
 
         //ftype_ = agg::glyph_ren_agg_gray8;
@@ -473,7 +473,7 @@ struct mixgraph_viewstate_t {
             auto key = item.first;
             auto arrow = item.second;
 
-            arrow_guistate_t *guiarrow = new arrow_guistate_t;
+            auto guiarrow = new arrow_guistate_t;
             arrow_guistate.insert(std::make_pair(item.first, guiarrow));
 
             auto &head = vertex_guistate[arrow->head->id];

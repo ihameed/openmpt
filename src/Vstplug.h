@@ -10,10 +10,6 @@
     #include <vstfxstore.h>
 #endif
 
-#define kBuzzMagic    'Buzz'
-#define kDmoMagic    'DXMO'
-
-
 class CVstPluginManager;
 class CVstPlugin;
 class CVstEditor;
@@ -248,9 +244,6 @@ public:
     BOOL CreateMixPlugin(PSNDMIXPLUGIN, CSoundFile*);
     VOID OnIdle();
     static void ReportPlugException(LPCSTR format,...);
-
-protected:
-    VOID EnumerateDirectXDMOs();
 
 protected:
     VstIntPtr VstCallback(AEffect *effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void *ptr, float opt);
