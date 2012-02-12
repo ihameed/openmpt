@@ -156,7 +156,6 @@ LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
 UINT CMainFrame::gdwIdleTime = 0;
-uint32_t CMainFrame::deprecated_m_dwSoundSetup = SOUNDSETUP_SECONDARY;
 uint32_t CMainFrame::deprecated_m_nChannels = 2;
 uint32_t CMainFrame::m_dwQuality = 0;
 uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
@@ -420,7 +419,6 @@ void CMainFrame::LoadIniSettings()
     uint32_t defaultDevice = 0; //XXXih: portaudio
 
     m_nWaveDevice = GetPrivateProfileLong("Sound Settings", "WaveDevice", defaultDevice, iniFile);
-    deprecated_m_dwSoundSetup = GetPrivateProfileDWord("Sound Settings", "SoundSetup", SOUNDSETUP_SECONDARY, iniFile);
     m_dwQuality = GetPrivateProfileDWord("Sound Settings", "Quality", 0, iniFile);
     m_nSrcMode = GetPrivateProfileDWord("Sound Settings", "SrcMode", SRCMODE_POLYPHASE, iniFile);
     deprecated_m_nBitsPerSample = GetPrivateProfileDWord("Sound Settings", "BitsPerSample", 16, iniFile);
@@ -549,7 +547,6 @@ bool CMainFrame::LoadRegistrySettings()
 
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    m_csRegKey, 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
-        registry_query_value(key, "SoundSetup", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_dwSoundSetup, &dwDWORDSize);
         registry_query_value(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&m_dwQuality, &dwDWORDSize);
         registry_query_value(key, "SrcMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nSrcMode, &dwDWORDSize);
         registry_query_value(key, "PreAmp", NULL, &dwREG_DWORD, (LPBYTE)&m_nPreAmp, &dwDWORDSize);
@@ -950,7 +947,6 @@ void CMainFrame::SaveIniSettings()
     }
     
     WritePrivateProfileLong("Sound Settings", "WaveDevice", m_nWaveDevice, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "SoundSetup", deprecated_m_dwSoundSetup, iniFile);
     WritePrivateProfileDWord("Sound Settings", "Quality", m_dwQuality, iniFile);
     WritePrivateProfileDWord("Sound Settings", "SrcMode", m_nSrcMode, iniFile);
     WritePrivateProfileDWord("Sound Settings", "BitsPerSample", deprecated_m_nBitsPerSample, iniFile);
@@ -1284,9 +1280,8 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
         }
         WaveFormat.SubFormat = guid_MEDIASUBTYPE_PCM;
     }
-    if (deprecated_m_dwSoundSetup & SOUNDSETUP_STREVERSE) CSoundFile::gdwSoundSetup |= SNDMIX_REVERSESTEREO;
-    else CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
-    m_pSndFile->deprecated_SetWaveConfig(samplespersec, bits, channels, (deprecated_m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) ? TRUE : FALSE);
+    CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
+    m_pSndFile->deprecated_SetWaveConfig(samplespersec, bits, channels, TRUE);
     gbStopSent = FALSE;
     m_pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
     m_pSndFile->UPDATEDSPEFFECTS();
@@ -1462,17 +1457,11 @@ void CMainFrame::UpdateAudioParameters(BOOL bReset)
     CSoundFile::deprecated_SetWaveConfig(this->stream_settings.sample_rate,
             deprecated_m_nBitsPerSample,
             deprecated_m_nChannels,
-            (deprecated_m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) ? TRUE : FALSE);
-    if (deprecated_m_dwSoundSetup & SOUNDSETUP_STREVERSE)
-        CSoundFile::gdwSoundSetup |= SNDMIX_REVERSESTEREO;
-    else
-        CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
-    
+            TRUE);
+    CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     // Soft panning
-    if (deprecated_m_dwSoundSetup & SOUNDSETUP_SOFTPANNING)
-        CSoundFile::gdwSoundSetup |= SNDMIX_SOFTPANNING;
-    else
-        CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
+    CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
+
     if (m_dwPatternSetup & PATTERN_MUTECHNMODE)
         CSoundFile::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
     else
@@ -2142,7 +2131,7 @@ void CMainFrame::OnViewOptions()
         
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
-    COptionsSoundcard sounddlg(44100, deprecated_m_dwSoundSetup, deprecated_m_nBitsPerSample, deprecated_m_nChannels, 75, m_nWaveDevice);
+    COptionsSoundcard sounddlg(44100, 0, deprecated_m_nBitsPerSample, deprecated_m_nChannels, 75, m_nWaveDevice);
     COptionsKeyboard keyboard;
     COptionsColors colors;
     COptionsPlayer playerdlg;
