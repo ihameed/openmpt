@@ -1909,18 +1909,15 @@ BOOL CTrackApp::UninitializeDXPlugins()
     iPlug = 0;
     while (pPlug)
     {
-        if (pPlug->dwPluginId1 != kDmoMagic)
+        s[0] = 0;
+        wsprintf(tmp, "Plugin%d", iPlug);
+        strcpy(s, pPlug->szDllPath);
+        if(theApp.IsPortableMode())
         {
-            s[0] = 0;
-            wsprintf(tmp, "Plugin%d", iPlug);
-            strcpy(s, pPlug->szDllPath);
-            if(theApp.IsPortableMode())
-            {
-                CMainFrame::AbsolutePathToRelative(s);
-            }
-            WritePrivateProfileString("VST Plugins", tmp, s, m_szConfigFileName);
-            iPlug++;
+            CMainFrame::AbsolutePathToRelative(s);
         }
+        WritePrivateProfileString("VST Plugins", tmp, s, m_szConfigFileName);
+        iPlug++;
         pPlug = pPlug->pNext;
     }
     wsprintf(s, "%d", iPlug);

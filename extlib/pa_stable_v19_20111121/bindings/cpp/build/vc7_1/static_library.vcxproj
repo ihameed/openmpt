@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D18EA0C9-8C65-441D-884C-55EB43A84F2A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../lib/\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../../lib/\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../include/;../../../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ProgramDataBaseFileName>$(IntDir)vc71.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)portaudiocpp-vc7_1-d.lib</OutputFile>
+      <IgnoreSpecificDefaultLibraries>strmiids.lib</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>../../include/;../../../../include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <ProgramDataBaseFileName>$(IntDir)vc71.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)portaudiocpp-vc7_1-r.lib</OutputFile>
+      <IgnoreSpecificDefaultLibraries>strmiids.lib</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\portaudiocpp\AsioDeviceAdapter.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\BlockingStream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\CallbackInterface.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\CallbackStream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\CFunCallbackStream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\CppFunCallbackStream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\Device.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\DirectionSpecificStreamParameters.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\Exception.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\HostApi.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\InterfaceCallbackStream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\MemFunCallbackStream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\Stream.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\StreamParameters.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\System.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\SystemDeviceIterator.cxx" />
+    <ClCompile Include="..\..\source\portaudiocpp\SystemHostApiIterator.cxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\portaudiocpp\AsioDeviceAdapter.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\AutoSystem.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\BlockingStream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\CallbackInterface.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\CallbackStream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\CFunCallbackStream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\CppFunCallbackStream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\Device.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\DirectionSpecificStreamParameters.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\Exception.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\HostApi.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\InterfaceCallbackStream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\MemFunCallbackStream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\PortAudioCpp.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\SampleDataFormat.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\Stream.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\StreamParameters.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\System.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\SystemDeviceIterator.hxx" />
+    <ClInclude Include="..\..\include\portaudiocpp\SystemHostApiIterator.hxx" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

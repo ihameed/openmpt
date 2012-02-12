@@ -353,6 +353,12 @@ CMainFrame::CMainFrame() :
         }
     }
 
+    debug_log("=================================================");
+    for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
+        debug_log("hostapi '%s' device '%s'", i->hostApi().name(), i->name());
+    }
+    debug_log("=================================================");
+
     // Create Audio Critical Section
     MemsetZero(m_csAudio);
     InitializeCriticalSection(&m_csAudio);
