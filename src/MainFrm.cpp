@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "mptrack.h"
 #include "MainFrm.h"
-#include "legacy_soundlib/snddev.h"
 #include "moddoc.h"
 #include "childfrm.h"
 #include "legacy_soundlib/dlsbank.h"
@@ -43,20 +42,6 @@ static char THIS_FILE[] = __FILE__;
 
 extern UINT gnMidiImportSpeed;
 extern UINT gnMidiPatternLen;
-
-
-//========================================
-class CMPTSoundSource: public ISoundSource
-//========================================
-{
-public:
-    CMPTSoundSource() {}
-    ULONG AudioRead(PVOID pData, ULONG cbSize);
-    VOID AudioDone(ULONG dwSize, ULONG dwLatency);
-};
-
-
-CMPTSoundSource gMPTSoundSource;
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
@@ -164,13 +149,12 @@ uint32_t CMainFrame::gnPlugWindowLast = 0;
 uint32_t CMainFrame::gnMsgBoxVisiblityFlags = UINT32_MAX;
 
 CRITICAL_SECTION CMainFrame::m_csAudio;
-HANDLE CMainFrame::m_hPlayThread = NULL;
+HANDLE CMainFrame::deprecated_m_hPlayThread = NULL;
 DWORD CMainFrame::m_dwPlayThreadId = 0;
 HANDLE CMainFrame::m_hAudioWakeUp = NULL;
 HANDLE CMainFrame::m_hNotifyThread = NULL;
 DWORD CMainFrame::m_dwNotifyThreadId = 0;
 HANDLE CMainFrame::m_hNotifyWakeUp = NULL;
-ISoundDevice *CMainFrame::gpSoundDevice = NULL;
 LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
@@ -183,13 +167,9 @@ uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
 uint32_t CMainFrame::m_nBitsPerSample = 16;
 uint32_t CMainFrame::m_nPreAmp = 128;
 uint32_t CMainFrame::gbLoopSong = TRUE;
-#ifndef NO_DSOUND
-LONG CMainFrame::m_nWaveDevice = SNDDEV_BUILD_ID(0, SNDDEV_DSOUND);
-#else
-LONG CMainFrame::m_nWaveDevice = SNDDEV_BUILD_ID(0, SNDDEV_WAVEOUT);
-#endif // NO_DSOUND
+LONG CMainFrame::m_nWaveDevice = 0;
 LONG CMainFrame::m_nMidiDevice = 0;
-uint32_t CMainFrame::m_nBufferLength = 75;
+uint32_t CMainFrame::deprecated_m_nBufferLength = 75;
 LONG CMainFrame::gnLVuMeter = 0;
 LONG CMainFrame::gnRVuMeter = 0;
 EQPRESET CMainFrame::m_EqSettings = { "", {16,16,16,16,16,16}, { 125, 300, 600, 1250, 4000, 8000 } };
@@ -442,18 +422,8 @@ void CMainFrame::LoadIniSettings()
         rgbCustomColors[ncol] = GetPrivateProfileDWord("Display", s, rgbCustomColors[ncol], iniFile);
     }
 
-#ifndef NO_DSOUND
-    uint32_t defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_DSOUND); // first DirectSound device
-#else
-    uint32_t defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_WAVEOUT); // first WaveOut device
-#endif // NO_DSOUND
-#ifndef NO_ASIO
-    // If there's an ASIO device available, prefer it over DirectSound
-    if(EnumerateSoundDevices(SNDDEV_ASIO, 0, nullptr, 0))
-    {
-        defaultDevice = SNDDEV_BUILD_ID(0, SNDDEV_ASIO);
-    }
-#endif // NO_ASIO
+    uint32_t defaultDevice = 0; //XXXih: portaudio
+
     m_nWaveDevice = GetPrivateProfileLong("Sound Settings", "WaveDevice", defaultDevice, iniFile);
     m_dwSoundSetup = GetPrivateProfileDWord("Sound Settings", "SoundSetup", SOUNDSETUP_SECONDARY, iniFile);
     m_dwQuality = GetPrivateProfileDWord("Sound Settings", "Quality", 0, iniFile);
@@ -461,24 +431,10 @@ void CMainFrame::LoadIniSettings()
     m_dwRate = GetPrivateProfileDWord("Sound Settings", "Mixing_Rate", 0, iniFile);
     m_nBitsPerSample = GetPrivateProfileDWord("Sound Settings", "BitsPerSample", 16, iniFile);
     m_nChannels = GetPrivateProfileDWord("Sound Settings", "ChannelMode", 2, iniFile);
-    m_nBufferLength = GetPrivateProfileDWord("Sound Settings", "BufferLength", 50, iniFile);
-        if(m_nBufferLength < SNDDEV_MINBUFFERLEN) m_nBufferLength = SNDDEV_MINBUFFERLEN;
-        if(m_nBufferLength > SNDDEV_MAXBUFFERLEN) m_nBufferLength = SNDDEV_MAXBUFFERLEN;
+    deprecated_m_nBufferLength = GetPrivateProfileDWord("Sound Settings", "BufferLength", 50, iniFile);
     if(m_dwRate == 0)
     {
         m_dwRate = 44100;
-#ifndef NO_ASIO
-        // If no mixing rate is specified and we're using ASIO, get a mixing rate supported by the device.
-        if(SNDDEV_GET_TYPE(m_nWaveDevice) == SNDDEV_ASIO)
-        {
-            ISoundDevice *dummy;
-            if(CreateSoundDevice(SNDDEV_ASIO, &dummy))
-            {
-                m_dwRate = dummy->GetCurrentSampleRate(SNDDEV_GET_NUMBER(m_nWaveDevice));
-                delete dummy;
-            }
-        }
-#endif // NO_ASIO
     }
 
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
@@ -608,8 +564,8 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&m_dwQuality, &dwDWORDSize);
         registry_query_value(key, "SrcMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nSrcMode, &dwDWORDSize);
         registry_query_value(key, "Mixing_Rate", NULL, &dwREG_DWORD, (LPBYTE)&m_dwRate, &dwDWORDSize);
-        registry_query_value(key, "BufferLength", NULL, &dwREG_DWORD, (LPBYTE)&m_nBufferLength, &dwDWORDSize);
-        if ((m_nBufferLength < 10) || (m_nBufferLength > 200)) m_nBufferLength = 100;
+        registry_query_value(key, "BufferLength", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_nBufferLength, &dwDWORDSize);
+        if ((deprecated_m_nBufferLength < 10) || (deprecated_m_nBufferLength > 200)) deprecated_m_nBufferLength = 100;
         registry_query_value(key, "PreAmp", NULL, &dwREG_DWORD, (LPBYTE)&m_nPreAmp, &dwDWORDSize);
 
         CHAR sPath[_MAX_PATH] = "";
@@ -742,26 +698,11 @@ VOID CMainFrame::Initialize()
     #ifdef NO_VST
         title += " NO_VST";
     #endif
-    #ifdef NO_ASIO
-        title += " NO_ASIO";
-    #endif
-    #ifdef NO_DSOUND
-        title += " NO_DSOUND";
-    #endif
     SetTitle(title);
     OnUpdateFrameTitle(false);
 
     // Load Chords
     theApp.LoadChords(Chords);
-    // Check for valid sound device
-    if (!EnumerateSoundDevices(SNDDEV_GET_TYPE(m_nWaveDevice), SNDDEV_GET_NUMBER(m_nWaveDevice), nullptr, 0))
-    {
-        m_nWaveDevice = SNDDEV_BUILD_ID(0, SNDDEV_DSOUND);
-        if (!EnumerateSoundDevices(SNDDEV_GET_TYPE(m_nWaveDevice), SNDDEV_GET_NUMBER(m_nWaveDevice), nullptr, 0))
-        {
-            m_nWaveDevice = SNDDEV_BUILD_ID(0, SNDDEV_WAVEOUT);
-        }
-    }
     // Default directory location
     for(UINT i = 0; i < NUM_DIRS; i++)
     {
@@ -774,7 +715,6 @@ VOID CMainFrame::Initialize()
     //XXXih: portaudio
     m_hAudioWakeUp = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hNotifyWakeUp = CreateEvent(NULL, FALSE, FALSE, NULL);
-    m_hPlayThread = CreateThread(NULL, 0, AudioThread, NULL, 0, &m_dwPlayThreadId);
     m_hNotifyThread = CreateThread(NULL, 0, NotifyThread, NULL, 0, &m_dwNotifyThreadId);
     // Setup timer
     OnUpdateUser(NULL);
@@ -905,9 +845,9 @@ BOOL CMainFrame::DestroyWindow()
         m_nTimer = 0;
     }
     if (shMidiIn) midiCloseDevice();
-    if (m_hPlayThread != NULL)
+    if (deprecated_m_hPlayThread != NULL)
     {
-        if(TerminateThread(m_hPlayThread, 0)) m_hPlayThread = NULL;
+        if(TerminateThread(deprecated_m_hPlayThread, 0)) deprecated_m_hPlayThread = NULL;
     }
     if (m_hNotifyThread != NULL)
     {
@@ -980,15 +920,6 @@ void CMainFrame::OnClose()
     BeginWaitCursor();
     if (m_dwStatus & MODSTATUS_PLAYING) PauseMod();
     if (pMDIActive) pMDIActive->SavePosition(TRUE);
-    if (gpSoundDevice)
-    {
-        BEGIN_CRITICAL();
-        //gpSoundDevice->Reset();
-        //audioCloseDevice();
-        gpSoundDevice->Release();
-        gpSoundDevice = NULL;
-        END_CRITICAL();
-    }
     // Save Settings
     SaveIniSettings();
     if(m_InputHandler && m_InputHandler->activeCommandSet)
@@ -1044,7 +975,7 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileDWord("Sound Settings", "Mixing_Rate", m_dwRate, iniFile);
     WritePrivateProfileDWord("Sound Settings", "BitsPerSample", m_nBitsPerSample, iniFile);
     WritePrivateProfileDWord("Sound Settings", "ChannelMode", m_nChannels, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "BufferLength", m_nBufferLength, iniFile);
+    WritePrivateProfileDWord("Sound Settings", "BufferLength", deprecated_m_nBufferLength, iniFile);
     WritePrivateProfileDWord("Sound Settings", "PreAmp", m_nPreAmp, iniFile);
     WritePrivateProfileLong("Sound Settings", "StereoSeparation", CSoundFile::m_nStereoSeparation, iniFile);
     WritePrivateProfileLong("Sound Settings", "MixChannels", CSoundFile::m_nMaxMixChannels, iniFile);
@@ -1270,29 +1201,6 @@ void CMainFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
 //static BOOL gbStopSent = FALSE;
 BOOL gbStopSent = FALSE;
 
-// Sound Device Callback
-BOOL SoundDeviceCallback(uint32_t dwUser)
-//------------------------------------
-{
-    BOOL bOk = FALSE;
-    CMainFrame *pMainFrm = (CMainFrame *)theApp.m_pMainWnd;
-    if (gbStopSent) return FALSE;
-    BEGIN_CRITICAL();
-    if ((pMainFrm) && (pMainFrm->IsPlaying()) && (CMainFrame::gpSoundDevice)) {
-        bOk = CMainFrame::gpSoundDevice->FillAudioBuffer(&gMPTSoundSource, gdwPlayLatency, dwUser);
-    }/* else {
-        CMainFrame::gpSoundDevice->SilenceAudioBuffer(&gMPTSoundSource, gdwPlayLatency, dwUser);
-    }*/
-    if (!bOk)
-    {
-        //debug_log("----------------------- ::SoundDeviceCallback: stop sent!!!!");
-        //gbStopSent = TRUE;
-        //pMainFrm->PostMessage(WM_COMMAND, ID_PLAYER_STOP);
-    }
-    END_CRITICAL();
-    return bOk;
-}
-
 
 void Terminate_AudioThread()
 //----------------------------------------------
@@ -1300,95 +1208,9 @@ void Terminate_AudioThread()
     //TODO: Why does this not get called.
     AfxMessageBox("Audio thread terminated unexpectedly. Attempting to shut down audio device");
     CMainFrame* pMainFrame = CMainFrame::GetMainFrame();
-    if (pMainFrame->gpSoundDevice) pMainFrame->gpSoundDevice->Reset();
-    pMainFrame->audioCloseDevice();
     exit(-1);
 }
 
-
-// Audio thread
-DWORD WINAPI CMainFrame::AudioThread(LPVOID)
-//------------------------------------------
-{
-    CMainFrame *pMainFrm;
-    BOOL bWait;
-    UINT nSleep;
-
-    set_terminate(Terminate_AudioThread);
-
-// -> CODE#0021
-// -> DESC="use multimedia timer instead of Sleep() in audio thread"
-    HANDLE sleepEvent = CreateEvent(NULL,TRUE,FALSE,NULL);
-// -! BEHAVIOUR_CHANGE#0021
-
-    bWait = TRUE;
-    nSleep = 50;
-// -> CODE#0021
-// -> DESC="use multimedia timer instead of Sleep() in audio thread"
-//rewbs: reduce to normal priority during debug for easier hang debugging
-#ifdef NDEBUG
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL );
-#endif 
-#ifdef _DEBUG
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-#endif 
-//    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-// -! BEHAVIOUR_CHANGE#0021
-    for (;;)
-    {
-        if (bWait)
-        {
-            WaitForSingleObject(CMainFrame::m_hAudioWakeUp, 250);
-        } else
-        {
-// -> CODE#0021
-// -> DESC="use multimedia timer instead of Sleep() in audio thread"
-//    		Sleep(nSleep);
-            timeSetEvent(nSleep,1,(LPTIMECALLBACK)sleepEvent,NULL,TIME_ONESHOT | TIME_CALLBACK_EVENT_SET);
-            WaitForSingleObject(sleepEvent,nSleep);
-            ResetEvent(sleepEvent);
-// -! BEHAVIOUR_CHANGE#0021
-        }
-        bWait = TRUE;
-        pMainFrm = (CMainFrame *)theApp.m_pMainWnd;
-        BEGIN_CRITICAL();
-        if ((!gbStopSent) && (pMainFrm) && (pMainFrm->IsPlaying()) && (CMainFrame::gpSoundDevice))
-        {
-            if (!CMainFrame::gpSoundDevice->Directcallback())
-            {
-                if (CMainFrame::gpSoundDevice->FillAudioBuffer(&gMPTSoundSource, gdwPlayLatency))
-                {
-                    ULONG nMaxSleep = CMainFrame::gpSoundDevice->GetMaxFillInterval();
-                    bWait = FALSE;
-                    nSleep = CMainFrame::m_nBufferLength / 8;
-                    if (nSleep > nMaxSleep) nSleep = nMaxSleep;
-                    if (nSleep < 10) nSleep = 10;
-                    if (nSleep > 40) nSleep = 40;
-                } else
-                {
-                //debug_log("----------------------- CMainFrame::AudioThread: stop sent!!!!");
-                    //CMainFrame::gpSoundDevice->SilenceAudioBuffer(&gMPTSoundSource, gdwPlayLatency);
-                    //gbStopSent = TRUE;
-                    //pMainFrm->PostMessage(WM_COMMAND, ID_PLAYER_STOP);
-                }
-            } else
-            {
-                nSleep = 50;
-            }
-        }
-        END_CRITICAL();
-    }
-
-// -> CODE#0021
-// -> DESC="use multimedia timer instead of Sleep() in audio thread"
-    // Commented as this caused "warning C4702: unreachable code"
-    //CloseHandle(sleepEvent);
-// -! BEHAVIOUR_CHANGE#0021
-
-    // Commented the two lines below as those caused "warning C4702: unreachable code"
-    //ExitThread(0);
-    //return 0;
-}
 
 
 void Terminate_NotifyThread()
@@ -1397,8 +1219,6 @@ void Terminate_NotifyThread()
     //TODO: Why does this not get called.
     AfxMessageBox("Notify thread terminated unexpectedly. Attempting to shut down audio device");
     CMainFrame* pMainFrame = CMainFrame::GetMainFrame();
-    if (pMainFrame->gpSoundDevice) pMainFrame->gpSoundDevice->Reset();
-    pMainFrame->audioCloseDevice();
     exit(-1);
 }
 
@@ -1451,25 +1271,7 @@ DWORD WINAPI CMainFrame::NotifyThread(LPVOID)
 
 
 
-ULONG CMPTSoundSource::AudioRead(PVOID pData, ULONG cbSize)
-//---------------------------------------------------------
-{
-    CMainFrame *pMainFrm = (CMainFrame *)theApp.m_pMainWnd;
-    if (pMainFrm) return pMainFrm->AudioRead(pData, cbSize);
-    return 0;
-}
-
-
-VOID CMPTSoundSource::AudioDone(ULONG nBytesWritten, ULONG nLatency)
-//------------------------------------------------------------------
-{
-    CMainFrame *pMainFrm = (CMainFrame *)theApp.m_pMainWnd;
-    if (pMainFrm) pMainFrm->AudioDone(nBytesWritten, nLatency);
-}
-
-
-
-ULONG CMainFrame::AudioRead(PVOID pvData, ULONG ulSize)
+ULONG CMainFrame::deprecated_AudioRead(PVOID pvData, ULONG ulSize)
 //-----------------------------------------------------
 {
     //XXXih: portaudio hax
@@ -1485,7 +1287,7 @@ ULONG CMainFrame::AudioRead(PVOID pvData, ULONG ulSize)
 }
 
 
-VOID CMainFrame::AudioDone(ULONG nBytesWritten, ULONG nLatency)
+VOID CMainFrame::deprecated_AudioDone(ULONG nBytesWritten, ULONG nLatency)
 //-------------------------------------------------------------
 {
     if (nBytesWritten > (uint32_t)slSampleSize)
@@ -1495,11 +1297,11 @@ VOID CMainFrame::AudioDone(ULONG nBytesWritten, ULONG nLatency)
 }
 
 
-LONG CMainFrame::audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec)
+LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec)
 //----------------------------------------------------------------------------------
 {
     WAVEFORMATEXTENSIBLE WaveFormat;
-    UINT buflen = m_nBufferLength;
+    UINT buflen = deprecated_m_nBufferLength;
     
     if (!m_pSndFile) return -1;
     slSampleSize = (bits/8) * channels;
@@ -1534,31 +1336,15 @@ LONG CMainFrame::audioTryOpeningDevice(UINT channels, UINT bits, UINT samplesper
     if (m_dwSoundSetup & SOUNDSETUP_STREVERSE) CSoundFile::gdwSoundSetup |= SNDMIX_REVERSESTEREO;
     else CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     m_pSndFile->SetWaveConfig(samplespersec, bits, channels, (m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) ? TRUE : FALSE);
-    // Maybe we failed because someone is playing sound already.
-    // Shut any sound off, and try once more before giving up.
-    UINT nDevType = SNDDEV_GET_TYPE(m_nWaveDevice);
-    UINT nDevNo = SNDDEV_GET_NUMBER(m_nWaveDevice);
-    UINT fulOptions = (m_dwSoundSetup & SOUNDSETUP_SECONDARY) ? SNDDEV_OPTIONS_SECONDARY : 0;
-    if ((gpSoundDevice) && (gpSoundDevice->GetDeviceType() != nDevType))
-    {
-        gpSoundDevice->Release();
-        gpSoundDevice = NULL;
-    }
-    if (!gpSoundDevice)
-    {
-        if (!CreateSoundDevice(nDevType, &gpSoundDevice)) return -1;
-    }
-    gpSoundDevice->Configure(m_hWnd, NUM_AUDIO_BUFFERS, m_nBufferLength, fulOptions);
     gbStopSent = FALSE;
     m_pSndFile->SetResamplingMode(m_nSrcMode);
     m_pSndFile->UPDATEDSPEFFECTS();
     m_pSndFile->SetAGC(m_dwQuality & QUALITY_AGC);
-    if (!gpSoundDevice->Open(nDevNo, &WaveFormat.Format)) return -1;
     return 0;
 }
 
 
-BOOL CMainFrame::audioOpenDevice()
+BOOL CMainFrame::deprecated_audioOpenDevice()
 //--------------------------------
 {
     UINT nFixedBitsPerSample;
@@ -1568,10 +1354,10 @@ BOOL CMainFrame::audioOpenDevice()
     if (m_dwStatus & MODSTATUS_PLAYING) return TRUE;
     if (!m_dwRate) m_dwRate = 22050;
     if ((m_nChannels != 1) && (m_nChannels != 2) && (m_nChannels != 4)) m_nChannels = 2;
-    err = audioTryOpeningDevice(m_nChannels,
+    err = deprecated_audioTryOpeningDevice(m_nChannels,
                                 m_nBitsPerSample,
                                 m_dwRate);
-    nFixedBitsPerSample = (gpSoundDevice) ? gpSoundDevice->HasFixedBitsPerSample() : 0;
+    nFixedBitsPerSample = 1; //XXXih: portaudio
     if ((err) && ((m_dwRate > 44100) || (m_nChannels > 2) || (m_nBitsPerSample > 16)
                || ((nFixedBitsPerSample) && (nFixedBitsPerSample != m_nBitsPerSample))))
     {
@@ -1581,7 +1367,7 @@ BOOL CMainFrame::audioOpenDevice()
         if (m_nChannels > 2) m_nChannels = 2;
         if (nFixedBitsPerSample) m_nBitsPerSample = nFixedBitsPerSample;
         else if (m_nBitsPerSample > 16) m_nBitsPerSample = 16;
-        err = audioTryOpeningDevice(m_nChannels,
+        err = deprecated_audioTryOpeningDevice(m_nChannels,
                                     m_nBitsPerSample,
                                     m_dwRate);
         if (err) m_dwRate = oldrate;
@@ -1597,18 +1383,6 @@ BOOL CMainFrame::audioOpenDevice()
     return TRUE;
 }
 
-
-void CMainFrame::audioCloseDevice()
-//---------------------------------
-{
-    BEGIN_CRITICAL();
-    if (gpSoundDevice)
-    {
-        gpSoundDevice->Reset();
-        gpSoundDevice->Close();
-    }
-    END_CRITICAL();
-}
 
 
 void CMainFrame::CalcStereoVuMeters(int *pMix, unsigned long nSamples, unsigned long nChannels)
@@ -1963,7 +1737,7 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     {
         CSoundFile::sound_mix_callback = NULL;
     }
-    if (!audioOpenDevice())
+    if (!deprecated_audioOpenDevice())
     {
         m_pSndFile = NULL;
         m_pModPlaying = NULL;
@@ -2010,9 +1784,6 @@ BOOL CMainFrame::PauseMod(CModDoc *pModDoc)
     if (m_dwStatus & MODSTATUS_PLAYING)
     {
         m_dwStatus &= ~MODSTATUS_PLAYING;
-
-        if (gpSoundDevice) gpSoundDevice->Reset();
-        audioCloseDevice();
 
         BEGIN_CRITICAL();
         m_pSndFile->SuspendPlugins();     //rewbs.VSTCompliance
@@ -2086,7 +1857,7 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSndFile)
         return FALSE;
     }
     m_pSndFile = pSndFile;
-    if (!audioOpenDevice())
+    if (!deprecated_audioOpenDevice())
     {
         debug_log("CMainFrame::PlaySoundFile: failed to open audio device");
         m_pSndFile = NULL;
@@ -2097,7 +1868,6 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSndFile)
     m_pSndFile->InitPlayer(TRUE);
     m_dwStatus |= MODSTATUS_PLAYING;
     debug_log("CMainFrame::PlaySoundFile: end");
-    if (gpSoundDevice) gpSoundDevice->Start();
     SetEvent(m_hAudioWakeUp);
     return TRUE;
 }
@@ -2294,7 +2064,7 @@ BOOL CMainFrame::SetupSoundCard(uint32_t q, uint32_t rate, UINT nBits, UINT nChn
 {
     BOOL bPlaying = (m_dwStatus & MODSTATUS_PLAYING) ? TRUE : FALSE;
     if ((m_dwRate != rate) || ((m_dwSoundSetup & SOUNDSETUP_RESTARTMASK) != (q & SOUNDSETUP_RESTARTMASK))
-     || (m_nWaveDevice != wd) || (m_nBufferLength != bufsize) || (nBits != m_nBitsPerSample)
+     || (m_nWaveDevice != wd) || (deprecated_m_nBufferLength != bufsize) || (nBits != m_nBitsPerSample)
      || (m_nChannels != nChns))
     {
         CModDoc *pActiveMod = NULL;
@@ -2307,7 +2077,7 @@ BOOL CMainFrame::SetupSoundCard(uint32_t q, uint32_t rate, UINT nBits, UINT nChn
         m_nWaveDevice = wd;
         m_dwRate = rate;
         m_dwSoundSetup = q;
-        m_nBufferLength = bufsize;
+        deprecated_m_nBufferLength = bufsize;
         m_nBitsPerSample = nBits;
         m_nChannels = nChns;
         BEGIN_CRITICAL();
@@ -2478,7 +2248,7 @@ void CMainFrame::OnViewOptions()
         
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
-    COptionsSoundcard sounddlg(m_dwRate, m_dwSoundSetup, m_nBitsPerSample, m_nChannels, m_nBufferLength, m_nWaveDevice);
+    COptionsSoundcard sounddlg(m_dwRate, m_dwSoundSetup, m_nBitsPerSample, m_nChannels, deprecated_m_nBufferLength, m_nWaveDevice);
     COptionsKeyboard keyboard;
     COptionsColors colors;
     COptionsPlayer playerdlg;

@@ -755,7 +755,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
         break;
     case audioMasterGetOutputLatency:
         {
-            VstIntPtr latency = CMainFrame::GetMainFrame()->m_nBufferLength * (CMainFrame::GetMainFrame()->GetSampleRate()/1000L);
+            VstIntPtr latency = CMainFrame::GetMainFrame()->deprecated_m_nBufferLength * (CMainFrame::GetMainFrame()->GetSampleRate()/1000L);
             return latency;
         }
     // input pin in <value> (-1: first to come), returns cEffect* - DEPRECATED in VST 2.4

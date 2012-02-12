@@ -8,7 +8,6 @@
 #include "moddoc.h"
 #include "globals.h"
 #include "legacy_soundlib/dlsbank.h"
-#include "legacy_soundlib/snddev.h"
 #include "vstplug.h"
 #include "commctrl.h"
 #include "version.h"
@@ -547,7 +546,7 @@ CTrackApp::CTrackApp()
     m_pPluginManager = NULL;
     m_bInitialized = FALSE;
     m_bLayer3Present = FALSE;
-    m_bExWaveSupport = FALSE;
+    deprecated_m_bExWaveSupport = FALSE;
     m_bDebugMode = FALSE;
     m_hAlternateResourceHandle = NULL;
     m_szConfigFileName[0] = 0;
@@ -598,10 +597,7 @@ void Terminate_AppThread()
 //----------------------------------------------
 {    
     //TODO: Why does this not get called.
-    AfxMessageBox("Application thread terminated unexpectedly. Attempting to shut down audio device");
-    CMainFrame* pMainFrame = CMainFrame::GetMainFrame();
-    if (pMainFrame->gpSoundDevice) pMainFrame->gpSoundDevice->Reset();
-    pMainFrame->audioCloseDevice();
+    AfxMessageBox("HOLY BALLS");
     exit(-1);
 }
 
@@ -856,14 +852,13 @@ BOOL CTrackApp::InitInstance()
     //RegisterExtensions();
 
     // Load DirectSound (if available)
-    m_bExWaveSupport = opt_enable_wavex;
-    SndDevInitialize();
+    deprecated_m_bExWaveSupport = opt_enable_wavex;
 
     // Load DLS Banks
     if (!opt_disable_dls) LoadDefaultDLSBanks();
 
     // Initialize DXPlugins
-    if (!opt_disable_plugins) InitializeDXPlugins();
+    if (!opt_disable_plugins) deprecated_InitializeDXPlugins();
 
     // Initialize localized strings
     ImportLocalizedStrings();
@@ -900,7 +895,6 @@ int CTrackApp::ExitInstance()
 //---------------------------
 {
     //::MessageBox("Exiting/Crashing");
-    SndDevUninitialize();
     if (glpMidiLibrary)
     {
         if (m_szConfigFileName[0]) ExportMidiConfig(m_szConfigFileName);
@@ -942,7 +936,7 @@ int CTrackApp::ExitInstance()
         }
     }
     // Uninitialize DX-Plugins
-    UninitializeDXPlugins();
+    deprecated_UninitializeDXPlugins();
 
     return CWinApp::ExitInstance();
 }
@@ -1856,7 +1850,7 @@ BOOL CMappedFile::Unlock()
 // DirectX Plugins
 //
 
-BOOL CTrackApp::InitializeDXPlugins()
+BOOL CTrackApp::deprecated_InitializeDXPlugins()
 //-----------------------------------
 {
     TCHAR s[_MAX_PATH], tmp[32];
@@ -1897,7 +1891,7 @@ BOOL CTrackApp::InitializeDXPlugins()
 }
 
 
-BOOL CTrackApp::UninitializeDXPlugins()
+BOOL CTrackApp::deprecated_UninitializeDXPlugins()
 //-------------------------------------
 {
     TCHAR s[_MAX_PATH], tmp[32];
@@ -2010,11 +2004,6 @@ LRESULT CTrackApp::ProcessWndProcException(CException* e, const MSG* pMsg)
     // TODO: Add your specialized code here and/or call the base class
     Log("Unhandled Exception\n");
     Log("Attempting to close sound device\n");
-    
-    if (CMainFrame::gpSoundDevice) {
-        CMainFrame::gpSoundDevice->Reset(); 
-        CMainFrame::gpSoundDevice->Close();
-    }
 
     return CWinApp::ProcessWndProcException(e, pMsg);
 }

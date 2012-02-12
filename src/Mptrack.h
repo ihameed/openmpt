@@ -119,7 +119,7 @@ protected:
     CVstPluginManager *m_pPluginManager;
     BOOL m_bInitialized;
     BOOL m_bLayer3Present; //XXXih: trace this!
-    BOOL m_bExWaveSupport;
+    BOOL deprecated_m_bExWaveSupport;
     BOOL m_bDebugMode;
     uint32_t m_dwTimeStarted, m_dwLastPluginIdleCall;
     HANDLE m_hAlternateResourceHandle;
@@ -166,7 +166,7 @@ public:
     void LoadChords(PMPTCHORD pChords);
     void SaveChords(PMPTCHORD pChords);
     BOOL CanEncodeLayer3() const { return m_bLayer3Present; }
-    BOOL IsWaveExEnabled() const { return m_bExWaveSupport; }
+    BOOL IsWaveExEnabled() const { return deprecated_m_bExWaveSupport; }
     BOOL IsDebug() const { return m_bDebugMode; }
     LPCSTR GetConfigFileName() const { return m_szConfigFileName; }
     static bool IsPortableMode() { return m_bPortableMode; }
@@ -180,8 +180,8 @@ public:
     BOOL GetLocalizedString(LPCSTR pszName, LPSTR pszStr, UINT cbSize);
 
 public:
-    BOOL InitializeDXPlugins();
-    BOOL UninitializeDXPlugins();
+    BOOL deprecated_InitializeDXPlugins();
+    BOOL deprecated_UninitializeDXPlugins();
 
 // Overrides
 public:

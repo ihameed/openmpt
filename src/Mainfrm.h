@@ -430,7 +430,7 @@ public:
     static uint32_t m_dwSoundSetup, m_dwRate, m_dwQuality, m_nSrcMode, m_nBitsPerSample, m_nPreAmp, gbLoopSong, m_nChannels;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
     static LONG m_nMidiDevice;
-    static uint32_t m_nBufferLength;
+    static uint32_t deprecated_m_nBufferLength;
     static EQPRESET m_EqSettings;
     // Pattern Setup
     static UINT gnPatternSpacing;
@@ -463,7 +463,7 @@ public:
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;
     static HANDLE m_hAudioWakeUp, m_hNotifyWakeUp;
-    static HANDLE m_hPlayThread, m_hNotifyThread;
+    static HANDLE deprecated_m_hPlayThread, m_hNotifyThread;
     static DWORD m_dwPlayThreadId, m_dwNotifyThreadId;
     static LONG gnLVuMeter, gnRVuMeter;
     static UINT gdwIdleTime;
@@ -520,13 +520,11 @@ public:
     static void UpdateAudioParameters(BOOL bReset=FALSE);
     static void EnableLowLatencyMode(BOOL bOn=TRUE);
     static void CalcStereoVuMeters(int *, unsigned long, unsigned long);
-    static DWORD WINAPI AudioThread(LPVOID);
     static DWORD WINAPI NotifyThread(LPVOID);
-    ULONG AudioRead(PVOID pData, ULONG cbSize);
-    VOID AudioDone(ULONG nBytesWritten, ULONG nLatency);
-    LONG audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec);
-    BOOL audioOpenDevice();
-    void audioCloseDevice();
+    ULONG deprecated_AudioRead(PVOID pData, ULONG cbSize);
+    VOID deprecated_AudioDone(ULONG nBytesWritten, ULONG nLatency);
+    LONG deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec);
+    BOOL deprecated_audioOpenDevice();
     BOOL audioFillBuffers();
     LRESULT OnWOMDone(WPARAM, LPARAM);
     BOOL dsoundFillBuffers(LPBYTE lpBuf, uint32_t dwSize);

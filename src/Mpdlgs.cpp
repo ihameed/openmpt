@@ -6,7 +6,6 @@
 #include "mpdlgs.h"
 #include "moptions.h"
 #include "moddoc.h"
-#include "legacy_soundlib/snddev.h"
 #include ".\mpdlgs.h"
 
 #include "pervasives/pervasives.h"
@@ -186,41 +185,6 @@ BOOL COptionsSoundcard::OnInitDialog()
     	{
     		m_CbnDevice.SetImageList(pMainFrm->GetImageList());
     	}
-    	COMBOBOXEXITEM cbi;
-    	UINT iItem = 0;
-    	for (UINT nDevType=0; nDevType<SNDDEV_NUM_DEVTYPES; nDevType++)
-    	{
-    		UINT nDev = 0;
-
-    		while (EnumerateSoundDevices(nDevType, nDev, s, sizeof(s)))
-    		{
-    			cbi.mask = CBEIF_IMAGE | CBEIF_LPARAM | CBEIF_TEXT | CBEIF_SELECTEDIMAGE | CBEIF_OVERLAY;
-    			cbi.iItem = iItem;
-    			cbi.cchTextMax = 0;
-    			switch(nDevType)
-    			{
-    			case SNDDEV_DSOUND:
-    				cbi.iImage = IMAGE_DIRECTX;
-    				break;
-    			case SNDDEV_ASIO:
-    				bAsio = TRUE;
-    				cbi.iImage = IMAGE_ASIO;
-    				break;
-    			default:
-    				cbi.iImage = IMAGE_WAVEOUT;
-    			}
-    			cbi.iSelectedImage = cbi.iImage;
-    			cbi.iOverlay = cbi.iImage;
-    			cbi.iIndent = 0;
-    			cbi.lParam = SNDDEV_BUILD_ID(nDev, nDevType);
-    			cbi.pszText = s;
-    			int pos = m_CbnDevice.InsertItem(&cbi);
-    			if (cbi.lParam == (LONG)m_nSoundDevice) m_CbnDevice.SetCurSel(pos);
-    			iItem++;
-    			nDev++;
-    		}
-    	}
-    	GetDlgItem(IDC_CHECK4)->EnableWindow((SNDDEV_GET_TYPE(m_nSoundDevice) == SNDDEV_DSOUND) ? TRUE : FALSE);
     }
     // Sample Format
     {
@@ -305,7 +269,6 @@ void COptionsSoundcard::OnDeviceChanged()
     if (n >= 0)
     {
     	int dev = m_CbnDevice.GetItemData(n);
-    	GetDlgItem(IDC_CHECK4)->EnableWindow((SNDDEV_GET_TYPE(dev) == SNDDEV_DSOUND) ? TRUE : FALSE);
     	UpdateSampleRates(dev);
     	OnSettingsChanged();
     }
@@ -326,28 +289,7 @@ void COptionsSoundcard::UpdateSampleRates(int dev)
     	samplerates.push_back(nMixingRates[i]);
     }
 
-    ISoundDevice *dummy = nullptr;
     bool justCreated = false, knowRates = false;
-    if(CMainFrame::m_nWaveDevice == dev)
-    {
-    	// If this is the currently active sound device, it might already be playing something, so we shouldn't create yet another instance of it.
-    	dummy = CMainFrame::gpSoundDevice;
-    }
-    if(dummy == nullptr)
-    {
-    	justCreated = true;
-    	CreateSoundDevice(SNDDEV_GET_TYPE(dev), &dummy);
-    }
-
-    if(dummy != nullptr)
-    {
-    	// Now we can query the supported sample rates.
-    	knowRates = dummy->CanSampleRate(SNDDEV_GET_NUMBER(dev), samplerates, supportedRates);
-    	if(justCreated)
-    	{
-    		delete dummy;
-    	}
-    }
 
     if(!knowRates)
     {
@@ -411,9 +353,7 @@ void COptionsSoundcard::OnOK()
     {
     	CHAR s[32];
     	m_CbnBufferLength.GetWindowText(s, sizeof(s));
-    	m_nBufferLength = atoi(s);
-    	//Check given value.
-    	m_nBufferLength = CLAMP(m_nBufferLength, SNDDEV_MINBUFFERLEN, SNDDEV_MAXBUFFERLEN);
+    	m_nBufferLength = atoi(s); //XXXih: portaudio
     	wsprintf(s, "%d ms", m_nBufferLength);
     	m_CbnBufferLength.SetWindowText(s);
     }
