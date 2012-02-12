@@ -373,7 +373,6 @@ public:    // Static Members
     static UINT m_nMaxMixChannels;
     static LONG m_nStreamVolume;
     static uint32_t gdwSysInfo, gdwSoundSetup, gdwMixingFreq, gnBitsPerSample, gnChannels;
-    static UINT gnAGC;
     static UINT gnVolumeRampInSamples;
     static UINT gnVolumeRampOutSamples;
     static UINT gnCPUUsage;
@@ -609,11 +608,6 @@ public:
     static uint32_t InitSysInfo();
     static uint32_t GetSysInfo() { return gdwSysInfo; }
     static void EnableMMX(BOOL b) { if (b) gdwSoundSetup |= SNDMIX_ENABLEMMX; else gdwSoundSetup &= ~SNDMIX_ENABLEMMX; }
-    // AGC
-    static BOOL GetAGC() { return (gdwSoundSetup & SNDMIX_AGC) ? TRUE : FALSE; }
-    static void deprecated_SetAGC(BOOL b);
-    static void ResetAGC();
-    static void ProcessAGC(int count);
     // DSP Effects
     static void InitializeDSP(BOOL bReset);
     static void ProcessStereoDSP(int count);

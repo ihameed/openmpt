@@ -1016,26 +1016,7 @@ void CSoundFile::SetMasterVolume(UINT nVol, bool adjustAGC)
 {
     if (nVol < 1) nVol = 1;
     if (nVol > 0x200) nVol = 0x200;    // x4 maximum
-    if ((nVol < m_nMasterVolume) && (nVol) && (gdwSoundSetup & SNDMIX_AGC) && (adjustAGC))
-    {
-        gnAGC = gnAGC * m_nMasterVolume / nVol;
-        if (gnAGC > AGC_UNITY) gnAGC = AGC_UNITY;
-    }
     m_nMasterVolume = nVol;
-}
-
-
-void CSoundFile::deprecated_SetAGC(BOOL b)
-//-----------------------------
-{
-    if (b)
-    {
-        if (!(gdwSoundSetup & SNDMIX_AGC))
-        {
-            gdwSoundSetup |= SNDMIX_AGC;
-            gnAGC = AGC_UNITY;
-        }
-    } else gdwSoundSetup &= ~SNDMIX_AGC;
 }
 
 

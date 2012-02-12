@@ -1277,7 +1277,6 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
     gbStopSent = FALSE;
     m_pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
     m_pSndFile->UPDATEDSPEFFECTS();
-    m_pSndFile->deprecated_SetAGC(m_dwQuality & QUALITY_AGC);
     return 0;
 }
 
@@ -1454,7 +1453,6 @@ void CMainFrame::UpdateAudioParameters(BOOL bReset)
         CSoundFile::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
     CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
     CSoundFile::UPDATEDSPEFFECTS();
-    CSoundFile::deprecated_SetAGC(m_dwQuality & QUALITY_AGC);
     CSoundFile::SetEQGains(    m_EqSettings.Gains, MAX_EQ_BANDS, m_EqSettings.Freqs, bReset );
     if (bReset) CSoundFile::InitPlayer(TRUE);
 }
@@ -1634,7 +1632,6 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     pSndFile->SetupITBidiMode();
 
     if ((m_pSndFile) || (m_dwStatus & MODSTATUS_PLAYING)) PauseMod();
-    if (((m_pSndFile) && (pSndFile != m_pSndFile)) || (!m_dwElapsedTime)) CSoundFile::ResetAGC();
     m_pSndFile = pSndFile;
     m_pModPlaying = pModDoc;
     m_hFollowSong = hPat;
@@ -1978,7 +1975,6 @@ BOOL CMainFrame::SetupPlayer(uint32_t q, uint32_t srcmode, BOOL bForceUpdate)
         BEGIN_CRITICAL();
         CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
         CSoundFile::UPDATEDSPEFFECTS();
-        CSoundFile::deprecated_SetAGC(m_dwQuality & QUALITY_AGC);
         END_CRITICAL();
         PostMessage(WM_MOD_INVALIDATEPATTERNS, HINT_MPTSETUP);
     }
@@ -2286,8 +2282,6 @@ void CMainFrame::OnTimer(UINT)
         if (gdwIdleTime > 15000)
         {
             gdwIdleTime = 0;
-            // After 15 seconds of inactivity, we reset the AGC
-            CSoundFile::ResetAGC();
             gdwPlayLatency = 0;
         }
     }

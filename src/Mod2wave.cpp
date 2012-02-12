@@ -381,7 +381,6 @@ void CDoWaveConvert::OnButton1()
 // -! NEW_FEATURE#0024
     {
         m_pSndFile->gnBitsPerSample = 24;
-        m_pSndFile->deprecated_SetAGC(FALSE);
         if (oldVol > 128) m_pSndFile->SetMasterVolume(128);
     } else
     {

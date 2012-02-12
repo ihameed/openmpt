@@ -42,7 +42,6 @@ uint32_t CSoundFile::gdwSoundSetup = 0;
 uint32_t CSoundFile::gdwMixingFreq = 44100;
 uint32_t CSoundFile::gnBitsPerSample = 16;
 // Mixing data initialized in
-UINT CSoundFile::gnAGC = AGC_UNITY;
 UINT CSoundFile::gnVolumeRampInSamples = 0;    	//default value
 UINT CSoundFile::gnVolumeRampOutSamples = 42;    	//default value
 UINT CSoundFile::gnCPUUsage = 0;
@@ -55,7 +54,6 @@ bool gbInitTables = 0;
 
 typedef size_t (MPPASMCALL * LPCONVERTPROC)(void *, int *, size_t);
 
-extern UINT MPPASMCALL X86_AGC(int *pBuffer, UINT nSamples, UINT nAGC);
 extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
 extern VOID MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, uint32_t nSamples);
 extern VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples);
