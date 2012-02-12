@@ -49,7 +49,9 @@ Json::Value json_of_paudio_settings(const paudio_settings &settings, portaudio::
     root["device"]   = pa_system.deviceByIndex(settings.device).name();
     root["latency"]  = settings.latency;
 
-    root["asio_buffer_length"] = settings.asio_buffer_length;
+    root["buffer_length"] = settings.buffer_length;
+
+    root["channels"] = settings.channels;
     return root;
 }
 
@@ -76,23 +78,24 @@ paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa
             }
         }
 
-        ret.latency = root["latency"].asDouble();
-        ret.asio_buffer_length = root["asio_buffer_length"].asUInt();
+        ret.latency       = root["latency"].asDouble();
+        ret.buffer_length = root["buffer_length"].asUInt();
+        ret.channels      = root["channels"].asUInt();
     } catch (std::runtime_error e) {
         ret.sample_rate        = 0;
         ret.sample_format      = portaudio::INVALID_FORMAT;
         ret.host_api           = paInDevelopment;
         ret.device             = 0;
         ret.latency            = 0;
-        ret.asio_buffer_length = 0;
+        ret.buffer_length      = 0;
+        ret.channels           = 0;
     }
     return ret;
 }
 
-paudio_callback::paudio_callback(CMainFrame &main_frame) :
+paudio_callback::paudio_callback(CMainFrame &main_frame, paudio_settings &settings) :
     main_frame(main_frame),
-    debug_wrap(1024),
-    debug_counter(0)
+    settings(settings)
 { }
 
 int paudio_callback::invoke(const void *input, void *output, unsigned long frames,
@@ -101,25 +104,15 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
 {
     auto ret = 0;
 
-    unsigned long channels = 2;
     const unsigned long width = sizeof(int16_t);
-    size_t buf_len = frames * channels * width;
+    size_t buf_len = frames * settings.channels * width;
 
     if (main_frame.IsPlaying() && main_frame.m_pSndFile && !gbStopSent) {
-        if (debug_counter % debug_wrap == 0) {
-            debug_log("paudio_callback: main_frame.IsPlaying = '%d', main_frame.m_pSndFile = '%p'", main_frame.IsPlaying(), main_frame.m_pSndFile);
-        }
         ret = main_frame.m_pSndFile->ReadPattern(output, buf_len);
-        if (debug_counter % debug_wrap == 0) {
-            debug_log("paudio_callback: ReadPattern = '%d'", ret);
-        }
-        main_frame.DoNotification(ret, 128);
+        main_frame.DoNotification(ret, settings.buffer_length);
     }
 
     if (ret == 0) {
-        if (debug_counter % debug_wrap == 0) {
-            debug_log("paudio_callback: ret == 0; clearing buffer");
-        }
         if (!gbStopSent) {
             gbStopSent = TRUE;
             main_frame.PostMessage(WM_COMMAND, ID_PLAYER_STOP);
@@ -130,30 +123,26 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
         }
     }
 
-    ++debug_counter;
-
     return paContinue;
 }
 
 paudio::paudio(paudio_settings &settings, portaudio::System &system, CMainFrame &main_frame) :
     interleaved(true),
-    channels(2),
-    buffer_length(64),
-    callback(main_frame),
     settings(settings),
+    callback(main_frame, this->settings),
     stream(
         portaudio::StreamParameters(
             portaudio::DirectionSpecificStreamParameters::null(),
             portaudio::DirectionSpecificStreamParameters(
                 system.deviceByIndex(settings.device),
-                channels,
+                settings.channels,
                 settings.sample_format,
                 interleaved,
                 settings.latency,
                 nullptr
             ),
             settings.sample_rate,
-            buffer_length,
+            settings.buffer_length,
             false
         ),
         callback,

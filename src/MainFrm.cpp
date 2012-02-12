@@ -343,12 +343,13 @@ CMainFrame::CMainFrame() :
 
     auto &default_output = pa_system.defaultOutputDevice();
     modplug::audioio::paudio_settings settings;
-    settings.asio_buffer_length = 0;
     settings.latency  = default_output.defaultLowOutputLatency();
     settings.host_api = default_output.hostApi().typeId();
     settings.device   = default_output.index();
     settings.sample_format = portaudio::INT16;
     settings.sample_rate   = 44100.0;
+    settings.channels      = 2;
+    settings.buffer_length = 1024;
     stream = std::make_shared<modplug::audioio::paudio>(settings, pa_system, *this);
 
     // Create Audio Critical Section

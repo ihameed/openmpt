@@ -18,7 +18,8 @@ struct paudio_settings {
     PaDeviceIndex device;
 
     PaTime latency;
-    long asio_buffer_length;
+    unsigned int buffer_length;
+    unsigned int channels;
 };
 Json::Value json_of_paudio_settings(const paudio_settings &);
 paudio_settings paudio_settings_of_json(Json::Value &);
@@ -28,15 +29,14 @@ paudio_settings paudio_settings_of_json(Json::Value &);
 
 class paudio_callback {
 public:
-    paudio_callback(CMainFrame &main_frame);
+    paudio_callback(CMainFrame &main_frame, paudio_settings &settings);
 
     int invoke(const void *, void *, unsigned long, const PaStreamCallbackTimeInfo *, PaStreamCallbackFlags);
 
 
 private:
     CMainFrame &main_frame;
-    int debug_counter;
-    const int debug_wrap;
+    paudio_settings &settings; 
 };
 
 
@@ -52,8 +52,6 @@ public:
 
 private:
     const bool interleaved;
-    const int channels;
-    const int buffer_length;
     paudio_settings settings;
     paudio_callback callback;
 
