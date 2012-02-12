@@ -156,7 +156,6 @@ LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
 UINT CMainFrame::gdwIdleTime = 0;
-uint32_t CMainFrame::deprecated_m_nChannels = 2;
 uint32_t CMainFrame::m_dwQuality = 0;
 uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
 uint32_t CMainFrame::m_nPreAmp = 128;
@@ -420,7 +419,6 @@ void CMainFrame::LoadIniSettings()
     m_nWaveDevice = GetPrivateProfileLong("Sound Settings", "WaveDevice", defaultDevice, iniFile);
     m_dwQuality = GetPrivateProfileDWord("Sound Settings", "Quality", 0, iniFile);
     m_nSrcMode = GetPrivateProfileDWord("Sound Settings", "SrcMode", SRCMODE_POLYPHASE, iniFile);
-    deprecated_m_nChannels = GetPrivateProfileDWord("Sound Settings", "ChannelMode", 2, iniFile);
 
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
     CSoundFile::m_nStereoSeparation = GetPrivateProfileLong("Sound Settings", "StereoSeparation", 128, iniFile);
@@ -583,7 +581,6 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "RowSpacing", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing, &dwDWORDSize);
         registry_query_value(key, "RowSpacing2", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing2, &dwDWORDSize);
         registry_query_value(key, "LoopSong", NULL, &dwREG_DWORD, (LPBYTE)&gbLoopSong, &dwDWORDSize);
-        registry_query_value(key, "ChannelMode", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_nChannels, &dwDWORDSize);
         registry_query_value(key, "MidiImportSpeed", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiImportSpeed, &dwDWORDSize);
         registry_query_value(key, "MidiImportPatLen", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiPatternLen, &dwDWORDSize);
         // EQ
@@ -946,7 +943,6 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileLong("Sound Settings", "WaveDevice", m_nWaveDevice, iniFile);
     WritePrivateProfileDWord("Sound Settings", "Quality", m_dwQuality, iniFile);
     WritePrivateProfileDWord("Sound Settings", "SrcMode", m_nSrcMode, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "ChannelMode", deprecated_m_nChannels, iniFile);
     WritePrivateProfileDWord("Sound Settings", "PreAmp", m_nPreAmp, iniFile);
     WritePrivateProfileLong("Sound Settings", "StereoSeparation", CSoundFile::m_nStereoSeparation, iniFile);
     WritePrivateProfileLong("Sound Settings", "MixChannels", CSoundFile::m_nMaxMixChannels, iniFile);
@@ -1294,9 +1290,7 @@ BOOL CMainFrame::deprecated_audioOpenDevice()
 
     if ((!m_pSndFile) || (!m_pSndFile->GetType())) return FALSE;
     if (m_dwStatus & MODSTATUS_PLAYING) return TRUE;
-    if ((deprecated_m_nChannels != 1) && (deprecated_m_nChannels != 2) && (deprecated_m_nChannels != 4)) deprecated_m_nChannels = 2;
-    err = deprecated_audioTryOpeningDevice(deprecated_m_nChannels,
-                                16, 44100);
+    err = deprecated_audioTryOpeningDevice(2, 16, 44100);
     deprecated_nFixedBitsPerSample = 1; //XXXih: portaudio
     // Display error message box
     if (err != 0)
@@ -1449,10 +1443,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 void CMainFrame::UpdateAudioParameters(BOOL bReset)
 //-------------------------------------------------
 {
-    CSoundFile::deprecated_SetWaveConfig(this->stream_settings.sample_rate,
-            16,
-            deprecated_m_nChannels,
-            TRUE);
+    CSoundFile::deprecated_SetWaveConfig(this->stream_settings.sample_rate, 16, 2, TRUE);
     CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     // Soft panning
     CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
@@ -2126,7 +2117,7 @@ void CMainFrame::OnViewOptions()
         
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
-    COptionsSoundcard sounddlg(44100, 0, 16, deprecated_m_nChannels, 75, m_nWaveDevice);
+    COptionsSoundcard sounddlg(44100, 0, 16, 2, 75, m_nWaveDevice);
     COptionsKeyboard keyboard;
     COptionsColors colors;
     COptionsPlayer playerdlg;

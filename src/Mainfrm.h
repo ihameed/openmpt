@@ -427,7 +427,7 @@ public:
     static CString gcsInstallGUID;
     
     // Audio Setup
-    static uint32_t m_dwQuality, m_nSrcMode, m_nPreAmp, gbLoopSong, deprecated_m_nChannels;
+    static uint32_t m_dwQuality, m_nSrcMode, m_nPreAmp, gbLoopSong;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
     static LONG m_nMidiDevice;
     static EQPRESET m_EqSettings;
