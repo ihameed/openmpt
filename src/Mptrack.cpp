@@ -769,7 +769,7 @@ BOOL CTrackApp::InitInstance()
     CSoundFile::InitSysInfo();
     if (CSoundFile::gdwSysInfo & SYSMIX_ENABLEMMX)
     {
-        CMainFrame::m_dwSoundSetup |= SOUNDSETUP_ENABLEMMX;
+        CMainFrame::deprecated_m_dwSoundSetup |= SOUNDSETUP_ENABLEMMX;
         CMainFrame::m_nSrcMode = SRCMODE_SPLINE;
     }
     if (CSoundFile::gdwSysInfo & SYSMIX_MMXEX)

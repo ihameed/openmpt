@@ -427,7 +427,7 @@ public:
     static CString gcsInstallGUID;
     
     // Audio Setup
-    static uint32_t m_dwSoundSetup, deprecated_m_dwRate, m_dwQuality, m_nSrcMode, deprecated_m_nBitsPerSample, m_nPreAmp, gbLoopSong, deprecated_m_nChannels;
+    static uint32_t deprecated_m_dwSoundSetup, m_dwQuality, m_nSrcMode, deprecated_m_nBitsPerSample, m_nPreAmp, gbLoopSong, deprecated_m_nChannels;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
     static LONG m_nMidiDevice;
     static EQPRESET m_EqSettings;
@@ -517,7 +517,7 @@ public:
 
 // Low-Level Audio
 public:
-    static void UpdateAudioParameters(BOOL bReset=FALSE);
+    void UpdateAudioParameters(BOOL bReset=FALSE);
     static void EnableLowLatencyMode(BOOL bOn=TRUE);
     static void CalcStereoVuMeters(int *, unsigned long, unsigned long);
     static DWORD WINAPI NotifyThread(LPVOID);
@@ -604,7 +604,6 @@ public:
     BOOL InitRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
     BOOL StopRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
     void SwitchToActiveView();
-    BOOL deprecated_SetupSoundCard(uint32_t q, uint32_t rate, UINT nbits, UINT chns, UINT bufsize, LONG wd);
     BOOL SetupDirectories(LPCTSTR szModDir, LPCTSTR szSampleDir, LPCTSTR szInstrDir, LPCTSTR szVstDir, LPCTSTR szPresetDir);
     BOOL SetupMiscOptions();
     BOOL SetupPlayer(uint32_t, uint32_t, BOOL bForceUpdate=FALSE);

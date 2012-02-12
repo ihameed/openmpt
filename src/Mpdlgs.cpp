@@ -363,7 +363,6 @@ void COptionsSoundcard::OnOK()
     else
     	CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    if (pMainFrm) pMainFrm->deprecated_SetupSoundCard(m_dwSoundSetup, m_dwRate, m_nBitsPerSample, m_nChannels, m_nBufferLength, m_nSoundDevice);
     CPropertyPage::OnOK();
 }
 
