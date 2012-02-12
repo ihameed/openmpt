@@ -427,10 +427,9 @@ public:
     static CString gcsInstallGUID;
     
     // Audio Setup
-    static uint32_t m_dwSoundSetup, m_dwRate, m_dwQuality, m_nSrcMode, m_nBitsPerSample, m_nPreAmp, gbLoopSong, m_nChannels;
+    static uint32_t m_dwSoundSetup, deprecated_m_dwRate, m_dwQuality, m_nSrcMode, deprecated_m_nBitsPerSample, m_nPreAmp, gbLoopSong, deprecated_m_nChannels;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
     static LONG m_nMidiDevice;
-    static uint32_t deprecated_m_nBufferLength;
     static EQPRESET m_EqSettings;
     // Pattern Setup
     static UINT gnPatternSpacing;
@@ -458,13 +457,14 @@ public:
 public:
     portaudio::AutoSystem pa_auto_system;
     portaudio::System &pa_system;
+    modplug::audioio::paudio_settings stream_settings;
     std::shared_ptr<modplug::audioio::paudio> stream;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;
-    static HANDLE m_hAudioWakeUp, m_hNotifyWakeUp;
-    static HANDLE deprecated_m_hPlayThread, m_hNotifyThread;
-    static DWORD m_dwPlayThreadId, m_dwNotifyThreadId;
+    static HANDLE m_hNotifyWakeUp;
+    static HANDLE m_hNotifyThread;
+    static DWORD m_dwNotifyThreadId;
     static LONG gnLVuMeter, gnRVuMeter;
     static UINT gdwIdleTime;
     static LONG slSampleSize, sdwSamplesPerSec, sdwAudioBufferSize;
@@ -521,8 +521,6 @@ public:
     static void EnableLowLatencyMode(BOOL bOn=TRUE);
     static void CalcStereoVuMeters(int *, unsigned long, unsigned long);
     static DWORD WINAPI NotifyThread(LPVOID);
-    ULONG deprecated_AudioRead(PVOID pData, ULONG cbSize);
-    VOID deprecated_AudioDone(ULONG nBytesWritten, ULONG nLatency);
     LONG deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec);
     BOOL deprecated_audioOpenDevice();
     BOOL audioFillBuffers();
@@ -606,7 +604,7 @@ public:
     BOOL InitRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
     BOOL StopRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
     void SwitchToActiveView();
-    BOOL SetupSoundCard(uint32_t q, uint32_t rate, UINT nbits, UINT chns, UINT bufsize, LONG wd);
+    BOOL deprecated_SetupSoundCard(uint32_t q, uint32_t rate, UINT nbits, UINT chns, UINT bufsize, LONG wd);
     BOOL SetupDirectories(LPCTSTR szModDir, LPCTSTR szSampleDir, LPCTSTR szInstrDir, LPCTSTR szVstDir, LPCTSTR szPresetDir);
     BOOL SetupMiscOptions();
     BOOL SetupPlayer(uint32_t, uint32_t, BOOL bForceUpdate=FALSE);

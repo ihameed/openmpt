@@ -546,7 +546,6 @@ CTrackApp::CTrackApp()
     m_pPluginManager = NULL;
     m_bInitialized = FALSE;
     m_bLayer3Present = FALSE;
-    deprecated_m_bExWaveSupport = FALSE;
     m_bDebugMode = FALSE;
     m_hAlternateResourceHandle = NULL;
     m_szConfigFileName[0] = 0;
@@ -562,31 +561,6 @@ CTrackApp::CTrackApp()
     CModDoc::CreateZxxFromType(m_MidiCfg.szMidiZXXExt, zxx_reso4Bit);
 
     modplug::gui::mixgraph_view_register();
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// GetDSoundVersion
-
-static uint32_t GetDSoundVersion()
-//-----------------------------
-{
-    uint32_t dwVersion = 0x600;
-    HKEY key = NULL;
-    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\DirectX", 0, KEY_READ, &key) == ERROR_SUCCESS)
-    {
-        CHAR szVersion[32] = "";
-        uint32_t dwSize = sizeof(szVersion);
-        uint32_t dwType = REG_SZ;
-        if (registry_query_value(key, "Version", NULL, &dwType, (LPBYTE)szVersion, &dwSize) == ERROR_SUCCESS)
-        {
-            // "4.06.03.xxxx"
-            dwVersion = ((szVersion[3] - '0') << 8) | ((szVersion[5] - '0') << 4) | ((szVersion[6] - '0'));
-            if (dwVersion < 0x600) dwVersion = 0x600;
-            if (dwVersion > 0x800) dwVersion = 0x800;
-        }
-        RegCloseKey(key);
-    }
-    return dwVersion;
 }
 
 
@@ -828,12 +802,10 @@ BOOL CTrackApp::InitInstance()
     // Parse command line for standard shell commands, DDE, file open
 
 
-    bool opt_enable_wavex = false;
     bool opt_debug_mode = false;
     bool opt_disable_dls = false;
     bool opt_disable_plugins = false;
     bool opt_suppress_yet_another_helpful_modal_dialog = false;
-    if (GetDSoundVersion() >= 0x0700) opt_enable_wavex = true;
 
     // create main MDI Frame window
     CMainFrame* pMainFrame = new CMainFrame();
@@ -850,9 +822,6 @@ BOOL CTrackApp::InitInstance()
 
     // Register MOD extensions
     //RegisterExtensions();
-
-    // Load DirectSound (if available)
-    deprecated_m_bExWaveSupport = opt_enable_wavex;
 
     // Load DLS Banks
     if (!opt_disable_dls) LoadDefaultDLSBanks();

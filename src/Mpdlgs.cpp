@@ -194,7 +194,7 @@ BOOL COptionsSoundcard::OnInitDialog()
     		UINT j = 3*3-1-i;
     		UINT nBits = 8 << (j % 3);
     		UINT nChannels = 1 << (j/3);
-    		if ((((nChannels <= 2) && (nBits <= 16)) || (theApp.IsWaveExEnabled()) || (bAsio))
+    		if ((((nChannels <= 2) && (nBits <= 16)) || (bAsio))
     		 && ((nBits >= 16) || (nChannels <= 2)))
     		{
     			wsprintf(s, "%s, %d Bit", gszChnCfgNames[j/3], nBits);
@@ -363,7 +363,7 @@ void COptionsSoundcard::OnOK()
     else
     	CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    if (pMainFrm) pMainFrm->SetupSoundCard(m_dwSoundSetup, m_dwRate, m_nBitsPerSample, m_nChannels, m_nBufferLength, m_nSoundDevice);
+    if (pMainFrm) pMainFrm->deprecated_SetupSoundCard(m_dwSoundSetup, m_dwRate, m_nBitsPerSample, m_nChannels, m_nBufferLength, m_nSoundDevice);
     CPropertyPage::OnOK();
 }
 

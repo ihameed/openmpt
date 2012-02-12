@@ -103,7 +103,7 @@ END_MESSAGE_MAP()
 
 // Static
 static int gdwLastLowLatencyTime = 0;
-static int gdwLastMixActiveTime = 0;
+static int deprecated_gdwLastMixActiveTime = 0;
 static uint32_t gsdwTotalSamples = 0;
 static uint32_t gdwPlayLatency = 0;
 
@@ -149,9 +149,6 @@ uint32_t CMainFrame::gnPlugWindowLast = 0;
 uint32_t CMainFrame::gnMsgBoxVisiblityFlags = UINT32_MAX;
 
 CRITICAL_SECTION CMainFrame::m_csAudio;
-HANDLE CMainFrame::deprecated_m_hPlayThread = NULL;
-DWORD CMainFrame::m_dwPlayThreadId = 0;
-HANDLE CMainFrame::m_hAudioWakeUp = NULL;
 HANDLE CMainFrame::m_hNotifyThread = NULL;
 DWORD CMainFrame::m_dwNotifyThreadId = 0;
 HANDLE CMainFrame::m_hNotifyWakeUp = NULL;
@@ -159,17 +156,16 @@ LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
 UINT CMainFrame::gdwIdleTime = 0;
-uint32_t CMainFrame::m_dwRate = 44100;
+uint32_t CMainFrame::deprecated_m_dwRate = 44100;
 uint32_t CMainFrame::m_dwSoundSetup = SOUNDSETUP_SECONDARY;
-uint32_t CMainFrame::m_nChannels = 2;
+uint32_t CMainFrame::deprecated_m_nChannels = 2;
 uint32_t CMainFrame::m_dwQuality = 0;
 uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
-uint32_t CMainFrame::m_nBitsPerSample = 16;
+uint32_t CMainFrame::deprecated_m_nBitsPerSample = 16;
 uint32_t CMainFrame::m_nPreAmp = 128;
 uint32_t CMainFrame::gbLoopSong = TRUE;
 LONG CMainFrame::m_nWaveDevice = 0;
 LONG CMainFrame::m_nMidiDevice = 0;
-uint32_t CMainFrame::deprecated_m_nBufferLength = 75;
 LONG CMainFrame::gnLVuMeter = 0;
 LONG CMainFrame::gnRVuMeter = 0;
 EQPRESET CMainFrame::m_EqSettings = { "", {16,16,16,16,16,16}, { 125, 300, 600, 1250, 4000, 8000 } };
@@ -342,15 +338,14 @@ CMainFrame::CMainFrame() :
     debug_log("=================================================");
 
     auto &default_output = pa_system.defaultOutputDevice();
-    modplug::audioio::paudio_settings settings;
-    settings.latency  = default_output.defaultLowOutputLatency();
-    settings.host_api = default_output.hostApi().typeId();
-    settings.device   = default_output.index();
-    settings.sample_format = portaudio::INT16;
-    settings.sample_rate   = 44100.0;
-    settings.channels      = 2;
-    settings.buffer_length = 1024;
-    stream = std::make_shared<modplug::audioio::paudio>(settings, pa_system, *this);
+    stream_settings.latency  = default_output.defaultLowOutputLatency();
+    stream_settings.host_api = default_output.hostApi().typeId();
+    stream_settings.device   = default_output.index();
+    stream_settings.sample_format = portaudio::INT16;
+    stream_settings.sample_rate   = 44100.0;
+    stream_settings.channels      = 2;
+    stream_settings.buffer_length = 256;
+    stream = std::make_shared<modplug::audioio::paudio>(stream_settings, pa_system, *this);
 
     // Create Audio Critical Section
     MemsetZero(m_csAudio);
@@ -429,13 +424,12 @@ void CMainFrame::LoadIniSettings()
     m_dwSoundSetup = GetPrivateProfileDWord("Sound Settings", "SoundSetup", SOUNDSETUP_SECONDARY, iniFile);
     m_dwQuality = GetPrivateProfileDWord("Sound Settings", "Quality", 0, iniFile);
     m_nSrcMode = GetPrivateProfileDWord("Sound Settings", "SrcMode", SRCMODE_POLYPHASE, iniFile);
-    m_dwRate = GetPrivateProfileDWord("Sound Settings", "Mixing_Rate", 0, iniFile);
-    m_nBitsPerSample = GetPrivateProfileDWord("Sound Settings", "BitsPerSample", 16, iniFile);
-    m_nChannels = GetPrivateProfileDWord("Sound Settings", "ChannelMode", 2, iniFile);
-    deprecated_m_nBufferLength = GetPrivateProfileDWord("Sound Settings", "BufferLength", 50, iniFile);
-    if(m_dwRate == 0)
+    deprecated_m_dwRate = GetPrivateProfileDWord("Sound Settings", "Mixing_Rate", 0, iniFile);
+    deprecated_m_nBitsPerSample = GetPrivateProfileDWord("Sound Settings", "BitsPerSample", 16, iniFile);
+    deprecated_m_nChannels = GetPrivateProfileDWord("Sound Settings", "ChannelMode", 2, iniFile);
+    if(deprecated_m_dwRate == 0)
     {
-        m_dwRate = 44100;
+        deprecated_m_dwRate = 44100;
     }
 
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
@@ -564,9 +558,7 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "SoundSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwSoundSetup, &dwDWORDSize);
         registry_query_value(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&m_dwQuality, &dwDWORDSize);
         registry_query_value(key, "SrcMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nSrcMode, &dwDWORDSize);
-        registry_query_value(key, "Mixing_Rate", NULL, &dwREG_DWORD, (LPBYTE)&m_dwRate, &dwDWORDSize);
-        registry_query_value(key, "BufferLength", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_nBufferLength, &dwDWORDSize);
-        if ((deprecated_m_nBufferLength < 10) || (deprecated_m_nBufferLength > 200)) deprecated_m_nBufferLength = 100;
+        registry_query_value(key, "Mixing_Rate", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_dwRate, &dwDWORDSize);
         registry_query_value(key, "PreAmp", NULL, &dwREG_DWORD, (LPBYTE)&m_nPreAmp, &dwDWORDSize);
 
         CHAR sPath[_MAX_PATH] = "";
@@ -603,8 +595,8 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "RowSpacing", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing, &dwDWORDSize);
         registry_query_value(key, "RowSpacing2", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing2, &dwDWORDSize);
         registry_query_value(key, "LoopSong", NULL, &dwREG_DWORD, (LPBYTE)&gbLoopSong, &dwDWORDSize);
-        registry_query_value(key, "BitsPerSample", NULL, &dwREG_DWORD, (LPBYTE)&m_nBitsPerSample, &dwDWORDSize);
-        registry_query_value(key, "ChannelMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nChannels, &dwDWORDSize);
+        registry_query_value(key, "BitsPerSample", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_nBitsPerSample, &dwDWORDSize);
+        registry_query_value(key, "ChannelMode", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_nChannels, &dwDWORDSize);
         registry_query_value(key, "MidiImportSpeed", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiImportSpeed, &dwDWORDSize);
         registry_query_value(key, "MidiImportPatLen", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiPatternLen, &dwDWORDSize);
         // EQ
@@ -714,7 +706,6 @@ VOID CMainFrame::Initialize()
     // Create Audio Thread
     stream->start();
     //XXXih: portaudio
-    m_hAudioWakeUp = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hNotifyWakeUp = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hNotifyThread = CreateThread(NULL, 0, NotifyThread, NULL, 0, &m_dwNotifyThreadId);
     // Setup timer
@@ -846,10 +837,6 @@ BOOL CMainFrame::DestroyWindow()
         m_nTimer = 0;
     }
     if (shMidiIn) midiCloseDevice();
-    if (deprecated_m_hPlayThread != NULL)
-    {
-        if(TerminateThread(deprecated_m_hPlayThread, 0)) deprecated_m_hPlayThread = NULL;
-    }
     if (m_hNotifyThread != NULL)
     {
         if(TerminateThread(m_hNotifyThread, 0)) m_hNotifyThread = NULL;
@@ -973,10 +960,9 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileDWord("Sound Settings", "SoundSetup", m_dwSoundSetup, iniFile);
     WritePrivateProfileDWord("Sound Settings", "Quality", m_dwQuality, iniFile);
     WritePrivateProfileDWord("Sound Settings", "SrcMode", m_nSrcMode, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "Mixing_Rate", m_dwRate, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "BitsPerSample", m_nBitsPerSample, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "ChannelMode", m_nChannels, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "BufferLength", deprecated_m_nBufferLength, iniFile);
+    WritePrivateProfileDWord("Sound Settings", "Mixing_Rate", deprecated_m_dwRate, iniFile);
+    WritePrivateProfileDWord("Sound Settings", "BitsPerSample", deprecated_m_nBitsPerSample, iniFile);
+    WritePrivateProfileDWord("Sound Settings", "ChannelMode", deprecated_m_nChannels, iniFile);
     WritePrivateProfileDWord("Sound Settings", "PreAmp", m_nPreAmp, iniFile);
     WritePrivateProfileLong("Sound Settings", "StereoSeparation", CSoundFile::m_nStereoSeparation, iniFile);
     WritePrivateProfileLong("Sound Settings", "MixChannels", CSoundFile::m_nMaxMixChannels, iniFile);
@@ -1270,39 +1256,11 @@ DWORD WINAPI CMainFrame::NotifyThread(LPVOID)
 }
 
 
-
-
-ULONG CMainFrame::deprecated_AudioRead(PVOID pvData, ULONG ulSize)
-//-----------------------------------------------------
-{
-    //XXXih: portaudio hax
-    if ((IsPlaying()) && (m_pSndFile))
-    {
-        uint32_t dwSamplesRead = 0;//m_pSndFile->ReadPattern(pvData, ulSize);
-        //dwSamplesRead = m_pSndFile->ReadPattern(pvData, ulSize);
-        dwSamplesRead = 0;
-        //m_dTotalCPU = m_pPerfCounter->StartStop()/(static_cast<double>(dwSamplesRead)/m_dwRate);
-        return dwSamplesRead * slSampleSize;
-    }
-    return 0;
-}
-
-
-VOID CMainFrame::deprecated_AudioDone(ULONG nBytesWritten, ULONG nLatency)
-//-------------------------------------------------------------
-{
-    if (nBytesWritten > (uint32_t)slSampleSize)
-    {
-        DoNotification(nBytesWritten/CMainFrame::slSampleSize, nLatency);
-    }
-}
-
-
 LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec)
 //----------------------------------------------------------------------------------
 {
     WAVEFORMATEXTENSIBLE WaveFormat;
-    UINT buflen = deprecated_m_nBufferLength;
+    UINT buflen = 75;
     
     if (!m_pSndFile) return -1;
     slSampleSize = (bits/8) * channels;
@@ -1336,11 +1294,11 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
     }
     if (m_dwSoundSetup & SOUNDSETUP_STREVERSE) CSoundFile::gdwSoundSetup |= SNDMIX_REVERSESTEREO;
     else CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
-    m_pSndFile->SetWaveConfig(samplespersec, bits, channels, (m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) ? TRUE : FALSE);
+    m_pSndFile->deprecated_SetWaveConfig(samplespersec, bits, channels, (m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) ? TRUE : FALSE);
     gbStopSent = FALSE;
-    m_pSndFile->SetResamplingMode(m_nSrcMode);
+    m_pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
     m_pSndFile->UPDATEDSPEFFECTS();
-    m_pSndFile->SetAGC(m_dwQuality & QUALITY_AGC);
+    m_pSndFile->deprecated_SetAGC(m_dwQuality & QUALITY_AGC);
     return 0;
 }
 
@@ -1348,30 +1306,30 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
 BOOL CMainFrame::deprecated_audioOpenDevice()
 //--------------------------------
 {
-    UINT nFixedBitsPerSample;
+    UINT deprecated_nFixedBitsPerSample;
     LONG err;
 
     if ((!m_pSndFile) || (!m_pSndFile->GetType())) return FALSE;
     if (m_dwStatus & MODSTATUS_PLAYING) return TRUE;
-    if (!m_dwRate) m_dwRate = 22050;
-    if ((m_nChannels != 1) && (m_nChannels != 2) && (m_nChannels != 4)) m_nChannels = 2;
-    err = deprecated_audioTryOpeningDevice(m_nChannels,
-                                m_nBitsPerSample,
-                                m_dwRate);
-    nFixedBitsPerSample = 1; //XXXih: portaudio
-    if ((err) && ((m_dwRate > 44100) || (m_nChannels > 2) || (m_nBitsPerSample > 16)
-               || ((nFixedBitsPerSample) && (nFixedBitsPerSample != m_nBitsPerSample))))
+    if (!deprecated_m_dwRate) deprecated_m_dwRate = 22050;
+    if ((deprecated_m_nChannels != 1) && (deprecated_m_nChannels != 2) && (deprecated_m_nChannels != 4)) deprecated_m_nChannels = 2;
+    err = deprecated_audioTryOpeningDevice(deprecated_m_nChannels,
+                                deprecated_m_nBitsPerSample,
+                                deprecated_m_dwRate);
+    deprecated_nFixedBitsPerSample = 1; //XXXih: portaudio
+    if ((err) && ((deprecated_m_dwRate > 44100) || (deprecated_m_nChannels > 2) || (deprecated_m_nBitsPerSample > 16)
+               || ((deprecated_nFixedBitsPerSample) && (deprecated_nFixedBitsPerSample != deprecated_m_nBitsPerSample))))
     {
-        uint32_t oldrate = m_dwRate;
+        uint32_t oldrate = deprecated_m_dwRate;
 
-        m_dwRate = 44100;
-        if (m_nChannels > 2) m_nChannels = 2;
-        if (nFixedBitsPerSample) m_nBitsPerSample = nFixedBitsPerSample;
-        else if (m_nBitsPerSample > 16) m_nBitsPerSample = 16;
-        err = deprecated_audioTryOpeningDevice(m_nChannels,
-                                    m_nBitsPerSample,
-                                    m_dwRate);
-        if (err) m_dwRate = oldrate;
+        deprecated_m_dwRate = 44100;
+        if (deprecated_m_nChannels > 2) deprecated_m_nChannels = 2;
+        if (deprecated_nFixedBitsPerSample) deprecated_m_nBitsPerSample = deprecated_nFixedBitsPerSample;
+        else if (deprecated_m_nBitsPerSample > 16) deprecated_m_nBitsPerSample = 16;
+        err = deprecated_audioTryOpeningDevice(deprecated_m_nChannels,
+                                    deprecated_m_nBitsPerSample,
+                                    deprecated_m_dwRate);
+        if (err) deprecated_m_dwRate = oldrate;
     }
     // Display error message box
     if (err != 0)
@@ -1380,7 +1338,7 @@ BOOL CMainFrame::deprecated_audioOpenDevice()
         return FALSE;
     }
     // Device is ready
-    gdwLastMixActiveTime = timeGetTime();
+    deprecated_gdwLastMixActiveTime = timeGetTime();
     return TRUE;
 }
 
@@ -1420,7 +1378,7 @@ void CMainFrame::CalcStereoVuMeters(int *pMix, unsigned long nSamples, unsigned 
 BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 //-------------------------------------------------------------------
 {
-    m_dwElapsedTime += (dwSamplesRead * 1000) / m_dwRate;
+    m_dwElapsedTime += (dwSamplesRead * 1000) / deprecated_m_dwRate;
     gsdwTotalSamples += dwSamplesRead;
     if (!m_pSndFile) return FALSE;
     if (m_nMixChn < m_pSndFile->m_nMixStat) m_nMixChn++;
@@ -1509,7 +1467,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                 if (rVu > 0x10000) rVu = 0x10000;
                 p->dwPos[0] = lVu;
                 p->dwPos[1] = rVu;
-                uint32_t dwVuDecay = _muldiv(dwSamplesRead, 120000, m_dwRate) + 1;
+                uint32_t dwVuDecay = _muldiv(dwSamplesRead, 120000, deprecated_m_dwRate) + 1;
                 if (lVu >= dwVuDecay) gnLVuMeter = (lVu - dwVuDecay) << 11; else gnLVuMeter = 0;
                 if (rVu >= dwVuDecay) gnRVuMeter = (rVu - dwVuDecay) << 11; else gnRVuMeter = 0;
             }
@@ -1524,10 +1482,10 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 void CMainFrame::UpdateAudioParameters(BOOL bReset)
 //-------------------------------------------------
 {
-    if ((m_nBitsPerSample != 8) && (m_nBitsPerSample != 32)) m_nBitsPerSample = 16;
-    CSoundFile::SetWaveConfig(m_dwRate,
-            m_nBitsPerSample,
-            m_nChannels,
+    if ((deprecated_m_nBitsPerSample != 8) && (deprecated_m_nBitsPerSample != 32)) deprecated_m_nBitsPerSample = 16;
+    CSoundFile::deprecated_SetWaveConfig(deprecated_m_dwRate,
+            deprecated_m_nBitsPerSample,
+            deprecated_m_nChannels,
             (m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) ? TRUE : FALSE);
     if (m_dwSoundSetup & SOUNDSETUP_STREVERSE)
         CSoundFile::gdwSoundSetup |= SNDMIX_REVERSESTEREO;
@@ -1543,9 +1501,9 @@ void CMainFrame::UpdateAudioParameters(BOOL bReset)
         CSoundFile::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
     else
         CSoundFile::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
-    CSoundFile::SetResamplingMode(m_nSrcMode);
+    CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
     CSoundFile::UPDATEDSPEFFECTS();
-    CSoundFile::SetAGC(m_dwQuality & QUALITY_AGC);
+    CSoundFile::deprecated_SetAGC(m_dwQuality & QUALITY_AGC);
     CSoundFile::SetEQGains(    m_EqSettings.Gains, MAX_EQ_BANDS, m_EqSettings.Freqs, bReset );
     if (bReset) CSoundFile::InitPlayer(TRUE);
 }
@@ -1773,7 +1731,6 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     m_wndToolBar.SetCurrentSong(m_pSndFile);
     debug_log("--------- CMainFrame::PlayMod: end");
     //if (gpSoundDevice) gpSoundDevice->Start();
-    SetEvent(m_hAudioWakeUp);
     return TRUE;
 }
 
@@ -1869,7 +1826,6 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSndFile)
     m_pSndFile->InitPlayer(TRUE);
     m_dwStatus |= MODSTATUS_PLAYING;
     debug_log("CMainFrame::PlaySoundFile: end");
-    SetEvent(m_hAudioWakeUp);
     return TRUE;
 }
 
@@ -2060,13 +2016,13 @@ BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, uint3
 }
 
 
-BOOL CMainFrame::SetupSoundCard(uint32_t q, uint32_t rate, UINT nBits, UINT nChns, UINT bufsize, LONG wd)
+BOOL CMainFrame::deprecated_SetupSoundCard(uint32_t q, uint32_t rate, UINT nBits, UINT nChns, UINT bufsize, LONG wd)
 //-------------------------------------------------------------------------------------------------
 {
     BOOL bPlaying = (m_dwStatus & MODSTATUS_PLAYING) ? TRUE : FALSE;
-    if ((m_dwRate != rate) || ((m_dwSoundSetup & SOUNDSETUP_RESTARTMASK) != (q & SOUNDSETUP_RESTARTMASK))
-     || (m_nWaveDevice != wd) || (deprecated_m_nBufferLength != bufsize) || (nBits != m_nBitsPerSample)
-     || (m_nChannels != nChns))
+    if ((deprecated_m_dwRate != rate) || ((m_dwSoundSetup & SOUNDSETUP_RESTARTMASK) != (q & SOUNDSETUP_RESTARTMASK))
+     || (m_nWaveDevice != wd) || (nBits != deprecated_m_nBitsPerSample)
+     || (deprecated_m_nChannels != nChns))
     {
         CModDoc *pActiveMod = NULL;
         HWND hFollow = m_hFollowSong;
@@ -2076,11 +2032,10 @@ BOOL CMainFrame::SetupSoundCard(uint32_t q, uint32_t rate, UINT nBits, UINT nChn
             PauseMod();
         }
         m_nWaveDevice = wd;
-        m_dwRate = rate;
+        deprecated_m_dwRate = rate;
         m_dwSoundSetup = q;
-        deprecated_m_nBufferLength = bufsize;
-        m_nBitsPerSample = nBits;
-        m_nChannels = nChns;
+        deprecated_m_nBitsPerSample = nBits;
+        deprecated_m_nChannels = nChns;
         BEGIN_CRITICAL();
         UpdateAudioParameters(FALSE);
         END_CRITICAL();
@@ -2108,9 +2063,9 @@ BOOL CMainFrame::SetupPlayer(uint32_t q, uint32_t srcmode, BOOL bForceUpdate)
         m_nSrcMode = srcmode;
         m_dwQuality = q;
         BEGIN_CRITICAL();
-        CSoundFile::SetResamplingMode(m_nSrcMode);
+        CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
         CSoundFile::UPDATEDSPEFFECTS();
-        CSoundFile::SetAGC(m_dwQuality & QUALITY_AGC);
+        CSoundFile::deprecated_SetAGC(m_dwQuality & QUALITY_AGC);
         END_CRITICAL();
         PostMessage(WM_MOD_INVALIDATEPATTERNS, HINT_MPTSETUP);
     }
@@ -2249,7 +2204,7 @@ void CMainFrame::OnViewOptions()
         
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
-    COptionsSoundcard sounddlg(m_dwRate, m_dwSoundSetup, m_nBitsPerSample, m_nChannels, deprecated_m_nBufferLength, m_nWaveDevice);
+    COptionsSoundcard sounddlg(deprecated_m_dwRate, m_dwSoundSetup, deprecated_m_nBitsPerSample, deprecated_m_nChannels, 75, m_nWaveDevice);
     COptionsKeyboard keyboard;
     COptionsColors colors;
     COptionsPlayer playerdlg;
@@ -2377,7 +2332,7 @@ void CMainFrame::OnImportMidiLib()
 void CMainFrame::SetLastMixActiveTime()    	//rewbs.LiveVSTi
 //-------------------------------------
 {
-    gdwLastMixActiveTime = timeGetTime();
+    deprecated_gdwLastMixActiveTime = timeGetTime();
 }
 
 void CMainFrame::OnTimer(UINT)
@@ -2402,15 +2357,15 @@ void CMainFrame::OnTimer(UINT)
         }
         if ((m_pSndFile) && (m_pSndFile->IsPaused()) && (!m_pSndFile->m_nMixChannels))
         {
-            //Log("%d (%d)\n", dwTime - gdwLastMixActiveTime, gdwLastMixActiveTime);
-            if (curTime - gdwLastMixActiveTime > 5000)
+            //Log("%d (%d)\n", dwTime - deprecated_gdwLastMixActiveTime, deprecated_gdwLastMixActiveTime);
+            if (curTime - deprecated_gdwLastMixActiveTime > 5000)
             {
                 //rewbs.instroVSTi: testing without shutting down audio device after 5s of idle time.
                 //PauseMod();
             }
         } else
         {
-            gdwLastMixActiveTime = curTime;
+            deprecated_gdwLastMixActiveTime = curTime;
         }
     } else
     {

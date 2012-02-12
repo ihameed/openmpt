@@ -600,9 +600,9 @@ public:
 public:
     // Mixer Config
     static BOOL InitPlayer(BOOL bReset=FALSE);
-    static BOOL SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
+    static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
     static BOOL SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL xbass,BOOL dolbynr=FALSE,BOOL bEQ=FALSE);
-    static BOOL SetResamplingMode(UINT nMode); // SRCMODE_XXXX
+    static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
     static BOOL IsStereo() { return (gnChannels > 1) ? TRUE : FALSE; }
     static uint32_t GetSampleRate() { return gdwMixingFreq; }
     static uint32_t GetBitsPerSample() { return gnBitsPerSample; }
@@ -611,7 +611,7 @@ public:
     static void EnableMMX(BOOL b) { if (b) gdwSoundSetup |= SNDMIX_ENABLEMMX; else gdwSoundSetup &= ~SNDMIX_ENABLEMMX; }
     // AGC
     static BOOL GetAGC() { return (gdwSoundSetup & SNDMIX_AGC) ? TRUE : FALSE; }
-    static void SetAGC(BOOL b);
+    static void deprecated_SetAGC(BOOL b);
     static void ResetAGC();
     static void ProcessAGC(int count);
     // DSP Effects

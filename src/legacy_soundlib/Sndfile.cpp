@@ -958,7 +958,7 @@ void CSoundFile::SanitizeMacros()
 }
 
 
-BOOL CSoundFile::SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
+BOOL CSoundFile::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
 //----------------------------------------------------------------------------
 {
     BOOL bReset = FALSE;
@@ -989,7 +989,7 @@ BOOL CSoundFile::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL b
 }
 
 
-BOOL CSoundFile::SetResamplingMode(UINT nMode)
+BOOL CSoundFile::deprecated_SetResamplingMode(UINT nMode)
 //--------------------------------------------
 {
     uint32_t d = gdwSoundSetup & ~(SNDMIX_NORESAMPLING|SNDMIX_SPLINESRCMODE|SNDMIX_POLYPHASESRCMODE|SNDMIX_FIRFILTERSRCMODE);
@@ -1025,7 +1025,7 @@ void CSoundFile::SetMasterVolume(UINT nVol, bool adjustAGC)
 }
 
 
-void CSoundFile::SetAGC(BOOL b)
+void CSoundFile::deprecated_SetAGC(BOOL b)
 //-----------------------------
 {
     if (b)
