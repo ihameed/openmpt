@@ -295,7 +295,8 @@ static UINT indicators[] =
 // CMainFrame construction/destruction
 //#include <direct.h>
 CMainFrame::CMainFrame() :
-    pa_auto_system(), pa_system(portaudio::System::instance())
+    pa_auto_system(),
+    pa_system(portaudio::System::instance())
 //----------------------
 {
     m_bModTreeHasFocus = false;    //rewbs.customKeys
@@ -328,7 +329,7 @@ CMainFrame::CMainFrame() :
 
     m_dTotalCPU=0;
     MemsetZero(gpenVuMeter);
-    
+
     // Default chords
     MemsetZero(Chords);
     for (UINT ichord=0; ichord<3*12; ichord++)
@@ -353,11 +354,22 @@ CMainFrame::CMainFrame() :
         }
     }
 
+    //XXXih: portaudio wip
     debug_log("=================================================");
     for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
         debug_log("hostapi '%s' device '%s'", i->hostApi().name(), i->name());
     }
     debug_log("=================================================");
+
+    auto &default_output = pa_system.defaultOutputDevice();
+    modplug::audioio::paudio_settings settings;
+    settings.asio_buffer_length = 0;
+    settings.latency  = default_output.defaultLowOutputLatency();
+    settings.host_api = default_output.hostApi().typeId();
+    settings.device   = default_output.index();
+    settings.sample_format = portaudio::INT16;
+    settings.sample_rate   = 44100.0;
+    stream = std::make_shared<modplug::audioio::paudio>(settings, pa_system, *this);
 
     // Create Audio Critical Section
     MemsetZero(m_csAudio);
@@ -758,6 +770,8 @@ VOID CMainFrame::Initialize()
     if (m_szDefaultDirectory[DIR_MODS][0]) SetCurrentDirectory(m_szDefaultDirectory[DIR_MODS]);
 
     // Create Audio Thread
+    stream->start();
+    //XXXih: portaudio
     m_hAudioWakeUp = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hNotifyWakeUp = CreateEvent(NULL, FALSE, FALSE, NULL);
     m_hPlayThread = CreateThread(NULL, 0, AudioThread, NULL, 0, &m_dwPlayThreadId);
@@ -1253,7 +1267,8 @@ void CMainFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame Sound Library
 
-static BOOL gbStopSent = FALSE;
+//static BOOL gbStopSent = FALSE;
+BOOL gbStopSent = FALSE;
 
 // Sound Device Callback
 BOOL SoundDeviceCallback(uint32_t dwUser)
@@ -1270,8 +1285,9 @@ BOOL SoundDeviceCallback(uint32_t dwUser)
     }*/
     if (!bOk)
     {
-        gbStopSent = TRUE;
-        pMainFrm->PostMessage(WM_COMMAND, ID_PLAYER_STOP);
+        //debug_log("----------------------- ::SoundDeviceCallback: stop sent!!!!");
+        //gbStopSent = TRUE;
+        //pMainFrm->PostMessage(WM_COMMAND, ID_PLAYER_STOP);
     }
     END_CRITICAL();
     return bOk;
@@ -1350,9 +1366,10 @@ DWORD WINAPI CMainFrame::AudioThread(LPVOID)
                     if (nSleep > 40) nSleep = 40;
                 } else
                 {
+                //debug_log("----------------------- CMainFrame::AudioThread: stop sent!!!!");
                     //CMainFrame::gpSoundDevice->SilenceAudioBuffer(&gMPTSoundSource, gdwPlayLatency);
-                    gbStopSent = TRUE;
-                    pMainFrm->PostMessage(WM_COMMAND, ID_PLAYER_STOP);
+                    //gbStopSent = TRUE;
+                    //pMainFrm->PostMessage(WM_COMMAND, ID_PLAYER_STOP);
                 }
             } else
             {
@@ -1455,9 +1472,12 @@ VOID CMPTSoundSource::AudioDone(ULONG nBytesWritten, ULONG nLatency)
 ULONG CMainFrame::AudioRead(PVOID pvData, ULONG ulSize)
 //-----------------------------------------------------
 {
+    //XXXih: portaudio hax
     if ((IsPlaying()) && (m_pSndFile))
     {
-        uint32_t dwSamplesRead = m_pSndFile->ReadPattern(pvData, ulSize);
+        uint32_t dwSamplesRead = 0;//m_pSndFile->ReadPattern(pvData, ulSize);
+        //dwSamplesRead = m_pSndFile->ReadPattern(pvData, ulSize);
+        dwSamplesRead = 0;
         //m_dTotalCPU = m_pPerfCounter->StartStop()/(static_cast<double>(dwSamplesRead)/m_dwRate);
         return dwSamplesRead * slSampleSize;
     }
@@ -1914,9 +1934,15 @@ BOOL CMainFrame::ResetNotificationBuffer(HWND hwnd)
 BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
 //-----------------------------------------------------------------------
 {
-    if (!pModDoc) return FALSE;
+    if (!pModDoc) {
+        debug_log("------------ CMainFrame::PlayMod: pModDoc == 0");
+        return FALSE;
+    }
     CSoundFile *pSndFile = pModDoc->GetSoundFile();
-    if ((!pSndFile) || (!pSndFile->GetType())) return FALSE;
+    if ((!pSndFile) || (!pSndFile->GetType())) {
+        debug_log("-------------- CMainFrame::PlayMod: pSndFile == 0 or pSndFile->GetType == 0");
+        return FALSE;
+    }
     const bool bPaused = pSndFile->IsPaused();
     const bool bPatLoop = (pSndFile->m_dwSongFlags & SONG_PATTERNLOOP) ? true : false;
     pSndFile->ResetChannels();
@@ -1942,6 +1968,7 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
         m_pSndFile = NULL;
         m_pModPlaying = NULL;
         m_hFollowSong = NULL;
+        debug_log("---------- CMainFrame::PlayMod: failed to open audio device");
         return FALSE;
     }
     m_nMixChn = m_nAvgMixChn = 0;
@@ -1969,7 +1996,8 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     MemsetZero(NotifyBuffer);
     m_dwStatus |= MODSTATUS_PLAYING;
     m_wndToolBar.SetCurrentSong(m_pSndFile);
-    if (gpSoundDevice) gpSoundDevice->Start();
+    debug_log("--------- CMainFrame::PlayMod: end");
+    //if (gpSoundDevice) gpSoundDevice->Start();
     SetEvent(m_hAudioWakeUp);
     return TRUE;
 }
@@ -2053,10 +2081,14 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSndFile)
 //--------------------------------------------------
 {
     if (m_pSndFile) PauseMod(NULL);
-    if ((!pSndFile) || (!pSndFile->GetType())) return FALSE;
+    if ((!pSndFile) || (!pSndFile->GetType())) {
+        debug_log("CMainFrame::PlaySoundFile: pSndFile == 0 or pSndFile->GetType == 0");
+        return FALSE;
+    }
     m_pSndFile = pSndFile;
     if (!audioOpenDevice())
     {
+        debug_log("CMainFrame::PlaySoundFile: failed to open audio device");
         m_pSndFile = NULL;
         return FALSE;
     }
@@ -2064,6 +2096,7 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSndFile)
     m_pSndFile->SetMasterVolume(m_nPreAmp, true);
     m_pSndFile->InitPlayer(TRUE);
     m_dwStatus |= MODSTATUS_PLAYING;
+    debug_log("CMainFrame::PlaySoundFile: end");
     if (gpSoundDevice) gpSoundDevice->Start();
     SetEvent(m_hAudioWakeUp);
     return TRUE;

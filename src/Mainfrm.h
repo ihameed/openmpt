@@ -8,7 +8,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include <portaudiocpp/PortAudioCpp.hxx>
+#include "audioio/paudio.h"
 
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
@@ -458,6 +458,7 @@ public:
 public:
     portaudio::AutoSystem pa_auto_system;
     portaudio::System &pa_system;
+    std::shared_ptr<modplug::audioio::paudio> stream;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;
@@ -487,6 +488,7 @@ public:
 public:
     static HMIDIIN shMidiIn;
 
+    CSoundFile *m_pSndFile;
 
 protected:
     CSoundFile m_WaveFile;
@@ -495,7 +497,6 @@ protected:
     CMainToolBar m_wndToolBar;
     CImageList m_ImageList;
     CModDoc *m_pModPlaying;
-    CSoundFile *m_pSndFile;
     HWND m_hFollowSong, m_hWndMidi;
     uint32_t m_dwStatus, m_dwElapsedTime, m_dwTimeSec, m_dwNotifyType;
     UINT m_nTimer, m_nAvgMixChn, m_nMixChn;

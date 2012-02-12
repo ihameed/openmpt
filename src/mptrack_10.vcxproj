@@ -203,6 +203,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractVstEditor.cpp" />
+    <ClCompile Include="audioio\paudio.cpp" />
     <ClCompile Include="AutoSaver.cpp" />
     <ClCompile Include="ChannelManagerDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
@@ -332,6 +333,7 @@
     <ResourceCompile Include="mptrack.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="audioio\paudio.h" />
     <ClInclude Include="gui\mixgraph_view.h" />
     <ClInclude Include="gui\widget.h" />
     <ClInclude Include="legacy_soundlib\Dlsbank.h" />

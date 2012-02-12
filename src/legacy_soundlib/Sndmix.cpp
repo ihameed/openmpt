@@ -279,6 +279,8 @@ BOOL CSoundFile::GlobalFadeSong(UINT msec)
 
 UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     //XXXih: i render here!
+    //XXXih: gnBitsPerSample shouldn't exist!
+    gnBitsPerSample = 16;
     unsigned char *buffer = static_cast<unsigned char *>(out_buffer);
     LPCONVERTPROC clip_samples = modplug::mixer::clip_32_to_8;
     size_t max_samples;
