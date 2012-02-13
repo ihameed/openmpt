@@ -864,9 +864,6 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         //kill notes if required.
         if ( (bpause) || (m_SndFile.IsPaused()) || pMainFrm->GetModPlaying() != this)
         { 
-            //OnPlayerPause();    			  // pause song - pausing VSTis is too slow
-            pMainFrm->SetLastMixActiveTime(); // mark activity
-
             // All notes off
             for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
             {

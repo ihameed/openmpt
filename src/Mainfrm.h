@@ -657,7 +657,6 @@ public:
 public:
     afx_msg void OnAddDlsBank();
     afx_msg void OnImportMidiLib();
-    afx_msg void SetLastMixActiveTime(); //rewbs.VSTCompliance
     afx_msg void OnViewOptions();		 //rewbs.resamplerConf: made public so it's accessible from mod2wav gui :/
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

@@ -103,7 +103,6 @@ END_MESSAGE_MAP()
 
 // Static
 static int gdwLastLowLatencyTime = 0;
-static int deprecated_gdwLastMixActiveTime = 0;
 static uint32_t gsdwTotalSamples = 0;
 static uint32_t gdwPlayLatency = 0;
 
@@ -1284,21 +1283,17 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
 BOOL CMainFrame::deprecated_audioOpenDevice()
 //--------------------------------
 {
-    UINT deprecated_nFixedBitsPerSample;
     LONG err;
 
     if ((!m_pSndFile) || (!m_pSndFile->GetType())) return FALSE;
     if (m_dwStatus & MODSTATUS_PLAYING) return TRUE;
     err = deprecated_audioTryOpeningDevice(2, 16, 44100);
-    deprecated_nFixedBitsPerSample = 1; //XXXih: portaudio
     // Display error message box
     if (err != 0)
     {
         MessageBox("Unable to open sound device!", NULL, MB_OK|MB_ICONERROR);
         return FALSE;
     }
-    // Device is ready
-    deprecated_gdwLastMixActiveTime = timeGetTime();
     return TRUE;
 }
 
@@ -2238,12 +2233,6 @@ void CMainFrame::OnImportMidiLib()
 }
 
 
-void CMainFrame::SetLastMixActiveTime()    	//rewbs.LiveVSTi
-//-------------------------------------
-{
-    deprecated_gdwLastMixActiveTime = timeGetTime();
-}
-
 void CMainFrame::OnTimer(UINT)
 //----------------------------
 {
@@ -2263,18 +2252,6 @@ void CMainFrame::OnTimer(UINT)
         if (curTime - gdwLastLowLatencyTime > 15000)
         {
             gdwPlayLatency = 0;
-        }
-        if ((m_pSndFile) && (m_pSndFile->IsPaused()) && (!m_pSndFile->m_nMixChannels))
-        {
-            //Log("%d (%d)\n", dwTime - deprecated_gdwLastMixActiveTime, deprecated_gdwLastMixActiveTime);
-            if (curTime - deprecated_gdwLastMixActiveTime > 5000)
-            {
-                //rewbs.instroVSTi: testing without shutting down audio device after 5s of idle time.
-                //PauseMod();
-            }
-        } else
-        {
-            deprecated_gdwLastMixActiveTime = curTime;
         }
     } else
     {
