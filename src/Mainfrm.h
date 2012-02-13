@@ -466,7 +466,6 @@ public:
     static HANDLE m_hNotifyThread;
     static DWORD m_dwNotifyThreadId;
     static LONG gnLVuMeter, gnRVuMeter;
-    static UINT gdwIdleTime;
     static LONG slSampleSize, sdwSamplesPerSec, sdwAudioBufferSize;
     //rewbs.resamplerConf
     static double gdWFIRCutoff;
@@ -518,7 +517,6 @@ public:
 // Low-Level Audio
 public:
     void UpdateAudioParameters(BOOL bReset=FALSE);
-    static void EnableLowLatencyMode(BOOL bOn=TRUE);
     static void CalcStereoVuMeters(int *, unsigned long, unsigned long);
     static DWORD WINAPI NotifyThread(LPVOID);
     LONG deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec);

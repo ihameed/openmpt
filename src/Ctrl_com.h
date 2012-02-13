@@ -24,7 +24,6 @@ public:
     virtual void RecalcLayout();
     virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual CRuntimeClass *GetAssociatedViewClass();
-    virtual void OnActivatePage(LPARAM);
     virtual void OnDeactivatePage();
     //}}AFX_VIRTUAL
 protected:

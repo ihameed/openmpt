@@ -38,13 +38,6 @@ CRuntimeClass *CCtrlComments::GetAssociatedViewClass()
 }
 
 
-void CCtrlComments::OnActivatePage(LPARAM)
-//----------------------------------------
-{
-    CMainFrame::EnableLowLatencyMode(FALSE);
-}
-
-
 void CCtrlComments::OnDeactivatePage()
 //------------------------------------
 {

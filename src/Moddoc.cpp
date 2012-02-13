@@ -882,7 +882,6 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             m_SndFile.m_dwSongFlags |= SONG_PAUSED;
             pMainFrm->PlayMod(this, m_hWndFollow, m_dwNotifyType);
         }
-        CMainFrame::EnableLowLatencyMode();
 
         BEGIN_CRITICAL();
 
@@ -1901,7 +1900,6 @@ void CModDoc::OnPlayerPlayFromStart()
         m_SndFile.ResumePlugins();
         END_CRITICAL();
         pMainFrm->PlayMod(this, m_hWndFollow, m_dwNotifyType);
-        CMainFrame::EnableLowLatencyMode(FALSE);
     }
 }
 /*

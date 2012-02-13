@@ -102,9 +102,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
 END_MESSAGE_MAP()
 
 // Static
-static int gdwLastLowLatencyTime = 0;
 static uint32_t gsdwTotalSamples = 0;
-static uint32_t gdwPlayLatency = 0;
 
 // Globals
 UINT CMainFrame::gnPatternSpacing = 0;
@@ -154,7 +152,6 @@ HANDLE CMainFrame::m_hNotifyWakeUp = NULL;
 LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
-UINT CMainFrame::gdwIdleTime = 0;
 uint32_t CMainFrame::m_dwQuality = 0;
 uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
 uint32_t CMainFrame::m_nPreAmp = 128;
@@ -1453,13 +1450,6 @@ void CMainFrame::UpdateAudioParameters(BOOL bReset)
 }
 
 
-void CMainFrame::EnableLowLatencyMode(BOOL bOn)
-//---------------------------------------------
-{
-    gdwPlayLatency = (bOn) ? sdwAudioBufferSize : 0;
-    gdwLastLowLatencyTime = timeGetTime();
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame diagnostics
@@ -2246,22 +2236,6 @@ void CMainFrame::OnTimer(UINT)
     }
     // Idle Time Check
     uint32_t curTime = timeGetTime();
-    if (IsPlaying())
-    {
-        gdwIdleTime = 0;
-        if (curTime - gdwLastLowLatencyTime > 15000)
-        {
-            gdwPlayLatency = 0;
-        }
-    } else
-    {
-        gdwIdleTime += MPTTIMER_PERIOD;
-        if (gdwIdleTime > 15000)
-        {
-            gdwIdleTime = 0;
-            gdwPlayLatency = 0;
-        }
-    }
     m_wndToolBar.SetCurrentSong(m_pSndFile);
 
     if (m_pAutoSaver && m_pAutoSaver->IsEnabled())

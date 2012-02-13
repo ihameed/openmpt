@@ -2165,7 +2165,6 @@ void CViewPattern::PatternStep(bool autoStep)
         {
             pMainFrm->PlayMod(pModDoc, m_hWnd, MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);
         }
-        CMainFrame::EnableLowLatencyMode();
         if(autoStep)
         {
             if (CMainFrame::m_dwPatternSetup & PATTERN_CONTSCROLL)

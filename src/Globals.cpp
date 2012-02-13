@@ -81,10 +81,6 @@ LRESULT CModControlDlg::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
         m_hWndView = (HWND)lParam;
         break;
 
-    case CTRLMSG_ACTIVATEPAGE:
-        OnActivatePage(lParam);
-        break;
-
     case CTRLMSG_DEACTIVATEPAGE:
         OnDeactivatePage();
         break;
