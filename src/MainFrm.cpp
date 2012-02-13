@@ -152,7 +152,7 @@ HANDLE CMainFrame::m_hNotifyWakeUp = NULL;
 LONG CMainFrame::slSampleSize = 2;
 LONG CMainFrame::sdwSamplesPerSec = 44100;
 LONG CMainFrame::sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
-uint32_t CMainFrame::m_dwQuality = 0;
+uint32_t CMainFrame::deprecated_m_dwQuality = 0;
 uint32_t CMainFrame::m_nSrcMode = SRCMODE_LINEAR;
 uint32_t CMainFrame::m_nPreAmp = 128;
 uint32_t CMainFrame::gbLoopSong = TRUE;
@@ -413,7 +413,7 @@ void CMainFrame::LoadIniSettings()
     uint32_t defaultDevice = 0; //XXXih: portaudio
 
     m_nWaveDevice = GetPrivateProfileLong("Sound Settings", "WaveDevice", defaultDevice, iniFile);
-    m_dwQuality = GetPrivateProfileDWord("Sound Settings", "Quality", 0, iniFile);
+    deprecated_m_dwQuality = GetPrivateProfileDWord("Sound Settings", "Quality", 0, iniFile);
     m_nSrcMode = GetPrivateProfileDWord("Sound Settings", "SrcMode", SRCMODE_POLYPHASE, iniFile);
 
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
@@ -470,20 +470,6 @@ void CMainFrame::LoadIniSettings()
     GetPrivateProfileString("Paths", "Key_Config_File", m_szKbdFile, m_szKbdFile, INIBUFFERSIZE, iniFile);
     RelativePathToAbsolute(m_szKbdFile);
 
-    CSoundFile::m_nXBassDepth = GetPrivateProfileLong("Effects", "XBassDepth", 0, iniFile);
-    CSoundFile::m_nXBassRange = GetPrivateProfileLong("Effects", "XBassRange", 0, iniFile);
-    CSoundFile::m_nReverbDepth = GetPrivateProfileLong("Effects", "ReverbDepth", 0, iniFile);
-    CSoundFile::gnReverbType = GetPrivateProfileLong("Effects", "ReverbType", 0, iniFile);
-    CSoundFile::m_nProLogicDepth = GetPrivateProfileLong("Effects", "ProLogicDepth", 0, iniFile);
-    CSoundFile::m_nProLogicDelay = GetPrivateProfileLong("Effects", "ProLogicDelay", 0, iniFile);
-
-    GetPrivateProfileStruct("Effects", "EQ_Settings", &m_EqSettings, sizeof(EQPRESET), iniFile);
-    GetPrivateProfileStruct("Effects", "EQ_User1", &CEQSetupDlg::gUserPresets[0], sizeof(EQPRESET), iniFile);
-    GetPrivateProfileStruct("Effects", "EQ_User2", &CEQSetupDlg::gUserPresets[1], sizeof(EQPRESET), iniFile);
-    GetPrivateProfileStruct("Effects", "EQ_User3", &CEQSetupDlg::gUserPresets[2], sizeof(EQPRESET), iniFile);
-    GetPrivateProfileStruct("Effects", "EQ_User4", &CEQSetupDlg::gUserPresets[3], sizeof(EQPRESET), iniFile);
-
-
     m_pAutoSaver = new CAutoSaver();
     GetPrivateProfileLong("AutoSave", "Enabled", true, iniFile)?m_pAutoSaver->Enable():m_pAutoSaver->Disable();
     m_pAutoSaver->SetSaveInterval(GetPrivateProfileLong("AutoSave", "IntervalMinutes", 10, iniFile));
@@ -539,7 +525,7 @@ bool CMainFrame::LoadRegistrySettings()
 
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    m_csRegKey, 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
-        registry_query_value(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&m_dwQuality, &dwDWORDSize);
+        registry_query_value(key, "Quality", NULL, &dwREG_DWORD, (LPBYTE)&deprecated_m_dwQuality, &dwDWORDSize);
         registry_query_value(key, "SrcMode", NULL, &dwREG_DWORD, (LPBYTE)&m_nSrcMode, &dwDWORDSize);
         registry_query_value(key, "PreAmp", NULL, &dwREG_DWORD, (LPBYTE)&m_nPreAmp, &dwDWORDSize);
 
@@ -559,12 +545,6 @@ bool CMainFrame::LoadRegistrySettings()
         dwSZSIZE = sizeof(m_szKbdFile);
         registry_query_value(key, "Key_Config_File", NULL, &dwREG_SZ, (LPBYTE)m_szKbdFile, &dwSZSIZE);
 
-        registry_query_value(key, "XBassDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nXBassDepth, &dwDWORDSize);
-        registry_query_value(key, "XBassRange", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nXBassRange, &dwDWORDSize);
-        registry_query_value(key, "ReverbDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nReverbDepth, &dwDWORDSize);
-        registry_query_value(key, "ReverbType", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::gnReverbType, &dwDWORDSize);
-        registry_query_value(key, "ProLogicDepth", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nProLogicDepth, &dwDWORDSize);
-        registry_query_value(key, "ProLogicDelay", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nProLogicDelay, &dwDWORDSize);
         registry_query_value(key, "StereoSeparation", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nStereoSeparation, &dwDWORDSize);
         registry_query_value(key, "MixChannels", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nMaxMixChannels, &dwDWORDSize);
         registry_query_value(key, "WaveDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nWaveDevice, &dwDWORDSize);
@@ -937,7 +917,7 @@ void CMainFrame::SaveIniSettings()
     }
     
     WritePrivateProfileLong("Sound Settings", "WaveDevice", m_nWaveDevice, iniFile);
-    WritePrivateProfileDWord("Sound Settings", "Quality", m_dwQuality, iniFile);
+    WritePrivateProfileDWord("Sound Settings", "Quality", deprecated_m_dwQuality, iniFile);
     WritePrivateProfileDWord("Sound Settings", "SrcMode", m_nSrcMode, iniFile);
     WritePrivateProfileDWord("Sound Settings", "PreAmp", m_nPreAmp, iniFile);
     WritePrivateProfileLong("Sound Settings", "StereoSeparation", CSoundFile::m_nStereoSeparation, iniFile);
@@ -980,13 +960,6 @@ void CMainFrame::SaveIniSettings()
     }
     // Obsolete, since we always write to Keybindings.mkb now. Older versions of OpenMPT 1.18+ will look for this file if this entry is missing, so this is kind of backwards compatible.
     WritePrivateProfileString("Paths", "Key_Config_File", NULL, iniFile);
-
-    WritePrivateProfileLong("Effects", "XBassDepth", CSoundFile::m_nXBassDepth, iniFile);
-    WritePrivateProfileLong("Effects", "XBassRange", CSoundFile::m_nXBassRange, iniFile);
-    WritePrivateProfileLong("Effects", "ReverbDepth", CSoundFile::m_nReverbDepth, iniFile);
-    WritePrivateProfileLong("Effects", "ReverbType", CSoundFile::gnReverbType, iniFile);
-    WritePrivateProfileLong("Effects", "ProLogicDepth", CSoundFile::m_nProLogicDepth, iniFile);
-    WritePrivateProfileLong("Effects", "ProLogicDelay", CSoundFile::m_nProLogicDelay, iniFile);
 
     WritePrivateProfileStruct("Effects", "EQ_Settings", &m_EqSettings, sizeof(EQPRESET), iniFile);
     WritePrivateProfileStruct("Effects", "EQ_User1", &CEQSetupDlg::gUserPresets[0], sizeof(EQPRESET), iniFile);
@@ -1239,40 +1212,11 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
     UINT buflen = 75;
     
     if (!m_pSndFile) return -1;
-    slSampleSize = (bits/8) * channels;
-    sdwAudioBufferSize = ((samplespersec * buflen) / 1000) * slSampleSize;
-    sdwAudioBufferSize = (sdwAudioBufferSize + 0x0F) & ~0x0F;
-    if (sdwAudioBufferSize < MIN_AUDIO_BUFFERSIZE) sdwAudioBufferSize = MIN_AUDIO_BUFFERSIZE;
-    if (sdwAudioBufferSize > MAX_AUDIO_BUFFERSIZE) sdwAudioBufferSize = MAX_AUDIO_BUFFERSIZE;
-    WaveFormat.Format.wFormatTag = WAVE_FORMAT_PCM;
-    WaveFormat.Format.nChannels = (unsigned short) channels;
-    WaveFormat.Format.nSamplesPerSec = samplespersec;
-    WaveFormat.Format.nAvgBytesPerSec = samplespersec * slSampleSize;
-    WaveFormat.Format.nBlockAlign = (unsigned short) slSampleSize;
-    WaveFormat.Format.wBitsPerSample = (unsigned short)bits;
-    WaveFormat.Format.cbSize = 0;
-    // MultiChannel configuration
-    if ((WaveFormat.Format.wBitsPerSample == 32) || (WaveFormat.Format.nChannels > 2))
-    {
-        const GUID guid_MEDIASUBTYPE_PCM = {0x00000001, 0x0000, 0x0010, 0x80, 0x00, 0x0, 0xAA, 0x0, 0x38, 0x9B, 0x71};
-        WaveFormat.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-        WaveFormat.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
-        WaveFormat.Samples.wValidBitsPerSample = WaveFormat.Format.wBitsPerSample;
-        switch(WaveFormat.Format.nChannels)
-        {
-        case 1:    	WaveFormat.dwChannelMask = 0x0004; break; // FRONT_CENTER
-        case 2:    	WaveFormat.dwChannelMask = 0x0003; break; // FRONT_LEFT | FRONT_RIGHT
-        case 3:    	WaveFormat.dwChannelMask = 0x0103; break; // FRONT_LEFT|FRONT_RIGHT|BACK_CENTER
-        case 4:    	WaveFormat.dwChannelMask = 0x0033; break; // FRONT_LEFT|FRONT_RIGHT|BACK_LEFT|BACK_RIGHT
-        default:    WaveFormat.dwChannelMask = 0; break;
-        }
-        WaveFormat.SubFormat = guid_MEDIASUBTYPE_PCM;
-    }
+
     CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     m_pSndFile->deprecated_SetWaveConfig(samplespersec, bits, channels, TRUE);
     gbStopSent = FALSE;
     m_pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
-    m_pSndFile->UPDATEDSPEFFECTS();
     return 0;
 }
 
@@ -1444,8 +1388,6 @@ void CMainFrame::UpdateAudioParameters(BOOL bReset)
     else
         CSoundFile::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
     CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
-    CSoundFile::UPDATEDSPEFFECTS();
-    CSoundFile::SetEQGains(    m_EqSettings.Gains, MAX_EQ_BANDS, m_EqSettings.Freqs, bReset );
     if (bReset) CSoundFile::InitPlayer(TRUE);
 }
 
@@ -1953,13 +1895,12 @@ BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, uint3
 BOOL CMainFrame::SetupPlayer(uint32_t q, uint32_t srcmode, BOOL bForceUpdate)
 //---------------------------------------------------------------------
 {
-    if ((q != m_dwQuality) || (srcmode != m_nSrcMode) || (bForceUpdate))
+    if ((q != deprecated_m_dwQuality) || (srcmode != m_nSrcMode) || (bForceUpdate))
     {
         m_nSrcMode = srcmode;
-        m_dwQuality = q;
+        deprecated_m_dwQuality = q;
         BEGIN_CRITICAL();
         CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
-        CSoundFile::UPDATEDSPEFFECTS();
         END_CRITICAL();
         PostMessage(WM_MOD_INVALIDATEPATTERNS, HINT_MPTSETUP);
     }

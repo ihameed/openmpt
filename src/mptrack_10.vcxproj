@@ -266,11 +266,8 @@
     <ClCompile Include="legacy_soundlib\Sampleio.cpp" />
     <ClCompile Include="legacy_soundlib\Sndfile.cpp" />
     <ClCompile Include="legacy_soundlib\Sndmix.cpp" />
-    <ClCompile Include="legacy_soundlib\Snd_dsp.cpp" />
-    <ClCompile Include="legacy_soundlib\Snd_eq.cpp" />
     <ClCompile Include="legacy_soundlib\Snd_flt.cpp" />
     <ClCompile Include="legacy_soundlib\Snd_fx.cpp" />
-    <ClCompile Include="legacy_soundlib\Snd_rvb.cpp" />
     <ClCompile Include="legacy_soundlib\Tables.cpp" />
     <ClCompile Include="legacy_soundlib\tuning.cpp" />
     <ClCompile Include="legacy_soundlib\tuningbase.cpp" />
@@ -349,7 +346,6 @@
     <ClInclude Include="legacy_soundlib\PlaybackEventer.h" />
     <ClInclude Include="legacy_soundlib\Sndfile.h" />
     <ClInclude Include="legacy_soundlib\Snd_defs.h" />
-    <ClInclude Include="legacy_soundlib\snd_rvb.h" />
     <ClInclude Include="legacy_soundlib\tuning.h" />
     <ClInclude Include="legacy_soundlib\tuningbase.h" />
     <ClInclude Include="legacy_soundlib\tuningcollection.h" />

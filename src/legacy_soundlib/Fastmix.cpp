@@ -28,10 +28,6 @@
 // Front Mix Buffer (Also room for interleaved rear mix)
 int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 
-// Reverb Mix Buffer
-#ifndef NO_REVERB
-int MixReverbBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
-#endif
 
 #ifndef FASTSOUNDLIB
 int MixRearBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
@@ -41,9 +37,6 @@ float MixFloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 #pragma bss_seg()
 
 
-#ifndef NO_REVERB
-extern UINT gnReverbSend;
-#endif
 
 extern LONG gnDryROfsVol;
 extern LONG gnDryLOfsVol;
@@ -1520,35 +1513,15 @@ UINT CSoundFile::CreateStereoMix(int count)
     #ifndef NO_FILTER
         if (pChannel->flags & CHN_FILTER) nFlags |= MIXNDX_FILTER;
     #endif
-        //rewbs.resamplerConf
         nFlags |= GetResamplingFlag(pChannel);
-        //end rewbs.resamplerConf
-        //XXXih: disabled legacy garbage
-        /*
-        if ((nFlags < 0x20) && (pChannel->left_volume == pChannel->right_volume)
-         && ((!pChannel->nRampLength) || (pChannel->left_ramp == pChannel->right_ramp)))
-        {
-            pMixFuncTable = gpFastMixFunctionTable;
-        } else
-        {
-            pMixFuncTable = gpMixFunctionTable;
-        }
-        */
         nsamples = count;
     #ifndef NO_REVERB
-        pbuffer = (gdwSoundSetup & SNDMIX_REVERB) ? MixReverbBuffer : MixSoundBuffer;
+        pbuffer = MixSoundBuffer;
         if ((pChannel->flags & CHN_SURROUND) && (gnChannels > 2)) pbuffer = MixRearBuffer;
-        if (pChannel->flags & CHN_NOREVERB) pbuffer = MixSoundBuffer;
 
         JUICY_FRUITS = pbuffer;
         //XXXih: JUICY FRUITS
         pbuffer = herp->ghetto_channels;
-
-    #ifdef ENABLE_MMX
-        //XXXih: reverb - delete
-        if ((pChannel->flags & CHN_REVERB) && (gdwSysInfo & SYSMIX_ENABLEMMX))
-            pbuffer = MixReverbBuffer;
-    #endif
 
         //Look for plugins associated with this implicit tracker channel.
         UINT nMixPlugin = GetBestPlugin(ChnMix[nChn], PRIORITISE_INSTRUMENT, RESPECT_MUTES);
@@ -1581,16 +1554,6 @@ UINT CSoundFile::CreateStereoMix(int count)
                     pPlugin->dwFlags |= MIXPLUG_MIXREADY;
                 }
             }
-        }
-        if (pbuffer == MixReverbBuffer)
-        {
-            if (!gnReverbSend)
-            {
-                modplug::mixer::stereo_fill(MixReverbBuffer, count, &gnRvbROfsVol, &gnRvbLOfsVol);
-            }
-            gnReverbSend += count;
-            pOfsR = &gnRvbROfsVol;
-            pOfsL = &gnRvbLOfsVol;
         }
     #ifndef FASTSOUNDLIB
         bSurround = (pbuffer == MixRearBuffer);

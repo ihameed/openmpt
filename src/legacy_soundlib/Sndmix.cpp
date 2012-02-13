@@ -74,14 +74,6 @@ extern signed char ft2VibratoTable[256];    // -64 .. +64
 extern int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 extern int MixRearBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 
-#ifndef NO_REVERB
-extern UINT gnReverbSend;
-extern LONG gnRvbROfsVol;
-extern LONG gnRvbLOfsVol;
-
-extern void ProcessReverb(UINT nSamples);
-#endif
-
 // Log tables for pre-amp
 const UINT PreAmpTable[16] =
 {
@@ -225,14 +217,7 @@ BOOL CSoundFile::InitPlayer(BOOL bReset)
     gnVolumeRampInSamples = 0;
     gnVolumeRampOutSamples = 0;
     gnDryROfsVol = gnDryLOfsVol = 0;
-#ifndef NO_REVERB
-    gnRvbROfsVol = gnRvbLOfsVol = 0;
-#endif
     if (bReset) gnCPUUsage = 0;
-    InitializeDSP(bReset);
-#ifdef ENABLE_EQ
-    InitializeEQ(bReset);
-#endif
     gbInitPlugins = (bReset) ? 3 : 1;
     return TRUE;
 }
@@ -348,9 +333,6 @@ UINT CSoundFile::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         if (!computed_samples) 
             break;
         num_samples = computed_samples;
-        #ifndef NO_REVERB
-            gnReverbSend = 0;
-        #endif
         // Resetting sound buffer
         modplug::mixer::stereo_fill(MixSoundBuffer, num_samples, &gnDryROfsVol, &gnDryLOfsVol);
 

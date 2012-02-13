@@ -251,7 +251,7 @@ void CCtrlGeneral::UpdateView(uint32_t dwHint, CObject *pHint)
     }
     if (dwHint & HINT_MPTSETUP)
     {
-    	uint32_t dwSetup = CMainFrame::m_dwQuality;
+    	uint32_t dwSetup = CMainFrame::deprecated_m_dwQuality;
     	m_ComboResampling.SetCurSel(CMainFrame::m_nSrcMode);
     	CheckDlgButton(IDC_CHECK_LOOPSONG,	(CMainFrame::gbLoopSong) ? TRUE : FALSE);
     	CheckDlgButton(IDC_CHECK_AGC,		(dwSetup & QUALITY_AGC) ? TRUE : FALSE);
@@ -510,7 +510,7 @@ void CCtrlGeneral::OnResamplingChanged()
     if ((n < NUM_SRC_MODES) && (n != CMainFrame::m_nSrcMode))
     {
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    	if (pMainFrm) pMainFrm->SetupPlayer(CMainFrame::m_dwQuality, n);
+    	if (pMainFrm) pMainFrm->SetupPlayer(CMainFrame::deprecated_m_dwQuality, n);
     }
 }
 
@@ -532,9 +532,9 @@ void CCtrlGeneral::OnAGCChanged()
 //-------------------------------
 {
     BOOL b = IsDlgButtonChecked(IDC_CHECK_AGC);
-    uint32_t dwQuality = CMainFrame::m_dwQuality & ~QUALITY_AGC;
+    uint32_t dwQuality = CMainFrame::deprecated_m_dwQuality & ~QUALITY_AGC;
     if (b) dwQuality |= QUALITY_AGC;
-    if (dwQuality != CMainFrame::m_dwQuality)
+    if (dwQuality != CMainFrame::deprecated_m_dwQuality)
     {
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     	if (pMainFrm) pMainFrm->SetupPlayer(dwQuality, CMainFrame::m_nSrcMode);
@@ -546,9 +546,9 @@ void CCtrlGeneral::OnXBassChanged()
 //---------------------------------
 {
     BOOL b = IsDlgButtonChecked(IDC_CHECK_BASS);
-    uint32_t dwQuality = CMainFrame::m_dwQuality & ~QUALITY_MEGABASS;
+    uint32_t dwQuality = CMainFrame::deprecated_m_dwQuality & ~QUALITY_MEGABASS;
     if (b) dwQuality |= QUALITY_MEGABASS;
-    if (dwQuality != CMainFrame::m_dwQuality)
+    if (dwQuality != CMainFrame::deprecated_m_dwQuality)
     {
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     	if (pMainFrm) pMainFrm->SetupPlayer(dwQuality, CMainFrame::m_nSrcMode);
@@ -560,9 +560,9 @@ void CCtrlGeneral::OnReverbChanged()
 //----------------------------------
 {
     BOOL b = IsDlgButtonChecked(IDC_CHECK_REVERB);
-    uint32_t dwQuality = CMainFrame::m_dwQuality & ~QUALITY_REVERB;
+    uint32_t dwQuality = CMainFrame::deprecated_m_dwQuality & ~QUALITY_REVERB;
     if (b) dwQuality |= QUALITY_REVERB;
-    if (dwQuality != CMainFrame::m_dwQuality)
+    if (dwQuality != CMainFrame::deprecated_m_dwQuality)
     {
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     	if (pMainFrm) pMainFrm->SetupPlayer(dwQuality, CMainFrame::m_nSrcMode);
@@ -574,9 +574,9 @@ void CCtrlGeneral::OnSurroundChanged()
 //------------------------------------
 {
     BOOL b = IsDlgButtonChecked(IDC_CHECK_SURROUND);
-    uint32_t dwQuality = CMainFrame::m_dwQuality & ~QUALITY_SURROUND;
+    uint32_t dwQuality = CMainFrame::deprecated_m_dwQuality & ~QUALITY_SURROUND;
     if (b) dwQuality |= QUALITY_SURROUND;
-    if (dwQuality != CMainFrame::m_dwQuality)
+    if (dwQuality != CMainFrame::deprecated_m_dwQuality)
     {
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     	if (pMainFrm) pMainFrm->SetupPlayer(dwQuality, CMainFrame::m_nSrcMode);
@@ -588,9 +588,9 @@ void CCtrlGeneral::OnEqualizerChanged()
 //-------------------------------------
 {
     BOOL b = IsDlgButtonChecked(IDC_CHECK_EQ);
-    uint32_t dwQuality = CMainFrame::m_dwQuality & ~QUALITY_EQ;
+    uint32_t dwQuality = CMainFrame::deprecated_m_dwQuality & ~QUALITY_EQ;
     if (b) dwQuality |= QUALITY_EQ;
-    if (dwQuality != CMainFrame::m_dwQuality)
+    if (dwQuality != CMainFrame::deprecated_m_dwQuality)
     {
     	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     	if (pMainFrm) pMainFrm->SetupPlayer(dwQuality, CMainFrame::m_nSrcMode);

@@ -365,10 +365,7 @@ private: //Misc data
 
 
 public:    // Static Members
-    static UINT m_nXBassDepth, m_nXBassRange;
     static float m_nMaxSample;
-    static UINT m_nReverbDepth, gnReverbType;
-    static UINT m_nProLogicDepth, m_nProLogicDelay;
     static UINT m_nStereoSeparation;
     static UINT m_nMaxMixChannels;
     static LONG m_nStreamVolume;
@@ -608,23 +605,7 @@ public:
     static uint32_t InitSysInfo();
     static uint32_t GetSysInfo() { return gdwSysInfo; }
     static void EnableMMX(BOOL b) { if (b) gdwSoundSetup |= SNDMIX_ENABLEMMX; else gdwSoundSetup &= ~SNDMIX_ENABLEMMX; }
-    // DSP Effects
-    static void InitializeDSP(BOOL bReset);
-    static void ProcessStereoDSP(int count);
-    static void ProcessMonoDSP(int count);
-    // [Reverb level 0(quiet)-100(loud)], [REVERBTYPE_XXXX]
-    static BOOL SetReverbParameters(UINT nDepth, UINT nType);
-    // [XBass level 0(quiet)-100(loud)], [cutoff in Hz 10-100]
-    static BOOL SetXBassParameters(UINT nDepth, UINT nRange);
-    // [Surround level 0(quiet)-100(heavy)] [delay in ms, usually 5-40ms]
-    static BOOL SetSurroundParameters(UINT nDepth, UINT nDelay);
-#ifdef ENABLE_EQ
-    // EQ
-    static void InitializeEQ(BOOL bReset=TRUE);
-    static void SetEQGains(const UINT *pGains, UINT nBands, const UINT *pFreqs=NULL, BOOL bReset=FALSE);    // 0=-12dB, 32=+12dB
-    /*static*/ void EQStereo(int *pbuffer, UINT nCount);
-    /*static*/ void EQMono(int *pbuffer, UINT nCount);
-#endif
+
     // Analyzer Functions
     static UINT WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
     static UINT WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
