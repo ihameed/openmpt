@@ -22,6 +22,8 @@
 //end  rewbs.memLeak
 
 
+#include "qmfcapp.h"
+
 #include "gui/mixgraph_view.h"
 
 #include "pervasives/pervasives.h"
@@ -563,7 +565,6 @@ CTrackApp::CTrackApp()
     modplug::gui::mixgraph_view_register();
 }
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CTrackApp initialization
 
@@ -707,9 +708,16 @@ void CTrackApp::SetupPaths()
     m_bPortableMode = bIsAppDir;
 }
 
+BOOL CTrackApp::Run() {
+    auto result = QMfcApp::run(this);
+    delete qApp;
+    return result;
+}
+
 BOOL CTrackApp::InitInstance()
 //----------------------------
 {
+    QMfcApp::instance(this);
 
     set_terminate(Terminate_AppThread);
 

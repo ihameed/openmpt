@@ -748,6 +748,16 @@ struct mixgraph_viewstate_t {
         return 0;
     }
 
+    int rmb_up() {
+        DWORD style = GetWindowLong(this->hwnd, GWL_STYLE);
+        if (style & WS_CHILD) {
+            SetWindowLong(this->hwnd, GWL_STYLE, (style & ~WS_CHILD) | WS_POPUP | WS_THICKFRAME | WS_TILED);
+            SetParent(this->hwnd, nullptr);
+        }
+
+        return 0;
+    }
+
     int mouse_moved(points_t mouse_pos) {
         this->update_region_selection(mouse_pos);
         if (this->hompy_selected) {
@@ -939,7 +949,6 @@ void show_my_weldus(modplug::mixgraph::core *graph) {
     auto child  = mixgraph_view_create(state, hwnd);
     debug_log("show_my_weldus mixgraph_view_create lasterror = %d", GetLastError());
     hooper->graphchild = child;
-
     debug_log("lasterror = %d", GetLastError());
     debug_log("show_my_weldus hwnd = %d    state = %p    child = %d", hwnd, state, child);
 

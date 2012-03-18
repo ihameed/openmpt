@@ -55,11 +55,18 @@ int32_t registry_query_value(hkey_t, const char *, uint32_t *, uint32_t *, uint8
 
 
 
+template <typename array_type, size_t array_size, typename function_type>
+function_type for_each(array_type (&container)[array_size], function_type f) {
+    std::for_each(container, container + array_size, f);
+    return f;
+}
+
 template <typename container_type, typename function_type>
 function_type for_each(container_type &container, function_type f) {
     std::for_each(container.begin(), container.end(), f);
     return f;
 }
+
 
 template <typename container_type, typename function_type>
 function_type for_each_rev(container_type &container, function_type f) {

@@ -19,6 +19,16 @@ typedef uint32_t sampleoffset_t;
 typedef uint32_t ufixedpt_t;
 typedef int32_t fixedpt_t;
 
+
+struct resampler_config_t {
+    //rewbs.resamplerConf
+    long ramp_in_length;
+    long ramp_out_length;
+    double fir_cutoff;
+    uint8_t fir_type; //WFIR_KAISER4T;
+    //end rewbs.resamplerConf
+};
+
 struct modsample_t {
     sampleoffset_t length;
 

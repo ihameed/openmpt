@@ -9,11 +9,16 @@
 #endif // _MSC_VER >= 1000
 
 #include "audioio/paudio.h"
+#include "gui/qt4/config_dialog.h"
 
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
 #include "inputhandler.h"
 #include "mptrack.h"
+
+#include "qwinwidget.h"
+
+//class QWinWidget;
 
 class CInputHandler;
 class CMainFrame;
@@ -453,6 +458,9 @@ public:
     portaudio::System &pa_system;
     modplug::audioio::paudio_settings stream_settings;
     std::shared_ptr<modplug::audioio::paudio> stream;
+    modplug::gui::qt4::config_context context;
+//    QWinWidget qwinwidget;
+    std::shared_ptr<QWinWidget> qwinwidget;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;

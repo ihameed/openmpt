@@ -24,6 +24,8 @@
 #include "version.h"
 #include "ctrl_pat.h"
 
+#include <qwinwidget.h>
+
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
 
@@ -264,8 +266,8 @@ static UINT indicators[] =
 //#include <direct.h>
 CMainFrame::CMainFrame() :
     pa_auto_system(),
-    pa_system(portaudio::System::instance())
-//----------------------
+    pa_system(portaudio::System::instance()),
+    context(pa_system)
 {
     m_bModTreeHasFocus = false;    //rewbs.customKeys
     m_pNoteMapHasFocus = nullptr;    //rewbs.customKeys
@@ -360,6 +362,7 @@ CMainFrame::CMainFrame() :
 
     //Loading static tunings here - probably not the best place to do that but anyway.
     CSoundFile::LoadStaticTunings();
+
 }
 
 void CMainFrame::LoadIniSettings()
@@ -642,6 +645,11 @@ bool CMainFrame::LoadRegistrySettings()
 VOID CMainFrame::Initialize()
 //---------------------------
 {
+    debug_log("---------------------------------------------- HUAOHUAHOHUAHAOHAOHAUOHSDIOFIODSFUIDSAUIOFSAIODASIODJIOSAIJODASOIDJSAODIOSADIOJSAIODJSAIODSADA");
+    qwinwidget = std::make_shared<QWinWidget>(this);
+//    qwinwidget->showCentered();
+    debug_log("++++++++++++++++++++++++++++++++++++++++++++++ HUAOHUAHOHUAHAOHAOHAUOHSDIOFIODSFUIDSAUIOFSAIODASIODJIOSAIJODASOIDJSAODIOSADIOJSAIODJSAIODSADA");
+
     //Adding version number to the frame title
     CString title = GetTitle();
     title += CString(" ") + MptVersion::str;
@@ -1136,18 +1144,6 @@ void CMainFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
 
 //static BOOL gbStopSent = FALSE;
 BOOL gbStopSent = FALSE;
-
-
-void Terminate_AudioThread()
-//----------------------------------------------
-{    
-    //TODO: Why does this not get called.
-    AfxMessageBox("Audio thread terminated unexpectedly. Attempting to shut down audio device");
-    CMainFrame* pMainFrame = CMainFrame::GetMainFrame();
-    exit(-1);
-}
-
-
 
 void Terminate_NotifyThread()
 //----------------------------------------------

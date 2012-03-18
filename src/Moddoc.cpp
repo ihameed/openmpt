@@ -18,6 +18,10 @@
 
 #include "gui/mixgraph_view.h"
 #include "pervasives/pervasives.h"
+#include "gui/qt4/config_dialog.h"
+
+#include <QtGui>
+#include <qwinwidget.h>
 
 using namespace modplug::pervasives;
 
@@ -3511,6 +3515,18 @@ void CModDoc::OnViewMPTHacks()
 
 //XXXih: gross!
 void CModDoc::on_test_graph_editor() {
+    /*
+    QWidget *hoot = new QWidget();
+    hoot->setWindowTitle("huoh");
+    hoot->setFixedSize(300, 400);
+    hoot->move(100, 50);
+    hoot->show();
+    */
+    auto &hurr = CMainFrame::GetMainFrame()->context;
+    auto *derp = new modplug::gui::qt4::config_dialog(hurr);
+    derp->move(50, 50);
+    derp->resize(200, 400);
+    derp->show();
     modplug::gui::show_my_weldus(&this->m_SndFile.mixgraph);
 }
 

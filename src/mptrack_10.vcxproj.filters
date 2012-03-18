@@ -132,6 +132,22 @@
     <ClCompile Include="legacy_soundlib\Waveform.cpp" />
     <ClCompile Include="legacy_soundlib\WindowedFIR.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
+    <ClCompile Include="qtmyanus.cpp" />
+    <ClCompile Include="gui\qt4\config_dialog.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_config_dialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_config_dialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_config_dialog.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt4\config_audioio.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -243,6 +259,9 @@
     <ClInclude Include="legacy_soundlib\Wav.h" />
     <ClInclude Include="legacy_soundlib\wavConverter.h" />
     <ClInclude Include="audioio\paudio.h" />
+    <ClInclude Include="gui\qt4\config_audioio.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />
@@ -289,5 +308,35 @@
     <Filter Include="agg">
       <UniqueIdentifier>{655f80f1-0bdb-42e0-94de-2724a2b4ffed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{4d2f49a5-fe8c-4a45-a7fa-6fa87f9638dc}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{fbdb8e4b-c0a3-4d5b-b172-9fe76368b63d}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Template">
+      <UniqueIdentifier>{58638deb-9a0e-4b3d-b377-2cde017649f3}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="gui\qt4\config_dialog.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

@@ -1198,6 +1198,7 @@
 #define ID_PLUGINTOINSTRUMENT           60457
 #define ID_INTERNETUPDATE               60458
 #define ID_VIEW_TESTGRAPHEDITOR         60459
+#define ID_VIEW_SUPERDUPERSETUP         60460
 
 // Next default values for new objects
 // 
@@ -1205,7 +1206,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        531
-#define _APS_NEXT_COMMAND_VALUE         60460
+#define _APS_NEXT_COMMAND_VALUE         60461
 #define _APS_NEXT_CONTROL_VALUE         2447
 #define _APS_NEXT_SYMED_VALUE           901
 #endif

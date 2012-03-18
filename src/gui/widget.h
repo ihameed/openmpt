@@ -76,6 +76,7 @@ CHECK_HAS_THE_GUY(resized,          COMMA int width COMMA int height, width COMM
 CHECK_HAS_THE_GUY(lmb_down,         COMMA points_t pos, pos);
 CHECK_HAS_THE_GUY(lmb_double_click, COMMA points_t pos, pos);
 CHECK_HAS_THE_GUY(lmb_up,           EMPTY, EMPTY);
+CHECK_HAS_THE_GUY(rmb_up,           EMPTY, EMPTY);
 CHECK_HAS_THE_GUY(mouse_moved,      COMMA points_t pos, pos);
 CHECK_HAS_THE_GUY(paint,            EMPTY, EMPTY);
 
@@ -144,6 +145,10 @@ inline LRESULT default_wndproc(HWND &hwnd, UINT &msg, WPARAM &wparam, LPARAM &lp
 
     case WM_LBUTTONDOWN:
         IF_FUNC_DEFINED(lmb_down) { return tarded::do_lmb_down(state, MAKEPOINTS(lparam)); }
+        break;
+
+    case WM_RBUTTONUP:
+        IF_FUNC_DEFINED(rmb_up) { return tarded::do_rmb_up(state); }
         break;
 
     case WM_MOUSEMOVE:

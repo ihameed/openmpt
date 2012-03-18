@@ -135,6 +135,8 @@ public:
     CTrackApp();
 
 public:
+    //XXXih: qt hurrr
+    virtual BOOL Run();
 
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
