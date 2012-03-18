@@ -320,7 +320,6 @@
     <ClCompile Include="PerformanceCounter.cpp" />
     <ClCompile Include="pervasives\pervasives.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
-    <ClCompile Include="qtmyanus.cpp" />
     <ClCompile Include="SampleEditorDialogs.cpp" />
     <ClCompile Include="ScaleEnvPointsDlg.cpp" />
     <ClCompile Include="serialization_utils.cpp" />
@@ -576,7 +575,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="mptrack.rc" QtVersion_x0020_Win32="msvc2010" />
+      <UserProperties RESOURCE_FILE="mptrack.rc" QtVersion_x0020_Win32="$(DefaultQtVersion)" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

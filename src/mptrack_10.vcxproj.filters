@@ -132,7 +132,6 @@
     <ClCompile Include="legacy_soundlib\Waveform.cpp" />
     <ClCompile Include="legacy_soundlib\WindowedFIR.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
-    <ClCompile Include="qtmyanus.cpp" />
     <ClCompile Include="gui\qt4\config_dialog.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
