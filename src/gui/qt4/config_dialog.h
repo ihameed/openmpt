@@ -19,7 +19,7 @@ public:
 
 class config_page : public QWidget {
 public:
-    config_page(config_context &, QWidget *parent = 0) : QWidget(parent) { };
+    virtual void refresh() { };
 };
 
 class config_treeview;
@@ -27,7 +27,7 @@ class config_treeview;
 class config_dialog : public QDialog {
     Q_OBJECT
 public:
-    config_dialog(config_context &, QWidget * = 0);
+    config_dialog(config_context &, CMainFrame &, QWidget * = 0);
 
 public slots:
     void change_page();

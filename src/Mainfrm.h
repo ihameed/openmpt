@@ -418,13 +418,13 @@ public:
     static BOOL gbMdiMaximize;
     static bool gbShowHackControls;
     static LONG glTreeWindowWidth, glTreeSplitRatio;
-    static LONG glGeneralWindowHeight, glPatternWindowHeight, glSampleWindowHeight, 
+    static LONG glGeneralWindowHeight, glPatternWindowHeight, glSampleWindowHeight,
     	        glInstrumentWindowHeight, glCommentsWindowHeight, glGraphWindowHeight; //rewbs.varWindowSize
     static HHOOK ghKbdHook;
     static uint32_t gdwNotificationType;
     static CString gcsPreviousVersion;
     static CString gcsInstallGUID;
-    
+
     // Audio Setup
     static uint32_t deprecated_m_dwQuality, m_nSrcMode, m_nPreAmp, gbLoopSong;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
@@ -459,7 +459,7 @@ public:
     modplug::audioio::paudio_settings stream_settings;
     std::shared_ptr<modplug::audioio::paudio> stream;
     modplug::gui::qt4::config_context context;
-//    QWinWidget qwinwidget;
+    //modplug::gui::qt4::config_dialog config_dialog;
     std::shared_ptr<QWinWidget> qwinwidget;
 
     static CRITICAL_SECTION m_csAudio;
@@ -514,7 +514,7 @@ protected:
 public:
     CMainFrame(/*CString regKeyExtension*/);
     VOID Initialize();
-    
+
 
 // Low-Level Audio
 public:
@@ -559,7 +559,7 @@ public:
     static uint32_t GetPrivateProfileDWord(const CString section, const CString key, const uint32_t defaultValue, const CString iniFile);
     static bool WritePrivateProfileCString(const CString section, const CString key, const CString value, const CString iniFile);
     static CString GetPrivateProfileCString(const CString section, const CString key, const CString defaultValue, const CString iniFile);
-    
+
 
     // Misc functions
 public:
@@ -657,7 +657,8 @@ public:
 public:
     afx_msg void OnAddDlsBank();
     afx_msg void OnImportMidiLib();
-    afx_msg void OnViewOptions();		 //rewbs.resamplerConf: made public so it's accessible from mod2wav gui :/
+    afx_msg void OnViewOptions();
+    afx_msg void OnDisplayConfigEditor();
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnRButtonDown(UINT, CPoint);
@@ -670,7 +671,7 @@ protected:
     afx_msg void OnPluginManager();
 // -! NEW_FEATURE#0002
 
-    
+
 
 // -> CODE#0015
 // -> DESC="channels management dlg"
@@ -701,7 +702,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg void OnInitMenu(CMenu* pMenu);
-    bool UpdateEffectKeys(void); 
+    bool UpdateEffectKeys(void);
     afx_msg void OnKillFocus(CWnd* pNewWnd);
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 

@@ -284,7 +284,7 @@ public:
 //////////////////////////////////////////////////////////////////
 // More Bitmap Helpers
 
-#define FASTBMP_XSHIFT    		12	// 4K pixels
+#define FASTBMP_XSHIFT    		13	// 4K pixels
 #define FASTBMP_MAXWIDTH    	(1 << FASTBMP_XSHIFT)
 #define FASTBMP_MAXHEIGHT    	16
 
@@ -347,7 +347,7 @@ void AddPluginParameternamesToCombobox(CComboBox& CBox, CVstPlugin& plug);
 // Append note names in range [noteStart, noteEnd] to given combobox. Index starts from 0.
 void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modcommand_t::NOTE noteStart, const modplug::tracker::modcommand_t::NOTE noteEnd);
 
-// Append note names to combobox. If pSndFile != nullprt, appends only notes that are 
+// Append note names to combobox. If pSndFile != nullprt, appends only notes that are
 // available in the module type. If nInstr is given, instrument specific note names are used instead of
 // default note names.
 void AppendNotesToControlEx(CComboBox& combobox, const CSoundFile* const pSndFile = nullptr, const INSTRUMENTINDEX nInstr = MAX_INSTRUMENTS);
@@ -367,8 +367,8 @@ const LPCTSTR szSpecialNoteNames[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEX
 const LPCTSTR szSpecialNoteShortDesc[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("Param Control (Smooth)"), TEXT("Param Control"), TEXT("Note Fade"), TEXT("Note Cut"), TEXT("Note Off")};
 
 // Make sure that special note arrays include string for every note.
-STATIC_ASSERT(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == ARRAYELEMCOUNT(szSpecialNoteNames)); 
-STATIC_ASSERT(ARRAYELEMCOUNT(szSpecialNoteShortDesc) == ARRAYELEMCOUNT(szSpecialNoteNames)); 
+STATIC_ASSERT(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == ARRAYELEMCOUNT(szSpecialNoteNames));
+STATIC_ASSERT(ARRAYELEMCOUNT(szSpecialNoteShortDesc) == ARRAYELEMCOUNT(szSpecialNoteNames));
 
 const LPCSTR szHexChar = "0123456789ABCDEF";
 const LPCSTR gszModCommands = " 0123456789ABCDRFFTE???GHK?YXPLZ\\?#??"; //rewbs.smoothVST: added last \ (written as \\);

@@ -14,7 +14,8 @@ double downsample_sinc_table[SINC_SIZE];
 
 // see https://ccrma.stanford.edu/~jos/sasp/Kaiser_Window.html
 // see http://mathworld.wolfram.com/ModifiedBesselFunctionoftheFirstKind.html
-// izero : double -> double is an approximation of the zero-order modified bessel function of the first kind
+// izero is an approximation of the zero-order modified
+// bessel function of the first kind
 // [(x / 2)^2k / k!^2] / [(x / 2)^2(k - 1) / (k - 1)!^2] = x^2 / (2k)^2
 double izero(double x) {
     static const double tolerance = 1e-21; // lifted from jos
@@ -40,7 +41,12 @@ double normalized_sinc(double x) {
     return sin(PI * x) / (PI * x);
 }
 
-static void prefill_sinc_fir(sample_t *sinc_table, const double kaiser_beta, const double lowpass_factor, const int phases_per_tap, const int taps) {
+static void prefill_sinc_fir(sample_t *sinc_table,
+                             const double kaiser_beta,
+                             const double lowpass_factor,
+                             const int phases_per_tap,
+                             const int taps)
+{
     const double izero_beta = izero(kaiser_beta);
     const double kPi = 4.0 * atan(1.0) * lowpass_factor;
     const int midpoint = (taps / 2) * phases_per_tap;
@@ -54,7 +60,9 @@ static void prefill_sinc_fir(sample_t *sinc_table, const double kaiser_beta, con
         } else {
             double x = (double)(ix - midpoint) * (double)(1.0 / phases_per_tap);
             int det = (taps * taps) / 4;
-            fsinc = sin(x * kPi) * izero(kaiser_beta*sqrt(1 - x * x * (1.0 / det))) / (izero_beta * x * kPi); // Kaiser window
+            fsinc = sin(x * kPi)
+                  * izero(kaiser_beta * sqrt(1 - x * x * (1.0 / det)))
+                  / (izero_beta * x * kPi); // Kaiser window
         }
         *sinc_table++ = static_cast<sample_t>(fsinc * lowpass_factor);
     }

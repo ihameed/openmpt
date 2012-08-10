@@ -318,6 +318,7 @@
     <ClCompile Include="PatternEditorDialogs.cpp" />
     <ClCompile Include="PatternGotoDialog.cpp" />
     <ClCompile Include="PerformanceCounter.cpp" />
+    <ClCompile Include="pervasives\debug.cpp" />
     <ClCompile Include="pervasives\pervasives.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
     <ClCompile Include="SampleEditorDialogs.cpp" />
@@ -426,7 +427,9 @@
     <ClInclude Include="PatternEditorDialogs.h" />
     <ClInclude Include="PatternGotoDialog.h" />
     <ClInclude Include="PerformanceCounter.h" />
+    <ClInclude Include="pervasives\debug.h" />
     <ClInclude Include="pervasives\pervasives.h" />
+    <ClInclude Include="pervasives\static_assoc.h" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SampleEditorDialogs.h" />
@@ -455,6 +458,7 @@
     <ClInclude Include="test\test.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\colors.bmp" />
     <None Include="res\dragging.cur" />

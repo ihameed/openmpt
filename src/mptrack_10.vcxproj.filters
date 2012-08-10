@@ -147,6 +147,9 @@
     <ClCompile Include="gui\qt4\config_audioio.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="pervasives\debug.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -261,6 +264,12 @@
     <ClInclude Include="gui\qt4\config_audioio.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="pervasives\static_assoc.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\debug.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />
@@ -290,6 +299,7 @@
     <None Include="res\defaultKeybindings.mkb" />
     <None Include="mptrack.reg" />
     <None Include="VTune\mptrack.vpj" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="mixer">

@@ -57,6 +57,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_WM_CREATE()
     ON_WM_RBUTTONDOWN()
     ON_COMMAND(ID_VIEW_OPTIONS,    			OnViewOptions)
+    ON_COMMAND(ID_VIEW_SOOPERSETUP,         OnDisplayConfigEditor)
 
 // -> CODE#0002
 // -> DESC="list box to choose VST plugin presets (programs)"
@@ -220,7 +221,7 @@ LPMODPLUGDIB CMainFrame::bmpVUMeters = NULL;
 LPMODPLUGDIB CMainFrame::bmpVisNode = NULL;
 LPMODPLUGDIB CMainFrame::bmpVisPcNode = NULL;
 HPEN CMainFrame::gpenVuMeter[NUM_VUMETER_PENS*2];
-COLORREF CMainFrame::rgbCustomColors[MAX_MODCOLORS] = 
+COLORREF CMainFrame::rgbCustomColors[MAX_MODCOLORS] =
     {
         RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00), RGB(0xC0, 0xC0, 0xC0), RGB(0x00, 0x00, 0x00), RGB(0x00, 0x00, 0x00), RGB(0xFF, 0xFF, 0xFF), 0x0000FF,
         RGB(0xFF, 0xFF, 0x80), RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xE8, 0xE0),
@@ -325,20 +326,24 @@ CMainFrame::CMainFrame() :
     }
 
     //XXXih: portaudio wip
-    debug_log("=================================================");
+    DEBUG_FUNC("=================================================");
     for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
-        debug_log("hostapi '%s' device '%s'", i->hostApi().name(), i->name());
+        DEBUG_FUNC("hostapi '%s' device '%s'", i->hostApi().name(), i->name());
     }
-    debug_log("=================================================");
+    DEBUG_FUNC("=================================================");
 
     auto &default_output = pa_system.defaultOutputDevice();
     stream_settings.latency  = default_output.defaultLowOutputLatency();
     stream_settings.host_api = default_output.hostApi().typeId();
     stream_settings.device   = default_output.index();
     stream_settings.sample_format = portaudio::INT16;
-    stream_settings.sample_rate   = 44100.0;
+    //stream_settings.sample_rate   = 44100.0;
+    stream_settings.sample_rate   = 48000.0;
     stream_settings.channels      = 2;
-    stream_settings.buffer_length = 256;
+    stream_settings.buffer_length = 512;
+    DEBUG_FUNC("stream_settings = %s", debug_json_dump(
+        modplug::audioio::json_of_paudio_settings(stream_settings, pa_system)
+    ).c_str());
     stream = std::make_shared<modplug::audioio::paudio>(stream_settings, pa_system, *this);
 
     // Create Audio Critical Section
@@ -440,7 +445,7 @@ void CMainFrame::LoadIniSettings()
         m_dwPatternSetup |= PATTERN_RESETCHANNELS;
     if(vIniVersion < MAKE_VERSION_NUMERIC(1,19,00,07))
         m_dwPatternSetup &= ~0x800;    				// this was previously deprecated and is now used for something else
-    if(vIniVersion < MptVersion::num) 
+    if(vIniVersion < MptVersion::num)
         m_dwPatternSetup &= ~(0x200000|0x400000|0x10000000);    // various deprecated old options
 
     m_nRowSpacing = GetPrivateProfileDWord("Pattern Editor", "RowSpacing", 16, iniFile);
@@ -448,9 +453,9 @@ void CMainFrame::LoadIniSettings()
     gbLoopSong = GetPrivateProfileDWord("Pattern Editor", "LoopSong", true, iniFile);
     gnPatternSpacing = GetPrivateProfileDWord("Pattern Editor", "Spacing", 1, iniFile);
     gbPatternVUMeters = GetPrivateProfileDWord("Pattern Editor", "VU-Meters", false, iniFile);
-    gbPatternPluginNames = GetPrivateProfileDWord("Pattern Editor", "Plugin-Names", true, iniFile);    
-    gbPatternRecord = GetPrivateProfileDWord("Pattern Editor", "Record", true, iniFile);    
-    gnAutoChordWaitTime = GetPrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", 60, iniFile);    
+    gbPatternPluginNames = GetPrivateProfileDWord("Pattern Editor", "Plugin-Names", true, iniFile);
+    gbPatternRecord = GetPrivateProfileDWord("Pattern Editor", "Record", true, iniFile);
+    gnAutoChordWaitTime = GetPrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", 60, iniFile);
     COrderList::s_nDefaultMargins = static_cast<uint8_t>(GetPrivateProfileInt("Pattern Editor", "DefaultSequenceMargins", 2, iniFile));
     gbShowHackControls = (0 != GetPrivateProfileDWord("Misc", "ShowHackControls", 0, iniFile));
     CSoundFile::s_DefaultPlugVolumeHandling = static_cast<uint8_t>(GetPrivateProfileInt("Misc", "DefaultPlugVolumeHandling", PLUGIN_VOLUMEHANDLING_IGNORE, iniFile));
@@ -578,7 +583,7 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "VolumeRampInSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampInSamples, &dwDWORDSize);
         dwDWORDSize = sizeof(glVolumeRampOutSamples);
         registry_query_value(key, "VolumeRampOutSamples", NULL, &dwREG_DWORD, (LPBYTE)&glVolumeRampOutSamples, &dwDWORDSize);
-        
+
         //end rewbs.resamplerConf
         //rewbs.autochord
         dwDWORDSize = sizeof(gnAutoChordWaitTime);
@@ -603,9 +608,9 @@ bool CMainFrame::LoadRegistrySettings()
         dwDWORDSize = sizeof(asInterval);
         registry_query_value(key, "AutoSave_IntervalMinutes", NULL, &dwREG_DWORD, (LPBYTE)&asInterval, &dwDWORDSize);
         dwDWORDSize = sizeof(asBackupHistory);
-        registry_query_value(key, "AutoSave_BackupHistory", NULL, &dwREG_DWORD, (LPBYTE)&asBackupHistory, &dwDWORDSize);    	
+        registry_query_value(key, "AutoSave_BackupHistory", NULL, &dwREG_DWORD, (LPBYTE)&asBackupHistory, &dwDWORDSize);
         dwDWORDSize = sizeof(asUseOriginalPath);
-        registry_query_value(key, "AutoSave_UseOriginalPath", NULL, &dwREG_DWORD, (LPBYTE)&asUseOriginalPath, &dwDWORDSize);    	
+        registry_query_value(key, "AutoSave_UseOriginalPath", NULL, &dwREG_DWORD, (LPBYTE)&asUseOriginalPath, &dwDWORDSize);
 
         dwDWORDSize = MAX_PATH;
         registry_query_value(key, "AutoSave_Path", NULL, &dwREG_DWORD, (LPBYTE)asPath.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
@@ -679,7 +684,7 @@ VOID CMainFrame::Initialize()
     // Setup timer
     OnUpdateUser(NULL);
     m_nTimer = SetTimer(1, MPTTIMER_PERIOD, NULL);
-    
+
 //rewbs: reduce to normal priority during debug for easier hang debugging
     //SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
@@ -743,9 +748,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     penHalfDarkGray = ::CreatePen(PS_DOT, 0, GetSysColor(COLOR_BTNSHADOW));
     penBlack = (HPEN)::GetStockObject(BLACK_PEN);
     penWhite = (HPEN)::GetStockObject(WHITE_PEN);
-    
-    
-    
+
+
+
     // Cursors
     curDragging = theApp.LoadCursor(IDC_DRAGGING);
     curArrow = theApp.LoadStandardCursor(IDC_ARROW);
@@ -895,7 +900,7 @@ void CMainFrame::SaveIniSettings()
     CString version = MptVersion::str;
     WritePrivateProfileString("Version", "Version", version, iniFile);
     WritePrivateProfileString("Version", "InstallGUID", gcsInstallGUID, iniFile);
-    
+
     WINDOWPLACEMENT wpl;
     wpl.length = sizeof(WINDOWPLACEMENT);
     GetWindowPlacement(&wpl);
@@ -923,7 +928,7 @@ void CMainFrame::SaveIniSettings()
         wsprintf(s, "Color%02d", ncol);
         WritePrivateProfileDWord("Display", s, rgbCustomColors[ncol], iniFile);
     }
-    
+
     WritePrivateProfileLong("Sound Settings", "WaveDevice", m_nWaveDevice, iniFile);
     WritePrivateProfileDWord("Sound Settings", "Quality", deprecated_m_dwQuality, iniFile);
     WritePrivateProfileDWord("Sound Settings", "SrcMode", m_nSrcMode, iniFile);
@@ -946,9 +951,9 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileDWord("Pattern Editor", "LoopSong", gbLoopSong, iniFile);
     WritePrivateProfileDWord("Pattern Editor", "Spacing", gnPatternSpacing, iniFile);
     WritePrivateProfileDWord("Pattern Editor", "VU-Meters", gbPatternVUMeters, iniFile);
-    WritePrivateProfileDWord("Pattern Editor", "Plugin-Names", gbPatternPluginNames, iniFile);    
-    WritePrivateProfileDWord("Pattern Editor", "Record", gbPatternRecord, iniFile);    
-    WritePrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", gnAutoChordWaitTime, iniFile);    
+    WritePrivateProfileDWord("Pattern Editor", "Plugin-Names", gbPatternPluginNames, iniFile);
+    WritePrivateProfileDWord("Pattern Editor", "Record", gbPatternRecord, iniFile);
+    WritePrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", gnAutoChordWaitTime, iniFile);
 
     // Write default paths
     const bool bConvertPaths = theApp.IsPortableMode();
@@ -979,7 +984,7 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileLong("AutoSave", "IntervalMinutes", m_pAutoSaver->GetSaveInterval(), iniFile);
     WritePrivateProfileLong("AutoSave", "BackupHistory", m_pAutoSaver->GetHistoryDepth(), iniFile);
     WritePrivateProfileLong("AutoSave", "UseOriginalPath", m_pAutoSaver->GetUseOriginalPath(), iniFile);
-    _tcscpy(szPath, m_pAutoSaver->GetPath()); 
+    _tcscpy(szPath, m_pAutoSaver->GetPath());
     if(bConvertPaths)
     {
         AbsolutePathToRelative(szPath);
@@ -1031,7 +1036,7 @@ uint32_t CMainFrame::GetPrivateProfileDWord(const CString section, const CString
     return static_cast<uint32_t>(atol(valueBuffer));
 }
 
-bool CMainFrame::WritePrivateProfileCString(const CString section, const CString key, const CString value, const CString iniFile) 
+bool CMainFrame::WritePrivateProfileCString(const CString section, const CString key, const CString value, const CString iniFile)
 {
     return (WritePrivateProfileString(section, key, value, iniFile) != 0);
 }
@@ -1076,7 +1081,7 @@ LRESULT CALLBACK CMainFrame::KeyboardProc(int code, WPARAM wParam, LPARAM lParam
     }
 
     return CallNextHookEx(ghKbdHook, code, wParam, lParam);
-}    
+}
 
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
@@ -1087,7 +1092,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
         CWnd* pWnd = CWnd::FromHandlePermanent(pMsg->hwnd);
         CControlBar* pBar = NULL;
         HWND hwnd = (pWnd) ? pWnd->m_hWnd : NULL;
-        
+
         if ((hwnd) && (pMsg->message == WM_RBUTTONDOWN)) pBar = DYNAMIC_DOWNCAST(CControlBar, pWnd);
         if ((pBar != NULL) || ((pMsg->message == WM_NCRBUTTONDOWN) && (pMsg->wParam == HTMENU)))
         {
@@ -1147,7 +1152,7 @@ BOOL gbStopSent = FALSE;
 
 void Terminate_NotifyThread()
 //----------------------------------------------
-{    
+{
     //TODO: Why does this not get called.
     AfxMessageBox("Notify thread terminated unexpectedly. Attempting to shut down audio device");
     CMainFrame* pMainFrame = CMainFrame::GetMainFrame();
@@ -1206,7 +1211,7 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
 {
     WAVEFORMATEXTENSIBLE WaveFormat;
     UINT buflen = 75;
-    
+
     if (!m_pSndFile) return -1;
 
     CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
@@ -1963,7 +1968,7 @@ VOID CMainFrame::SetUserText(LPCSTR lpszText)
     if (lpszText[0] | m_szUserText[0])
     {
         strcpy(m_szUserText, lpszText);
-        OnUpdateUser(NULL); 
+        OnUpdateUser(NULL);
     }
 }
 
@@ -2010,7 +2015,7 @@ VOID CMainFrame::OnDocumentClosed(CModDoc *pModDoc)
     if (pModDoc == m_pModPlaying) PauseMod();
 
     // Make sure that OnTimer() won't try to set the closed document modified anymore.
-    if (pModDoc == m_pJustModifiedDoc) m_pJustModifiedDoc = 0; 
+    if (pModDoc == m_pJustModifiedDoc) m_pJustModifiedDoc = 0;
 
     m_wndTree.OnDocumentClosed(pModDoc);
 }
@@ -2032,7 +2037,7 @@ void CMainFrame::OnViewOptions()
 {
     if (m_bOptionsLocked)    //rewbs.customKeys
         return;
-        
+
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
     COptionsSoundcard sounddlg(44100, 0, 16, 2, 75, m_nWaveDevice);
@@ -2054,6 +2059,16 @@ void CMainFrame::OnViewOptions()
     dlg.DoModal();
     m_bOptionsLocked=false;    //rewbs.customKeys
     m_wndTree.OnOptionsChanged();
+}
+
+void CMainFrame::OnDisplayConfigEditor() {
+    auto &context = this->context;
+    auto parent = this->qwinwidget.get();
+    auto *derp = new modplug::gui::qt4::config_dialog(context, *this, parent);
+    /*derp->move(50, 50);
+    derp->resize(200, 400);
+    */
+    derp->show();
 }
 
 
@@ -2184,7 +2199,7 @@ void CMainFrame::OnTimer(UINT)
             OnViewOptions();
         }
     }
-    
+
     // Ensure the modified flag gets set in the WinMain thread, even if modification
     // originated from Audio Thread (access to CWnd is not thread safe).
     // Flaw: if 2 docs are modified in between Timer ticks (very rare), one mod will be lost.
@@ -2489,13 +2504,13 @@ LRESULT CMainFrame::OnCustomKeyMsg(WPARAM wParam, LPARAM lParam)
         case kcViewPattern:
         case kcViewSamples:
         case kcViewInstruments:
-        case kcViewComments: 
+        case kcViewComments:
         case kcViewGraph: //rewbs.graph
         case kcViewSongProperties:
         case kcPlayPatternFromCursor:
-        case kcPlayPatternFromStart: 
-        case kcPlaySongFromCursor: 
-        case kcPlaySongFromStart: 
+        case kcPlayPatternFromStart:
+        case kcPlaySongFromCursor:
+        case kcPlaySongFromStart:
         case kcPlayPauseSong:
         case kcStopSong:
         case kcEstimateSongLength:
@@ -2534,7 +2549,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
         return;
 
     CMDIFrameWnd::OnInitMenu(pMenu);
-    
+
 }
 
 //end rewbs.VSTTimeInfo
@@ -2601,13 +2616,13 @@ bool CMainFrame::UpdateEffectKeys(void)
         CSoundFile* pSndFile = pModDoc->GetSoundFile();
         if (pSndFile)
         {
-            if    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) 
+            if    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
                 return m_InputHandler->SetXMEffects();
             else
                 return m_InputHandler->SetITEffects();
         }
     }
-    
+
     return false;
 }
 //end rewbs.customKeys
@@ -2618,7 +2633,7 @@ void CMainFrame::OnKillFocus(CWnd* pNewWnd)
 //-----------------------------------------
 {
     CMDIFrameWnd::OnKillFocus(pNewWnd);
-    
+
     //rewbs: ensure modifiers are reset when we leave the window (e.g. alt-tab)
     CMainFrame::GetMainFrame()->GetInputHandler()->SetModifierMask(0);
     //end rewbs

@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+#include <functional>
+#include <string>
+
 #include "paudio.h"
 #include "../MainFrm.h"
 #include "../pervasives/pervasives.h"
@@ -13,16 +16,36 @@ extern BOOL gbStopSent;
 namespace modplug {
 namespace audioio {
 
-typedef char * huoh;
-
-std::array<const char *, 14> paudio_api_names = {
-    "none", "directsound", "mme", "asio", "soundmanager",
-    "coreaudio", "oss", "alsa", "al", "beos", "wdmks", "jack",
-    "wasapi", "audiosciencehpi"
+struct json_sample_format_assoc {
+    portaudio::SampleDataFormat key;
+    const char *value;
 };
 
-std::array<const char *, 7> paudio_sample_format_names = {
-    "invalid", "float32", "int32", "int24", "int16", "int8", "uint8"
+std::array<const char *, 14> paudio_api_names = {
+    "none",
+    "directsound",
+    "mme",
+    "asio",
+    "soundmanager",
+    "coreaudio",
+    "oss",
+    "alsa",
+    "al",
+    "beos",
+    "wdmks",
+    "jack",
+    "wasapi",
+    "audiosciencehpi"
+};
+
+static const json_sample_format_assoc paudio_sample_format_names[] = {
+    { portaudio::FLOAT32,        "float32" },
+    { portaudio::INT32,          "int32" },
+    { portaudio::INT24,          "int24" },
+    { portaudio::INT16,          "int16" },
+    { portaudio::INT8,           "int8" },
+    { portaudio::UINT8,          "uint8" },
+    { portaudio::INVALID_FORMAT, "invalid" }
 };
 
 template <typename arr>
@@ -40,10 +63,14 @@ size_t lookup_by_name(arr &names, const char *name) {
     return 0;
 }
 
+
+
+
 Json::Value json_of_paudio_settings(const paudio_settings &settings, portaudio::System &pa_system) {
     Json::Value root;
     root["sample_rate"]   = settings.sample_rate;
-    root["sample_format"] = lookup_by_index(paudio_sample_format_names, (size_t) settings.sample_format);
+    root["sample_format"] = value_of_key(paudio_sample_format_names,
+                                         settings.sample_format);
 
     root["host_api"] = lookup_by_index(paudio_api_names, settings.host_api);
     root["device"]   = pa_system.deviceByIndex(settings.device).name();
@@ -60,8 +87,11 @@ paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa
 
     try {
         ret.sample_rate   = root["sample_rate"].asDouble();
-        ret.sample_format = static_cast<portaudio::SampleDataFormat>(
-            lookup_by_name(paudio_sample_format_names, root["sample_format"].asCString())
+
+        ret.sample_format = key_of_value(
+            paudio_sample_format_names,
+            root["sample_format"].asCString(),
+            strcmp
         );
 
         ret.host_api = static_cast<PaHostApiTypeId>(

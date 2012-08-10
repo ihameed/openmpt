@@ -8,6 +8,7 @@
 #include "../../pervasives/pervasives.h"
 #include "config_dialog.h"
 #include "config_audioio.h"
+#include "../../MainFrm.h"
 
 using namespace modplug::pervasives;
 
@@ -56,13 +57,22 @@ public:
     }
 };
 
-config_dialog::config_dialog(config_context &context, QWidget *parent) : QDialog(parent) {
+config_dialog::config_dialog(config_context &context, CMainFrame &bag_of_junk,
+                             QWidget *parent)
+    : QDialog(parent)
+{
     static config_page_spec config_dialog_layout[] = {
-        { "Audio I/O", "root", MAKE_PAGE(config_audioio_main) },
+        { "Audio I/O", "root",
+            [&](config_context &context) {
+                return new config_audioio_main(context, bag_of_junk.stream_settings);
+            }
+        },
         { "Audio I/O", "Channel Assignment", MAKE_PAGE_IGNORE(QProgressBar) },
         { "GUI", "root", MAKE_PAGE_IGNORE(QTextEdit) },
         { "GUI", "Keyboard", MAKE_PAGE_IGNORE(QTextEdit) },
-        { "GUI", "Mouse", MAKE_PAGE_IGNORE(QTextEdit) }
+        { "GUI", "Mouse", MAKE_PAGE_IGNORE(QTextEdit) },
+        { "Plugins", "root", MAKE_PAGE_IGNORE(QTextEdit) },
+        { "Plugins", "VST2", MAKE_PAGE_IGNORE(QTextEdit) },
     };
 
     auto vsplit = new QVBoxLayout(this);
@@ -120,7 +130,8 @@ config_dialog::config_dialog(config_context &context, QWidget *parent) : QDialog
 
     for_each(categories, add_category);
 
-    QObject::connect(category_list, SIGNAL(itemSelectionChanged()), this, SLOT(change_page()));
+    QObject::connect(category_list, SIGNAL(itemSelectionChanged()),
+                     this, SLOT(change_page()));
 }
 
 void config_dialog::change_page() {

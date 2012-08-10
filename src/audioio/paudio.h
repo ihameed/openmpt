@@ -21,8 +21,11 @@ struct paudio_settings {
     unsigned int buffer_length;
     unsigned int channels;
 };
-Json::Value json_of_paudio_settings(const paudio_settings &);
-paudio_settings paudio_settings_of_json(Json::Value &);
+Json::Value json_of_paudio_settings(
+    const paudio_settings &,
+    portaudio::System &
+);
+paudio_settings paudio_settings_of_json(Json::Value &, portaudio::System &);
 
 
 
@@ -31,12 +34,16 @@ class paudio_callback {
 public:
     paudio_callback(CMainFrame &main_frame, paudio_settings &settings);
 
-    int invoke(const void *, void *, unsigned long, const PaStreamCallbackTimeInfo *, PaStreamCallbackFlags);
+    int invoke(const void *,
+               void *,
+               unsigned long,
+               const PaStreamCallbackTimeInfo *,
+               PaStreamCallbackFlags);
 
 
 private:
     CMainFrame &main_frame;
-    paudio_settings &settings; 
+    paudio_settings &settings;
 };
 
 
