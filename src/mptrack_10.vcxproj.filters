@@ -150,6 +150,15 @@
     <ClCompile Include="pervasives\debug.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_config_audioio.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_config_audioio.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_config_audioio.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -261,9 +270,6 @@
     <ClInclude Include="legacy_soundlib\Wav.h" />
     <ClInclude Include="legacy_soundlib\wavConverter.h" />
     <ClInclude Include="audioio\paudio.h" />
-    <ClInclude Include="gui\qt4\config_audioio.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="pervasives\static_assoc.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -344,6 +350,9 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gui\qt4\config_dialog.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt4\config_audioio.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -130,8 +130,10 @@ config_dialog::config_dialog(config_context &context, CMainFrame &bag_of_junk,
     button_apply = add_button("&Apply");
     button_hsplit->insertStretch(0, 100);
 
-    QObject::connect(category_list, SIGNAL(itemSelectionChanged()),
-                     this, SLOT(change_page()));
+    QObject::connect(
+        category_list, SIGNAL(itemSelectionChanged()),
+        this, SLOT(change_page())
+    );
 }
 
 void config_dialog::change_page() {

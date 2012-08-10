@@ -25,11 +25,11 @@ struct sample_format_assoc {
 };
 
 static const sample_rate_assoc supported_sample_rates[] = {
-    { 22050,  "22050" },
-    { 44100,  "44100" },
-    { 48000,  "48000" },
-    { 96000,  "96000" },
-    { 192000, "192000" }
+    { 22050.0,  "22050" },
+    { 44100.0,  "44100" },
+    { 48000.0,  "48000" },
+    { 96000.0,  "96000" },
+    { 192000.0, "192000" }
 };
 
 static const sample_format_assoc supported_sample_formats[] = {
@@ -55,10 +55,11 @@ config_audioio_main::config_audioio_main(
     devices = new QComboBox;
     rates = new QComboBox;
     formats = new QComboBox;
+    latency = new QLabel;
 
     buflen = new QSpinBox;
     buflen->setSuffix(" samples");
-    buflen->setMinimum(2);
+    buflen->setMinimum(0);
     buflen->setMaximum(5678);
     buflen->setSingleStep(32);
 
@@ -77,6 +78,8 @@ config_audioio_main::config_audioio_main(
     add_widget("Sample Format:", formats);
     add_widget("Buffer Length:", buflen);
     add_widget("Output Channels:", channels);
+    add_widget("Output Latency:", latency);
+
     layout->addItem(
         new QSpacerItem(
             0, 0,
@@ -86,7 +89,7 @@ config_audioio_main::config_audioio_main(
     );
 
     for_each(supported_sample_rates, [&](sample_rate_assoc t) {
-        rates->addItem(t.value);
+        rates->addItem(t.value, QVariant(t.key));
     });
 
     for_each(supported_sample_formats, [&](sample_format_assoc t) {
@@ -101,12 +104,25 @@ config_audioio_main::config_audioio_main(
         );
     }
 
+    QObject::connect(
+        rates, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(latency_event_with_int(int))
+    );
+
+    QObject::connect(
+        buflen, SIGNAL(valueChanged(int)),
+        this, SLOT(latency_event_with_int(int))
+    );
+
     refresh();
 };
 
 void config_audioio_main::refresh() {
     DEBUG_FUNC("%s",
-        debug_json_dump(json_of_paudio_settings(settings, context.pa_system)).c_str()
+        debug_json_dump(json_of_paudio_settings(
+            settings,
+            context.pa_system
+        )).c_str()
     );
     auto current_sample_rate = static_cast<int>(settings.sample_rate);
 
@@ -124,6 +140,25 @@ void config_audioio_main::refresh() {
     buflen->setValue(settings.buffer_length);
 
     channels->setValue(settings.channels);
+}
+
+void config_audioio_main::latency_event_with_int(int) {
+    update_latency_indicator();
+}
+
+void config_audioio_main::update_latency_indicator() {
+    double rate = current_sample_rate();
+    int len = buflen->value();
+    double latency_ms = rate == 0
+        ? 0
+        : (1000 * len) / rate;
+    latency->setText(QString("%1 ms").arg(latency_ms));
+}
+
+double config_audioio_main::current_sample_rate() const {
+    int idx = rates->currentIndex();
+    auto data = rates->itemData(idx);
+    return data == QVariant::Invalid ? 0 : data.toDouble();
 }
 
 

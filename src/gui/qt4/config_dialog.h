@@ -18,6 +18,7 @@ public:
 };
 
 class config_page : public QWidget {
+    Q_OBJECT
 public:
     virtual void refresh() { };
 };
