@@ -94,11 +94,6 @@ config_dialog::config_dialog(config_context &context, CMainFrame &bag_of_junk,
         return widget;
     };
 
-    button_ok = add_button("&OK");
-    button_cancel = add_button("&Cancel");
-    button_apply = add_button("&Apply");
-    button_hsplit->insertStretch(0, 100);
-
     category_map categories;
 
     for_each(config_dialog_layout, [&](config_page_spec &the_guy) {
@@ -129,6 +124,11 @@ config_dialog::config_dialog(config_context &context, CMainFrame &bag_of_junk,
     };
 
     for_each(categories, add_category);
+
+    button_ok = add_button("&OK");
+    button_cancel = add_button("&Cancel");
+    button_apply = add_button("&Apply");
+    button_hsplit->insertStretch(0, 100);
 
     QObject::connect(category_list, SIGNAL(itemSelectionChanged()),
                      this, SLOT(change_page()));

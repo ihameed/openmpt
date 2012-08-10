@@ -458,7 +458,6 @@
     <ClInclude Include="test\test.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="res\bitmap1.bmp" />
     <None Include="res\colors.bmp" />
     <None Include="res\dragging.cur" />

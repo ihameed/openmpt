@@ -29,27 +29,25 @@ static const sample_rate_assoc supported_sample_rates[] = {
     { 44100,  "44100" },
     { 48000,  "48000" },
     { 96000,  "96000" },
-    { 192000, "192000" },
-    { -1,     "Unknown" }
+    { 192000, "192000" }
 };
 
 static const sample_format_assoc supported_sample_formats[] = {
-    { portaudio::FLOAT32,        "32-bit floating point" },
-    { portaudio::INT32,          "32-bit signed integer" },
-    { portaudio::INT24,          "24-bit signed integer" },
-    { portaudio::INT16,          "16-bit signed integer" },
-    { portaudio::INT8,           "8-bit signed integer" },
-    { portaudio::UINT8,          "8-bit unsigned integer" },
-    { portaudio::INVALID_FORMAT, "Unknown" }
+    { portaudio::UINT8,   "8-bit unsigned integer" },
+    { portaudio::INT8,    "8-bit signed integer" },
+    { portaudio::INT16,   "16-bit signed integer" },
+    { portaudio::INT24,   "24-bit signed integer" },
+    { portaudio::INT32,   "32-bit signed integer" },
+    { portaudio::FLOAT32, "32-bit floating point" }
 };
 
 
 
-
-config_audioio_main::config_audioio_main(config_context &context,
-                                         paudio_settings &settings,
-                                         QWidget *parent)
-    : config_page(), settings(settings), context(context)
+config_audioio_main::config_audioio_main(
+    config_context &context,
+    paudio_settings &settings,
+    QWidget *parent
+) : config_page(), settings(settings), context(context)
 {
     auto layout = new QGridLayout(this);
 
@@ -57,8 +55,15 @@ config_audioio_main::config_audioio_main(config_context &context,
     devices = new QComboBox;
     rates = new QComboBox;
     formats = new QComboBox;
-    buflen = new QLineEdit;
-    channels =  new QLineEdit;
+
+    buflen = new QSpinBox;
+    buflen->setSuffix(" samples");
+    buflen->setMinimum(2);
+    buflen->setMaximum(5678);
+    buflen->setSingleStep(32);
+
+    channels = new QSpinBox;
+    channels->setMinimum(0);
 
     int row = 0;
     auto add_widget = [&](char *name, QWidget *widget) {
@@ -114,12 +119,9 @@ void config_audioio_main::refresh() {
 
     devices->setCurrentIndex(settings.device);
 
-    QString derf;
-    derf.setNum(settings.buffer_length, 10);
-    buflen->setText(derf);
+    buflen->setValue(settings.buffer_length);
 
-    derf.setNum(settings.channels, 10);
-    channels->setText(derf);
+    channels->setValue(settings.channels);
 }
 
 

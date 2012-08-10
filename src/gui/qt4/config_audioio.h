@@ -25,8 +25,8 @@ private:
     QComboBox *devices;
     QComboBox *rates;
     QComboBox *formats;
-    QLineEdit *channels;
-    QLineEdit *buflen;
+    QSpinBox *channels;
+    QSpinBox *buflen;
 };
 
 }

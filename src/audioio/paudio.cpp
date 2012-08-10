@@ -39,13 +39,12 @@ std::array<const char *, 14> paudio_api_names = {
 };
 
 static const json_sample_format_assoc paudio_sample_format_names[] = {
-    { portaudio::FLOAT32,        "float32" },
-    { portaudio::INT32,          "int32" },
-    { portaudio::INT24,          "int24" },
-    { portaudio::INT16,          "int16" },
-    { portaudio::INT8,           "int8" },
-    { portaudio::UINT8,          "uint8" },
-    { portaudio::INVALID_FORMAT, "invalid" }
+    { portaudio::FLOAT32, "float32" },
+    { portaudio::INT32,   "int32" },
+    { portaudio::INT24,   "int24" },
+    { portaudio::INT16,   "int16" },
+    { portaudio::INT8,    "int8" },
+    { portaudio::UINT8,   "uint8" }
 };
 
 template <typename arr>
@@ -70,7 +69,8 @@ Json::Value json_of_paudio_settings(const paudio_settings &settings, portaudio::
     Json::Value root;
     root["sample_rate"]   = settings.sample_rate;
     root["sample_format"] = value_of_key(paudio_sample_format_names,
-                                         settings.sample_format);
+                                         settings.sample_format,
+                                         "invalid");
 
     root["host_api"] = lookup_by_index(paudio_api_names, settings.host_api);
     root["device"]   = pa_system.deviceByIndex(settings.device).name();
@@ -91,6 +91,7 @@ paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa
         ret.sample_format = key_of_value(
             paudio_sample_format_names,
             root["sample_format"].asCString(),
+            portaudio::INVALID_FORMAT,
             strcmp
         );
 
