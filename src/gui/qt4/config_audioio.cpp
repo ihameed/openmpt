@@ -96,7 +96,9 @@ config_audioio_main::config_audioio_main(
     auto &pa_system = context.pa_system;
 
     for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
-        devices->addItem(QString(i->hostApi().name()) + ": " + i->name());
+        devices->addItem(
+            QString("%1: %2").arg(i->hostApi().name()) .arg(i->name())
+        );
     }
 
     refresh();
