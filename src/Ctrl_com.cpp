@@ -6,6 +6,8 @@
 #include "ctrl_com.h"
 #include "view_com.h"
 
+#include "gui/qt4/comment_view.h"
+
 BEGIN_MESSAGE_MAP(CCtrlComments, CModControlDlg)
     //{{AFX_MSG_MAP(CCtrlComments)
     ON_MESSAGE(WM_MOD_KEYCOMMAND,	OnCustomKeyMsg)	//rewbs.customKeys
@@ -48,13 +50,19 @@ void CCtrlComments::OnDeactivatePage()
 BOOL CCtrlComments::OnInitDialog()
 //--------------------------------
 {
+    qwinwidget = std::make_shared<QWinWidget>(this);
+    qwinwidget->setLayout(new QVBoxLayout);
+    commentbox = new modplug::gui::qt4::comment_view(m_pSndFile);
+    qwinwidget->layout()->addWidget(commentbox);
     CModControlDlg::OnInitDialog();
     // Initialize comments
     m_hFont = NULL;
     m_EditComments.SetMargins(4, 0);
     UpdateView(HINT_MODTYPE|HINT_MODCOMMENTS|HINT_MPTOPTIONS, NULL);
     m_EditComments.SetFocus();
+    m_EditComments.ShowWindow(0);
     m_bInitialized = TRUE;
+    qwinwidget->show();
     return FALSE;
 }
 
@@ -62,151 +70,30 @@ BOOL CCtrlComments::OnInitDialog()
 void CCtrlComments::RecalcLayout()
 //--------------------------------
 {
-    CRect rcClient, rect;
-    int cx0, cy0;
-    
     if ((!m_hWnd) || (!m_EditComments.m_hWnd)) return;
+    CRect rcClient, rect;
     GetClientRect(&rcClient);
-    m_EditComments.GetWindowRect(&rect);
-    ScreenToClient(&rect);
-    cx0 = rect.Width();
-    cy0 = rect.Height();
-    rect.bottom = rcClient.bottom - 3;
-    rect.right = rcClient.right - rect.left;
-    if ((rect.right > rect.left) && (rect.bottom > rect.top))
-    {
-    	int cxmax = (CMainFrame::m_dwPatternSetup & PATTERN_LARGECOMMENTS) ? 80*8 : 80*6;
-    	int cx = rect.Width(), cy = rect.Height();
-    	if (cx > cxmax) cx = cxmax;
-    	if ((cx != cx0) || (cy != cy0)) m_EditComments.SetWindowPos(NULL, 0,0, cx, cy, SWP_NOMOVE|SWP_NOZORDER|SWP_DRAWFRAME);
-    }
+    qwinwidget->move(0, 0);
+    qwinwidget->resize(rcClient.Width(), rcClient.Height());
 }
 
 
-void CCtrlComments::UpdateView(uint32_t dwHint, CObject *pHint)
-//----------------------------------------------------------
-{
+void CCtrlComments::UpdateView(uint32_t dwHint, CObject *pHint) {
+    DEBUG_FUNC("dwHint = %x", dwHint);
     if ((pHint == this) || (!m_pSndFile) || (!(dwHint & (HINT_MODCOMMENTS|HINT_MPTOPTIONS|HINT_MODTYPE)))) return;
-    if (m_nLockCount) return;
-    m_nLockCount++;
-    HFONT newfont;
-    if (CMainFrame::m_dwPatternSetup & PATTERN_LARGECOMMENTS)
-    	newfont = CMainFrame::GetLargeFixedFont();
-    else
-    	newfont = CMainFrame::GetFixedFont();
-    if (newfont != m_hFont)
-    {
-    	m_hFont = newfont;
-    	m_EditComments.SendMessage(WM_SETFONT, (WPARAM)newfont);
-    	RecalcLayout();
-    }
-    m_EditComments.SetRedraw(FALSE);
-    m_EditComments.SetSel(0, -1, TRUE);
-    m_EditComments.ReplaceSel("");
-    if (m_pSndFile->m_lpszSongComments)
-    {
-    	CHAR s[256], *p = m_pSndFile->m_lpszSongComments, c;
-    	UINT ln = 0;
-    	while ((c = *p++) != NULL)
-    	{
-    		if ((ln >= LINE_LENGTH-1) || (!*p))
-    		{
-    			if (((uint8_t)c) > ' ') s[ln++] = c;
-    			c = 0x0D;
-    		}
-    		if (c == 0x0D)
-    		{
-    			s[ln] = 0x0D;
-    			s[ln+1] = 0x0A;
-    			s[ln+2] = 0;
-    			m_EditComments.SetSel(65000, 65000, TRUE);
-    			m_EditComments.ReplaceSel(s);
-    			ln = 0;
-    		} else
-    		{
-    			if (((uint8_t)c) < ' ') c = ' ';
-    			s[ln++] = c;
-    		}
-    	}
-    	m_EditComments.SetSel(0, 0);
-    	m_EditComments.SetModify(FALSE);
-    }
-    if (dwHint & HINT_MODTYPE)
-    {
-    	m_EditComments.SetReadOnly(!m_pSndFile->GetModSpecifications().hasComments);
-    }
 
-    m_EditComments.SetRedraw(TRUE);
-    m_nLockCount--;
+    commentbox->legacy_set_comments_from_module(dwHint & HINT_MODCOMMENTS);
 }
 
-void CCtrlComments::OnCommentsChanged()
-//-------------------------------------
-{
-    CHAR s[256], *oldcomments = NULL;
-    
-    if ((m_nLockCount) || (!m_pSndFile)
-    	|| !m_pSndFile->GetModSpecifications().hasComments) return;
-    if ((!m_bInitialized) || (!m_EditComments.m_hWnd) || (!m_EditComments.GetModify())) return;
-    if (m_pSndFile->m_lpszSongComments)
-    {
-    	oldcomments = m_pSndFile->m_lpszSongComments;
-    	m_pSndFile->m_lpszSongComments = NULL;
-    }
-    // Updating comments
-    {
+void CCtrlComments::OnCommentsChanged() {
+    DEBUG_FUNC("");
 
-
-    	UINT n = m_EditComments.GetLineCount();
-    	LPSTR p = new char[n * LINE_LENGTH + 1];
-    	p[0] = 0;
-    	if (!p) return;
-    	for (UINT i=0; i<n; i++)
-    	{
-    		int ln = m_EditComments.GetLine(i, s, LINE_LENGTH);
-    		if (ln < 0) ln = 0;
-    		if (ln > LINE_LENGTH-1) ln = LINE_LENGTH-1;
-    		s[ln] = 0;
-    		while ((ln > 0) && (((uint8_t)s[ln-1]) <= ' ')) s[--ln] = 0;
-    		if (i+1 < n) strcat(s, "\r");
-    		strcat(p, s);
-    	}
-    	UINT len = strlen(p);
-    	while ((len > 0) && ((p[len-1] == ' ') || (p[len-1] == '\r')))
-    	{
-    		len--;
-    		p[len] = 0;
-    	}
-    	if (p[0])
-    		m_pSndFile->m_lpszSongComments = p;
-    	else
-    		delete[] p;
-    	if (oldcomments)
-    	{
-    		bool bSame = false;
-    		if ((m_pSndFile->m_lpszSongComments)
-    		 && (!strcmp(m_pSndFile->m_lpszSongComments, oldcomments))) bSame = true;
-    		delete[] oldcomments;
-    		if (bSame) return;
-    	} else
-    	{
-    		if (!m_pSndFile->m_lpszSongComments) return;
-    	}
-    	if (m_pModDoc)
-    	{
-    		m_EditComments.SetModify(FALSE);
-    		m_pModDoc->SetModified();
-    		m_pModDoc->UpdateAllViews(NULL, HINT_MODCOMMENTS, this);
-    	}
-    }
+    commentbox->legacy_update_module_comment();
 }
 
-//rewbs.customKeys
-LRESULT CCtrlComments::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-{
-    if (wParam == kcNull)
+LRESULT CCtrlComments::OnCustomKeyMsg(WPARAM wParam, LPARAM) {
+    if (wParam == kcNull) {
     	return NULL;
-    //currently no specific custom keys for this context
+    }
     return wParam;
 }
-//end rewbs.customKeys

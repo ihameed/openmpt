@@ -12,6 +12,7 @@
 
 class CModControlDlg;
 class CChildFrame;
+class QWinWidget;
 
 
 typedef struct _GENERALVIEWSTATE
@@ -148,6 +149,9 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg void OnSetFocus(CWnd* pOldWnd); //rewbs.customKeysAutoEffects
+
+private:
+    std::shared_ptr<QWinWidget> qwinwidget;
 };
 
 /////////////////////////////////////////////////////////////////////////////

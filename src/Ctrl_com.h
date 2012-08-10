@@ -2,6 +2,10 @@
 #define _CONTROL_COMMENTS_H_
 
 
+class QWinWidget;
+
+namespace modplug { namespace gui { namespace qt4 { class comment_view; } } }
+
 //========================================
 class CCtrlComments: public CModControlDlg
 //========================================
@@ -32,6 +36,10 @@ protected:
     afx_msg void OnCommentsChanged();
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
+
+private:
+    std::shared_ptr<QWinWidget> qwinwidget;
+    modplug::gui::qt4::comment_view *commentbox;
 };
 
 #endif

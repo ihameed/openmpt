@@ -11,6 +11,8 @@
 #include "view_gen.h"
 #include ".\childfrm.h"
 
+#include <QtGui>
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,7 +21,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// 
+//
 
 IMPLEMENT_DYNAMIC(CViewExSplitWnd, CSplitterWnd)
 
@@ -93,6 +95,7 @@ CChildFrame::~CChildFrame()
 BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 //-----------------------------------------------------------------------------
 {
+    qwinwidget = std::make_shared<QWinWidget>(this);
     // create a splitter with 1 row, 2 columns
     if (!m_wndSplitter.CreateStatic(this, 2, 1)) return FALSE;
 
@@ -101,7 +104,7 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
     int cy = CMainFrame::glGeneralWindowHeight;	//rewbs.varWindowSize - default to general tab.
     if (cy <= 1) cy = (lpcs->cy*2) / 3;
     if (!m_wndSplitter.CreateView(0, 0, pContext->m_pNewViewClass, CSize(0, cy), pContext)) return FALSE;
-    
+
     // Get 2nd window handle
     CModControlView *pModView;
     if ((pModView = (CModControlView *)m_wndSplitter.GetPane(0, 0)) != NULL)
@@ -189,9 +192,13 @@ void CChildFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
 BOOL CChildFrame::ChangeViewClass(CRuntimeClass* pViewClass, CCreateContext* pContext)
 //------------------------------------------------------------------------------------
 {
+    //XXXih: HACK
+    LPCSTR legacy_class_name = pViewClass->m_lpszClassName;
+
+    DEBUG_FUNC("pViewClass = %s", legacy_class_name);
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CWnd *pWnd;
-    if (!strcmp(pViewClass->m_lpszClassName, m_szCurrentViewClassName)) return TRUE;
+    if (!strcmp(legacy_class_name, m_szCurrentViewClassName)) return TRUE;
     if (m_szCurrentViewClassName[0])
     {
     	m_szCurrentViewClassName[0] = 0;
@@ -237,7 +244,7 @@ void CChildFrame::SavePosition(BOOL bForce)
     if (m_hWnd)
     {
     	CRect rect;
-    	
+
     	m_bMaxWhenClosed = IsZoomed();
     	if (bForce) CMainFrame::gbMdiMaximize = m_bMaxWhenClosed;
     	if (!IsIconic())
@@ -255,12 +262,12 @@ void CChildFrame::SavePosition(BOOL bForce)
     			else if (strcmp("CViewSample", m_szCurrentViewClassName) == 0)
     				CMainFrame::glSampleWindowHeight = l;
     			else if (strcmp("CViewInstrument", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glInstrumentWindowHeight = l;				
+    				CMainFrame::glInstrumentWindowHeight = l;
     			else if (strcmp("CViewComments", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glCommentsWindowHeight = l;				
+    				CMainFrame::glCommentsWindowHeight = l;
     			//rewbs.graph
     			else if (strcmp("CViewGraph", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glGraphWindowHeight = l;				
+    				CMainFrame::glGraphWindowHeight = l;
     			//end rewbs.graph
 
     		}
@@ -269,7 +276,7 @@ void CChildFrame::SavePosition(BOOL bForce)
 }
 
 //rewbs.varWindowSize
-int CChildFrame::GetSplitterHeight() { 
+int CChildFrame::GetSplitterHeight() {
     if (m_hWnd)
     {
     	CRect rect;
@@ -279,7 +286,7 @@ int CChildFrame::GetSplitterHeight() {
     	{
     		pWnd->GetWindowRect(&rect);
     		return rect.Height();
-    	} 
+    	}
     }
     return 15;	// tidy default
 };
@@ -435,4 +442,3 @@ void CChildFrame::OnSetFocus(CWnd* pOldWnd)
     }
 }
 //end rewbs.customKeysAutoEffects
-
