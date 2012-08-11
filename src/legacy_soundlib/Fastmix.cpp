@@ -348,7 +348,7 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
     fy2 = fy1;\
     fy1 = fy - (vol & pChn->nFilter_HP);\
     vol = fy;\
-    
+
 
 // Stereo
 #define MIX_BEGIN_STEREO_FILTER\
@@ -417,7 +417,7 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::modchannel_t *, int
 #define BEGIN_MIX_FLT_INTERFACE(func)\
     BEGIN_MIX_INTERFACE(func)\
     MIX_BEGIN_FILTER
-    
+
 
 #define END_MIX_FLT_INTERFACE()\
     SNDMIX_ENDSAMPLELOOP\
@@ -443,7 +443,7 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::modchannel_t *, int
 #define BEGIN_MIX_STFLT_INTERFACE(func)\
     BEGIN_MIX_INTERFACE(func)\
     MIX_BEGIN_STEREO_FILTER
-    
+
 
 #define END_MIX_STFLT_INTERFACE()\
     SNDMIX_ENDSAMPLELOOP\
@@ -1472,12 +1472,12 @@ static LONG MPPFASTCALL GetSampleCount(modplug::tracker::modchannel_t *pChn, LON
 
 
 
-UINT CSoundFile::CreateStereoMix(int count)
+UINT module_renderer::CreateStereoMix(int count)
 //-----------------------------------------
 {
     LPLONG pOfsL, pOfsR;
     uint32_t nchused, nchmixed;
-    
+
     if (!count) return 0;
 #ifndef FASTSOUNDLIB
     BOOL bSurround;
@@ -1497,7 +1497,7 @@ UINT CSoundFile::CreateStereoMix(int count)
         int *JUICY_FRUITS;
 
         size_t channel_i_care_about = pChannel->parent_channel ? (pChannel->parent_channel - 1) : (ChnMix[nChn]);
-        auto herp = (channel_i_care_about > modplug::mixgraph::MAX_PHYSICAL_CHANNELS) ? 
+        auto herp = (channel_i_care_about > modplug::mixgraph::MAX_PHYSICAL_CHANNELS) ?
             (mixgraph.channel_bypass) :
             (mixgraph.channel_vertices[channel_i_care_about]);
         auto herp_left = herp->channels[0];
@@ -1525,7 +1525,7 @@ UINT CSoundFile::CreateStereoMix(int count)
 
         //Look for plugins associated with this implicit tracker channel.
         UINT nMixPlugin = GetBestPlugin(ChnMix[nChn], PRIORITISE_INSTRUMENT, RESPECT_MUTES);
-        
+
         //rewbs.instroVSTi
 /*    	UINT nMixPlugin=0;
         if (pChannel->instrument && pChannel->pInstrument) {    // first try intrument VST
@@ -1533,12 +1533,12 @@ UINT CSoundFile::CreateStereoMix(int count)
                 nMixPlugin = pChannel->instrument->nMixPlug;
         }
         if (!nMixPlugin && (nMasterCh > 0) && (nMasterCh <= m_nChannels)) {     // Then try Channel VST
-            if(!(pChannel->dwFlags & CHN_NOFX)) 
+            if(!(pChannel->dwFlags & CHN_NOFX))
                 nMixPlugin = ChnSettings[nMasterCh-1].nMixPlugin;
         }
 */
 
-        //end rewbs.instroVSTi    	
+        //end rewbs.instroVSTi
         //XXXih: vchan mix -> plugin prepopulated state heer
         if ((nMixPlugin > 0) && (nMixPlugin <= MAX_MIXPLUGINS))
         {
@@ -1665,7 +1665,7 @@ UINT CSoundFile::CreateStereoMix(int count)
     return nchused;
 }
 
-UINT CSoundFile::GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel)
+UINT module_renderer::GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel)
 //------------------------------------------------------------
 {
     if (pChannel->instrument) {
@@ -1678,24 +1678,24 @@ UINT CSoundFile::GetResamplingFlag(const modplug::tracker::modchannel_t *pChanne
 //    		default: ;
         }
     }
-    
+
     //didn't manage to get flag from instrument header, use channel flags.
     if (pChannel->flags & CHN_HQSRC)
     {
         if (gdwSoundSetup & SNDMIX_SPLINESRCMODE)    	return MIXNDX_HQSRC;
         if (gdwSoundSetup & SNDMIX_POLYPHASESRCMODE)    return MIXNDX_KAISERSRC;
-        if (gdwSoundSetup & SNDMIX_FIRFILTERSRCMODE)    return MIXNDX_FIRFILTERSRC;				
+        if (gdwSoundSetup & SNDMIX_FIRFILTERSRCMODE)    return MIXNDX_FIRFILTERSRC;
     } else if (!(pChannel->flags & CHN_NOIDO)) {
         return MIXNDX_LINEARSRC;
     }
-    
+
     return 0;
 }
 
 
 extern int gbInitPlugins;
 
-void CSoundFile::ProcessPlugins(UINT nCount)
+void module_renderer::ProcessPlugins(UINT nCount)
 //------------------------------------------
 {
     // Setup float inputs
@@ -1796,7 +1796,7 @@ void CSoundFile::ProcessPlugins(UINT nCount)
                     pOutputs[2*nOutput] = pOutState->pOutBufferL;
                     pOutputs[2*(nOutput+1)] = pOutState->pOutBufferR;
                 }
-                
+
             }
 */
 
@@ -1846,9 +1846,9 @@ void CSoundFile::ProcessPlugins(UINT nCount)
 //
 
 
-float CSoundFile::m_nMaxSample = 0;
+float module_renderer::m_nMaxSample = 0;
 
-VOID CSoundFile::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount)
+VOID module_renderer::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount)
 //-----------------------------------------------------------------------------------------
 {
 
@@ -1877,7 +1877,7 @@ VOID CSoundFile::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, U
 }
 
 
-VOID CSoundFile::FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount)
+VOID module_renderer::FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount)
 //---------------------------------------------------------------------------------------------
 {
     if (gdwSoundSetup & SNDMIX_ENABLEMMX)
@@ -1894,7 +1894,7 @@ VOID CSoundFile::FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOu
 }
 
 
-VOID CSoundFile::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
+VOID module_renderer::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
 //------------------------------------------------------------------------
 {
     if (gdwSoundSetup & SNDMIX_ENABLEMMX)
@@ -1914,12 +1914,12 @@ VOID CSoundFile::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
             return;
         }
     }
-    modplug::mixer::mono_mix_to_float(pSrc, pOut, nCount, m_pConfig->getIntToFloat());    
+    modplug::mixer::mono_mix_to_float(pSrc, pOut, nCount, m_pConfig->getIntToFloat());
 
 }
 
 
-VOID CSoundFile::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
+VOID module_renderer::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
 //-----------------------------------------------------------------------
 {
     if (gdwSoundSetup & SNDMIX_ENABLEMMX)

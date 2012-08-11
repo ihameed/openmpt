@@ -387,7 +387,7 @@ static int ConvertMidiTempo(int tempo_us, int *pTickMultiplier)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Maps a midi instrument - returns the instrument number in the file
-UINT CSoundFile::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, UINT nNote)
+UINT module_renderer::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, UINT nNote)
 //--------------------------------------------------------------------------------
 {
     modinstrument_t *pIns;
@@ -486,7 +486,7 @@ UINT CSoundFile::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, UINT n
 #define MIDIGLOBAL_XGSYSTEMON    	0x0200
 
 
-bool CSoundFile::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
 //---------------------------------------------------------------
 {
     const MIDIFILEHEADER *pmfh = (const MIDIFILEHEADER *)lpStream;
@@ -560,11 +560,11 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
     m_nDefaultSpeed = gnMidiImportSpeed;
     m_nDefaultGlobalVolume = MAX_GLOBAL_VOLUME;
     midimastervol = m_nDefaultGlobalVolume;
-    
+
 #ifdef MIDI_LOG
     Log("%d tracks, tempo = %dus, division = %04X TickFactor=%d\n", tracks, nTempoUsec, ((UINT)division) & 0xFFFF, nTickMultiplier);
 #endif
-    // Initializing 
+    // Initializing
     Order.resize(MAX_ORDERS, Order.GetInvalidPatIndex());
     memset(chnstate, 0, sizeof(chnstate));
     memset(miditracks, 0, sizeof(miditracks));
@@ -708,7 +708,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                         ptrk->ptracks += len;
                     }
                     break;
-                
+
                 //////////////////////////////////////////////////////////////////////
                 // META-events: FF.code.len.data[len]
                 case 0xFF:
@@ -1061,7 +1061,7 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                             ptrk->ptracks++;
                         }
                         break;
-                    
+
                     ////////////////////////////////
                     // E0: Pitch Bend
                     case 0xE0:
@@ -1206,5 +1206,3 @@ bool CSoundFile::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
 #endif
     return true;
 }
-
-

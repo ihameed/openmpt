@@ -51,19 +51,19 @@ protected:
     BOOL m_bInitialized;
     CModDoc *m_pModDoc;
     CModControlView *m_pParent;
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
     HWND m_hWndView;
     LONG m_nLockCount;
 
 public:
     CModControlDlg();
     virtual ~CModControlDlg();
-    
+
 public:
     VOID SetDocument(CModDoc *pModDoc, CModControlView *parent) { m_pParent = parent; m_pModDoc = pModDoc; m_pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL; }
     VOID SetViewWnd(HWND hwndView) { m_hWndView = hwndView; }
     CModDoc *GetDocument() const { return m_pModDoc; }
-    CSoundFile *GetSoundFile() const { return m_pSndFile; }
+    module_renderer *GetSoundFile() const { return m_pSndFile; }
     HWND GetViewWnd() const { return m_hWndView; }
     LRESULT SendViewMessage(UINT uMsg, LPARAM lParam=0) const;
     BOOL PostViewMessage(UINT uMsg, LPARAM lParam=0) const;
@@ -76,7 +76,7 @@ public:
 protected:
     //{{AFX_VIRTUAL(CModControlDlg)
     public:
-    
+
     afx_msg void OnEditCut() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_CUT, 0); }			//rewbs.customKeys
     afx_msg void OnEditCopy() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_COPY, 0); }		//rewbs.customKeys
     afx_msg void OnEditPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_PASTE, 0); }		//rewbs.customKeys

@@ -140,7 +140,7 @@ bool _wao_write_pattern(Json::Value &out, const MODPATTERN &pattern) {
     return true;
 }
 
-bool write_wao(CPatternContainer &pattern_list, CSoundFile &kitchen_sink) {
+bool write_wao(CPatternContainer &pattern_list, module_renderer &kitchen_sink) {
     Json::Value root;
 
     root["version"] = 1;
@@ -183,7 +183,7 @@ bool write_wao(CPatternContainer &pattern_list, CSoundFile &kitchen_sink) {
     return false;
 }
 
-bool read_wao(CPatternContainer &pattern_list, CSoundFile &kitchen_sink) {
+bool read_wao(CPatternContainer &pattern_list, module_renderer &kitchen_sink) {
     return false;
 }
 

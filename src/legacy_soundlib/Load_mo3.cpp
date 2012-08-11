@@ -21,7 +21,7 @@ typedef int (WINAPI * UNMO3_DECODE)(void **data, int *len);
 typedef void (WINAPI * UNMO3_FREE)(void *data);
 
 
-bool CSoundFile::ReadMO3(const uint8_t * lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadMO3(const uint8_t * lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------
 {
     // no valid MO3 file (magic bytes: "MO3")
@@ -71,7 +71,7 @@ bool CSoundFile::ReadMO3(const uint8_t * lpStream, const uint32_t dwMemLength)
     		{
     			/* if decoding was successful, mo3Stream and iLen will keep the new
     			   pointers now. */
-    			
+
     			if(iLen > 0)
     			{
     				bResult = true;
@@ -83,7 +83,7 @@ bool CSoundFile::ReadMO3(const uint8_t * lpStream, const uint32_t dwMemLength)
     				#endif // FASTSOUNDLIB
     				&& (!ReadMod((const uint8_t *)*mo3Stream, (uint32_t)iLen))) bResult = false;
     			}
-    			
+
     			UNMO3_Free(*mo3Stream);
     		}
     	}

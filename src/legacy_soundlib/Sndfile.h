@@ -73,13 +73,13 @@ public:
     virtual void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel) = 0;
     virtual void MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChan) = 0;
     virtual void HardAllNotesOff() = 0;    	//rewbs.VSTCompliance
-    virtual void RecalculateGain() = 0;    	
+    virtual void RecalculateGain() = 0;
     virtual bool isPlaying(UINT note, UINT midiChn, UINT trackerChn) = 0; //rewbs.VSTiNNA
     virtual bool MoveNote(UINT note, UINT midiChn, UINT sourceTrackerChn, UINT destTrackerChn) = 0; //rewbs.VSTiNNA
     virtual void SetParameter(PlugParamIndex paramindex, PlugParamValue paramvalue) = 0;
     virtual void SetZxxParameter(UINT nParam, UINT nValue) = 0;
     virtual PlugParamValue GetParameter(PlugParamIndex nIndex) = 0;
-    virtual UINT GetZxxParameter(UINT nParam) = 0; //rewbs.smoothVST 
+    virtual UINT GetZxxParameter(UINT nParam) = 0; //rewbs.smoothVST
     virtual void ModifyParameter(PlugParamIndex nIndex, PlugParamValue diff);
     virtual VstIntPtr Dispatch(VstInt32 opCode, VstInt32 index, VstIntPtr value, void *ptr, float opt) =0; //rewbs.VSTCompliance
     virtual void NotifySongPlaying(bool)=0;    //rewbs.VSTCompliance
@@ -133,7 +133,7 @@ struct SNDMIXPLUGININFO
     uint32_t dwReserved[4];    // Reserved for routing info
     CHAR szName[32];
     CHAR szLibraryName[64];    // original DLL name
-}; // Size should be 128     						
+}; // Size should be 128
 typedef SNDMIXPLUGININFO* PSNDMIXPLUGININFO;
 STATIC_ASSERT(sizeof(SNDMIXPLUGININFO) == 128);    // this is directly written to files, so the size must be correct!
 
@@ -155,7 +155,7 @@ typedef SNDMIXPLUGIN* PSNDMIXPLUGIN;
 
 //class CSoundFile;
 class CModDoc;
-typedef    BOOL (__cdecl *PMIXPLUGINCREATEPROC)(PSNDMIXPLUGIN, CSoundFile*);
+typedef    BOOL (__cdecl *PMIXPLUGINCREATEPROC)(PSNDMIXPLUGIN, module_renderer*);
 
 struct SNDMIXSONGEQ
 {
@@ -291,7 +291,7 @@ const uint8_t MSF_MIDICC_BUGEMULATION    = 2;		//IT/MPT/XM
 class CTuningCollection;
 
 //==============
-class CSoundFile
+class module_renderer
 //==============
 {
 public:
@@ -300,7 +300,7 @@ public:
 
 public: //Misc
     void ChangeModTypeTo(const MODTYPE& newType);
-    
+
     // Returns value in seconds. If given position won't be played at all, returns -1.
     // If updateVars is true, the state of various playback variables will be updated according to the playback position.
     double GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars);
@@ -319,7 +319,7 @@ public: //Misc
             return true; // S3M and MOD format don't have compatibility flags, so we will always return true
         return ((GetType() & type) && GetModFlag(MSF_COMPATIBLE_PLAY)) ? true : false;
     }
-    
+
     //Tuning-->
 public:
     static bool LoadStaticTunings();
@@ -421,7 +421,7 @@ public:    // for Editing
 
     modplug::tracker::modsample_t Samples[MAX_SAMPLES];    					// Sample Headers
     modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];    	// Instrument Headers
-    modplug::tracker::modinstrument_t m_defaultInstrument;    				// Currently only used to get default values for extented properties. 
+    modplug::tracker::modinstrument_t m_defaultInstrument;    				// Currently only used to get default values for extented properties.
 
     CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];    	// Song and sample names
     std::string song_name;
@@ -444,8 +444,8 @@ public:    // for Editing
 // -! NEW_FEATURE#0023
 
 public:
-    CSoundFile();
-    ~CSoundFile();
+    module_renderer();
+    ~module_renderer();
 
 public:
     BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength=0);
@@ -464,7 +464,7 @@ public:
 
     // Returns 1 + index of last valid pattern, zero if no such pattern exists.
     PATTERNINDEX GetNumPatterns() const;
-    INSTRUMENTINDEX GetNumInstruments() const { return m_nInstruments; } 
+    INSTRUMENTINDEX GetNumInstruments() const { return m_nInstruments; }
     SAMPLEINDEX GetNumSamples() const { return m_nSamples; }
     UINT GetCurrentPos() const;
     PATTERNINDEX GetCurrentPattern() const { return m_nPattern; }
@@ -487,8 +487,8 @@ public:
     CString GetInstrumentName(UINT nInstr) const;
     UINT GetMusicSpeed() const { return m_nMusicSpeed; }
     UINT GetMusicTempo() const { return m_nMusicTempo; }
-    
-    //Get modlength in various cases: total length, length to 
+
+    //Get modlength in various cases: total length, length to
     //specific order&row etc. Return value is in seconds.
     GetLengthType GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX ord = ORDERINDEX_INVALID, ROWINDEX row = ROWINDEX_INVALID);
 
@@ -558,7 +558,7 @@ public:
     void LoadExtendedSongProperties(const MODTYPE modtype, const uint8_t * ptr, const uint8_t * const startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
 #endif // MODPLUG_NO_FILESAVE
 
-    // Reads extended instrument properties(XM/IT/MPTM). 
+    // Reads extended instrument properties(XM/IT/MPTM).
     // If no errors occur and song extension tag is found, returns pointer to the beginning
     // of the tag, else returns NULL.
     const uint8_t * LoadExtendedInstrumentProperties(const uint8_t * const pStart, const uint8_t * const pEnd, bool* pInterpretMptMade = nullptr);
@@ -570,7 +570,7 @@ public:
     void S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const;
     void S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport = false) const;
     uint16_t ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
-    
+
     static void ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
     static void MODExx2S3MSxx(modplug::tracker::modcommand_t *m); // Convert Exx to Sxx
     static void S3MSxx2MODExx(modplug::tracker::modcommand_t *m); // Convert Sxx to Exx
@@ -584,7 +584,7 @@ public:
     void RecalculateGainForAllPlugs();
     void ResetChannels();
     UINT ReadPattern(LPVOID lpBuffer, UINT cbBuffer);
-    UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, CSoundFile *, uint32_t *, LPBYTE ps=NULL);
+    UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, module_renderer *, uint32_t *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
     UINT GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel);
     BOOL FadeSong(UINT msec);
@@ -671,7 +671,7 @@ private:
 public:
     // Write pattern effect functions
     bool TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn = CHANNELINDEX_INVALID, bool bAllowMultipleEffects = true, writeEffectAllowRowChange allowRowChange = weIgnore, bool bRetry = true);
-    
+
     // Read/Write sample functions
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
     UINT PackSample(int &sample, int next);
@@ -721,8 +721,8 @@ public:
     bool SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName);
     bool SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName);
     // I/O from another sound file
-    bool ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrcSong, UINT nSrcInstrument);
-    bool ReadSampleFromSong(SAMPLEINDEX nSample, CSoundFile *pSrcSong, UINT nSrcSample);
+    bool ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, module_renderer *pSrcSong, UINT nSrcInstrument);
+    bool ReadSampleFromSong(SAMPLEINDEX nSample, module_renderer *pSrcSong, UINT nSrcSample);
     // Period/Note functions
     UINT GetNoteFromPeriod(UINT period) const;
     UINT GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const;
@@ -815,7 +815,7 @@ private:
 public:
     // "importance" of every FX command. Table is used for importing from formats with multiple effect columns
     // and is approximately the same as in SchismTracker.
-    static uint16_t CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
+    static uint16_t module_renderer::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce);
 
@@ -832,14 +832,14 @@ inline uint32_t modplug::tracker::modsample_t::GetSampleRate(const MODTYPE type)
 {
     uint32_t nRate;
     if(type & (MOD_TYPE_MOD|MOD_TYPE_XM))
-        nRate = CSoundFile::TransposeToFrequency(RelativeTone, nFineTune);
+        nRate = module_renderer::TransposeToFrequency(RelativeTone, nFineTune);
     else
         nRate = c5_samplerate;
     return (nRate > 0) ? nRate : 8363;
 }
 
 
-inline IMixPlugin* CSoundFile::GetInstrumentPlugin(INSTRUMENTINDEX instr)
+inline IMixPlugin* module_renderer::GetInstrumentPlugin(INSTRUMENTINDEX instr)
 //-----------------------------------------------------------------------
 {
     if(instr > 0 && instr < MAX_INSTRUMENTS && Instruments[instr] && Instruments[instr]->nMixPlug && Instruments[instr]->nMixPlug <= MAX_MIXPLUGINS)

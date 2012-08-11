@@ -80,7 +80,7 @@ extern void ITUnpack16Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint3
 
 
 // Compression table
-static char UnpackTable[MAX_PACK_TABLES][16] = 
+static char UnpackTable[MAX_PACK_TABLES][16] =
 //--------------------------------------------
 {
     // CPU-generated dynamic table
@@ -131,7 +131,7 @@ uint8_t * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument_t * in
 - use only caracters used in full member name, ordered as they appear in it
 - match caracter attribute (small,capital)
 
-Example with "panning_envelope.loop_end" , "pitch_envelope.loop_end" & "volume_envelope.Values[MAX_ENVPOINTS]" members : 
+Example with "panning_envelope.loop_end" , "pitch_envelope.loop_end" & "volume_envelope.Values[MAX_ENVPOINTS]" members :
 - use 'PLE.' for panning_envelope.loop_end
 - use 'PiLE' for pitch_envelope.loop_end
 - use 'VE[.' for volume_envelope.Values[MAX_ENVPOINTS]
@@ -153,7 +153,7 @@ CWV.    [EXT]	dwCreatedWithVersion
 DCT.    		duplicate_check_type;
 dF..    		dwFlags;
 DGV.    [EXT]	nDefaultGlobalVolume
-DT..    [EXT]	nDefaultTempo;			
+DT..    [EXT]	nDefaultTempo;
 DNA.    		duplicate_note_action;
 EBIH    [EXT]	embeded instrument header tag (ITP file format)
 FM..    		default_filter_mode;
@@ -444,12 +444,12 @@ CTuning* modplug::tracker::modinstrument_t::s_DefaultTuning = 0;
 //////////////////////////////////////////////////////////
 // CSoundFile
 
-CTuningCollection* CSoundFile::s_pTuningsSharedBuiltIn(0);
-CTuningCollection* CSoundFile::s_pTuningsSharedLocal(0);
-uint8_t CSoundFile::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
+CTuningCollection* module_renderer::s_pTuningsSharedBuiltIn(0);
+CTuningCollection* module_renderer::s_pTuningsSharedLocal(0);
+uint8_t module_renderer::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
 
 #pragma warning(disable : 4355) // "'this' : used in base member initializer list"
-CSoundFile::CSoundFile() :
+module_renderer::module_renderer() :
     Patterns(*this),
     Order(*this),
     m_PlaybackEventer(*this),
@@ -509,12 +509,12 @@ CSoundFile::CSoundFile() :
 
     m_pConfig = new CSoundFilePlayConfig();
     m_pTuningsTuneSpecific = new CTuningCollection("Tune specific tunings");
-    
+
     BuildDefaultInstrument();
 }
 
 
-CSoundFile::~CSoundFile()
+module_renderer::~module_renderer()
 //-----------------------
 {
     delete m_pConfig;
@@ -523,7 +523,7 @@ CSoundFile::~CSoundFile()
 }
 
 
-BOOL CSoundFile::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength)
+BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength)
 //----------------------------------------------------------------------------
 {
     m_pModDoc = pModDoc;
@@ -763,9 +763,9 @@ BOOL CSoundFile::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwM
 
     switch(m_nTempoMode)
     {
-        case tempo_mode_alternative: 
+        case tempo_mode_alternative:
             m_nSamplesPerTick = gdwMixingFreq / m_nMusicTempo; break;
-        case tempo_mode_modern: 
+        case tempo_mode_modern:
             m_nSamplesPerTick = gdwMixingFreq * (60/m_nMusicTempo / (m_nMusicSpeed * m_nCurrentRowsPerBeat)); break;
         case tempo_mode_classic: default:
             m_nSamplesPerTick = (gdwMixingFreq * 5 * m_nTempoFactor) / (m_nMusicTempo << 8);
@@ -855,7 +855,7 @@ BOOL CSoundFile::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwM
 }
 
 
-BOOL CSoundFile::Destroy()
+BOOL module_renderer::Destroy()
 //------------------------
 {
     size_t i;
@@ -901,7 +901,7 @@ BOOL CSoundFile::Destroy()
 //////////////////////////////////////////////////////////////////////////
 // Memory Allocation
 
-LPSTR CSoundFile::AllocateSample(UINT nbytes)
+LPSTR module_renderer::AllocateSample(UINT nbytes)
 //-------------------------------------------
 {
     if (nbytes>0xFFFFFFD6)
@@ -912,7 +912,7 @@ LPSTR CSoundFile::AllocateSample(UINT nbytes)
 }
 
 
-void CSoundFile::FreeSample(LPVOID p)
+void module_renderer::FreeSample(LPVOID p)
 //-----------------------------------
 {
     if (p)
@@ -925,7 +925,7 @@ void CSoundFile::FreeSample(LPVOID p)
 //////////////////////////////////////////////////////////////////////////
 // Misc functions
 
-void CSoundFile::ResetMidiCfg()
+void module_renderer::ResetMidiCfg()
 //-----------------------------
 {
     MemsetZero(m_MidiCfg);
@@ -940,7 +940,7 @@ void CSoundFile::ResetMidiCfg()
 
 
 // Set null terminator for all MIDI macros
-void CSoundFile::SanitizeMacros()
+void module_renderer::SanitizeMacros()
 //-------------------------------
 {
     for(size_t i = 0; i < CountOf(m_MidiCfg.szMidiGlb); i++)
@@ -958,7 +958,7 @@ void CSoundFile::SanitizeMacros()
 }
 
 
-BOOL CSoundFile::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
+BOOL module_renderer::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
 //----------------------------------------------------------------------------
 {
     BOOL bReset = FALSE;
@@ -974,7 +974,7 @@ BOOL CSoundFile::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,B
 }
 
 
-BOOL CSoundFile::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL bNR,BOOL bEQ)
+BOOL module_renderer::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL bNR,BOOL bEQ)
 //------------------------------------------------------------------------------------------
 {
     uint32_t d = gdwSoundSetup & ~(SNDMIX_SURROUND | SNDMIX_REVERB | SNDMIX_MEGABASS | SNDMIX_NOISEREDUCTION | SNDMIX_EQ);
@@ -989,7 +989,7 @@ BOOL CSoundFile::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL b
 }
 
 
-BOOL CSoundFile::deprecated_SetResamplingMode(UINT nMode)
+BOOL module_renderer::deprecated_SetResamplingMode(UINT nMode)
 //--------------------------------------------
 {
     uint32_t d = gdwSoundSetup & ~(SNDMIX_NORESAMPLING|SNDMIX_SPLINESRCMODE|SNDMIX_POLYPHASESRCMODE|SNDMIX_FIRFILTERSRCMODE);
@@ -1011,7 +1011,7 @@ BOOL CSoundFile::deprecated_SetResamplingMode(UINT nMode)
 }
 
 
-void CSoundFile::SetMasterVolume(UINT nVol, bool adjustAGC)
+void module_renderer::SetMasterVolume(UINT nVol, bool adjustAGC)
 //---------------------------------------------------------
 {
     if (nVol < 1) nVol = 1;
@@ -1020,7 +1020,7 @@ void CSoundFile::SetMasterVolume(UINT nVol, bool adjustAGC)
 }
 
 
-PATTERNINDEX CSoundFile::GetNumPatterns() const
+PATTERNINDEX module_renderer::GetNumPatterns() const
 //---------------------------------------------
 {
     PATTERNINDEX max = 0;
@@ -1033,7 +1033,7 @@ PATTERNINDEX CSoundFile::GetNumPatterns() const
 }
 
 
-UINT CSoundFile::GetMaxPosition() const
+UINT module_renderer::GetMaxPosition() const
 //-------------------------------------
 {
     UINT max = 0;
@@ -1048,17 +1048,17 @@ UINT CSoundFile::GetMaxPosition() const
 }
 
 
-UINT CSoundFile::GetCurrentPos() const
+UINT module_renderer::GetCurrentPos() const
 //------------------------------------
 {
     UINT pos = 0;
 
     for (UINT i=0; i<m_nCurrentPattern; i++) if (Order[i] < Patterns.Size())
         pos += Patterns[Order[i]].GetNumRows();
-    return pos + m_nRow; 
+    return pos + m_nRow;
 }
 
-double  CSoundFile::GetCurrentBPM() const
+double  module_renderer::GetCurrentBPM() const
 //---------------------------------------
 {
     double bpm;
@@ -1072,11 +1072,11 @@ double  CSoundFile::GetCurrentBPM() const
         double samplesPerBeat = m_nSamplesPerTick * ticksPerBeat;    	//samps/beat = samps/tick * ticks/beat
         bpm =  gdwMixingFreq/samplesPerBeat * 60;    					//beats/sec  = samps/sec  / samps/beat
     }    																//beats/min  =  beats/sec * 60
-    
+
     return bpm;
 }
 
-void CSoundFile::SetCurrentPos(UINT nPos)
+void module_renderer::SetCurrentPos(UINT nPos)
 //---------------------------------------
 {
     ORDERINDEX nPattern;
@@ -1084,7 +1084,7 @@ void CSoundFile::SetCurrentPos(UINT nPos)
 
     for (CHANNELINDEX i=0; i<MAX_VIRTUAL_CHANNELS; i++)
         ResetChannelState(i, resetMask);
-    
+
     if (!nPos)
     {
         m_nGlobalVolume = m_nDefaultGlobalVolume;
@@ -1146,7 +1146,7 @@ void CSoundFile::SetCurrentPos(UINT nPos)
 
 
 
-void CSoundFile::SetCurrentOrder(ORDERINDEX nOrder)
+void module_renderer::SetCurrentOrder(ORDERINDEX nOrder)
 //-------------------------------------------------
 {
     while ((nOrder < Order.size()) && (Order[nOrder] == Order.GetIgnoreIndex())) nOrder++;
@@ -1194,14 +1194,14 @@ void CSoundFile::SetCurrentOrder(ORDERINDEX nOrder)
 }
 
 //rewbs.VSTCompliance
-void CSoundFile::SuspendPlugins()    
+void module_renderer::SuspendPlugins()
 //-------------------------------
 {
     for (UINT iPlug=0; iPlug<MAX_MIXPLUGINS; iPlug++)
     {
-        if (!m_MixPlugins[iPlug].pMixPlugin)    
+        if (!m_MixPlugins[iPlug].pMixPlugin)
             continue;  //most common branch
-        
+
         IMixPlugin *pPlugin = m_MixPlugins[iPlug].pMixPlugin;
         if (m_MixPlugins[iPlug].pMixState)
         {
@@ -1213,12 +1213,12 @@ void CSoundFile::SuspendPlugins()
     m_lTotalSampleCount=0;
 }
 
-void CSoundFile::ResumePlugins()    
+void module_renderer::ResumePlugins()
 //------------------------------
 {
     for (UINT iPlug=0; iPlug<MAX_MIXPLUGINS; iPlug++)
     {
-        if (!m_MixPlugins[iPlug].pMixPlugin)    
+        if (!m_MixPlugins[iPlug].pMixPlugin)
             continue;  //most common branch
 
         if (m_MixPlugins[iPlug].pMixState)
@@ -1233,14 +1233,14 @@ void CSoundFile::ResumePlugins()
 }
 
 
-void CSoundFile::StopAllVsti()
+void module_renderer::StopAllVsti()
 //----------------------------
 {
     for (UINT iPlug=0; iPlug<MAX_MIXPLUGINS; iPlug++)
     {
-        if (!m_MixPlugins[iPlug].pMixPlugin)    
+        if (!m_MixPlugins[iPlug].pMixPlugin)
             continue;  //most common branch
-        
+
         IMixPlugin *pPlugin = m_MixPlugins[iPlug].pMixPlugin;
         if (m_MixPlugins[iPlug].pMixState)
         {
@@ -1251,14 +1251,14 @@ void CSoundFile::StopAllVsti()
 }
 
 
-void CSoundFile::RecalculateGainForAllPlugs()
+void module_renderer::RecalculateGainForAllPlugs()
 //-------------------------------------------
 {
     for (UINT iPlug=0; iPlug<MAX_MIXPLUGINS; iPlug++)
     {
-        if (!m_MixPlugins[iPlug].pMixPlugin)    
+        if (!m_MixPlugins[iPlug].pMixPlugin)
             continue;  //most common branch
-        
+
         IMixPlugin *pPlugin = m_MixPlugins[iPlug].pMixPlugin;
         if (m_MixPlugins[iPlug].pMixState)
         {
@@ -1269,7 +1269,7 @@ void CSoundFile::RecalculateGainForAllPlugs()
 
 //end rewbs.VSTCompliance
 
-void CSoundFile::ResetChannels()
+void module_renderer::ResetChannels()
 //------------------------------
 {
     m_dwSongFlags &= ~(SONG_CPUVERYHIGH|SONG_FADINGSONG|SONG_ENDREACHED|SONG_GLOBALFADE);
@@ -1282,7 +1282,7 @@ void CSoundFile::ResetChannels()
 
 
 
-void CSoundFile::LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
+void module_renderer::LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
 //------------------------------------------------------------
 {
     if ((nPat < 0) || (nPat >= Patterns.Size()) || (!Patterns[nPat]))
@@ -1303,7 +1303,7 @@ void CSoundFile::LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
     }
 }
 //rewbs.playSongFromCursor
-void CSoundFile::DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
+void module_renderer::DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
 //----------------------------------------------------------------
 {
     if ((nPat < 0) || (nPat >= Patterns.Size()) || (!Patterns[nPat])) nPat = 0;
@@ -1319,7 +1319,7 @@ void CSoundFile::DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
     //m_nSeqOverride = 0;
 }
 
-ORDERINDEX CSoundFile::FindOrder(PATTERNINDEX nPat, UINT startFromOrder, bool direction)
+ORDERINDEX module_renderer::FindOrder(PATTERNINDEX nPat, UINT startFromOrder, bool direction)
 //--------------------------------------------------------------------------------------
 {
     ORDERINDEX foundAtOrder = ORDERINDEX_INVALID;
@@ -1344,7 +1344,7 @@ ORDERINDEX CSoundFile::FindOrder(PATTERNINDEX nPat, UINT startFromOrder, bool di
 //end rewbs.playSongFromCursor
 
 
-MODTYPE CSoundFile::GetBestSaveFormat() const
+MODTYPE module_renderer::GetBestSaveFormat() const
 //-------------------------------------------
 {
     if ((!m_nSamples) || (!m_nChannels)) return MOD_TYPE_NONE;
@@ -1361,7 +1361,7 @@ MODTYPE CSoundFile::GetBestSaveFormat() const
 }
 
 
-MODTYPE CSoundFile::GetSaveFormats() const
+MODTYPE module_renderer::GetSaveFormats() const
 //----------------------------------------
 {
     UINT n = 0;
@@ -1381,7 +1381,7 @@ MODTYPE CSoundFile::GetSaveFormats() const
 }
 
 
-LPCTSTR CSoundFile::GetSampleName(UINT nSample) const
+LPCTSTR module_renderer::GetSampleName(UINT nSample) const
 //---------------------------------------------------
 {
     if (nSample<MAX_SAMPLES) {
@@ -1392,7 +1392,7 @@ LPCTSTR CSoundFile::GetSampleName(UINT nSample) const
 }
 
 
-CString CSoundFile::GetInstrumentName(UINT nInstr) const
+CString module_renderer::GetInstrumentName(UINT nInstr) const
 //------------------------------------------------------
 {
     if ((nInstr >= MAX_INSTRUMENTS) || (!Instruments[nInstr]))
@@ -1408,7 +1408,7 @@ CString CSoundFile::GetInstrumentName(UINT nInstr) const
 }
 
 
-bool CSoundFile::InitChannel(CHANNELINDEX nChn)
+bool module_renderer::InitChannel(CHANNELINDEX nChn)
 //---------------------------------------------
 {
     if(nChn >= MAX_BASECHANNELS) return true;
@@ -1431,7 +1431,7 @@ bool CSoundFile::InitChannel(CHANNELINDEX nChn)
     return false;
 }
 
-void CSoundFile::ResetChannelState(CHANNELINDEX i, uint8_t resetMask)
+void module_renderer::ResetChannelState(CHANNELINDEX i, uint8_t resetMask)
 //----------------------------------------------------------------
 {
     if(i >= MAX_VIRTUAL_CHANNELS) return;
@@ -1503,13 +1503,13 @@ void CSoundFile::ResetChannelState(CHANNELINDEX i, uint8_t resetMask)
         Chn[i].nRestorePanOnNewNote = 0;
         Chn[i].nRestoreCutoffOnNewNote = 0;
         Chn[i].nRestoreResonanceOnNewNote = 0;
-        
+
     }
 }
 
 
 #ifndef NO_PACKING
-UINT CSoundFile::PackSample(int &sample, int next)
+UINT module_renderer::PackSample(int &sample, int next)
 //------------------------------------------------
 {
     UINT i = 0;
@@ -1526,13 +1526,13 @@ UINT CSoundFile::PackSample(int &sample, int next)
 }
 
 
-bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result/*=NULL*/)
+bool module_renderer::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result/*=NULL*/)
 //--------------------------------------------------------------------------------------------
 {
     int pos, old, oldpos, besttable = 0;
     uint32_t dwErr, dwTotal, dwResult;
     int i,j;
-    
+
     if (result) *result = 0;
     if ((!pSample) || (nLen < 1024)) return false;
     // Try packing with different tables
@@ -1570,14 +1570,14 @@ bool CSoundFile::CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t 
 
 #ifndef MODPLUG_NO_FILESAVE
 
-UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen)
+UINT module_renderer::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen)
 //-------------------------------------------------------------------------------
 {
     UINT len = 0, bufcount;
     char buffer[4096];
     signed char *pSample = (signed char *)pSmp->sample_data;
     UINT nLen = pSmp->length;
-    
+
     if ((nMaxLen) && (nLen > nMaxLen)) nLen = nMaxLen;
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
@@ -1591,7 +1591,7 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
     // 3: 4-bit ADPCM data
     case RS_ADPCM4:
         {
-            int pos; 
+            int pos;
             len = (nLen + 1) / 2;
             if(f) fwrite(CompressionTable, 16, 1, f);
             bufcount = 0;
@@ -1802,14 +1802,14 @@ UINT CSoundFile::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT 
 //    5 = signed 16-bit PCM data
 //    6 = unsigned 16-bit PCM data
 
-UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, uint32_t dwMemLength, const uint16_t format)
+UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR lpMemFile, uint32_t dwMemLength, const uint16_t format)
 //---------------------------------------------------------------------------------------------------------------
 {
     if ((!pSmp) || (pSmp->length < 2) || (!lpMemFile)) return 0;
 
     if(pSmp->length > MAX_SAMPLE_LENGTH)
         pSmp->length = MAX_SAMPLE_LENGTH;
-    
+
     UINT len = 0, mem = pSmp->length+6;
 
     pSmp->flags &= ~(CHN_16BIT|CHN_STEREO);
@@ -1849,7 +1849,7 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
             len = pSmp->length;
             if (len > dwMemLength) len = pSmp->length = dwMemLength;
             LPSTR pSample = pSmp->sample_data;
-            for (UINT j=0; j<len; j++) pSample[j] = (char)(lpMemFile[j] - 0x80); 
+            for (UINT j=0; j<len; j++) pSample[j] = (char)(lpMemFile[j] - 0x80);
         }
         break;
 
@@ -2202,7 +2202,7 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
             len = pSmp->length * 6;
             //pSmp->length tells(?) the number of frames there
             //are. One 'frame' of 1 byte(== 8 bit) mono data requires
-            //1 byte of space, while one frame of 3 byte(24 bit) 
+            //1 byte of space, while one frame of 3 byte(24 bit)
             //stereo data requires 3*2 = 6 bytes. This is(?)
             //why there is factor 6.
 
@@ -2282,7 +2282,7 @@ UINT CSoundFile::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LP
 }
 
 
-void CSoundFile::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
+void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
 //------------------------------------------------
 {
     if ((!pSmp->sample_data) || (!pSmp->length)) return;
@@ -2376,7 +2376,7 @@ void CSoundFile::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
 // Transpose <-> Frequency conversions
 
 // returns 8363*2^((transp*128+ftune)/(12*128))
-uint32_t CSoundFile::TransposeToFrequency(int transp, int ftune)
+uint32_t module_renderer::TransposeToFrequency(int transp, int ftune)
 //-----------------------------------------------------------
 {
     const float _fbase = 8363;
@@ -2411,13 +2411,13 @@ uint32_t CSoundFile::TransposeToFrequency(int transp, int ftune)
 
 
 // returns 12*128*log2(freq/8363)
-int CSoundFile::FrequencyToTranspose(uint32_t freq)
+int module_renderer::FrequencyToTranspose(uint32_t freq)
 //----------------------------------------------
 {
     const float _f1_8363 = 1.0f / 8363.0f;
     const float _factor = 128 * 12;
     LONG result;
-    
+
     if (!freq) return 0;
     _asm {
     fld _factor
@@ -2431,7 +2431,7 @@ int CSoundFile::FrequencyToTranspose(uint32_t freq)
 }
 
 
-void CSoundFile::FrequencyToTranspose(modplug::tracker::modsample_t *psmp)
+void module_renderer::FrequencyToTranspose(modplug::tracker::modsample_t *psmp)
 //----------------------------------------------------
 {
     int f2t = FrequencyToTranspose(psmp->c5_samplerate);
@@ -2448,7 +2448,7 @@ void CSoundFile::FrequencyToTranspose(modplug::tracker::modsample_t *psmp)
 }
 
 
-void CSoundFile::CheckCPUUsage(UINT nCPU)
+void module_renderer::CheckCPUUsage(UINT nCPU)
 //---------------------------------------
 {
     if (nCPU > 100) nCPU = 100;
@@ -2483,7 +2483,7 @@ void CSoundFile::CheckCPUUsage(UINT nCPU)
 // Check whether a sample is used.
 // In sample mode, the sample numbers in all patterns are checked.
 // In instrument mode, it is only checked if a sample is referenced by an instrument (but not if the sample is actually played anywhere)
-bool CSoundFile::IsSampleUsed(SAMPLEINDEX nSample) const
+bool module_renderer::IsSampleUsed(SAMPLEINDEX nSample) const
 //------------------------------------------------------
 {
     if ((!nSample) || (nSample > GetNumSamples())) return false;
@@ -2512,7 +2512,7 @@ bool CSoundFile::IsSampleUsed(SAMPLEINDEX nSample) const
 }
 
 
-bool CSoundFile::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
+bool module_renderer::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
 //-------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr > GetNumInstruments()) || (!Instruments[nInstr])) return false;
@@ -2530,7 +2530,7 @@ bool CSoundFile::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
 
 // Detect samples that are referenced by an instrument, but actually not used in a song.
 // Only works in instrument mode. Unused samples are marked as false in the vector.
-SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
+SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
 //-------------------------------------------------------------------------
 {
     sampleUsed.assign(GetNumSamples() + 1, false);
@@ -2587,7 +2587,7 @@ SAMPLEINDEX CSoundFile::DetectUnusedSamples(vector<bool> &sampleUsed) const
 
 
 // Destroy samples where keepSamples index is false. First sample is keepSamples[1]!
-SAMPLEINDEX CSoundFile::RemoveSelectedSamples(const vector<bool> &keepSamples)
+SAMPLEINDEX module_renderer::RemoveSelectedSamples(const vector<bool> &keepSamples)
 //----------------------------------------------------------------------------
 {
     if(keepSamples.empty())
@@ -2610,7 +2610,7 @@ SAMPLEINDEX CSoundFile::RemoveSelectedSamples(const vector<bool> &keepSamples)
 }
 
 
-bool CSoundFile::DestroySample(SAMPLEINDEX nSample)
+bool module_renderer::DestroySample(SAMPLEINDEX nSample)
 //-------------------------------------------------
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
@@ -2634,7 +2634,7 @@ bool CSoundFile::DestroySample(SAMPLEINDEX nSample)
 
 // -> CODE#0020
 // -> DESC="rearrange sample list"
-bool CSoundFile::MoveSample(SAMPLEINDEX from, SAMPLEINDEX to)
+bool module_renderer::MoveSample(SAMPLEINDEX from, SAMPLEINDEX to)
 //-----------------------------------------------------------
 {
     if (!from || from >= MAX_SAMPLES || !to || to >= MAX_SAMPLES) return false;
@@ -2655,23 +2655,23 @@ bool CSoundFile::MoveSample(SAMPLEINDEX from, SAMPLEINDEX to)
 #endif // FASTSOUNDLIB
 
 //rewbs.plugDocAware
-/*PSNDMIXPLUGIN CSoundFile::GetSndPlugMixPlug(IMixPlugin *pPlugin) 
+/*PSNDMIXPLUGIN CSoundFile::GetSndPlugMixPlug(IMixPlugin *pPlugin)
 {
     for (UINT iPlug=0; iPlug<MAX_MIXPLUGINS; iPlug++)
     {
         if (m_MixPlugins[iPlug].pMixPlugin == pPlugin)
             return &(m_MixPlugins[iPlug]);
     }
-    
+
     return NULL;
 }*/
 //end rewbs.plugDocAware
 
 
-void CSoundFile::BuildDefaultInstrument() 
+void module_renderer::BuildDefaultInstrument()
 //---------------------------------------
 {
-// m_defaultInstrument is currently only used to get default values for extented properties. 
+// m_defaultInstrument is currently only used to get default values for extented properties.
 // In the future we can make better use of this.
     MemsetZero(m_defaultInstrument);
     m_defaultInstrument.resampling_mode = SRCMODE_DEFAULT;
@@ -2686,18 +2686,18 @@ void CSoundFile::BuildDefaultInstrument()
     m_defaultInstrument.pitch_to_tempo_lock = 0;
     m_defaultInstrument.pTuning = m_defaultInstrument.s_DefaultTuning;
     m_defaultInstrument.nPluginVelocityHandling = PLUGIN_VELOCITYHANDLING_CHANNEL;
-    m_defaultInstrument.nPluginVolumeHandling = CSoundFile::s_DefaultPlugVolumeHandling;
+    m_defaultInstrument.nPluginVolumeHandling = module_renderer::s_DefaultPlugVolumeHandling;
 }
 
 
-void CSoundFile::DeleteStaticdata()
+void module_renderer::DeleteStaticdata()
 //---------------------------------
 {
     delete s_pTuningsSharedLocal; s_pTuningsSharedLocal = nullptr;
     delete s_pTuningsSharedBuiltIn; s_pTuningsSharedBuiltIn = nullptr;
 }
 
-bool CSoundFile::SaveStaticTunings()
+bool module_renderer::SaveStaticTunings()
 //----------------------------------
 {
     if(s_pTuningsSharedLocal->Serialize())
@@ -2714,7 +2714,7 @@ void SimpleMessageBox(const char* message, const char* title)
     MessageBox(0, message, title, MB_ICONINFORMATION);
 }
 
-bool CSoundFile::LoadStaticTunings()
+bool module_renderer::LoadStaticTunings()
 //----------------------------------
 {
     if(s_pTuningsSharedLocal || s_pTuningsSharedBuiltIn) return true;
@@ -2745,7 +2745,7 @@ bool CSoundFile::LoadStaticTunings()
         if(s_pTuningsSharedBuiltIn->AddTuning(pT))
             delete pT;
     }
-        
+
     // Load local tunings.
     CString sPath;
     sPath.Format(TEXT("%slocal_tunings%s"), CMainFrame::GetDefaultDirectory(DIR_TUNING), CTuningCollection::s_FileExtension);
@@ -2767,7 +2767,7 @@ bool CSoundFile::LoadStaticTunings()
 
 
 
-void CSoundFile::SetDefaultInstrumentValues(modplug::tracker::modinstrument_t *pIns)
+void module_renderer::SetDefaultInstrumentValues(modplug::tracker::modinstrument_t *pIns)
 //--------------------------------------------------------------
 {
     pIns->resampling_mode = m_defaultInstrument.resampling_mode;
@@ -2782,7 +2782,7 @@ void CSoundFile::SetDefaultInstrumentValues(modplug::tracker::modinstrument_t *p
 }
 
 
-long CSoundFile::GetSampleOffset() 
+long module_renderer::GetSampleOffset()
 //--------------------------------
 {
     //TODO: This is where we could inform patterns of the exact song position when playback starts.
@@ -2792,7 +2792,7 @@ long CSoundFile::GetSampleOffset()
     return 0;
 }
 
-string CSoundFile::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const INSTRUMENTINDEX inst) const
+string module_renderer::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const INSTRUMENTINDEX inst) const
 //--------------------------------------------------------------------------------------------------
 {
     if((inst >= MAX_INSTRUMENTS && inst != INSTRUMENTINDEX_INVALID) || note < 1 || note > NOTE_MAX) return "BUG";
@@ -2805,7 +2805,7 @@ string CSoundFile::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const INSTRUM
 }
 
 
-void CSoundFile::SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type)
+void module_renderer::SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type)
 //------------------------------------------------------------------------------------------
 {
     switch(type)
@@ -2833,7 +2833,7 @@ void CSoundFile::SetModSpecsPointer(const CModSpecifications*& pModSpecs, const 
     }
 }
 
-uint16_t CSoundFile::GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const
+uint16_t module_renderer::GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const
 //-----------------------------------------------------------------------------------
 {
     const MODTYPE combined = oldtype | newtype;
@@ -2849,7 +2849,7 @@ uint16_t CSoundFile::GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype
     return (1 << MSF_COMPATIBLE_PLAY);
 }
 
-void CSoundFile::ChangeModTypeTo(const MODTYPE& newType)
+void module_renderer::ChangeModTypeTo(const MODTYPE& newType)
 //------------------------------------------------------
 {
     const MODTYPE oldtype = m_nType;
@@ -2867,7 +2867,7 @@ void CSoundFile::ChangeModTypeTo(const MODTYPE& newType)
 }
 
 
-bool CSoundFile::SetTitle(const char* titleCandidate, size_t strSize)
+bool module_renderer::SetTitle(const char* titleCandidate, size_t strSize)
 //-------------------------------------------------------------------
 {
     if (song_name.compare(titleCandidate)) {
@@ -2878,7 +2878,7 @@ bool CSoundFile::SetTitle(const char* titleCandidate, size_t strSize)
 }
 
 
-double CSoundFile::GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars)
+double module_renderer::GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars)
 //---------------------------------------------------------------------------------
 {
     const GetLengthType t = GetLength(updateVars ? eAdjust : eNoAdjust, ord, row);
@@ -2887,7 +2887,7 @@ double CSoundFile::GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVa
 }
 
 
-const CModSpecifications& CSoundFile::GetModSpecifications(const MODTYPE type)
+const CModSpecifications& module_renderer::GetModSpecifications(const MODTYPE type)
 //----------------------------------------------------------------------------
 {
     const CModSpecifications* p = nullptr;
@@ -2897,7 +2897,7 @@ const CModSpecifications& CSoundFile::GetModSpecifications(const MODTYPE type)
 
 
 // Set up channel panning and volume suitable for MOD + similar files. If the current mod type is not MOD, bForceSetup has to be set to true.
-void CSoundFile::SetupMODPanning(bool bForceSetup)
+void module_renderer::SetupMODPanning(bool bForceSetup)
 //------------------------------------------------
 {
     // Setup LRRL panning, max channel volume
@@ -2915,7 +2915,7 @@ void CSoundFile::SetupMODPanning(bool bForceSetup)
 
 
 // Set or unset the IT bidi loop mode (see Fastmix.cpp for an explanation). The variable has to be static...
-void CSoundFile::SetupITBidiMode()
+void module_renderer::SetupITBidiMode()
 //--------------------------------
 {
     m_bITBidiMode = IsCompatibleMode(TRK_IMPULSETRACKER);

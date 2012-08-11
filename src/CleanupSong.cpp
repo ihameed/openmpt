@@ -18,7 +18,7 @@
 // Default checkbox state
 bool CModCleanupDlg::m_bCheckBoxes[CU_MAX_CLEANUP_OPTIONS] =
 {
-    true,	false,	true,			// patterns	
+    true,	false,	true,			// patterns
     false,	false,					// orders
     true,	false,	false,	true,	// samples
     true,	false,					// instruments
@@ -100,7 +100,7 @@ BOOL CModCleanupDlg::OnInitDialog()
     	CheckDlgButton(m_nCleanupIDtoDlgID[i], (m_bCheckBoxes[i]) ? MF_CHECKED : MF_UNCHECKED);
     }
 
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return FALSE;
 
     GetDlgItem(m_nCleanupIDtoDlgID[CU_MERGE_SEQUENCES])->EnableWindow((pSndFile->m_nType & MOD_TYPE_MPT) ? TRUE : FALSE);
@@ -177,7 +177,7 @@ void CModCleanupDlg::OnVerifyMutualExclusive()
 //--------------------------------------------
 {
     HWND hFocus = GetFocus()->m_hWnd;
-    for(int i = 0; i < CU_MAX_CLEANUP_OPTIONS; i++)	
+    for(int i = 0; i < CU_MAX_CLEANUP_OPTIONS; i++)
     {
     	// if this item is focussed, we have just (un)checked it.
     	if(hFocus == GetDlgItem(m_nCleanupIDtoDlgID[i])->m_hWnd)
@@ -190,7 +190,7 @@ void CModCleanupDlg::OnVerifyMutualExclusive()
     		if(m_nMutuallyExclusive[i] != CU_NONE)
     			CheckDlgButton(m_nCleanupIDtoDlgID[m_nMutuallyExclusive[i]], MF_UNCHECKED);
     		// find other elements which are mutually exclusive with the selected element.
-    		for(int j = 0; j < CU_MAX_CLEANUP_OPTIONS; j++)	
+    		for(int j = 0; j < CU_MAX_CLEANUP_OPTIONS; j++)
     		{
     			if(m_nMutuallyExclusive[j] == i)
     				CheckDlgButton(m_nCleanupIDtoDlgID[j], MF_UNCHECKED);
@@ -323,7 +323,7 @@ BOOL CModCleanupDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 
     if (pNMHDR->code == TTN_NEEDTEXTA)
     {
-    	//strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText, 
+    	//strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText,
     	//	strTipText.GetLength() + 1);
     	strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, ARRAYELEMCOUNT(pTTTA->szText) - 1));
     }
@@ -359,7 +359,7 @@ const OrigPatSettings defaultSettings = {false, 0, nullptr, 0, 0, 0, ""};
 bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
 //-----------------------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     const SEQUENCEINDEX maxSeqIndex = pSndFile->Order.GetNumSequences();
@@ -516,7 +516,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
 bool CModCleanupDlg::RemoveUnusedSamples()
 //----------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     CHAR s[512];
@@ -571,11 +571,11 @@ bool CModCleanupDlg::RemoveUnusedSamples()
 bool CModCleanupDlg::OptimizeSamples()
 //------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     UINT nLoopOpt = 0;
-    
+
     for (SAMPLEINDEX nSmp=1; nSmp <= pSndFile->m_nSamples; nSmp++)
     {
     	if(pSndFile->Samples[nSmp].sample_data && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
@@ -606,14 +606,14 @@ bool CModCleanupDlg::OptimizeSamples()
     	return true;
     }
 
-    return false;	
+    return false;
 }
 
 // Rearrange sample list
 bool CModCleanupDlg::RearrangeSamples()
 //-------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     if(pSndFile->m_nSamples < 2)
@@ -695,7 +695,7 @@ bool CModCleanupDlg::RearrangeSamples()
 bool CModCleanupDlg::RemoveUnusedInstruments()
 //--------------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     vector<bool> usedmap;
@@ -811,12 +811,12 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
 bool CModCleanupDlg::RemoveUnusedPlugins()
 //----------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     bool usedmap[MAX_MIXPLUGINS];
     memset(usedmap, false, sizeof(usedmap));
-    
+
     for (PLUGINDEX nPlug = 0; nPlug < MAX_MIXPLUGINS; nPlug++) {
 
     	//Is the plugin assigned to a channel?
@@ -865,7 +865,7 @@ bool CModCleanupDlg::RemoveUnusedPlugins()
 bool CModCleanupDlg::ResetVariables()
 //-----------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     //jojo.compocleanup
@@ -883,7 +883,7 @@ bool CModCleanupDlg::ResetVariables()
     pSndFile->m_nMixLevels = mixLevels_compatible;
     pSndFile->m_nTempoMode = tempo_mode_classic;
     pSndFile->m_dwSongFlags = SONG_LINEARSLIDES;
-    
+
     // Global vars
     pSndFile->m_nDefaultTempo = 125;
     pSndFile->m_nDefaultSpeed = 6;
@@ -925,7 +925,7 @@ bool CModCleanupDlg::ResetVariables()
 bool CModCleanupDlg::RemoveAllPatterns()
 //--------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     if (pSndFile->Patterns.Size() == 0) return false;
@@ -939,7 +939,7 @@ bool CModCleanupDlg::RemoveAllPatterns()
 bool CModCleanupDlg::RemoveAllOrders()
 //------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     pSndFile->Order.SetSequence(0);
@@ -957,7 +957,7 @@ bool CModCleanupDlg::RemoveAllOrders()
 bool CModCleanupDlg::RemoveAllSamples()
 //-------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     if (pSndFile->GetNumSamples() == 0) return false;
@@ -978,7 +978,7 @@ bool CModCleanupDlg::RemoveAllSamples()
 bool CModCleanupDlg::RemoveAllInstruments(bool bConfirm)
 //------------------------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     if (pSndFile->GetNumInstruments() == 0) return false;

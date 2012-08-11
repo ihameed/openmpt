@@ -304,12 +304,12 @@ class CSplitKeyboadSettings: public CDialog
 {
 protected:
     CComboBox m_CbnSplitInstrument, m_CbnSplitNote, m_CbnOctaveModifier, m_CbnSplitVolume;
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
 
 public:
     SplitKeyboardSettings *m_pOptions;
 
-    CSplitKeyboadSettings(CWnd *parent, CSoundFile *pSndFile, SplitKeyboardSettings *pOptions):CDialog(IDD_KEYBOARD_SPLIT, parent)
+    CSplitKeyboadSettings(CWnd *parent, module_renderer *pSndFile, SplitKeyboardSettings *pOptions):CDialog(IDD_KEYBOARD_SPLIT, parent)
     {
     	m_pSndFile = pSndFile;
     	m_pOptions = pOptions;

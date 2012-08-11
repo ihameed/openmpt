@@ -48,20 +48,20 @@ class CDoWaveConvert: public CDialog
 {
 public:
     PWAVEFORMATEX m_pWaveFormat;
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
     LPCSTR m_lpszFileName;
     uint32_t m_dwFileLimit, m_dwSongLimit;
     UINT m_nMaxPatterns;
     bool m_bAbort, m_bNormalize, m_bGivePlugsIdleTime;
 
 public:
-    CDoWaveConvert(CSoundFile *sndfile, LPCSTR fname, PWAVEFORMATEX pwfx, bool bNorm, CWnd *parent = NULL):CDialog(IDD_PROGRESS, parent)
-    	{ m_pSndFile = sndfile; 
-    	  m_lpszFileName = fname; 
-    	  m_pWaveFormat = pwfx; 
-    	  m_bAbort = false; 
-    	  m_bNormalize = bNorm; 
-    	  m_dwFileLimit = m_dwSongLimit = 0; 
+    CDoWaveConvert(module_renderer *sndfile, LPCSTR fname, PWAVEFORMATEX pwfx, bool bNorm, CWnd *parent = NULL):CDialog(IDD_PROGRESS, parent)
+    	{ m_pSndFile = sndfile;
+    	  m_lpszFileName = fname;
+    	  m_pWaveFormat = pwfx;
+    	  m_bAbort = false;
+    	  m_bNormalize = bNorm;
+    	  m_dwFileLimit = m_dwSongLimit = 0;
     	  m_nMaxPatterns = 0; }
     BOOL OnInitDialog();
     void OnCancel() { m_bAbort = true; }

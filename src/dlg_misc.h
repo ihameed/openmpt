@@ -1,7 +1,7 @@
 #ifndef _MPT_DLG_MISC_H_
 #define _MPT_DLG_MISC_H_
 
-class CSoundFile;
+class module_renderer;
 class CModDoc;
 class CDLSBank;
 
@@ -12,7 +12,7 @@ class CModTypeDlg: public CDialog
 public:
     CComboBox m_TypeBox, m_ChannelsBox, m_TempoModeBox, m_PlugMixBox;
     CButton m_CheckBox1, m_CheckBox2, m_CheckBox3, m_CheckBox4, m_CheckBox5, m_CheckBoxPT1x;
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
     UINT m_nChannels;
     MODTYPE m_nType;
     uint32_t m_dwSongFlags;
@@ -23,7 +23,7 @@ public:
 // -! NEW_FEATURE#0023
 
 public:
-    CModTypeDlg(CSoundFile *pSndFile, CWnd *parent):CDialog(IDD_MODDOC_MODTYPE, parent) { m_pSndFile = pSndFile; m_nType = MOD_TYPE_NONE; m_nChannels = 0; }
+    CModTypeDlg(module_renderer *pSndFile, CWnd *parent):CDialog(IDD_MODDOC_MODTYPE, parent) { m_pSndFile = pSndFile; m_nType = MOD_TYPE_NONE; m_nChannels = 0; }
     bool VerifyData();
     void UpdateDialog();
 
@@ -36,7 +36,7 @@ protected:
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     virtual void OnCancel();
-    
+
     //}}AFX_VIRTUAL
 
     BOOL OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult);
@@ -83,16 +83,16 @@ class CRemoveChannelsDlg: public CDialog
 //======================================
 {
 public:
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
     vector<bool> m_bKeepMask;
     CHANNELINDEX m_nChannels, m_nRemove;
     CListBox m_RemChansList;		//rewbs.removeChansDlgCleanup
     bool m_ShowCancel;
 
 public:
-    CRemoveChannelsDlg(CSoundFile *pSndFile, CHANNELINDEX nChns, bool showCancel = true, CWnd *parent=NULL):CDialog(IDD_REMOVECHANNELS, parent)
-    	{ m_pSndFile = pSndFile; 
-    	  m_nChannels = m_pSndFile->GetNumChannels(); 
+    CRemoveChannelsDlg(module_renderer *pSndFile, CHANNELINDEX nChns, bool showCancel = true, CWnd *parent=NULL):CDialog(IDD_REMOVECHANNELS, parent)
+    	{ m_pSndFile = pSndFile;
+    	  m_nChannels = m_pSndFile->GetNumChannels();
     	  m_nRemove = nChns;
     	  m_bKeepMask.assign(m_nChannels, true);
     	  m_ShowCancel = showCancel;
@@ -149,7 +149,7 @@ protected:
     CEdit m_EditSFx, m_EditZxx;
     CColourEdit m_EditMacroValue[NUM_MACROS], m_EditMacroType[NUM_MACROS]; //rewbs.macroGUI
     CButton m_EditMacro[NUM_MACROS], m_BtnMacroShowAll[NUM_MACROS];
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
     CModDoc *m_pModDoc;
 
     void UpdateMacroList(int macro=-1);
@@ -168,7 +168,7 @@ protected:
     afx_msg void OnPlugChanged();
     afx_msg void OnPlugParamChanged();
     afx_msg void OnCCChanged();
-    
+
     afx_msg void OnViewAllParams(UINT id);
     afx_msg void OnSetSFx(UINT id);
     DECLARE_MESSAGE_MAP()
@@ -206,7 +206,7 @@ public:
     CKeyboardControl() { m_hParent = NULL; m_nOctaves = 1; m_nSelection = -1; m_bCapture = FALSE; }
 
 public:
-    void Init(HWND parent, UINT nOctaves=1, BOOL bCursNotify=FALSE) { m_hParent = parent; 
+    void Init(HWND parent, UINT nOctaves=1, BOOL bCursNotify=FALSE) { m_hParent = parent;
     m_nOctaves = nOctaves; m_bCursorNotify = bCursNotify; memset(KeyFlags, 0, sizeof(KeyFlags)); }
     void SetFlags(UINT key, UINT flags) { if (key < NOTE_MAX) KeyFlags[key] = (uint8_t)flags; }
     UINT GetFlags(UINT key) const { return (key < NOTE_MAX) ? KeyFlags[key] : 0; }
@@ -229,12 +229,12 @@ protected:
     CKeyboardControl m_Keyboard;
     CComboBox m_CbnSample;
     CSliderCtrl m_SbOctave;
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
     UINT m_nInstrument;
     uint16_t KeyboardMap[NOTE_MAX];
 
 public:
-    CSampleMapDlg(CSoundFile *pSndFile, UINT nInstr, CWnd *parent=NULL):CDialog(IDD_EDITSAMPLEMAP, parent)
+    CSampleMapDlg(module_renderer *pSndFile, UINT nInstr, CWnd *parent=NULL):CDialog(IDD_EDITSAMPLEMAP, parent)
     	{ m_pSndFile = pSndFile; m_nInstrument = nInstr; }
 
 protected:

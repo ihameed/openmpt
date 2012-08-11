@@ -52,7 +52,7 @@ static float pow(float a, float b)
 #endif // _ASM_MATH
 
 
-uint32_t CSoundFile::CutOffToFrequency(UINT nCutOff, int flt_modifier) const
+uint32_t module_renderer::CutOffToFrequency(UINT nCutOff, int flt_modifier) const
 //-----------------------------------------------------------------------
 {
     float Fc;
@@ -70,12 +70,12 @@ uint32_t CSoundFile::CutOffToFrequency(UINT nCutOff, int flt_modifier) const
 
 
 // Simple 2-poles resonant filter
-void CSoundFile::SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool bReset, int flt_modifier) const
+void module_renderer::SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool bReset, int flt_modifier) const
 //----------------------------------------------------------------------------------------
 {
     float fs = (float)gdwMixingFreq;
     float fg, fb0, fb1, fc, dmpfac;
-    
+
 /*    if (pChn->pHeader) {
     	fc = (float)CutOffToFrequency(pChn->nCutOff, flt_modifier);
     	dmpfac = pow(10.0f, -((24.0f / 128.0f)*(float)pChn->nResonance) / 20.0f);
@@ -109,12 +109,12 @@ void CSoundFile::SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool b
     		dmpfac = pow(10.0f, -((24.0f / 128.0f)*(float)((pChn->nResonance+pChn->nResSwing)&0x7F)) / 20.0f);
     	}
 
-    	
+
 
 //    }
 
     fc *= (float)(2.0*3.14159265358/fs);
-    	
+
     float d = (1.0f-2.0f*dmpfac)* fc;
     if (d>2.0) d = 2.0;
     d = (2.0f*dmpfac - d)/fc;
@@ -138,7 +138,7 @@ void CSoundFile::SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool b
     	pChn->nFilter_B1 = fb1;
     	pChn->nFilter_HP = 0;
     }
-    
+
     if (bReset)
     {
     	pChn->nFilter_Y1 = pChn->nFilter_Y2 = 0;

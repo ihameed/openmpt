@@ -60,7 +60,7 @@ VstIntPtr VSTCALLBACK CVstPluginManager::MasterCallBack(AEffect *effect, VstInt3
 }
 
 
-BOOL CVstPluginManager::CreateMixPluginProc(PSNDMIXPLUGIN pMixPlugin, CSoundFile* pSndFile)
+BOOL CVstPluginManager::CreateMixPluginProc(PSNDMIXPLUGIN pMixPlugin, module_renderer* pSndFile)
 //-------------------------------------------------------------------------------------
 {
     CVstPluginManager *that = theApp.GetPluginManager();
@@ -77,14 +77,14 @@ CVstPluginManager::CVstPluginManager()
 {
     m_pVstHead = NULL;
     //m_bNeedIdle = FALSE; //rewbs.VSTCompliance - now member of plugin class
-    CSoundFile::gpMixPluginCreateProc = CreateMixPluginProc;
+    module_renderer::gpMixPluginCreateProc = CreateMixPluginProc;
 }
 
 
 CVstPluginManager::~CVstPluginManager()
 //-------------------------------------
 {
-    CSoundFile::gpMixPluginCreateProc = NULL;
+    module_renderer::gpMixPluginCreateProc = NULL;
     while (m_pVstHead)
     {
         PVSTPLUGINLIB p = m_pVstHead;
@@ -358,7 +358,7 @@ BOOL CVstPluginManager::RemovePlugin(PVSTPLUGINLIB pFactory)
 }
 
 
-BOOL CVstPluginManager::CreateMixPlugin(PSNDMIXPLUGIN pMixPlugin, CSoundFile* pSndFile)
+BOOL CVstPluginManager::CreateMixPlugin(PSNDMIXPLUGIN pMixPlugin, module_renderer* pSndFile)
 //-------------------------------------------------------------------------------------
 {
     UINT nMatch=0;
@@ -630,7 +630,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
 
         if (pVstPlugin)
         {
-            CSoundFile* pSndFile = pVstPlugin->GetSoundFile();
+            module_renderer* pSndFile = pVstPlugin->GetSoundFile();
 
             if (pVstPlugin->IsSongPlaying())
             {
@@ -695,7 +695,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
         //Screw it! Let's just return the tempo at this point in time (might be a bit wrong).
         if (effect->resvd1)
         {
-            CSoundFile *pSndFile = ((CVstPlugin*)effect->resvd1)->GetSoundFile();
+            module_renderer *pSndFile = ((CVstPlugin*)effect->resvd1)->GetSoundFile();
             if (pSndFile)
             {
                 return (VstInt32)(pSndFile->GetCurrentBPM() * 10000);
@@ -1172,7 +1172,7 @@ CSelectPluginDlg::CSelectPluginDlg(CModDoc *pModDoc, int nPlugSlot, CWnd *parent
     m_nPlugSlot = nPlugSlot;
 
      if (m_pModDoc) {
-        CSoundFile* pSndFile = pModDoc->GetSoundFile();
+        module_renderer* pSndFile = pModDoc->GetSoundFile();
         if (pSndFile && (0<=m_nPlugSlot && m_nPlugSlot<MAX_MIXPLUGINS)) {
             m_pPlugin = &pSndFile->m_MixPlugins[m_nPlugSlot];
         }
@@ -1644,7 +1644,7 @@ CVstPlugin::CVstPlugin(HMODULE hLibrary, PVSTPLUGINLIB pFactory, PSNDMIXPLUGIN p
 }
 
 
-void CVstPlugin::Initialize(CSoundFile* pSndFile)
+void CVstPlugin::Initialize(module_renderer* pSndFile)
 //-----------------------------------------------
 {
     if (!m_pEvList)
@@ -1726,8 +1726,8 @@ void CVstPlugin::Initialize(CSoundFile* pSndFile)
 
     }
 
-    m_nSampleRate=CSoundFile::gdwMixingFreq;
-    Dispatch(effSetSampleRate, 0, 0, NULL, CSoundFile::gdwMixingFreq);
+    m_nSampleRate=module_renderer::gdwMixingFreq;
+    Dispatch(effSetSampleRate, 0, 0, NULL, module_renderer::gdwMixingFreq);
     Dispatch(effSetBlockSize, 0, modplug::mixgraph::MIX_BUFFER_SIZE, NULL, 0.0f);
     if (m_pEffect->numPrograms > 0)    {
         Dispatch(effSetProgram, 0, 0, NULL, 0);
@@ -1781,7 +1781,7 @@ void CVstPlugin::Initialize(CSoundFile* pSndFile)
     m_pProcessFP = (m_pEffect->flags & effFlagsCanReplacing) ?  m_pEffect->processReplacing : m_pEffect->process;
 
  // issue samplerate again here, cos some plugs like it before the block size, other like it right at the end.
-    Dispatch(effSetSampleRate, 0, 0, NULL, CSoundFile::gdwMixingFreq);
+    Dispatch(effSetSampleRate, 0, 0, NULL, module_renderer::gdwMixingFreq);
 
 }
 
@@ -2189,7 +2189,7 @@ void CVstPlugin::Init(unsigned long /*nFreq*/, int /*bReset*/)
 void CVstPlugin::Resume()
 //-----------------------
 {
-    long sampleRate = CSoundFile::gdwMixingFreq;
+    long sampleRate = module_renderer::gdwMixingFreq;
 
     try {
         //reset some stuf

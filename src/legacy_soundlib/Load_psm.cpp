@@ -129,7 +129,7 @@ inline uint8_t convert_psm_porta(uint8_t param, bool bNewFormat)
     return ((bNewFormat) ? (param) : ((param < 4) ? (param | 0xF0) : (param >> 2)));
 }
 
-bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;
@@ -372,7 +372,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLen
 
                                     dwSettingsOffset += 3;
                                     break;
-                                
+
                                 default: // How the hell should this happen? I've listened through almost all existing (original) PSM files. :)
                                     // anyway, in such cases, we have to quit as we don't know how big the chunk really is.
                                     return false;
@@ -412,7 +412,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLen
                             }
                         }
                         break;
-                    
+
                     case PSMCHUNKID_PATT: // PATT - Pattern list
                         // We don't really need this.
                         break;
@@ -535,7 +535,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLen
         {
             if(dwPatternOffset + 2 > dwMemLength) return false;
             uint16_t rowSize = LittleEndianW(*(uint16_t *)(lpStream + dwPatternOffset));
-            
+
             uint32_t dwRowOffset = dwPatternOffset + 2;
 
             while(dwRowOffset < dwPatternOffset + rowSize)
@@ -628,7 +628,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLen
                     case 0x0E: // portamento down
                         command = CMD_PORTAMENTODOWN;
                         param = convert_psm_porta(param, bNewFormat);
-                        break;    				
+                        break;
                     case 0x0F: // tone portamento
                         command = CMD_TONEPORTAMENTO;
                         if(!bNewFormat) param >>= 2;
@@ -644,7 +644,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLen
                     case 0x12: // tone portamento + volslide down
                         command = CMD_TONEPORTAVOL;
                         param = (param >> 4) & 0x0F;
-                        break;    					
+                        break;
 
                     // Vibrato
                     case 0x15: // vibrato
@@ -660,7 +660,7 @@ bool CSoundFile::ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLen
                         break;
                     case 0x18: // vibrato + volslide down
                         command = CMD_VIBRATOVOL;
-                        break;    				
+                        break;
 
                     // Tremolo
                     case 0x1F: // tremolo
@@ -866,7 +866,7 @@ struct PSM16PATHEADER
 #pragma pack()
 
 
-bool CSoundFile::ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;

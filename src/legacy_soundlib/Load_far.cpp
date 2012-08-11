@@ -1,5 +1,5 @@
 /*
- * This source code is public domain. 
+ * This source code is public domain.
  *
  * Copied to OpenMPT from libmodplug.
  *
@@ -58,7 +58,7 @@ typedef struct FARSAMPLE
 #pragma pack()
 
 
-bool CSoundFile::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     if(dwMemLength < sizeof(FARHEADER1))
@@ -114,7 +114,7 @@ bool CSoundFile::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLength)
 
     Order.ReadAsByte(pmh2->orders, pmh2->snglen, sizeof(pmh2->orders));
     m_nRestartPos = pmh2->loopto;
-    // Reading Patterns    
+    // Reading Patterns
     dwMemPos += headerlen - (869 + pmh1->stlen);
     if (dwMemPos >= dwMemLength) return true;
 
@@ -272,4 +272,3 @@ bool CSoundFile::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLength)
     }
     return true;
 }
-

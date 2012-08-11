@@ -13,7 +13,7 @@ extern uint8_t ImpulseTrackerPortaVolCmd[16];
 
 
 // Convert an Exx command (MOD) to Sxx command (S3M)
-void CSoundFile::MODExx2S3MSxx(modplug::tracker::modcommand_t *m)
+void module_renderer::MODExx2S3MSxx(modplug::tracker::modcommand_t *m)
 //-------------------------------------------
 {
     if(m->command != CMD_MODCMDEX) return;
@@ -38,7 +38,7 @@ void CSoundFile::MODExx2S3MSxx(modplug::tracker::modcommand_t *m)
 
 
 // Convert an Sxx command (S3M) to Exx command (MOD)
-void CSoundFile::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
+void module_renderer::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
 //-------------------------------------------
 {
     if(m->command != CMD_S3MCMDEX) return;
@@ -49,8 +49,8 @@ void CSoundFile::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
     case 0x20:	m->param = (m->param & 0x0F) | 0x50; break;
     case 0x30:	m->param = (m->param & 0x0F) | 0x40; break;
     case 0x40:	m->param = (m->param & 0x0F) | 0x70; break;
-    case 0x50:	
-    case 0x60:	
+    case 0x50:
+    case 0x60:
     case 0x90:
     case 0xA0:	m->command = CMD_XFINEPORTAUPDOWN; break;
     case 0xB0:	m->param = (m->param & 0x0F) | 0x60; break;
@@ -60,8 +60,8 @@ void CSoundFile::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
 }
 
 
-// Convert a mod command from one format to another. 
-void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType)
+// Convert a mod command from one format to another.
+void module_renderer::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType)
 //--------------------------------------------------------------------------------
 {
     // helper variables
@@ -71,10 +71,10 @@ void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldT
     	oldTypeIsS3M_IT_MPT = (oldTypeIsS3M || oldTypeIsIT || oldTypeIsMPT),
     	oldTypeIsIT_MPT = (oldTypeIsIT || oldTypeIsMPT);
 
-    const bool newTypeIsMOD = (nNewType == MOD_TYPE_MOD), newTypeIsXM =  (nNewType == MOD_TYPE_XM), 
+    const bool newTypeIsMOD = (nNewType == MOD_TYPE_MOD), newTypeIsXM =  (nNewType == MOD_TYPE_XM),
     	newTypeIsS3M = (nNewType == MOD_TYPE_S3M), newTypeIsIT = (nNewType == MOD_TYPE_IT),
-    	newTypeIsMPT = (nNewType == MOD_TYPE_MPT), newTypeIsMOD_XM = (newTypeIsMOD || newTypeIsXM), 
-    	newTypeIsS3M_IT_MPT = (newTypeIsS3M || newTypeIsIT || newTypeIsMPT), 
+    	newTypeIsMPT = (nNewType == MOD_TYPE_MPT), newTypeIsMOD_XM = (newTypeIsMOD || newTypeIsXM),
+    	newTypeIsS3M_IT_MPT = (newTypeIsS3M || newTypeIsIT || newTypeIsMPT),
     	newTypeIsIT_MPT = (newTypeIsIT || newTypeIsMPT);
 
     //////////////////////////
@@ -605,13 +605,13 @@ void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldT
     	}
     } // End if (newTypeIsIT)
 
-    if(!CSoundFile::GetModSpecifications(nNewType).HasNote(m->note))
+    if(!module_renderer::GetModSpecifications(nNewType).HasNote(m->note))
     	m->note = NOTE_NONE;
 
     // ensure the commands really exist in this format
-    if(CSoundFile::GetModSpecifications(nNewType).HasCommand(m->command) == false)
+    if(module_renderer::GetModSpecifications(nNewType).HasCommand(m->command) == false)
     	m->command = CMD_NONE;
-    if(CSoundFile::GetModSpecifications(nNewType).HasVolCommand(m->volcmd) == false)
+    if(module_renderer::GetModSpecifications(nNewType).HasVolCommand(m->volcmd) == false)
     	m->volcmd = CMD_NONE;
 
 }
@@ -619,7 +619,7 @@ void CSoundFile::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldT
 
 // "importance" of every FX command. Table is used for importing from formats with multiple effect colums
 // and is approximately the same as in SchismTracker.
-uint16_t CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd)
+uint16_t module_renderer::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd)
 //---------------------------------------------------------
 {
     switch(cmd)
@@ -677,8 +677,8 @@ uint16_t CSoundFile::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd
     	  allowRowChange - Indicates whether it is allowed to use the next or previous row if there's no space for the effect
     	  bRetry - For internal use only. Indicates whether an effect "rewrite" has already taken place (for recursive calls)
    NOTE: Effect remapping is only implemented for a few basic effects.
-*/ 
-bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
+*/
+bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     // First, reject invalid parameters.
@@ -832,7 +832,7 @@ bool CSoundFile::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffec
 // Some commands can only be converted by losing some precision.
 // If moving the command into the volume column is more important than accuracy, use bForce = true.
 // (Code translated from SchismTracker and mainly supposed to be used with loaders ported from this tracker)
-bool CSoundFile::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
+bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
 //----------------------------------------------------------------
 {
     switch (*e)

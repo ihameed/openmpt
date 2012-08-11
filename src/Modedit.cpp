@@ -65,7 +65,7 @@ bool CModDoc::ChangeNumChannels(CHANNELINDEX nNewChannels, const bool showCancel
     		nChnToRemove = 0;
     		nFound = GetNumChannels();
     	}
-    	
+
     	CRemoveChannelsDlg rem(&m_SndFile, nChnToRemove, showCancelInRemoveDlg);
     	CheckUsedChannels(rem.m_bKeepMask, nFound);
     	if (rem.DoModal() != IDOK) return false;
@@ -106,7 +106,7 @@ bool CModDoc::RemoveChannels(const vector<bool> &keepMask)
     }
     if(nRemainingChannels == GetNumChannels() || nRemainingChannels < m_SndFile.GetModSpecifications().channelsMin)
     {
-    	CString str;	
+    	CString str;
     	if(nRemainingChannels == GetNumChannels()) str.Format("No channels chosen to be removed.");
     	else str.Format("No removal done - channel number is already at minimum.");
     	CMainFrame::GetMainFrame()->MessageBox(str, "Remove channel", MB_OK | MB_ICONINFORMATION);
@@ -148,7 +148,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 
     const CHANNELINDEX nRemainingChannels = static_cast<CHANNELINDEX>(newOrder.size());
 
-    if(nRemainingChannels > m_SndFile.GetModSpecifications().channelsMax || nRemainingChannels < m_SndFile.GetModSpecifications().channelsMin) 	
+    if(nRemainingChannels > m_SndFile.GetModSpecifications().channelsMax || nRemainingChannels < m_SndFile.GetModSpecifications().channelsMin)
     {
     	CString str;
     	str.Format(GetStrI18N(_TEXT("Can't apply change: Number of channels should be within [%u,%u]")), m_SndFile.GetModSpecifications().channelsMin, m_SndFile.GetModSpecifications().channelsMax);
@@ -164,7 +164,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     }
 
     BEGIN_CRITICAL();
-    for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++) 
+    for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
     {
     	if(m_SndFile.Patterns[nPat])
     	{
@@ -199,7 +199,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     	}
     }
 
-    modplug::tracker::modchannel_t chns[MAX_BASECHANNELS];		
+    modplug::tracker::modchannel_t chns[MAX_BASECHANNELS];
     modplug::tracker::MODCHANNELSETTINGS settings[MAX_BASECHANNELS];
     vector<UINT> recordStates(GetNumChannels(), 0);
     vector<bool> chnMutePendings(GetNumChannels(), false);
@@ -255,7 +255,7 @@ bool CModDoc::MoveChannel(CHANNELINDEX chnFrom, CHANNELINDEX chnTo)
     if(chnFrom == chnTo) return false;
     if(chnFrom >= GetNumChannels() || chnTo >= GetNumChannels())
     {
-    	CString str = "Error: Bad move indexes in CSoundFile::MoveChannel(...)";	
+    	CString str = "Error: Bad move indexes in CSoundFile::MoveChannel(...)";
     	CMainFrame::GetMainFrame()->MessageBox(str , "MoveChannel(...)", MB_OK | MB_ICONINFORMATION);
     	return true;
     }
@@ -297,7 +297,7 @@ bool CModDoc::MoveChannel(CHANNELINDEX chnFrom, CHANNELINDEX chnTo)
 struct ConvertInstrumentsToSamplesInPatterns
 //==========================================
 {
-    ConvertInstrumentsToSamplesInPatterns(CSoundFile *pSndFile)
+    ConvertInstrumentsToSamplesInPatterns(module_renderer *pSndFile)
     {
     	this->pSndFile = pSndFile;
     }
@@ -325,7 +325,7 @@ struct ConvertInstrumentsToSamplesInPatterns
     	}
     }
 
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
 };
 
 
@@ -347,10 +347,10 @@ UINT CModDoc::RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS])
     UINT nRemoved=0;
     for (PLUGINDEX nPlug=0; nPlug<MAX_MIXPLUGINS; nPlug++)
     {
-    	SNDMIXPLUGIN* pPlug = &m_SndFile.m_MixPlugins[nPlug];		
+    	SNDMIXPLUGIN* pPlug = &m_SndFile.m_MixPlugins[nPlug];
     	if (keepMask[nPlug] || !pPlug)
     	{
-    		Log("Keeping mixplug addess (%d): %X\n", nPlug, &(pPlug->pMixPlugin));	
+    		Log("Keeping mixplug addess (%d): %X\n", nPlug, &(pPlug->pMixPlugin));
     		continue;
     	}
 
@@ -372,7 +372,7 @@ UINT CModDoc::RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS])
     	MemsetZero(pPlug->Info);
     	Log("Zeroing range (%d) %X - %X\n", nPlug, &(pPlug->Info),  &(pPlug->Info)+sizeof(SNDMIXPLUGININFO));
     	pPlug->nPluginDataSize=0;
-    	pPlug->fDryRatio=0;	
+    	pPlug->fDryRatio=0;
     	pPlug->defaultProgram=0;
     	nRemoved++;
     }
@@ -988,7 +988,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     						bPrepareUndo = false;
     						bFirstUndo = false;
     					}
-    					
+
     					// ITSyle mixpaste requires that we keep a copy of the thing we are about to paste on
     					// so that we can refer back to check if there was anything in e.g. the note column before we pasted.
     					const modplug::tracker::modcommand_t origModCmd = m[col];
@@ -1004,7 +1004,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     					}
 
     					// Note
-    					if (s[0] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.note==0) || 
+    					if (s[0] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.note==0) ||
     											     (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
     					{
     						m[col].note = NOTE_NONE;
@@ -1029,7 +1029,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     						}
     					}
     					// Instrument
-    					if (s[3] > ' ' && (!doMixPaste || ( (!doITStyleMix && origModCmd.instr==0) || 
+    					if (s[3] > ' ' && (!doMixPaste || ( (!doITStyleMix && origModCmd.instr==0) ||
     											     (doITStyleMix  && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0) ) ))
 
     					{
@@ -1039,7 +1039,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     						} else m[col].instr = 0;
     					}
     					// Volume
-    					if (s[5] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.volcmd==0) || 
+    					if (s[5] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.volcmd==0) ||
     											     (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
 
     					{
@@ -1067,7 +1067,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     							}
     						} else m[col].volcmd = m[col].vol = 0;
     					}
-    					
+
     					if (m[col].IsPcNote())
     					{
     						if (s[8] != '.' && s[8] > ' ')
@@ -1080,7 +1080,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     					}
     					else
     					{
-    						if (s[8] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.command==0) || 
+    						if (s[8] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.command==0) ||
     													(doITStyleMix && origModCmd.command==0 && origModCmd.param==0))))
     						{
     							m[col].command = 0;
@@ -1094,7 +1094,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     							}
     						}
     						// Effect value
-    						if (s[9] > ' ' && (!doMixPaste || ((!doITStyleMix && (origModCmd.command == CMD_NONE || origModCmd.param == 0)) || 
+    						if (s[9] > ' ' && (!doMixPaste || ((!doITStyleMix && (origModCmd.command == CMD_NONE || origModCmd.param == 0)) ||
     													(doITStyleMix && origModCmd.command == CMD_NONE && origModCmd.param == 0))))
     						{
     							m[col].param = 0;
@@ -1165,7 +1165,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     					bPrepareUndo = true;
     				}
     			}
-    		
+
     		}
     	PasteDone:
     		GlobalUnlock(hCpy);
@@ -1201,7 +1201,7 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     BeginWaitCursor();
     pIns = m_SndFile.Instruments[nIns];
     if(pIns == nullptr) return false;
-    
+
     modplug::tracker::modenvelope_t *pEnv = nullptr;
 
     switch(nEnv)

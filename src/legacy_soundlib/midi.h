@@ -34,7 +34,7 @@ class CMIDIMappingDirective
 public:
     CMIDIMappingDirective() :
       m_Active(true), m_CaptureMIDI(false), m_AllowPatternEdit(true), m_AnyChannel(true),
-    	  m_ChnEvent(0xB << 4), m_MIDIByte1(0), m_PluginIndex(1), m_Parameter(0) 
+    	  m_ChnEvent(0xB << 4), m_MIDIByte1(0), m_PluginIndex(1), m_Parameter(0)
       {}
 
     void SetActive(const bool b) {m_Active = b;}
@@ -51,14 +51,14 @@ public:
     //Note: In these functions, channel value is in range [1,16],
     //GetChannel() returns 0 on 'any channel'.
     void SetChannel(const int c){if(c < 1 || c > 16) m_AnyChannel = true; else {m_ChnEvent &= ~0xF; m_ChnEvent |= c-1; m_AnyChannel = false;}}
-    uint8_t GetChannel() const {return (m_AnyChannel) ? 0 : (m_ChnEvent & 0xF) + 1;} 
+    uint8_t GetChannel() const {return (m_AnyChannel) ? 0 : (m_ChnEvent & 0xF) + 1;}
 
     void SetEvent(uint8_t e) {if(e > 15) e = 15; m_ChnEvent &= ~0xF0; m_ChnEvent |= (e << 4);}
     uint8_t GetEvent() const {return static_cast<uint8_t>((m_ChnEvent >> 4) & 0xF);}
 
     void SetController(int controller) {if(controller > 127) controller = 127; m_MIDIByte1 = static_cast<uint8_t>(controller);}
     uint8_t GetController() const {return m_MIDIByte1;}
-    
+
     //Note: Plug index starts from 1.
     void SetPlugIndex(const int i) {m_PluginIndex = static_cast<uint8_t>(i);}
     uint8_t GetPlugIndex() const {return m_PluginIndex;}
@@ -85,7 +85,7 @@ private:
     uint32_t m_Parameter;
 };
 
-class CSoundFile;
+class module_renderer;
 inline bool operator<(const CMIDIMappingDirective& a, const CMIDIMappingDirective& b) {return a.GetController() < b.GetController();}
 inline bool operator<(const CMIDIMappingDirective& d, const uint8_t& ctrlVal) {return d.GetController() < ctrlVal;}
 inline bool operator<(const uint8_t& ctrlVal, const CMIDIMappingDirective& d) {return ctrlVal < d.GetController();}
@@ -96,7 +96,7 @@ class CMIDIMapper
 {
 public:
     typedef vector<CMIDIMappingDirective>::const_iterator const_iterator;
-    CMIDIMapper(CSoundFile& sndfile) : m_rSndFile(sndfile) {}
+    CMIDIMapper(module_renderer& sndfile) : m_rSndFile(sndfile) {}
 
     //If mapping found:
     //	-mappedIndex is set to mapped value(plug index)
@@ -133,7 +133,7 @@ private:
     void Sort() {std::stable_sort(m_Directives.begin(), m_Directives.end());}
 
 private:
-    CSoundFile& m_rSndFile;
+    module_renderer& m_rSndFile;
     vector<CMIDIMappingDirective> m_Directives;
 };
 

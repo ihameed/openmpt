@@ -100,7 +100,7 @@ typedef struct tagMMD0SAMPLE
 typedef struct tagMMDSAMPLEHEADER
 {
     uint32_t length;     // length of *one* *unpacked* channel in *bytes*
-    uint16_t type;   
+    uint16_t type;
                 // if non-negative
                     // bits 0-3 reserved for multi-octave instruments, not supported on the PC
                     // 0x10: 16 bit (otherwise 8 bit)
@@ -172,7 +172,7 @@ typedef struct tagMMD2SONGHEADER
     uint8_t numsamples;    // # of samples (max 63)
 } MMD2SONGHEADER;
 
-// For MMD0 the note information is held in 3 bytes, byte0, byte1, byte2.  For reference we 
+// For MMD0 the note information is held in 3 bytes, byte0, byte1, byte2.  For reference we
 // number the bits in each byte 0..7, where 0 is the low bit.
 // The note is held as bits 5..0 of byte0
 // The instrument is encoded in 6 bits,  bits 7 and 6 of byte0 and bits 7,6,5,4 of byte1
@@ -245,7 +245,7 @@ typedef struct tagMMD0EXP
     uint32_t annotxt;
     uint32_t annolen;
     uint32_t iinfo;    		// Instrument names
-    uint16_t i_ext_entries;    
+    uint16_t i_ext_entries;
     uint16_t i_ext_entrsz;
     uint32_t jumpmask;
     uint32_t rgbtable;
@@ -474,7 +474,7 @@ static void MedConvert(modplug::tracker::modcommand_t *p, const MMD0SONGHEADER *
 }
 
 
-bool CSoundFile::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     const MEDMODULEHEADER *pmmh;
@@ -659,7 +659,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLength)
                 nSections = 0;
             }
             UINT pseq = 0;
-            
+
             if ((playseqtable) && (playseqtable < dwMemLength) && (nplayseq*4 < dwMemLength - playseqtable))
             {
                 pseq = BigEndian(((LPDWORD)(lpStream+playseqtable))[nplayseq]);
@@ -702,7 +702,7 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLength)
         UINT annolen = BigEndian(pmex->annolen);
         annolen = min(annolen, MED_MAX_COMMENT_LENGTH); //Thanks to Luigi Auriemma for pointing out an overflow risk
         if ((annotxt) && (annolen) && (annolen <= dwMemLength) && (annotxt <= dwMemLength - annolen) )
-        { 
+        {
             ReadMessage(lpStream + annotxt, annolen - 1, leAutodetect);
         }
         // Song Name
@@ -913,5 +913,3 @@ bool CSoundFile::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLength)
     SetupMODPanning(true);
     return true;
 }
-
-

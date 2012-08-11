@@ -58,8 +58,8 @@ struct MODTREEDOCINFO
     HTREEITEM tiEffects[MAX_MIXPLUGINS];
     bool bIsSamplePlaying[MAX_SAMPLES];
     bool bIsInstrPlaying[MAX_INSTRUMENTS];
-    
-    MODTREEDOCINFO(const CSoundFile* const pSndFile)
+
+    MODTREEDOCINFO(const module_renderer* const pSndFile)
     {
     	pModDoc = NULL;
     	nSeqSel = SEQUENCEINDEX_INVALID;
@@ -110,7 +110,7 @@ class CModTree: public CTreeCtrl
 //==============================
 {
 protected:
-    CSoundFile m_SongFile;
+    module_renderer m_SongFile;
     CModTreeDropTarget m_DropTarget;
     CModTree *m_pDataTree;
     uint32_t m_dwStatus;

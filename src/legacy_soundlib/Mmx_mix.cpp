@@ -19,8 +19,8 @@
 // defined at the bottom of the file. #define's are used to isolate
 // the different flavours of functionality:
 // ENABLE_MMX, ENABLE_AMDNOW, ENABLE_SSE flags must be set to
-// to compile the optimized sections of the code. In both cases the 
-// X86_xxxxxx functions will compile. 
+// to compile the optimized sections of the code. In both cases the
+// X86_xxxxxx functions will compile.
 //
 ////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
@@ -61,7 +61,7 @@ static unsigned int QueryProcessorExtensions()
 
     if (!bMMXChecked)
     {
-        _asm 
+        _asm
         {
             pushfd                      // Store original EFLAGS on stack
             pop     eax                 // Get original EFLAGS in EAX
@@ -110,7 +110,7 @@ Done:
 }
 
 
-uint32_t CSoundFile::InitSysInfo()
+uint32_t module_renderer::InitSysInfo()
 //-----------------------------
 {
     OSVERSIONINFO osvi;

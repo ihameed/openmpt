@@ -124,7 +124,7 @@ typedef struct _MT2GROUP
 #pragma pack()
 
 
-static void ConvertMT2Command(CSoundFile *that, modplug::tracker::modcommand_t *m, MT2COMMAND *p)
+static void ConvertMT2Command(module_renderer *that, modplug::tracker::modcommand_t *m, MT2COMMAND *p)
 //---------------------------------------------------------------------------
 {
     // Note
@@ -181,7 +181,7 @@ static void ConvertMT2Command(CSoundFile *that, modplug::tracker::modcommand_t *
 }
 
 
-bool CSoundFile::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
 //-----------------------------------------------------------
 {
     MT2FILEHEADER *pfh = (MT2FILEHEADER *)lpStream;
@@ -465,7 +465,7 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
                 #endif
 
                     switch(iEnv)
-                    {    				
+                    {
                     case 0: // Volume Envelope
                         pEnv = &pIns->volume_envelope;
                         break;
@@ -590,13 +590,13 @@ bool CSoundFile::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
         modsample_t *psmp = &Samples[iData+1];
         if (!(pms->nFlags & 5))
         {
-            if (psmp->length > 0) 
+            if (psmp->length > 0)
             {
             #ifdef MT2DEBUG
                 Log("  Reading sample #%d at offset 0x%04X (len=%d)\n", iData+1, dwMemPos, psmp->length);
             #endif
                 UINT rsflags;
-                
+
                 if (pms->nChannels == 2)
                     rsflags = (psmp->flags & CHN_16BIT) ? RS_STPCM16D : RS_STPCM8D;
                 else

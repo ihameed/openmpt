@@ -15,7 +15,7 @@ class CVstPlugin;
 class CVstEditor;
 class Cfxp;    			//rewbs.VSTpresets
 class CModDoc;
-class CSoundFile;
+class module_renderer;
 
 enum {
     effBuzzGetNumCommands=0x1000,
@@ -62,7 +62,7 @@ public:
     UINT m_nInputs, m_nOutputs;
 
 protected:
-    enum {VSTEVENT_QUEUE_LEN=256}; 
+    enum {VSTEVENT_QUEUE_LEN=256};
 
     ULONG m_nRefCount;
     CVstPlugin *m_pNext, *m_pPrev;
@@ -87,7 +87,7 @@ protected:
     float dummyBuffer_[modplug::mixgraph::MIX_BUFFER_SIZE + 2];
     VstMidiEvent m_ev_queue[VSTEVENT_QUEUE_LEN];
     CModDoc* m_pModDoc;			 //rewbs.plugDocAware
-    CSoundFile* m_pSndFile;			 //rewbs.plugDocAware
+    module_renderer* m_pSndFile;			 //rewbs.plugDocAware
 //    PSNDMIXPLUGIN m_pSndMixPlugin;	 //rewbs.plugDocAware
     UINT m_nPreviousMidiChan; //rewbs.VSTCompliance
     bool m_bSongPlaying; //rewbs.VSTCompliance
@@ -102,7 +102,7 @@ protected:
 public:
     CVstPlugin(HINSTANCE hLibrary, PVSTPLUGINLIB pFactory, PSNDMIXPLUGIN pMixPlugin, AEffect *pEffect);
     virtual ~CVstPlugin();
-    void Initialize(CSoundFile* pSndFile);
+    void Initialize(module_renderer* pSndFile);
 
 public:
     PVSTPLUGINLIB GetPluginFactory() const { return m_pFactory; }
@@ -120,7 +120,7 @@ public:
     bool RandomizeParams(VstInt32 minParam = 0, VstInt32 maxParam = 0); 	//rewbs.VSTpresets
     bool isModified() {return m_bModified;}
     inline CModDoc* GetModDoc() {return m_pModDoc;}
-    inline CSoundFile* GetSoundFile() {return m_pSndFile;}
+    inline module_renderer* GetSoundFile() {return m_pSndFile;}
     UINT FindSlot();
     void SetSlot(UINT slot);
     UINT GetSlot();
@@ -165,7 +165,7 @@ public:
     int AddRef() { return ++m_nRefCount; }
     int Release();
     void SaveAllParameters();
-    void RestoreAllParameters(long nProg=-1); //rewbs.plugDefaultProgram - added param 
+    void RestoreAllParameters(long nProg=-1); //rewbs.plugDefaultProgram - added param
     void ProcessVSTEvents(); //rewbs.VSTiNoteHoldonStopFix
     void ClearVSTEvents(); //rewbs.VSTiNoteHoldonStopFix
     void RecalculateGain();
@@ -196,7 +196,7 @@ public:
     VstSpeakerArrangement speakerArrangement;  //rewbs.VSTcompliance
 
 private:
-    short getMIDI14bitValueFromShort(short value); 
+    short getMIDI14bitValueFromShort(short value);
     void MidiPitchBend(UINT nMidiCh, short pitchBendPos);
 #else // case: NO_VST
 public:
@@ -241,7 +241,7 @@ public:
     BOOL IsValidPlugin(const VSTPLUGINLIB *pLib);
     PVSTPLUGINLIB AddPlugin(LPCSTR pszDllPath, BOOL bCache=TRUE, const bool checkFileExistence = false, CString* const errStr = 0);
     BOOL RemovePlugin(PVSTPLUGINLIB);
-    BOOL CreateMixPlugin(PSNDMIXPLUGIN, CSoundFile*);
+    BOOL CreateMixPlugin(PSNDMIXPLUGIN, module_renderer*);
     VOID OnIdle();
     static void ReportPlugException(LPCSTR format,...);
 
@@ -249,7 +249,7 @@ protected:
     VstIntPtr VstCallback(AEffect *effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void *ptr, float opt);
     VstIntPtr VstFileSelector(const bool destructor, VstFileSelect *pFileSel, const AEffect *effect);
     static VstIntPtr VSTCALLBACK MasterCallBack(AEffect *effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void *ptr, float opt);
-    static BOOL __cdecl CreateMixPluginProc(PSNDMIXPLUGIN, CSoundFile*);
+    static BOOL __cdecl CreateMixPluginProc(PSNDMIXPLUGIN, module_renderer*);
     VstTimeInfo timeInfo;	//rewbs.VSTcompliance
 
 public:

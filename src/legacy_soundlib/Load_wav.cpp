@@ -18,7 +18,7 @@
 /////////////////////////////////////////////////////////////
 // WAV file support
 
-bool CSoundFile::ReadWav(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadWav(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;
@@ -158,7 +158,7 @@ typedef struct IMAADPCMBLOCK
 
 #pragma pack()
 
-static const int gIMAUnpackTable[90] = 
+static const int gIMAUnpackTable[90] =
 {
   7,     8,     9,    10,    11,    12,    13,    14,
   16,    17,    19,    21,    23,    25,    28,    31,
@@ -219,6 +219,3 @@ BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, uint32_t dwBy
     }
     return true;
 }
-
-
-

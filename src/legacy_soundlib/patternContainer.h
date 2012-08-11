@@ -4,7 +4,7 @@
 #include "pattern.h"
 #include "Snd_defs.h"
 
-class CSoundFile;
+class module_renderer;
 typedef CPattern MODPATTERN;
 
 //=====================
@@ -26,7 +26,7 @@ public:
 
 //BEGIN: INTERFACE METHODS
 public:
-    CPatternContainer(CSoundFile& sndFile) : m_rSndFile(sndFile) {m_Patterns.assign(MAX_PATTERNS, MODPATTERN(*this));}
+    CPatternContainer(module_renderer& sndFile) : m_rSndFile(sndFile) {m_Patterns.assign(MAX_PATTERNS, MODPATTERN(*this));}
 
     // Clears existing patterns and resizes array to default size.
     void Init();
@@ -35,11 +35,11 @@ public:
     void ClearPatterns();
     // Delete all patterns.
     void DestroyPatterns();
-    
+
     //Insert (default)pattern to given position. If pattern already exists at that position,
     //ignoring request. Returns true on failure, false otherwise.
     bool Insert(const PATTERNINDEX index, const ROWINDEX rows);
-    
+
     //Insert pattern to position with the lowest index, and return that index, PATTERNINDEX_INVALID
     //on failure.
     PATTERNINDEX Insert(const ROWINDEX rows);
@@ -57,8 +57,8 @@ public:
 
     PATTERNINDEX Size() const {return static_cast<PATTERNINDEX>(m_Patterns.size());}
 
-    CSoundFile& GetSoundFile() {return m_rSndFile;}
-    const CSoundFile& GetSoundFile() const {return m_rSndFile;}
+    module_renderer& GetSoundFile() {return m_rSndFile;}
+    const module_renderer& GetSoundFile() const {return m_rSndFile;}
 
     //Returns the index of given pattern, Size() if not found.
     PATTERNINDEX GetIndex(const MODPATTERN* const pPat) const;
@@ -71,7 +71,7 @@ public:
 
     // Returns true if the pattern is empty, i.e. there are no notes/effects in this pattern
     bool IsPatternEmpty(const PATTERNINDEX nPat) const;
-    
+
     void ResizeArray(const PATTERNINDEX newSize);
 
     void OnModTypeChanged(const MODTYPE oldtype);
@@ -85,7 +85,7 @@ public:
 //BEGIN: DATA MEMBERS
 private:
     PATTERNVECTOR m_Patterns;
-    CSoundFile& m_rSndFile;
+    module_renderer& m_rSndFile;
 //END: DATA MEMBERS
 
 };
@@ -109,4 +109,3 @@ void ReadModPatterns(std::istream& iStrm, CPatternContainer& patc, const size_t 
 void WriteModPatterns(std::ostream& oStrm, const CPatternContainer& patc);
 
 #endif
-

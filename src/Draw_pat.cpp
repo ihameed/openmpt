@@ -51,7 +51,7 @@ typedef const PATTERNFONT * PCPATTERNFONT;
 // Font Definitions
 
 // Medium Font (Default)
-const PATTERNFONT gDefaultPatternFont = 
+const PATTERNFONT gDefaultPatternFont =
 {
     92,13,    // Column Width & Height
     0,0,    // Clear location
@@ -74,7 +74,7 @@ const PATTERNFONT gDefaultPatternFont =
 //////////////////////////////////////////////////
 // Small Font
 
-const PATTERNFONT gSmallPatternFont = 
+const PATTERNFONT gSmallPatternFont =
 {
     70,11,    // Column Width & Height
     92,0,    // Clear location
@@ -204,7 +204,7 @@ void CViewPattern::UpdateView(uint32_t dwHintMask, CObject *)
 }
 
 
-POINT CViewPattern::GetPointFromPosition(uint32_t dwPos) 
+POINT CViewPattern::GetPointFromPosition(uint32_t dwPos)
 //---------------------------------------------------
 {
     PCPATTERNFONT pfnt = GetCurrentPatternFont();
@@ -346,7 +346,7 @@ void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
             string noteStr = pTuning->GetNoteName(note-NOTE_MIDDLEC);
             if(noteStr.size() < 3)
                 noteStr.resize(3, ' ');
-            
+
             // Hack: Manual tweaking for default/small font displays.
             if(pfnt == &gDefaultPatternFont)
             {
@@ -444,7 +444,7 @@ void CViewPattern::OnDraw(CDC *pDC)
     HGDIOBJ oldpen;
     CRect rcClient, rect, rc;
     CModDoc *pModDoc;
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     HDC hdc;
     UINT xofs, yofs, nColumnWidth, ncols, nrows, ncolhdr;
     int xpaint, ypaint, mixPlug;
@@ -559,7 +559,7 @@ void CViewPattern::OnDraw(CDC *pDC)
                     } else {
                         wsprintf(s, "---");
                     }
-                    DrawButtonRect(hdc, &rect, s, FALSE, 
+                    DrawButtonRect(hdc, &rect, s, FALSE,
                         ((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_PLUGNAME) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE, DT_CENTER);
                 }
 
@@ -694,7 +694,7 @@ void CViewPattern::OnDraw(CDC *pDC)
 }
 
 
-void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPattern, BOOL bSelEnable,
+void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT nPattern, BOOL bSelEnable,
                         BOOL bPlaying, UINT yofs, UINT nrows, UINT xofs, CRect &rcClient, int *pypaint)
 //-----------------------------------------------------------------------------------------------------
 {
@@ -706,7 +706,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPatte
     int xpaint, ypaint = *pypaint;
     int row_col, row_bkcol;
     UINT bRowSel, bSpeedUp, nColumnWidth, ncols, maxcol;
-    
+
     ncols = pSndFile->GetNumChannels();
     m0.note = m0.instr = m0.vol = m0.volcmd = m0.command = m0.param = 0;
     nColumnWidth = m_szCell.cx;
@@ -745,13 +745,13 @@ void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPatte
     for (UINT row=yofs; row<nrows; row++)
     {
         UINT col, xbmp, nbmp, oldrowcolor;
-        
+
         wsprintf(s, (CMainFrame::m_dwPatternSetup & PATTERN_HEXDISPLAY) ? "%02X" : "%d", row);
         rect.left = 0;
         rect.top = ypaint;
         rect.right = rcClient.right;
         rect.bottom = rect.top + m_szCell.cy;
-        if (!::RectVisible(hdc, &rect)) 
+        if (!::RectVisible(hdc, &rect))
         {
             // No speedup for these columns next time
             for (UINT iup=xofs; iup<maxcol; iup++) bColSel[iup] &= ~0x40;
@@ -841,7 +841,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    CSoundFile *pSndFile, UINT nPatte
                     {
                         if(m->GetValueVolCol() == mold->GetValueVolCol() || (m_nDetailLevel < 2)) dwSpeedUpMask |= 0x04;
                         if(m->GetValueEffectCol() == mold->GetValueEffectCol() || (m_nDetailLevel < 3)) dwSpeedUpMask |= 0x18;
-                    }    	
+                    }
                 }
                 else
                 {
@@ -1073,7 +1073,7 @@ void CViewPattern::DrawDragSel(HDC hdc)
 //-------------------------------------
 {
     CModDoc *pModDoc;
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     CRect rect;
     POINT ptTopLeft, ptBottomRight;
     uint32_t dwTopLeft, dwBottomRight;
@@ -1175,7 +1175,7 @@ void CViewPattern::UpdateScrollSize()
     if (pModDoc)
     {
         CRect rect;
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         SIZE sizeTotal, sizePage, sizeLine;
         sizeTotal.cx = m_szHeader.cx + pSndFile->m_nChannels * m_szCell.cx;
         sizeTotal.cy = m_szHeader.cy + pSndFile->Patterns[m_nPattern].GetNumRows() * m_szCell.cy;
@@ -1206,7 +1206,7 @@ void CViewPattern::UpdateScrollPos()
 {
     CRect rect;
     GetClientRect(&rect);
-    
+
     int x = GetScrollPos(SB_HORZ);
     if (x < 0) x = 0;
     m_nXScroll = (x + m_szCell.cx - 1) / m_szCell.cx;
@@ -1315,7 +1315,7 @@ void CViewPattern::SetCurSel(uint32_t dwBegin, uint32_t dwEnd)
     RECT rect1, rect2, rect, rcInt, rcUni;
     POINT pt;
     int x1, y1, x2, y2;
-    
+
     x1 = dwBegin & 0xFFFF;
     y1 = dwBegin >> 16;
     x2 = dwEnd & 0xFFFF;
@@ -1336,7 +1336,7 @@ void CViewPattern::SetCurSel(uint32_t dwBegin, uint32_t dwEnd)
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         if (pSndFile)
         {
             y1 = max(y1, 0);
@@ -1403,7 +1403,7 @@ void CViewPattern::InvalidateRow(int n)
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         int yofs = GetYScrollPos() - m_nMidRow;
         if (n == -1) n = m_nRow;
         if ((n < yofs) || (n >= (int)pSndFile->Patterns[m_nPattern].GetNumRows())) return;
@@ -1451,7 +1451,7 @@ void CViewPattern::UpdateIndicator()
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if ((pMainFrm) && (pModDoc))
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         CHAR s[512];
         UINT nChn;
         wsprintf(s, "Row %d, Col %d", GetCurrentRow(), GetCurrentChannel() + 1);
@@ -1570,9 +1570,9 @@ void CViewPattern::UpdateXInfoText()
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if ((pMainFrm) && (pModDoc))
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         if (!pSndFile) return;
-        
+
         //xtraInfo.Format("Chan: %d; macro: %X; cutoff: %X; reso: %X; pan: %X",
         xtraInfo.Format("Chn:%d; Vol:%X; Mac:%X; Cut:%X%s; Res:%X; Pan:%X%s",
                         nChn+1,
@@ -1597,13 +1597,13 @@ void CViewPattern::UpdateAllVUMeters(MPTNOTIFICATION *pnotify)
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     CRect rcClient;
     HDC hdc;
     BOOL bPlaying;
     UINT nChn;
     int x, xofs;
-    
+
     if ((!pModDoc) || (!pMainFrm)) return;
     memset(ChnVUMeters, 0, sizeof(ChnVUMeters));
     GetClientRect(&rcClient);
@@ -1623,8 +1623,3 @@ void CViewPattern::UpdateAllVUMeters(MPTNOTIFICATION *pnotify)
     }
     ::ReleaseDC(m_hWnd, hdc);
 }
-
-
-
-
-

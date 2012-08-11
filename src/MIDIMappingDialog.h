@@ -15,7 +15,7 @@ class CMIDIMappingDialog : public CDialog
     DECLARE_DYNAMIC(CMIDIMappingDialog)
 
 public:
-    CMIDIMappingDialog(CWnd* pParent, CSoundFile& rSndfile);
+    CMIDIMappingDialog(CWnd* pParent, module_renderer& rSndfile);
     virtual ~CMIDIMappingDialog();
 
 // Dialog Data
@@ -29,7 +29,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 private:
-    CSoundFile& m_rSndFile;
+    module_renderer& m_rSndFile;
     CMIDIMapper& m_rMIDIMapper;
 
 private:
@@ -51,10 +51,10 @@ private:
 
     CSpinButtonCtrl m_SpinMoveMapping;
 
-    
+
 public:
     afx_msg void OnLbnSelchangeList1();
-    
+
     afx_msg void OnBnClickedCheckactive();
     afx_msg void OnBnClickedCheckCapture();
     afx_msg void OnCbnSelchangeComboController();

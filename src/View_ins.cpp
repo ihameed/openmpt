@@ -28,7 +28,7 @@
 #define ENV_LEFTBAR_CYBTN    	22
 
 
-const UINT cLeftBarButtons[ENV_LEFTBAR_BUTTONS] = 
+const UINT cLeftBarButtons[ENV_LEFTBAR_BUTTONS] =
 {
     ID_ENVSEL_VOLUME,
     ID_ENVSEL_PANNING,
@@ -119,7 +119,7 @@ CViewInstrument::CViewInstrument()
     memset(m_baPlayingNote, 0, sizeof(bool)*NOTE_MAX);	//rewbs.customKeys
     m_nPlayingChannel = CHANNELINDEX_INVALID;			//rewbs.customKeys
     //rewbs.envRowGrid
-    m_bGrid=true;								  
+    m_bGrid=true;
     m_bGridForceRedraw=false;
     m_GridSpeed = -1;
     m_GridScrollPos = -1;
@@ -148,7 +148,7 @@ void CViewInstrument::UpdateScrollSize()
     {
     	SIZE sizeTotal, sizePage, sizeLine;
     	UINT ntickmax = EnvGetTick(EnvGetLastPoint());
-    	
+
     	sizeTotal.cx = (INT)((ntickmax + 2) * m_fZoom);
     	sizeTotal.cy = 1;
     	sizeLine.cx = (INT)m_fZoom;
@@ -451,7 +451,7 @@ bool CViewInstrument::EnvSetSustainStart(int nPoint)
     if(nPoint < 0 || nPoint > (int)EnvGetLastPoint()) return false;
 
     // We won't do any security checks here as GetEnvelopePtr() does that for us.
-    CSoundFile *pSndFile = GetDocument()->GetSoundFile();
+    module_renderer *pSndFile = GetDocument()->GetSoundFile();
 
     if (nPoint != envelope->sustain_start)
     {
@@ -473,7 +473,7 @@ bool CViewInstrument::EnvSetSustainEnd(int nPoint)
     if(nPoint < 0 || nPoint > (int)EnvGetLastPoint()) return false;
 
     // We won't do any security checks here as GetEnvelopePtr() does that for us.
-    CSoundFile *pSndFile = GetDocument()->GetSoundFile();
+    module_renderer *pSndFile = GetDocument()->GetSoundFile();
 
     if (nPoint != envelope->sustain_end)
     {
@@ -529,7 +529,7 @@ bool CViewInstrument::EnvSetFlag(const uint32_t dwFlag, const bool bEnable) cons
     		return true;
     	}
     } else
-    {	
+    {
     	if(envelope->flags & dwFlag)
     	{
     		envelope->flags &= ~dwFlag;
@@ -540,7 +540,7 @@ bool CViewInstrument::EnvSetFlag(const uint32_t dwFlag, const bool bEnable) cons
 }
 
 
-bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, uint32_t dwChanFlag, uint32_t dwExtraFlags)
+bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, module_renderer *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, uint32_t dwChanFlag, uint32_t dwExtraFlags)
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(pEnv == nullptr) return false;
@@ -574,7 +574,7 @@ bool CViewInstrument::EnvSetVolEnv(bool bEnable)
 {
     modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
     if(pIns == nullptr) return false;
-    CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
+    module_renderer *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
     return EnvToggleEnv(&pIns->volume_envelope, pSndFile, pIns, bEnable, 64, CHN_VOLENV);
 }
@@ -585,7 +585,7 @@ bool CViewInstrument::EnvSetPanEnv(bool bEnable)
 {
     modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
     if(pIns == nullptr) return false;
-    CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
+    module_renderer *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
     return EnvToggleEnv(&pIns->panning_envelope, pSndFile, pIns, bEnable, 32, CHN_PANENV);
 }
@@ -596,7 +596,7 @@ bool CViewInstrument::EnvSetPitchEnv(bool bEnable)
 {
     modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
     if(pIns == nullptr) return false;
-    CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
+    module_renderer *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
     pIns->pitch_envelope.flags &= ~ENV_FILTER;
     return EnvToggleEnv(&pIns->pitch_envelope, pSndFile, pIns, bEnable, 32, CHN_PITCHENV);
@@ -608,7 +608,7 @@ bool CViewInstrument::EnvSetFilterEnv(bool bEnable)
 {
     modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
     if(pIns == nullptr) return false;
-    CSoundFile *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
+    module_renderer *pSndFile = GetDocument()->GetSoundFile(); // security checks are done in GetInstrumentPtr()
 
     pIns->pitch_envelope.flags &= ~ENV_FILTER;
     return EnvToggleEnv(&pIns->pitch_envelope, pSndFile, pIns, bEnable, 64, CHN_PITCHENV, ENV_FILTER);
@@ -712,15 +712,15 @@ void CViewInstrument::UpdateNcButtonState()
 //-----------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     CDC *pDC = NULL;
-    
+
     if (!pModDoc) return;
     pSndFile = pModDoc->GetSoundFile();
     for (UINT i=0; i<ENV_LEFTBAR_BUTTONS; i++) if (cLeftBarButtons[i] != ID_SEPARATOR)
     {
     	uint32_t dwStyle = 0;
-    	
+
     	switch(cLeftBarButtons[i])
     	{
     	case ID_ENVSEL_VOLUME:		if (m_nEnv == ENV_VOLUME) dwStyle |= NCBTNS_CHECKED; break;
@@ -802,7 +802,7 @@ void CViewInstrument::DrawGrid(CDC *pDC, UINT speed)
     	m_pbmpOldGrid = m_dcGrid.SelectObject(&m_bmpGrid);
 
     	//do draw
-    	CSoundFile *pSndFile;
+    	module_renderer *pSndFile;
     	int width = m_rcClient.right - m_rcClient.left;
     	int nPrevTick = -1;
     	int nTick, nRow;
@@ -830,7 +830,7 @@ void CViewInstrument::DrawGrid(CDC *pDC, UINT speed)
 
     			m_dcGrid.MoveTo(x+1, 0);
     			m_dcGrid.LineTo(x+1, m_rcClient.bottom);
-    			
+
     		}
     	}
     }
@@ -845,16 +845,16 @@ void CViewInstrument::OnDraw(CDC *pDC)
     RECT rect;
     int nScrollPos = GetScrollPos(SB_HORZ);
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     HGDIOBJ oldpen;
     //HDC hdc;
     UINT maxpoint;
     int ymed = (m_rcClient.bottom - 1) / 2;
 
 //rewbs.envRowGrid
-    // to avoid flicker, establish a memory dc, draw to it 
+    // to avoid flicker, establish a memory dc, draw to it
     // and then BitBlt it to the destination "pDC"
-    
+
     //check for window resize
     if (m_dcMemMain.GetSafeHdc()) {
     	m_dcMemMain.SelectObject(oldBitmap);
@@ -950,7 +950,7 @@ void CViewInstrument::OnDraw(CDC *pDC)
     }
     DrawPositionMarks(m_dcMemMain.m_hDC);
     if (oldpen) m_dcMemMain.SelectObject(oldpen);
-    
+
     //rewbs.envRowGrid
     pDC->BitBlt(m_rcClient.left, m_rcClient.top, m_rcClient.right-m_rcClient.left, m_rcClient.bottom-m_rcClient.top, &m_dcMemMain, 0, 0, SRCCOPY);
 
@@ -995,7 +995,7 @@ bool CViewInstrument::EnvRemovePoint(UINT nPoint)
     CModDoc *pModDoc = GetDocument();
     if ((pModDoc) && (nPoint <= EnvGetLastPoint()))
     {
-    	CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = pModDoc->GetSoundFile();
     	modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
     	if (pIns)
     	{
@@ -1039,7 +1039,7 @@ UINT CViewInstrument::EnvInsertPoint(int nTick, int nValue)
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-    	CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = pModDoc->GetSoundFile();
     	modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
     	if (pIns)
     	{
@@ -1188,7 +1188,7 @@ void CViewInstrument::DrawNcButton(CDC *pDC, UINT nBtn)
     	uint32_t dwStyle = m_NcButtonState[nBtn];
     	COLORREF c3, c4;
     	int xofs = 0, yofs = 0, nImage = 0;
-    		
+
     	c1 = c2 = c3 = c4 = crFc;
     	if (!(CMainFrame::m_dwPatternSetup & PATTERN_FLATBUTTONS))
     	{
@@ -1388,7 +1388,7 @@ void CViewInstrument::OnNcLButtonDblClk(UINT uFlags, CPoint point)
 LRESULT CViewInstrument::OnNcHitTest(CPoint point)
 #else
 UINT CViewInstrument::OnNcHitTest(CPoint point)
-#endif 
+#endif
 //---------------------------------------------
 {
     CRect rect;
@@ -1663,7 +1663,7 @@ void CViewInstrument::OnRButtonDown(UINT, CPoint pt)
 {
     const CModDoc *pModDoc = GetDocument();
     if(!pModDoc) return;
-    const CSoundFile *pSndFile = GetDocument()->GetSoundFile();
+    const module_renderer *pSndFile = GetDocument()->GetSoundFile();
     if(!pSndFile) return;
 
     CMenu Menu;
@@ -1781,7 +1781,7 @@ void CViewInstrument::OnEnvCarryChanged()
     }
 }
 
-void CViewInstrument::OnEnvToggleReleasNode() 
+void CViewInstrument::OnEnvToggleReleasNode()
 //-------------------------------------------
 {
     if(IsDragItemEnvPoint() && EnvToggleReleaseNode(m_nDragItem - 1))
@@ -1845,7 +1845,7 @@ void CViewInstrument::OnEnvToggleGrid()
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     	pModDoc->UpdateAllViews(NULL, (m_nInstrument << HINT_SHIFT_INS) | HINT_ENVELOPE, NULL);
-    
+
 }
 //end rewbs.envRowGrid
 
@@ -1861,7 +1861,7 @@ void CViewInstrument::OnEnvRemovePoint()
 void CViewInstrument::OnEnvInsertPoint()
 //--------------------------------------
 {
-    
+
     EnvInsertPoint(ScreenToTick(m_ptMenu.x), ScreenToValue(m_ptMenu.y));
 }
 
@@ -1920,7 +1920,7 @@ void CViewInstrument::PlayNote(UINT note)
     		m_baPlayingNote[note] = true;											//rewbs.instViewNNA
     		m_nPlayingChannel = pModDoc->PlayNote(note, m_nInstrument, 0, FALSE); //rewbs.instViewNNA
     		s[0] = 0;
-    		if ((note) && (note <= NOTE_MAX)) 
+    		if ((note) && (note <= NOTE_MAX))
     		{
     			const std::string temp = pModDoc->GetSoundFile()->GetNoteName(static_cast<int16_t>(note), m_nInstrument);
     			if(temp.size() >= sizeofS)
@@ -1966,7 +1966,7 @@ BOOL CViewInstrument::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
 //-----------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     BOOL bCanDrop = FALSE;
     BOOL bUpdate;
 
@@ -1991,7 +1991,7 @@ BOOL CViewInstrument::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
     	bCanDrop = ((lpDropInfo->dwDropItem < MAX_DLS_BANKS)
     			 && (CTrackApp::gpDLSBanks[lpDropInfo->dwDropItem]));
     	break;
-    
+
     case DRAGONDROP_SOUNDFILE:
     case DRAGONDROP_MIDIINSTR:
     	bCanDrop = ((lpDropInfo->lDropParam)
@@ -2103,17 +2103,17 @@ LRESULT CViewInstrument::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
     uint8_t midiByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
     uint8_t midiByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
 
-    CSoundFile* pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL;
+    module_renderer* pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL;
     if (!pSndFile) return 0;
 
     const uint8_t nNote  = midiByte1 + 1;		// +1 is for MPT, where middle C is 61
-    int nVol   = midiByte2;					
+    int nVol   = midiByte2;
     uint8_t event  = GetFromMIDIMsg_Event(dwMidiData);
     if ((event == 0x9) && !nVol) event = 0x8;	//Convert event to note-off if req'd
 
     uint8_t mappedIndex = 0, paramValue = 0;
     uint32_t paramIndex = 0;
-    if(pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue)) 
+    if(pSndFile->GetMIDIMapper().OnMIDImsg(dwMidiData, mappedIndex, paramIndex, paramValue))
     	return 0;
 
     switch(event)
@@ -2163,24 +2163,24 @@ BOOL CViewInstrument::PreTranslateMessage(MSG *pMsg)
     if (pMsg)
     {
     	//We handle keypresses before Windows has a chance to handle them (for alt etc..)
-    	if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) || 
+    	if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
     		(pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
     	{
     		CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-    		
+
     		//Translate message manually
     		UINT nChar = pMsg->wParam;
     		UINT nRepCnt = LOWORD(pMsg->lParam);
     		UINT nFlags = HIWORD(pMsg->lParam);
     		KeyEventType kT = ih->GetKeyEventType(nFlags);
     		InputTargetContext ctx = (InputTargetContext)(kCtxViewInstruments);
-    		
+
     		if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
     			return true; // Mapped to a command, no need to pass message on.
     	}
 
     }
-    
+
     return CModScrollView::PreTranslateMessage(pMsg);
 }
 
@@ -2189,11 +2189,11 @@ LRESULT CViewInstrument::OnCustomKeyMsg(WPARAM wParam, LPARAM)
 {
     if (wParam == kcNull)
     	return NULL;
-    
-    CModDoc *pModDoc = GetDocument();	
+
+    CModDoc *pModDoc = GetDocument();
     if (!pModDoc) return NULL;
-    
-    //CSoundFile *pSndFile = pModDoc->GetSoundFile();	
+
+    //CSoundFile *pSndFile = pModDoc->GetSoundFile();
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 
     switch(wParam)
@@ -2208,7 +2208,7 @@ LRESULT CViewInstrument::OnCustomKeyMsg(WPARAM wParam, LPARAM)
     	case kcNoteCut:			PlayNote(NOTE_NOTECUT); return wParam;
     	case kcInstrumentLoad:	SendCtrlMessage(IDC_INSTRUMENT_OPEN); return wParam;
     	case kcInstrumentSave:	SendCtrlMessage(IDC_INSTRUMENT_SAVEAS); return wParam;
-    	case kcInstrumentNew:	SendCtrlMessage(IDC_INSTRUMENT_NEW); return wParam;	
+    	case kcInstrumentNew:	SendCtrlMessage(IDC_INSTRUMENT_NEW); return wParam;
 
     	// envelope editor
     	case kcInstrumentEnvelopeZoomIn:				OnEnvZoomIn(); return wParam;
@@ -2235,9 +2235,9 @@ LRESULT CViewInstrument::OnCustomKeyMsg(WPARAM wParam, LPARAM)
     	return wParam;
     }
     if (wParam>=kcInstrumentStartNoteStops && wParam<=kcInstrumentEndNoteStops)
-    {	
+    {
     	int note =wParam-kcInstrumentStartNoteStops+1+pMainFrm->GetBaseOctave()*12;
-    	m_baPlayingNote[note]=false; 
+    	m_baPlayingNote[note]=false;
     	pModDoc->NoteOff(note, FALSE, m_nInstrument);
     	return wParam;
     }
@@ -2248,7 +2248,7 @@ void CViewInstrument::OnEnvelopeScalepoints()
 //--------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL;
+    module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : NULL;
     if(pSndFile == nullptr)
     	return;
 
@@ -2267,7 +2267,7 @@ void CViewInstrument::OnEnvelopeScalepoints()
     	}
     }
 
-    
+
 }
 
 
@@ -2361,7 +2361,7 @@ void CViewInstrument::EnvKbdMovePointDown(uint8_t stepsize)
     if(pEnv == nullptr || !IsDragItemEnvPoint()) return;
     if(pEnv->Values[m_nDragItem - 1] >= ENVELOPE_MIN + stepsize)
     	pEnv->Values[m_nDragItem - 1] -= stepsize;
-    else 
+    else
     	pEnv->Values[m_nDragItem - 1] = ENVELOPE_MIN;
 
     SetInstrumentModified();
@@ -2472,7 +2472,7 @@ modplug::tracker::modinstrument_t *CViewInstrument::GetInstrumentPtr() const
 {
     CModDoc *pModDoc = GetDocument();
     if(pModDoc == nullptr) return nullptr;
-    CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    module_renderer *pSndFile = pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return nullptr;
     return pSndFile->Instruments[m_nInstrument];
 }
@@ -2485,7 +2485,7 @@ modplug::tracker::modenvelope_t *CViewInstrument::GetEnvelopePtr() const
     // First do some standard checks...
     modplug::tracker::modinstrument_t *pIns = GetInstrumentPtr();
     if(pIns == nullptr) return nullptr;
-    		
+
     // Now for the real thing.
     modplug::tracker::modenvelope_t *envelope = nullptr;
 
@@ -2511,7 +2511,7 @@ bool CViewInstrument::CanMovePoint(UINT envPoint, int step)
 {
     modplug::tracker::modenvelope_t *pEnv = GetEnvelopePtr();
     if(pEnv == nullptr) return false;
-    
+
     // Can't move first point
     if(envPoint == 0)
     {
@@ -2541,7 +2541,7 @@ BOOL CViewInstrument::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
     // Ctrl + mouse wheel: envelope zoom.
     if (nFlags == MK_CONTROL)
-    { 
+    {
     	// Speed up zoom scrolling by some factor (might need some tuning).
     	const float speedUpFactor = Util::Max(1.0f, m_fZoom * 7.0f / ENV_MAX_ZOOM);
     	EnvSetZoom(m_fZoom + speedUpFactor * (zDelta / WHEEL_DELTA));

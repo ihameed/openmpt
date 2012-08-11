@@ -59,12 +59,12 @@ typedef struct tagSTMHEADER
 
 
 
-bool CSoundFile::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     STMHEADER *phdr = (STMHEADER *)lpStream;
     uint32_t dwMemPos = 0;
-    
+
     if ((!lpStream) || (dwMemLength < sizeof(STMHEADER))) return false;
     if ((phdr->filetype != 2) || (phdr->unused != 0x1A)
      || ((_strnicmp(phdr->trackername, "!SCREAM!", 8))
@@ -192,4 +192,3 @@ bool CSoundFile::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLength)
     }
     return true;
 }
-

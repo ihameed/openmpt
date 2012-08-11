@@ -307,7 +307,7 @@ LRESULT CChildFrame::OnInstrumentSelected(WPARAM wParam, LPARAM lParam)
     if (pView) pModDoc = (CModDoc *)pView->GetDocument();
     if ((m_hWndCtrl) && (pModDoc))
     {
-    	CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = pModDoc->GetSoundFile();
     	UINT nIns = lParam;
 
     	if ((!wParam) && (pSndFile->m_nInstruments > 0))

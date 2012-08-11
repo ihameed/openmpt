@@ -55,7 +55,7 @@ CSize CToolBarEx::CalcDynamicLayout(int nLength, uint32_t dwMode)
     	}
 
     	sizeResult = CToolBar::CalcDynamicLayout(nLength, dwMode);
-    	
+
     	if (bSwitch)
     	{
     		if (bOld)
@@ -408,7 +408,7 @@ BOOL CMainToolBar::SetBaseOctave(UINT nOctave)
 }
 
 
-BOOL CMainToolBar::SetCurrentSong(CSoundFile *pSndFile)
+BOOL CMainToolBar::SetCurrentSong(module_renderer *pSndFile)
 //-----------------------------------------------------
 {
     // Update Info
@@ -427,7 +427,7 @@ BOOL CMainToolBar::SetCurrentSong(CSoundFile *pSndFile)
     			pModDoc->UpdateAllViews(NULL, HINT_SPEEDCHANGE);
     		}
     		//end rewbs.envRowGrid
-    			
+
     		if (nCurrentSpeed < 0) m_SpinSpeed.EnableWindow(TRUE);
     		nCurrentSpeed = nSpeed;
     		wsprintf(s, "%d", nCurrentSpeed);
@@ -443,11 +443,11 @@ BOOL CMainToolBar::SetCurrentSong(CSoundFile *pSndFile)
     	}
     	int nRowsPerBeat = pSndFile->m_nCurrentRowsPerBeat;
     	if (nRowsPerBeat != nCurrentRowsPerBeat)
-    	{	
+    	{
     		if (nCurrentRowsPerBeat < 0) m_SpinRowsPerBeat.EnableWindow(TRUE);
     		nCurrentRowsPerBeat = nRowsPerBeat;
     		wsprintf(s, "%d", nCurrentRowsPerBeat);
-    		m_EditRowsPerBeat.SetWindowText(s);			
+    		m_EditRowsPerBeat.SetWindowText(s);
     	}
     } else
     {
@@ -479,7 +479,7 @@ void CMainToolBar::OnVScroll(UINT nCode, UINT nPos, CScrollBar *pScrollBar)
 //-------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm;
-    
+
     CToolBarEx::OnVScroll(nCode, nPos, pScrollBar);
     short int oct = (short int)m_SpinOctave.GetPos();
     if ((oct >= MIN_BASEOCTAVE) && ((int)oct != nCurrentOctave))
@@ -489,7 +489,7 @@ void CMainToolBar::OnVScroll(UINT nCode, UINT nPos, CScrollBar *pScrollBar)
     if ((nCurrentSpeed < 0) || (nCurrentTempo < 0)) return;
     if ((pMainFrm = CMainFrame::GetMainFrame()) != NULL)
     {
-    	CSoundFile *pSndFile = pMainFrm->GetSoundFilePlaying();
+    	module_renderer *pSndFile = pMainFrm->GetSoundFilePlaying();
     	if (pSndFile)
     	{
     		short int n;
@@ -499,7 +499,7 @@ void CMainToolBar::OnVScroll(UINT nCode, UINT nPos, CScrollBar *pScrollBar)
     				pSndFile->SetTempo(max(nCurrentTempo - 1, pSndFile->GetModSpecifications().tempoMin), true);
     			else
     				pSndFile->SetTempo(min(nCurrentTempo + 1, pSndFile->GetModSpecifications().tempoMax), true);
-    	
+
     			m_SpinTempo.SetPos(0);
     		}
     		if ((n = (short int)m_SpinSpeed.GetPos()) != 0)
@@ -531,7 +531,7 @@ void CMainToolBar::OnVScroll(UINT nCode, UINT nPos, CScrollBar *pScrollBar)
     			m_SpinRowsPerBeat.SetPos(0);
 
     			//update pattern editor
-    			
+
     			CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     			if (pMainFrm)
     			{
@@ -552,7 +552,7 @@ void CMainToolBar::SetRowsPerBeat(ROWINDEX nNewRPB)
     if(pMainFrm == nullptr)
     	return;
     CModDoc *pModDoc = pMainFrm->GetModPlaying();
-    CSoundFile *pSndFile = pMainFrm->GetSoundFilePlaying();
+    module_renderer *pSndFile = pMainFrm->GetSoundFilePlaying();
     if(pModDoc == nullptr || pSndFile == nullptr)
     	return;
 
@@ -816,7 +816,7 @@ VOID CModTreeBar::DoLButtonUp()
     if (m_dwStatus & MTB_DRAGGING)
     {
     	CRect rect;
-    	
+
     	m_dwStatus &= ~MTB_DRAGGING;
     	if (m_dwStatus & MTB_TRACKER)
     	{
@@ -953,7 +953,7 @@ void CModTreeBar::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
 LRESULT CModTreeBar::OnNcHitTest(CPoint point)
 #else
 UINT CModTreeBar::OnNcHitTest(CPoint point)
-#endif 
+#endif
 //-----------------------------------------
 {
     CRect rect;
@@ -1001,7 +1001,7 @@ void CModTreeBar::OnNcMouseMove(UINT, CPoint point)
 {
     CRect rect;
     CPoint pt = point;
-    
+
     GetWindowRect(&rect);
     pt.x -= rect.left;
     pt.y -= rect.top;
@@ -1021,7 +1021,7 @@ void CModTreeBar::OnNcLButtonDown(UINT, CPoint point)
 {
     CRect rect;
     CPoint pt = point;
-    
+
     GetWindowRect(&rect);
     pt.x -= rect.left;
     pt.y -= rect.top;

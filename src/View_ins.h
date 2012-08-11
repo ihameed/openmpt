@@ -24,7 +24,7 @@ protected:
     uint32_t m_NcButtonState[ENV_LEFTBAR_BUTTONS];
     uint32_t m_dwNotifyPos[MAX_VIRTUAL_CHANNELS];
     //rewbs.envRowGrid
-    bool m_bGrid;			  
+    bool m_bGrid;
     bool m_bGridForceRedraw;
     CBitmap *m_pbmpOldGrid;
     CBitmap m_bmpGrid;
@@ -91,7 +91,7 @@ protected:
     bool EnvToggleReleaseNode(int nPoint);
 
     // Set envelope status
-    bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, CSoundFile *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, uint32_t dwChanFlag, uint32_t dwExtraFlags = 0);
+    bool EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, module_renderer *pSndFile, modplug::tracker::modinstrument_t *pIns, bool bEnable, uint8_t cDefaultValue, uint32_t dwChanFlag, uint32_t dwExtraFlags = 0);
     bool EnvSetVolEnv(bool bEnable);
     bool EnvSetPanEnv(bool bEnable);
     bool EnvSetPitchEnv(bool bEnable);
@@ -161,7 +161,7 @@ protected:
     afx_msg LRESULT OnNcHitTest(CPoint point);
 #else
     afx_msg UINT OnNcHitTest(CPoint point);
-#endif 
+#endif
     afx_msg void OnNcPaint();
     afx_msg void OnPrevInstrument();
     afx_msg void OnNextInstrument();
@@ -210,4 +210,3 @@ private:
 
 
 #endif
-

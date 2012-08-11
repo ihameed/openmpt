@@ -226,7 +226,7 @@ void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nR
 
 
 
-bool CSoundFile::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     uint32_t dwMemPos, dwPos, blocklen, dwTrackPos;
@@ -416,7 +416,7 @@ bool CSoundFile::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLength)
 
                         // taken from load_xm.cpp - seems to fix wakingup.mdl
                         if (!(pIns->volume_envelope.flags & ENV_ENABLED) && !pIns->fadeout)
-                            pIns->fadeout = 8192;    	
+                            pIns->fadeout = 8192;
                     }
                 }
                 dwPos += 34 + 14*lpStream[dwPos+1];
@@ -590,5 +590,3 @@ uint16_t MDLReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n)
     }
     return v;
 }
-
-

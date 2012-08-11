@@ -200,22 +200,22 @@ BOOL CModTree::PreTranslateMessage(MSG* pMsg)
     			}
     		}
     		return TRUE;
-    	} 
-    } 
+    	}
+    }
     //rewbs.customKeys
     //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-    if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) || 
+    if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
     	(pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
     {
     	CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-    	
+
     	//Translate message manually
     	UINT nChar = pMsg->wParam;
     	UINT nRepCnt = LOWORD(pMsg->lParam);
     	UINT nFlags = HIWORD(pMsg->lParam);
     	KeyEventType kT = ih->GetKeyEventType(nFlags);
     	InputTargetContext ctx = (InputTargetContext)(kCtxViewTree);
-    	
+
     	if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
     		return true; // Mapped to a command, no need to pass message on.
     }
@@ -605,7 +605,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
 {
     PMODTREEDOCINFO pInfo = DocInfo[nDocNdx];
     CModDoc *pDoc;
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     CHAR s[256], stmp[256];
     TV_ITEM tvi;
     const uint32_t hintFlagPart = HintFlagPart(lHint);
@@ -1023,7 +1023,7 @@ uint64_t CModTree::GetModItem(HTREEITEM hItem)
     hItemParentParent = GetParentItem(hItemParent);
     hRootParent = hItemParent;
     CModDoc *pModDoc = GetDocumentFromItem(hItem);
-    CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : nullptr;
+    module_renderer *pSndFile = pModDoc ? pModDoc->GetSoundFile() : nullptr;
     if ((hRootParent != NULL) && (m_pDataTree))
     {
     	HTREEITEM h;
@@ -1168,7 +1168,7 @@ BOOL CModTree::ExecuteItem(HTREEITEM hItem)
     	case MODITEM_COMMENTS:
     		if (pModDoc) pModDoc->ActivateView(IDD_CONTROL_COMMENTS, 0);
     		return TRUE;
-    	
+
     	/*case MODITEM_SEQUENCE:
     		if (pModDoc) pModDoc->ActivateView(IDD_CONTROL_PATTERNS, (dwItem << 16) | 0x8000);
     		return TRUE;*/
@@ -1330,7 +1330,7 @@ BOOL CModTree::PlayItem(HTREEITEM hItem, UINT nParam)
     			{
     				CDLSBank *pDLSBank = CTrackApp::gpDLSBanks[bank];
     				UINT rgn = 0, instr = (modItem & 0x00007FFF);
-    				// Drum 
+    				// Drum
     				if (modItem & 0x80000000)
     				{
     					rgn = (modItem & 0x007F0000) >> 16;
@@ -1397,7 +1397,7 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
 
     PMODTREEDOCINFO pInfo = DocInfo[m_nDocNdx];
     CModDoc *pModDoc = (pInfo) ? pInfo->pModDoc : nullptr;
-    CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
     switch(modItemType)
     {
     case MODITEM_SEQUENCE:
@@ -1551,7 +1551,7 @@ VOID CModTree::FillInstrumentLibrary()
 {
     TV_INSERTSTRUCT tvis;
     CHAR s[_MAX_PATH+32], szPath[_MAX_PATH] = "";
-    
+
     if (!m_hInsLib) return;
     SetRedraw(FALSE);
     if ((m_szSongName[0]) && (!m_pDataTree))
@@ -1607,7 +1607,7 @@ VOID CModTree::FillInstrumentLibrary()
     	if (m_pDataTree)
     	{
     		strcpy(s, "?:\\");
-    		for (UINT iDrive='A'; iDrive<='Z'; iDrive++)  //rewbs.fix3112: < became <= 
+    		for (UINT iDrive='A'; iDrive<='Z'; iDrive++)  //rewbs.fix3112: < became <=
     		{
     			s[0] = (CHAR)iDrive;
     			UINT nDriveType = GetDriveType(s);
@@ -1858,7 +1858,7 @@ BOOL CModTree::InstrumentLibraryChDir(LPCSTR lpszDir)
 {
     CHAR s[_MAX_PATH+80], sdrive[_MAX_DRIVE];
     BOOL bOk = FALSE, bSong = FALSE;
-    
+
     if ((!lpszDir) || (!lpszDir[0])) return FALSE;
     BeginWaitCursor();
     if (!GetCurrentDirectory(sizeof(s), s)) s[0] = 0;
@@ -1943,7 +1943,7 @@ BOOL CModTree::GetDropInfo(LPDRAGONDROP pdropinfo, LPSTR pszFullPath)
     case MODITEM_PATTERN:
     	pdropinfo->dwDropType = DRAGONDROP_PATTERN;
     	break;
-    
+
     case MODITEM_SAMPLE:
     	pdropinfo->dwDropType = DRAGONDROP_SAMPLE;
     	break;
@@ -2009,7 +2009,7 @@ BOOL CModTree::GetDropInfo(LPDRAGONDROP pdropinfo, LPSTR pszFullPath)
     		pdropinfo->dwDropItem = (uint32_t)((m_qwItemDrag & 0x3F000000) >> 24);	// bank #
     		// Melodic: (Instrument)
     		// Drums:	(0x80000000) | (Region << 16) | (Instrument)
-    		pdropinfo->lDropParam = (LPARAM)((m_qwItemDrag & 0x80FF7FFF)); // 
+    		pdropinfo->lDropParam = (LPARAM)((m_qwItemDrag & 0x80FF7FFF)); //
     		break;
     	}
     }
@@ -2030,7 +2030,7 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
     const PMODTREEDOCINFO pInfoDrag = DocInfo[m_nDragDocNdx];
     const PMODTREEDOCINFO pInfoDrop = DocInfo[m_nDocNdx];
     CModDoc *pModDoc = (pInfoDrop) ? pInfoDrop->pModDoc : nullptr;
-    CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
 
     switch(modItemDropType)
     {
@@ -2071,7 +2071,7 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
     			// copy mod sequence over.
     			CModDoc *pDragDoc = pInfoDrag->pModDoc;
     			if(pDragDoc == nullptr) return false;
-    			CSoundFile *pDragSndFile = pDragDoc->GetSoundFile();
+    			module_renderer *pDragSndFile = pDragDoc->GetSoundFile();
     			if(pDragSndFile == nullptr) return false;
     			const SEQUENCEINDEX nOrigSeq = (SEQUENCEINDEX)modItemDragID;
     			const ModSequence *pOrigSeq = &(pDragSndFile->Order.GetSequence(nOrigSeq));
@@ -2165,7 +2165,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
 
     if((bUpdateSamples == false) && (bUpdateInstruments == false)) return;
 
-    CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    module_renderer *pSndFile = pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return;
 
     for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
@@ -2243,7 +2243,7 @@ void CModTree::OnBeginDrag(HTREEITEM hItem, bool bLeft, LRESULT *pResult)
     if (!(m_dwStatus & TREESTATUS_DRAGGING))
     {
     	bool bDrag = false;
-    	
+
     	m_hDropWnd = NULL;
     	m_hItemDrag = hItem;
     	if (m_hItemDrag != NULL)
@@ -2270,7 +2270,7 @@ void CModTree::OnBeginDrag(HTREEITEM hItem, bool bLeft, LRESULT *pResult)
     		// can we drag an order header? (only in MPTM format and if there's only one sequence)
     		{
     			CModDoc *pModDoc = DocInfo[m_nDragDocNdx]->pModDoc;
-    			CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    			module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
     			if(pSndFile && pSndFile->Order.GetNumSequences() == 1)
     				bDrag = true;
     		}
@@ -2390,7 +2390,7 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
     			nDefault = ID_MODTREE_EXECUTE;
     			AppendMenu(hMenu, MF_STRING, nDefault, "&View Comments");
     			break;
-    		
+
     		case MODITEM_ORDER:
     		case MODITEM_PATTERN:
     			nDefault = ID_MODTREE_EXECUTE;
@@ -2403,7 +2403,7 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
     			{
     				bool isCurSeq = false;
     				CModDoc *pModDoc = GetDocumentFromItem(hItem);
-    				CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    				module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
     				if(pModDoc && pSndFile && (pModDoc->GetModType() == MOD_TYPE_MPT))
     				{
     					if(pSndFile->Order.GetSequence((SEQUENCEINDEX)modItemID).GetLength() == 0)
@@ -2427,7 +2427,7 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
     		case MODITEM_HDR_ORDERS:
     			{
     				CModDoc *pModDoc = GetDocumentFromItem(hItem);
-    				CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    				module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
     				if(pModDoc && pSndFile && (pModDoc->GetModType() == MOD_TYPE_MPT))
     				{
     					AppendMenu(hMenu, MF_STRING, ID_MODTREE_INSERT, "&Insert Sequence");
@@ -2483,7 +2483,7 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
     				AppendMenu(hMenu, MF_STRING, nDefault, "&Edit");
 
     				CModDoc *pModDoc = GetDocumentFromItem(hItem);
-    				CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    				module_renderer *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
     				if (pSndFile) {
     					PSNDMIXPLUGIN pPlugin = &pSndFile->m_MixPlugins[modItemID];
     					if (pPlugin) {
@@ -2676,7 +2676,7 @@ void CModTree::OnMouseMove(UINT nFlags, CPoint point)
     {
     	HTREEITEM hItem;
     	UINT flags;
-    	
+
     	// Bug?
     	if (!(nFlags & (MK_LBUTTON|MK_RBUTTON)))
     	{
@@ -2855,7 +2855,7 @@ void CModTree::OnMuteTreeItem()
     	} else
     	if ((modItemType == MODITEM_EFFECT))
     	{
-    		CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : nullptr;
+    		module_renderer *pSndFile = pModDoc ? pModDoc->GetSoundFile() : nullptr;
     		if (pSndFile == nullptr)
     			return;
     		PSNDMIXPLUGIN pPlugin = &pSndFile->m_MixPlugins[modItemID];
@@ -2947,7 +2947,7 @@ void CModTree::OnDuplicateTreeItem()
     const uint32_t modItemID = GetModItemID(modItem);
 
     pModDoc = GetDocumentFromItem(hItem);
-    CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
 
     if (pModDoc && pSndFile && ((modItemType == MODITEM_SEQUENCE) || (modItemType == MODITEM_HDR_ORDERS)))
     {
@@ -2971,7 +2971,7 @@ void CModTree::OnInsertTreeItem()
     //const uint32_t modItemID = GetModItemID(modItem);
 
     pModDoc = GetDocumentFromItem(hItem);
-    CSoundFile *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
 
     if (pModDoc && pSndFile && ((modItemType == MODITEM_SEQUENCE) || (modItemType == MODITEM_HDR_ORDERS)))
     {
@@ -3007,7 +3007,7 @@ void CModTree::OnSetItemPath()
 {
     HTREEITEM hItem = GetSelectedItem();
     CModDoc *pModDoc = GetDocumentFromItem(hItem);
-    CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     const uint64_t modItem = GetModItem(hItem);
     //const uint32_t modItemType = GetModItemType(modItem);
@@ -3029,7 +3029,7 @@ void CModTree::OnSaveItem()
 {
     HTREEITEM hItem = GetSelectedItem();
     CModDoc *pModDoc = GetDocumentFromItem(hItem);
-    CSoundFile *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer *pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     const uint64_t modItem = GetModItem(hItem);
     //const uint32_t modItemType = GetModItemType(modItem);
@@ -3149,7 +3149,7 @@ BOOL CModTree::OnDrop(COleDataObject* pDataObject, DROPEFFECT, CPoint)
     HDROP hDropInfo;
     UINT nFiles;
     BOOL bOk = FALSE;
-    
+
     if (!pDataObject) return FALSE;
     if (!pDataObject->GetData(CF_HDROP, &stgm)) return FALSE;
     if (stgm.tymed != TYMED_HGLOBAL) return FALSE;
@@ -3182,7 +3182,7 @@ void CModTree::OnRefreshInstrLib()
 //--------------------------------
 {
     HTREEITEM hActive;
-    
+
     BeginWaitCursor();
     RefreshInstrumentLibrary();
     if (m_pDataTree)
@@ -3258,7 +3258,7 @@ LRESULT CModTree::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
 {
     if (wParam == kcNull)
     	return NULL;
-    
+
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 
     if (wParam>=kcTreeViewStartNotes && wParam<=kcTreeViewEndNotes)
@@ -3267,7 +3267,7 @@ LRESULT CModTree::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
     	return wParam;
     }
     if (wParam>=kcTreeViewStartNoteStops && wParam<=kcTreeViewEndNoteStops)
-    {	
+    {
     	return wParam;
     }
 
@@ -3278,7 +3278,7 @@ void CModTree::OnKillFocus(CWnd* pNewWnd)
 {
     CTreeCtrl::OnKillFocus(pNewWnd);
     CMainFrame::GetMainFrame()->m_bModTreeHasFocus=false;
-    
+
 }
 
 void CModTree::OnSetFocus(CWnd* pOldWnd)

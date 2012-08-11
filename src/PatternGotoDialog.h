@@ -1,6 +1,6 @@
 #pragma once
 
-class CSoundFile;
+class module_renderer;
 
 // CPatternGotoDialog dialog
 
@@ -17,7 +17,7 @@ public:
 
 public:
     UINT m_nRow, m_nChannel, m_nPattern, m_nOrder, m_nActiveOrder;
-    void UpdatePos(UINT row, UINT chan, UINT pat, UINT ord, CSoundFile* pSndFile);
+    void UpdatePos(UINT row, UINT chan, UINT pat, UINT ord, module_renderer* pSndFile);
 
 protected:
     bool m_bControlLock;
@@ -25,11 +25,11 @@ protected:
     inline void LockControls() {m_bControlLock=true;}
     inline void UnlockControls() {m_bControlLock=false;}
 
-    CSoundFile* m_pSndFile;
+    module_renderer* m_pSndFile;
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     virtual void OnOK();
     afx_msg void OnEnChangeGotoPat();
-    
+
 
 public:
     afx_msg void OnEnChangeGotoOrd();

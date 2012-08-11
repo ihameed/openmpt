@@ -72,14 +72,14 @@ void Convert_AMS_Text_Chars(char &c)
 }
 
 
-bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     uint8_t pkinf[MAX_SAMPLES];
     AMSFILEHEADER *pfh = (AMSFILEHEADER *)lpStream;
     uint32_t dwMemPos;
     UINT tmp, tmp2;
-    
+
     if ((!lpStream) || (dwMemLength < 126)) return false;
     if ((pfh->verhi != 0x01) || (strncmp(pfh->szHeader, "Extreme", 7))
      || (!pfh->patterns) || (!pfh->orders) || (!pfh->samples) || (pfh->samples > MAX_SAMPLES)
@@ -158,7 +158,7 @@ bool CSoundFile::ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLen
         }
         dwMemPos += tmp;
     }
-    
+
     // Read Song Comments
     tmp = *((uint16_t *)(lpStream+dwMemPos));
     dwMemPos += 2;
@@ -349,7 +349,7 @@ typedef struct AMS2SAMPLE
 #pragma pack()
 
 
-bool CSoundFile::ReadAMS2(const uint8_t * /*lpStream*/, uint32_t /*dwMemLength*/)
+bool module_renderer::ReadAMS2(const uint8_t * /*lpStream*/, uint32_t /*dwMemLength*/)
 //------------------------------------------------------------
 {
     return false;
@@ -602,7 +602,7 @@ void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char pac
 {
     UINT tmplen = dmax;
     signed char *amstmp = new signed char[tmplen];
-    
+
     if (!amstmp) return;
     // Unpack Loop
     {
@@ -663,4 +663,3 @@ void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char pac
     }
     delete[] amstmp;
 }
-

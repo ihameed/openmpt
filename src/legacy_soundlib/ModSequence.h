@@ -3,7 +3,7 @@
 
 #include <vector>
 
-class CSoundFile;
+class module_renderer;
 class ModSequenceSet;
 
 class ModSequence
@@ -13,14 +13,14 @@ public:
     friend class ModSequenceSet;
     typedef PATTERNINDEX* iterator;
     typedef const PATTERNINDEX* const_iterator;
-    
+
     friend void WriteModSequence(std::ostream& oStrm, const ModSequence& seq);
     friend void ReadModSequence(std::istream& iStrm, ModSequence& seq, const size_t);
 
     virtual ~ModSequence() {if (m_bDeletableArray) delete[] m_pArray;}
     ModSequence(const ModSequence&);
-    ModSequence(CSoundFile& rSf, ORDERINDEX nSize);
-    ModSequence(CSoundFile& rSf, PATTERNINDEX* pArray, ORDERINDEX nSize, ORDERINDEX nCapacity, bool bDeletableArray);
+    ModSequence(module_renderer& rSf, ORDERINDEX nSize);
+    ModSequence(module_renderer& rSf, PATTERNINDEX* pArray, ORDERINDEX nSize, ORDERINDEX nCapacity, bool bDeletableArray);
 
     // Initialize default sized sequence.
     void Init();
@@ -40,7 +40,7 @@ public:
     void Append(PATTERNINDEX nPat);					// Appends given patindex.
 
     // Inserts nCount orders starting from nPos using nFill as the pattern index for all inserted orders.
-    // Sequence will automatically grow if needed and if it can't grow enough, some tail 
+    // Sequence will automatically grow if needed and if it can't grow enough, some tail
     // orders will be discarded.
     // Return: Number of orders inserted.
     ORDERINDEX Insert(ORDERINDEX nPos, ORDERINDEX nCount) {return Insert(nPos, nCount, GetInvalidPatIndex());}
@@ -52,7 +52,7 @@ public:
     void clear();
     void resize(ORDERINDEX nNewSize) {resize(nNewSize, GetInvalidPatIndex());}
     void resize(ORDERINDEX nNewSize, PATTERNINDEX nFill);
-    
+
     // Replaces all occurences of nOld with nNew.
     void Replace(PATTERNINDEX nOld, PATTERNINDEX nNew) {if (nOld != nNew) std::replace(begin(), end(), nOld, nNew);}
 
@@ -78,7 +78,7 @@ public:
     // when orderlist is empty.
     ORDERINDEX GetPreviousOrderIgnoringSkips(const ORDERINDEX start) const;
     ORDERINDEX GetNextOrderIgnoringSkips(const ORDERINDEX start) const;
-    
+
     ModSequence& operator=(const ModSequence& seq);
 
     // Read/write.
@@ -108,7 +108,7 @@ protected:
     PATTERNINDEX m_nInvalidIndex;	// Invalid pat index.
     PATTERNINDEX m_nIgnoreIndex;	// Ignore pat index.
     bool m_bDeletableArray;			// True if m_pArray points the deletable(with delete[]) array.
-    CSoundFile* m_pSndFile;			// Pointer to associated CSoundFile.
+    module_renderer* m_pSndFile;			// Pointer to associated CSoundFile.
 
     static const bool NoArrayDelete = false;
 };
@@ -129,7 +129,7 @@ class ModSequenceSet : public ModSequence
     friend void ReadModSequence(std::istream& iStrm, ModSequence& seq, const size_t);
 
 public:
-    ModSequenceSet(CSoundFile& sndFile);
+    ModSequenceSet(module_renderer& sndFile);
 
     const ModSequence& GetSequence() {return GetSequence(GetCurrentSequenceIndex());}
     const ModSequence& GetSequence(SEQUENCEINDEX nSeq) const;
@@ -150,7 +150,7 @@ public:
     bool MergeSequences();
 
     // If there are subsongs (separated by "---" or "+++" patterns) in the module,
-    // asks user whether to convert these into multiple sequences (given that the 
+    // asks user whether to convert these into multiple sequences (given that the
     // modformat supports multiple sequences).
     // Returns true if sequences were modified, false otherwise.
     bool ConvertSubsongsToMultipleSequences();
@@ -181,4 +181,3 @@ void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t);
 
 
 #endif
-

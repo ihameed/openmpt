@@ -195,7 +195,7 @@ uint8_t DMFvibrato2MPT(uint8_t val, const uint8_t internalTicks)
 }
 
 
-PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dwMemLength, DMF_PATTERNSETTINGS &settings, CSoundFile *pSndFile)
+PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dwMemLength, DMF_PATTERNSETTINGS &settings, module_renderer *pSndFile)
 //----------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_PATTERN(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return nPat);
@@ -246,7 +246,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
             }
 
             globalInfo &= DMFPAT_GLOBMASK;
-            
+
             uint8_t globalData = 0;
             if(globalInfo != 0)
             {
@@ -669,7 +669,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
                 int n;
                 for (n = 0; n < 4; n++)
                 {
-                    if(CSoundFile::ConvertVolEffect(&effect2, &effectParam2, (n >> 1) ? true : false))
+                    if(module_renderer::ConvertVolEffect(&effect2, &effectParam2, (n >> 1) ? true : false))
                     {
                         n = 5;
                         break;
@@ -679,7 +679,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
                 }
                 if (n < 5)
                 {
-                    if (CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)effect2) > CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)effect3))
+                    if (module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)effect2) > module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)effect3))
                     {
                         std::swap(effect2, effect3);
                         std::swap(effectParam2, effectParam3);
@@ -740,7 +740,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
 }
 
 
-uint32_t ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool isV8, uint8_t &sampleFlags, CSoundFile *pSndFile)
+uint32_t ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool isV8, uint8_t &sampleFlags, module_renderer *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_SAMPLE(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -813,7 +813,7 @@ uint32_t ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream
 }
 
 
-bool CSoundFile::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_CHUNK(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwChunkEnd, x, break);
@@ -1112,7 +1112,7 @@ int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen)
     DMF_HTREE tree;
     int actnode;
     uint8_t value, sign, delta = 0;
-    
+
     MemsetZero(tree);
     tree.ibuf = ibuf;
     tree.ibufmax = ibufmax;
@@ -1142,5 +1142,3 @@ int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen)
 #endif
     return tree.ibuf - ibuf;
 }
-
-

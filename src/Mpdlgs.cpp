@@ -109,18 +109,18 @@ BOOL COptionsSoundcard::OnInitDialog()
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     BOOL bAsio = FALSE;
     CHAR s[128];
-    
+
     CPropertyPage::OnInitDialog();
     if (m_dwSoundSetup & SOUNDSETUP_STREVERSE) CheckDlgButton(IDC_CHECK1, MF_CHECKED);
     if (m_dwSoundSetup & SOUNDSETUP_SOFTPANNING) CheckDlgButton(IDC_CHECK2, MF_CHECKED);
     if (m_dwSoundSetup & SOUNDSETUP_ENABLEMMX) CheckDlgButton(IDC_CHECK3, MF_CHECKED);
     if (m_dwSoundSetup & SOUNDSETUP_SECONDARY) CheckDlgButton(IDC_CHECK4, MF_CHECKED);
     // Multimedia extensions
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_CHECK3), (CSoundFile::GetSysInfo() & SYSMIX_ENABLEMMX) ? TRUE : FALSE);
-    if(CSoundFile::GetSysInfo() & SYSMIX_SSE)
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_CHECK3), (module_renderer::GetSysInfo() & SYSMIX_ENABLEMMX) ? TRUE : FALSE);
+    if(module_renderer::GetSysInfo() & SYSMIX_SSE)
     {
         SetDlgItemText(IDC_CHECK3, _T("Enable SSE acceleration"));
-    } else if (CSoundFile::GetSysInfo() & SYSMIX_3DNOW)
+    } else if (module_renderer::GetSysInfo() & SYSMIX_3DNOW)
     {
         SetDlgItemText(IDC_CHECK3, _T("Enable 3DNow! acceleration"));
     }
@@ -134,7 +134,7 @@ BOOL COptionsSoundcard::OnInitDialog()
         {
             wsprintf(s, "%d (%s)", nCPUMix[n], szCPUNames[n]);
             m_CbnPolyphony.AddString(s);
-            if (CSoundFile::m_nMaxMixChannels == nCPUMix[n]) m_CbnPolyphony.SetCurSel(n);
+            if (module_renderer::m_nMaxMixChannels == nCPUMix[n]) m_CbnPolyphony.SetCurSel(n);
         }
     }
     // Sound Buffer Length
@@ -165,7 +165,7 @@ BOOL COptionsSoundcard::OnInitDialog()
         m_SliderStereoSep.SetPos(2);
         for (int n=0; n<=4; n++)
         {
-            if ((int)CSoundFile::m_nStereoSeparation <= (int)(32 << n))
+            if ((int)module_renderer::m_nStereoSeparation <= (int)(32 << n))
             {
                 m_SliderStereoSep.SetPos(n);
                 break;
@@ -221,10 +221,10 @@ void COptionsSoundcard::UpdateStereoSep()
 //---------------------------------------
 {
     CHAR s[64];
-    CSoundFile::m_nStereoSeparation = 32 << m_SliderStereoSep.GetPos();
-    wsprintf(s, "%d%%", (CSoundFile::m_nStereoSeparation * 100) / 128);
+    module_renderer::m_nStereoSeparation = 32 << m_SliderStereoSep.GetPos();
+    wsprintf(s, "%d%%", (module_renderer::m_nStereoSeparation * 100) / 128);
     SetDlgItemText(IDC_TEXT1, s);
-    
+
 }
 
 
@@ -342,7 +342,7 @@ void COptionsSoundcard::OnOK()
     // Polyphony
     {
         int nmmx = m_CbnPolyphony.GetCurSel();
-        if ((nmmx >= 0) && (nmmx < sizeof(nCPUMix)/sizeof(nCPUMix[0]))) CSoundFile::m_nMaxMixChannels = nCPUMix[nmmx];
+        if ((nmmx >= 0) && (nmmx < sizeof(nCPUMix)/sizeof(nCPUMix[0]))) module_renderer::m_nMaxMixChannels = nCPUMix[nmmx];
     }
     // Sound Device
     {
@@ -359,9 +359,9 @@ void COptionsSoundcard::OnOK()
     }
     // Soft Panning
     if (m_dwSoundSetup & SOUNDSETUP_SOFTPANNING)
-        CSoundFile::gdwSoundSetup |= SNDMIX_SOFTPANNING;
+        module_renderer::gdwSoundSetup |= SNDMIX_SOFTPANNING;
     else
-        CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
+        module_renderer::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CPropertyPage::OnOK();
 }
@@ -418,7 +418,7 @@ BOOL COptionsPlayer::OnInitDialog()
 //---------------------------------
 {
     uint32_t dwQuality;
-    
+
     CPropertyPage::OnInitDialog();
     dwQuality = CMainFrame::deprecated_m_dwQuality;
     // Resampling type
@@ -437,7 +437,7 @@ BOOL COptionsPlayer::OnInitDialog()
     if (dwQuality & QUALITY_AGC) CheckDlgButton(IDC_CHECK2, MF_CHECKED);
     if (dwQuality & QUALITY_SURROUND) CheckDlgButton(IDC_CHECK4, MF_CHECKED);
     if (dwQuality & QUALITY_NOISEREDUCTION) CheckDlgButton(IDC_CHECK5, MF_CHECKED);
-    if (CSoundFile::GetSysInfo() & SYSMIX_SLOWCPU)
+    if (module_renderer::GetSysInfo() & SYSMIX_SLOWCPU)
         ::EnableWindow(::GetDlgItem(m_hWnd, IDC_CHECK3), FALSE);
     else if (dwQuality & QUALITY_EQ) CheckDlgButton(IDC_CHECK3, MF_CHECKED);
 
@@ -505,12 +505,12 @@ void COptionsPlayer::OnResamplerChanged()
         m_CEditWFIRCutoff.EnableWindow(TRUE);
         wsprintf(s, "%d", static_cast<int>((CMainFrame::gdWFIRCutoff*100)));
         break;
-    default: 
+    default:
         m_CbnWFIRType.AddString("None");
         m_CEditWFIRCutoff.EnableWindow(FALSE);
         m_CbnWFIRType.EnableWindow(FALSE);
     }
-    
+
     m_CEditWFIRCutoff.SetWindowText(s);
     OnSettingsChanged();
 }
@@ -526,7 +526,7 @@ void COptionsPlayer::OnDefaultResampling()
     m_CEditWFIRCutoff.SetWindowText("97");
     m_CEditRampIn.SetWindowText("0");
     m_CEditRampOut.SetWindowText("42");
-    
+
 }
 
 extern VOID SndMixInitializeTables();
@@ -968,7 +968,7 @@ BOOL CEQSetupDlg::OnSetActive()
 //-----------------------------
 {
     CMainFrame::m_nLastOptionsPage = OPTIONS_PAGE_EQ;
-    SetDlgItemText(IDC_EQ_WARNING, 
+    SetDlgItemText(IDC_EQ_WARNING,
         "Note: This EQ, when enabled from Player tab, is applied to "
         "any and all of the modules "
         "that you load in OpenMPT; its settings are stored globally, "
@@ -1008,7 +1008,7 @@ void CMidiSetupDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_SPIN2,		m_SpinPat);
     //}}AFX_DATA_MAP
 }
-    
+
 
 BOOL CMidiSetupDlg::OnInitDialog()
 //--------------------------------
@@ -1064,7 +1064,7 @@ void CMidiSetupDlg::OnOK()
     if (IsDlgButtonChecked(IDC_MIDIVOL_TO_NOTEVOL)) m_dwMidiSetup |= MIDISETUP_MIDIVOL_TO_NOTEVOL;
     if (IsDlgButtonChecked(IDC_MIDIPLAYCONTROL)) m_dwMidiSetup |= MIDISETUP_RESPONDTOPLAYCONTROLMSGS;
     if (IsDlgButtonChecked(IDC_MIDIPLAYPATTERNONMIDIIN)) m_dwMidiSetup |= MIDISETUP_PLAYPATTERNONMIDIIN;
-    
+
     if ((combo = (CComboBox *)GetDlgItem(IDC_COMBO1)) != NULL)
     {
         int n = combo->GetCurSel();
@@ -1083,4 +1083,3 @@ BOOL CMidiSetupDlg::OnSetActive()
     CMainFrame::m_nLastOptionsPage = OPTIONS_PAGE_MIDI;
     return CPropertyPage::OnSetActive();
 }
-

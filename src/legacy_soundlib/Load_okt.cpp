@@ -54,7 +54,7 @@ struct OKT_SAMPLEINFO
 
 
 // Parse the sample header block
-void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vector<bool> &sample7bit, CSoundFile *pSndFile)
+void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vector<bool> &sample7bit, module_renderer *pSndFile)
 //------------------------------------------------------------------------------------------------------------------
 {
     pSndFile->m_nSamples = min((SAMPLEINDEX)(dwMemLength / 32), MAX_SAMPLES - 1);	// typically 36
@@ -96,7 +96,7 @@ void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vecto
 
 
 // Parse a pattern block
-void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const PATTERNINDEX nPat, CSoundFile *pSndFile)
+void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const PATTERNINDEX nPat, module_renderer *pSndFile)
 //-----------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_OKTPAT(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return);
@@ -266,7 +266,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
 }
 
 
-bool CSoundFile::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;

@@ -76,7 +76,7 @@ static MODTYPE GDMHeader_Origin[] =
     MOD_TYPE_NONE, MOD_TYPE_MOD, MOD_TYPE_MTM, MOD_TYPE_S3M, MOD_TYPE_669, MOD_TYPE_FAR, MOD_TYPE_ULT, MOD_TYPE_STM, MOD_TYPE_MED
 };
 
-bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength < sizeof(GDMHEADER))) return false;
@@ -108,7 +108,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
     for(CHANNELINDEX i = 0; i < 32; i++)
     {
         if(pHeader->PanMap[i] < 16)
-        {    	
+        {
             ChnSettings[i].nPan = min((pHeader->PanMap[i] << 4) + 8, 256);
         }
         else if(pHeader->PanMap[i] == 16)
@@ -133,11 +133,11 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
     uint32_t iSampleOffset  = LittleEndian(pHeader->SamOffset),
            iPatternsOffset = LittleEndian(pHeader->PatOffset);
 
-    const uint32_t iOrdOffset = LittleEndian(pHeader->OrdOffset), iSamHeadOffset = LittleEndian(pHeader->SamHeadOffset), 
+    const uint32_t iOrdOffset = LittleEndian(pHeader->OrdOffset), iSamHeadOffset = LittleEndian(pHeader->SamHeadOffset),
                  iMTOffset = LittleEndian(pHeader->MTOffset), iMTLength = LittleEndian(pHeader->MTLength),
                  iSSOffset = LittleEndian(pHeader->SSOffset), iSSLength = LittleEndianW(pHeader->SSLength),
                  iTGOffset = LittleEndian(pHeader->TGOffset), iTGLength = LittleEndianW(pHeader->TGLength);
-    
+
 
     // check if offsets are valid. we won't read the scrolly text or text graphics, but invalid pointers would probably indicate a broken file...
     if(       dwMemLength < iOrdOffset || dwMemLength - iOrdOffset < pHeader->NOO
@@ -154,7 +154,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
 
     // read samples
     m_nSamples = pHeader->NOS + 1;
-    
+
     for(SAMPLEINDEX iSmp = 1; iSmp <= m_nSamples; iSmp++)
     {
         const PGDMSAMPLEHEADER pSample = (PGDMSAMPLEHEADER)(lpStream + iSamHeadOffset + (iSmp - 1) * sizeof(GDMSAMPLEHEADER));
@@ -214,7 +214,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
 
         /* note: apparently (and according to zilym), 2GDM doesn't handle 16 bit or stereo samples properly.
            so those flags are pretty much meaningless and we will ignore them... in fact, samples won't load as expected if we don't! */
-        
+
         UINT iSampleFormat;
         if(pSample->Flags & 0x02) // 16 bit
         {
@@ -236,7 +236,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
 
         // read sample data
         ReadSample(&Samples[iSmp], iSampleFormat, reinterpret_cast<LPCSTR>(lpStream + iSampleOffset), dwMemLength - iSampleOffset);
-            
+
         iSampleOffset += min(LittleEndian(pSample->Length), dwMemLength - iSampleOffset);
 
     }
@@ -249,12 +249,12 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
     // we'll start at position iPatternsOffset and decode all patterns
     for (PATTERNINDEX iPat = 0; iPat < pHeader->NOP + 1; iPat++)
     {
-        
+
         if(iPatternsOffset + 2 > dwMemLength) break;
         uint16_t iPatternLength = LittleEndianW(*(uint16_t *)(lpStream + iPatternsOffset)); // pattern length including the two "length" bytes
         if(iPatternLength > dwMemLength || iPatternsOffset > dwMemLength - iPatternLength) break;
 
-        if(Patterns.Insert(iPat, 64)) 
+        if(Patterns.Insert(iPat, 64))
             break;
 
         // position in THIS pattern
@@ -321,7 +321,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
                         case 0x09: command = CMD_OFFSET; break;
                         case 0x0A: command = CMD_VOLUMESLIDE; break;
                         case 0x0B: command = CMD_POSITIONJUMP; break;
-                        case 0x0C: 
+                        case 0x0C:
                             if(bS3MCommandSet)
                             {
                                 command = CMD_NONE;
@@ -335,7 +335,7 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
                             }
                             break;
                         case 0x0D: command = CMD_PATTERNBREAK; break;
-                        case 0x0E: 
+                        case 0x0E:
                             if(bS3MCommandSet)
                             {
                                 command = CMD_S3MCMDEX;
@@ -488,19 +488,19 @@ bool CSoundFile::ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLen
                     }
 
                 }
-                
+
             }
         }
 
         iPatternsOffset += iPatternLength;
     }
 
-    // read song comments    
+    // read song comments
     if(iMTLength > 0)
     {
         ReadMessage(lpStream + iMTOffset, iMTLength, leAutodetect);
     }
-    
+
     return true;
 
 }

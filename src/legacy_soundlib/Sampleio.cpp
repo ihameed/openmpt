@@ -18,7 +18,7 @@
 
 #pragma warning(disable:4244)
 
-bool CSoundFile::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //--------------------------------------------------------------------------------------------
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
@@ -34,7 +34,7 @@ bool CSoundFile::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint3
 }
 
 
-bool CSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr >= MAX_INSTRUMENTS)) return false;
@@ -48,7 +48,7 @@ bool CSoundFile::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
 }
 
 
-bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
     uint32_t *psig = (uint32_t *)lpMemFile;
@@ -104,7 +104,7 @@ bool CSoundFile::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
 // -> CODE#0003
 // -> DESC="remove instrument's samples"
 // BOOL CSoundFile::DestroyInstrument(UINT nInstr)
-bool CSoundFile::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples)
+bool module_renderer::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples)
 //----------------------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr > m_nInstruments)) return false;
@@ -145,7 +145,7 @@ bool CSoundFile::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples)
 
 
 // Removing all unused samples
-bool CSoundFile::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
+bool module_renderer::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
 //--------------------------------------------------------------
 {
     vector<bool> sampleused(GetNumSamples() + 1, false);
@@ -182,7 +182,7 @@ bool CSoundFile::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
 // I/O From another song
 //
 
-bool CSoundFile::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrcSong, UINT nSrcInstr)
+bool module_renderer::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, module_renderer *pSrcSong, UINT nSrcInstr)
 //---------------------------------------------------------------------------------------------------
 {
     if ((!pSrcSong) || (!nSrcInstr) || (nSrcInstr > pSrcSong->m_nInstruments)
@@ -247,7 +247,7 @@ bool CSoundFile::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, CSoundFile *pSrc
 }
 
 
-bool CSoundFile::ReadSampleFromSong(SAMPLEINDEX nSample, CSoundFile *pSrcSong, UINT nSrcSample)
+bool module_renderer::ReadSampleFromSong(SAMPLEINDEX nSample, module_renderer *pSrcSong, UINT nSrcSample)
 //---------------------------------------------------------------------------------------------
 {
     if ((!pSrcSong) || (!nSrcSample) || (nSrcSample > pSrcSong->m_nSamples) || (nSample >= MAX_SAMPLES)) return false;
@@ -294,7 +294,7 @@ bool CSoundFile::ReadSampleFromSong(SAMPLEINDEX nSample, CSoundFile *pSrcSong, U
 
 extern BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, uint32_t dwBytes, UINT pkBlkAlign);
 
-bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset)
+bool module_renderer::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset)
 //-------------------------------------------------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0, dwDataPos;
@@ -304,7 +304,7 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t d
     WAVESMPLHEADER *psh;
     WAVEEXTRAHEADER *pxh;
     uint32_t dwInfoList, dwFact, dwSamplesPerBlock;
-    
+
     if ((!nSample) || (!lpMemFile) || (dwFileLength < (uint32_t)(sizeof(WAVEFILEHEADER)+sizeof(WAVEFORMATHEADER)))) return false;
     if (((phdr->id_RIFF != IFFID_RIFF) && (phdr->id_RIFF != IFFID_LIST))
      || ((phdr->id_WAVE != IFFID_WAVE) && (phdr->id_WAVE != IFFID_wave))) return false;
@@ -400,13 +400,13 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t d
     UINT nType = RS_PCM8U;
     if (pfmt->channels == 1)
     {
-        if (pfmt->bitspersample == 24) nType = RS_PCM24S; 
-        else if (pfmt->bitspersample == 32) nType = RS_PCM32S; 
+        if (pfmt->bitspersample == 24) nType = RS_PCM24S;
+        else if (pfmt->bitspersample == 32) nType = RS_PCM32S;
             else nType = (pfmt->bitspersample == 16) ? RS_PCM16S : RS_PCM8U;
     } else
     {
-        if (pfmt->bitspersample == 24) nType = RS_STIPCM24S; 
-        else if (pfmt->bitspersample == 32) nType = RS_STIPCM32S; 
+        if (pfmt->bitspersample == 24) nType = RS_STIPCM24S;
+        else if (pfmt->bitspersample == 32) nType = RS_STIPCM32S;
             else nType = (pfmt->bitspersample == 16) ? RS_STIPCM16S : RS_STIPCM8U;
     }
     UINT samplesize = pfmt->channels * (pfmt->bitspersample >> 3);
@@ -521,7 +521,7 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t d
         pSmp->vibrato_rate = pxh->nVibRate;
         // Name present (clipboard only)
         UINT xtrabytes = pxh->xtra_len + 8 - sizeof(WAVEEXTRAHEADER);
-        LPSTR pszTextEx = (LPSTR)(pxh+1); 
+        LPSTR pszTextEx = (LPSTR)(pxh+1);
         if (xtrabytes >= MAX_SAMPLENAME)
         {
             memcpy(m_szNames[nSample], pszTextEx, MAX_SAMPLENAME - 1);
@@ -541,7 +541,7 @@ bool CSoundFile::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t d
 ///////////////////////////////////////////////////////////////
 // Save WAV
 
-bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
+bool module_renderer::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
 //---------------------------------------------------------------
 {
     LPCSTR lpszMPT = "Modplug Tracker\0";
@@ -647,7 +647,7 @@ bool CSoundFile::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
 ///////////////////////////////////////////////////////////////
 // Save RAW
 
-bool CSoundFile::SaveRAWSample(UINT nSample, LPCSTR lpszFileName)
+bool module_renderer::SaveRAWSample(UINT nSample, LPCSTR lpszFileName)
 //---------------------------------------------------------------
 {
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
@@ -722,8 +722,8 @@ typedef struct GF1SAMPLEHEADER
 //
 //    It can be represented like this (the enveloppe is totally bogus, it is
 //    just to show the concept):
-//    					  
-//    |                               
+//
+//    |
 //    |           /----`               | |
 //    |   /------/      `\         | | | | |
 //    |  /                 \       | | | | |
@@ -779,14 +779,14 @@ LONG PatchFreqToNote(ULONG nFreq)
 }
 
 
-void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, uint32_t dwMemLength)
+void PatchToSample(module_renderer *that, UINT nSample, LPBYTE lpStream, uint32_t dwMemLength)
 //------------------------------------------------------------------------------------
 {
     modplug::tracker::modsample_t *pIns = &that->Samples[nSample];
     uint32_t dwMemPos = sizeof(GF1SAMPLEHEADER);
     GF1SAMPLEHEADER *psh = (GF1SAMPLEHEADER *)(lpStream);
     UINT nSmpType;
-    
+
     if (dwMemLength < sizeof(GF1SAMPLEHEADER)) return;
     if (psh->name[0])
     {
@@ -829,7 +829,7 @@ void PatchToSample(CSoundFile *that, UINT nSample, LPBYTE lpStream, uint32_t dwM
 }
 
 
-bool CSoundFile::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, uint32_t dwMemLength)
 //-------------------------------------------------------------------------------------
 {
     uint32_t dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
@@ -852,7 +852,7 @@ bool CSoundFile::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, uint32_t dw
 
 
 // PAT Instrument
-bool CSoundFile::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, uint32_t dwMemLength)
 //--------------------------------------------------------------------------------------------
 {
     GF1PATCHFILEHEADER *phdr = (GF1PATCHFILEHEADER *)lpStream;
@@ -994,7 +994,7 @@ typedef struct S3ISAMPLESTRUCT
     uint32_t scrs;
 } S3ISAMPLESTRUCT;
 
-bool CSoundFile::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------
 {
     S3ISAMPLESTRUCT *pss = (S3ISAMPLESTRUCT *)lpMemFile;
@@ -1074,7 +1074,7 @@ typedef struct XISAMPLEHEADER
 
 
 
-bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------
 {
     XIFILEHEADER *pxh = (XIFILEHEADER *)lpMemFile;
@@ -1267,7 +1267,7 @@ bool CSoundFile::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint
 }
 
 
-bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
+bool module_renderer::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 //----------------------------------------------------------------------------
 {
     XIFILEHEADER xfh;
@@ -1397,7 +1397,7 @@ bool CSoundFile::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 }
 
 
-bool CSoundFile::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //--------------------------------------------------------------------------------------
 {
     XIFILEHEADER *pxh = (XIFILEHEADER *)lpMemFile;
@@ -1542,7 +1542,7 @@ static uint32_t Ext2Long(LPBYTE p)
 
 
 
-bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //----------------------------------------------------------------------------------------
 {
     uint32_t dwMemPos = sizeof(AIFFFILEHEADER);
@@ -1613,7 +1613,7 @@ bool CSoundFile::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
 //BOOL CSoundFile::ReadITSSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
-UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
+UINT module_renderer::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
 //-------------------------------------------------------------------------------------------------------
 {
     ITSAMPLESTRUCT *pis = (ITSAMPLESTRUCT *)lpMemFile;
@@ -1691,7 +1691,7 @@ UINT CSoundFile::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t d
 }
 
 
-bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //----------------------------------------------------------------------------------------------
 {
     ITINSTRUMENT *pinstr = (ITINSTRUMENT *)lpMemFile;
@@ -1778,7 +1778,7 @@ bool CSoundFile::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uin
 }
 
 
-bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
+bool module_renderer::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
 //-----------------------------------------------------------------------------
 {
     uint8_t buffer[554];
@@ -1917,7 +1917,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
         smpsize = psmp->length;
         if (psmp->flags & CHN_16BIT)
         {
-            itss.flags |= 0x02; 
+            itss.flags |= 0x02;
             smpsize <<= 1;
         } else
         {
@@ -1927,7 +1927,7 @@ bool CSoundFile::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
         if (psmp->flags & CHN_STEREO)
         {
             itss.flags |= 0x04;
-            smpsize <<= 1; 
+            smpsize <<= 1;
         } else
         {
             itss.flags &= ~(0x04);
@@ -1972,7 +1972,7 @@ bool IsValidSizeField(const uint8_t * const pData, const uint8_t * const pEnd, c
 {
     if(size < 0 || (uintptr_t)(pEnd - pData) < (uintptr_t)size)
         return false;
-    else 
+    else
         return true;
 }
 
@@ -1982,7 +1982,7 @@ void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, const
 {
     // get field's address in instrument's header
     uint8_t* fadr = GetInstrumentHeaderFieldPointer(pIns, code, size);
-     
+
     if(fadr && code != 'K[..')    // copy field data in instrument's header
         memcpy(fadr,ptr,size);  // (except for keyboard mapping)
     ptr += size;    			// jump field
@@ -2101,14 +2101,14 @@ typedef struct IFFBODY
 
 
 
-bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------
 {
     IFF8SVXFILEHEADER *pfh = (IFF8SVXFILEHEADER *)lpMemFile;
     IFFVHDR *pvh = (IFFVHDR *)(lpMemFile + 12);
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     uint32_t dwMemPos = 12;
-    
+
     if ((!lpMemFile) || (dwFileLength < sizeof(IFFVHDR)+12) || (pfh->dwFORM != IFFID_FORM)
      || (pfh->dw8SVX != IFFID_8SVX) || (BigEndian(pfh->dwSize) >= dwFileLength)
      || (pvh->dwVHDR != IFFID_VHDR) || (BigEndian(pvh->dwSize) >= dwFileLength)) return false;
@@ -2166,4 +2166,3 @@ bool CSoundFile::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileL
     }
     return (pSmp->sample_data != nullptr);
 }
-

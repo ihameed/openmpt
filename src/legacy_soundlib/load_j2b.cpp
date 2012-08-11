@@ -202,18 +202,18 @@ static uint8_t riffam_efftrans[] =
 };
 
 
-static uint8_t riffam_autovibtrans[] = 
+static uint8_t riffam_autovibtrans[] =
 {
     VIB_SINE, VIB_SQUARE, VIB_RAMP_UP, VIB_RAMP_DOWN, VIB_RANDOM,
 };
 
 
 // Convert RIFF AM(FF) pattern data to MPT pattern data.
-bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool bIsAM, CSoundFile *pSndFile)
+bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool bIsAM, module_renderer *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 {
     // version false = AMFF, true = AM
-    
+
     uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ(1);
@@ -260,7 +260,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
                 {
                     // command translation
                     m->command = riffam_efftrans[m->command];
-                    
+
                     // handling special commands
                     switch(m->command)
                     {
@@ -291,7 +291,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
                         m->param = ((m->param >> 4) * 10) + (m->param & 0x0F);
                         break;
                     case CMD_MODCMDEX:
-                        CSoundFile::MODExx2S3MSxx(m);
+                        module_renderer::MODExx2S3MSxx(m);
                         break;
                     case CMD_TEMPO:
                         if(m->param <= 0x1F) m->command = CMD_SPEED;
@@ -440,7 +440,7 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
 }
 
 
-bool CSoundFile::ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //----------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_CHUNK(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwChunkEnd, x, break);
@@ -466,7 +466,7 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLeng
     m_nChannels = 0;
     m_nSamples = 0;
     m_nInstruments = 0;
-    
+
     // go through all chunks now
     while(dwMemPos < dwMemLength)
     {
@@ -778,7 +778,7 @@ bool CSoundFile::ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLeng
     #undef ASSERT_CAN_READ_CHUNK
 }
 
-bool CSoundFile::ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;

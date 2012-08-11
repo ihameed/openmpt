@@ -14,7 +14,7 @@ class CEffectVis : public CModControlDlg
     DECLARE_DYNAMIC(CEffectVis)
 
 public:
-    enum 
+    enum
     {
     	kAction_OverwriteFX=0,
     	kAction_FillFX,
@@ -47,7 +47,7 @@ protected:
     void ShowVisImage(CDC *pDC);
     BOOL m_boolForceRedraw, m_boolUseBitmaps;
     RECT invalidated;
-    
+
     int m_nLastDrawnRow; // for interpolation
     long m_nLastDrawnY; // for interpolation
     int m_nRowToErase;
@@ -89,7 +89,7 @@ public:
     bool IsPcNote(int row);
     void SetPcNote(int row);
 
-    CSoundFile* m_pSndFile;
+    module_renderer* m_pSndFile;
     CModDoc* m_pModDoc;
     CRect m_rcDraw;
     CRect m_rcFullWin;
@@ -105,12 +105,12 @@ public:
     LONG* GetSplitPosRef() {return NULL;} 	//rewbs.varWindowSize
 
     CViewPattern *m_pViewPattern;
-    
+
 
     DECLARE_MESSAGE_MAP()
     BOOL OnInitDialog();
     afx_msg void OnPaint();
-    
+
 public: //HACK for first window repos
     afx_msg void OnSize(UINT nType, int cx, int cy);
 protected:

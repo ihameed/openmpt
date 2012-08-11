@@ -74,7 +74,7 @@ enum
     S3I_TYPE_ADMEL = 2,
 };
 
-void CSoundFile::S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const
+void module_renderer::S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const
 //--------------------------------------------------------
 {
     UINT command = m->command;
@@ -118,7 +118,7 @@ void CSoundFile::S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const
 }
 
 
-void CSoundFile::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport) const
+void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport) const
 //------------------------------------------------------------------------------------------------
 {
     UINT command = *pcmd;
@@ -148,7 +148,7 @@ void CSoundFile::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatib
     case CMD_FINEVIBRATO:    	command = 'U'; break;
     case CMD_GLOBALVOLUME:    	command = 'V'; break;
     case CMD_GLOBALVOLSLIDE:    command = 'W'; break;
-    case CMD_PANNING8:    		
+    case CMD_PANNING8:
         command = 'X';
         if (bIT && !(m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM)))
         {
@@ -195,8 +195,8 @@ void CSoundFile::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatib
         case 0xB0:    if (param & 0x0F) { command = 'D'; param |= 0xF0; } else command=param=0; break;
         }
         break;
-    // Chars under 0x40 don't save properly, so map : to ] and # to [.    
-    case CMD_DELAYCUT: 
+    // Chars under 0x40 don't save properly, so map : to ] and # to [.
+    case CMD_DELAYCUT:
         if(bCompatibilityExport || !bIT)
             command = param = 0;
         else
@@ -216,7 +216,7 @@ void CSoundFile::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatib
 }
 
 
-bool CSoundFile::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     if ((!lpStream) || (dwMemLength <= sizeof(S3MFILEHEADER) + 64)) return false;
@@ -546,7 +546,7 @@ static const uint8_t S3MFiller[16] =
 };
 
 
-bool CSoundFile::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
+bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
 //----------------------------------------------------------
 {
     FILE *f;

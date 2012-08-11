@@ -47,7 +47,7 @@
 
 
 // Trim envelopes and remove release nodes.
-void UpdateEnvelopes(modplug::tracker::modenvelope_t *mptEnv, CSoundFile *pSndFile, std::bitset<wNumWarnings> &warnings)
+void UpdateEnvelopes(modplug::tracker::modenvelope_t *mptEnv, module_renderer *pSndFile, std::bitset<wNumWarnings> &warnings)
 //---------------------------------------------------------------------------------------------------------
 {
     // shorten instrument envelope if necessary (for mod conversion)
@@ -84,7 +84,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     PATTERNINDEX nResizedPatterns = 0;
 
     const MODTYPE nOldType = m_SndFile.GetType();
-    
+
     if (nNewType == nOldType && nNewType == MOD_TYPE_IT)
     {
         // Even if m_nType doesn't change, we might need to change extension in itp<->it case.
@@ -103,10 +103,10 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
                 oldTypeIsS3M_IT_MPT = (oldTypeIsS3M || oldTypeIsIT || oldTypeIsMPT),
                 oldTypeIsIT_MPT = (oldTypeIsIT || oldTypeIsMPT);
 
-    const bool newTypeIsMOD = (nNewType == MOD_TYPE_MOD), newTypeIsXM =  (nNewType == MOD_TYPE_XM), 
+    const bool newTypeIsMOD = (nNewType == MOD_TYPE_MOD), newTypeIsXM =  (nNewType == MOD_TYPE_XM),
                 newTypeIsS3M = (nNewType == MOD_TYPE_S3M), newTypeIsIT = (nNewType == MOD_TYPE_IT),
-                newTypeIsMPT = (nNewType == MOD_TYPE_MPT), newTypeIsMOD_XM = (newTypeIsMOD || newTypeIsXM), 
-                newTypeIsS3M_IT_MPT = (newTypeIsS3M || newTypeIsIT || newTypeIsMPT), 
+                newTypeIsMPT = (nNewType == MOD_TYPE_MPT), newTypeIsMOD_XM = (newTypeIsMOD || newTypeIsXM),
+                newTypeIsS3M_IT_MPT = (newTypeIsS3M || newTypeIsIT || newTypeIsMPT),
                 newTypeIsXM_IT_MPT = (newTypeIsXM || newTypeIsIT || newTypeIsMPT),
                 newTypeIsIT_MPT = (newTypeIsIT || newTypeIsMPT);
 
@@ -221,7 +221,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
                         m->param = cEffectMemory[nChannel][m->command];
                     else
                         cEffectMemory[nChannel][m->command] = m->param;
-                    break;    			
+                    break;
 
                 }
             }
@@ -296,7 +296,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Transpose to Frequency (MOD/XM to S3M/IT/MPT)
         if(oldTypeIsMOD_XM && newTypeIsS3M_IT_MPT)
         {
-            m_SndFile.Samples[nSmp].c5_samplerate = CSoundFile::TransposeToFrequency(m_SndFile.Samples[nSmp].RelativeTone, m_SndFile.Samples[nSmp].nFineTune);
+            m_SndFile.Samples[nSmp].c5_samplerate = module_renderer::TransposeToFrequency(m_SndFile.Samples[nSmp].RelativeTone, m_SndFile.Samples[nSmp].nFineTune);
             m_SndFile.Samples[nSmp].RelativeTone = 0;
             m_SndFile.Samples[nSmp].nFineTune = 0;
         }
@@ -304,7 +304,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Frequency to Transpose, panning (S3M/IT/MPT to MOD/XM)
         if(oldTypeIsS3M_IT_MPT && newTypeIsMOD_XM)
         {
-            CSoundFile::FrequencyToTranspose(&m_SndFile.Samples[nSmp]);
+            module_renderer::FrequencyToTranspose(&m_SndFile.Samples[nSmp]);
             if (!(m_SndFile.Samples[nSmp].flags & CHN_PANNING)) m_SndFile.Samples[nSmp].default_pan = 128;
             // No relative note for MOD files
             // TODO: Pattern notes could be transposed based on the previous relative tone?
@@ -386,7 +386,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     }
 
     // Is the "restart position" value allowed in this format?
-    if(m_SndFile.m_nRestartPos > 0 && !CSoundFile::GetModSpecifications(nNewType).hasRestartPos)
+    if(m_SndFile.m_nRestartPos > 0 && !module_renderer::GetModSpecifications(nNewType).hasRestartPos)
     {
         // Try to fix it
         RestartPosToPattern();
@@ -416,7 +416,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     }
 
     // Check for patterns with custom time signatures (fixing will be applied in the pattern container)
-    if(!CSoundFile::GetModSpecifications(nNewType).hasPatternSignatures)
+    if(!module_renderer::GetModSpecifications(nNewType).hasPatternSignatures)
     {
         for(PATTERNINDEX nPat = 0; nPat < m_SndFile.GetNumPatterns(); nPat++)
         {
@@ -481,7 +481,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         UpdateEnvelopes(&(m_SndFile.Instruments[i]->panning_envelope), &m_SndFile, warnings);
         UpdateEnvelopes(&(m_SndFile.Instruments[i]->pitch_envelope), &m_SndFile, warnings);
     }
-        
+
     CHAR s[64];
     CHANGEMODTYPE_CHECK(wInstrumentsToSamples, "All instruments have been converted to samples.\n");
     wsprintf(s, "%d patterns have been resized to 64 rows\n", nResizedPatterns);

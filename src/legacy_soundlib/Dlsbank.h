@@ -1,7 +1,7 @@
 #ifndef _DLS_BANK_H_
 #define _DLS_BANK_H_
 
-class CSoundFile;
+class module_renderer;
 
 #pragma pack(1)
 
@@ -121,8 +121,8 @@ public:
     UINT GetRegionFromKey(UINT nIns, UINT nKey);
     BOOL FreeWaveForm(LPBYTE p);
     BOOL ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, uint32_t *pLen);
-    BOOL ExtractSample(CSoundFile *pSndFile, UINT nSample, UINT nIns, UINT nRgn, int transpose=0);
-    BOOL ExtractInstrument(CSoundFile *pSndFile, UINT nInstr, UINT nIns, UINT nDrumRgn);
+    BOOL ExtractSample(module_renderer *pSndFile, UINT nSample, UINT nIns, UINT nRgn, int transpose=0);
+    BOOL ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nIns, UINT nDrumRgn);
 
 // Internal Loader Functions
 protected:

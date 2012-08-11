@@ -266,7 +266,7 @@ static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINS
     }
 }
 
-bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;
@@ -304,7 +304,7 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLen
 
     m_nSamples = 0; // Will be incremented later
     m_nInstruments = 0;
-    
+
     m_nChannels = 0;
     for(CHANNELINDEX nChn = 0; nChn < 32; nChn++)
     {
@@ -350,7 +350,7 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLen
     Order.resize(hdr.ordnum);
     for(ORDERINDEX nOrd = 0; nOrd < hdr.ordnum; nOrd++)
         Order[nOrd] = ((hdr.orderlist[nOrd] == 0xff) ? Order.GetIgnoreIndex() : (PATTERNINDEX)hdr.orderlist[nOrd]);
-    
+
     // read patterns
     for(PATTERNINDEX nPat = 0; nPat < hdr.patnum; nPat++)
     {
@@ -495,7 +495,7 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLen
         // Orpheus does not check this!
         //if(memcmp(imfins.ii10, "II10", 4) != 0)
         //    return false;
-        
+
         pIns = new modinstrument_t;
         if(!pIns)
             continue;
@@ -542,7 +542,7 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLen
 
             if(memcmp(imfsmp.is10, "IS10", 4) != 0)
                 return false;
-            
+
             memcpy(pSample->legacy_filename, imfsmp.filename, 12);
             SpaceToNullStringFixed<12>(pSample->legacy_filename);
             strcpy(m_szNames[m_nSamples], pSample->legacy_filename);
@@ -567,7 +567,7 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLen
             }
             if (imfsmp.flags & 8)
                 pSample->flags |= CHN_PANNING;
-            
+
             if(blen)
             {
                 ASSERT_CAN_READ(blen);
@@ -579,6 +579,6 @@ bool CSoundFile::ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLen
         }
         firstsample += imfins.smpnum;
     }
-    
+
     return true;
 }

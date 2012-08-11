@@ -82,7 +82,7 @@ typedef struct tagXMSAMPLESTRUCT
 
 
 // Read .XM patterns
-uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t dwMemPos, XMFILEHEADER *xmheader, CSoundFile *pSndFile)
+uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t dwMemPos, XMFILEHEADER *xmheader, module_renderer *pSndFile)
 //-------------------------------------------------------------------------------------------------------------------------
 {
     uint8_t patterns_used[256];
@@ -234,7 +234,7 @@ uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t 
     return dwMemPos;
 }
 
-bool CSoundFile::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength)
 //--------------------------------------------------------------------
 {
     XMFILEHEADER xmheader;
@@ -308,7 +308,7 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength)
         uint32_t samplesize[32];
         UINT samplemap[32];
         uint16_t nsamples;
-                
+
         if (dwMemPos + sizeof(uint32_t) >= dwMemLength) return true;
         uint32_t ihsize = LittleEndian(*((uint32_t *)(lpStream + dwMemPos)));
         if (dwMemPos + ihsize > dwMemLength) return true;
@@ -656,7 +656,7 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength)
         bMadeWithModPlug = true;
     }
     // Read mix plugins information
-    if (dwMemPos + 8 < dwMemLength) 
+    if (dwMemPos + 8 < dwMemLength)
     {
         uint32_t dwOldPos = dwMemPos;
         dwMemPos += LoadMixPlugins(lpStream+dwMemPos, dwMemLength-dwMemPos);
@@ -722,7 +722,7 @@ bool CSoundFile::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength)
 #ifndef MODPLUG_NO_FILESAVE
 #include "../Moddoc.h"    // for logging errors
 
-bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatibilityExport)
+bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatibilityExport)
 //------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_WRITE(x) \
@@ -745,7 +745,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     uint8_t xmph[9];
     FILE *f;
     int i;
-    bool bAddChannel = false; // avoid odd channel count for FT2 compatibility 
+    bool bAddChannel = false; // avoid odd channel count for FT2 compatibility
 
     if(bCompatibilityExport) nPacking = false;
 
@@ -778,7 +778,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     PATTERNINDEX nPatterns = 0;
     for(ORDERINDEX nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
     {
-        if(Patterns.IsValidIndex(Order[nOrd])) 
+        if(Patterns.IsValidIndex(Order[nOrd]))
         {
             nMaxOrds++;
             if(Order[nOrd] >= nPatterns) nPatterns = Order[nOrd] + 1;
@@ -809,7 +809,7 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
     // write order list (wihout +++ and ---, explained above)
     for(ORDERINDEX nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
     {
-        if(Patterns.IsValidIndex(Order[nOrd]) || !bCompatibilityExport) 
+        if(Patterns.IsValidIndex(Order[nOrd]) || !bCompatibilityExport)
         {
             uint8_t nOrdval = static_cast<uint8_t>(Order[nOrd]);
             fwrite(&nOrdval, 1, sizeof(uint8_t), f);
@@ -988,12 +988,12 @@ bool CSoundFile::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCompatib
                             break;
                         }
                     }
-                    
+
                     if (k == xmih.samples) //we got to the end of the loop: sample unnaccounted for.
                     {
                         smptable[xmih.samples++] = sample; //record in instrument's sample table
                     }
-                    
+
                     if ((xmih.samples >= 32) || (xmih.samples >= 16 && bCompatibilityExport)) break;
                     xmsh.snum[j] = k;    //record sample table offset in instrument's note map
                 }

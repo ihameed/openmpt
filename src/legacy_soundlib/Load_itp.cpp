@@ -23,7 +23,7 @@
 #define ITP_FILE_ID 0x2e697470    // .itp ASCII
 
 
-bool CSoundFile::ReadITProject(const uint8_t * lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     UINT i,n,nsmp;
@@ -367,7 +367,7 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const uint32_t dwMemLen
                     flags += 5;
                     if (pis.flags & 4) flags |= RSF_STEREO;
                     pSmp->flags |= CHN_16BIT;
-                } 
+                }
                 else{
                     if (pis.flags & 4) flags |= RSF_STEREO;
                 }
@@ -395,7 +395,7 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const uint32_t dwMemLen
 
         ReadInstrumentFromFile(i+1, lpFile, len);
         f.Unlock();
-        f.Close();    
+        f.Close();
     }
 
     // Extra info data
@@ -424,7 +424,7 @@ bool CSoundFile::ReadITProject(const uint8_t * lpStream, const uint32_t dwMemLen
 
             switch( fcode )
             {
-            case 'MPTS': goto mpts; //:)    	// reached end of instrument headers 
+            case 'MPTS': goto mpts; //:)    	// reached end of instrument headers
             case 'SEP@': case 'MPTX':
                 ptr += sizeof(__int32);    		// jump code
                 i++;    						// switch to next instrument
@@ -466,7 +466,7 @@ mpts:
 
 #ifndef MODPLUG_NO_FILESAVE
 
-bool CSoundFile::SaveITProject(LPCSTR lpszFileName)
+bool module_renderer::SaveITProject(LPCSTR lpszFileName)
 //-------------------------------------------------
 {
     // Check song type
@@ -740,4 +740,3 @@ bool CSoundFile::SaveITProject(LPCSTR lpszFileName)
 }
 
 #endif
-

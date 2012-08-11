@@ -18,7 +18,7 @@ typedef struct _MTHDCHUNK    // (big endian)
 {
     uint32_t id;		// "MThd" = 0x6468544D
     uint32_t len;		// 6
-    uint16_t wFmt;		// 0=single track, 1=synchro multitrack, 2=asynch multitrack 
+    uint16_t wFmt;		// 0=single track, 1=synchro multitrack, 2=asynch multitrack
     uint16_t wTrks;		// # of tracks
     uint16_t wDivision;	// PPQN
 } MTHDCHUNK, *PMTHDCHUNK;
@@ -90,7 +90,7 @@ static int LinearToDLSMidiVolume(int nVolume)
 {
     const float kLin2Mid = 127.0f*127.0f/65536.0f;
     int result;
-    
+
     _asm {
     fild nVolume
     fld kLin2Mid
@@ -124,11 +124,11 @@ void CModToMidi::DoDataExchange(CDataExchange *pDX)
 }
 
 
-CModToMidi::CModToMidi(LPCSTR pszPathName, CSoundFile *pSndFile, CWnd *pWndParent):CDialog(IDD_MOD2MIDI, pWndParent)
+CModToMidi::CModToMidi(LPCSTR pszPathName, module_renderer *pSndFile, CWnd *pWndParent):CDialog(IDD_MOD2MIDI, pWndParent)
 //------------------------------------------------------------------------------------------------------------------
 {
     CHAR fext[_MAX_EXT];
-    
+
     m_bRmi = FALSE;
     m_pSndFile = pSndFile;
     strcpy(m_szFileName, pszPathName);
@@ -216,7 +216,7 @@ VOID CModToMidi::FillProgramBox(BOOL bPerc)
 //-----------------------------------------
 {
     CHAR s[256];
-    
+
     if (m_bPerc == bPerc) return;
     m_CbnProgram.ResetContent();
     if (bPerc)
@@ -377,7 +377,7 @@ BOOL CModToMidi::DoConvert()
     if (m_bRmi) f.Write(&rmid, sizeof(rmid));
     f.Write(&mthd, sizeof(mthd));
 
-    
+
 
     // Add Song Name on track 0
     m_pSndFile->GetTitle(s);
@@ -563,6 +563,3 @@ BOOL CModToMidi::DoConvert()
     f.Close();
     return TRUE;
 }
-
-
-

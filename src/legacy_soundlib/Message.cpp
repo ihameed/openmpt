@@ -19,7 +19,7 @@
 // Allocate memory for song message.
 // [in]  length: text length in characters, without possible trailing null terminator.
 // [out] returns true on success.
-bool CSoundFile::AllocateMessage(size_t length)
+bool module_renderer::AllocateMessage(size_t length)
 //---------------------------------------------
 {
     FreeMessage();
@@ -36,7 +36,7 @@ bool CSoundFile::AllocateMessage(size_t length)
 
 
 // Free previously allocated song message memory
-void CSoundFile::FreeMessage()
+void module_renderer::FreeMessage()
 //----------------------------
 {
     if(m_lpszSongComments)
@@ -53,7 +53,7 @@ void CSoundFile::FreeMessage()
 // [in]  lineEnding: line ending formatting of the text in memory.
 // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
 // [out] returns true on success.
-bool CSoundFile::ReadMessage(const uint8_t *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &))
+bool module_renderer::ReadMessage(const uint8_t *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &))
 //----------------------------------------------------------------------------------------------------------------------------
 {
     char c;
@@ -144,7 +144,7 @@ bool CSoundFile::ReadMessage(const uint8_t *data, const size_t length, enmLineEn
 // [in]  lineEndingLength: The padding space between two fixed lines. (there could for example be a null char after every line)
 // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
 // [out] returns true on success.
-bool CSoundFile::ReadFixedLineLengthMessage(const uint8_t *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &))
+bool module_renderer::ReadFixedLineLengthMessage(const uint8_t *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &))
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(lineLength == 0)
@@ -174,7 +174,7 @@ bool CSoundFile::ReadFixedLineLengthMessage(const uint8_t *data, const size_t le
     			m_lpszSongComments[cpos + lpos] = ' ';
     			break;
     		}
-    		
+
     	}
     }
     return true;
@@ -182,7 +182,7 @@ bool CSoundFile::ReadFixedLineLengthMessage(const uint8_t *data, const size_t le
 
 
 // OLD and unused function. Do we still need it?
-UINT CSoundFile::GetSongMessage(LPSTR s, UINT len, UINT linesize)
+UINT module_renderer::GetSongMessage(LPSTR s, UINT len, UINT linesize)
 //---------------------------------------------------------------
 {
     LPCSTR p = m_lpszSongComments;
@@ -204,7 +204,7 @@ UINT CSoundFile::GetSongMessage(LPSTR s, UINT len, UINT linesize)
 
 
 // OLD and unused function. Do we still need it?
-UINT CSoundFile::GetRawSongMessage(LPSTR s, UINT len, UINT linesize)
+UINT module_renderer::GetRawSongMessage(LPSTR s, UINT len, UINT linesize)
 //------------------------------------------------------------------
 {
     LPCSTR p = m_lpszSongComments;
@@ -215,7 +215,7 @@ UINT CSoundFile::GetRawSongMessage(LPSTR s, UINT len, UINT linesize)
     	uint8_t c = (uint8_t)*p++;
     	if ((c == 0x0D)	|| (c == 0x0A))
     	{
-    		if (ln) 
+    		if (ln)
     		{
     			while (ln < linesize) { if (s) s[i] = ' '; i++; ln++; }
     			ln = 0;

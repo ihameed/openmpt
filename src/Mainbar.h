@@ -4,7 +4,7 @@
 #define MIN_BASEOCTAVE    	0
 #define MAX_BASEOCTAVE    	8
 
-class CSoundFile;
+class module_renderer;
 class CModDoc;
 class CModTree;
 
@@ -61,7 +61,7 @@ public:
     void Init(CMainFrame *);
     UINT GetBaseOctave();
     BOOL SetBaseOctave(UINT nOctave);
-    BOOL SetCurrentSong(CSoundFile *pModDoc);
+    BOOL SetCurrentSong(module_renderer *pModDoc);
 
 protected:
     //{{AFX_MSG(CMainToolBar)
@@ -123,7 +123,7 @@ protected:
     afx_msg LRESULT OnNcHitTest(CPoint point);
 #else
     afx_msg UINT OnNcHitTest(CPoint point);
-#endif 
+#endif
     afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);

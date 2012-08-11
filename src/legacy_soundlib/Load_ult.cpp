@@ -201,7 +201,7 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpS
     int n;
     for (n = 0; n < 4; n++)
     {
-    	if(CSoundFile::ConvertVolEffect(&cmd1, &param1, (n >> 1) ? true : false))
+    	if(module_renderer::ConvertVolEffect(&cmd1, &param1, (n >> 1) ? true : false))
     	{
     		n = 5;
     		break;
@@ -211,7 +211,7 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpS
     }
     if (n < 5)
     {
-    	if (CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
+    	if (module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
     	{
     		std::swap(cmd1, cmd2);
     		std::swap(param1, param2);
@@ -227,7 +227,7 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpS
     note->vol = param1;
     note->command = cmd2;
     note->param = param2;
-    
+
     *dwMP = dwMemPos;
     return repeat;
 
@@ -304,7 +304,7 @@ struct PostFixUltCommands
 };
 
 
-bool CSoundFile::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0;

@@ -130,17 +130,17 @@ BOOL CChannelManagerDlg::OnInitDialog()
 
     HWND menu = ::GetDlgItem(m_hWnd,IDC_TAB1);
 
-    TCITEM tie; 
-    tie.mask = TCIF_TEXT | TCIF_IMAGE; 
-    tie.iImage = -1; 
-    tie.pszText = "Solo/Mute"; 
-    TabCtrl_InsertItem(menu, 0, &tie); 
-    tie.pszText = "Record select"; 
-    TabCtrl_InsertItem(menu, 1, &tie); 
-    tie.pszText = "Fx plugins"; 
-    TabCtrl_InsertItem(menu, 2, &tie); 
-    tie.pszText = "Reorder/Remove"; 
-    TabCtrl_InsertItem(menu, 3, &tie); 
+    TCITEM tie;
+    tie.mask = TCIF_TEXT | TCIF_IMAGE;
+    tie.iImage = -1;
+    tie.pszText = "Solo/Mute";
+    TabCtrl_InsertItem(menu, 0, &tie);
+    tie.pszText = "Record select";
+    TabCtrl_InsertItem(menu, 1, &tie);
+    tie.pszText = "Fx plugins";
+    TabCtrl_InsertItem(menu, 2, &tie);
+    tie.pszText = "Reorder/Remove";
+    TabCtrl_InsertItem(menu, 3, &tie);
     currentTab = 0;
 
     for(CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++){
@@ -163,7 +163,7 @@ void CChannelManagerDlg::OnApply()
 {
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(!m_pSndFile || !pModDoc) return;
 
@@ -211,7 +211,7 @@ void CChannelManagerDlg::OnApply()
 
     	return;
     }
-    
+
 
     // Update manager internal store memory
     for(CHANNELINDEX nChn = 0; nChn < nChannels; nChn++){
@@ -230,7 +230,7 @@ void CChannelManagerDlg::OnApply()
     	m_pSndFile->SetCurrentPos(0);
     	m_pSndFile->SetCurrentPos(i);
     }
-    */	
+    */
 
     END_CRITICAL();
     EndWaitCursor();
@@ -268,7 +268,7 @@ void CChannelManagerDlg::OnSelectAll()
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(m_pSndFile)
     	for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
@@ -284,7 +284,7 @@ void CChannelManagerDlg::OnInvert()
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(m_pSndFile)
     	for(CHANNELINDEX nChn = 0 ; nChn < m_pSndFile->m_nChannels ; nChn++)
@@ -300,12 +300,12 @@ void CChannelManagerDlg::OnAction1()
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(pModDoc && m_pSndFile){
-    	
+
     	int nbOk = 0, nbSelect = 0;
-    	
+
     	switch(currentTab){
     		case 0:
     			for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
@@ -380,12 +380,12 @@ void CChannelManagerDlg::OnAction2()
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(pModDoc && m_pSndFile){
-    	
+
     	int nbOk = 0, nbSelect = 0;
-    	
+
     	switch(currentTab){
     		case 0:
     			for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
@@ -454,7 +454,7 @@ void CChannelManagerDlg::OnStore(void)
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     switch(currentTab){
     	case 0:
@@ -489,7 +489,7 @@ void CChannelManagerDlg::OnRestore(void)
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     EnterCriticalSection(&applying);
 
@@ -696,7 +696,7 @@ void CChannelManagerDlg::OnPaint()
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(!pModDoc || !m_pSndFile){
     	::EndPaint(m_hWnd,&pDC);
@@ -873,7 +873,7 @@ bool CChannelManagerDlg::ButtonHit( CPoint point, CHANNELINDEX * id, CRect * inv
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(pModDoc && m_pSndFile){
     	//UINT nChannels = m_pSndFile->m_nChannels;
@@ -963,7 +963,7 @@ void CChannelManagerDlg::OnMouseMove(UINT nFlags,CPoint point)
     	tme.hwndTrack = m_hWnd;
     	tme.dwFlags = TME_LEAVE|TME_HOVER;
     	tme.dwHoverTime = 1;
-    	mouseTracking = _TrackMouseEvent(&tme) ? true : false; 
+    	mouseTracking = _TrackMouseEvent(&tme) ? true : false;
     }
 
     if(!leftButton && !rightButton){
@@ -985,7 +985,7 @@ void CChannelManagerDlg::OnLButtonUp(UINT /*nFlags*/,CPoint point)
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(moveRect && m_pSndFile){
     	CHANNELINDEX n, i, k;
@@ -1113,7 +1113,7 @@ void CChannelManagerDlg::MouseEvent(UINT nFlags,CPoint point,uint8_t button)
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = pMainFrm ? pMainFrm->GetActiveDoc() : NULL;
-    CSoundFile * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
+    module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(!pModDoc || !m_pSndFile) return;
 

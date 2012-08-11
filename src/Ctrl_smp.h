@@ -55,7 +55,7 @@ public:
 
     bool SetCurrentSample(SAMPLEINDEX nSmp, LONG lZoom = -1, bool bUpdNum = true);
     bool OpenSample(LPCSTR lpszFileName);
-    bool OpenSample(CSoundFile *pSndFile, SAMPLEINDEX nSample);
+    bool OpenSample(module_renderer *pSndFile, SAMPLEINDEX nSample);
     LONG* GetSplitPosRef() {return &CMainFrame::glSampleWindowHeight;} 	//rewbs.varWindowSize
 
 public:

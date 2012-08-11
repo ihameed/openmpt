@@ -43,7 +43,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(m_pModDoc == nullptr) return false;
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     PATTERNUNDOBUFFER sUndo;
@@ -105,7 +105,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
 //------------------------------------------------------
 {
     if(m_pModDoc == nullptr) return PATTERNINDEX_INVALID;
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return PATTERNINDEX_INVALID;
 
     modplug::tracker::modcommand_t *pUndoData, *pPattern;
@@ -155,14 +155,14 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
     		pPattern += pSndFile->GetNumChannels();
     		pUndoData += pUndo->numChannels;
     	}
-    }		
+    }
 
     RemoveLastUndoStep();
 
     if (CanUndo() == false) m_pModDoc->UpdateAllViews(NULL, HINT_UNDO);
     if(linkToPrevious)
     {
-    	return Undo(true);		
+    	return Undo(true);
     } else
     {
     	return nPattern;
@@ -231,18 +231,18 @@ void CSampleUndo::ClearUndo(const SAMPLEINDEX nSmp)
 // That way, a lot of RAM can be saved, because some actions don't even require an undo sample buffer.
 bool CSampleUndo::PrepareUndo(const SAMPLEINDEX nSmp, sampleUndoTypes nChangeType, UINT nChangeStart, UINT nChangeEnd)
 //--------------------------------------------------------------------------------------------------------------------
-{    
+{
     if(m_pModDoc == nullptr || !SampleBufferExists(nSmp)) return false;
 
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
-    
+
     // Remove an undo step if there are too many.
     while(UndoBuffer[nSmp - 1].size() >= MAX_UNDO_LEVEL)
     {
     	DeleteUndoStep(nSmp, 0);
     }
-    
+
     // Restrict amount of memory that's being used
     RestrictBufferSize();
 
@@ -318,7 +318,7 @@ bool CSampleUndo::Undo(const SAMPLEINDEX nSmp)
 {
     if(m_pModDoc == nullptr || CanUndo(nSmp) == false) return false;
 
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     // Select most recent undo slot
@@ -418,7 +418,7 @@ void CSampleUndo::DeleteUndoStep(const SAMPLEINDEX nSmp, const UINT nStep)
 //------------------------------------------------------------------------
 {
     if(!SampleBufferExists(nSmp, false) || nStep >= UndoBuffer[nSmp - 1].size()) return;
-    CSoundFile::FreeSample(UndoBuffer[nSmp - 1][nStep].SamplePtr);
+    module_renderer::FreeSample(UndoBuffer[nSmp - 1][nStep].SamplePtr);
     UndoBuffer[nSmp - 1].erase(UndoBuffer[nSmp - 1].begin() + nStep);
 }
 

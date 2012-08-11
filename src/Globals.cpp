@@ -268,13 +268,13 @@ void CModControlView::OnUpdate(CView*, LPARAM lHint, CObject*pHint)
 }
 
 
-void CModControlView::ForceRefresh() 
+void CModControlView::ForceRefresh()
 //---------------------------------
 {
     SetActivePage(GetActivePage());
 }
 
-int  CModControlView::GetActivePage() 
+int  CModControlView::GetActivePage()
 //-----------------------------------
 {
     return m_nActiveDlg;
@@ -285,8 +285,8 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CModControlDlg *pDlg = NULL;
-    
-    
+
+
     if (nIndex == -1) nIndex = m_TabCtrl.GetCurSel();
 
     const UINT nID = m_TabCtrl.GetItemData(nIndex);
@@ -389,7 +389,7 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
     pMainFrm->SetInfoText("");
     pMainFrm->SetXInfoText(""); //rewbs.xinfo
     pDlg->ShowWindow(SW_SHOW);
-    ((CChildFrame *)GetParentFrame())->SetSplitterHeight(*(pDlg->GetSplitPosRef()));    //rewbs.varWindowSize	
+    ((CChildFrame *)GetParentFrame())->SetSplitterHeight(*(pDlg->GetSplitPosRef()));    //rewbs.varWindowSize
     if (m_hWndMDI) ::PostMessage(m_hWndMDI, WM_MOD_CHANGEVIEWCLASS, (WPARAM)lParam, (LPARAM)pDlg);
     return TRUE;
 }
@@ -422,7 +422,7 @@ void CModControlView::UpdateView(uint32_t lHint, CObject *pObject)
     // Module type changed: update tabs
     if (lHint & HINT_MODTYPE)
     {
-        CSoundFile *pSndFile = pDoc->GetSoundFile();
+        module_renderer *pSndFile = pDoc->GetSoundFile();
         UINT nCount = 4;
         UINT nType = pSndFile->GetType();
         UINT mask = 1 | 2 | 4 | 16;
@@ -676,7 +676,7 @@ BOOL CModControlBar::Init(UINT nId)
 {
     HINSTANCE hInstance = AfxGetInstanceHandle();
     TBADDBITMAP tbab;
-    
+
     SetButtonStructSize(sizeof(TBBUTTON));
     SetBitmapSize(CSize(16, 15));
     SetButtonSize(CSize(27, 24));
@@ -705,7 +705,7 @@ BOOL CModControlBar::AddButton(UINT nID, int iImage, UINT nStyle, UINT nState)
     btn.iString = 0;
     return AddButtons(1, &btn);
 }
-    
+
 
 void CModControlBar::UpdateStyle()
 //--------------------------------

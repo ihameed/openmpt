@@ -489,10 +489,10 @@ public:
 public:
     static HMIDIIN shMidiIn;
 
-    CSoundFile *m_pSndFile;
+    module_renderer *m_pSndFile;
 
 protected:
-    CSoundFile m_WaveFile;
+    module_renderer m_WaveFile;
     CModTreeBar m_wndTree;
     CStatusBar m_wndStatusBar;
     CMainToolBar m_wndToolBar;
@@ -589,20 +589,20 @@ public:
     BOOL PlayMod(CModDoc *, HWND hPat=NULL, uint32_t dwNotifyType=0);
     BOOL StopMod(CModDoc *pDoc=NULL);
     BOOL PauseMod(CModDoc *pDoc=NULL);
-    BOOL PlaySoundFile(CSoundFile *);
+    BOOL PlaySoundFile(module_renderer *);
     BOOL PlaySoundFile(LPCSTR lpszFileName, UINT nNote=0);
-    BOOL PlaySoundFile(CSoundFile *pSong, UINT nInstrument, UINT nSample, UINT nNote=0);
+    BOOL PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nSample, UINT nNote=0);
     BOOL PlayDLSInstrument(UINT nDLSBank, UINT nIns, UINT nRgn);
-    BOOL StopSoundFile(CSoundFile *);
+    BOOL StopSoundFile(module_renderer *);
     inline BOOL IsPlaying() const { return (m_dwStatus & MODSTATUS_PLAYING); 	}
     inline BOOL IsRendering() const { return (m_dwStatus & MODSTATUS_RENDERING); 	} //rewbs.VSTTimeInfo
     uint32_t GetElapsedTime() const { return m_dwElapsedTime; }
     void ResetElapsedTime() { m_dwElapsedTime = 0; }
     void SetElapsedTime(uint32_t dwElapsedTime) { m_dwElapsedTime = dwElapsedTime; }
     inline CModDoc *GetModPlaying() const { return (IsPlaying()||IsRendering()) ? m_pModPlaying : NULL; }
-    inline CSoundFile *GetSoundFilePlaying() const { return (IsPlaying()||IsRendering()) ? m_pSndFile : NULL; }  //rewbs.VSTTimeInfo
-    BOOL InitRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
-    BOOL StopRenderer(CSoundFile*);  //rewbs.VSTTimeInfo
+    inline module_renderer *GetSoundFilePlaying() const { return (IsPlaying()||IsRendering()) ? m_pSndFile : NULL; }  //rewbs.VSTTimeInfo
+    BOOL InitRenderer(module_renderer*);  //rewbs.VSTTimeInfo
+    BOOL StopRenderer(module_renderer*);  //rewbs.VSTTimeInfo
     void SwitchToActiveView();
     BOOL SetupDirectories(LPCTSTR szModDir, LPCTSTR szSampleDir, LPCTSTR szInstrDir, LPCTSTR szVstDir, LPCTSTR szPresetDir);
     BOOL SetupMiscOptions();

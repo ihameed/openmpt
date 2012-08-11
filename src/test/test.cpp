@@ -1,6 +1,6 @@
 /*
  * Miscellaneous (unit) tests.
- * 
+ *
  */
 
 #include "stdafx.h"
@@ -60,7 +60,7 @@ catch(...)  \
 {    		\
     MessageBox(0, CString("Test \"" STRINGIZE(func) "\" threw an unknown exception."), "Test \"" STRINGIZE(func) "\": Exception was thrown", MB_ICONERROR); \
 }
-    
+
 
 void TestVersion();
 void TestTypes();
@@ -111,7 +111,7 @@ void TestVersion()
     	STATIC_ASSERT( MAKE_VERSION_NUMERIC(01,17,03,00) >> 8 == 0x011703 );
     }
 
-    //Verify that the version obtained from the executable file is the same as 
+    //Verify that the version obtained from the executable file is the same as
     //defined in MptVersion.
     {
     	char  szFullPath[MAX_PATH];
@@ -130,18 +130,18 @@ void TestVersion()
 
     	char* szVer = NULL;
     	UINT uVerLength;
-    	if (!(::GetFileVersionInfo((LPTSTR)szFullPath, (uint32_t)dwVerHnd, 
+    	if (!(::GetFileVersionInfo((LPTSTR)szFullPath, (uint32_t)dwVerHnd,
     							   (uint32_t)dwVerInfoSize, (LPVOID)pVersionInfo))) {
     		delete[] pVersionInfo;
     		throw std::runtime_error("GetFileVersionInfo() returned false");
-    	}   
-    	if (!(::VerQueryValue(pVersionInfo, TEXT("\\StringFileInfo\\040904b0\\FileVersion"), 
+    	}
+    	if (!(::VerQueryValue(pVersionInfo, TEXT("\\StringFileInfo\\040904b0\\FileVersion"),
     						  (LPVOID*)&szVer, &uVerLength))) {
     		delete[] pVersionInfo;
     		throw std::runtime_error("VerQueryValue() returned false");
     	}
 
-    	CString version = szVer;	
+    	CString version = szVer;
     	delete[] pVersionInfo;
 
     	//version string should be like: 1,17,2,38  Change ',' to '.' to get format 1.17.2.38
@@ -210,7 +210,7 @@ void TestMisc()
 void TestLoadFile(const CModDoc *pModDoc)
 //---------------------------------------
 {
-    const CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    const module_renderer *pSndFile = pModDoc->GetSoundFile();
 
     // Global Variables
     VERIFY_EQUAL_NONCONT(strcmp(pSndFile->song_name.c_str(), "Test Module"), 0);
@@ -230,7 +230,7 @@ void TestLoadFile(const CModDoc *pModDoc)
     VERIFY_EQUAL_NONCONT(pSndFile->m_nDefaultRowsPerMeasure, 12);
     VERIFY_EQUAL_NONCONT(pSndFile->m_dwCreatedWithVersion, MAKE_VERSION_NUMERIC(1, 19, 02, 05));
     VERIFY_EQUAL_NONCONT(pSndFile->m_nRestartPos, 1);
-    
+
     // Edit history
     VERIFY_EQUAL_NONCONT(pModDoc->GetFileHistory()->size() > 0, true);
     const FileHistory &fh = pModDoc->GetFileHistory()->at(0);
@@ -436,7 +436,7 @@ void TestLoadSaveFile()
     // Test file saving
      pModDoc->DoSave(theFile + "saved.mptm");
     pModDoc->OnCloseDocument();
-    
+
     // Reload the saved file and test if everything is still working correctly.
     pModDoc = (CModDoc *)theApp.OpenDocumentFile(theFile + "saved.mptm");
     TestLoadFile(pModDoc);
@@ -491,7 +491,7 @@ void TestPCnoteSerialization()
     if(pModDoc == nullptr)
     	throw(std::runtime_error("pModdoc is nullptr"));
 
-    CSoundFile* pSndFile = pModDoc->GetSoundFile();
+    module_renderer* pSndFile = pModDoc->GetSoundFile();
     if(pSndFile == nullptr)
     	throw(std::runtime_error("pSndFile is nullptr"));
 
@@ -552,7 +552,7 @@ void TestPCnoteSerialization()
     	}
     	VERIFY_EQUAL( bPatternDataMatch, true);
     }
-    	
+
     pModDoc->OnCloseDocument();
 }
 
@@ -567,4 +567,3 @@ namespace MptTest
 };
 
 #endif
-

@@ -181,13 +181,13 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
 }
 
 
-bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     const DBMFILEHEADER *pfh = (DBMFILEHEADER *)lpStream;
     uint32_t dwMemPos;
     uint16_t nOrders, nSamples, nInstruments, nPatterns;
-    
+
     if ((!lpStream) || (dwMemLength <= sizeof(DBMFILEHEADER)) || (!pfh->channels)
      || (pfh->dbm_id != DBM_FILE_MAGIC) || (!pfh->songs) || (pfh->song_id != DBM_ID_SONG)
      || (pfh->name_id != DBM_ID_NAME) || (pfh->name_len != DBM_NAMELEN)
@@ -213,7 +213,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
         uint32_t chunk_id = LittleEndian(((LPDWORD)(lpStream+dwMemPos))[0]);
         uint32_t chunk_size = BigEndian(((LPDWORD)(lpStream+dwMemPos))[1]);
         uint32_t chunk_pos;
-        
+
         dwMemPos += 8;
         chunk_pos = dwMemPos;
         if ((dwMemPos + chunk_size > dwMemLength) || (chunk_size > dwMemLength)) break;
@@ -288,13 +288,13 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
         if (chunk_id == DBM_ID_VENV)
         {
             UINT nEnvelopes = lpStream[chunk_pos+1];
-            
+
             chunk_pos += 2;
             for (UINT iEnv=0; iEnv<nEnvelopes; iEnv++)
             {
                 DBMENVELOPE *peh;
                 UINT nins;
-                
+
                 if (chunk_pos + sizeof(DBMENVELOPE) > dwMemPos) break;
                 peh = (DBMENVELOPE *)(lpStream+chunk_pos);
                 nins = BigEndianW(peh->instrument);
@@ -387,7 +387,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
                                         int n;
                                         for (n = 0; n < 4; n++)
                                         {
-                                            if(CSoundFile::ConvertVolEffect(&cmd1, &param1, (n >> 1) ? true : false))
+                                            if(module_renderer::ConvertVolEffect(&cmd1, &param1, (n >> 1) ? true : false))
                                             {
                                                 n = 5;
                                                 break;
@@ -397,7 +397,7 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
                                         }
                                         if (n < 5)
                                         {
-                                            if (CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > CSoundFile::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
+                                            if (module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
                                             {
                                                 std::swap(cmd1, cmd2);
                                                 std::swap(param1, param2);
@@ -471,4 +471,3 @@ bool CSoundFile::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLength)
     }
     return true;
 }
-

@@ -7,8 +7,8 @@
 #include "../serialization_utils.h"
 #include "../version.h"
 
-CSoundFile& CPattern::GetSoundFile() {return m_rPatternContainer.GetSoundFile();}
-const CSoundFile& CPattern::GetSoundFile() const {return m_rPatternContainer.GetSoundFile();}
+module_renderer& CPattern::GetSoundFile() {return m_rPatternContainer.GetSoundFile();}
+const module_renderer& CPattern::GetSoundFile() const {return m_rPatternContainer.GetSoundFile();}
 
 
 CHANNELINDEX CPattern::GetNumChannels() const
@@ -38,12 +38,12 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
     {
     	//For mimicing old behavior of setting patternsize before even having the
     	//actual pattern allocated.
-    	m_Rows = newRowCount; 
+    	m_Rows = newRowCount;
     	return false;
     }
 
 
-    CSoundFile& sndFile = m_rPatternContainer.GetSoundFile();
+    module_renderer& sndFile = m_rPatternContainer.GetSoundFile();
     const CModSpecifications& specs = sndFile.GetModSpecifications();
     if(sndFile.m_pModDoc == nullptr) return true;
     CModDoc& rModDoc = *sndFile.m_pModDoc;
@@ -135,7 +135,7 @@ bool CPattern::Expand()
 {
     modplug::tracker::modcommand_t *newPattern, *oldPattern;
 
-    CSoundFile& sndFile = m_rPatternContainer.GetSoundFile();
+    module_renderer& sndFile = m_rPatternContainer.GetSoundFile();
     if(sndFile.m_pModDoc == nullptr) return true;
 
     CModDoc& rModDoc = *sndFile.m_pModDoc;
@@ -167,7 +167,7 @@ bool CPattern::Expand()
 bool CPattern::Shrink()
 //---------------------
 {
-    CSoundFile& sndFile = m_rPatternContainer.GetSoundFile();
+    module_renderer& sndFile = m_rPatternContainer.GetSoundFile();
     if(sndFile.m_pModDoc == NULL) return true;
 
     CModDoc& rModDoc = *sndFile.m_pModDoc;
@@ -416,7 +416,7 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
     			chval |= IT_bitmask_patternChanEnabled_c;
 
     		Binarywrite<uint8_t>(oStrm, chval);
-    			
+
     		if(diffmask)
     		{
     			lastChnMC[c] = m;
@@ -467,7 +467,7 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
     		continue;
     	}
 
-    	CHANNELINDEX ch = (t & IT_bitmask_patternChanField_c); 
+    	CHANNELINDEX ch = (t & IT_bitmask_patternChanField_c);
     	if(ch > 0)
     		ch--;
 

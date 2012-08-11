@@ -18,7 +18,7 @@ extern uint16_t ProTrackerPeriodTable[6*12];
 //////////////////////////////////////////////////////////
 // ProTracker / NoiseTracker MOD/NST file support
 
-void CSoundFile::ConvertModCommand(modplug::tracker::modcommand_t *m) const
+void module_renderer::ConvertModCommand(modplug::tracker::modcommand_t *m) const
 //-----------------------------------------------------
 {
     UINT command = m->command, param = m->param;
@@ -65,7 +65,7 @@ void CSoundFile::ConvertModCommand(modplug::tracker::modcommand_t *m) const
 }
 
 
-uint16_t CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport) const
+uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport) const
 //---------------------------------------------------------------------------------------------------------
 {
     UINT command = m->command, param = m->param;
@@ -95,7 +95,7 @@ uint16_t CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, con
     case CMD_TONEPORTAVOL:    	command = 0x05; break;
     case CMD_VIBRATOVOL:    	command = 0x06; break;
     case CMD_TREMOLO:    		command = 0x07; break;
-    case CMD_PANNING8:    		
+    case CMD_PANNING8:
         command = 0x08;
         if(m_nType & MOD_TYPE_S3M)
         {
@@ -146,7 +146,7 @@ uint16_t CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, con
         else
             command = 'Y' - 55;
         break;
-    case CMD_MIDI:    			
+    case CMD_MIDI:
         if(bCompatibilityExport)
             command = param = 0;
         else
@@ -171,7 +171,7 @@ uint16_t CSoundFile::ModSaveCommand(const modplug::tracker::modcommand_t *m, con
         case 0x20:    command = 0x0E; param = (param & 0x0F) | 0x50; break;
         case 0x30:    command = 0x0E; param = (param & 0x0F) | 0x40; break;
         case 0x40:    command = 0x0E; param = (param & 0x0F) | 0x70; break;
-        case 0x90:  
+        case 0x90:
             if(bCompatibilityExport)
                 command = param = 0;
             else
@@ -259,7 +259,7 @@ struct FixMODPatterns
 };
 
 
-bool CSoundFile::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
 //---------------------------------------------------------------
 {
     char s[1024];
@@ -410,7 +410,7 @@ bool CSoundFile::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
     }
     if ((dwWowTest < 0x600) || (dwWowTest > dwMemLength)) nErr += 8;
     if ((m_nSamples == 15) && (nErr >= 16)) return false;
-    // Default settings    
+    // Default settings
     m_nType = MOD_TYPE_MOD;
     m_nDefaultSpeed = 6;
     m_nDefaultTempo = 125;
@@ -552,7 +552,7 @@ bool CSoundFile::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
 #include "../moddoc.h"
 #endif    // MODPLUG_TRACKER
 
-bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompatibilityExport)
+bool module_renderer::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompatibilityExport)
 //-------------------------------------------------------------------------------------------
 {
     uint8_t insmap[32];
@@ -607,7 +607,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
         bTab[26] = repstart >> 9;
         bTab[27] = repstart >> 1;
         if(replen < 2) // ensure PT will load it properly
-            replen = 2; 
+            replen = 2;
         bTab[28] = replen >> 9;
         bTab[29] = replen >> 1;
         fwrite(bTab, 30, 1, f);
@@ -646,7 +646,7 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
         if (Patterns[ipat])    				//if pattern exists
         {
             modplug::tracker::modcommand_t *m = Patterns[ipat];
-            for (UINT i=0; i<64; i++) {    			//for all rows 
+            for (UINT i=0; i<64; i++) {    			//for all rows
                 if (i < Patterns[ipat].GetNumRows()) {    		//if row exists
                     LPBYTE p=s;
                     for (UINT c=0; c<m_nChannels; c++,p+=4,m++)
@@ -676,14 +676,14 @@ bool CSoundFile::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCompati
                     fwrite(s, m_nChannels, 4, f);
                 }
             }    									//end for all rows
-        } else    {								
+        } else    {
             memset(s, 0, m_nChannels*4);    	//if pattern does not exist
             for (UINT i=0; i<64; i++) {    		//invent blank pattern
                 fwrite(s, m_nChannels, 4, f);
             }
         }
     }    									//end for all patterns
-    
+
     //Check for unsaved patterns
 #ifdef MODPLUG_TRACKER
     if(GetpModDoc() != nullptr)

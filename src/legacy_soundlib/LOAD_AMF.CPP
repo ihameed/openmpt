@@ -171,12 +171,12 @@ void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const uint8_t *pTrack, UIN
 
 
 
-bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength)
+bool module_renderer::ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------
 {
     const AMFFILEHEADER *pfh = (AMFFILEHEADER *)lpStream;
     uint32_t dwMemPos;
-    
+
     if ((!lpStream) || (dwMemLength < 2048)) return false;
     if ((!strncmp((LPCSTR)lpStream, "ASYLUM Music Format V1.0", 25)) && (dwMemLength > 4096))
     {
@@ -357,7 +357,7 @@ bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLen
         if ((psh->type) && (LittleEndian(psh->offset) < dwMemLength-1))
         {
             sampleseekpos[iIns] = LittleEndian(psh->offset);
-            if (LittleEndian(psh->offset) > maxsampleseekpos) 
+            if (LittleEndian(psh->offset) > maxsampleseekpos)
                 maxsampleseekpos = LittleEndian(psh->offset);
             if ((pSmp->loop_end > pSmp->loop_start + 2)
              && (pSmp->loop_end <= pSmp->length)) pSmp->flags |= CHN_LOOP;
@@ -422,5 +422,3 @@ bool CSoundFile::ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLen
     }
     return true;
 }
-
-

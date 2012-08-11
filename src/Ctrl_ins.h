@@ -68,7 +68,7 @@ protected:
     afx_msg void OnEditSample(UINT nID);
     afx_msg void OnEditSampleMap();
     afx_msg void OnInstrumentDuplicate();
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM); //rewbs.customKeys 
+    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM); //rewbs.customKeys
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
@@ -85,7 +85,7 @@ protected:
     CComboBox m_ComboNNA, m_ComboDCT, m_ComboDCA, m_ComboPPC, m_CbnMidiCh, m_CbnMixPlug, m_CbnResampling, m_CbnFilterMode, m_CbnPluginVelocityHandling, m_CbnPluginVolumeHandling;
     CEdit m_EditName, m_EditFileName, m_EditGlobalVol, m_EditPanning, m_EditPPS, m_EditFadeOut;
     CButton m_CheckPanning, m_CheckCutOff, m_CheckResonance;
-    CSliderCtrl m_SliderVolSwing, m_SliderPanSwing, m_SliderCutSwing, m_SliderResSwing, 
+    CSliderCtrl m_SliderVolSwing, m_SliderPanSwing, m_SliderCutSwing, m_SliderResSwing,
     	        m_SliderCutOff, m_SliderResonance;
     CNoteMapWnd m_NoteMap;
     INSTRUMENTINDEX m_nInstrument;
@@ -107,7 +107,7 @@ protected:
     CEdit m_EditPitchTempoLock;
     CButton m_CheckPitchTempoLock;
 
-    
+
 public:
     CCtrlInstruments();
     virtual ~CCtrlInstruments();
@@ -116,7 +116,7 @@ public:
     void SetInstrumentModified(const bool modified = true);
     BOOL SetCurrentInstrument(UINT nIns, BOOL bUpdNum=TRUE);
     BOOL OpenInstrument(LPCSTR lpszFileName);
-    BOOL OpenInstrument(CSoundFile *pSndFile, UINT nInstr);
+    BOOL OpenInstrument(module_renderer *pSndFile, UINT nInstr);
     BOOL EditSample(UINT nSample);
     VOID UpdateFilterText();
     LONG* GetSplitPosRef() {return &CMainFrame::glInstrumentWindowHeight;} 	//rewbs.varWindowSize

@@ -44,9 +44,9 @@
 #define HINT_MASK_ITEM    	(~HINT_MASK_FLAGS) //To nullify update hintbits from hint parameter.
 #define HintFlagPart(x)    	((x) & HINT_MASK_FLAGS)
 
-//If fails, hint flagbits|itembits does not enable all bits; 
+//If fails, hint flagbits|itembits does not enable all bits;
 //might be worthwhile to check the reason.
-STATIC_ASSERT( (HINT_MASK_ITEM | HINT_MASK_FLAGS) == -1 ); 
+STATIC_ASSERT( (HINT_MASK_ITEM | HINT_MASK_FLAGS) == -1 );
 
 //If fails, hint param flag and item parts overlap; might be a problem.
 STATIC_ASSERT( (HINT_MASK_ITEM & HINT_MASK_FLAGS) == 0 );
@@ -82,12 +82,12 @@ STATIC_ASSERT( (HINT_MASK_ITEM & HINT_MASK_FLAGS) == 0 );
 #define HINT_SHIFT_SEQUENCE    (32 - HINT_BITS_SEQUENCE)
 
 //Check that hint bit counts are not too large given the number of hint flags.
-STATIC_ASSERT( ((-1 << HINT_SHIFT_PAT) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_PAT) ); 
-STATIC_ASSERT( ((-1 << HINT_SHIFT_ROW) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_ROW) ); 
-STATIC_ASSERT( ((-1 << HINT_SHIFT_SMP) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SMP) ); 
-STATIC_ASSERT( ((-1 << HINT_SHIFT_INS) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_INS) ); 
-STATIC_ASSERT( ((-1 << HINT_SHIFT_CHNTAB) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_CHNTAB) ); 
-STATIC_ASSERT( ((-1 << HINT_SHIFT_SEQUENCE) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SEQUENCE) ); 
+STATIC_ASSERT( ((-1 << HINT_SHIFT_PAT) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_PAT) );
+STATIC_ASSERT( ((-1 << HINT_SHIFT_ROW) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_ROW) );
+STATIC_ASSERT( ((-1 << HINT_SHIFT_SMP) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SMP) );
+STATIC_ASSERT( ((-1 << HINT_SHIFT_INS) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_INS) );
+STATIC_ASSERT( ((-1 << HINT_SHIFT_CHNTAB) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_CHNTAB) );
+STATIC_ASSERT( ((-1 << HINT_SHIFT_SEQUENCE) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SEQUENCE) );
 
 
 // parametered macro presets:
@@ -175,7 +175,7 @@ class CModDoc: public CDocument
 protected:
     LPSTR m_lpszLog;
     std::basic_ostringstream<TCHAR> m_logEvents; // Log for general progress and error events.
-    CSoundFile m_SndFile;
+    module_renderer m_SndFile;
 
     BOOL m_bPaused;
     HWND m_hWndFollow;
@@ -206,8 +206,8 @@ protected: // create from serialization only
 
 // public members
 public:
-    CSoundFile *GetSoundFile() { return &m_SndFile; }
-    const CSoundFile *GetSoundFile() const { return &m_SndFile; }
+    module_renderer *GetSoundFile() { return &m_SndFile; }
+    const module_renderer *GetSoundFile() const { return &m_SndFile; }
 
     void InitPlayer();
     void SetPause(BOOL bPause) { m_bPaused = bPause; }
@@ -271,7 +271,7 @@ public:
     vector<FileHistory> *GetFileHistory() { return &m_FileHistory; }
     const vector<FileHistory> *GetFileHistory() const { return &m_FileHistory; }
     time_t GetCreationTime() const { return m_creationTime; }
-    
+
 // operations
 public:
     bool ChangeModType(MODTYPE wType);
@@ -362,7 +362,7 @@ public:
     void OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder);
 
     // Returns formatted modplug::tracker::modinstrument_t name.
-    // [in] bEmptyInsteadOfNoName: In case of unnamed instrument string, "(no name)" is returned unless this 
+    // [in] bEmptyInsteadOfNoName: In case of unnamed instrument string, "(no name)" is returned unless this
     //                             parameter is true is case which an empty name is returned.
     // [in] bIncludeIndex: True to include instrument index in front of the instrument name, false otherwise.
     CString GetPatternViewInstrumentName(UINT nInstr, bool bEmptyInsteadOfNoName = false, bool bIncludeIndex = true) const;

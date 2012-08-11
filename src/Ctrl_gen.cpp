@@ -108,12 +108,12 @@ BOOL CCtrlGeneral::OnInitDialog()
     m_SpinSamplePA.SetRange(0, 2000);
     m_SpinVSTiVol.SetRange(0, 2000);
     m_SpinRestartPos.SetRange(0, 255);
-    
+
     m_SliderTempo.SetRange(0, specs.tempoMax - specs.tempoMin);
     m_SliderGlobalVol.SetRange(0, MAX_SLIDER_GLOBAL_VOL);
     m_SliderVSTiVol.SetRange(0, MAX_SLIDER_VSTI_VOL);
     m_SliderSamplePreAmp.SetRange(0, MAX_SLIDER_SAMPLE_VOL);
-    
+
 
     // -! BEHAVIOUR_CHANGE#0016
     m_ComboResampling.AddString("None");
@@ -121,13 +121,13 @@ BOOL CCtrlGeneral::OnInitDialog()
     m_ComboResampling.AddString("Cubic spline");
     //rewbs.resamplerConf
     m_ComboResampling.AddString("Polyphase");
-    m_ComboResampling.AddString("XMMS-ModPlug");	
+    m_ComboResampling.AddString("XMMS-ModPlug");
     //end rewbs.resamplerConf
     m_bEditsLocked=false;
     UpdateView(HINT_MODGENERAL|HINT_MODTYPE|HINT_MODSEQUENCE|HINT_MPTSETUP, NULL);
     OnActivatePage(0);
     m_bInitialized = TRUE;
-    
+
     return FALSE;
 }
 
@@ -228,7 +228,7 @@ void CCtrlGeneral::UpdateView(uint32_t dwHint, CObject *pHint)
     	m_EditVSTiVol.EnableWindow(bIsNotMOD_S3M);
     	m_SpinVSTiVol.EnableWindow(bIsNotMOD_S3M);
     	m_EditRestartPos.EnableWindow(specs.hasRestartPos ? TRUE : FALSE);
-    	
+
     	//Note: Sample volume slider is not disabled for MOD
     	//on purpose(can be used to control play volume)
 
@@ -361,7 +361,7 @@ void CCtrlGeneral::OnTempoChanged()
     			m_pSndFile->m_nMusicTempo = n;
     			m_pModDoc->SetModified();
     			m_pModDoc->UpdateAllViews(NULL, HINT_MODGENERAL, this);
-    			UpdateView(HINT_MODGENERAL, NULL); 
+    			UpdateView(HINT_MODGENERAL, NULL);
     			m_bEditsLocked=false;
     		}
     	}
@@ -409,7 +409,7 @@ void CCtrlGeneral::OnVSTiVolChanged()
     			m_pSndFile->RecalculateGainForAllPlugs();
     			m_pModDoc->SetModified();
     			m_pModDoc->UpdateAllViews(NULL, HINT_MODGENERAL, this);
-    			UpdateView(HINT_MODGENERAL, NULL); 
+    			UpdateView(HINT_MODGENERAL, NULL);
     			m_bEditsLocked=false;
     		}
     	}
@@ -430,7 +430,7 @@ void CCtrlGeneral::OnSamplePAChanged()
     			m_pSndFile->m_nSamplePreAmp = n;
     			m_pModDoc->SetModified();
     			m_pModDoc->UpdateAllViews(NULL, HINT_MODGENERAL, this);
-    			UpdateView(HINT_MODGENERAL, NULL); 
+    			UpdateView(HINT_MODGENERAL, NULL);
     			m_bEditsLocked=false;
     		}
     	}
@@ -449,7 +449,7 @@ void CCtrlGeneral::OnGlobalVolChanged()
     		UINT n = atoi(s);
     		n = CLAMP(n, 0, 128);
     		if (n != (m_pSndFile->m_nDefaultGlobalVolume >> 1))
-    		{ 
+    		{
     			m_bEditsLocked=true;
     			m_EditGlobalVol.SetModify(FALSE);
     			m_pSndFile->m_nDefaultGlobalVolume = n << 1;
@@ -522,7 +522,7 @@ void CCtrlGeneral::OnLoopSongChanged()
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-    	CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = pModDoc->GetSoundFile();
     	if (pSndFile) pSndFile->SetRepeatCount((CMainFrame::gbLoopSong) ? -1 : 0);
     }
 }
@@ -641,7 +641,7 @@ BOOL CCtrlGeneral::GetToolTipText(UINT uId, LPSTR pszText) {
     	}
     }
     return FALSE;
-    
+
 }
 
 void CCtrlGeneral::setAsDecibels(LPSTR stringToSet, double value, double valueAtZeroDB) {
@@ -651,7 +651,7 @@ void CCtrlGeneral::setAsDecibels(LPSTR stringToSet, double value, double valueAt
     	wsprintf(stringToSet, "-inf");
     	return;
     }
-    
+
     double changeFactor = value / valueAtZeroDB;
     double dB = 10*log(changeFactor);
 

@@ -1,5 +1,5 @@
 /*
- * This source code is public domain. 
+ * This source code is public domain.
  *
  * Copied to OpenMPT from libmodplug.
  *
@@ -39,7 +39,7 @@ typedef struct tagSAMPLE669
 } SAMPLE669;
 
 
-bool CSoundFile::Read669(const uint8_t *lpStream, const uint32_t dwMemLength)
+bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLength)
 //---------------------------------------------------------------------
 {
     BOOL b669Ext;
@@ -190,5 +190,3 @@ bool CSoundFile::Read669(const uint8_t *lpStream, const uint32_t dwMemLength)
     }
     return true;
 }
-
-

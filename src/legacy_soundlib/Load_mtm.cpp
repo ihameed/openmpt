@@ -48,7 +48,7 @@ typedef struct tagMTMHEADER
 #pragma pack()
 
 
-bool CSoundFile::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
 //-----------------------------------------------------------
 {
     uint32_t dwMemPos = 66;
@@ -157,4 +157,3 @@ bool CSoundFile::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
     m_nMaxPeriod = 32767;
     return true;
 }
-

@@ -17,7 +17,7 @@
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
-void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, CSoundFile *pSndFile, UINT * xparam, UINT * multiplier)
+void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_renderer *pSndFile, UINT * xparam, UINT * multiplier)
 {
     if(xparam == NULL || multiplier == NULL) return;
 
@@ -115,7 +115,7 @@ BOOL CFindReplaceTab::OnInitDialog()
 {
     CHAR s[256];
     CComboBox *combo;
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
 
     CPropertyPage::OnInitDialog();
     if (!m_pModDoc) return TRUE;
@@ -406,7 +406,7 @@ BOOL CPatternPropertiesDlg::OnInitDialog()
     CComboBox *combo;
     CDialog::OnInitDialog();
     combo = (CComboBox *)GetDlgItem(IDC_COMBO1);
-    const CSoundFile *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
+    const module_renderer *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
     if ((pSndFile) && (m_nPattern < pSndFile->Patterns.Size()) && (combo))
     {
     	CHAR s[256];
@@ -426,7 +426,7 @@ BOOL CPatternPropertiesDlg::OnInitDialog()
     		(pSndFile->Patterns[m_nPattern].GetNumRows() * pSndFile->m_nChannels * sizeof(modplug::tracker::modcommand_t)) / 1024);
     	SetDlgItemText(IDC_TEXT1, s);
 
-    	// Window title		
+    	// Window title
     	CHAR szName[MAX_PATTERNNAME + 1];
     	pSndFile->Patterns[m_nPattern].GetName(szName, MAX_PATTERNNAME);
     	if(strlen(szName))
@@ -455,7 +455,7 @@ BOOL CPatternPropertiesDlg::OnInitDialog()
 void CPatternPropertiesDlg::OnHalfRowNumber()
 //-------------------------------------------
 {
-    const CSoundFile *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
+    const module_renderer *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
     if(pSndFile == nullptr)
     	return;
 
@@ -470,7 +470,7 @@ void CPatternPropertiesDlg::OnHalfRowNumber()
 void CPatternPropertiesDlg::OnDoubleRowNumber()
 //---------------------------------------------
 {
-    const CSoundFile *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
+    const module_renderer *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
     if(pSndFile == nullptr)
     	return;
 
@@ -484,7 +484,7 @@ void CPatternPropertiesDlg::OnDoubleRowNumber()
 
 void CPatternPropertiesDlg::OnOverrideSignature()
 //-----------------------------------------------
-{    
+{
     GetDlgItem(IDC_EDIT_ROWSPERBEAT)->EnableWindow(IsDlgButtonChecked(IDC_CHECK1));
     GetDlgItem(IDC_EDIT_ROWSPERMEASURE)->EnableWindow(IsDlgButtonChecked(IDC_CHECK1));
 }
@@ -493,7 +493,7 @@ void CPatternPropertiesDlg::OnOverrideSignature()
 void CPatternPropertiesDlg::OnOK()
 //--------------------------------
 {
-    CSoundFile *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
+    module_renderer *pSndFile = (m_pModDoc) ? m_pModDoc->GetSoundFile() : nullptr;
     if(pSndFile)
     {
     	// Update pattern signature if necessary
@@ -610,7 +610,7 @@ BOOL CEditCommand::ShowEditWindow(UINT nPat, uint32_t dwCursor)
 //----------------------------------------------------------
 {
     CHAR s[64];
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     UINT nRow = dwCursor >> 16;
     UINT nChannel = (dwCursor & 0xFFFF) >> 3;
 
@@ -658,7 +658,7 @@ BOOL CEditCommand::ShowEditWindow(UINT nPat, uint32_t dwCursor)
 void CEditCommand::UpdateNote(UINT note, UINT instr)
 //--------------------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if ((m_nPattern >= pSndFile->Patterns.Size()) || (!m_pModDoc)
     	|| (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
     	|| (m_nChannel >= pSndFile->m_nChannels)
@@ -687,7 +687,7 @@ void CEditCommand::UpdateNote(UINT note, UINT instr)
 void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
 //----------------------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if ((m_nPattern >= pSndFile->Patterns.Size()) || (!m_pModDoc)
     	|| (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
     	|| (m_nChannel >= pSndFile->m_nChannels)
@@ -715,7 +715,7 @@ void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
 void CEditCommand::UpdateEffect(UINT command, UINT param)
 //-------------------------------------------------------
 {
-    CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if ((m_nPattern >= pSndFile->Patterns.Size()) || (!m_pModDoc)
     	|| (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
     	|| (m_nChannel >= pSndFile->m_nChannels)
@@ -786,13 +786,13 @@ void CPageEditNote::UpdateDialog()
 {
     char s[64];
     CComboBox *combo;
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
 
     if ((!m_bInitialized) || (!m_pModDoc)) return;
     pSndFile = m_pModDoc->GetSoundFile();
     // Note
     if ((combo = (CComboBox *)GetDlgItem(IDC_COMBO1)) != NULL)
-    {	
+    {
     	combo->ResetContent();
     	combo->SetItemData(combo->AddString("No note"), 0);
     	AppendNotesToControlEx(*combo, pSndFile, m_nInstr);
@@ -869,7 +869,7 @@ void CPageEditNote::OnNoteChanged()
     	if(n >= 0)
     	{
     		const UINT oldInstr = m_nInstr;
-    		CSoundFile* pSndFile = m_pModDoc->GetSoundFile();
+    		module_renderer* pSndFile = m_pModDoc->GetSoundFile();
     		m_nInstr = combo->GetItemData(n);
     		//Checking whether note names should be recreated.
     		if(!modplug::tracker::modcommand_t::IsPcNote(m_nNote) && pSndFile && pSndFile->Instruments[m_nInstr] && pSndFile->Instruments[oldInstr])
@@ -912,7 +912,7 @@ void CPageEditVolume::UpdateDialog()
     UpdateRanges();
     if ((combo = (CComboBox *)GetDlgItem(IDC_COMBO1)) != NULL)
     {
-    	CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     	if (pSndFile->m_nType == MOD_TYPE_MOD || m_bIsParamControl)
     	{
     		combo->EnableWindow(FALSE);
@@ -1010,7 +1010,7 @@ void CPageEditEffect::UpdateDialog()
 {
     CHAR s[128];
     CComboBox *combo;
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
 
     if ((!m_pModDoc) || (!m_bInitialized)) return;
     pSndFile = m_pModDoc->GetSoundFile();
@@ -1485,7 +1485,7 @@ BOOL CChannelRenameDlg::OnInitDialog()
     wsprintf(s, "Set name for channel %d:", m_nChannel);
     SetDlgItemText(IDC_STATIC_CHANNEL_NAME, s);
     SetDlgItemText(IDC_EDIT_CHANNEL_NAME, m_sName);
-    ((CEdit*)(GetDlgItem(IDC_EDIT_CHANNEL_NAME)))->LimitText(MAX_CHANNELNAME - 1); 
+    ((CEdit*)(GetDlgItem(IDC_EDIT_CHANNEL_NAME)))->LimitText(MAX_CHANNELNAME - 1);
 
     return TRUE;
 }

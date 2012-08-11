@@ -10,8 +10,8 @@
 // CMIDIMappingDialog dialog
 
 IMPLEMENT_DYNAMIC(CMIDIMappingDialog, CDialog)
-CMIDIMappingDialog::CMIDIMappingDialog(CWnd* pParent /*=NULL*/, CSoundFile& rSndfile)
-    : CDialog(CMIDIMappingDialog::IDD, pParent), m_rSndFile(rSndfile), 
+CMIDIMappingDialog::CMIDIMappingDialog(CWnd* pParent /*=NULL*/, module_renderer& rSndfile)
+    : CDialog(CMIDIMappingDialog::IDD, pParent), m_rSndFile(rSndfile),
       m_rMIDIMapper(m_rSndFile.GetMIDIMapper())
 //---------------------------------------------------------------------
 {
@@ -79,7 +79,7 @@ BOOL CMIDIMappingDialog::OnInitDialog()
     CDialog::OnInitDialog();
 
     m_EventCBox.SetCurSel(0);
-    
+
     //Add controller names.
     for(size_t i = MIDICC_start; i<=MIDICC_end; i++)
     {
@@ -95,7 +95,7 @@ BOOL CMIDIMappingDialog::OnInitDialog()
     //Add plugin parameter names
     AddPluginParameternamesToCombobox(m_PlugParamCBox, m_rSndFile.m_MixPlugins[(m_Setting.GetPlugIndex() <= MAX_MIXPLUGINS) ? m_Setting.GetPlugIndex() - 1 : 0]);
     m_PlugParamCBox.SetCurSel(m_Setting.GetParamIndex());
-    
+
     //Add directives to list.
     typedef CMIDIMapper::const_iterator CITER;
     for(CITER iter = m_rMIDIMapper.Begin(); iter != m_rMIDIMapper.End(); iter++)
@@ -122,7 +122,7 @@ BOOL CMIDIMappingDialog::OnInitDialog()
     CMainFrame::GetMainFrame()->SetMidiRecordWnd(GetSafeHwnd());
 
     CheckDlgButton(IDC_CHECK_MIDILEARN, BST_CHECKED);
-    
+
     return TRUE;  // return TRUE unless you set the focus to a control
 }
 
@@ -136,12 +136,12 @@ void CMIDIMappingDialog::OnLbnSelchangeList1()
     CheckDlgButton(IDC_CHECKACTIVE, activeSetting.IsActive() ? BST_CHECKED : BST_UNCHECKED);
     CheckDlgButton(IDC_CHECKCAPTURE, activeSetting.GetCaptureMIDI() ? BST_CHECKED : BST_UNCHECKED);
     CheckDlgButton(IDC_CHECK_PATRECORD, activeSetting.GetAllowPatternEdit() ? BST_CHECKED : BST_UNCHECKED);
-    
+
     m_ChannelCBox.SetCurSel(activeSetting.GetChannel());
 
     if(m_Setting.GetEvent() == 0xB)
-    	m_EventCBox.SetCurSel(0); 
-    else 
+    	m_EventCBox.SetCurSel(0);
+    else
     	m_EventCBox.SetCurSel(-1);
 
 
@@ -302,7 +302,7 @@ void CMIDIMappingDialog::OnBnClickedButtonRemove()
     		m_Setting = m_rMIDIMapper.GetDirective(i);
 
     	OnLbnSelchangeList1();
-    	
+
     }
 }
 
@@ -354,7 +354,7 @@ void CMIDIMappingDialog::OnDeltaposSpinmovemapping(NMHDR *pNMHDR, LRESULT *pResu
     if(index < 0 || index >= m_List.GetCount()) return;
 
     LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
-    
+
     if(pNMUpDown->iDelta < 0) //Up
     {
     	if(index - 1 >= 0 && m_rMIDIMapper.AreOrderEqual(index-1, index))
@@ -379,7 +379,7 @@ void CMIDIMappingDialog::OnDeltaposSpinmovemapping(NMHDR *pNMHDR, LRESULT *pResu
     		m_List.SetCurSel(index+1);
     	}
     }
-    
-    
+
+
     *pResult = 0;
 }

@@ -112,7 +112,7 @@ void CViewComments::OnInitialUpdate()
 
     	// For XM, set the instrument list as the default list
     	CModDoc *pModDoc = GetDocument();
-    	CSoundFile *pSndFile;
+    	module_renderer *pSndFile;
     	if(pModDoc)
     	{
     		pSndFile= pModDoc->GetSoundFile();
@@ -172,7 +172,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
     //CHAR s[256], stmp[256];
     CHAR s[512], stmp[256]; //rewbs.fix3082
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     LV_COLUMN lvc;
     LV_ITEM lvi, lvi2;
 
@@ -298,7 +298,7 @@ void CViewComments::OnUpdate(CView *pSender, LPARAM lHint, CObject *)
     				case SMPLIST_MIDDLEC:
     					if (pSmp->length)
     					{
-    						wsprintf(s, "%d Hz", 
+    						wsprintf(s, "%d Hz",
     							pSndFile->GetFreqFromPeriod(
     								pSndFile->GetPeriodFromNote(NOTE_MIDDLEC + pSmp->RelativeTone, pSmp->nFineTune, pSmp->c5_samplerate),
     								pSmp->c5_samplerate));
@@ -472,7 +472,7 @@ VOID CViewComments::UpdateButtonState()
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-    	CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = pModDoc->GetSoundFile();
     	m_ToolBar.SetState(IDC_LIST_SAMPLES, ((m_nListId == IDC_LIST_SAMPLES) ? TBSTATE_CHECKED : 0)|TBSTATE_ENABLED);
     	m_ToolBar.SetState(IDC_LIST_INSTRUMENTS, ((m_nListId == IDC_LIST_INSTRUMENTS) ? TBSTATE_CHECKED : 0)|TBSTATE_ENABLED);
     	m_ToolBar.SetState(IDC_LIST_PATTERNS, ((m_nListId == IDC_LIST_PATTERNS) ? TBSTATE_CHECKED : 0)|TBSTATE_ENABLED);
@@ -492,11 +492,11 @@ VOID CViewComments::OnEndLabelEdit(LPNMHDR pnmhdr, LRESULT *)
     if ((plvItem->pszText != NULL) && (!plvItem->iSubItem) && (pModDoc))
     {
     	UINT iItem = plvItem->iItem;
-    	CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    	module_renderer *pSndFile = pModDoc->GetSoundFile();
     	lstrcpyn(s, plvItem->pszText, sizeof(s));
 
     	size_t maxStrLen = (m_nListId == IDC_LIST_SAMPLES) ? pSndFile->GetModSpecifications().sampleNameLengthMax : pSndFile->GetModSpecifications().instrNameLengthMax;
-    	
+
     	for (size_t i = min(maxStrLen, strlen(s)); i < sizeof(s); i++)
     		s[i] = 0;
 
@@ -579,7 +579,7 @@ void CViewComments::OnShowInstruments()
     	CModDoc *pModDoc = GetDocument();
     	if (pModDoc)
     	{
-    		CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    		module_renderer *pSndFile = pModDoc->GetSoundFile();
     		if (pSndFile->m_nInstruments)
     		{
     			m_nListId = IDC_LIST_INSTRUMENTS;

@@ -12,7 +12,7 @@ namespace gui {
 namespace qt4 {
 
 
-comment_view::comment_view(CSoundFile *legacy_module)
+comment_view::comment_view(module_renderer *legacy_module)
     : QWidget(), legacy_module(legacy_module), busy_loading_comments(false)
 {
     auto layout = new QVBoxLayout();

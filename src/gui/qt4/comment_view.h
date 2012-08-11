@@ -2,7 +2,7 @@
 
 #include <QtGui>
 
-class CSoundFile;
+class module_renderer;
 
 namespace modplug {
 namespace gui {
@@ -13,7 +13,7 @@ static const unsigned int max_comment_line_length = 128;
 class comment_view : public QWidget {
     Q_OBJECT
 public:
-    comment_view(CSoundFile *);
+    comment_view(module_renderer *);
 
     void legacy_set_comments_from_module(bool);
 
@@ -22,7 +22,7 @@ public slots:
 
 private:
     QPlainTextEdit comment_editor;
-    CSoundFile *legacy_module;
+    module_renderer *legacy_module;
     bool busy_loading_comments;
 };
 

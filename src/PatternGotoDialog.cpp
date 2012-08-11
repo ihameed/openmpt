@@ -19,7 +19,7 @@ CPatternGotoDialog::CPatternGotoDialog(CWnd* pParent /*=NULL*/)
     , m_nOrder(0)
 {
     m_bControlLock=false;
-    ::CreateDialog(NULL, MAKEINTRESOURCE(IDD), pParent->m_hWnd, NULL); 
+    ::CreateDialog(NULL, MAKEINTRESOURCE(IDD), pParent->m_hWnd, NULL);
 }
 
 CPatternGotoDialog::~CPatternGotoDialog()
@@ -44,7 +44,7 @@ END_MESSAGE_MAP()
 
 // CPatternGotoDialog message handlers
 
-void CPatternGotoDialog::UpdatePos(UINT row, UINT chan, UINT pat, UINT ord, CSoundFile* pSndFile)
+void CPatternGotoDialog::UpdatePos(UINT row, UINT chan, UINT pat, UINT ord, module_renderer* pSndFile)
 {
     m_nRow = row;
     m_nChannel = chan;
@@ -57,9 +57,9 @@ void CPatternGotoDialog::UpdatePos(UINT row, UINT chan, UINT pat, UINT ord, CSou
 void CPatternGotoDialog::OnOK()
 {
     UpdateData();
-    
+
     bool validated=true;
-    
+
     //is pattern number sensible?
     if (m_nPattern>=m_pSndFile->Patterns.Size()) {
     	validated=false;
@@ -69,7 +69,7 @@ void CPatternGotoDialog::OnOK()
     if (validated && !(m_pSndFile->Patterns[m_nPattern])) {
     	validated=false;
     }
-    
+
     //Does order match pattern?
     if (validated && m_pSndFile->Order[m_nOrder] != m_nPattern) {
     	validated=false;
@@ -79,7 +79,7 @@ void CPatternGotoDialog::OnOK()
     if (validated && m_pSndFile->Patterns[m_nPattern].GetNumRows() <= m_nRow) {
     	validated=false;
     }
-    
+
     //Does track have enough channels?
     if (validated && m_pSndFile->m_nChannels < m_nChannel) {
     	validated=false;
@@ -101,7 +101,7 @@ void CPatternGotoDialog::OnEnChangeGotoPat()
     if (ControlsLocked()) {
     	return;				//the change to textbox did not come from user.
     }
-    	
+
     UpdateData();
     m_nOrder = m_pSndFile->FindOrder(m_nPattern, m_nActiveOrder);
 
@@ -126,7 +126,7 @@ void CPatternGotoDialog::OnEnChangeGotoOrd()
     	UINT candidatePattern = m_pSndFile->Order[m_nOrder];
     	if (candidatePattern<m_pSndFile->Patterns.Size() && m_pSndFile->Patterns[candidatePattern]) {
     		m_nPattern = candidatePattern;
-    	} 
+    	}
     }
 
     LockControls();

@@ -3,14 +3,14 @@
 
 #include "pattern.h"
 
-class CSoundFile;
+class module_renderer;
 
 //====================
 class CPlaybackEventer
 //====================
 {
 public:
-    CPlaybackEventer(CSoundFile& sndf) : m_rSndFile(sndf) {}
+    CPlaybackEventer(module_renderer& sndf) : m_rSndFile(sndf) {}
     ~CPlaybackEventer();
 
     //SetPatternEvent(const PATTERNINDEX pattern, const ROWINDEX row, const CHANNELINDEX column);
@@ -19,7 +19,7 @@ public:
     void PatternTransitionChnUnmuteAll();
 
 private:
-    CSoundFile& m_rSndFile;
+    module_renderer& m_rSndFile;
 };
 
 #endif

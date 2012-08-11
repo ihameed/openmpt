@@ -368,7 +368,7 @@ CMainFrame::CMainFrame() :
     m_pPerfCounter= new CPerformanceCounter();
 
     //Loading static tunings here - probably not the best place to do that but anyway.
-    CSoundFile::LoadStaticTunings();
+    module_renderer::LoadStaticTunings();
 
 }
 
@@ -427,8 +427,8 @@ void CMainFrame::LoadIniSettings()
     m_nSrcMode = GetPrivateProfileDWord("Sound Settings", "SrcMode", SRCMODE_POLYPHASE, iniFile);
 
     m_nPreAmp = GetPrivateProfileDWord("Sound Settings", "PreAmp", 128, iniFile);
-    CSoundFile::m_nStereoSeparation = GetPrivateProfileLong("Sound Settings", "StereoSeparation", 128, iniFile);
-    CSoundFile::m_nMaxMixChannels = GetPrivateProfileLong("Sound Settings", "MixChannels", MAX_VIRTUAL_CHANNELS, iniFile);
+    module_renderer::m_nStereoSeparation = GetPrivateProfileLong("Sound Settings", "StereoSeparation", 128, iniFile);
+    module_renderer::m_nMaxMixChannels = GetPrivateProfileLong("Sound Settings", "MixChannels", MAX_VIRTUAL_CHANNELS, iniFile);
     gbWFIRType = static_cast<uint8_t>(GetPrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", 7, iniFile));
     gdWFIRCutoff = static_cast<double>(GetPrivateProfileLong("Sound Settings", "ResamplerWFIRCutoff", 97, iniFile))/100.0;
     //XXXih: kill the old registry entry or something
@@ -460,8 +460,8 @@ void CMainFrame::LoadIniSettings()
     gnAutoChordWaitTime = GetPrivateProfileDWord("Pattern Editor", "AutoChordWaitTime", 60, iniFile);
     COrderList::s_nDefaultMargins = static_cast<uint8_t>(GetPrivateProfileInt("Pattern Editor", "DefaultSequenceMargins", 2, iniFile));
     gbShowHackControls = (0 != GetPrivateProfileDWord("Misc", "ShowHackControls", 0, iniFile));
-    CSoundFile::s_DefaultPlugVolumeHandling = static_cast<uint8_t>(GetPrivateProfileInt("Misc", "DefaultPlugVolumeHandling", PLUGIN_VOLUMEHANDLING_IGNORE, iniFile));
-    if(CSoundFile::s_DefaultPlugVolumeHandling > 2) CSoundFile::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
+    module_renderer::s_DefaultPlugVolumeHandling = static_cast<uint8_t>(GetPrivateProfileInt("Misc", "DefaultPlugVolumeHandling", PLUGIN_VOLUMEHANDLING_IGNORE, iniFile));
+    if(module_renderer::s_DefaultPlugVolumeHandling > 2) module_renderer::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
 
     m_nSampleUndoMaxBuffer = GetPrivateProfileLong("Sample Editor" , "UndoBufferSize", m_nSampleUndoMaxBuffer >> 20, iniFile);
     m_nSampleUndoMaxBuffer = max(1, m_nSampleUndoMaxBuffer) << 20;
@@ -555,8 +555,8 @@ bool CMainFrame::LoadRegistrySettings()
         dwSZSIZE = sizeof(m_szKbdFile);
         registry_query_value(key, "Key_Config_File", NULL, &dwREG_SZ, (LPBYTE)m_szKbdFile, &dwSZSIZE);
 
-        registry_query_value(key, "StereoSeparation", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nStereoSeparation, &dwDWORDSize);
-        registry_query_value(key, "MixChannels", NULL, &dwREG_DWORD, (LPBYTE)&CSoundFile::m_nMaxMixChannels, &dwDWORDSize);
+        registry_query_value(key, "StereoSeparation", NULL, &dwREG_DWORD, (LPBYTE)&module_renderer::m_nStereoSeparation, &dwDWORDSize);
+        registry_query_value(key, "MixChannels", NULL, &dwREG_DWORD, (LPBYTE)&module_renderer::m_nMaxMixChannels, &dwDWORDSize);
         registry_query_value(key, "WaveDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nWaveDevice, &dwDWORDSize);
         registry_query_value(key, "MidiSetup", NULL, &dwREG_DWORD, (LPBYTE)&m_dwMidiSetup, &dwDWORDSize);
         registry_query_value(key, "MidiDevice", NULL, &dwREG_DWORD, (LPBYTE)&m_nMidiDevice, &dwDWORDSize);
@@ -706,7 +706,7 @@ CMainFrame::~CMainFrame()
     delete m_pPerfCounter;
 
     CChannelManagerDlg::DestroySharedInstance();
-    CSoundFile::DeleteStaticdata();
+    module_renderer::DeleteStaticdata();
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -932,8 +932,8 @@ void CMainFrame::SaveIniSettings()
     WritePrivateProfileDWord("Sound Settings", "Quality", deprecated_m_dwQuality, iniFile);
     WritePrivateProfileDWord("Sound Settings", "SrcMode", m_nSrcMode, iniFile);
     WritePrivateProfileDWord("Sound Settings", "PreAmp", m_nPreAmp, iniFile);
-    WritePrivateProfileLong("Sound Settings", "StereoSeparation", CSoundFile::m_nStereoSeparation, iniFile);
-    WritePrivateProfileLong("Sound Settings", "MixChannels", CSoundFile::m_nMaxMixChannels, iniFile);
+    WritePrivateProfileLong("Sound Settings", "StereoSeparation", module_renderer::m_nStereoSeparation, iniFile);
+    WritePrivateProfileLong("Sound Settings", "MixChannels", module_renderer::m_nMaxMixChannels, iniFile);
     WritePrivateProfileDWord("Sound Settings", "XMMSModplugResamplerWFIRType", gbWFIRType, iniFile);
     WritePrivateProfileLong("Sound Settings", "ResamplerWFIRCutoff", static_cast<int>(gdWFIRCutoff*100+0.5), iniFile);
     WritePrivateProfileLong("Sound Settings", "VolumeRampInSamples", glVolumeRampInSamples, iniFile);
@@ -1213,7 +1213,7 @@ LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT
 
     if (!m_pSndFile) return -1;
 
-    CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
+    module_renderer::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     m_pSndFile->deprecated_SetWaveConfig(samplespersec, bits, channels, TRUE);
     gbStopSent = FALSE;
     m_pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
@@ -1380,17 +1380,17 @@ void CMainFrame::UpdateAudioParameters(BOOL bReset)
 //-------------------------------------------------
 {
     auto &stream_settings = global_config.audio_settings();
-    CSoundFile::deprecated_SetWaveConfig(stream_settings.sample_rate, 16, 2, TRUE);
-    CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
+    module_renderer::deprecated_SetWaveConfig(stream_settings.sample_rate, 16, 2, TRUE);
+    module_renderer::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     // Soft panning
-    CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
+    module_renderer::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
 
     if (m_dwPatternSetup & PATTERN_MUTECHNMODE)
-        CSoundFile::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
+        module_renderer::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
     else
-        CSoundFile::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
-    CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
-    if (bReset) CSoundFile::InitPlayer(TRUE);
+        module_renderer::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
+    module_renderer::deprecated_SetResamplingMode(m_nSrcMode);
+    if (bReset) module_renderer::InitPlayer(TRUE);
 }
 
 
@@ -1549,7 +1549,7 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
         debug_log("------------ CMainFrame::PlayMod: pModDoc == 0");
         return FALSE;
     }
-    CSoundFile *pSndFile = pModDoc->GetSoundFile();
+    module_renderer *pSndFile = pModDoc->GetSoundFile();
     if ((!pSndFile) || (!pSndFile->GetType())) {
         debug_log("-------------- CMainFrame::PlayMod: pSndFile == 0 or pSndFile->GetType == 0");
         return FALSE;
@@ -1568,10 +1568,10 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
     {
         gnLVuMeter = gnRVuMeter = 0;
-        CSoundFile::sound_mix_callback = CalcStereoVuMeters;
+        module_renderer::sound_mix_callback = CalcStereoVuMeters;
     } else
     {
-        CSoundFile::sound_mix_callback = NULL;
+        module_renderer::sound_mix_callback = NULL;
     }
     if (!deprecated_audioOpenDevice())
     {
@@ -1674,7 +1674,7 @@ BOOL CMainFrame::StopMod(CModDoc *pModDoc)
 {
     if ((pModDoc) && (pModDoc != m_pModPlaying)) return FALSE;
     CModDoc *pPlay = m_pModPlaying;
-    CSoundFile *pSndFile = m_pSndFile;
+    module_renderer *pSndFile = m_pSndFile;
     PauseMod();
     if (pPlay) pPlay->SetPause(FALSE);
     if (pSndFile) pSndFile->SetCurrentPos(0);
@@ -1683,7 +1683,7 @@ BOOL CMainFrame::StopMod(CModDoc *pModDoc)
 }
 
 
-BOOL CMainFrame::PlaySoundFile(CSoundFile *pSndFile)
+BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
 //--------------------------------------------------
 {
     if (m_pSndFile) PauseMod(NULL);
@@ -1809,7 +1809,7 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
 }
 
 
-BOOL CMainFrame::PlaySoundFile(CSoundFile *pSong, UINT nInstrument, UINT nSample, UINT nNote)
+BOOL CMainFrame::PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nSample, UINT nNote)
 //-------------------------------------------------------------------------------------------
 {
     StopSoundFile(&m_WaveFile);
@@ -1860,7 +1860,7 @@ BOOL CMainFrame::PlaySoundFile(CSoundFile *pSong, UINT nInstrument, UINT nSample
 }
 
 
-BOOL CMainFrame::StopSoundFile(CSoundFile *pSndFile)
+BOOL CMainFrame::StopSoundFile(module_renderer *pSndFile)
 //--------------------------------------------------
 {
     if ((pSndFile) && (pSndFile != m_pSndFile)) return FALSE;
@@ -1883,11 +1883,11 @@ BOOL CMainFrame::SetFollowSong(CModDoc *pDoc, HWND hwnd, BOOL bFollowSong, uint3
     if (dwType) m_dwNotifyType = dwType;
     if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
     {
-        CSoundFile::sound_mix_callback = CalcStereoVuMeters;
+        module_renderer::sound_mix_callback = CalcStereoVuMeters;
     } else
     {
         gnLVuMeter = gnRVuMeter = 0;
-        CSoundFile::sound_mix_callback = NULL;
+        module_renderer::sound_mix_callback = NULL;
     }
     return TRUE;
 }
@@ -1902,7 +1902,7 @@ BOOL CMainFrame::SetupPlayer(uint32_t q, uint32_t srcmode, BOOL bForceUpdate)
         m_nSrcMode = srcmode;
         deprecated_m_dwQuality = q;
         BEGIN_CRITICAL();
-        CSoundFile::deprecated_SetResamplingMode(m_nSrcMode);
+        module_renderer::deprecated_SetResamplingMode(m_nSrcMode);
         END_CRITICAL();
         PostMessage(WM_MOD_INVALIDATEPATTERNS, HINT_MPTSETUP);
     }
@@ -1926,9 +1926,9 @@ BOOL CMainFrame::SetupMiscOptions()
 //---------------------------------
 {
     if (CMainFrame::m_dwPatternSetup & PATTERN_MUTECHNMODE)
-        CSoundFile::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
+        module_renderer::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
     else
-        CSoundFile::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
+        module_renderer::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
 
     m_wndToolBar.EnableFlatButtons(m_dwPatternSetup & PATTERN_FLATBUTTONS);
 
@@ -2086,7 +2086,7 @@ void CMainFrame::OnPluginManager()
 
     if (pModDoc)
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         //Find empty plugin slot
         for (int nPlug=0; nPlug<MAX_MIXPLUGINS; nPlug++)
         {
@@ -2551,7 +2551,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 long CMainFrame::GetSampleRate()
 //------------------------------
 {
-    return CSoundFile::GetSampleRate();
+    return module_renderer::GetSampleRate();
 }
 
 long CMainFrame::GetTotalSampleCount()
@@ -2565,7 +2565,7 @@ long CMainFrame::GetTotalSampleCount()
 double CMainFrame::GetApproxBPM()
 //-------------------------------
 {
-    CSoundFile *pSndFile = NULL;
+    module_renderer *pSndFile = NULL;
 
     pSndFile = GetActiveDoc()->GetSoundFile();
     if (pSndFile) {
@@ -2574,7 +2574,7 @@ double CMainFrame::GetApproxBPM()
     return 0;
 }
 
-BOOL CMainFrame::InitRenderer(CSoundFile* pSndFile)
+BOOL CMainFrame::InitRenderer(module_renderer* pSndFile)
 //-------------------------------------------------
 {
     BEGIN_CRITICAL();
@@ -2587,7 +2587,7 @@ BOOL CMainFrame::InitRenderer(CSoundFile* pSndFile)
     return true;
 }
 
-BOOL CMainFrame::StopRenderer(CSoundFile* pSndFile)
+BOOL CMainFrame::StopRenderer(module_renderer* pSndFile)
 //-------------------------------------------------
 {
     m_dwStatus &= ~MODSTATUS_RENDERING;
@@ -2608,7 +2608,7 @@ bool CMainFrame::UpdateEffectKeys(void)
     CModDoc* pModDoc = GetActiveDoc();
     if (pModDoc)
     {
-        CSoundFile* pSndFile = pModDoc->GetSoundFile();
+        module_renderer* pSndFile = pModDoc->GetSoundFile();
         if (pSndFile)
         {
             if    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
@@ -2655,7 +2655,7 @@ void CMainFrame::OnViewMIDIMapping()
 //----------------------------------
 {
     CModDoc* pModDoc = GetActiveDoc();
-    CSoundFile* pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
+    module_renderer* pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
     if(!pSndFile) return;
 
     const HWND oldMIDIRecondWnd = GetMidiRecordWnd();

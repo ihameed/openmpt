@@ -35,7 +35,7 @@ bool EqualTof(const float a, const float b)
 float Round(const float value, const int digit)
 {
     float v = 0.1f * (value * powf(10.0f, (float)(digit + 1)) + (value < 0.0f ? -5.0f : 5.0f));
-    modff(v, &v);    
+    modff(v, &v);
     return v / powf(10.0f, (float)digit);
 }
 
@@ -147,7 +147,7 @@ void CCtrlSamples::DoDataExchange(CDataExchange* pDX)
 }
 
 
-CCtrlSamples::CCtrlSamples() : 
+CCtrlSamples::CCtrlSamples() :
 //----------------------------
     m_nStretchProcessStepLength(nDefaultStretchChunkSize),
     m_nSequenceMs(DEFAULT_SEQUENCE_MS),
@@ -257,13 +257,13 @@ BOOL CCtrlSamples::OnInitDialog()
     GetDlgItem(IDC_BUTTON1)->ShowWindow(SW_SHOW); // PitchShiftTimeStretch
     GetDlgItem(IDC_BUTTON2)->ShowWindow(SW_SHOW); // EstimateSampleSize
     GetDlgItem(IDC_CHECK3)->ShowWindow(SW_SHOW);  // EnableStretchToSize
-    GetDlgItem(IDC_EDIT6)->ShowWindow(SW_SHOW);   // 
+    GetDlgItem(IDC_EDIT6)->ShowWindow(SW_SHOW);   //
     GetDlgItem(IDC_GROUPBOX_PITCH_TIME)->ShowWindow(SW_SHOW);  //
     GetDlgItem(IDC_TEXT_PITCH)->ShowWindow(SW_SHOW);  //
     GetDlgItem(IDC_TEXT_QUALITY)->ShowWindow(SW_SHOW);  //
     GetDlgItem(IDC_TEXT_FFT)->ShowWindow(SW_SHOW);  //
     GetDlgItem(IDC_GROUPBOX_PITCH_TIME)->ShowWindow(SW_SHOW);  //
-    
+
     CHAR str[16];
 
     // Pitch selection
@@ -326,7 +326,7 @@ bool CCtrlSamples::SetCurrentSample(SAMPLEINDEX nSmp, LONG lZoom, bool bUpdNum)
 //-----------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    CSoundFile *pSndFile;
+    module_renderer *pSndFile;
     if (!pModDoc) return false;
     pSndFile = pModDoc->GetSoundFile();
     if (pSndFile->m_nSamples < 1) pSndFile->m_nSamples = 1;
@@ -359,7 +359,7 @@ void CCtrlSamples::OnActivatePage(LPARAM lParam)
     CModDoc *pModDoc = GetDocument();
     if ((pModDoc) && (m_pParent))
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         if (lParam < 0)
         {
             int nIns = m_pParent->GetInstrumentChange();
@@ -434,7 +434,7 @@ LRESULT CCtrlSamples::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
         if (lParam)
         {
             LPDRAGONDROP pDropInfo = (LPDRAGONDROP)lParam;
-            CSoundFile *pSndFile = (CSoundFile *)(pDropInfo->lDropParam);
+            module_renderer *pSndFile = (module_renderer *)(pDropInfo->lDropParam);
             if (pDropInfo->pModDoc) pSndFile = pDropInfo->pModDoc->GetSoundFile();
             if (pSndFile) return OpenSample(pSndFile, (SAMPLEINDEX)pDropInfo->dwDropItem) ? TRUE : FALSE;
         }
@@ -491,7 +491,7 @@ LRESULT CCtrlSamples::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
     case IDC_SAMPLE_SAVEAS:
         OnSampleSave();
         break;
-    
+
     case IDC_SAMPLE_NEW:
         OnSampleNew();
         break;
@@ -517,7 +517,7 @@ BOOL CCtrlSamples::GetToolTipText(UINT uId, LPSTR pszText)
             if ((m_pSndFile) && (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_MOD)) && (m_nSample))
             {
                 modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
-                UINT nFreqHz = CSoundFile::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+                UINT nFreqHz = module_renderer::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
                 wsprintf(pszText, "%ldHz", nFreqHz);
                 return TRUE;
             }
@@ -620,7 +620,7 @@ void CCtrlSamples::UpdateView(uint32_t dwHintMask, CObject *pObj)
         modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
         CHAR s[128];
         uint32_t d;
-        
+
         // Length / Type
         wsprintf(s, "%d-bit %s, len: %d", pSmp->GetElementarySampleSize() * 8, (pSmp->flags & CHN_STEREO) ? "stereo" : "mono", pSmp->length);
         SetDlgItemText(IDC_TEXT5, s);
@@ -652,7 +652,7 @@ void CCtrlSamples::UpdateView(uint32_t dwHintMask, CObject *pObj)
         {
             wsprintf(s, "%lu", pSmp->c5_samplerate);
             m_EditFineTune.SetWindowText(s);
-            transp = CSoundFile::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
+            transp = module_renderer::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
         } else
         {
             int ftune = ((int)pSmp->nFineTune);
@@ -830,7 +830,7 @@ OpenError:
 }
 
 
-bool CCtrlSamples::OpenSample(CSoundFile *pSndFile, SAMPLEINDEX nSample)
+bool CCtrlSamples::OpenSample(module_renderer *pSndFile, SAMPLEINDEX nSample)
 //----------------------------------------------------------------------
 {
     if ((!pSndFile) || (!nSample) || (nSample > pSndFile->m_nSamples)) return false;
@@ -903,7 +903,7 @@ void CCtrlSamples::OnSampleNew()
     if (smp != SAMPLEINDEX_INVALID)
     {
         SAMPLEINDEX nOldSmp = m_nSample;
-        CSoundFile *pSndFile = m_pModDoc->GetSoundFile();
+        module_renderer *pSndFile = m_pModDoc->GetSoundFile();
         SetCurrentSample(smp);
 
         if(bDuplicate && nOldSmp >= 1 && nOldSmp < MAX_SAMPLES)
@@ -912,7 +912,7 @@ void CCtrlSamples::OnSampleNew()
             memcpy(&m_pSndFile->Samples[smp], &m_pSndFile->Samples[nOldSmp], sizeof(modplug::tracker::modsample_t));
             strcpy(m_pSndFile->m_szNames[smp], m_pSndFile->m_szNames[nOldSmp]);
             // clone sample.
-            if((m_pSndFile->Samples[smp].sample_data = CSoundFile::AllocateSample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
+            if((m_pSndFile->Samples[smp].sample_data = module_renderer::AllocateSample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
             {
                 memcpy(m_pSndFile->Samples[smp].sample_data, m_pSndFile->Samples[nOldSmp].sample_data, m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes());
             }
@@ -938,7 +938,7 @@ void CCtrlSamples::OnSampleOpen()
 //-------------------------------
 {
     static int nLastIndex = 0;
-    
+
     FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(true, "", "",
         "All Samples|*.wav;*.pat;*.s3i;*.smp;*.snd;*.raw;*.xi;*.aif;*.aiff;*.its;*.8sv;*.8svx;*.svx;*.pcm|"
         "Wave Files (*.wav)|*.wav|"
@@ -960,7 +960,7 @@ void CCtrlSamples::OnSampleOpen()
     {
         //If loading multiple samples, advancing to next sample and creating
         //new one if necessary.
-        if(counter > 0)    
+        if(counter > 0)
         {
             if(m_nSample >= MAX_SAMPLES-1)
                 break;
@@ -1136,7 +1136,7 @@ void CCtrlSamples::OnNormalize()
         {
             bool bOk = false;
             modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[iSmp];
-        
+
             if(iMinSample != iMaxSample)
             {
                 //if more than one sample is selected, always amplify the whole sample.
@@ -1218,7 +1218,7 @@ void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
 //-----------------------------------------------------------------------
 {
     modplug::tracker::modsample_t *pSmp;
-    
+
     if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
 
     BeginWaitCursor();
@@ -1413,7 +1413,7 @@ void CCtrlSamples::OnUpsample()
     pOriginal = pSmp->sample_data;
     dwNewLen = pSmp->length + (dwEnd-dwStart);
     pNewSample = NULL;
-    if (dwNewLen+4 <= MAX_SAMPLE_LENGTH) pNewSample = CSoundFile::AllocateSample((dwNewLen+4)*newsmplsize);
+    if (dwNewLen+4 <= MAX_SAMPLE_LENGTH) pNewSample = module_renderer::AllocateSample((dwNewLen+4)*newsmplsize);
     if (pNewSample)
     {
         m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
@@ -1519,7 +1519,7 @@ void CCtrlSamples::OnUpsample()
         pSmp->sample_data = (LPSTR)pNewSample;
         pSmp->length = dwNewLen;
 
-        CSoundFile::FreeSample(pOriginal);
+        module_renderer::FreeSample(pOriginal);
         END_CRITICAL();
         m_pModDoc->AdjustEndOfSample(m_nSample);
         if (selection.bSelected == true)
@@ -1561,7 +1561,7 @@ void CCtrlSamples::OnDownsample()
     dwNewLen = pSmp->length - dwRemove;
     dwEnd = dwStart+dwRemove*2;
     pNewSample = NULL;
-    if ((dwNewLen > 32) && (dwRemove)) pNewSample = CSoundFile::AllocateSample((dwNewLen+4)*smplsize);
+    if ((dwNewLen > 32) && (dwRemove)) pNewSample = module_renderer::AllocateSample((dwNewLen+4)*smplsize);
     if (pNewSample)
     {
 
@@ -1646,7 +1646,7 @@ void CCtrlSamples::OnDownsample()
         }
         pSmp->length = dwNewLen;
         pSmp->sample_data = (LPSTR)pNewSample;
-        CSoundFile::FreeSample(pOriginal);
+        module_renderer::FreeSample(pOriginal);
         END_CRITICAL();
         m_pModDoc->AdjustEndOfSample(m_nSample);
         if (selection.bSelected == true)
@@ -1721,17 +1721,17 @@ void CCtrlSamples::OnEstimateSampleSize()
     //Calculate/verify samplerate at C5.
     long lSampleRate = pSmp->c5_samplerate;
     if(m_pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-        lSampleRate = CSoundFile::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
-    if(lSampleRate <= 0) 
+        lSampleRate = module_renderer::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+    if(lSampleRate <= 0)
         lSampleRate = 8363;
 
     //Open dialog
-    CPSRatioCalc dlg(pSmp->length, lSampleRate, 
-                     m_pSndFile->m_nMusicSpeed,  m_pSndFile->m_nMusicTempo, 
+    CPSRatioCalc dlg(pSmp->length, lSampleRate,
+                     m_pSndFile->m_nMusicSpeed,  m_pSndFile->m_nMusicTempo,
                      m_pSndFile->m_nDefaultRowsPerBeat, m_pSndFile->m_nTempoMode,
                      m_dTimeStretchRatio, this);
     if (dlg.DoModal() != IDOK) return;
-    
+
     //Update ratio value&textbox
     m_dTimeStretchRatio = dlg.m_dRatio;
     UpdateData(FALSE);
@@ -1762,7 +1762,7 @@ void CCtrlSamples::OnPitchShiftTimeStretch()
             pSmp->sustain_start = (UINT)min(pSmp->sustain_start * (m_dTimeStretchRatio/100.0), pSmp->length);
             pSmp->sustain_end = (UINT)min(pSmp->sustain_end * (m_dTimeStretchRatio/100.0), pSmp->length);
         }
-        
+
     }
     // Pitch shifting
     else
@@ -1816,12 +1816,12 @@ int CCtrlSamples::TimeStretch(float ratio)
 //----------------------------------------
 {
     CString sPath;
-    
+
     sPath.Format(TEXT("%s%s"), CTrackApp::GetAppDirPath(), TEXT("elastique2.dll"));
         if (sPath.GetLength() <= _MAX_PATH && PathFileExists(sPath) == TRUE) {
             return ElastiqueTimeStretch(ratio);
         }
-        
+
     static HANDLE handleSt = NULL; // Handle to SoundTouch object.
     if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
@@ -1854,7 +1854,7 @@ int CCtrlSamples::TimeStretch(float ratio)
         if (sPath.GetLength() <= _MAX_PATH && PathFileExists(sPath) == TRUE)
             handleSt = soundtouch_createInstance();
     }
-    if (handleSt == NULL) 
+    if (handleSt == NULL)
     {
         AfxMessageBox(IDS_SOUNDTOUCH_LOADFAILURE);
         return -1;
@@ -1889,7 +1889,7 @@ int CCtrlSamples::TimeStretch(float ratio)
     // so allocate a bit more(1.03*).
     const uint32_t nNewSampleLength = (uint32_t)(1.03 * ratio * (double)pSmp->length);
     //const uint32_t nNewSampleLength = (uint32_t)(0.5 + ratio * (double)pSmp->length);
-    PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
+    PVOID pNewSample = module_renderer::AllocateSample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
 
@@ -1918,10 +1918,10 @@ int CCtrlSamples::TimeStretch(float ratio)
     UINT len = 0; //To contain length of processing step.
 
     // Initialize soundtouch object.
-    {    
+    {
         if(nSampleRate < 300) // Too low samplerate crashes soundtouch.
         {                     // Limiting it to value 300(quite arbitrarily chosen).
-            return 5;         
+            return 5;
         }
         soundtouch_setSampleRate(handleSt, nSampleRate);
         soundtouch_setChannels(handleSt, nChn);
@@ -1932,26 +1932,26 @@ int CCtrlSamples::TimeStretch(float ratio)
         soundtouch_setSetting(handleSt, SETTING_USE_QUICKSEEK, 0);
 
         // Read settings from GUI.
-        ReadTimeStretchParameters();    
+        ReadTimeStretchParameters();
 
         if(m_nStretchProcessStepLength == 0) m_nStretchProcessStepLength = nDefaultStretchChunkSize;
         if(m_nStretchProcessStepLength < 64) m_nStretchProcessStepLength = nDefaultStretchChunkSize;
         len = m_nStretchProcessStepLength;
-        
+
         // Set settings to soundtouch. Zero value means 'use default', and
         // setting value is read back after setting because not all settings are accepted.
         if(m_nSequenceMs == 0) m_nSequenceMs = DEFAULT_SEQUENCE_MS;
         soundtouch_setSetting(handleSt, SETTING_SEQUENCE_MS, m_nSequenceMs);
         m_nSequenceMs = soundtouch_getSetting(handleSt, SETTING_SEQUENCE_MS);
-        
+
         if(m_nSeekWindowMs == 0) m_nSeekWindowMs = DEFAULT_SEEKWINDOW_MS;
         soundtouch_setSetting(handleSt, SETTING_SEEKWINDOW_MS, m_nSeekWindowMs);
         m_nSeekWindowMs = soundtouch_getSetting(handleSt, SETTING_SEEKWINDOW_MS);
-        
+
         if(m_nOverlapMs == 0) m_nOverlapMs = DEFAULT_OVERLAP_MS;
         soundtouch_setSetting(handleSt, SETTING_OVERLAP_MS, m_nOverlapMs);
         m_nOverlapMs = soundtouch_getSetting(handleSt, SETTING_OVERLAP_MS);
-        
+
         // Update GUI with the actual SoundTouch parameters in effect.
         UpdateTimeStretchParameterString();
     }
@@ -2025,9 +2025,9 @@ enum _ElastiqueProStereoInputMode_ {
 
 enum _elastiquePro_proc_mode {
     kProDefaultMode = 0,
-    kProTransientMode, 
-    kEfficientTransientMode, 
-    kEfficientTonalMode, 
+    kProTransientMode,
+    kEfficientTransientMode,
+    kEfficientTonalMode,
 };
 
 #define _FALSE 0
@@ -2058,7 +2058,7 @@ public:
 
     static char* GetVersionString();
     static char* GetBuildDateString();
-    
+
 
 
 };
@@ -2090,7 +2090,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     if(pitch > 2.0f) return 2 + (2<<8);
 
     const uint8_t nChn = pSmp->GetNumChannels();
-    
+
     if (handleSt == NULL)
     {
         // Check whether the DLL file exists.
@@ -2103,7 +2103,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
             handleSt = create(512, nChn, 44100.0, kProDefaultMode);
         }
     }
-    if (handleSt == NULL) 
+    if (handleSt == NULL)
     {
         AfxMessageBox(IDS_SOUNDTOUCH_LOADFAILURE);
         return -1;
@@ -2127,7 +2127,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     // so allocate a bit more(1.03*).
     const uint32_t nNewSampleLength = (uint32_t)(2.03 * ratio * (double)pSmp->length);
     //const uint32_t nNewSampleLength = (uint32_t)(0.5 + ratio * (double)pSmp->length);
-    PVOID pNewSample = CSoundFile::AllocateSample(nNewSampleLength * nChn * smpsize);
+    PVOID pNewSample = module_renderer::AllocateSample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
 
@@ -2156,10 +2156,10 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     UINT len = 0; //To contain length of processing step.
 
     // Initialize soundtouch object.
-    {    
+    {
         if(nSampleRate < 300) // Too low samplerate crashes soundtouch.
         {                     // Limiting it to value 300(quite arbitrarily chosen).
-            return 5;         
+            return 5;
         }
         float stretch = ratio;
         handleSt->SetStretchQPitchFactor(stretch, 1.0);
@@ -2170,17 +2170,17 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     UINT nLengthCounter = 0;
 
     float **inChannels = new float*[nChn];
-    
+
     float **outChannels = new float*[nChn];
-    
-    
+
+
     // Process sample in steps.
     while(pos < pSmp->length)
     {
         len  = handleSt->GetFramesNeeded();
         int full_len = len;
         // Current chunk size limit test
-        if(len >= pSmp->length - pos) 
+        if(len >= pSmp->length - pos)
                 len = pSmp->length - pos;
 
         // Show progress bar using process button painting & text label
@@ -2208,17 +2208,17 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
                 inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16_t*>(pSmp->sample_data) + (pos + s)*nChn + ch);
             }
         }
-        
+
         handleSt->ProcessData(inChannels, full_len, outChannels);
-        
+
         for(int ch=0;ch<nChn;ch++) {
             if(len) delete[] inChannels[ch];
             for(UINT s=0;s<512;s++) {
                 *(reinterpret_cast<int16_t*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
             }
             delete[] outChannels[ch];
-        }    	
-        
+        }
+
         //soundtouch_putSamples(handleSt, reinterpret_cast<int16_t*>(pSmp->sample_data + pos * smpsize * nChn), len);
 
         // Receive some processed samples (it's not guaranteed that there is any available).
@@ -2234,23 +2234,23 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
         for(int ch=0;ch<nChn;ch++) {
             outChannels[ch] = new float[512];
         }
-        
+
         extra = handleSt->FlushBuffer(outChannels);
-        
+
         for(int ch=0;ch<nChn;ch++) {
             for(UINT s=0;s<extra;s++) {
                 *(reinterpret_cast<int16_t*>(pNewSample) + (nLengthCounter+s)*nChn + ch) = (short)(32768*outChannels[ch][s]);
             }
             delete[] outChannels[ch];
-        }    	
+        }
         nLengthCounter += extra;
     }
-        
+
 
 
     handleSt->Reset();
 
-    
+
     delete[] outChannels;
     delete[] inChannels;
 
@@ -2358,7 +2358,7 @@ int CCtrlSamples::PitchShift(float pitch)
             // TRICK : output buffer offset management
             // as the pitch-shifter adds  some blank signal in head of output  buffer (matching FFT
             // length - in short it needs a certain amount of data before being able to output some
-            // meaningfull  processed samples) , in order  to avoid this behaviour , we will ignore  
+            // meaningfull  processed samples) , in order  to avoid this behaviour , we will ignore
             // the  first FFT_length  samples and process  the same  amount of extra  blank samples
             // (all 0.0f) at the end of the buffer (those extra samples will benefit from  internal
             // FFT data  computed during the previous  steps resulting in a  correct and consistent
@@ -2500,7 +2500,7 @@ void CCtrlSamples::OnSignUnSign()
 //-------------------------------
 {
     modplug::tracker::modsample_t *pSmp;
-    
+
     if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
 
     if(m_pModDoc->IsNotePlaying(0, m_nSample, 0) == TRUE)
@@ -2528,7 +2528,7 @@ void CCtrlSamples::OnSilence()
 //----------------------------
 {
     modplug::tracker::modsample_t *pSmp;
-    
+
     if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
     BeginWaitCursor();
     SELECTIONPOINTS selection = GetSelectionPoints();
@@ -2629,7 +2629,7 @@ void CCtrlSamples::OnFileNameChanged()
 //------------------------------------
 {
     CHAR s[32];
-    
+
     if ((IsLocked()) || (!m_pSndFile)) return;
     s[0] = 0;
     m_EditFileName.GetWindowText(s, sizeof(s));
@@ -2734,7 +2734,7 @@ void CCtrlSamples::OnFineTuneChanged()
         if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].c5_samplerate))
         {
             m_pSndFile->Samples[m_nSample].c5_samplerate = n;
-            int transp = CSoundFile::FrequencyToTranspose(n) >> 7;
+            int transp = module_renderer::FrequencyToTranspose(n) >> 7;
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
             if (basenote >= BASENOTE_MAX) basenote = BASENOTE_MAX-1;
@@ -2768,8 +2768,8 @@ void CCtrlSamples::OnBaseNoteChanged()
     int n = (NOTE_MIDDLEC - 1) - (m_CbnBaseNote.GetCurSel() + BASENOTE_MIN);
     if (m_pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_S3M|MOD_TYPE_MPT))
     {
-        LONG ft = CSoundFile::FrequencyToTranspose(m_pSndFile->Samples[m_nSample].c5_samplerate) & 0x7f;
-        n = CSoundFile::TransposeToFrequency(n, ft);
+        LONG ft = module_renderer::FrequencyToTranspose(m_pSndFile->Samples[m_nSample].c5_samplerate) & 0x7f;
+        n = module_renderer::TransposeToFrequency(n, ft);
         if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].c5_samplerate))
         {
             CHAR s[32];
@@ -2891,7 +2891,7 @@ void CCtrlSamples::OnLoopStartChanged()
     if ((n >= 0) && (n < (LONG)pSmp->length) && ((n < (LONG)pSmp->loop_end) || (!(pSmp->flags & CHN_LOOP))))
     {
         pSmp->loop_start = n;
-        if(pSmp->flags & CHN_LOOP) 
+        if(pSmp->flags & CHN_LOOP)
         {
             /* only update sample buffer if the loop is actually enabled
               (resets sound without any reason otherwise) - http://forum.openmpt.org/index.php?topic=1874.0 */
@@ -3052,7 +3052,7 @@ void CCtrlSamples::OnVScroll(UINT nCode, UINT, CScrollBar *)
     LPSTR pSample = pSmp->sample_data;
     short int pos;
     bool bRedraw = false;
-    
+
     LockControls();
     if ((!pSmp->length) || (!pSample)) goto NoSample;
     if (pSmp->flags & CHN_16BIT)
@@ -3247,7 +3247,7 @@ NoSample:
             if(d < m_nFinetuneStep) d = m_nFinetuneStep;
             d += (pos * m_nFinetuneStep);
             pSmp->c5_samplerate = CLAMP(d, 1, 9999999); // 9999999 is max. in Impulse Tracker
-            int transp = CSoundFile::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
+            int transp = module_renderer::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
             if (basenote >= BASENOTE_MAX) basenote = BASENOTE_MAX-1;
@@ -3291,24 +3291,24 @@ BOOL CCtrlSamples::PreTranslateMessage(MSG *pMsg)
     if (pMsg)
     {
         //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-        if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) || 
+        if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
             (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
         {
             CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-            
+
             //Translate message manually
             UINT nChar = pMsg->wParam;
             UINT nRepCnt = LOWORD(pMsg->lParam);
             UINT nFlags = HIWORD(pMsg->lParam);
             KeyEventType kT = ih->GetKeyEventType(nFlags);
             InputTargetContext ctx = (InputTargetContext)(kCtxCtrlSamples);
-            
+
             if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
                 return true; // Mapped to a command, no need to pass message on.
         }
 
     }
-    
+
     return CModControlDlg::PreTranslateMessage(pMsg);
 }
 
@@ -3317,14 +3317,14 @@ LRESULT CCtrlSamples::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
 {
     if (wParam == kcNull)
         return NULL;
-    
+
     switch(wParam)
     {
         case kcSampleCtrlLoad: OnSampleOpen(); return wParam;
         case kcSampleCtrlSave: OnSampleSave(); return wParam;
         case kcSampleCtrlNew:  OnSampleNew();  return wParam;
     }
-    
+
     return 0;
 }
 //end rewbs.customKeys
@@ -3416,4 +3416,3 @@ void CCtrlSamples::OnXFade()
 
     }
 }
-

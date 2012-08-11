@@ -3091,7 +3091,7 @@ HWND CModDoc::GetEditPosition(ROWINDEX &row, PATTERNINDEX &pat, ORDERINDEX &ord)
     HWND followSonghWnd;
     PATTERNVIEWSTATE *patternViewState;
     CChildFrame *pChildFrm = (CChildFrame *) GetChildFrame();
-    CSoundFile *pSndFile = GetSoundFile();
+    module_renderer *pSndFile = GetSoundFile();
 
     if (strcmp("CViewPattern", pChildFrm->GetCurrentViewClassName()) == 0) // dirty HACK
     {
@@ -3195,7 +3195,7 @@ int CModDoc::MacroToMidiCC(CString macro)
 int CModDoc::FindMacroForParam(long param) const
 //----------------------------------------------
 {
-    const CSoundFile *pSndFile = GetSoundFile();
+    const module_renderer *pSndFile = GetSoundFile();
     if(pSndFile == nullptr)
     {
         return -1;
@@ -3284,7 +3284,7 @@ void CModDoc::CreateZxxFromType(CHAR (&szMidiZXXExt)[128][MACRO_LENGTH], enmFixe
 bool CModDoc::IsMacroDefaultSetupUsed() const
 //-------------------------------------------
 {
-    const CSoundFile *pSndFile = GetSoundFile();
+    const module_renderer *pSndFile = GetSoundFile();
     if(pSndFile == nullptr)
     {
         return false;
@@ -3332,7 +3332,7 @@ void CModDoc::OnPatternRestart()
             pChildFrm->SendViewMessage(VIEWMSG_PATTERNLOOP, 1);
         }
 
-        CSoundFile *pSndFile = GetSoundFile();
+        module_renderer *pSndFile = GetSoundFile();
 
         ROWINDEX nRow;
         PATTERNINDEX nPat;
@@ -3392,7 +3392,7 @@ void CModDoc::OnPatternPlay()
             pChildFrm->SendViewMessage(VIEWMSG_PATTERNLOOP, 1);
         }
 
-        CSoundFile *pSndFile = GetSoundFile();
+        module_renderer *pSndFile = GetSoundFile();
 
         ROWINDEX nRow;
         PATTERNINDEX nPat;
@@ -3448,7 +3448,7 @@ void CModDoc::OnPatternPlayNoLoop()
             pChildFrm->SendViewMessage(VIEWMSG_PATTERNLOOP, 0);
         }
 
-        CSoundFile *pSndFile = GetSoundFile();
+        module_renderer *pSndFile = GetSoundFile();
 
         ROWINDEX nRow;
         PATTERNINDEX nPat;

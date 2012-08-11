@@ -11,11 +11,11 @@
 #define new DEBUG_NEW
 
 
-ModSequence::ModSequence(CSoundFile& rSf,
+ModSequence::ModSequence(module_renderer& rSf,
     					 PATTERNINDEX* pArray,
     					 ORDERINDEX nSize,
-    					 ORDERINDEX nCapacity, 
-    					 const bool bDeletableArray) : 
+    					 ORDERINDEX nCapacity,
+    					 const bool bDeletableArray) :
     	m_pSndFile(&rSf),
     	m_pArray(pArray),
     	m_nSize(nSize),
@@ -27,7 +27,7 @@ ModSequence::ModSequence(CSoundFile& rSf,
 {}
 
 
-ModSequence::ModSequence(CSoundFile& rSf, ORDERINDEX nSize) : 
+ModSequence::ModSequence(module_renderer& rSf, ORDERINDEX nSize) :
     m_pSndFile(&rSf),
     m_bDeletableArray(true),
     m_nInvalidIndex(GetInvalidPatIndex(MOD_TYPE_MPT)),
@@ -69,9 +69,9 @@ namespace
     // Functor for detecting non-valid patterns from sequence.
     struct IsNotValidPat
     {
-    	IsNotValidPat(CSoundFile& sndFile) : rSndFile(sndFile) {}
+    	IsNotValidPat(module_renderer& sndFile) : rSndFile(sndFile) {}
     	bool operator()(PATTERNINDEX i) {return !rSndFile.Patterns.IsValidPat(i);}
-    	CSoundFile& rSndFile;
+    	module_renderer& rSndFile;
     };
 }
 
@@ -113,7 +113,7 @@ void ModSequence::AdjustToNewModType(const MODTYPE oldtype)
     	}
     	resize(specs.ordersMax);
     }
-    	
+
     // Replace items used to denote end of song order.
     Replace(GetInvalidPatIndex(oldtype), GetInvalidPatIndex());
 }
@@ -271,7 +271,7 @@ ModSequence& ModSequence::operator=(const ModSequence& seq)
 /////////////////////////////////////
 
 
-ModSequenceSet::ModSequenceSet(CSoundFile& sndFile)
+ModSequenceSet::ModSequenceSet(module_renderer& sndFile)
     : ModSequence(sndFile, m_Cache, s_nCacheSize, s_nCacheSize, NoArrayDelete),
       m_nCurrentSeq(0)
 //-------------------------------------------------------------------
@@ -342,7 +342,7 @@ SEQUENCEINDEX ModSequenceSet::AddSequence(bool bDuplicate)
 {
     if(GetNumSequences() == MAX_SEQUENCES)
     	return SEQUENCEINDEX_INVALID;
-    m_Sequences.push_back(ModSequence(*m_pSndFile, s_nCacheSize)); 
+    m_Sequences.push_back(ModSequence(*m_pSndFile, s_nCacheSize));
     if (bDuplicate)
     {
     	m_Sequences.back() = *this;
@@ -357,7 +357,7 @@ void ModSequenceSet::RemoveSequence(SEQUENCEINDEX i)
 //--------------------------------------------------
 {
     // Do nothing if index is invalid or if there's only one sequence left.
-    if (i >= m_Sequences.size() || m_Sequences.size() <= 1) 
+    if (i >= m_Sequences.size() || m_Sequences.size() <= 1)
     	return;
     const bool bSequenceChanges = (i == m_nCurrentSeq);
     m_Sequences.erase(m_Sequences.begin() + i);
@@ -612,7 +612,7 @@ size_t ModSequence::WriteAsByte(FILE* f, const uint16_t count)
     if(GetLength() < count) resize(count);
 
     size_t i = 0;
-    
+
     for(i = 0; i<count; i++)
     {
     	const PATTERNINDEX pat = (*this)[i];
@@ -634,10 +634,10 @@ bool ModSequence::ReadAsByte(const uint8_t* pFrom, const int howMany, const int 
 {
     if(howMany < 0 || howMany > memLength) return true;
     if(m_pSndFile->GetType() != MOD_TYPE_MPT && howMany > MAX_ORDERS) return true;
-    
+
     if(GetLength() < static_cast<size_t>(howMany))
     	resize(ORDERINDEX(howMany));
-    
+
     for(int i = 0; i<howMany; i++, pFrom++)
     	(*this)[i] = *pFrom;
     return false;
@@ -756,4 +756,3 @@ void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
     seq.m_nCurrentSeq = (nCurrent < seq.GetNumSequences()) ? nCurrent : 0;
     seq.CopyStorageToCache();
 }
-

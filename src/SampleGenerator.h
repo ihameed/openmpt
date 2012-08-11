@@ -33,7 +33,7 @@ class CSampleGenerator
 //====================
 {
 protected:
-    
+
     // sample parameters
     static int sample_frequency;
     static int sample_length;
@@ -68,7 +68,7 @@ public:
     bool ShowDialog();
     bool TestExpression();
     bool CanRenderSample();
-    bool RenderSample(CSoundFile *pSndFile, SAMPLEINDEX nSample);
+    bool RenderSample(module_renderer *pSndFile, SAMPLEINDEX nSample);
 
     CSampleGenerator();
 
@@ -141,7 +141,7 @@ public:
     const smpgen_clip_methods GetClipping() { return sample_clipping; }
     const mu::string_type GetExpression() { return expression; };
     bool CanApply() { return apply; };
-    
+
     CSmpGenDialog(int freq, int len, smpgen_clip_methods clipping, mu::string_type expr):CDialog(IDD_SAMPLE_GENERATOR, CMainFrame::GetMainFrame())
     {
     	sample_frequency = freq;

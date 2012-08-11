@@ -136,7 +136,7 @@ void X86_Cvt8M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwI
 
 
 
-UINT CSoundFile::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
+UINT module_renderer::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
 //----------------------------------------------------------------------------
 {
     uint32_t dwInc;
@@ -169,7 +169,7 @@ UINT CSoundFile::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
 }
 
 
-UINT CSoundFile::WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
+UINT module_renderer::WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
 //----------------------------------------------------------------------------------
 {
     uint32_t dwInc;
@@ -227,7 +227,7 @@ void X86_Spectrum(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nSmpSize,
 
 
 
-LONG CSoundFile::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nChannels)
+LONG module_renderer::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nChannels)
 //-----------------------------------------------------------------------------------------------
 {
     LONG sincos[2];
@@ -314,7 +314,7 @@ normloop:
 extern void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
 extern int MixSoundBuffer[];
 
-UINT CSoundFile::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, uint32_t dwByteInc)
+UINT module_renderer::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, uint32_t dwByteInc)
 //-----------------------------------------------------------------------------------------------
 {
 #ifdef ASM_NORMALIZE

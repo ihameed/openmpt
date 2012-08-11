@@ -48,7 +48,7 @@ void CSoundFile::GenerateSamplePosMap() {
 
 
 
-    double accurateBufferCount = 
+    double accurateBufferCount =
 
     long lSample = 0;
     nPattern
@@ -84,7 +84,7 @@ void CSoundFile::GenerateSamplePosMap() {
 // [out] lastRow: last parsed row (dito)
 // [out] endOrder: last order before module loops (UNDEFINED if a target is specified)
 // [out] endRow: last row before module loops (dito)
-GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX endOrder, ROWINDEX endRow)
+GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX endOrder, ROWINDEX endRow)
 //---------------------------------------------------------------------------------------------------------
 {
     GetLengthType retval;
@@ -129,7 +129,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
 
         if(nCurrentPattern >= Order.size())
             break;
-        
+
         // Check if pattern is valid
         nPattern = Order[nCurrentPattern];
         bool positionJumpOnThisRow = false;
@@ -247,7 +247,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
                 {
                     nNextRow = param;
                 }
-                        
+
                 if (!positionJumpOnThisRow)
                 {
                     nNextPattern = nCurrentPattern + 1;
@@ -291,7 +291,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
 // -! NEW_FEATURE#0010
                 break;
             // Pattern Delay
-            case CMD_S3MCMDEX:    
+            case CMD_S3MCMDEX:
                 if ((param & 0xF0) == 0x60) { nSpeedCount = param & 0x0F; break; } else
                 if ((param & 0xF0) == 0xA0) { pChn->nOldHiOffset = param & 0x0F; break; } else
                 if ((param & 0xF0) == 0xB0) { param &= 0x0F; param |= 0x60; }
@@ -407,7 +407,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
                 if (param) oldparam[nChn] = param; else param = oldparam[nChn];
                 pChn->nOldChnVolSlide = param;
                 if (((param & 0x0F) == 0x0F) && (param & 0xF0))
-                {    
+                {
                     param = (param >> 4) + chnvols[nChn];
                 } else
                 if (((param & 0xF0) == 0xF0) && (param & 0x0F))
@@ -428,9 +428,9 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
         nSpeedCount += nMusicSpeed;
         switch(m_nTempoMode)
         {
-            case tempo_mode_alternative: 
+            case tempo_mode_alternative:
                 dElapsedTime +=  60000.0 / (1.65625 * (double)(nMusicSpeed * nMusicTempo)); break;
-            case tempo_mode_modern: 
+            case tempo_mode_modern:
                 dElapsedTime += 60000.0 / (double)nMusicTempo / (double)m_nCurrentRowsPerBeat; break;
             case tempo_mode_classic: default:
                 dElapsedTime += (2500.0 * (double)nSpeedCount) / (double)nMusicTempo;
@@ -484,7 +484,7 @@ GetLengthType CSoundFile::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Effects
 
-void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT instr, bool bPorta, bool bUpdVol, bool bResetEnv)
+void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT instr, bool bPorta, bool bUpdVol, bool bResetEnv)
 //--------------------------------------------------------------------------------------------------------
 {
     bool bInstrumentChanged = false;
@@ -549,9 +549,9 @@ void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT ins
     {
         bInstrumentChanged = true;
         // we will set the new instrument later.
-    } 
-    else 
-    {    
+    }
+    else
+    {
         // Special XM hack
         if ((bPorta) && (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2)) && (pIns)
         && (pChn->sample) && (pSmp != pChn->sample))
@@ -572,7 +572,7 @@ void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT ins
     {
         pChn->instrument = pIns;
     }
-    
+
     // Update Volume
     if (bUpdVol)
     {
@@ -588,10 +588,10 @@ void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT ins
 
     if(returnAfterVolumeAdjust) return;
 
-    
+
     // Instrument adjust
     pChn->nNewIns = 0;
-    
+
     if (pIns && (pIns->nMixPlug || pSmp))    	//rewbs.VSTiNNA
         pChn->nNNA = pIns->new_note_action;
 
@@ -662,7 +662,7 @@ void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT ins
     {
         pChn->flags &= ~(CHN_KEYOFF|CHN_NOTEFADE|CHN_VOLENV|CHN_PANENV|CHN_PITCHENV);
 
-        //IT compatibility tentative fix: Don't change bidi loop direction when 
+        //IT compatibility tentative fix: Don't change bidi loop direction when
         //no sample nor instrument is changed.
         if(IsCompatibleMode(TRK_IMPULSETRACKER) && pSmp == pChn->sample && !bInstrumentChanged)
             pChn->flags = (pChn->flags & (CHN_CHANNELFLAGS | CHN_PINGPONGFLAG)) | (pSmp->flags & CHN_SAMPLEFLAGS);
@@ -715,7 +715,7 @@ void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT ins
         pChn->nFineTune = pSmp->nFineTune;
     }
 
-    
+
     pChn->sample_data = pSmp->sample_data;
     pChn->nTranspose = pSmp->RelativeTone;
 
@@ -746,7 +746,7 @@ void CSoundFile::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT ins
 }
 
 
-void CSoundFile::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEnv, bool bManual)
+void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEnv, bool bManual)
 //-----------------------------------------------------------------------------------------
 {
     if (note < NOTE_MIN) return;
@@ -772,7 +772,7 @@ void CSoundFile::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEnv, bo
             KeyOff(nChn);
         else // Invalid Note -> Note Fade
         //if (note == NOTE_FADE)
-            if(m_nInstruments)    
+            if(m_nInstruments)
                 pChn->flags |= CHN_NOTEFADE;
 
         // Note Cut
@@ -890,8 +890,8 @@ void CSoundFile::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEnv, bo
             }
         }
         if (pChn->sample_position >= pChn->length) pChn->sample_position = pChn->loop_start;
-    } 
-    else 
+    }
+    else
         bPorta = false;
 
     if ((!bPorta) || (!(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT)))
@@ -1038,7 +1038,7 @@ void CSoundFile::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEnv, bo
 }
 
 
-UINT CSoundFile::GetNNAChannel(UINT nChn) const
+UINT module_renderer::GetNNAChannel(UINT nChn) const
 //---------------------------------------------
 {
     const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -1071,7 +1071,7 @@ UINT CSoundFile::GetNNAChannel(UINT nChn) const
 }
 
 
-void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
+void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
 //------------------------------------------------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -1170,8 +1170,8 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
                     {
                     case DNA_NOTECUT:
                     case DNA_NOTEOFF:
-                    case DNA_NOTEFADE:    
-                        //switch off duplicated note played on this plugin 
+                    case DNA_NOTEFADE:
+                        //switch off duplicated note played on this plugin
                         IMixPlugin *pPlugin =  m_MixPlugins[pHeader->nMixPlug-1].pMixPlugin;
                         if (pPlugin && p->nNote)
                             pPlugin->MidiCommand(p->instrument->midi_channel, p->instrument->midi_program, p->instrument->midi_bank, p->nNote + NOTE_KEYOFF, 0, i);
@@ -1204,7 +1204,7 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             }
         }
     }
-    
+
     //rewbs.VSTiNNA
     // Do we need to apply New/Duplicate Note Action to a VSTi?
     bool applyNNAtoPlug = false;
@@ -1216,12 +1216,12 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
         UINT nPlugin = 0;
         nPlugin = pChn->instrument->nMixPlug;      	   // first try intrument VST
         if ((!nPlugin) || (nPlugin > MAX_MIXPLUGINS))  // Then try Channel VST
-            nPlugin = ChnSettings[nChn].nMixPlugin;    		
+            nPlugin = ChnSettings[nChn].nMixPlugin;
         */
         if ((nPlugin) && (nPlugin <= MAX_MIXPLUGINS))
-        { 
+        {
             pPlugin =  m_MixPlugins[nPlugin-1].pMixPlugin;
-            if (pPlugin) 
+            if (pPlugin)
             {
                 // apply NNA to this Plug iff this plug is currently playing a note on this tracking chan
                 // (and if it is playing a note, we know that would be the last note played on this chan).
@@ -1235,7 +1235,7 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             }
         }
     }
-    //end rewbs.VSTiNNA    
+    //end rewbs.VSTiNNA
 
     // New Note Action
     //if ((pChn->nVolume) && (pChn->length))
@@ -1248,14 +1248,14 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             // Copy Channel
             *p = *pChn;
             p->flags &= ~(CHN_VIBRATO|CHN_TREMOLO|CHN_PANBRELLO|CHN_MUTE|CHN_PORTAMENTO);
-            
+
             //rewbs: Copy mute and FX status from master chan.
             //I'd like to copy other flags too, but this would change playback behaviour.
             p->flags |= (pChn->flags & (CHN_MUTE|CHN_NOFX));
 
             p->parent_channel = nChn+1;
             p->nCommand = 0;
-            //rewbs.VSTiNNA    
+            //rewbs.VSTiNNA
             if (applyNNAtoPlug && pPlugin)
             {
                 //Move note to the NNA channel (odd, but makes sense with DNA stuff).
@@ -1265,14 +1265,14 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
                 {
                 case NNA_NOTEOFF:
                 case NNA_NOTECUT:
-                case NNA_NOTEFADE:    
-                    //switch off note played on this plugin, on this tracker channel and midi channel 
+                case NNA_NOTEFADE:
+                    //switch off note played on this plugin, on this tracker channel and midi channel
                     //pPlugin->MidiCommand(pChn->instrument->midi_channel, pChn->instrument->midi_program, pChn->nNote+0xFF, 0, n);
                     pPlugin->MidiCommand(pChn->instrument->midi_channel, pChn->instrument->midi_program, pChn->instrument->midi_bank, /*pChn->nNote+*/NOTE_KEYOFF, 0, nChn);
                     break;
                 }
             }
-            //end rewbs.VSTiNNA    
+            //end rewbs.VSTiNNA
             // Key Off the note
             switch(pChn->nNNA)
             {
@@ -1294,7 +1294,7 @@ void CSoundFile::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
 }
 
 
-BOOL CSoundFile::ProcessEffects()
+BOOL module_renderer::ProcessEffects()
 //-------------------------------
 {
     modplug::tracker::modchannel_t *pChn = Chn;
@@ -1333,7 +1333,7 @@ BOOL CSoundFile::ProcessEffects()
         // Row data is cleared after first tick so on following
         // ticks using channels m_nPlugParamValueStep to identify
         // the need for parameter control. The condition cmd == 0
-        // is to make sure that m_nPlugParamValueStep != 0 because 
+        // is to make sure that m_nPlugParamValueStep != 0 because
         // of NOTE_PCS, not because of macro.
         if(pChn->nRowNote == NOTE_PCS || (cmd == 0 && pChn->m_nPlugParamValueStep != 0))
         {
@@ -1416,7 +1416,7 @@ BOOL CSoundFile::ProcessEffects()
                             pChn->sample = &Samples[instr];
                         }
                         else
-                        {    
+                        {
                             if(instr < MAX_INSTRUMENTS)
                                 pChn->instrument = Instruments[instr];
                         }
@@ -1440,14 +1440,14 @@ BOOL CSoundFile::ProcessEffects()
                 }
             }
         }
-        
+
         // Handles note/instrument/volume changes
         if (m_nTickCount == nStartTick) // can be delayed by a note delay effect
         {
             UINT note = pChn->nRowNote;
             if (instr) pChn->nNewIns = instr;
             bool retrigEnv = (!note) && (instr);
-            
+
             // Now it's time for some FT2 crap...
             if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
             {
@@ -1494,7 +1494,7 @@ BOOL CSoundFile::ProcessEffects()
                     }
                 }
             }
-            if (retrigEnv) //Case: instrument with no note data. 
+            if (retrigEnv) //Case: instrument with no note data.
             {
                 //IT compatibility: Instrument with no note.
                 if(IsCompatibleMode(TRK_IMPULSETRACKER) || (m_dwSongFlags & SONG_PT1XMODE))
@@ -1549,7 +1549,7 @@ BOOL CSoundFile::ProcessEffects()
 
         //rewbs.VSTnoteDelay
         #ifdef MODPLUG_TRACKER
-//    		if (m_nInstruments) ProcessMidiOut(nChn, pChn); 
+//    		if (m_nInstruments) ProcessMidiOut(nChn, pChn);
         #endif // MODPLUG_TRACKER
         //end rewbs.VSTnoteDelay
 
@@ -1570,7 +1570,7 @@ BOOL CSoundFile::ProcessEffects()
                     pChn->nCutOff = pChn->nRestoreCutoffOnNewNote - 1;
                     pChn->nRestoreCutoffOnNewNote = 0;
                 }
-                
+
             }
 
             // Instrument Change ?
@@ -1627,7 +1627,7 @@ BOOL CSoundFile::ProcessEffects()
 
         //rewbs.VSTnoteDelay
         #ifdef MODPLUG_TRACKER
-            if (m_nInstruments) ProcessMidiOut(nChn, pChn); 
+            if (m_nInstruments) ProcessMidiOut(nChn, pChn);
         #endif // MODPLUG_TRACKER
         }
 
@@ -1669,7 +1669,7 @@ BOOL CSoundFile::ProcessEffects()
                         // no memory here.
                         volcmd = VOLCMD_NONE;
                     }
-                    
+
                 } else
                 {
                     if(vol) pChn->nOldVolParam = vol; else vol = pChn->nOldVolParam;
@@ -1736,7 +1736,7 @@ BOOL CSoundFile::ProcessEffects()
                     else
                         PortamentoDown(pChn, vol << 2, false);
                     break;
-                            
+
                 case VOLCMD_OFFSET:    				//rewbs.volOff
                     if (m_nTickCount == nStartTick)
                         SampleOffset(nChn, vol<<3, bPorta);
@@ -1815,7 +1815,7 @@ BOOL CSoundFile::ProcessEffects()
                 if (m_nRow < Patterns[m_nPattern].GetNumRows()-1) {
                     m = Patterns[m_nPattern] + (m_nRow+1) * m_nChannels + nChn;
                 }
-                if (m && m->command == CMD_XPARAM) { 
+                if (m && m->command == CMD_XPARAM) {
                     if (m_nType & MOD_TYPE_XM) {
                         param -= 0x20; //with XM, 0x20 is the lowest tempo. Anything below changes ticks per row.
                     }
@@ -1896,7 +1896,7 @@ BOOL CSoundFile::ProcessEffects()
             {
                 // XM Tremor. Logic is being processed in sndmix.cpp
             }
-                
+
             pChn->nCommand = CMD_TREMOR;
             if (param) pChn->nTremorParam = param;
 
@@ -1910,7 +1910,7 @@ BOOL CSoundFile::ProcessEffects()
 //     		{
 //     			break;
 //     		}
-            
+
             if (!(GetType() & (MOD_TYPE_IT|MOD_TYPE_MPT))) param <<= 1;
             //IT compatibility 16. FT2, ST3 and IT ignore out-of-range values
             if(IsCompatibleMode(TRK_IMPULSETRACKER | TRK_FASTTRACKER2 | TRK_SCREAMTRACKER))
@@ -1958,7 +1958,7 @@ BOOL CSoundFile::ProcessEffects()
             if(IsCompatibleMode(TRK_IMPULSETRACKER))
                 pChn->nPanSwing = 0;
             break;
-            
+
         // Panning Slide
         case CMD_PANNINGSLIDE:
             PanningSlide(pChn, param);
@@ -2023,7 +2023,7 @@ BOOL CSoundFile::ProcessEffects()
             case 0x20: ExtraFinePortamentoDown(pChn, param & 0x0F); break;
             // ModPlug XM Extensions (ignore in compatible mode)
             case 0x50:
-            case 0x60: 
+            case 0x60:
             case 0x70:
             case 0x90:
             case 0xA0:
@@ -2083,7 +2083,7 @@ BOOL CSoundFile::ProcessEffects()
             if((m_dwSongFlags & SONG_PATTERNLOOP) && m_nSeqOverride == 0)
             {
                  m_nSeqOverride = param + 1;
-                 //Releasing pattern loop after position jump could cause 
+                 //Releasing pattern loop after position jump could cause
                  //instant jumps - modifying behavior so that now position jumps
                  //occurs also when pattern loop is enabled.
             }
@@ -2114,7 +2114,7 @@ BOOL CSoundFile::ProcessEffects()
             {
                 nBreakRow = param;
             }
-            
+
             if((m_dwSongFlags & SONG_PATTERNLOOP))
             {
                 //If song is set to loop and a pattern break occurs we should stay on the same pattern.
@@ -2127,7 +2127,7 @@ BOOL CSoundFile::ProcessEffects()
         // Midi Controller
         case CMD_MIDI:    		// Midi Controller (on first tick only)
         case CMD_SMOOTHMIDI:    // Midi Controller (smooth, i.e. on every tick)
-            
+
             if((cmd == CMD_MIDI) && !(m_dwSongFlags & SONG_FIRSTTICK)) break;
             if (param < 0x80)
                 ProcessMidiMacro(nChn, (cmd == CMD_SMOOTHMIDI), m_MidiCfg.szMidiSFXExt[pChn->nActiveMacro], param);
@@ -2168,7 +2168,7 @@ BOOL CSoundFile::ProcessEffects()
             if (nBreakRow == ROWINDEX_INVALID) nBreakRow = 0;
             m_dwSongFlags |= SONG_BREAKTOROW;
 
-            if (nPosJump >= Order.size()) 
+            if (nPosJump >= Order.size())
             {
                 nPosJump = 0;
             }
@@ -2196,7 +2196,7 @@ BOOL CSoundFile::ProcessEffects()
 }
 
 
-void CSoundFile::ResetChannelEnvelopes(modplug::tracker::modchannel_t* pChn)
+void module_renderer::ResetChannelEnvelopes(modplug::tracker::modchannel_t* pChn)
 //------------------------------------------------------
 {
     ResetChannelEnvelope(pChn->volume_envelope);
@@ -2205,7 +2205,7 @@ void CSoundFile::ResetChannelEnvelopes(modplug::tracker::modchannel_t* pChn)
 }
 
 
-void CSoundFile::ResetChannelEnvelope(modplug::tracker::modenvstate_t &env)
+void module_renderer::ResetChannelEnvelope(modplug::tracker::modenvstate_t &env)
 //------------------------------------------------------------
 {
     env.position = 0;
@@ -2216,7 +2216,7 @@ void CSoundFile::ResetChannelEnvelope(modplug::tracker::modenvstate_t &env)
 ////////////////////////////////////////////////////////////
 // Channels effects
 
-void CSoundFile::PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param, const bool doFinePortamentoAsRegular)
+void module_renderer::PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param, const bool doFinePortamentoAsRegular)
 //---------------------------------------------------------
 {
     MidiPortamento(pChn, param); //Send midi pitch bend event if there's a plugin
@@ -2259,7 +2259,7 @@ void CSoundFile::PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param, 
 }
 
 
-void CSoundFile::PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param, const bool doFinePortamentoAsRegular)
+void module_renderer::PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param, const bool doFinePortamentoAsRegular)
 //-----------------------------------------------------------
 {
     MidiPortamento(pChn, -1*param); //Send midi pitch bend event if there's a plugin
@@ -2299,7 +2299,7 @@ void CSoundFile::PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param
     }
 }
 
-void CSoundFile::MidiPortamento(modplug::tracker::modchannel_t *pChn, int param)
+void module_renderer::MidiPortamento(modplug::tracker::modchannel_t *pChn, int param)
 //----------------------------------------------------------
 {
     //Send midi pitch bend event if there's a plugin:
@@ -2315,7 +2315,7 @@ void CSoundFile::MidiPortamento(modplug::tracker::modchannel_t *pChn, int param)
     }
 }
 
-void CSoundFile::FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param)
 //-------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2339,7 +2339,7 @@ void CSoundFile::FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT par
 }
 
 
-void CSoundFile::FinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param)
 //---------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2363,7 +2363,7 @@ void CSoundFile::FinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT p
 }
 
 
-void CSoundFile::ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param)
 //------------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2387,7 +2387,7 @@ void CSoundFile::ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn, UIN
 }
 
 
-void CSoundFile::ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param)
 //--------------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2412,7 +2412,7 @@ void CSoundFile::ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, U
 
 // Implemented for IMF compatibility, can't actually save this in any formats
 // sign should be 1 (up) or -1 (down)
-void CSoundFile::NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int sign)
+void module_renderer::NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int sign)
 //----------------------------------------------------------------
 {
     uint8_t x, y;
@@ -2438,7 +2438,7 @@ void CSoundFile::NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int
 }
 
 // Portamento Slide
-void CSoundFile::TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param)
 //-----------------------------------------------------------
 {
     pChn->flags |= CHN_PORTAMENTO;
@@ -2453,7 +2453,7 @@ void CSoundFile::TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param
     if(m_nType == MOD_TYPE_MPT && pChn->instrument && pChn->instrument->pTuning)
     {
         //Behavior: Param tells number of finesteps(or 'fullsteps'(notes) with glissando)
-        //to slide per row(not per tick).    
+        //to slide per row(not per tick).
         const long old_PortamentoTickSlide = (m_nTickCount != 0) ? pChn->m_PortamentoTickSlide : 0;
 
         if(param)
@@ -2536,7 +2536,7 @@ void CSoundFile::TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param
 }
 
 
-void CSoundFile::Vibrato(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::Vibrato(modplug::tracker::modchannel_t *p, UINT param)
 //-------------------------------------------------
 {
     p->m_VibratoDepth = param % 16 / 15.0F;
@@ -2549,7 +2549,7 @@ void CSoundFile::Vibrato(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void CSoundFile::FineVibrato(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::FineVibrato(modplug::tracker::modchannel_t *p, UINT param)
 //-----------------------------------------------------
 {
     if (param & 0x0F) p->nVibratoDepth = param & 0x0F;
@@ -2558,7 +2558,7 @@ void CSoundFile::FineVibrato(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void CSoundFile::Panbrello(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::Panbrello(modplug::tracker::modchannel_t *p, UINT param)
 //---------------------------------------------------
 {
     if (param & 0x0F) p->nPanbrelloDepth = param & 0x0F;
@@ -2567,7 +2567,7 @@ void CSoundFile::Panbrello(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void CSoundFile::VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT param)
 //--------------------------------------------------------
 {
     if (param)
@@ -2627,7 +2627,7 @@ void CSoundFile::VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT param)
 }
 
 
-void CSoundFile::PanningSlide(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::PanningSlide(modplug::tracker::modchannel_t *pChn, UINT param)
 //---------------------------------------------------------
 {
     LONG nPanSlide = 0;
@@ -2694,7 +2694,7 @@ void CSoundFile::PanningSlide(modplug::tracker::modchannel_t *pChn, UINT param)
 }
 
 
-void CSoundFile::FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT param)
 //---------------------------------------------------------
 {
     if (param) pChn->nOldFineVolUpDown = param; else param = pChn->nOldFineVolUpDown;
@@ -2707,7 +2707,7 @@ void CSoundFile::FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT param)
 }
 
 
-void CSoundFile::FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT param)
 //-----------------------------------------------------------
 {
     if (param) pChn->nOldFineVolUpDown = param; else param = pChn->nOldFineVolUpDown;
@@ -2720,7 +2720,7 @@ void CSoundFile::FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT param
 }
 
 
-void CSoundFile::Tremolo(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::Tremolo(modplug::tracker::modchannel_t *p, UINT param)
 //-------------------------------------------------
 {
     if (param & 0x0F) p->nTremoloDepth = (param & 0x0F) << 2;
@@ -2729,7 +2729,7 @@ void CSoundFile::Tremolo(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void CSoundFile::ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT param)
 //------------------------------------------------------------
 {
     LONG nChnSlide = 0;
@@ -2758,7 +2758,7 @@ void CSoundFile::ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT para
 }
 
 
-void CSoundFile::ExtendedMODCommands(UINT nChn, UINT param)
+void module_renderer::ExtendedMODCommands(UINT nChn, UINT param)
 //---------------------------------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -2789,7 +2789,7 @@ void CSoundFile::ExtendedMODCommands(UINT nChn, UINT param)
     case 0x70:    pChn->nTremoloType = param & 0x07; break;
     // E8x: Set 4-bit Panning
     case 0x80:    if((m_dwSongFlags & SONG_FIRSTTICK) && !(m_dwSongFlags & SONG_PT1XMODE))
-                { 
+                {
                     //IT compatibility 20. (Panning always resets surround state)
                     if(IsCompatibleMode(TRK_ALLTRACKERS))
                     {
@@ -2808,12 +2808,12 @@ void CSoundFile::ExtendedMODCommands(UINT nChn, UINT param)
     case 0xC0:    NoteCut(nChn, param); break;
     // EDx: Note Delay
     // EEx: Pattern Delay
-    case 0xF0:    
+    case 0xF0:
         if(GetType() == MOD_TYPE_MOD) // MOD: Invert Loop
         {
             pChn->nEFxSpeed = param;
             if(m_dwSongFlags & SONG_FIRSTTICK) InvertLoop(pChn);
-        }    
+        }
         else // XM: Set Active Midi Macro
         {
             pChn->nActiveMacro = param;
@@ -2823,7 +2823,7 @@ void CSoundFile::ExtendedMODCommands(UINT nChn, UINT param)
 }
 
 
-void CSoundFile::ExtendedS3MCommands(UINT nChn, UINT param)
+void module_renderer::ExtendedS3MCommands(UINT nChn, UINT param)
 //---------------------------------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -2914,7 +2914,7 @@ void CSoundFile::ExtendedS3MCommands(UINT nChn, UINT param)
                 case 10:    pChn->flags |= CHN_PANENV; break;
                 case 11:    pChn->flags &= ~CHN_PITCHENV; break;
                 case 12:    pChn->flags |= CHN_PITCHENV; break;
-                case 13:    
+                case 13:
                 case 14:
                     if(GetType() == MOD_TYPE_MPT)
                     {
@@ -2932,7 +2932,7 @@ void CSoundFile::ExtendedS3MCommands(UINT nChn, UINT param)
                 break;
     // S8x: Set 4-bit Panning
     case 0x80:    if(m_dwSongFlags & SONG_FIRSTTICK)
-                { 
+                {
                     // IT Compatibility (and other trackers as well): panning disables surround (unless panning in rear channels is enabled, which is not supported by the original trackers anyway)
                     if(IsCompatibleMode(TRK_ALLTRACKERS))
                     {
@@ -2969,7 +2969,7 @@ void CSoundFile::ExtendedS3MCommands(UINT nChn, UINT param)
 }
 
 
-void CSoundFile::ExtendedChannelEffect(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ExtendedChannelEffect(modplug::tracker::modchannel_t *pChn, UINT param)
 //------------------------------------------------------------------
 {
     // S9x and X9x commands (S3M/XM/IT only)
@@ -3025,7 +3025,7 @@ void CSoundFile::ExtendedChannelEffect(modplug::tracker::modchannel_t *pChn, UIN
 }
 
 
-inline void CSoundFile::InvertLoop(modplug::tracker::modchannel_t *pChn)
+inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
 //--------------------------------------------------
 {
     // EFx implementation for MOD files (PT 1.1A and up: Invert Loop)
@@ -3055,7 +3055,7 @@ inline void CSoundFile::InvertLoop(modplug::tracker::modchannel_t *pChn)
 // [in] isSmooth: If true, internal macros are interpolated between two rows
 // [in] pszMidiMacro: Actual Midi Macro
 // [in] param: Parameter for parametric macros
-void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro, UINT param)
+void module_renderer::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro, UINT param)
 //------------------------------------------------------------------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -3118,7 +3118,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
             }
 
         }
-        
+
         return;
     }
 
@@ -3187,10 +3187,10 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
 #endif // NO_FILTER
             }
             break;
-        
+
         // F0.F0.01.xx: Set Resonance
         case 0x01:
-            if (dwParam < 0x80) 
+            if (dwParam < 0x80)
             {
                 pChn->nRestoreResonanceOnNewNote = 0;
                 if(!isSmooth)
@@ -3209,7 +3209,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
                     pChn->nResonance = (uint8_t) (pChn->m_nPlugInitialParamValue + (m_nTickCount + 1) * pChn->m_nPlugParamValueStep + 0.5);
                 }
             }
-                
+
 #ifndef NO_FILTER
             SetupChannelFilter(pChn, (pChn->flags & CHN_FILTER) ? false : true);
 #endif // NO_FILTER
@@ -3288,7 +3288,7 @@ void CSoundFile::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro,
 
 
 //rewbs.volOffset: moved offset code to own method as it will be used in several places now
-void CSoundFile::SampleOffset(UINT nChn, UINT param, bool bPorta)
+void module_renderer::SampleOffset(UINT nChn, UINT param, bool bPorta)
 //---------------------------------------------------------------
 {
 
@@ -3375,7 +3375,7 @@ void CSoundFile::SampleOffset(UINT nChn, UINT param, bool bPorta)
 }
 //end rewbs.volOffset:
 
-void CSoundFile::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.VolOffset: added offset param.
+void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.VolOffset: added offset param.
 //------------------------------------------------------------
 {
     // Retrig: bit 8 is set if it's the new XM retrig
@@ -3409,7 +3409,7 @@ void CSoundFile::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.VolOff
         }
         if (nRetrigCount >= nRetrigSpeed)
         {
-            if (!(m_dwSongFlags & SONG_FIRSTTICK) || (pChn->nRowNote == NOTE_NONE)) 
+            if (!(m_dwSongFlags & SONG_FIRSTTICK) || (pChn->nRowNote == NOTE_NONE))
             {
                 bDoRetrig = true;
                 nRetrigCount = 0;
@@ -3503,7 +3503,7 @@ void CSoundFile::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.VolOff
 }
 
 
-void CSoundFile::DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSlide)
+void module_renderer::DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSlide)
 //-------------------------------------------------------------
 {
     // IT Linear slides
@@ -3546,7 +3546,7 @@ void CSoundFile::DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSli
 }
 
 
-void CSoundFile::NoteCut(UINT nChn, UINT nTick)
+void module_renderer::NoteCut(UINT nChn, UINT nTick)
 //---------------------------------------------
 {
     if(nTick == 0)
@@ -3590,7 +3590,7 @@ void CSoundFile::NoteCut(UINT nChn, UINT nTick)
 }
 
 
-void CSoundFile::KeyOff(UINT nChn)
+void module_renderer::KeyOff(UINT nChn)
 //--------------------------------
 {
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -3629,7 +3629,7 @@ void CSoundFile::KeyOff(UINT nChn)
         {
             pChn->flags |= CHN_NOTEFADE;
         }
-    
+
         if (pIns->volume_envelope.release_node != ENV_RELEASE_NODE_UNSET)
         {
             pChn->volume_envelope.release_value = GetVolEnvValueFromPosition(pChn->volume_envelope.position, pIns);
@@ -3644,7 +3644,7 @@ void CSoundFile::KeyOff(UINT nChn)
 // CSoundFile: Global Effects
 
 
-void CSoundFile::SetSpeed(UINT param)
+void module_renderer::SetSpeed(UINT param)
 //-----------------------------------
 {
     // ModPlug Tracker and Mod-Plugin don't do this check
@@ -3666,7 +3666,7 @@ void CSoundFile::SetSpeed(UINT param)
 }
 
 
-void CSoundFile::SetTempo(UINT param, bool setAsNonModcommand)
+void module_renderer::SetTempo(UINT param, bool setAsNonModcommand)
 //------------------------------------------------------------
 {
     const CModSpecifications& specs = GetModSpecifications();
@@ -3705,7 +3705,7 @@ void CSoundFile::SetTempo(UINT param, bool setAsNonModcommand)
 }
 
 
-int CSoundFile::PatternLoop(modplug::tracker::modchannel_t *pChn, UINT param)
+int module_renderer::PatternLoop(modplug::tracker::modchannel_t *pChn, UINT param)
 //-------------------------------------------------------
 {
     if (param)
@@ -3719,7 +3719,7 @@ int CSoundFile::PatternLoop(modplug::tracker::modchannel_t *pChn, UINT param)
                 if(IsCompatibleMode(TRK_IMPULSETRACKER | TRK_PROTRACKER))
                     pChn->nPatternLoop = m_nRow + 1;
 
-                return -1;    
+                return -1;
             }
         } else
         {
@@ -3746,7 +3746,7 @@ int CSoundFile::PatternLoop(modplug::tracker::modchannel_t *pChn, UINT param)
 }
 
 
-void CSoundFile::GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide)
+void module_renderer::GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide)
 //-----------------------------------------
 {
     LONG nGlbSlide = 0;
@@ -3776,7 +3776,7 @@ void CSoundFile::GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide)
 }
 
 
-uint32_t CSoundFile::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
+uint32_t module_renderer::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
 //----------------------------------------------------------------------
 {
     UINT nOrd;
@@ -3816,7 +3816,7 @@ uint32_t CSoundFile::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
 //////////////////////////////////////////////////////
 // Note/Period/Frequency functions
 
-UINT CSoundFile::GetNoteFromPeriod(UINT period) const
+UINT module_renderer::GetNoteFromPeriod(UINT period) const
 //---------------------------------------------------
 {
     if (!period) return 0;
@@ -3850,7 +3850,7 @@ UINT CSoundFile::GetNoteFromPeriod(UINT period) const
 
 
 
-UINT CSoundFile::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const
+UINT module_renderer::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const
 //-------------------------------------------------------------------------------
 {
     if ((!note) || (note >= NOTE_MIN_SPECIAL)) return 0;
@@ -3914,7 +3914,7 @@ UINT CSoundFile::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) cons
 }
 
 
-UINT CSoundFile::GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac) const
+UINT module_renderer::GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac) const
 //-----------------------------------------------------------------------------------
 {
     if (!period) return 0;
@@ -3942,30 +3942,30 @@ UINT CSoundFile::GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac) 
 }
 
 
-UINT  CSoundFile::GetBestPlugin(UINT nChn, UINT priority, bool respectMutes)
+UINT  module_renderer::GetBestPlugin(UINT nChn, UINT priority, bool respectMutes)
 //-------------------------------------------------------------------------
 {
     if (nChn > MAX_VIRTUAL_CHANNELS)    	//Check valid channel number
     {
         return 0;
     }
-    
+
     //Define search source order
     UINT nPlugin=0;
     switch (priority) {
-        case CHANNEL_ONLY:    					
+        case CHANNEL_ONLY:
             nPlugin = GetChannelPlugin(nChn, respectMutes);
             break;
-        case INSTRUMENT_ONLY:    					
+        case INSTRUMENT_ONLY:
             nPlugin  = GetActiveInstrumentPlugin(nChn, respectMutes);
             break;
-        case PRIORITISE_INSTRUMENT:    					
+        case PRIORITISE_INSTRUMENT:
             nPlugin  = GetActiveInstrumentPlugin(nChn, respectMutes);
             if ((!nPlugin) || (nPlugin>MAX_MIXPLUGINS)) {
                 nPlugin = GetChannelPlugin(nChn, respectMutes);
             }
             break;
-        case PRIORITISE_CHANNEL:    									
+        case PRIORITISE_CHANNEL:
             nPlugin  = GetChannelPlugin(nChn, respectMutes);
             if ((!nPlugin) || (nPlugin>MAX_MIXPLUGINS)) {
                 nPlugin = GetActiveInstrumentPlugin(nChn, respectMutes);
@@ -3977,20 +3977,20 @@ UINT  CSoundFile::GetBestPlugin(UINT nChn, UINT priority, bool respectMutes)
 }
 
 
-UINT __cdecl CSoundFile::GetChannelPlugin(UINT nChn, bool respectMutes) const
+UINT __cdecl module_renderer::GetChannelPlugin(UINT nChn, bool respectMutes) const
 //---------------------------------------------------------------------------
 {
     const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
 
     // If it looks like this is an NNA channel, we need to find the master channel.
-    // This ensures we pick up the right ChnSettings. 
+    // This ensures we pick up the right ChnSettings.
     // NB: parent_channel==0 means no master channel, so we need to -1 to get correct index.
-    if (nChn>=m_nChannels && pChn && pChn->parent_channel>0) { 
-        nChn = pChn->parent_channel-1;    			  
+    if (nChn>=m_nChannels && pChn && pChn->parent_channel>0) {
+        nChn = pChn->parent_channel-1;
     }
 
     UINT nPlugin;
-    if ( (respectMutes && (pChn->flags & CHN_MUTE)) || 
+    if ( (respectMutes && (pChn->flags & CHN_MUTE)) ||
      (pChn->flags&CHN_NOFX) ) {
         nPlugin = 0;
     } else {
@@ -4000,7 +4000,7 @@ UINT __cdecl CSoundFile::GetChannelPlugin(UINT nChn, bool respectMutes) const
 }
 
 
-UINT CSoundFile::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) const
+UINT module_renderer::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) const
 //----------------------------------------------------------------------------
 {
     const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
@@ -4009,7 +4009,7 @@ UINT CSoundFile::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) const
 
     UINT nPlugin=0;
     if (pChn && pChn->instrument) {
-        if (respectMutes && pChn->sample && (pChn->sample->flags & CHN_MUTE)) { 
+        if (respectMutes && pChn->sample && (pChn->sample->flags & CHN_MUTE)) {
             nPlugin = 0;
         } else {
             nPlugin = pChn->instrument->nMixPlug;
@@ -4019,7 +4019,7 @@ UINT CSoundFile::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) const
 }
 
 
-UINT CSoundFile::GetBestMidiChan(const modplug::tracker::modchannel_t *pChn) const
+UINT module_renderer::GetBestMidiChan(const modplug::tracker::modchannel_t *pChn) const
 //------------------------------------------------------------
 {
     if (pChn && pChn->instrument && pChn->instrument->midi_channel)
@@ -4030,7 +4030,7 @@ UINT CSoundFile::GetBestMidiChan(const modplug::tracker::modchannel_t *pChn) con
 }
 
 
-void CSoundFile::HandlePatternTransitionEvents()
+void module_renderer::HandlePatternTransitionEvents()
 //----------------------------------------------
 {
     if (!m_bPatternTransitionOccurred)
@@ -4063,7 +4063,7 @@ void CSoundFile::HandlePatternTransitionEvents()
 
 
 // Update time signatures (global or pattern-specific). Don't forget to call this when changing the RPB/RPM settings anywhere!
-void CSoundFile::UpdateTimeSignature()
+void module_renderer::UpdateTimeSignature()
 //------------------------------------
 {
     if(!Patterns.IsValidIndex(m_nPattern) || !Patterns[m_nPattern].GetOverrideSignature())
@@ -4078,7 +4078,7 @@ void CSoundFile::UpdateTimeSignature()
 }
 
 
-void CSoundFile::PortamentoMPT(modplug::tracker::modchannel_t* pChn, int param)
+void module_renderer::PortamentoMPT(modplug::tracker::modchannel_t* pChn, int param)
 //---------------------------------------------------------
 {
     //Behavior: Modifies portamento by param-steps on every tick.
@@ -4089,7 +4089,7 @@ void CSoundFile::PortamentoMPT(modplug::tracker::modchannel_t* pChn, int param)
 }
 
 
-void CSoundFile::PortamentoFineMPT(modplug::tracker::modchannel_t* pChn, int param)
+void module_renderer::PortamentoFineMPT(modplug::tracker::modchannel_t* pChn, int param)
 //-------------------------------------------------------------
 {
     //Behavior: Divides portamento change between ticks/row. For example
@@ -4120,7 +4120,7 @@ void CSoundFile::PortamentoFineMPT(modplug::tracker::modchannel_t* pChn, int par
    Length detection code:
    As the ModPlug engine already deals with pattern loops sufficiently (though not always correctly),
    there's no problem with (infinite) pattern loops in this code.
-   
+
    Normal player code:
    Bare in mind that rows inside pattern loops should only be evaluated once, or else the algorithm will cancel too early!
    So in that case, the pattern loop rows have to be reset when looping back.
@@ -4130,7 +4130,7 @@ void CSoundFile::PortamentoFineMPT(modplug::tracker::modchannel_t* pChn, int par
 // Resize / Clear the row vector.
 // If bReset is true, the vector is not only resized to the required dimensions, but also completely cleared (i.e. all visited rows are unset).
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-void CSoundFile::InitializeVisitedRows(const bool bReset, VisitedRowsType *pRowVector)
+void module_renderer::InitializeVisitedRows(const bool bReset, VisitedRowsType *pRowVector)
 //------------------------------------------------------------------------------------
 {
     if(pRowVector == nullptr)
@@ -4156,7 +4156,7 @@ void CSoundFile::InitializeVisitedRows(const bool bReset, VisitedRowsType *pRowV
 // nOrd, nRow - which row should be (un)set
 // If bVisited is true, the row will be set as visited.
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-void CSoundFile::SetRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bVisited, VisitedRowsType *pRowVector)
+void module_renderer::SetRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bVisited, VisitedRowsType *pRowVector)
 //--------------------------------------------------------------------------------------------------------------------------
 {
     const ORDERINDEX nMaxOrd = Order.GetLengthTailTrimmed();
@@ -4184,7 +4184,7 @@ void CSoundFile::SetRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const
 // If bAutoSet is true, the queried row will automatically be marked as visited.
 // Use this parameter instead of consecutive IsRowVisited/SetRowVisited calls.
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-bool CSoundFile::IsRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bAutoSet, VisitedRowsType *pRowVector)
+bool module_renderer::IsRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bAutoSet, VisitedRowsType *pRowVector)
 //-------------------------------------------------------------------------------------------------------------------------
 {
     const ORDERINDEX nMaxOrd = Order.GetLengthTailTrimmed();
@@ -4224,7 +4224,7 @@ bool CSoundFile::IsRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const 
 
 
 // Get the needed vector size for pattern nPat.
-size_t CSoundFile::GetVisitedRowsVectorSize(const PATTERNINDEX nPat)
+size_t module_renderer::GetVisitedRowsVectorSize(const PATTERNINDEX nPat)
 //------------------------------------------------------------------
 {
     if(Patterns.IsValidPat(nPat))
@@ -4237,4 +4237,3 @@ size_t CSoundFile::GetVisitedRowsVectorSize(const PATTERNINDEX nPat)
         return 1;
     }
 }
-

@@ -77,7 +77,7 @@ CDocument *CModDocTemplate::OpenDocumentFile(LPCTSTR path, BOOL addToMru, BOOL m
                 CString str;
                 str.Format(GetStrI18N(_TEXT("Unable to open \"%s\": file does not exist.")), path);
                 AfxMessageBox(str);
-            } else {    	
+            } else {
                 const int nOdc = AfxGetApp()->m_pDocManager->GetOpenDocumentCount();
                 CString str;
                 str.Format(GetStrI18N(_TEXT("Opening \"%s\" failed. This can happen if "
@@ -207,8 +207,8 @@ const uint8_t gEffectColors[MAX_EFFECTS] =
     MODCOLOR_PITCH,    	MODCOLOR_PITCH,		MODCOLOR_VOLUME,	MODCOLOR_VOLUME,
     MODCOLOR_VOLUME,    MODCOLOR_PANNING,	0,					MODCOLOR_VOLUME,
     MODCOLOR_GLOBALS,    MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	0,
-    MODCOLOR_GLOBALS,    MODCOLOR_GLOBALS,	0,					0,					
-    0,    				MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	
+    MODCOLOR_GLOBALS,    MODCOLOR_GLOBALS,	0,					0,
+    0,    				MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,
     MODCOLOR_GLOBALS,    0,					MODCOLOR_PITCH,		MODCOLOR_PANNING,
     MODCOLOR_PITCH,    	MODCOLOR_PANNING,	0,					0,
     0,    				0,					0,					MODCOLOR_PITCH,
@@ -242,7 +242,7 @@ BOOL CTrackApp::ImportMidiConfig(LPCSTR lpszConfigFile, BOOL bNoWarn)
 //-------------------------------------------------------------------
 {
     TCHAR szFileName[_MAX_PATH], s[_MAX_PATH], szUltraSndPath[_MAX_PATH];
-    
+
     if ((!lpszConfigFile) || (!lpszConfigFile[0])) return FALSE;
     if (!glpMidiLibrary)
     {
@@ -335,7 +335,7 @@ BOOL CTrackApp::ExportMidiConfig(LPCSTR lpszConfigFile)
 //-----------------------------------------------------
 {
     TCHAR szFileName[_MAX_PATH], s[128];
-    
+
     if ((!glpMidiLibrary) || (!lpszConfigFile) || (!lpszConfigFile[0])) return FALSE;
     for(size_t iMidi = 0; iMidi < 256; iMidi++) if (glpMidiLibrary->MidiMap[iMidi])
     {
@@ -455,10 +455,10 @@ BOOL CTrackApp::SaveDefaultDLSBanks()
     TCHAR szPath[_MAX_PATH];
     uint32_t nBanks = 0;
     for (UINT i=0; i<MAX_DLS_BANKS; i++) {
-        
+
         if (!gpDLSBanks[i] || !gpDLSBanks[i]->GetFileName() || !gpDLSBanks[i]->GetFileName()[0])
             continue;
-        
+
         _tcsncpy(szPath, gpDLSBanks[i]->GetFileName(), ARRAYELEMCOUNT(szPath) - 1);
         if(IsPortableMode())
         {
@@ -523,7 +523,7 @@ BEGIN_MESSAGE_MAP(CTrackApp, CWinApp)
     ON_COMMAND(ID_FILE_NEWIT,    OnFileNewIT)
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
-    ON_COMMAND(ID_NEW_ITPROJECT,OnFileNewITProject)    
+    ON_COMMAND(ID_NEW_ITPROJECT,OnFileNewITProject)
 // -! NEW_FEATURE#0023
     ON_COMMAND(ID_NEW_MPT,    	OnFileNewMPT)
     ON_COMMAND(ID_FILE_OPEN,    OnFileOpen)
@@ -570,7 +570,7 @@ CTrackApp::CTrackApp()
 
 void Terminate_AppThread()
 //----------------------------------------------
-{    
+{
     //TODO: Why does this not get called.
     AfxMessageBox("HOLY BALLS");
     exit(-1);
@@ -657,7 +657,7 @@ void CTrackApp::SetupPaths()
         MoveConfigFile("mpt_intl.ini");
         #endif    // WIN32 Legacy Stuff
     }
-    
+
     // Create tunings dir
     CString sTuningPath;
     sTuningPath.Format(TEXT("%stunings\\"), m_szConfigDirectory);
@@ -683,9 +683,9 @@ void CTrackApp::SetupPaths()
             WIN32_FIND_DATA FindFileData;
             HANDLE hFind;
             hFind = FindFirstFile(sSearchPattern, &FindFileData);
-            if(hFind != INVALID_HANDLE_VALUE) 
+            if(hFind != INVALID_HANDLE_VALUE)
             {
-                do 
+                do
                 {
                     MoveConfigFile(FindFileData.cFileName, "tunings\\");
                 } while(FindNextFile(hFind, &FindFileData) != 0);
@@ -760,7 +760,7 @@ BOOL CTrackApp::InitInstance()
     if (m_pszProfileName) {
         free((void *)m_pszProfileName);
     }
-    m_pszProfileName = _tcsdup(m_szConfigFileName); 
+    m_pszProfileName = _tcsdup(m_szConfigFileName);
 
 
     LoadStdProfileSettings(10);  // Load standard INI file options (including MRU)
@@ -774,12 +774,12 @@ BOOL CTrackApp::InitInstance()
     AddDocTemplate(m_pModTemplate);
 
     // Initialize Audio
-    CSoundFile::InitSysInfo();
-    if (CSoundFile::gdwSysInfo & SYSMIX_ENABLEMMX)
+    module_renderer::InitSysInfo();
+    if (module_renderer::gdwSysInfo & SYSMIX_ENABLEMMX)
     {
         CMainFrame::m_nSrcMode = SRCMODE_SPLINE;
     }
-    if (CSoundFile::gdwSysInfo & SYSMIX_MMXEX)
+    if (module_renderer::gdwSysInfo & SYSMIX_MMXEX)
     {
         CMainFrame::m_nSrcMode = SRCMODE_POLYPHASE;
     }
@@ -923,7 +923,7 @@ int CTrackApp::ExitInstance()
 
 void CTrackApp::LoadChords(PMPTCHORD pChords)
 //-------------------------------------------
-{    
+{
     if (!m_szConfigFileName[0]) return;
     for (UINT i=0; i<3*12; i++)
     {
@@ -946,7 +946,7 @@ void CTrackApp::SaveChords(PMPTCHORD pChords)
 //-------------------------------------------
 {
     CHAR s[64];
-    
+
     if (!m_szConfigFileName[0]) return;
     for (UINT i=0; i<3*12; i++)
     {
@@ -973,7 +973,7 @@ void CTrackApp::OnFileNew()
     CModDoc *pModDoc = CMainFrame::GetMainFrame()->GetActiveDoc();
     if(pModDoc != nullptr)
     {
-        CSoundFile *pSndFile = pModDoc->GetSoundFile();
+        module_renderer *pSndFile = pModDoc->GetSoundFile();
         if(pSndFile != nullptr)
         {
             nNewType = pSndFile->GetBestSaveFormat();
@@ -1263,7 +1263,7 @@ BOOL CAboutDlg::OnInitDialog()
         "\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
         "VST PlugIn Technology by Steinberg Media Technologies GmbH\r\n"
         "ASIO Technology by Steinberg Media Technologies GmbH\r\n"
-        "\r\n\r\n\r\n\r\n\r\n\r\n" 
+        "\r\n\r\n\r\n\r\n\r\n\r\n"
     };
     SetDlgItemText(IDC_HERPDERP, credits_and_authors);
     return TRUE;
@@ -1565,14 +1565,14 @@ void ErrorBox(UINT nStringID, CWnd*p)
 
 ////////////////////////////////////////////////////////////////////////////////
 // CFastBitmap 8-bit output / 4-bit input
-// useful for lots of small blits with color mapping 
+// useful for lots of small blits with color mapping
 // combined in one big blit
 
 void CFastBitmap::Init(LPMODPLUGDIB lpTextDib)
 //--------------------------------------------
 {
     m_nBlendOffset = 0;    		// rewbs.buildfix for pattern display bug in debug builds
-                                // & release builds when ran directly from vs.net 
+                                // & release builds when ran directly from vs.net
 
     m_pTextDib = lpTextDib;
     MemsetZero(m_Dib);
@@ -1663,7 +1663,7 @@ void CFastBitmap::TextBlt(int x, int y, int cx, int cy, int srcx, int srcy, LPMO
     uint8_t *pdest;
     UINT x1, x2;
     int srcwidth, srcinc;
-    
+
     m_n4BitPalette[0] = (uint8_t)m_nTextColor;
     m_n4BitPalette[15] = (uint8_t)m_nBkColor;
     if (x < 0)
@@ -1923,7 +1923,7 @@ BOOL CTrackApp::OpenURL(LPCSTR lpszURL)
                     lpszURL,
                     NULL,
                     NULL,
-                    0)) >= 32) return TRUE;    			
+                    0)) >= 32) return TRUE;
     }
     return FALSE;
 }
