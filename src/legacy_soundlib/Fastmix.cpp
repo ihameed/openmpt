@@ -30,7 +30,6 @@ int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 
 
 #ifndef FASTSOUNDLIB
-int MixRearBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 float MixFloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 #endif
 
@@ -1479,12 +1478,6 @@ UINT module_renderer::CreateStereoMix(int count)
     uint32_t nchused, nchmixed;
 
     if (!count) return 0;
-#ifndef FASTSOUNDLIB
-    BOOL bSurround;
-    if (gnChannels > 2) {
-        modplug::mixer::init_mix_buffer(MixRearBuffer, count * 2);
-    }
-#endif
     nchused = nchmixed = 0;
     for (UINT nChn=0; nChn<m_nMixChannels; nChn++)
     {
@@ -1515,9 +1508,7 @@ UINT module_renderer::CreateStereoMix(int count)
     #endif
         nFlags |= GetResamplingFlag(pChannel);
         nsamples = count;
-    #ifndef NO_REVERB
         pbuffer = MixSoundBuffer;
-        if ((pChannel->flags & CHN_SURROUND) && (gnChannels > 2)) pbuffer = MixRearBuffer;
 
         JUICY_FRUITS = pbuffer;
         //XXXih: JUICY FRUITS
@@ -1555,12 +1546,7 @@ UINT module_renderer::CreateStereoMix(int count)
                 }
             }
         }
-    #ifndef FASTSOUNDLIB
-        bSurround = (pbuffer == MixRearBuffer);
-    #endif
-    #else
         pbuffer = MixSoundBuffer;
-    #endif
         nchused++;
         ////////////////////////////////////////////////////
     SampleLooping:

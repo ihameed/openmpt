@@ -72,7 +72,6 @@ extern uint32_t FineLinearSlideUpTable[16];
 extern uint32_t FineLinearSlideDownTable[16];
 extern signed char ft2VibratoTable[256];    // -64 .. +64
 extern int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
-extern int MixRearBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 
 // Log tables for pre-amp
 const UINT PreAmpTable[16] =
@@ -361,12 +360,6 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
 
         size_t total_num_samples = num_samples;
 
-        // Multichannel
-        if (gnChannels > 2)
-        {
-            X86_InterleaveFrontRear(MixSoundBuffer, MixRearBuffer, num_samples);
-            total_num_samples *= 2;
-        }
         // Noise Shaping
         if (gnBitsPerSample <= 16)
         {
