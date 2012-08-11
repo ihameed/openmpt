@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "../../pervasives/pervasives.h"
+#include "app_config.h"
 #include "config_dialog.h"
 #include "config_audioio.h"
 #include "../../audioio/paudio.h"
@@ -44,32 +45,23 @@ static const sample_format_assoc supported_sample_formats[] = {
 
 
 config_audioio_main::config_audioio_main(
-    config_context &context,
-    paudio_settings &settings,
+    app_config &context,
     QWidget *parent
-) : config_page(), settings(settings), context(context)
+) : config_page(), context(context)
 {
     auto layout = new QGridLayout(this);
 
-    auto hoot = new QComboBox;
-    devices = new QComboBox;
-    rates = new QComboBox;
-    formats = new QComboBox;
-    latency = new QLabel;
+    buflen.setSuffix(" samples");
+    buflen.setMinimum(0);
+    buflen.setMaximum(5678);
+    buflen.setSingleStep(32);
 
-    buflen = new QSpinBox;
-    buflen->setSuffix(" samples");
-    buflen->setMinimum(0);
-    buflen->setMaximum(5678);
-    buflen->setSingleStep(32);
-
-    channels = new QSpinBox;
-    channels->setMinimum(0);
+    channels.setMinimum(0);
 
     int row = 0;
-    auto add_widget = [&](char *name, QWidget *widget) {
+    auto add_widget = [&](char *name, QWidget &widget) {
         layout->addWidget(new QLabel(name), row, 0);
-        layout->addWidget(widget, row, 1);
+        layout->addWidget(&widget, row, 1);
         ++row;
     };
 
@@ -89,28 +81,28 @@ config_audioio_main::config_audioio_main(
     );
 
     for_each(supported_sample_rates, [&](sample_rate_assoc t) {
-        rates->addItem(t.value, QVariant(t.key));
+        rates.addItem(t.value, QVariant(t.key));
     });
 
     for_each(supported_sample_formats, [&](sample_format_assoc t) {
-        formats->addItem(t.value);
+        formats.addItem(t.value);
     });
 
-    auto &pa_system = context.pa_system;
+    auto &pa_system = context.audio_handle();
 
     for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
-        devices->addItem(
+        devices.addItem(
             QString("%1: %2").arg(i->hostApi().name()) .arg(i->name())
         );
     }
 
     QObject::connect(
-        rates, SIGNAL(currentIndexChanged(int)),
+        &rates, SIGNAL(currentIndexChanged(int)),
         this, SLOT(latency_event_with_int(int))
     );
 
     QObject::connect(
-        buflen, SIGNAL(valueChanged(int)),
+        &buflen, SIGNAL(valueChanged(int)),
         this, SLOT(latency_event_with_int(int))
     );
 
@@ -118,28 +110,31 @@ config_audioio_main::config_audioio_main(
 };
 
 void config_audioio_main::refresh() {
+    auto settings = context.audio_settings();
+
     DEBUG_FUNC("%s",
         debug_json_dump(json_of_paudio_settings(
             settings,
-            context.pa_system
+            context.audio_handle()
         )).c_str()
     );
+
     auto current_sample_rate = static_cast<int>(settings.sample_rate);
 
-    rates->setCurrentIndex(idx_of_key(
+    rates.setCurrentIndex(idx_of_key(
         supported_sample_rates,
         current_sample_rate
     ));
-    formats->setCurrentIndex(idx_of_key(
+    formats.setCurrentIndex(idx_of_key(
         supported_sample_formats,
         settings.sample_format
     ));
 
-    devices->setCurrentIndex(settings.device);
+    devices.setCurrentIndex(settings.device);
 
-    buflen->setValue(settings.buffer_length);
+    buflen.setValue(settings.buffer_length);
 
-    channels->setValue(settings.channels);
+    channels.setValue(settings.channels);
 }
 
 void config_audioio_main::latency_event_with_int(int) {
@@ -148,16 +143,16 @@ void config_audioio_main::latency_event_with_int(int) {
 
 void config_audioio_main::update_latency_indicator() {
     double rate = current_sample_rate();
-    int len = buflen->value();
+    int len = buflen.value();
     double latency_ms = rate == 0
         ? 0
         : (1000 * len) / rate;
-    latency->setText(QString("%1 ms").arg(latency_ms));
+    latency.setText(QString("%1 ms").arg(latency_ms));
 }
 
 double config_audioio_main::current_sample_rate() const {
-    int idx = rates->currentIndex();
-    auto data = rates->itemData(idx);
+    int idx = rates.currentIndex();
+    auto data = rates.itemData(idx);
     return data == QVariant::Invalid ? 0 : data.toDouble();
 }
 

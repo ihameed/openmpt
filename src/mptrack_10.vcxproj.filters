@@ -171,6 +171,18 @@
     <ClCompile Include="GeneratedFiles\Template\moc_comment_view.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_app_config.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_app_config.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_app_config.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt4\app_config.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -368,6 +380,9 @@
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="gui\qt4\comment_view.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt4\app_config.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

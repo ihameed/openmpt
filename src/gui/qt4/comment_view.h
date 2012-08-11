@@ -21,7 +21,7 @@ public slots:
     void legacy_update_module_comment();
 
 private:
-    QPlainTextEdit *comment_editor;
+    QPlainTextEdit comment_editor;
     CSoundFile *legacy_module;
     bool busy_loading_comments;
 };

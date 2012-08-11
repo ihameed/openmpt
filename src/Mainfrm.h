@@ -8,8 +8,9 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "audioio/paudio.h"
+#include "gui/qt4/app_config.h"
 #include "gui/qt4/config_dialog.h"
+#include "audioio/paudio.h"
 
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
@@ -456,11 +457,10 @@ public:
 public:
     portaudio::AutoSystem pa_auto_system;
     portaudio::System &pa_system;
-    modplug::audioio::paudio_settings stream_settings;
     std::shared_ptr<modplug::audioio::paudio> stream;
-    modplug::gui::qt4::config_context context;
-    //modplug::gui::qt4::config_dialog config_dialog;
-    std::shared_ptr<QWinWidget> qwinwidget;
+    modplug::gui::qt4::app_config global_config;
+    modplug::gui::qt4::config_dialog *config_dialog;
+    std::unique_ptr<QWinWidget> qwinwidget;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;

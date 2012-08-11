@@ -13,24 +13,23 @@ namespace qt4 {
 
 
 comment_view::comment_view(CSoundFile *legacy_module)
-    : QWidget(), comment_editor(new QPlainTextEdit),
-      legacy_module(legacy_module), busy_loading_comments(false)
+    : QWidget(), legacy_module(legacy_module), busy_loading_comments(false)
 {
     auto layout = new QVBoxLayout();
     setLayout(layout);
 
-    layout->addWidget(comment_editor);
+    layout->addWidget(&comment_editor);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
 
-    comment_editor->setPlainText("Yes");
-    comment_editor->appendPlainText("5555Yes");
-    comment_editor->setFont(font);
-    comment_editor->setLineWrapMode(QPlainTextEdit::NoWrap);
+    comment_editor.setPlainText("Yes");
+    comment_editor.appendPlainText("5555Yes");
+    comment_editor.setFont(font);
+    comment_editor.setLineWrapMode(QPlainTextEdit::NoWrap);
 
     QObject::connect(
-        comment_editor, SIGNAL(textChanged()),
+        &comment_editor, SIGNAL(textChanged()),
         this, SLOT(legacy_update_module_comment())
     );
 }
@@ -41,8 +40,8 @@ void comment_view::legacy_set_comments_from_module(bool allow_editing) {
     }
 
     busy_loading_comments = true;
-    comment_editor->clear();
-    comment_editor->setUndoRedoEnabled(false);
+    comment_editor.clear();
+    comment_editor.setUndoRedoEnabled(false);
 
     if (legacy_module->m_lpszSongComments) {
         uint8_t bytestr[256];
@@ -65,7 +64,7 @@ void comment_view::legacy_set_comments_from_module(bool allow_editing) {
 
             if (curchar == '\r') {
                 bytestr[line_length] = '\0';
-                comment_editor->appendPlainText((char *)bytestr);
+                comment_editor.appendPlainText((char *)bytestr);
                 bytestr[0] = '\0';
                 line_length = 0;
             } else {
@@ -77,10 +76,10 @@ void comment_view::legacy_set_comments_from_module(bool allow_editing) {
         }
     }
 
-    comment_editor->moveCursor(QTextCursor::Start);
-    comment_editor->setUndoRedoEnabled(true);
-    comment_editor->setEnabled(true);
-    comment_editor->setReadOnly(!allow_editing);
+    comment_editor.moveCursor(QTextCursor::Start);
+    comment_editor.setUndoRedoEnabled(true);
+    comment_editor.setEnabled(true);
+    comment_editor.setReadOnly(!allow_editing);
     busy_loading_comments = false;
 }
 
@@ -103,7 +102,7 @@ void comment_view::legacy_update_module_comment() {
         legacy_module->m_lpszSongComments = nullptr;
     }
 
-    auto comment_lines = comment_editor->
+    auto comment_lines = comment_editor.
                          toPlainText().split(QRegExp("(\\r\\n|\\r|\\n)"));
 
     auto strip_trailing_garbage = [](QString &line) {

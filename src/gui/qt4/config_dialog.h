@@ -2,33 +2,26 @@
 #include <QtGui>
 
 #include "../../audioio/paudio.h"
+#include "../../pervasives/pervasives.h"
 
 namespace modplug {
 namespace gui {
 namespace qt4 {
 
 
-class config_context {
-public:
-    config_context(portaudio::System &pa_system) :
-        pa_system(pa_system)
-    { };
-
-    portaudio::System &pa_system;
-};
-
-class config_page : public QWidget {
+class config_page : public QWidget, private modplug::pervasives::noncopyable {
     Q_OBJECT
 public:
     virtual void refresh() { };
 };
 
 class config_treeview;
+class app_config;
 
-class config_dialog : public QDialog {
+class config_dialog : public QDialog, private modplug::pervasives::noncopyable {
     Q_OBJECT
 public:
-    config_dialog(config_context &, CMainFrame &, QWidget * = 0);
+    config_dialog(app_config &, QWidget *);
 
 public slots:
     void change_page();

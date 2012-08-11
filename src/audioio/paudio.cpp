@@ -65,7 +65,10 @@ size_t lookup_by_name(arr &names, const char *name) {
 
 
 
-Json::Value json_of_paudio_settings(const paudio_settings &settings, portaudio::System &pa_system) {
+Json::Value json_of_paudio_settings(
+    const paudio_settings &settings,
+    portaudio::System &pa_system
+) {
     Json::Value root;
     root["sample_rate"]   = settings.sample_rate;
     root["sample_format"] = value_of_key(paudio_sample_format_names,

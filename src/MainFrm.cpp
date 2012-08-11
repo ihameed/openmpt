@@ -268,7 +268,7 @@ static UINT indicators[] =
 CMainFrame::CMainFrame() :
     pa_auto_system(),
     pa_system(portaudio::System::instance()),
-    context(pa_system)
+    global_config(pa_system)
 {
     m_bModTreeHasFocus = false;    //rewbs.customKeys
     m_pNoteMapHasFocus = nullptr;    //rewbs.customKeys
@@ -333,14 +333,16 @@ CMainFrame::CMainFrame() :
     DEBUG_FUNC("=================================================");
 
     auto &default_output = pa_system.defaultOutputDevice();
+
+    modplug::audioio::paudio_settings stream_settings;
     stream_settings.latency  = default_output.defaultLowOutputLatency();
     stream_settings.host_api = default_output.hostApi().typeId();
     stream_settings.device   = default_output.index();
     stream_settings.sample_format = portaudio::INT16;
-    //stream_settings.sample_rate   = 44100.0;
-    stream_settings.sample_rate   = 48000.0;
+    stream_settings.sample_rate   = 44100.0;
     stream_settings.channels      = 2;
     stream_settings.buffer_length = 512;
+    global_config.change_audio_settings(stream_settings);
     DEBUG_FUNC("stream_settings = %s", debug_json_dump(
         modplug::audioio::json_of_paudio_settings(stream_settings, pa_system)
     ).c_str());
@@ -647,13 +649,10 @@ bool CMainFrame::LoadRegistrySettings()
 }
 
 
-VOID CMainFrame::Initialize()
-//---------------------------
-{
-    debug_log("---------------------------------------------- HUAOHUAHOHUAHAOHAOHAUOHSDIOFIODSFUIDSAUIOFSAIODASIODJIOSAIJODASOIDJSAODIOSADIOJSAIODJSAIODSADA");
-    qwinwidget = std::make_shared<QWinWidget>(this);
+VOID CMainFrame::Initialize() {
+    qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this));
+    config_dialog = new modplug::gui::qt4::config_dialog(global_config, qwinwidget.get());
 //    qwinwidget->showCentered();
-    debug_log("++++++++++++++++++++++++++++++++++++++++++++++ HUAOHUAHOHUAHAOHAOHAUOHSDIOFIODSFUIDSAUIOFSAIODASIODJIOSAIJODASOIDJSAODIOSADIOJSAIODJSAIODSADA");
 
     //Adding version number to the frame title
     CString title = GetTitle();
@@ -1275,7 +1274,8 @@ void CMainFrame::CalcStereoVuMeters(int *pMix, unsigned long nSamples, unsigned 
 BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 //-------------------------------------------------------------------
 {
-    m_dwElapsedTime += (dwSamplesRead * 1000) / this->stream_settings.sample_rate;
+    auto &stream_settings = global_config.audio_settings();
+    m_dwElapsedTime += (dwSamplesRead * 1000) / stream_settings.sample_rate;
     gsdwTotalSamples += dwSamplesRead;
     if (!m_pSndFile) return FALSE;
     if (m_nMixChn < m_pSndFile->m_nMixStat) m_nMixChn++;
@@ -1364,7 +1364,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                 if (rVu > 0x10000) rVu = 0x10000;
                 p->dwPos[0] = lVu;
                 p->dwPos[1] = rVu;
-                uint32_t dwVuDecay = _muldiv(dwSamplesRead, 120000, this->stream_settings.sample_rate) + 1;
+                uint32_t dwVuDecay = _muldiv(dwSamplesRead, 120000, stream_settings.sample_rate) + 1;
                 if (lVu >= dwVuDecay) gnLVuMeter = (lVu - dwVuDecay) << 11; else gnLVuMeter = 0;
                 if (rVu >= dwVuDecay) gnRVuMeter = (rVu - dwVuDecay) << 11; else gnRVuMeter = 0;
             }
@@ -1379,7 +1379,8 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 void CMainFrame::UpdateAudioParameters(BOOL bReset)
 //-------------------------------------------------
 {
-    CSoundFile::deprecated_SetWaveConfig(this->stream_settings.sample_rate, 16, 2, TRUE);
+    auto &stream_settings = global_config.audio_settings();
+    CSoundFile::deprecated_SetWaveConfig(stream_settings.sample_rate, 16, 2, TRUE);
     CSoundFile::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
     // Soft panning
     CSoundFile::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
@@ -2062,13 +2063,7 @@ void CMainFrame::OnViewOptions()
 }
 
 void CMainFrame::OnDisplayConfigEditor() {
-    auto &context = this->context;
-    auto parent = this->qwinwidget.get();
-    auto *derp = new modplug::gui::qt4::config_dialog(context, *this, parent);
-    /*derp->move(50, 50);
-    derp->resize(200, 400);
-    */
-    derp->show();
+    config_dialog->show();
 }
 
 

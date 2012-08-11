@@ -16,7 +16,7 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-typedef std::function<QWidget *(config_context &)> wid_fun;
+typedef std::function<QWidget *(app_config &)> wid_fun;
 
 struct config_page_spec {
     const char * const category;
@@ -26,8 +26,8 @@ struct config_page_spec {
 
 typedef std::map<std::string, std::vector<config_page_spec *> > category_map;
 
-#define MAKE_PAGE(HOOT) ([](config_context &context) { return new HOOT(context); })
-#define MAKE_PAGE_IGNORE(HOOT) ([](config_context &) { return new HOOT(); })
+#define MAKE_PAGE(HOOT) ([](app_config &context) { return new HOOT(context); })
+#define MAKE_PAGE_IGNORE(HOOT) ([](app_config &) { return new HOOT(); })
 
 class expanded_tree_item : public QTreeWidgetItem {
 public:
@@ -57,14 +57,13 @@ public:
     }
 };
 
-config_dialog::config_dialog(config_context &context, CMainFrame &bag_of_junk,
-                             QWidget *parent)
+config_dialog::config_dialog(app_config &context, QWidget *parent)
     : QDialog(parent)
 {
     static config_page_spec config_dialog_layout[] = {
         { "Audio I/O", "root",
-            [&](config_context &context) {
-                return new config_audioio_main(context, bag_of_junk.stream_settings);
+            [&](app_config &context) {
+                return new config_audioio_main(context);
             }
         },
         { "Audio I/O", "Channel Assignment", MAKE_PAGE_IGNORE(QProgressBar) },

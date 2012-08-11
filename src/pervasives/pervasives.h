@@ -18,6 +18,15 @@ typedef int32_t int24_t;
 namespace modplug {
 namespace pervasives {
 
+class noncopyable {
+protected:
+    noncopyable() { };
+    ~noncopyable() { };
+private:
+    noncopyable(const noncopyable &);
+    noncopyable & operator = (const noncopyable &);
+};
+
 typedef HKEY hkey_t; // :  -  (
 int32_t registry_query_value(hkey_t, const char *, uint32_t *,
                              uint32_t *, uint8_t *, uint32_t *);
