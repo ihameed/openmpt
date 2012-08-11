@@ -55,7 +55,6 @@ bool gbInitTables = 0;
 typedef size_t (MPPASMCALL * LPCONVERTPROC)(void *, int *, size_t);
 
 extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
-extern VOID MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, uint32_t nSamples);
 extern VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples);
 extern VOID SndMixInitializeTables();
 

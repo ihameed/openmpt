@@ -1979,35 +1979,6 @@ noiseloop:
 }
 
 
-void MPPASMCALL X86_InterleaveFrontRear(int *pFrontBuf, int *pRearBuf, uint32_t nSamples)
-//------------------------------------------------------------------------------------
-{
-    _asm {
-    mov ecx, nSamples    // ecx = samplecount
-    mov esi, pFrontBuf    // esi = front buffer
-    mov edi, pRearBuf    // edi = rear buffer
-    lea esi, [esi+ecx*4]    // esi = &front[N]
-    lea edi, [edi+ecx*4]    // edi = &rear[N]
-    lea ebx, [esi+ecx*4]    // ebx = &front[N*2]
-    push ebp
-interleaveloop:
-    mov eax, dword ptr [esi-8]
-    mov edx, dword ptr [esi-4]
-    sub ebx, 16
-    mov ebp, dword ptr [edi-8]
-    mov dword ptr [ebx], eax
-    mov dword ptr [ebx+4], edx
-    mov eax, dword ptr [edi-4]
-    sub esi, 8
-    sub edi, 8
-    dec ecx
-    mov dword ptr [ebx+8], ebp
-    mov dword ptr [ebx+12], eax
-    jnz interleaveloop
-    pop ebp
-    }
-}
-
 #endif // FASTSOUNDLIB
 
 
