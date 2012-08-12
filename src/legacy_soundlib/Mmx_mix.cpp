@@ -161,7 +161,7 @@ uint32_t module_renderer::InitSysInfo()
     if (dwProcSupport & PROCSUPPORT_3DNOW) d |= SYSMIX_3DNOW;
     if (dwProcSupport & PROCSUPPORT_SSE) d |= SYSMIX_SSE;
     if (!(dwProcSupport & PROCSUPPORT_CPUID)) d |= SYSMIX_SLOWCPU;
-    gdwSysInfo = d;
+    deprecated_global_system_info = d;
     return d;
 }
 

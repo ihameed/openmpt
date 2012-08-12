@@ -1577,7 +1577,7 @@ UINT module_renderer::CreateStereoMix(int count)
         }
         // Should we mix this channel ?
         UINT naddmix;
-        if (((nchmixed >= m_nMaxMixChannels) && (!(gdwSoundSetup & SNDMIX_DIRECTTODISK)))
+        if (((nchmixed >= m_nMaxMixChannels) && (!(deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK)))
          || ((!pChannel->nRampLength) && (!(pChannel->left_volume|pChannel->right_volume))))
         {
             LONG delta = (pChannel->position_delta * (LONG)nSmpCount) + (LONG)pChannel->fractional_sample_position;
@@ -1668,9 +1668,9 @@ UINT module_renderer::GetResamplingFlag(const modplug::tracker::modchannel_t *pC
     //didn't manage to get flag from instrument header, use channel flags.
     if (pChannel->flags & CHN_HQSRC)
     {
-        if (gdwSoundSetup & SNDMIX_SPLINESRCMODE)    	return MIXNDX_HQSRC;
-        if (gdwSoundSetup & SNDMIX_POLYPHASESRCMODE)    return MIXNDX_KAISERSRC;
-        if (gdwSoundSetup & SNDMIX_FIRFILTERSRCMODE)    return MIXNDX_FIRFILTERSRC;
+        if (deprecated_global_sound_setup_bitmask & SNDMIX_SPLINESRCMODE)    	return MIXNDX_HQSRC;
+        if (deprecated_global_sound_setup_bitmask & SNDMIX_POLYPHASESRCMODE)    return MIXNDX_KAISERSRC;
+        if (deprecated_global_sound_setup_bitmask & SNDMIX_FIRFILTERSRCMODE)    return MIXNDX_FIRFILTERSRC;
     } else if (!(pChannel->flags & CHN_NOIDO)) {
         return MIXNDX_LINEARSRC;
     }
@@ -1839,16 +1839,16 @@ VOID module_renderer::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOu
 {
 
 #ifdef ENABLE_MMX
-    if (gdwSoundSetup & SNDMIX_ENABLEMMX)
+    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
     {
-        if (gdwSysInfo & SYSMIX_SSE)
+        if (deprecated_global_system_info & SYSMIX_SSE)
         {
 #ifdef ENABLE_SSE
         SSE_StereoMixToFloat(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
 #endif
             return;
         }
-        if (gdwSysInfo & SYSMIX_3DNOW)
+        if (deprecated_global_system_info & SYSMIX_3DNOW)
         {
 #ifdef ENABLE_AMD
         AMD_StereoMixToFloat(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
@@ -1866,9 +1866,9 @@ VOID module_renderer::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOu
 VOID module_renderer::FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount)
 //---------------------------------------------------------------------------------------------
 {
-    if (gdwSoundSetup & SNDMIX_ENABLEMMX)
+    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
     {
-        if (gdwSysInfo & SYSMIX_3DNOW)
+        if (deprecated_global_system_info & SYSMIX_3DNOW)
         {
 #ifdef ENABLE_AMDNOW
             AMD_FloatToStereoMix(pIn1, pIn2, pOut, nCount, m_pConfig->getFloatToInt());
@@ -1883,16 +1883,16 @@ VOID module_renderer::FloatToStereoMix(const float *pIn1, const float *pIn2, int
 VOID module_renderer::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
 //------------------------------------------------------------------------
 {
-    if (gdwSoundSetup & SNDMIX_ENABLEMMX)
+    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
     {
-        if (gdwSysInfo & SYSMIX_SSE)
+        if (deprecated_global_system_info & SYSMIX_SSE)
         {
 #ifdef ENABLE_SSE
         SSE_MonoMixToFloat(pSrc, pOut, nCount, m_pConfig->getIntToFloat());
 #endif
             return;
         }
-        if (gdwSysInfo & SYSMIX_3DNOW)
+        if (deprecated_global_system_info & SYSMIX_3DNOW)
         {
 #ifdef ENABLE_AMDNOW
             AMD_MonoMixToFloat(pSrc, pOut, nCount, m_pConfig->getIntToFloat());
@@ -1908,9 +1908,9 @@ VOID module_renderer::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
 VOID module_renderer::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
 //-----------------------------------------------------------------------
 {
-    if (gdwSoundSetup & SNDMIX_ENABLEMMX)
+    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
     {
-        if (gdwSysInfo & SYSMIX_3DNOW)
+        if (deprecated_global_system_info & SYSMIX_3DNOW)
         {
 #ifdef ENABLE_AMDNOW
             AMD_FloatToMonoMix(pIn, pOut, nCount, m_pConfig->getFloatToInt());

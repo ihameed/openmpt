@@ -141,10 +141,10 @@ UINT module_renderer::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSampl
 {
     uint32_t dwInc;
     if ((!lpSrc) || (!lpDest) || (!nSamples)) return 0;
-    dwInc = _muldiv(gdwMixingFreq, 0x10000, 22050);
-    if (gnChannels >= 2)
+    dwInc = _muldiv(deprecated_global_mixing_freq, 0x10000, 22050);
+    if (deprecated_global_channels >= 2)
     {
-        if (gnBitsPerSample == 16)
+        if (deprecated_global_bits_per_sample == 16)
         {
             // Stereo, 16-bit
             X86_Cvt16S_8M(lpSrc, lpDest, nSamples, dwInc);
@@ -155,7 +155,7 @@ UINT module_renderer::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSampl
         }
     } else
     {
-        if (gnBitsPerSample == 16)
+        if (deprecated_global_bits_per_sample == 16)
         {
             // Mono, 16-bit
             X86_Cvt16M_8M(lpSrc, lpDest, nSamples, dwInc);
@@ -174,10 +174,10 @@ UINT module_renderer::WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT 
 {
     uint32_t dwInc;
     if ((!lpSrc) || (!lpDest) || (!nSamples)) return 0;
-    dwInc = _muldiv(gdwMixingFreq, 0x10000, 22050);
-    if (gnChannels >= 2)
+    dwInc = _muldiv(deprecated_global_mixing_freq, 0x10000, 22050);
+    if (deprecated_global_channels >= 2)
     {
-        if (gnBitsPerSample == 16)
+        if (deprecated_global_bits_per_sample == 16)
         {
             // Stereo, 16-bit
             X86_Cvt16S_8S(lpSrc, lpDest, nSamples, dwInc);
@@ -188,7 +188,7 @@ UINT module_renderer::WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT 
         }
     } else
     {
-        if (gnBitsPerSample == 16)
+        if (deprecated_global_bits_per_sample == 16)
         {
             // Mono, 16-bit
             X86_Cvt16M_8S(lpSrc, lpDest, nSamples, dwInc);

@@ -1028,7 +1028,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
     }
     // Special case for MPT
     if (bManual) pChn->flags &= ~CHN_MUTE;
-    if (((pChn->flags & CHN_MUTE) && (gdwSoundSetup & SNDMIX_MUTECHNMODE))
+    if (((pChn->flags & CHN_MUTE) && (deprecated_global_sound_setup_bitmask & SNDMIX_MUTECHNMODE))
      || ((pChn->sample) && (pChn->sample->flags & CHN_MUTE) && (!bManual))
      || ((pChn->instrument) && (pChn->instrument->flags & INS_MUTE) && (!bManual)))
     {

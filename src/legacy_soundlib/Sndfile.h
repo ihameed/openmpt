@@ -327,12 +327,12 @@ public:
     static BOOL InitPlayer(BOOL bReset=FALSE);
     static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
     static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
-    static BOOL IsStereo() { return (gnChannels > 1) ? TRUE : FALSE; }
-    static uint32_t GetSampleRate() { return gdwMixingFreq; }
-    static uint32_t GetBitsPerSample() { return gnBitsPerSample; }
+    static BOOL IsStereo() { return (deprecated_global_channels > 1) ? TRUE : FALSE; }
+    static uint32_t GetSampleRate() { return deprecated_global_mixing_freq; }
+    static uint32_t GetBitsPerSample() { return deprecated_global_bits_per_sample; }
     static uint32_t InitSysInfo();
-    static uint32_t GetSysInfo() { return gdwSysInfo; }
-    static void EnableMMX(BOOL b) { if (b) gdwSoundSetup |= SNDMIX_ENABLEMMX; else gdwSoundSetup &= ~SNDMIX_ENABLEMMX; }
+    static uint32_t GetSysInfo() { return deprecated_global_system_info; }
+    static void EnableMMX(BOOL b) { if (b) deprecated_global_sound_setup_bitmask |= SNDMIX_ENABLEMMX; else deprecated_global_sound_setup_bitmask &= ~SNDMIX_ENABLEMMX; }
 
     // Analyzer Functions
     static UINT WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
@@ -616,13 +616,16 @@ private: //Misc data
     // For handling backwards jumps and stuff to prevent infinite loops when counting the mod length or rendering to wav.
     VisitedRowsType m_VisitedRows;
 
-    //XXXih: not related to rendering
 public:    // Static Members
     static float m_nMaxSample;
     static UINT m_nStereoSeparation;
     static UINT m_nMaxMixChannels;
     static LONG m_nStreamVolume;
-    static uint32_t gdwSysInfo, gdwSoundSetup, gdwMixingFreq, gnBitsPerSample, gnChannels;
+    static uint32_t deprecated_global_system_info;
+    static uint32_t deprecated_global_sound_setup_bitmask;
+    static uint32_t deprecated_global_mixing_freq;
+    static uint32_t deprecated_global_bits_per_sample;
+    static uint32_t deprecated_global_channels;
     static UINT gnVolumeRampInSamples;
     static UINT gnVolumeRampOutSamples;
     static UINT gnCPUUsage;
@@ -631,6 +634,7 @@ public:    // Static Members
     static uint8_t s_DefaultPlugVolumeHandling;
 
 
+    //XXXih: not related to rendering
 public:    // for Editing
     CModDoc* m_pModDoc;    	// Can be a null pointer f.e. when previewing samples from the treeview.
     MODTYPE m_nType;

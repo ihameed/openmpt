@@ -64,7 +64,7 @@ uint32_t module_renderer::CutOffToFrequency(UINT nCutOff, int flt_modifier) cons
     LONG freq = (LONG)Fc;
     if (freq < 120) return 120;
     if (freq > 20000) return 20000;
-    if (freq*2 > (LONG)gdwMixingFreq) freq = gdwMixingFreq>>1;
+    if (freq*2 > (LONG)deprecated_global_mixing_freq) freq = deprecated_global_mixing_freq>>1;
     return (uint32_t)freq;
 }
 
@@ -73,7 +73,7 @@ uint32_t module_renderer::CutOffToFrequency(UINT nCutOff, int flt_modifier) cons
 void module_renderer::SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool bReset, int flt_modifier) const
 //----------------------------------------------------------------------------------------
 {
-    float fs = (float)gdwMixingFreq;
+    float fs = (float)deprecated_global_mixing_freq;
     float fg, fb0, fb1, fc, dmpfac;
 
 /*    if (pChn->pHeader) {

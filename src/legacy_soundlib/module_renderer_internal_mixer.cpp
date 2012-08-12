@@ -36,11 +36,11 @@ UINT module_renderer::m_nStereoSeparation = 128;
 LONG module_renderer::m_nStreamVolume = 0x8000;
 UINT module_renderer::m_nMaxMixChannels = MAX_VIRTUAL_CHANNELS;
 // Mixing Configuration (SetWaveConfig)
-uint32_t module_renderer::gdwSysInfo = 0;
-uint32_t module_renderer::gnChannels = 1;
-uint32_t module_renderer::gdwSoundSetup = 0;
-uint32_t module_renderer::gdwMixingFreq = 44100;
-uint32_t module_renderer::gnBitsPerSample = 16;
+uint32_t module_renderer::deprecated_global_system_info = 0;
+uint32_t module_renderer::deprecated_global_channels = 1;
+uint32_t module_renderer::deprecated_global_sound_setup_bitmask = 0;
+uint32_t module_renderer::deprecated_global_mixing_freq = 44100;
+uint32_t module_renderer::deprecated_global_bits_per_sample = 16;
 // Mixing data initialized in
 UINT module_renderer::gnVolumeRampInSamples = 0;    	//default value
 UINT module_renderer::gnVolumeRampOutSamples = 42;    	//default value
@@ -208,8 +208,8 @@ BOOL module_renderer::InitPlayer(BOOL bReset)
     }
 #endif
     if (m_nMaxMixChannels > MAX_VIRTUAL_CHANNELS) m_nMaxMixChannels = MAX_VIRTUAL_CHANNELS;
-    if (gdwMixingFreq < 4000) gdwMixingFreq = 4000;
-    if (gdwMixingFreq > MAX_SAMPLE_RATE) gdwMixingFreq = MAX_SAMPLE_RATE;
+    if (deprecated_global_mixing_freq < 4000) deprecated_global_mixing_freq = 4000;
+    if (deprecated_global_mixing_freq > MAX_SAMPLE_RATE) deprecated_global_mixing_freq = MAX_SAMPLE_RATE;
     // Start with ramping disabled to avoid clicks on first read.
     // Ramping is now set after the first read in CSoundFile::Read();
     gnVolumeRampInSamples = 0;
@@ -224,7 +224,7 @@ BOOL module_renderer::InitPlayer(BOOL bReset)
 BOOL module_renderer::FadeSong(UINT msec)
 //----------------------------------
 {
-    LONG nsamples = _muldiv(msec, gdwMixingFreq, 1000);
+    LONG nsamples = _muldiv(msec, deprecated_global_mixing_freq, 1000);
     if (nsamples <= 0) return FALSE;
     if (nsamples > 0x100000) nsamples = 0x100000;
     m_nBufferCount = nsamples;
@@ -251,7 +251,7 @@ BOOL module_renderer::GlobalFadeSong(UINT msec)
 //----------------------------------------
 {
     if (m_dwSongFlags & SONG_GLOBALFADE) return FALSE;
-    m_nGlobalFadeMaxSamples = _muldiv(msec, gdwMixingFreq, 1000);
+    m_nGlobalFadeMaxSamples = _muldiv(msec, deprecated_global_mixing_freq, 1000);
     m_nGlobalFadeSamples = m_nGlobalFadeMaxSamples;
     m_dwSongFlags |= SONG_GLOBALFADE;
     return TRUE;
@@ -261,7 +261,7 @@ BOOL module_renderer::GlobalFadeSong(UINT msec)
 UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     //XXXih: i render here!
     //XXXih: gnBitsPerSample shouldn't exist!
-    gnBitsPerSample = 16;
+    deprecated_global_bits_per_sample = 16;
     unsigned char *buffer = static_cast<unsigned char *>(out_buffer);
     LPCONVERTPROC clip_samples = modplug::mixer::clip_32_to_8;
     size_t max_samples;
@@ -275,8 +275,8 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     last_plugin_idx = MAX_MIXPLUGINS;
     while ((last_plugin_idx > 0) && (!m_MixPlugins[last_plugin_idx-1].pMixPlugin)) last_plugin_idx--;
     m_nMixStat = 0;
-    sample_width = gnChannels;
-    switch (gnBitsPerSample) {
+    sample_width = deprecated_global_channels;
+    switch (deprecated_global_bits_per_sample) {
         case 16: sample_width *= 2; clip_samples = modplug::mixer::clip_32_to_16; break;
         case 24: sample_width *= 3; clip_samples = modplug::mixer::clip_32_to_24; break;
         case 32: sample_width *= 4; clip_samples = modplug::mixer::clip_32_to_32; break;
@@ -337,7 +337,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         // ensure modplug::mixer::MIX_BUFFER_SIZE really is our max buffer size
         ASSERT (computed_samples <= modplug::mixgraph::MIX_BUFFER_SIZE);
 
-        num_samples *= (gnChannels >= 2) ? 2 : 1;
+        num_samples *= (deprecated_global_channels >= 2) ? 2 : 1;
         mixgraph.pre_process(computed_samples);
         m_nMixStat += CreateStereoMix(computed_samples);
 
@@ -352,7 +352,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         */
         mixgraph.process(MixSoundBuffer, computed_samples, m_pConfig->getFloatToInt(), m_pConfig->getIntToFloat());
 
-        if (gnChannels < 2) {
+        if (deprecated_global_channels < 2) {
             X86_MonoFromStereo(MixSoundBuffer, computed_samples);
         }
         nStat++;
@@ -360,11 +360,11 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         size_t total_num_samples = num_samples;
 
         // Noise Shaping
-        if (gnBitsPerSample <= 16)
+        if (deprecated_global_bits_per_sample <= 16)
         {
-            if ((gdwSoundSetup & SNDMIX_HQRESAMPLER)
-             && ((gnCPUUsage < 25) || (gdwSoundSetup & SNDMIX_DIRECTTODISK)))
-                X86_Dither(MixSoundBuffer, total_num_samples, gnBitsPerSample);
+            if ((deprecated_global_sound_setup_bitmask & SNDMIX_HQRESAMPLER)
+             && ((gnCPUUsage < 25) || (deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK)))
+                X86_Dither(MixSoundBuffer, total_num_samples, deprecated_global_bits_per_sample);
         }
 
         //Apply global volume
@@ -374,7 +374,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
 
         // Hook Function
         if (sound_mix_callback) {    //Currently only used for VU Meter, so it's OK to do it after global Vol.
-            sound_mix_callback(MixSoundBuffer, total_num_samples, gnChannels);
+            sound_mix_callback(MixSoundBuffer, total_num_samples, deprecated_global_channels);
         }
 
         // Perform clipping
@@ -389,7 +389,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
     }
 MixDone:
-    if (uncomputed_samples) memset(buffer, (gnBitsPerSample == 8) ? 0x80 : 0, uncomputed_samples * sample_width);
+    if (uncomputed_samples) memset(buffer, (deprecated_global_bits_per_sample == 8) ? 0x80 : 0, uncomputed_samples * sample_width);
     if (nStat) { m_nMixStat += nStat-1; m_nMixStat /= nStat; }
     return max_samples - uncomputed_samples;;
 }
@@ -554,7 +554,7 @@ BOOL module_renderer::ProcessRow()
                 // The visited rows vector might have been screwed up while editing...
                 // This is of course not possible during rendering to WAV, so we ignore that case.
                 GetLengthType t = GetLength(eNoAdjust);
-                if((gdwSoundSetup & SNDMIX_DIRECTTODISK) || (t.lastOrder == m_nCurrentPattern && t.lastRow == m_nRow))
+                if((deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK) || (t.lastOrder == m_nCurrentPattern && t.lastRow == m_nRow))
 #else
                 if(1)
 #endif // MODPLUG_TRACKER
@@ -665,12 +665,12 @@ BOOL module_renderer::ReadNote()
     {
 
         case tempo_mode_alternative:
-            m_nBufferCount = gdwMixingFreq / m_nMusicTempo;
+            m_nBufferCount = deprecated_global_mixing_freq / m_nMusicTempo;
             break;
 
         case tempo_mode_modern:
             {
-                double accurateBufferCount = (double)gdwMixingFreq * (60.0 / (double)m_nMusicTempo / ((double)m_nMusicSpeed * (double)m_nCurrentRowsPerBeat));
+                double accurateBufferCount = (double)deprecated_global_mixing_freq * (60.0 / (double)m_nMusicTempo / ((double)m_nMusicSpeed * (double)m_nCurrentRowsPerBeat));
                 m_nBufferCount = static_cast<int>(accurateBufferCount);
                 m_dBufferDiff += accurateBufferCount-m_nBufferCount;
                 //tick-to-tick tempo correction:
@@ -689,7 +689,7 @@ BOOL module_renderer::ReadNote()
 
         case tempo_mode_classic:
         default:
-            m_nBufferCount = (gdwMixingFreq * 5 * m_nTempoFactor) / (m_nMusicTempo << 8);
+            m_nBufferCount = (deprecated_global_mixing_freq * 5 * m_nTempoFactor) / (m_nMusicTempo << 8);
     }
 
     m_nSamplesPerTick = m_nBufferCount; //rewbs.flu
@@ -728,7 +728,7 @@ BOOL module_renderer::ReadNote()
         }
 
         if (m_pConfig->getUseGlobalPreAmp()) {
-            UINT attenuation = (gdwSoundSetup & SNDMIX_AGC) ? PreAmpAGCTable[nchn32>>1] : PreAmpTable[nchn32>>1];
+            UINT attenuation = (deprecated_global_sound_setup_bitmask & SNDMIX_AGC) ? PreAmpAGCTable[nchn32>>1] : PreAmpTable[nchn32>>1];
             if(attenuation < 1) attenuation = 1;
             nMasterVol = (mastervol << 7) / attenuation;
         } else {
@@ -1523,7 +1523,7 @@ BOOL module_renderer::ReadNote()
                 current_vchan->nRealVolume = 0;
             }
 
-            UINT ninc = _muldiv(freq, 0x10000, gdwMixingFreq);
+            UINT ninc = _muldiv(freq, 0x10000, deprecated_global_mixing_freq);
             if ((ninc >= 0xFFB0) && (ninc <= 0x10090)) ninc = 0x10000;
             if (m_nFreqFactor != 128) ninc = (ninc * m_nFreqFactor) >> 7;
             if (ninc > 0xFF0000) ninc = 0xFF0000;
@@ -1652,7 +1652,7 @@ BOOL module_renderer::ReadNote()
 #endif
             UINT kChnMasterVol = (current_vchan->flags & CHN_EXTRALOUD) ? 0x100 : nMasterVol;
             // Adjusting volumes
-            if (gnChannels >= 2)
+            if (deprecated_global_channels >= 2)
             {
                 int pan = ((int)current_vchan->nRealPan) - 128;
                 pan *= (int)m_nStereoSeparation;
@@ -1660,7 +1660,7 @@ BOOL module_renderer::ReadNote()
                 pan += 128;
                 pan = CLAMP(pan, 0, 256);
 #ifndef FASTSOUNDLIB
-                if (gdwSoundSetup & SNDMIX_REVERSESTEREO) pan = 256 - pan;
+                if (deprecated_global_sound_setup_bitmask & SNDMIX_REVERSESTEREO) pan = 256 - pan;
 #endif
 
                 LONG realvol;
@@ -1674,7 +1674,7 @@ BOOL module_renderer::ReadNote()
                 }
 
                 const forcePanningMode panningMode = m_pConfig->getForcePanningMode();
-                if (panningMode == forceSoftPanning || (panningMode == dontForcePanningMode && (gdwSoundSetup & SNDMIX_SOFTPANNING)))
+                if (panningMode == forceSoftPanning || (panningMode == dontForcePanningMode && (deprecated_global_sound_setup_bitmask & SNDMIX_SOFTPANNING)))
                 {
                     if (pan < 128)
                     {
@@ -1700,7 +1700,7 @@ BOOL module_renderer::ReadNote()
             //if (current_vchan->nNewRightVol > 0xFFFF) current_vchan->nNewRightVol = 0xFFFF;
             //if (current_vchan->nNewLeftVol > 0xFFFF) current_vchan->nNewLeftVol = 0xFFFF;
             // Check IDO
-            if (gdwSoundSetup & SNDMIX_NORESAMPLING)
+            if (deprecated_global_sound_setup_bitmask & SNDMIX_NORESAMPLING)
             {
                 current_vchan->flags |= CHN_NOIDO;
             } else
@@ -1711,16 +1711,16 @@ BOOL module_renderer::ReadNote()
                 {
                     current_vchan->flags |= CHN_NOIDO;
                 } else
-                if ((gdwSoundSetup & SNDMIX_HQRESAMPLER) && ((gnCPUUsage < 80) || (gdwSoundSetup & SNDMIX_DIRECTTODISK) || (m_nMixChannels < 8)))
+                if ((deprecated_global_sound_setup_bitmask & SNDMIX_HQRESAMPLER) && ((gnCPUUsage < 80) || (deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK) || (m_nMixChannels < 8)))
                 {
-                    if ((!(gdwSoundSetup & SNDMIX_DIRECTTODISK)) && (!(gdwSoundSetup & SNDMIX_ULTRAHQSRCMODE)))
+                    if ((!(deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK)) && (!(deprecated_global_sound_setup_bitmask & SNDMIX_ULTRAHQSRCMODE)))
                     {
                         int fmax = 0x20000;
-                        if (gdwSysInfo & SYSMIX_SLOWCPU)
+                        if (deprecated_global_system_info & SYSMIX_SLOWCPU)
                         {
                             fmax = 0xFE00;
                         } else
-                        if (!(gdwSysInfo & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU)))
+                        if (!(deprecated_global_system_info & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU)))
                         {
                             fmax = 0x18000;
                         }
@@ -1740,7 +1740,7 @@ BOOL module_renderer::ReadNote()
                 } else
                 {
                     if ((current_vchan->position_delta >= 0x14000)
-                    || ((current_vchan->position_delta >= 0xFF00) && ((current_vchan->position_delta < 0x10100) || (gdwSysInfo & SYSMIX_SLOWCPU)))
+                    || ((current_vchan->position_delta >= 0xFF00) && ((current_vchan->position_delta < 0x10100) || (deprecated_global_system_info & SYSMIX_SLOWCPU)))
                     || ((gnCPUUsage > 80) && (current_vchan->nNewLeftVol < 0x100) && (current_vchan->nNewRightVol < 0x100)))
                         current_vchan->flags |= CHN_NOIDO;
                 }
@@ -1761,7 +1761,7 @@ BOOL module_renderer::ReadNote()
 
             current_vchan->right_ramp = current_vchan->left_ramp = 0;
             // Dolby Pro-Logic Surround
-            if ((current_vchan->flags & CHN_SURROUND) && (gnChannels == 2)) current_vchan->nNewLeftVol = - current_vchan->nNewLeftVol;
+            if ((current_vchan->flags & CHN_SURROUND) && (deprecated_global_channels == 2)) current_vchan->nNewLeftVol = - current_vchan->nNewLeftVol;
             // Checking Ping-Pong Loops
             if (current_vchan->flags & CHN_PINGPONGFLAG) current_vchan->position_delta = -current_vchan->position_delta;
 
@@ -1778,7 +1778,7 @@ BOOL module_renderer::ReadNote()
                 bool enableCustomRamp = current_vchan->instrument && (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM));
                 if (enableCustomRamp) {
                     instrRampLength = rampUp ? current_vchan->instrument->volume_ramp_up : current_vchan->instrument->volume_ramp_down;
-                    rampLength = instrRampLength ? (gdwMixingFreq * instrRampLength / 100000) : globalRampLength;
+                    rampLength = instrRampLength ? (deprecated_global_mixing_freq * instrRampLength / 100000) : globalRampLength;
                 }
                 if (!rampLength) {
                     rampLength = 1;
@@ -1792,7 +1792,7 @@ BOOL module_renderer::ReadNote()
 //    			if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
 //    			 || ((gdwSysInfo & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU))
 //    			  && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50)))
-                if ((gdwSoundSetup & SNDMIX_DIRECTTODISK) || ((gdwSysInfo & (SYSMIX_ENABLEMMX | SYSMIX_FASTCPU)) && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && instrRampLength))) {
+                if ((deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK) || ((deprecated_global_system_info & (SYSMIX_ENABLEMMX | SYSMIX_FASTCPU)) && (deprecated_global_sound_setup_bitmask & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && instrRampLength))) {
 // -! NEW_FEATURE#0027
                     if ((current_vchan->right_volume | current_vchan->left_volume) && (current_vchan->nNewRightVol | current_vchan->nNewLeftVol) && (!(current_vchan->flags & CHN_FASTVOLRAMP)))    {
                         rampLength = m_nBufferCount;
@@ -1843,7 +1843,7 @@ BOOL module_renderer::ReadNote()
     }
 
     // Checking Max Mix Channels reached: ordering by volume
-    if ((m_nMixChannels >= m_nMaxMixChannels) && (!(gdwSoundSetup & SNDMIX_DIRECTTODISK)))
+    if ((m_nMixChannels >= m_nMaxMixChannels) && (!(deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK)))
     {
         for (UINT i=0; i<m_nMixChannels; i++)
         {

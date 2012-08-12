@@ -369,18 +369,18 @@ void CDoWaveConvert::OnButton1()
     SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
     int oldVol = m_pSndFile->GetMasterVolume();
     int nOldRepeat = m_pSndFile->GetRepeatCount();
-    module_renderer::gdwSoundSetup |= SNDMIX_DIRECTTODISK;
-    if ((!m_dwFileLimit) && (!m_dwSongLimit)) module_renderer::gdwSoundSetup |= SNDMIX_NOBACKWARDJUMPS;
-    module_renderer::gdwMixingFreq = m_pWaveFormat->nSamplesPerSec;
-    module_renderer::gnBitsPerSample = m_pWaveFormat->wBitsPerSample;
-    module_renderer::gnChannels = m_pWaveFormat->nChannels;
+    module_renderer::deprecated_global_sound_setup_bitmask |= SNDMIX_DIRECTTODISK;
+    if ((!m_dwFileLimit) && (!m_dwSongLimit)) module_renderer::deprecated_global_sound_setup_bitmask |= SNDMIX_NOBACKWARDJUMPS;
+    module_renderer::deprecated_global_mixing_freq = m_pWaveFormat->nSamplesPerSec;
+    module_renderer::deprecated_global_bits_per_sample = m_pWaveFormat->wBitsPerSample;
+    module_renderer::deprecated_global_channels = m_pWaveFormat->nChannels;
 // -> CODE#0024
 // -> DESC="wav export update"
 //    if ((m_bNormalize) && (m_pWaveFormat->wBitsPerSample <= 16))
     if ((m_bNormalize) && (m_pWaveFormat->wBitsPerSample <= 24))
 // -! NEW_FEATURE#0024
     {
-        m_pSndFile->gnBitsPerSample = 24;
+        m_pSndFile->deprecated_global_bits_per_sample = 24;
         if (oldVol > 128) m_pSndFile->SetMasterVolume(128);
     } else
     {
@@ -440,7 +440,7 @@ void CDoWaveConvert::OnButton1()
     m_pSndFile->m_PatternCuePoints.reserve(m_pSndFile->Order.GetLength());
 
     // Process the conversion
-    UINT nBytesPerSample = (module_renderer::gnBitsPerSample * module_renderer::gnChannels) / 8;
+    UINT nBytesPerSample = (module_renderer::deprecated_global_bits_per_sample * module_renderer::deprecated_global_channels) / 8;
     // For calculating the remaining time
     uint32_t dwStartTime = timeGetTime();
     // For giving away some processing time every now and then
@@ -488,7 +488,7 @@ void CDoWaveConvert::OnButton1()
         ullSamples += lRead;
         if (m_bNormalize)
         {
-            UINT imax = lRead*3*module_renderer::gnChannels;
+            UINT imax = lRead*3*module_renderer::deprecated_global_channels;
             for (UINT i=0; i<imax; i+=3)
             {
                 LONG l = ((((buffer[i+2] << 8) + buffer[i+1]) << 8) + buffer[i]) << 8;
@@ -520,7 +520,7 @@ void CDoWaveConvert::OnButton1()
             break;
         if (!(n % 10))
         {
-            uint32_t l = (uint32_t)(ullSamples / module_renderer::gdwMixingFreq);
+            uint32_t l = (uint32_t)(ullSamples / module_renderer::deprecated_global_mixing_freq);
 
             const uint32_t dwCurrentTime = timeGetTime();
             uint32_t timeRemaining = 0; // estimated remainig time
@@ -629,7 +629,7 @@ void CDoWaveConvert::OnButton1()
     fseek(f, dwDataOffset-sizeof(datahdr), SEEK_SET);
     fwrite(&datahdr, sizeof(datahdr), 1, f);
     fclose(f);
-    module_renderer::gdwSoundSetup &= ~(SNDMIX_DIRECTTODISK|SNDMIX_NOBACKWARDJUMPS);
+    module_renderer::deprecated_global_sound_setup_bitmask &= ~(SNDMIX_DIRECTTODISK|SNDMIX_NOBACKWARDJUMPS);
     m_pSndFile->SetRepeatCount(nOldRepeat);
     m_pSndFile->m_nMaxOrderPosition = 0;
     if (m_bNormalize)

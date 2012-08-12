@@ -359,9 +359,9 @@ void COptionsSoundcard::OnOK()
     }
     // Soft Panning
     if (m_dwSoundSetup & SOUNDSETUP_SOFTPANNING)
-        module_renderer::gdwSoundSetup |= SNDMIX_SOFTPANNING;
+        module_renderer::deprecated_global_sound_setup_bitmask |= SNDMIX_SOFTPANNING;
     else
-        module_renderer::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
+        module_renderer::deprecated_global_sound_setup_bitmask &= ~SNDMIX_SOFTPANNING;
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CPropertyPage::OnOK();
 }

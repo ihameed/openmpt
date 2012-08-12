@@ -775,11 +775,11 @@ BOOL CTrackApp::InitInstance()
 
     // Initialize Audio
     module_renderer::InitSysInfo();
-    if (module_renderer::gdwSysInfo & SYSMIX_ENABLEMMX)
+    if (module_renderer::deprecated_global_system_info & SYSMIX_ENABLEMMX)
     {
         CMainFrame::m_nSrcMode = SRCMODE_SPLINE;
     }
-    if (module_renderer::gdwSysInfo & SYSMIX_MMXEX)
+    if (module_renderer::deprecated_global_system_info & SYSMIX_MMXEX)
     {
         CMainFrame::m_nSrcMode = SRCMODE_POLYPHASE;
     }

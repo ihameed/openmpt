@@ -1853,9 +1853,9 @@ BOOL CMainFrame::SetupMiscOptions()
 //---------------------------------
 {
     if (CMainFrame::m_dwPatternSetup & PATTERN_MUTECHNMODE)
-        module_renderer::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
+        module_renderer::deprecated_global_sound_setup_bitmask |= SNDMIX_MUTECHNMODE;
     else
-        module_renderer::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
+        module_renderer::deprecated_global_sound_setup_bitmask &= ~SNDMIX_MUTECHNMODE;
 
     m_wndToolBar.EnableFlatButtons(m_dwPatternSetup & PATTERN_FLATBUTTONS);
 

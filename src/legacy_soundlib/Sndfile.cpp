@@ -764,11 +764,11 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     switch(m_nTempoMode)
     {
         case tempo_mode_alternative:
-            m_nSamplesPerTick = gdwMixingFreq / m_nMusicTempo; break;
+            m_nSamplesPerTick = deprecated_global_mixing_freq / m_nMusicTempo; break;
         case tempo_mode_modern:
-            m_nSamplesPerTick = gdwMixingFreq * (60/m_nMusicTempo / (m_nMusicSpeed * m_nCurrentRowsPerBeat)); break;
+            m_nSamplesPerTick = deprecated_global_mixing_freq * (60/m_nMusicTempo / (m_nMusicSpeed * m_nCurrentRowsPerBeat)); break;
         case tempo_mode_classic: default:
-            m_nSamplesPerTick = (gdwMixingFreq * 5 * m_nTempoFactor) / (m_nMusicTempo << 8);
+            m_nSamplesPerTick = (deprecated_global_mixing_freq * 5 * m_nTempoFactor) / (m_nMusicTempo << 8);
     }
 
     if ((m_nRestartPos >= Order.size()) || (Order[m_nRestartPos] >= Patterns.Size())) m_nRestartPos = 0;
@@ -965,13 +965,13 @@ BOOL module_renderer::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChann
         "thread id = %x; nRate = %d, nBits = %d, nChannels = %d, bMMX = %d",
         GetCurrentThreadId(), nRate, nBits, nChannels, bMMX);
     BOOL bReset = FALSE;
-    uint32_t d = gdwSoundSetup & ~SNDMIX_ENABLEMMX;
+    uint32_t d = deprecated_global_sound_setup_bitmask & ~SNDMIX_ENABLEMMX;
     if (bMMX) d |= SNDMIX_ENABLEMMX;
-    if ((gdwMixingFreq != nRate) || (gnBitsPerSample != nBits) || (gnChannels != nChannels) || (d != gdwSoundSetup)) bReset = TRUE;
-    gnChannels = nChannels;
-    gdwSoundSetup = d;
-    gdwMixingFreq = nRate;
-    gnBitsPerSample = nBits;
+    if ((deprecated_global_mixing_freq != nRate) || (deprecated_global_bits_per_sample != nBits) || (deprecated_global_channels != nChannels) || (d != deprecated_global_sound_setup_bitmask)) bReset = TRUE;
+    deprecated_global_channels = nChannels;
+    deprecated_global_sound_setup_bitmask = d;
+    deprecated_global_mixing_freq = nRate;
+    deprecated_global_bits_per_sample = nBits;
     InitPlayer(bReset);
     return TRUE;
 }
@@ -980,7 +980,7 @@ BOOL module_renderer::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChann
 BOOL module_renderer::deprecated_SetResamplingMode(UINT nMode)
 //--------------------------------------------
 {
-    uint32_t d = gdwSoundSetup & ~(SNDMIX_NORESAMPLING|SNDMIX_SPLINESRCMODE|SNDMIX_POLYPHASESRCMODE|SNDMIX_FIRFILTERSRCMODE);
+    uint32_t d = deprecated_global_sound_setup_bitmask & ~(SNDMIX_NORESAMPLING|SNDMIX_SPLINESRCMODE|SNDMIX_POLYPHASESRCMODE|SNDMIX_FIRFILTERSRCMODE);
     switch(nMode)
     {
     case SRCMODE_NEAREST:    d |= SNDMIX_NORESAMPLING; break;
@@ -994,7 +994,7 @@ BOOL module_renderer::deprecated_SetResamplingMode(UINT nMode)
     default: return FALSE;
     //end rewbs.resamplerConf
     }
-    gdwSoundSetup = d;
+    deprecated_global_sound_setup_bitmask = d;
     return TRUE;
 }
 
@@ -1058,7 +1058,7 @@ double  module_renderer::GetCurrentBPM() const
     {    																//with other modes, we calculate it:
         double ticksPerBeat = m_nMusicSpeed * m_nCurrentRowsPerBeat;    //ticks/beat = ticks/row  * rows/beat
         double samplesPerBeat = m_nSamplesPerTick * ticksPerBeat;    	//samps/beat = samps/tick * ticks/beat
-        bpm =  gdwMixingFreq/samplesPerBeat * 60;    					//beats/sec  = samps/sec  / samps/beat
+        bpm =  deprecated_global_mixing_freq/samplesPerBeat * 60;    					//beats/sec  = samps/sec  / samps/beat
     }    																//beats/min  =  beats/sec * 60
 
     return bpm;
@@ -2894,7 +2894,7 @@ void module_renderer::SetupMODPanning(bool bForceSetup)
     for(CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
     {
         ChnSettings[nChn].nVolume = 64;
-        if(gdwSoundSetup & SNDMIX_MAXDEFAULTPAN)
+        if(deprecated_global_sound_setup_bitmask & SNDMIX_MAXDEFAULTPAN)
             ChnSettings[nChn].nPan = (((nChn & 3) == 1) || ((nChn & 3) == 2)) ? 256 : 0;
         else
             ChnSettings[nChn].nPan = (((nChn & 3) == 1) || ((nChn & 3) == 2)) ? 0xC0 : 0x40;

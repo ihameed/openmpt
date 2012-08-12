@@ -1726,8 +1726,8 @@ void CVstPlugin::Initialize(module_renderer* pSndFile)
 
     }
 
-    m_nSampleRate=module_renderer::gdwMixingFreq;
-    Dispatch(effSetSampleRate, 0, 0, NULL, module_renderer::gdwMixingFreq);
+    m_nSampleRate=module_renderer::deprecated_global_mixing_freq;
+    Dispatch(effSetSampleRate, 0, 0, NULL, module_renderer::deprecated_global_mixing_freq);
     Dispatch(effSetBlockSize, 0, modplug::mixgraph::MIX_BUFFER_SIZE, NULL, 0.0f);
     if (m_pEffect->numPrograms > 0)    {
         Dispatch(effSetProgram, 0, 0, NULL, 0);
@@ -1781,7 +1781,7 @@ void CVstPlugin::Initialize(module_renderer* pSndFile)
     m_pProcessFP = (m_pEffect->flags & effFlagsCanReplacing) ?  m_pEffect->processReplacing : m_pEffect->process;
 
  // issue samplerate again here, cos some plugs like it before the block size, other like it right at the end.
-    Dispatch(effSetSampleRate, 0, 0, NULL, module_renderer::gdwMixingFreq);
+    Dispatch(effSetSampleRate, 0, 0, NULL, module_renderer::deprecated_global_mixing_freq);
 
 }
 
@@ -2189,7 +2189,7 @@ void CVstPlugin::Init(unsigned long /*nFreq*/, int /*bReset*/)
 void CVstPlugin::Resume()
 //-----------------------
 {
-    long sampleRate = module_renderer::gdwMixingFreq;
+    long sampleRate = module_renderer::deprecated_global_mixing_freq;
 
     try {
         //reset some stuf
