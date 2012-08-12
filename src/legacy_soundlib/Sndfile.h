@@ -291,7 +291,7 @@ const uint8_t MSF_MIDICC_BUGEMULATION    = 2;		//IT/MPT/XM
 
 class CTuningCollection;
 
-class module_renderer {
+class module_renderer : public modplug::pervasives::noncopyable {
 public:
     module_renderer();
     ~module_renderer();

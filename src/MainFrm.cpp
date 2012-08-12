@@ -1484,13 +1484,14 @@ BOOL CMainFrame::ResetNotificationBuffer(HWND hwnd)
 BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
 //-----------------------------------------------------------------------
 {
+    DEBUG_FUNC("");
     if (!pModDoc) {
-        debug_log("------------ CMainFrame::PlayMod: pModDoc == 0");
+        DEBUG_FUNC("pModDoc == 0");
         return FALSE;
     }
     module_renderer *pSndFile = pModDoc->GetSoundFile();
     if ((!pSndFile) || (!pSndFile->GetType())) {
-        debug_log("-------------- CMainFrame::PlayMod: pSndFile == 0 or pSndFile->GetType == 0");
+        DEBUG_FUNC("pSndFile == 0 or pSndFile->GetType == 0");
         return FALSE;
     }
     const bool bPaused = pSndFile->IsPaused();
@@ -1504,14 +1505,19 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     m_pModPlaying = pModDoc;
     m_hFollowSong = hPat;
     m_dwNotifyType = dwNotifyType;
-    if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
-    {
+    if (m_dwNotifyType & MPTNOTIFY_MASTERVU) {
         gnLVuMeter = gnRVuMeter = 0;
         module_renderer::sound_mix_callback = CalcStereoVuMeters;
-    } else
-    {
+    } else {
         module_renderer::sound_mix_callback = NULL;
     }
+
+    //XXXih: dumb
+    qwinwidget->update_audio_settings();
+    gbStopSent = FALSE;
+    pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
+    pSndFile->SetRepeatCount((gbLoopSong) ? -1 : 0);
+    //XXXih: dumb ^
 
     m_nMixChn = m_nAvgMixChn = 0;
     gsdwTotalSamples = 0;
@@ -1531,14 +1537,13 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
             //pSndFile->SetRepeatCount((gbLoopSong) ? -1 : 0);
         }
     }
-    pSndFile->SetRepeatCount((gbLoopSong) ? -1 : 0);
 
     m_pSndFile->SetMasterVolume(m_nPreAmp, true);
     m_pSndFile->InitPlayer(TRUE);
     MemsetZero(NotifyBuffer);
     m_dwStatus |= MODSTATUS_PLAYING;
     m_wndToolBar.SetCurrentSong(m_pSndFile);
-    debug_log("--------- CMainFrame::PlayMod: end");
+    DEBUG_FUNC("end");
     //if (gpSoundDevice) gpSoundDevice->Start();
     return TRUE;
 }
@@ -1618,9 +1623,12 @@ BOOL CMainFrame::StopMod(CModDoc *pModDoc)
 BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
 //--------------------------------------------------
 {
+    DEBUG_FUNC("");
+    qwinwidget->update_audio_settings();
+
     if (m_pSndFile) PauseMod(NULL);
     if ((!pSndFile) || (!pSndFile->GetType())) {
-        debug_log("CMainFrame::PlaySoundFile: pSndFile == 0 or pSndFile->GetType == 0");
+        DEBUG_FUNC("pSndFile == 0 or pSndFile->GetType == 0");
         return FALSE;
     }
     m_pSndFile = pSndFile;
@@ -1629,7 +1637,7 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
     m_pSndFile->SetMasterVolume(m_nPreAmp, true);
     m_pSndFile->InitPlayer(TRUE);
     m_dwStatus |= MODSTATUS_PLAYING;
-    debug_log("CMainFrame::PlaySoundFile: end");
+    DEBUG_FUNC("CMainFrame::PlaySoundFile: end");
     return TRUE;
 }
 

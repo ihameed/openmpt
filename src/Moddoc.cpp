@@ -103,7 +103,6 @@ void CModDoc::Dump(CDumpContext& dc) const
 // CModDoc construction/destruction
 
 CModDoc::CModDoc()
-//----------------
 {
     m_bHasValidPath = false;
     m_bPaused = TRUE;

@@ -101,7 +101,6 @@ END_MESSAGE_MAP()
 // CViewModTree construction/destruction
 
 CModTree::CModTree(CModTree *pDataTree)
-//-------------------------------------
 {
     m_pDataTree = pDataTree;
     m_dwStatus = 0;
