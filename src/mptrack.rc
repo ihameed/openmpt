@@ -183,29 +183,6 @@ BEGIN
     LTEXT           "Samples used for fading:",IDC_STATIC,6,8,96,8
 END
 
-IDD_OPTIONS_UPDATE DIALOGEX 0, 0, 274, 281
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Update"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    GROUPBOX        "Check for Updates",IDC_STATIC,6,6,258,66
-    CONTROL         "Never",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,12,18,240,8
-    CONTROL         "Daily",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,12,30,240,8
-    CONTROL         "Weekly (recommended)",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,12,42,240,8
-    CONTROL         "Monthly",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,12,54,240,8
-    GROUPBOX        "Privacy Settings",IDC_STATIC,6,78,258,54
-    CONTROL         "Allow us to collect basic update statistics",IDC_CHECK1,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,90,246,12
-    LTEXT           "If enabled, a randomized user ID is created and transmitted with every update check. This ID can not be linked to you or your computer in any way.",IDC_STATIC,12,102,246,24
-    GROUPBOX        "Advanced Settings",IDC_STATIC,6,138,258,60
-    LTEXT           "Update server URL:",IDC_STATIC,12,150,186,8
-    EDITTEXT        IDC_EDIT1,12,162,246,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "Reset",IDC_BUTTON2,204,146,54,12
-    LTEXT           "Do not change this unless you are absolutely sure of what you are doing.",IDC_STATIC,12,180,246,12
-    PUSHBUTTON      "Check for Updates",IDC_BUTTON1,6,204,84,18
-    LTEXT           "",IDC_LASTUPDATE,6,228,258,24
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -285,14 +262,6 @@ BEGIN
         RIGHTMARGIN, 171
         TOPMARGIN, 7
         BOTTOMMARGIN, 75
-    END
-
-    IDD_OPTIONS_UPDATE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 267
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 274
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -1334,30 +1303,6 @@ BEGIN
     GROUPBOX        "Length in Rows at C4",IDC_STATIC,6,55,171,45
 END
 
-IDD_OPTIONS_AUTOSAVE DIALOGEX 0, 0, 272, 279
-STYLE DS_SETFONT | DS_3DLOOK | WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Auto Save"
-FONT 8, "MS Shell Dlg", 0, 0, 0x0
-BEGIN
-    CONTROL         "Enable Autosave",IDC_AUTOSAVE_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,15,70,10
-    EDITTEXT        IDC_AUTOSAVE_INTERVAL,59,29,24,12,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_AUTOSAVE_HISTORY,59,46,24,12,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_AUTOSAVE_PATH,60,96,164,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_AUTOSAVE_BROWSE,226,97,12,11,NOT WS_TABSTOP
-    LTEXT           "[filename].AutoSave.[timestamp].[extension]",IDC_STATIC,60,120,164,12,SS_CENTERIMAGE,WS_EX_CLIENTEDGE
-    GROUPBOX        "Auto Save",IDC_STATIC,4,3,261,157
-    LTEXT           "Save every:",IDC_STATIC,15,29,40,12,SS_CENTERIMAGE
-    LTEXT           "minutes",IDC_STATIC,87,29,36,12,SS_CENTERIMAGE
-    LTEXT           "Filename:",IDC_STATIC,28,120,30,12,SS_CENTERIMAGE
-    LTEXT           "(example: mySong.AutoSave.20050327.2343.it)",IDC_STATIC,60,135,157,12,SS_CENTERIMAGE
-    LTEXT           "Keep up to:",IDC_STATIC,15,46,36,12,SS_CENTERIMAGE
-    LTEXT           "backups of each file name",IDC_STATIC,87,46,87,12,SS_CENTERIMAGE
-    GROUPBOX        "Location:",IDC_STATIC,15,70,240,80
-    CONTROL         "Use:",IDC_AUTOSAVE_USECUSTOMDIR,"Button",BS_AUTORADIOBUTTON,28,97,31,10
-    CONTROL         "Use song's original directory.",IDC_AUTOSAVE_USEORIGDIR,
-                    "Button",BS_AUTORADIOBUTTON,28,83,105,10
-END
-
 IDD_EDIT_GOTO DIALOGEX 0, 0, 130, 79
 STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOOLWINDOW
@@ -1724,12 +1669,6 @@ BEGIN
         RIGHTMARGIN, 264
         TOPMARGIN, 7
         BOTTOMMARGIN, 163
-    END
-
-    IDD_OPTIONS_AUTOSAVE, DIALOG
-    BEGIN
-        RIGHTMARGIN, 266
-        BOTTOMMARGIN, 276
     END
 
     IDD_EDIT_GOTO, DIALOG

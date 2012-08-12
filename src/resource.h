@@ -104,7 +104,6 @@
 #define IDD_SOUNDBANK_INFO1             441
 #define IDR_PLUGINMENU                  442
 #define IDD_PITCHSHIFT                  442
-#define IDD_OPTIONS_AUTOSAVE            443
 #define IDD_EDIT_GOTO                   444
 #define IDD_DIALOG1                     501
 #define IDD_MOVEFXSLOT                  501
@@ -133,7 +132,6 @@
 #define IDD_EDITHISTORY                 526
 #define IDD_SAMPLE_GRID_SIZE            527
 #define IDD_SAMPLE_XFADE                528
-#define IDD_OPTIONS_UPDATE              529
 #define IDD_DIALOG4                     530
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON2                     1002
@@ -713,12 +711,6 @@
 #define IDC_CREDITS                     2218
 #define IDC_MS_LENGTH_ORIGINAL2         2219
 #define IDC_RICHEDIT21                  2219
-#define IDC_AUTOSAVE_PATH               2220
-#define IDC_AUTOSAVE_BROWSE             2221
-#define IDC_AUTOSAVE_INTERVAL           2222
-#define IDC_AUTOSAVE_ENABLE             2223
-#define IDC_AUTOSAVE_HISTORY            2224
-#define IDC_AUTOSAVE_USEORIGDIR         2225
 #define IDC_PRIMARYHILITE               2226
 #define IDC_SECONDARYHILITE             2227
 #define IDC_GIVEPLUGSIDLETIME           2228
@@ -736,7 +728,6 @@
 #define IDC_LIST2                       2241
 #define IDC_APPLY                       2243
 #define IDC_RANDOM_PLACEHOLDER          2244
-#define IDC_AUTOSAVE_USECUSTOMDIR       2245
 #define IDC_BUTTON_MODTYPE2             2246
 #define IDC_BUTTON_PLAYERPROPS          2247
 #define IDC_SLIDER_SAMPLEPREAMP3        2248
@@ -920,7 +911,6 @@
 #define IDC_EDIT_HISTORY                2432
 #define IDC_SAMPLE_QUICKFADE            2433
 #define IDC_SAMPLE_XFADE                2434
-#define IDC_LASTUPDATE                  2435
 #define IDC_INSTR_RAMPUP                2436
 #define IDC_INSTR_RAMPUP_SPIN           2437
 #define IDC_INSTR_RAMPDOWN              2438

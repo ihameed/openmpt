@@ -548,7 +548,6 @@ public:
     static void TranslateKeyboardMap(LPSTR pszKbd);
     static VOID GetKeyName(LONG lParam, LPSTR pszName, UINT cbSize);
     static CInputHandler *m_InputHandler; 	//rewbs.customKeys
-    static CAutoSaver *m_pAutoSaver; 		//rewbs.customKeys
     static CPerformanceCounter *m_pPerfCounter;
 
     static bool WritePrivateProfileLong(const CString section, const CString key, const long value, const CString iniFile);

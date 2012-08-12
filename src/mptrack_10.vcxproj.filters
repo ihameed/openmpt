@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="AbstractVstEditor.cpp" />
-    <ClCompile Include="AutoSaver.cpp" />
     <ClCompile Include="ChannelManagerDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="CleanupSong.cpp" />
@@ -207,7 +206,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
-    <ClInclude Include="AutoSaver.h" />
     <ClInclude Include="ChannelManagerDlg.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="CleanupSong.h" />

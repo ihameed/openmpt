@@ -208,7 +208,6 @@
   <ItemGroup>
     <ClCompile Include="AbstractVstEditor.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
-    <ClCompile Include="AutoSaver.cpp" />
     <ClCompile Include="ChannelManagerDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="CleanupSong.cpp" />
@@ -501,7 +500,6 @@
     <ClInclude Include="mixgraph\vst_vertex.h" />
     <ClInclude Include="mixer\mixutil.h" />
     <ClInclude Include="AbstractVstEditor.h" />
-    <ClInclude Include="AutoSaver.h" />
     <ClInclude Include="ChannelManagerDlg.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="CleanupSong.h" />

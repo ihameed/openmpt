@@ -11,9 +11,8 @@
 #include "moptions.h"
 #include "vstplug.h"
 #include "KeyConfigDlg.h"
-#include "AutoSaver.h"
 #include "performancecounter.h"
-#include ".\mainfrm.h"
+#include "mainfrm.h"
 // -> CODE#0015
 // -> DESC="channels management dlg"
 #include "globals.h"
@@ -249,7 +248,6 @@ const TCHAR CMainFrame::m_szDirectoryToSettingsName[NUM_DIRS][32] =
 
 
 CInputHandler *CMainFrame::m_InputHandler = nullptr; //rewbs.customKeys
-CAutoSaver *CMainFrame::m_pAutoSaver = nullptr; //rewbs.autosave
 CPerformanceCounter *CMainFrame::m_pPerfCounter = nullptr;
 
 static UINT indicators[] =
@@ -472,16 +470,6 @@ void CMainFrame::LoadIniSettings()
     }
     GetPrivateProfileString("Paths", "Key_Config_File", m_szKbdFile, m_szKbdFile, INIBUFFERSIZE, iniFile);
     RelativePathToAbsolute(m_szKbdFile);
-
-    m_pAutoSaver = new CAutoSaver();
-    GetPrivateProfileLong("AutoSave", "Enabled", true, iniFile)?m_pAutoSaver->Enable():m_pAutoSaver->Disable();
-    m_pAutoSaver->SetSaveInterval(GetPrivateProfileLong("AutoSave", "IntervalMinutes", 10, iniFile));
-    m_pAutoSaver->SetHistoryDepth(GetPrivateProfileLong("AutoSave", "BackupHistory", 3, iniFile));
-    m_pAutoSaver->SetUseOriginalPath(GetPrivateProfileLong("AutoSave", "UseOriginalPath", true, iniFile) != 0);
-    GetPrivateProfileString("AutoSave", "Path", "", szPath, INIBUFFERSIZE, iniFile);
-    RelativePathToAbsolute(szPath);
-    m_pAutoSaver->SetPath(szPath);
-    m_pAutoSaver->SetFilenameTemplate(GetPrivateProfileCString("AutoSave", "FileNameTemplate", "", iniFile));
 }
 
 bool CMainFrame::LoadRegistrySettings()
@@ -493,14 +481,6 @@ bool CMainFrame::LoadRegistrySettings()
     uint32_t dwREG_SZ = REG_SZ;
     uint32_t dwDWORDSize = sizeof(UINT);
     uint32_t dwCRSIZE = sizeof(COLORREF);
-
-
-    bool asEnabled=true;
-    int asInterval=10;
-    int asBackupHistory=3;
-    bool asUseOriginalPath=true;
-    CString asPath ="";
-    CString asFileNameTemplate="";
 
     if (RegOpenKeyEx(HKEY_CURRENT_USER,    m_csRegWindow, 0, KEY_READ, &key) == ERROR_SUCCESS)
     {
@@ -590,27 +570,6 @@ bool CMainFrame::LoadRegistrySettings()
         dwDWORDSize = sizeof(gnPlugWindowLast);
         registry_query_value(key, "PlugSelectWindowLast", NULL, &dwREG_DWORD, (LPBYTE)&gnPlugWindowLast, &dwDWORDSize);
 
-
-        //rewbs.autoSave
-        dwDWORDSize = sizeof(asEnabled);
-        registry_query_value(key, "AutoSave_Enabled", NULL, &dwREG_DWORD, (LPBYTE)&asEnabled, &dwDWORDSize);
-        dwDWORDSize = sizeof(asInterval);
-        registry_query_value(key, "AutoSave_IntervalMinutes", NULL, &dwREG_DWORD, (LPBYTE)&asInterval, &dwDWORDSize);
-        dwDWORDSize = sizeof(asBackupHistory);
-        registry_query_value(key, "AutoSave_BackupHistory", NULL, &dwREG_DWORD, (LPBYTE)&asBackupHistory, &dwDWORDSize);
-        dwDWORDSize = sizeof(asUseOriginalPath);
-        registry_query_value(key, "AutoSave_UseOriginalPath", NULL, &dwREG_DWORD, (LPBYTE)&asUseOriginalPath, &dwDWORDSize);
-
-        dwDWORDSize = MAX_PATH;
-        registry_query_value(key, "AutoSave_Path", NULL, &dwREG_DWORD, (LPBYTE)asPath.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
-        asPath.ReleaseBuffer();
-
-        dwDWORDSize = MAX_PATH;
-        registry_query_value(key, "AutoSave_FileNameTemplate", NULL, &dwREG_DWORD, (LPBYTE)asFileNameTemplate.GetBuffer(dwDWORDSize/sizeof(TCHAR)), &dwDWORDSize);
-        asFileNameTemplate.ReleaseBuffer();
-
-        //end rewbs.autoSave
-
         RegCloseKey(key);
     } else
     {
@@ -626,7 +585,6 @@ bool CMainFrame::LoadRegistrySettings()
         gcsPreviousVersion = MptVersion::ToStr(dwPreviousVersion);
         RegCloseKey(key);
     }
-    m_pAutoSaver = new CAutoSaver(asEnabled, asInterval, asBackupHistory, asUseOriginalPath, asPath, asFileNameTemplate);
 
     gnPatternSpacing = theApp.GetProfileInt("Pattern Editor", "Spacing", 0);
     gbPatternVUMeters = theApp.GetProfileInt("Pattern Editor", "VU-Meters", 0);
@@ -688,7 +646,6 @@ CMainFrame::~CMainFrame()
 {
     DeleteCriticalSection(&m_csAudio);
     delete m_InputHandler;     //rewbs.customKeys
-    delete m_pAutoSaver; //rewbs.autosaver
     delete m_pPerfCounter;
 
     CChannelManagerDlg::DestroySharedInstance();
@@ -958,18 +915,6 @@ void CMainFrame::SaveIniSettings()
     }
     // Obsolete, since we always write to Keybindings.mkb now. Older versions of OpenMPT 1.18+ will look for this file if this entry is missing, so this is kind of backwards compatible.
     WritePrivateProfileString("Paths", "Key_Config_File", NULL, iniFile);
-
-    WritePrivateProfileLong("AutoSave", "Enabled", m_pAutoSaver->IsEnabled(), iniFile);
-    WritePrivateProfileLong("AutoSave", "IntervalMinutes", m_pAutoSaver->GetSaveInterval(), iniFile);
-    WritePrivateProfileLong("AutoSave", "BackupHistory", m_pAutoSaver->GetHistoryDepth(), iniFile);
-    WritePrivateProfileLong("AutoSave", "UseOriginalPath", m_pAutoSaver->GetUseOriginalPath(), iniFile);
-    _tcscpy(szPath, m_pAutoSaver->GetPath());
-    if(bConvertPaths)
-    {
-        AbsolutePathToRelative(szPath);
-    }
-    WritePrivateProfileString("AutoSave", "Path", szPath, iniFile);
-    WritePrivateProfileString("AutoSave", "FileNameTemplate", m_pAutoSaver->GetFilenameTemplate(), iniFile);
 
     theApp.SaveChords(Chords);
 
@@ -1965,12 +1910,10 @@ void CMainFrame::OnViewOptions()
     COptionsKeyboard keyboard;
     COptionsColors colors;
     CMidiSetupDlg mididlg(m_dwMidiSetup, m_nMidiDevice);
-    CAutoSaverGUI autosavedlg(m_pAutoSaver); //rewbs.AutoSaver
     dlg.AddPage(&general);
     dlg.AddPage(&keyboard);
     dlg.AddPage(&colors);
     dlg.AddPage(&mididlg);
-    dlg.AddPage(&autosavedlg);
     m_bOptionsLocked=true;    //rewbs.customKeys
     dlg.DoModal();
     m_bOptionsLocked=false;    //rewbs.customKeys
@@ -2100,16 +2043,6 @@ void CMainFrame::OnTimer(UINT)
     // Idle Time Check
     uint32_t curTime = timeGetTime();
     m_wndToolBar.SetCurrentSong(renderer);
-
-    if (m_pAutoSaver && m_pAutoSaver->IsEnabled())
-    {
-        bool success = m_pAutoSaver->DoSave(curTime);
-        if (!success)    	// autosave failure; bring up options.
-        {
-            CMainFrame::m_nLastOptionsPage = OPTIONS_PAGE_AUTOSAVE;
-            OnViewOptions();
-        }
-    }
 
     // Ensure the modified flag gets set in the WinMain thread, even if modification
     // originated from Audio Thread (access to CWnd is not thread safe).
