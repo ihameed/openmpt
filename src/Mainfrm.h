@@ -453,14 +453,15 @@ public:
     // key config
     static TCHAR m_szKbdFile[_MAX_PATH];
 
-    // Low-Level Audio
 public:
+    module_renderer *renderer;
+
     portaudio::AutoSystem pa_auto_system;
     portaudio::System &pa_system;
     std::shared_ptr<modplug::audioio::paudio> stream;
     modplug::gui::qt4::app_config global_config;
     modplug::gui::qt4::config_dialog *config_dialog;
-    std::unique_ptr<modplug::gui::qt4::mfc_root> qwinwidget;
+    std::unique_ptr<modplug::gui::qt4::mfc_root> ui_root;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;
@@ -486,10 +487,8 @@ public:
     static uint32_t gnMsgBoxVisiblityFlags;
 
     // Midi Input
-public:
     static HMIDIIN shMidiIn;
 
-    module_renderer *m_pSndFile;
 
 protected:
     module_renderer m_WaveFile;
@@ -597,7 +596,7 @@ public:
     void ResetElapsedTime() { m_dwElapsedTime = 0; }
     void SetElapsedTime(uint32_t dwElapsedTime) { m_dwElapsedTime = dwElapsedTime; }
     inline CModDoc *GetModPlaying() const { return (IsPlaying()||IsRendering()) ? m_pModPlaying : NULL; }
-    inline module_renderer *GetSoundFilePlaying() const { return (IsPlaying()||IsRendering()) ? m_pSndFile : NULL; }  //rewbs.VSTTimeInfo
+    inline module_renderer *GetSoundFilePlaying() const { return (IsPlaying()||IsRendering()) ? renderer : NULL; }  //rewbs.VSTTimeInfo
     BOOL InitRenderer(module_renderer*);  //rewbs.VSTTimeInfo
     BOOL StopRenderer(module_renderer*);  //rewbs.VSTTimeInfo
     void SwitchToActiveView();

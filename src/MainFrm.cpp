@@ -279,7 +279,7 @@ CMainFrame::CMainFrame() :
     m_pModPlaying = nullptr;
     m_hFollowSong = NULL;
     m_hWndMidi = NULL;
-    m_pSndFile = nullptr;
+    renderer = nullptr;
     m_dwStatus = 0;
     m_dwElapsedTime = 0;
     m_dwTimeSec = 0;
@@ -643,9 +643,8 @@ bool CMainFrame::LoadRegistrySettings()
 
 
 VOID CMainFrame::Initialize() {
-    qwinwidget = std::unique_ptr<modplug::gui::qt4::mfc_root>(new modplug::gui::qt4::mfc_root(global_config, *this));
-    config_dialog = new modplug::gui::qt4::config_dialog(global_config, qwinwidget.get());
-//    qwinwidget->showCentered();
+    ui_root = std::unique_ptr<modplug::gui::qt4::mfc_root>(new modplug::gui::qt4::mfc_root(global_config, *this));
+    config_dialog = new modplug::gui::qt4::config_dialog(global_config, ui_root.get());
 
     //Adding version number to the frame title
     CString title = GetTitle();
@@ -1235,9 +1234,9 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
     auto &stream_settings = global_config.audio_settings();
     m_dwElapsedTime += (dwSamplesRead * 1000) / stream_settings.sample_rate;
     gsdwTotalSamples += dwSamplesRead;
-    if (!m_pSndFile) return FALSE;
-    if (m_nMixChn < m_pSndFile->m_nMixStat) m_nMixChn++;
-    if (m_nMixChn > m_pSndFile->m_nMixStat) m_nMixChn--;
+    if (!renderer) return FALSE;
+    if (m_nMixChn < renderer->m_nMixStat) m_nMixChn++;
+    if (m_nMixChn > renderer->m_nMixStat) m_nMixChn--;
     if (!(m_dwNotifyType & MPTNOTIFY_TYPEMASK)) return FALSE;
     // Notify Client
     for (UINT i=0; i<MAX_UPDATE_HISTORY; i++)
@@ -1251,7 +1250,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
             SetEvent(m_hNotifyWakeUp);
         }
     }
-    if (!m_pSndFile) return FALSE;
+    if (!renderer) return FALSE;
     // Add an entry to the notification history
     for (UINT j=0; j<MAX_UPDATE_HISTORY; j++)
     {
@@ -1261,18 +1260,18 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
             p->dwType = m_dwNotifyType;
             uint32_t d = dwLatency / slSampleSize;
             p->dwLatency = gsdwTotalSamples + d;
-            p->nOrder = m_pSndFile->m_nCurrentPattern;
-            p->nRow = m_pSndFile->m_nRow;
-            p->nPattern = m_pSndFile->m_nPattern;
+            p->nOrder = renderer->m_nCurrentPattern;
+            p->nRow = renderer->m_nRow;
+            p->nPattern = renderer->m_nPattern;
             if (m_dwNotifyType & MPTNOTIFY_SAMPLE)
             {
                 UINT nSmp = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
-                    modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
+                    modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
                     p->dwPos[k] = 0;
-                    if ((nSmp) && (nSmp <= m_pSndFile->m_nSamples) && (pChn->length)
-                     && (pChn->sample_data) && (pChn->sample_data == m_pSndFile->Samples[nSmp].sample_data)
+                    if ((nSmp) && (nSmp <= renderer->m_nSamples) && (pChn->length)
+                     && (pChn->sample_data) && (pChn->sample_data == renderer->Samples[nSmp].sample_data)
                      && ((!(pChn->flags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
                     {
                         p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->sample_position);
@@ -1284,10 +1283,10 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                 UINT nIns = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
-                    modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
+                    modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
                     p->dwPos[k] = 0;
-                    if ((nIns) && (nIns <= m_pSndFile->m_nInstruments) && (pChn->length)
-                     && (pChn->instrument) && (pChn->instrument == m_pSndFile->Instruments[nIns])
+                    if ((nIns) && (nIns <= renderer->m_nInstruments) && (pChn->length)
+                     && (pChn->instrument) && (pChn->instrument == renderer->Instruments[nIns])
                      && ((!(pChn->flags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
                     {
                         if (m_dwNotifyType & MPTNOTIFY_PITCHENV)
@@ -1308,7 +1307,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
             {
                 for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
-                    modplug::tracker::modchannel_t *pChn = &m_pSndFile->Chn[k];
+                    modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
                     UINT vul = pChn->nLeftVU;
                     UINT vur = pChn->nRightVU;
                     p->dwPos[k] = (vul << 8) | (vur);
@@ -1464,7 +1463,7 @@ void CMainFrame::SetPreAmp(UINT n)
 //--------------------------------
 {
     m_nPreAmp = n;
-    if (m_pSndFile) m_pSndFile->SetMasterVolume(m_nPreAmp, true);
+    if (renderer) renderer->SetMasterVolume(m_nPreAmp, true);
 }
 
 
@@ -1500,8 +1499,8 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     // Select correct bidi loop mode when playing a module.
     pSndFile->SetupITBidiMode();
 
-    if ((m_pSndFile) || (m_dwStatus & MODSTATUS_PLAYING)) PauseMod();
-    m_pSndFile = pSndFile;
+    if ((renderer) || (m_dwStatus & MODSTATUS_PLAYING)) PauseMod();
+    renderer = pSndFile;
     m_pModPlaying = pModDoc;
     m_hFollowSong = hPat;
     m_dwNotifyType = dwNotifyType;
@@ -1513,7 +1512,7 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     }
 
     //XXXih: dumb
-    qwinwidget->update_audio_settings();
+    ui_root->update_audio_settings();
     gbStopSent = FALSE;
     pSndFile->SetRepeatCount((gbLoopSong) ? -1 : 0);
     //XXXih: dumb ^
@@ -1537,11 +1536,11 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
         }
     }
 
-    m_pSndFile->SetMasterVolume(m_nPreAmp, true);
-    m_pSndFile->InitPlayer(TRUE);
+    renderer->SetMasterVolume(m_nPreAmp, true);
+    renderer->InitPlayer(TRUE);
     MemsetZero(NotifyBuffer);
     m_dwStatus |= MODSTATUS_PLAYING;
-    m_wndToolBar.SetCurrentSong(m_pSndFile);
+    m_wndToolBar.SetCurrentSong(renderer);
     DEBUG_FUNC("end");
     //if (gpSoundDevice) gpSoundDevice->Start();
     return TRUE;
@@ -1557,7 +1556,7 @@ BOOL CMainFrame::PauseMod(CModDoc *pModDoc)
         m_dwStatus &= ~MODSTATUS_PLAYING;
 
         BEGIN_CRITICAL();
-        m_pSndFile->SuspendPlugins();     //rewbs.VSTCompliance
+        renderer->SuspendPlugins();     //rewbs.VSTCompliance
         END_CRITICAL();
 
         m_nMixChn = m_nAvgMixChn = 0;
@@ -1575,30 +1574,30 @@ BOOL CMainFrame::PauseMod(CModDoc *pModDoc)
         m_pModPlaying->SetPause(TRUE);
         m_wndTree.UpdatePlayPos(m_pModPlaying, NULL);
     }
-    if (m_pSndFile)
+    if (renderer)
     {
         //m_pSndFile->LoopPattern(-1);
         //Commented above line - why loop should be disabled when pausing?
 
-        m_pSndFile->m_dwSongFlags &= ~SONG_PAUSED;
-        if (m_pSndFile == &m_WaveFile)
+        renderer->m_dwSongFlags &= ~SONG_PAUSED;
+        if (renderer == &m_WaveFile)
         {
-            m_pSndFile = NULL;
+            renderer = NULL;
             m_WaveFile.Destroy();
         } else
         {
-            for (UINT i=m_pSndFile->m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++)
+            for (UINT i=renderer->m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++)
             {
-                if (!(m_pSndFile->Chn[i].parent_channel))
+                if (!(renderer->Chn[i].parent_channel))
                 {
-                    m_pSndFile->Chn[i].sample_position = m_pSndFile->Chn[i].fractional_sample_position = m_pSndFile->Chn[i].length = 0;
+                    renderer->Chn[i].sample_position = renderer->Chn[i].fractional_sample_position = renderer->Chn[i].length = 0;
                 }
             }
         }
 
     }
     m_pModPlaying = NULL;
-    m_pSndFile = NULL;
+    renderer = NULL;
     m_hFollowSong = NULL;
     m_wndToolBar.SetCurrentSong(NULL);
     return TRUE;
@@ -1610,7 +1609,7 @@ BOOL CMainFrame::StopMod(CModDoc *pModDoc)
 {
     if ((pModDoc) && (pModDoc != m_pModPlaying)) return FALSE;
     CModDoc *pPlay = m_pModPlaying;
-    module_renderer *pSndFile = m_pSndFile;
+    module_renderer *pSndFile = renderer;
     PauseMod();
     if (pPlay) pPlay->SetPause(FALSE);
     if (pSndFile) pSndFile->SetCurrentPos(0);
@@ -1623,18 +1622,18 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
 //--------------------------------------------------
 {
     DEBUG_FUNC("");
-    qwinwidget->update_audio_settings();
+    ui_root->update_audio_settings();
 
-    if (m_pSndFile) PauseMod(NULL);
+    if (renderer) PauseMod(NULL);
     if ((!pSndFile) || (!pSndFile->GetType())) {
         DEBUG_FUNC("pSndFile == 0 or pSndFile->GetType == 0");
         return FALSE;
     }
-    m_pSndFile = pSndFile;
+    renderer = pSndFile;
 
     gsdwTotalSamples = 0;
-    m_pSndFile->SetMasterVolume(m_nPreAmp, true);
-    m_pSndFile->InitPlayer(TRUE);
+    renderer->SetMasterVolume(m_nPreAmp, true);
+    renderer->InitPlayer(TRUE);
     m_dwStatus |= MODSTATUS_PLAYING;
     DEBUG_FUNC("CMainFrame::PlaySoundFile: end");
     return TRUE;
@@ -1797,7 +1796,7 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nS
 BOOL CMainFrame::StopSoundFile(module_renderer *pSndFile)
 //--------------------------------------------------
 {
-    if ((pSndFile) && (pSndFile != m_pSndFile)) return FALSE;
+    if ((pSndFile) && (pSndFile != renderer)) return FALSE;
     PauseMod(NULL);
     return TRUE;
 }
@@ -2118,7 +2117,7 @@ void CMainFrame::OnTimer(UINT)
     }
     // Idle Time Check
     uint32_t curTime = timeGetTime();
-    m_wndToolBar.SetCurrentSong(m_pSndFile);
+    m_wndToolBar.SetCurrentSong(renderer);
 
     if (m_pAutoSaver && m_pAutoSaver->IsEnabled())
     {
@@ -2195,12 +2194,12 @@ void CMainFrame::OnUpdateTime(CCmdUI *)
     CHAR s[64];
     wsprintf(s, "%d:%02d:%02d",
         m_dwTimeSec / 3600, (m_dwTimeSec / 60) % 60, (m_dwTimeSec % 60));
-    if ((m_pSndFile) && (!(m_pSndFile->IsPaused())))
+    if ((renderer) && (!(renderer->IsPaused())))
     {
-        if (m_pSndFile != &m_WaveFile)
+        if (renderer != &m_WaveFile)
         {
-            UINT nPat = m_pSndFile->m_nPattern;
-            if(nPat < m_pSndFile->Patterns.Size())
+            UINT nPat = renderer->m_nPattern;
+            if(nPat < renderer->Patterns.Size())
             {
                 if (nPat < 10) strcat(s, " ");
                 if (nPat < 100) strcat(s, " ");
@@ -2274,7 +2273,7 @@ LRESULT CMainFrame::OnUpdatePosition(WPARAM, LPARAM lParam)
     if (pnotify)
     {
         //Log("OnUpdatePosition: row=%d time=%lu\n", pnotify->nRow, pnotify->dwLatency);
-        if ((m_pModPlaying) && (m_pSndFile))
+        if ((m_pModPlaying) && (renderer))
         {
             m_wndTree.UpdatePlayPos(m_pModPlaying, pnotify);
             if (m_hFollowSong) ::SendMessage(m_hFollowSong, WM_MOD_UPDATEPOSITION, 0, lParam);

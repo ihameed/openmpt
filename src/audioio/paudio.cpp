@@ -178,8 +178,8 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
     const unsigned long width = sizeof(int16_t);
     size_t buf_len = frames * settings.channels * width;
 
-    if (main_frame.IsPlaying() && main_frame.m_pSndFile && !gbStopSent) {
-        ret = main_frame.m_pSndFile->ReadPattern(output, buf_len);
+    if (main_frame.IsPlaying() && main_frame.renderer && !gbStopSent) {
+        ret = main_frame.renderer->ReadPattern(output, buf_len);
         main_frame.DoNotification(ret, settings.buffer_length);
     }
 
