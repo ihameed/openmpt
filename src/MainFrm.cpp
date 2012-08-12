@@ -164,7 +164,6 @@ LONG CMainFrame::m_nWaveDevice = 0;
 LONG CMainFrame::m_nMidiDevice = 0;
 LONG CMainFrame::gnLVuMeter = 0;
 LONG CMainFrame::gnRVuMeter = 0;
-EQPRESET CMainFrame::m_EqSettings = { "", {16,16,16,16,16,16}, { 125, 300, 600, 1250, 4000, 8000 } };
 // Midi Setup
 uint32_t CMainFrame::m_dwMidiSetup = MIDISETUP_RECORDVELOCITY|MIDISETUP_RECORDNOTEOFF;
 // Pattern Setup
@@ -563,12 +562,6 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "LoopSong", NULL, &dwREG_DWORD, (LPBYTE)&gbLoopSong, &dwDWORDSize);
         registry_query_value(key, "MidiImportSpeed", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiImportSpeed, &dwDWORDSize);
         registry_query_value(key, "MidiImportPatLen", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiPatternLen, &dwDWORDSize);
-        // EQ
-        CEQSetupDlg::LoadEQ(key, "EQ_Settings", &m_EqSettings);
-        CEQSetupDlg::LoadEQ(key, "EQ_User1", &CEQSetupDlg::gUserPresets[0]);
-        CEQSetupDlg::LoadEQ(key, "EQ_User2", &CEQSetupDlg::gUserPresets[1]);
-        CEQSetupDlg::LoadEQ(key, "EQ_User3", &CEQSetupDlg::gUserPresets[2]);
-        CEQSetupDlg::LoadEQ(key, "EQ_User4", &CEQSetupDlg::gUserPresets[3]);
 
         //rewbs.resamplerConf
         dwDWORDSize = sizeof(gbWFIRType);
@@ -965,12 +958,6 @@ void CMainFrame::SaveIniSettings()
     }
     // Obsolete, since we always write to Keybindings.mkb now. Older versions of OpenMPT 1.18+ will look for this file if this entry is missing, so this is kind of backwards compatible.
     WritePrivateProfileString("Paths", "Key_Config_File", NULL, iniFile);
-
-    WritePrivateProfileStruct("Effects", "EQ_Settings", &m_EqSettings, sizeof(EQPRESET), iniFile);
-    WritePrivateProfileStruct("Effects", "EQ_User1", &CEQSetupDlg::gUserPresets[0], sizeof(EQPRESET), iniFile);
-    WritePrivateProfileStruct("Effects", "EQ_User2", &CEQSetupDlg::gUserPresets[1], sizeof(EQPRESET), iniFile);
-    WritePrivateProfileStruct("Effects", "EQ_User3", &CEQSetupDlg::gUserPresets[2], sizeof(EQPRESET), iniFile);
-    WritePrivateProfileStruct("Effects", "EQ_User4", &CEQSetupDlg::gUserPresets[3], sizeof(EQPRESET), iniFile);
 
     WritePrivateProfileLong("AutoSave", "Enabled", m_pAutoSaver->IsEnabled(), iniFile);
     WritePrivateProfileLong("AutoSave", "IntervalMinutes", m_pAutoSaver->GetSaveInterval(), iniFile);
@@ -1978,10 +1965,8 @@ void CMainFrame::OnViewOptions()
     COptionsKeyboard keyboard;
     COptionsColors colors;
     CMidiSetupDlg mididlg(m_dwMidiSetup, m_nMidiDevice);
-    CEQSetupDlg eqdlg(&m_EqSettings);
     CAutoSaverGUI autosavedlg(m_pAutoSaver); //rewbs.AutoSaver
     dlg.AddPage(&general);
-    dlg.AddPage(&eqdlg);
     dlg.AddPage(&keyboard);
     dlg.AddPage(&colors);
     dlg.AddPage(&mididlg);

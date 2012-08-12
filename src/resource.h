@@ -30,7 +30,6 @@
 #define IDD_PAGEEDITEFFECT              129
 #define IDD_SAMPLE_AMPLIFY              130
 #define IDD_SAMPLE_RESAMPLE             131
-#define IDD_SETUP_EQ                    132
 #define IDD_OPTIONS_EFFECTS             133
 #define IDD_OPTIONS_AUTHOR              134
 #define IDR_MAINFRAME                   200
@@ -144,11 +143,8 @@
 #define IDC_BUTTON6                     1006
 #define IDC_BUTTON7                     1007
 #define IDC_BUTTON8                     1008
-#define IDC_BUTTON9                     1009
-#define IDC_BUTTON10                    1010
 #define IDC_BUTTON11                    1011
 #define IDC_BUTTON12                    1012
-#define IDC_BUTTON13                    1013
 #define IDC_BUTTON14                    1014
 #define IDC_BUTTON15                    1015
 #define IDC_BUTTON16                    1016
@@ -821,7 +817,6 @@
 #define IDC_TEXT_QUALITY                2330
 #define IDC_TEXT_FFT                    2331
 #define IDC_TEXT_PERCENT                2332
-#define IDC_EQ_WARNING                  2333
 #define IDC_TEXT_STRETCHPARAMS          2337
 #define IDC_EDIT_STRETCHPARAMS          2338
 #define IDC_MIDI_MACRO_CONTROL          2339

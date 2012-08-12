@@ -433,7 +433,6 @@ public:
     static uint32_t deprecated_m_dwQuality, m_nSrcMode, m_nPreAmp, gbLoopSong;
     static LONG m_nWaveDevice; // use the SNDDEV_GET_NUMBER and SNDDEV_GET_TYPE macros to decode
     static LONG m_nMidiDevice;
-    static EQPRESET m_EqSettings;
     // Pattern Setup
     static UINT gnPatternSpacing;
     static BOOL gbPatternVUMeters, gbPatternPluginNames, gbPatternRecord;
