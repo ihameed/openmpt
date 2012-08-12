@@ -121,15 +121,12 @@
     <ClCompile Include="legacy_soundlib\patternContainer.cpp" />
     <ClCompile Include="legacy_soundlib\PlaybackEventer.cpp" />
     <ClCompile Include="legacy_soundlib\Sampleio.cpp" />
-    <ClCompile Include="legacy_soundlib\Snd_flt.cpp" />
     <ClCompile Include="legacy_soundlib\Snd_fx.cpp" />
     <ClCompile Include="legacy_soundlib\Sndfile.cpp" />
-    <ClCompile Include="legacy_soundlib\Sndmix.cpp" />
     <ClCompile Include="legacy_soundlib\Tables.cpp" />
     <ClCompile Include="legacy_soundlib\tuning.cpp" />
     <ClCompile Include="legacy_soundlib\tuningbase.cpp" />
     <ClCompile Include="legacy_soundlib\tuningCollection.cpp" />
-    <ClCompile Include="legacy_soundlib\Waveform.cpp" />
     <ClCompile Include="legacy_soundlib\WindowedFIR.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
     <ClCompile Include="gui\qt4\config_dialog.cpp">
@@ -197,6 +194,15 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_mfc_root.cpp">
       <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="legacy_soundlib\module_renderer_filters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="legacy_soundlib\module_renderer_internal_mixer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="legacy_soundlib\module_renderer_pcm_utils.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -385,6 +391,11 @@
       <UniqueIdentifier>{58638deb-9a0e-4b3d-b377-2cde017649f3}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
+      <ParseFiles>true</ParseFiles>
     </Filter>
   </ItemGroup>
   <ItemGroup>
