@@ -1515,7 +1515,6 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     //XXXih: dumb
     qwinwidget->update_audio_settings();
     gbStopSent = FALSE;
-    pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
     pSndFile->SetRepeatCount((gbLoopSong) ? -1 : 0);
     //XXXih: dumb ^
 
