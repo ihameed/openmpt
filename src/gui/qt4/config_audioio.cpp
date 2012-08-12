@@ -16,7 +16,7 @@ using namespace modplug::pervasives;
 using namespace modplug::audioio;
 
 struct sample_rate_assoc {
-    int key;
+    double key;
     const char *value;
 };
 
@@ -32,17 +32,6 @@ static const sample_rate_assoc supported_sample_rates[] = {
     { 96000.0,  "96000" },
     { 192000.0, "192000" }
 };
-
-static const sample_format_assoc supported_sample_formats[] = {
-    { portaudio::UINT8,   "8-bit unsigned integer" },
-    { portaudio::INT8,    "8-bit signed integer" },
-    { portaudio::INT16,   "16-bit signed integer" },
-    { portaudio::INT24,   "24-bit signed integer" },
-    { portaudio::INT32,   "32-bit signed integer" },
-    { portaudio::FLOAT32, "32-bit floating point" }
-};
-
-
 
 config_audioio_main::config_audioio_main(
     app_config &context,
@@ -67,7 +56,6 @@ config_audioio_main::config_audioio_main(
 
     add_widget("Output Device:", devices);
     add_widget("Sample Rate:", rates);
-    add_widget("Sample Format:", formats);
     add_widget("Buffer Length:", buflen);
     add_widget("Output Channels:", channels);
     add_widget("Output Latency:", latency);
@@ -84,15 +72,12 @@ config_audioio_main::config_audioio_main(
         rates.addItem(t.value, QVariant(t.key));
     });
 
-    for_each(supported_sample_formats, [&](sample_format_assoc t) {
-        formats.addItem(t.value);
-    });
-
     auto &pa_system = context.audio_handle();
 
     for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
         devices.addItem(
-            QString("%1: %2").arg(i->hostApi().name()) .arg(i->name())
+            QString("%1: %2").arg(i->hostApi().name()).arg(i->name()),
+            QVariant(i->hostApi().typeId())
         );
     }
 
@@ -125,16 +110,36 @@ void config_audioio_main::refresh() {
         supported_sample_rates,
         current_sample_rate
     ));
-    formats.setCurrentIndex(idx_of_key(
-        supported_sample_formats,
-        settings.sample_format
-    ));
 
     devices.setCurrentIndex(settings.device);
 
     buflen.setValue(settings.buffer_length);
 
     channels.setValue(settings.channels);
+}
+
+void config_audioio_main::apply_changes() {
+    auto current_sample_rate = [&] () -> double {
+        auto idx = rates.currentIndex();
+        return idx > 0 ? supported_sample_rates[idx].key : 0.0;
+    };
+
+    paudio_settings settings;
+    settings.buffer_length = buflen.value();
+    settings.channels = channels.value();
+
+    settings.host_api = paInDevelopment;
+    settings.device = 0;
+    auto idx = devices.currentIndex();
+    if (idx > 0) {
+        settings.host_api = hostapi_of_int(devices.itemData(idx).toInt());
+        settings.device = idx;
+    }
+
+    settings.latency = 0;
+    settings.sample_rate = current_sample_rate();
+
+    context.change_audio_settings(settings);
 }
 
 void config_audioio_main::latency_event_with_int(int) {

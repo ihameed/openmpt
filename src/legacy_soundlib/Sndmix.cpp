@@ -199,7 +199,7 @@ rneg:
 BOOL module_renderer::InitPlayer(BOOL bReset)
 //--------------------------------------
 {
-    Log("CSoundFile::InitPlayer!!!");
+    DEBUG_FUNC("");
 #ifndef FASTSOUNDLIB
     if (!gbInitTables)
     {

@@ -642,7 +642,9 @@ void CDoWaveConvert::OnButton1()
             fw.Close();
         }
     }
-    CMainFrame::GetMainFrame()->UpdateAudioParameters(TRUE);
+
+    //XXXih: CMainFrame::GetMainFrame()->UpdateAudioParameters(TRUE);
+
 //rewbs: reduce to normal priority during debug for easier hang debugging
     //SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);

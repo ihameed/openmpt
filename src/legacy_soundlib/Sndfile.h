@@ -19,6 +19,7 @@
 #include "Snd_defs.h"
 #include "Endianness.h"
 
+#include "../audioio/paudio.h"
 #include "../tracker/tracker.h"
 #include "../mixgraph/core.h"
 
@@ -290,292 +291,20 @@ const uint8_t MSF_MIDICC_BUGEMULATION    = 2;		//IT/MPT/XM
 
 class CTuningCollection;
 
-//==============
-class module_renderer
-//==============
-{
-public:
-    //Return true if title was changed.
-    bool SetTitle(const char*, size_t strSize);
-
-public: //Misc
-    void ChangeModTypeTo(const MODTYPE& newType);
-
-    // Returns value in seconds. If given position won't be played at all, returns -1.
-    // If updateVars is true, the state of various playback variables will be updated according to the playback position.
-    double GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars);
-
-    uint16_t GetModFlags() const {return m_ModFlags;}
-    void SetModFlags(const uint16_t v) {m_ModFlags = v;}
-    bool GetModFlag(uint8_t i) const {return ((m_ModFlags & (1<<i)) != 0);}
-    void SetModFlag(uint8_t i, bool val) {if(i < 8*sizeof(m_ModFlags)) {m_ModFlags = (val) ? m_ModFlags |= (1 << i) : m_ModFlags &= ~(1 << i);}}
-
-    // Is compatible mode for a specific tracker turned on?
-    // Hint 1: No need to poll for MOD_TYPE_MPT, as it will automatically be linked with MOD_TYPE_IT when using TRK_IMPULSETRACKER
-    // Hint 2: Always returns true for MOD / S3M format (if that is the format of the current file)
-    bool IsCompatibleMode(MODTYPE type) const
-    {
-        if(GetType() & type & (MOD_TYPE_MOD | MOD_TYPE_S3M))
-            return true; // S3M and MOD format don't have compatibility flags, so we will always return true
-        return ((GetType() & type) && GetModFlag(MSF_COMPATIBLE_PLAY)) ? true : false;
-    }
-
-    //Tuning-->
-public:
-    static bool LoadStaticTunings();
-    static bool SaveStaticTunings();
-    static void DeleteStaticdata();
-    static CTuningCollection& GetBuiltInTunings() {return *s_pTuningsSharedBuiltIn;}
-    static CTuningCollection& GetLocalTunings() {return *s_pTuningsSharedLocal;}
-    CTuningCollection& GetTuneSpecificTunings() {return *m_pTuningsTuneSpecific;}
-
-    std::string GetNoteName(const int16_t&, const INSTRUMENTINDEX inst = INSTRUMENTINDEX_INVALID) const;
-private:
-    CTuningCollection* m_pTuningsTuneSpecific;
-    static CTuningCollection* s_pTuningsSharedBuiltIn;
-    static CTuningCollection* s_pTuningsSharedLocal;
-    //<--Tuning
-
-public: //Get 'controllers'
-    CPlaybackEventer& GetPlaybackEventer() {return m_PlaybackEventer;}
-    const CPlaybackEventer& GetPlaybackEventer() const {return m_PlaybackEventer;}
-
-    CMIDIMapper& GetMIDIMapper() {return m_MIDIMapper;}
-    const CMIDIMapper& GetMIDIMapper() const {return m_MIDIMapper;}
-
-private: //Effect functions
-    void PortamentoMPT(modplug::tracker::modchannel_t*, int);
-    void PortamentoFineMPT(modplug::tracker::modchannel_t*, int);
-
-private: //Misc private methods.
-    static void SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type);
-    uint16_t GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const;
-
-private: //'Controllers'
-    CPlaybackEventer m_PlaybackEventer;
-    CMIDIMapper m_MIDIMapper;
-
-private: //Misc data
-    uint16_t m_ModFlags;
-    const CModSpecifications* m_pModSpecs;
-    bool m_bITBidiMode;    // Process bidi loops like Impulse Tracker (see Fastmix.cpp for an explanation)
-
-    // For handling backwards jumps and stuff to prevent infinite loops when counting the mod length or rendering to wav.
-    VisitedRowsType m_VisitedRows;
-
-
-public:    // Static Members
-    static float m_nMaxSample;
-    static UINT m_nStereoSeparation;
-    static UINT m_nMaxMixChannels;
-    static LONG m_nStreamVolume;
-    static uint32_t gdwSysInfo, gdwSoundSetup, gdwMixingFreq, gnBitsPerSample, gnChannels;
-    static UINT gnVolumeRampInSamples;
-    static UINT gnVolumeRampOutSamples;
-    static UINT gnCPUUsage;
-    static LPSNDMIXHOOKPROC sound_mix_callback;
-    static PMIXPLUGINCREATEPROC gpMixPluginCreateProc;
-    static uint8_t s_DefaultPlugVolumeHandling;
-
-
-public:    // for Editing
-    CModDoc* m_pModDoc;    	// Can be a null pointer f.e. when previewing samples from the treeview.
-    MODTYPE m_nType;
-    CHANNELINDEX m_nChannels;
-    SAMPLEINDEX m_nSamples;
-    INSTRUMENTINDEX m_nInstruments;
-    UINT m_nDefaultSpeed, m_nDefaultTempo, m_nDefaultGlobalVolume;
-    uint32_t m_dwSongFlags;    						// Song flags SONG_XXXX
-    bool m_bIsRendering;
-    UINT m_nMixChannels, m_nMixStat, m_nBufferCount;
-    double m_dBufferDiff;
-    UINT m_nTickCount, m_nTotalCount;
-    UINT m_nPatternDelay, m_nFrameDelay;    // m_nPatternDelay = pattern delay, m_nFrameDelay = fine pattern delay
-    ULONG m_lTotalSampleCount;    // rewbs.VSTTimeInfo
-    UINT m_nSamplesPerTick;    	// rewbs.betterBPM
-    ROWINDEX m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;    // default rows per beat and measure for this module // rewbs.betterBPM
-    ROWINDEX m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;    // current rows per beat and measure for this module
-    uint8_t m_nTempoMode;    		// rewbs.betterBPM
-    uint8_t m_nMixLevels;
-    UINT m_nMusicSpeed, m_nMusicTempo;
-    ROWINDEX m_nNextRow, m_nRow;
-    ROWINDEX m_nNextPatStartRow; // for FT2's E60 bug
-    PATTERNINDEX m_nPattern;
-    ORDERINDEX m_nCurrentPattern, m_nNextPattern, m_nRestartPos, m_nSeqOverride;
-    //NOTE: m_nCurrentPattern and m_nNextPattern refer to order index - not pattern index.
-    bool m_bPatternTransitionOccurred;
-    UINT m_nMasterVolume, m_nGlobalVolume, m_nSamplesToGlobalVolRampDest,
-         m_nGlobalVolumeDestination, m_nSamplePreAmp, m_nVSTiVolume;
-    long m_lHighResRampingGlobalVolume;
-    UINT m_nFreqFactor, m_nTempoFactor, m_nOldGlbVolSlide;
-    LONG m_nMinPeriod, m_nMaxPeriod;    // min period = highest possible frequency, max period = lowest possible frequency
-    LONG m_nRepeatCount;    // -1 means repeat infinitely.
-    uint32_t m_nGlobalFadeSamples, m_nGlobalFadeMaxSamples;
-    UINT m_nMaxOrderPosition;
-    LPSTR m_lpszSongComments;
-    UINT ChnMix[MAX_VIRTUAL_CHANNELS];    						// Channels to be mixed
-    modplug::tracker::modchannel_t Chn[MAX_VIRTUAL_CHANNELS];    					// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
-    modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
-    CPatternContainer Patterns;    						// Patterns
-    ModSequenceSet Order;    							// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
-
-    modplug::tracker::modsample_t Samples[MAX_SAMPLES];    					// Sample Headers
-    modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];    	// Instrument Headers
-    modplug::tracker::modinstrument_t m_defaultInstrument;    				// Currently only used to get default values for extented properties.
-
-    CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];    	// Song and sample names
-    std::string song_name;
-
-    MODMIDICFG m_MidiCfg;    							// Midi macro config table
-    SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];    		// Mix plugins
-    SNDMIXSONGEQ m_SongEQ;    							// Default song EQ preset
-    CHAR CompressionTable[16];    						// ADPCM compression LUT
-    bool m_bChannelMuteTogglePending[MAX_BASECHANNELS];
-
-    CSoundFilePlayConfig* m_pConfig;
-    uint32_t m_dwCreatedWithVersion;
-    uint32_t m_dwLastSavedWithVersion;
-
-    vector<PatternCuePoint> m_PatternCuePoints;    		// For WAV export (writing pattern positions to file)
-
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-    CHAR m_szInstrumentPath[MAX_INSTRUMENTS][_MAX_PATH];
-// -! NEW_FEATURE#0023
-
+class module_renderer {
 public:
     module_renderer();
     ~module_renderer();
 
-public:
-    BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength=0);
-    BOOL Destroy();
-    MODTYPE GetType() const { return m_nType; }
-    inline bool TypeIsIT_MPT() const { return (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) != 0; }
-    inline bool TypeIsIT_MPT_XM() const { return (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM)) != 0; }
-    inline bool TypeIsS3M_IT_MPT() const { return (m_nType & (MOD_TYPE_S3M | MOD_TYPE_IT | MOD_TYPE_MPT)) != 0; }
-    inline bool TypeIsXM_MOD() const { return (m_nType & (MOD_TYPE_XM | MOD_TYPE_MOD)) != 0; }
-    inline bool TypeIsMOD_S3M() const { return (m_nType & (MOD_TYPE_MOD | MOD_TYPE_S3M)) != 0; }
-    CModDoc* GetpModDoc() const { return m_pModDoc; }
-    CModDoc* GetModDocPtr() const { return m_pModDoc; }
+    void change_audio_settings(const modplug::audioio::paudio_settings &);
 
-    void SetMasterVolume(UINT vol, bool adjustAGC = false);
-    UINT GetMasterVolume() const { return m_nMasterVolume; }
+    //XXXih:   <:(
+    modplug::mixgraph::core mixgraph;
 
-    // Returns 1 + index of last valid pattern, zero if no such pattern exists.
-    PATTERNINDEX GetNumPatterns() const;
-    INSTRUMENTINDEX GetNumInstruments() const { return m_nInstruments; }
-    SAMPLEINDEX GetNumSamples() const { return m_nSamples; }
-    UINT GetCurrentPos() const;
-    PATTERNINDEX GetCurrentPattern() const { return m_nPattern; }
-    ORDERINDEX GetCurrentOrder() const { return static_cast<ORDERINDEX>(m_nCurrentPattern); }
-    UINT GetMaxPosition() const;
-    CHANNELINDEX GetNumChannels() const { return m_nChannels; }
+private:
+    modplug::audioio::paudio_settings render_settings;
 
-    IMixPlugin* GetInstrumentPlugin(INSTRUMENTINDEX instr);
-    const CModSpecifications& GetModSpecifications() const {return *m_pModSpecs;}
-    static const CModSpecifications& GetModSpecifications(const MODTYPE type);
-
-    double GetCurrentBPM() const;
-    ORDERINDEX FindOrder(PATTERNINDEX nPat, UINT startFromOrder=0, bool direction = true);    //rewbs.playSongFromCursor
-    void DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);    	//rewbs.playSongFromCursor
-    void SetCurrentPos(UINT nPos);
-    void SetCurrentOrder(ORDERINDEX nOrder);
-    void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
-    LPCSTR GetTitle() const { return song_name.c_str(); }
-    LPCTSTR GetSampleName(UINT nSample) const;
-    CString GetInstrumentName(UINT nInstr) const;
-    UINT GetMusicSpeed() const { return m_nMusicSpeed; }
-    UINT GetMusicTempo() const { return m_nMusicTempo; }
-
-    //Get modlength in various cases: total length, length to
-    //specific order&row etc. Return value is in seconds.
-    GetLengthType GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX ord = ORDERINDEX_INVALID, ROWINDEX row = ROWINDEX_INVALID);
-
-public:
-    //Returns song length in seconds.
-    uint32_t GetSongTime() { return static_cast<uint32_t>((m_nTempoMode == tempo_mode_alternative) ? GetLength(eNoAdjust).duration + 1.0 : GetLength(eNoAdjust).duration + 0.5); }
-
-    // A repeat count value of -1 means infinite loop
-    void SetRepeatCount(int n) { m_nRepeatCount = n; }
-    int GetRepeatCount() const { return m_nRepeatCount; }
-    bool IsPaused() const {    return (m_dwSongFlags & (SONG_PAUSED|SONG_STEP)) ? true : false; }	// Added SONG_STEP as it seems to be desirable in most cases to check for this as well.
-    void LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);
-    void CheckCPUUsage(UINT nCPU);
-
-    void SetupITBidiMode();
-
-    bool InitChannel(CHANNELINDEX nChn);
-    void ResetChannelState(CHANNELINDEX chn, uint8_t resetStyle);
-
-    // Module Loaders
-    bool ReadXM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadS3M(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMod(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMed(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadSTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    //bool ReadMPT(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadITProject(const uint8_t * const lpStream, const uint32_t dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
-    bool Read669(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadUlt(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadWav(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadDSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadFAR(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAMS2(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMDL(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadOKT(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadDMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadPTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadDBM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMT2(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadUMX(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMO3(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMID(const uint8_t * const lpStream, uint32_t dwMemLength);
-
-    // Save Functions
-#ifndef MODPLUG_NO_FILESAVE
-    UINT WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen=0);
-    bool SaveXM(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
-    bool SaveS3M(LPCSTR lpszFileName, UINT nPacking=0);
-    bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
-    bool SaveIT(LPCSTR lpszFileName, UINT nPacking=0);
-    bool SaveCompatIT(LPCSTR lpszFileName);
-    bool SaveITProject(LPCSTR lpszFileName); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
-    UINT SaveMixPlugins(FILE *f=NULL, BOOL bUpdate=TRUE);
-    void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::tracker::modinstrument_t* instruments[], UINT nInstruments);
-    void SaveExtendedInstrumentProperties(modplug::tracker::modinstrument_t *instruments[], UINT nInstruments, FILE* f);
-    void SaveExtendedSongProperties(FILE* f);
-    void LoadExtendedSongProperties(const MODTYPE modtype, const uint8_t * ptr, const uint8_t * const startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
-#endif // MODPLUG_NO_FILESAVE
-
-    // Reads extended instrument properties(XM/IT/MPTM).
-    // If no errors occur and song extension tag is found, returns pointer to the beginning
-    // of the tag, else returns NULL.
-    const uint8_t * LoadExtendedInstrumentProperties(const uint8_t * const pStart, const uint8_t * const pEnd, bool* pInterpretMptMade = nullptr);
-
-    // MOD Convert function
-    MODTYPE GetBestSaveFormat() const;
-    MODTYPE GetSaveFormats() const;
-    void ConvertModCommand(modplug::tracker::modcommand_t *) const;
-    void S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const;
-    void S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport = false) const;
-    uint16_t ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
-
-    static void ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
-    static void MODExx2S3MSxx(modplug::tracker::modcommand_t *m); // Convert Exx to Sxx
-    static void S3MSxx2MODExx(modplug::tracker::modcommand_t *m); // Convert Sxx to Exx
-    void SetupMODPanning(bool bForceSetup = false); // Setup LRRL panning, max channel volume
-
+    //XXXih: old api follows:
 public:
     // Real-time sound functions
     void SuspendPlugins(); //rewbs.VSTCompliance
@@ -597,7 +326,6 @@ public:
     // Mixer Config
     static BOOL InitPlayer(BOOL bReset=FALSE);
     static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
-    static BOOL SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL xbass,BOOL dolbynr=FALSE,BOOL bEQ=FALSE);
     static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
     static BOOL IsStereo() { return (gnChannels > 1) ? TRUE : FALSE; }
     static uint32_t GetSampleRate() { return gdwMixingFreq; }
@@ -819,9 +547,283 @@ public:
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce);
 
+    public:
+    //Return true if title was changed.
+    bool SetTitle(const char*, size_t strSize);
+
+public: //Misc
+    void ChangeModTypeTo(const MODTYPE& newType);
+
+    // Returns value in seconds. If given position won't be played at all, returns -1.
+    // If updateVars is true, the state of various playback variables will be updated according to the playback position.
+    double GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars);
+
+    uint16_t GetModFlags() const {return m_ModFlags;}
+    void SetModFlags(const uint16_t v) {m_ModFlags = v;}
+    bool GetModFlag(uint8_t i) const {return ((m_ModFlags & (1<<i)) != 0);}
+    void SetModFlag(uint8_t i, bool val) {if(i < 8*sizeof(m_ModFlags)) {m_ModFlags = (val) ? m_ModFlags |= (1 << i) : m_ModFlags &= ~(1 << i);}}
+
+    // Is compatible mode for a specific tracker turned on?
+    // Hint 1: No need to poll for MOD_TYPE_MPT, as it will automatically be linked with MOD_TYPE_IT when using TRK_IMPULSETRACKER
+    // Hint 2: Always returns true for MOD / S3M format (if that is the format of the current file)
+    bool IsCompatibleMode(MODTYPE type) const
+    {
+        if(GetType() & type & (MOD_TYPE_MOD | MOD_TYPE_S3M))
+            return true; // S3M and MOD format don't have compatibility flags, so we will always return true
+        return ((GetType() & type) && GetModFlag(MSF_COMPATIBLE_PLAY)) ? true : false;
+    }
+
+    //Tuning-->
 public:
-    //XXXih:   <:(
-    modplug::mixgraph::core mixgraph;
+    static bool LoadStaticTunings();
+    static bool SaveStaticTunings();
+    static void DeleteStaticdata();
+    static CTuningCollection& GetBuiltInTunings() {return *s_pTuningsSharedBuiltIn;}
+    static CTuningCollection& GetLocalTunings() {return *s_pTuningsSharedLocal;}
+    CTuningCollection& GetTuneSpecificTunings() {return *m_pTuningsTuneSpecific;}
+
+    std::string GetNoteName(const int16_t&, const INSTRUMENTINDEX inst = INSTRUMENTINDEX_INVALID) const;
+private:
+    CTuningCollection* m_pTuningsTuneSpecific;
+    static CTuningCollection* s_pTuningsSharedBuiltIn;
+    static CTuningCollection* s_pTuningsSharedLocal;
+    //<--Tuning
+
+public: //Get 'controllers'
+    CPlaybackEventer& GetPlaybackEventer() {return m_PlaybackEventer;}
+    const CPlaybackEventer& GetPlaybackEventer() const {return m_PlaybackEventer;}
+
+    CMIDIMapper& GetMIDIMapper() {return m_MIDIMapper;}
+    const CMIDIMapper& GetMIDIMapper() const {return m_MIDIMapper;}
+
+private: //Effect functions
+    void PortamentoMPT(modplug::tracker::modchannel_t*, int);
+    void PortamentoFineMPT(modplug::tracker::modchannel_t*, int);
+
+private: //Misc private methods.
+    static void SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type);
+    uint16_t GetModFlagMask(const MODTYPE oldtype, const MODTYPE newtype) const;
+
+private: //'Controllers'
+    CPlaybackEventer m_PlaybackEventer;
+    CMIDIMapper m_MIDIMapper;
+
+private: //Misc data
+    uint16_t m_ModFlags;
+    const CModSpecifications* m_pModSpecs;
+    bool m_bITBidiMode;    // Process bidi loops like Impulse Tracker (see Fastmix.cpp for an explanation)
+
+    // For handling backwards jumps and stuff to prevent infinite loops when counting the mod length or rendering to wav.
+    VisitedRowsType m_VisitedRows;
+
+    //XXXih: not related to rendering
+public:    // Static Members
+    static float m_nMaxSample;
+    static UINT m_nStereoSeparation;
+    static UINT m_nMaxMixChannels;
+    static LONG m_nStreamVolume;
+    static uint32_t gdwSysInfo, gdwSoundSetup, gdwMixingFreq, gnBitsPerSample, gnChannels;
+    static UINT gnVolumeRampInSamples;
+    static UINT gnVolumeRampOutSamples;
+    static UINT gnCPUUsage;
+    static LPSNDMIXHOOKPROC sound_mix_callback;
+    static PMIXPLUGINCREATEPROC gpMixPluginCreateProc;
+    static uint8_t s_DefaultPlugVolumeHandling;
+
+
+public:    // for Editing
+    CModDoc* m_pModDoc;    	// Can be a null pointer f.e. when previewing samples from the treeview.
+    MODTYPE m_nType;
+    CHANNELINDEX m_nChannels;
+    SAMPLEINDEX m_nSamples;
+    INSTRUMENTINDEX m_nInstruments;
+    UINT m_nDefaultSpeed, m_nDefaultTempo, m_nDefaultGlobalVolume;
+    uint32_t m_dwSongFlags;    						// Song flags SONG_XXXX
+    bool m_bIsRendering;
+    UINT m_nMixChannels, m_nMixStat, m_nBufferCount;
+    double m_dBufferDiff;
+    UINT m_nTickCount, m_nTotalCount;
+    UINT m_nPatternDelay, m_nFrameDelay;    // m_nPatternDelay = pattern delay, m_nFrameDelay = fine pattern delay
+    ULONG m_lTotalSampleCount;    // rewbs.VSTTimeInfo
+    UINT m_nSamplesPerTick;    	// rewbs.betterBPM
+    ROWINDEX m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;    // default rows per beat and measure for this module // rewbs.betterBPM
+    ROWINDEX m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;    // current rows per beat and measure for this module
+    uint8_t m_nTempoMode;    		// rewbs.betterBPM
+    uint8_t m_nMixLevels;
+    UINT m_nMusicSpeed, m_nMusicTempo;
+    ROWINDEX m_nNextRow, m_nRow;
+    ROWINDEX m_nNextPatStartRow; // for FT2's E60 bug
+    PATTERNINDEX m_nPattern;
+    ORDERINDEX m_nCurrentPattern, m_nNextPattern, m_nRestartPos, m_nSeqOverride;
+    //NOTE: m_nCurrentPattern and m_nNextPattern refer to order index - not pattern index.
+    bool m_bPatternTransitionOccurred;
+    UINT m_nMasterVolume, m_nGlobalVolume, m_nSamplesToGlobalVolRampDest,
+         m_nGlobalVolumeDestination, m_nSamplePreAmp, m_nVSTiVolume;
+    long m_lHighResRampingGlobalVolume;
+    UINT m_nFreqFactor, m_nTempoFactor, m_nOldGlbVolSlide;
+    LONG m_nMinPeriod, m_nMaxPeriod;    // min period = highest possible frequency, max period = lowest possible frequency
+    LONG m_nRepeatCount;    // -1 means repeat infinitely.
+    uint32_t m_nGlobalFadeSamples, m_nGlobalFadeMaxSamples;
+    UINT m_nMaxOrderPosition;
+    LPSTR m_lpszSongComments;
+    UINT ChnMix[MAX_VIRTUAL_CHANNELS];    						// Channels to be mixed
+    modplug::tracker::modchannel_t Chn[MAX_VIRTUAL_CHANNELS];    					// Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
+    modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
+    CPatternContainer Patterns;    						// Patterns
+    ModSequenceSet Order;    							// Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
+
+    modplug::tracker::modsample_t Samples[MAX_SAMPLES];    					// Sample Headers
+    modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];    	// Instrument Headers
+    modplug::tracker::modinstrument_t m_defaultInstrument;    				// Currently only used to get default values for extented properties.
+
+    CHAR m_szNames[MAX_SAMPLES][MAX_SAMPLENAME];    	// Song and sample names
+    std::string song_name;
+
+    MODMIDICFG m_MidiCfg;    							// Midi macro config table
+    SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];    		// Mix plugins
+    SNDMIXSONGEQ m_SongEQ;    							// Default song EQ preset
+    CHAR CompressionTable[16];    						// ADPCM compression LUT
+    bool m_bChannelMuteTogglePending[MAX_BASECHANNELS];
+
+    CSoundFilePlayConfig* m_pConfig;
+    uint32_t m_dwCreatedWithVersion;
+    uint32_t m_dwLastSavedWithVersion;
+
+    vector<PatternCuePoint> m_PatternCuePoints;    		// For WAV export (writing pattern positions to file)
+
+// -> CODE#0023
+// -> DESC="IT project files (.itp)"
+    CHAR m_szInstrumentPath[MAX_INSTRUMENTS][_MAX_PATH];
+// -! NEW_FEATURE#0023
+
+public:
+    BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength=0);
+    BOOL Destroy();
+    MODTYPE GetType() const { return m_nType; }
+    inline bool TypeIsIT_MPT() const { return (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) != 0; }
+    inline bool TypeIsIT_MPT_XM() const { return (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM)) != 0; }
+    inline bool TypeIsS3M_IT_MPT() const { return (m_nType & (MOD_TYPE_S3M | MOD_TYPE_IT | MOD_TYPE_MPT)) != 0; }
+    inline bool TypeIsXM_MOD() const { return (m_nType & (MOD_TYPE_XM | MOD_TYPE_MOD)) != 0; }
+    inline bool TypeIsMOD_S3M() const { return (m_nType & (MOD_TYPE_MOD | MOD_TYPE_S3M)) != 0; }
+    CModDoc* GetpModDoc() const { return m_pModDoc; }
+    CModDoc* GetModDocPtr() const { return m_pModDoc; }
+
+    void SetMasterVolume(UINT vol, bool adjustAGC = false);
+    UINT GetMasterVolume() const { return m_nMasterVolume; }
+
+    // Returns 1 + index of last valid pattern, zero if no such pattern exists.
+    PATTERNINDEX GetNumPatterns() const;
+    INSTRUMENTINDEX GetNumInstruments() const { return m_nInstruments; }
+    SAMPLEINDEX GetNumSamples() const { return m_nSamples; }
+    UINT GetCurrentPos() const;
+    PATTERNINDEX GetCurrentPattern() const { return m_nPattern; }
+    ORDERINDEX GetCurrentOrder() const { return static_cast<ORDERINDEX>(m_nCurrentPattern); }
+    UINT GetMaxPosition() const;
+    CHANNELINDEX GetNumChannels() const { return m_nChannels; }
+
+    IMixPlugin* GetInstrumentPlugin(INSTRUMENTINDEX instr);
+    const CModSpecifications& GetModSpecifications() const {return *m_pModSpecs;}
+    static const CModSpecifications& GetModSpecifications(const MODTYPE type);
+
+    double GetCurrentBPM() const;
+    ORDERINDEX FindOrder(PATTERNINDEX nPat, UINT startFromOrder=0, bool direction = true);    //rewbs.playSongFromCursor
+    void DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);    	//rewbs.playSongFromCursor
+    void SetCurrentPos(UINT nPos);
+    void SetCurrentOrder(ORDERINDEX nOrder);
+    void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
+    LPCSTR GetTitle() const { return song_name.c_str(); }
+    LPCTSTR GetSampleName(UINT nSample) const;
+    CString GetInstrumentName(UINT nInstr) const;
+    UINT GetMusicSpeed() const { return m_nMusicSpeed; }
+    UINT GetMusicTempo() const { return m_nMusicTempo; }
+
+    //Get modlength in various cases: total length, length to
+    //specific order&row etc. Return value is in seconds.
+    GetLengthType GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX ord = ORDERINDEX_INVALID, ROWINDEX row = ROWINDEX_INVALID);
+
+public:
+    //Returns song length in seconds.
+    uint32_t GetSongTime() { return static_cast<uint32_t>((m_nTempoMode == tempo_mode_alternative) ? GetLength(eNoAdjust).duration + 1.0 : GetLength(eNoAdjust).duration + 0.5); }
+
+    // A repeat count value of -1 means infinite loop
+    void SetRepeatCount(int n) { m_nRepeatCount = n; }
+    int GetRepeatCount() const { return m_nRepeatCount; }
+    bool IsPaused() const {    return (m_dwSongFlags & (SONG_PAUSED|SONG_STEP)) ? true : false; }	// Added SONG_STEP as it seems to be desirable in most cases to check for this as well.
+    void LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);
+    void CheckCPUUsage(UINT nCPU);
+
+    void SetupITBidiMode();
+
+    bool InitChannel(CHANNELINDEX nChn);
+    void ResetChannelState(CHANNELINDEX chn, uint8_t resetStyle);
+
+    // Module Loaders
+    bool ReadXM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadS3M(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMod(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMed(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadSTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    //bool ReadMPT(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadITProject(const uint8_t * const lpStream, const uint32_t dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
+    bool Read669(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadUlt(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadWav(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadDSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadFAR(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAMS2(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMDL(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadOKT(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadDMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadPTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadDBM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMT2(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadUMX(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMO3(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength);
+    bool ReadMID(const uint8_t * const lpStream, uint32_t dwMemLength);
+
+    // Save Functions
+#ifndef MODPLUG_NO_FILESAVE
+    UINT WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen=0);
+    bool SaveXM(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
+    bool SaveS3M(LPCSTR lpszFileName, UINT nPacking=0);
+    bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
+    bool SaveIT(LPCSTR lpszFileName, UINT nPacking=0);
+    bool SaveCompatIT(LPCSTR lpszFileName);
+    bool SaveITProject(LPCSTR lpszFileName); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
+    UINT SaveMixPlugins(FILE *f=NULL, BOOL bUpdate=TRUE);
+    void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::tracker::modinstrument_t* instruments[], UINT nInstruments);
+    void SaveExtendedInstrumentProperties(modplug::tracker::modinstrument_t *instruments[], UINT nInstruments, FILE* f);
+    void SaveExtendedSongProperties(FILE* f);
+    void LoadExtendedSongProperties(const MODTYPE modtype, const uint8_t * ptr, const uint8_t * const startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
+#endif // MODPLUG_NO_FILESAVE
+
+    // Reads extended instrument properties(XM/IT/MPTM).
+    // If no errors occur and song extension tag is found, returns pointer to the beginning
+    // of the tag, else returns NULL.
+    const uint8_t * LoadExtendedInstrumentProperties(const uint8_t * const pStart, const uint8_t * const pEnd, bool* pInterpretMptMade = nullptr);
+
+    // MOD Convert function
+    MODTYPE GetBestSaveFormat() const;
+    MODTYPE GetSaveFormats() const;
+    void ConvertModCommand(modplug::tracker::modcommand_t *) const;
+    void S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const;
+    void S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport = false) const;
+    uint16_t ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
+
+    static void ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
+    static void MODExx2S3MSxx(modplug::tracker::modcommand_t *m); // Convert Exx to Sxx
+    static void S3MSxx2MODExx(modplug::tracker::modcommand_t *m); // Convert Sxx to Exx
+    void SetupMODPanning(bool bForceSetup = false); // Setup LRRL panning, max channel volume
 };
 
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())

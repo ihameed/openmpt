@@ -16,7 +16,7 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-typedef std::function<QWidget *(app_config &)> wid_fun;
+typedef std::function<config_page *(app_config &)> wid_fun;
 
 struct config_page_spec {
     const char * const category;
@@ -26,8 +26,10 @@ struct config_page_spec {
 
 typedef std::map<std::string, std::vector<config_page_spec *> > category_map;
 
-#define MAKE_PAGE(HOOT) ([](app_config &context) { return new HOOT(context); })
-#define MAKE_PAGE_IGNORE(HOOT) ([](app_config &) { return new HOOT(); })
+#define MAKE_PAGE(HOOT) \
+    ([](app_config &context) -> config_page* { return new HOOT(context); })
+#define MAKE_PAGE_IGNORE(HOOT) \
+    ([](app_config &) -> config_page* { return new HOOT(); })
 
 class expanded_tree_item : public QTreeWidgetItem {
 public:
@@ -57,6 +59,11 @@ public:
     }
 };
 
+class empty_config_page : public config_page {
+    virtual void refresh() { }
+    virtual void apply_changes() { }
+};
+
 config_dialog::config_dialog(app_config &context, QWidget *parent)
     : QDialog(parent)
 {
@@ -66,32 +73,29 @@ config_dialog::config_dialog(app_config &context, QWidget *parent)
                 return new config_audioio_main(context);
             }
         },
-        { "Audio I/O", "Channel Assignment", MAKE_PAGE_IGNORE(QProgressBar) },
-        { "GUI", "root", MAKE_PAGE_IGNORE(QTextEdit) },
-        { "GUI", "Keyboard", MAKE_PAGE_IGNORE(QTextEdit) },
-        { "GUI", "Mouse", MAKE_PAGE_IGNORE(QTextEdit) },
-        { "Plugins", "root", MAKE_PAGE_IGNORE(QTextEdit) },
-        { "Plugins", "VST2", MAKE_PAGE_IGNORE(QTextEdit) },
+        { "Audio I/O", "Channel Assignment", MAKE_PAGE_IGNORE(empty_config_page) },
+        { "GUI", "root", MAKE_PAGE_IGNORE(empty_config_page) },
+        { "GUI", "Keyboard", MAKE_PAGE_IGNORE(empty_config_page) },
+        { "GUI", "Mouse", MAKE_PAGE_IGNORE(empty_config_page) },
+        { "Plugins", "root", MAKE_PAGE_IGNORE(empty_config_page) },
+        { "Plugins", "VST2", MAKE_PAGE_IGNORE(empty_config_page) },
     };
 
     auto vsplit = new QVBoxLayout(this);
     auto hsplit = new QHBoxLayout;
-    auto button_hsplit = new QHBoxLayout;
 
     vsplit->setContentsMargins(3, 3, 3, 3);
     vsplit->addLayout(hsplit);
-    vsplit->addLayout(button_hsplit);
+
+    buttons.addButton("&OK", QDialogButtonBox::AcceptRole);
+    buttons.addButton("&Cancel", QDialogButtonBox::RejectRole);
+    buttons.addButton("&Apply", QDialogButtonBox::ApplyRole);
+    vsplit->addWidget(&buttons);
 
     category_list  = new config_treeview();
     category_pager = new QStackedWidget();
     hsplit->addWidget(category_list);
     hsplit->addWidget(category_pager);
-
-    auto add_button = [&](const char *caption) -> QPushButton * {
-        auto widget = new QPushButton(caption);
-        button_hsplit->addWidget(widget);
-        return widget;
-    };
 
     category_map categories;
 
@@ -100,8 +104,10 @@ config_dialog::config_dialog(app_config &context, QWidget *parent)
     });
 
     auto add_page = [&](expanded_tree_item *item, wid_fun &f) {
-        auto page_idx = category_pager->addWidget(f(context));
+        auto page = f(context);
+        auto page_idx = category_pager->addWidget(page);
         item->setData(0, Qt::UserRole, page_idx);
+        pages.push_back(page);
     };
 
     auto add_category = [&](category_map::value_type &the_guy) {
@@ -124,14 +130,14 @@ config_dialog::config_dialog(app_config &context, QWidget *parent)
 
     for_each(categories, add_category);
 
-    button_ok = add_button("&OK");
-    button_cancel = add_button("&Cancel");
-    button_apply = add_button("&Apply");
-    button_hsplit->insertStretch(0, 100);
-
     QObject::connect(
         category_list, SIGNAL(itemSelectionChanged()),
         this, SLOT(change_page())
+    );
+
+    QObject::connect(
+        &buttons, SIGNAL(clicked(QAbstractButton *)),
+        this, SLOT(button_clicked(QAbstractButton *))
     );
 }
 
@@ -141,6 +147,30 @@ void config_dialog::change_page() {
         auto page_idx = active.first()->data(0, Qt::UserRole).toInt();
         category_pager->setCurrentIndex(page_idx);
     }
+}
+
+void config_dialog::button_clicked(QAbstractButton *button) {
+    switch (buttons.buttonRole(button)) {
+    case QDialogButtonBox::AcceptRole:
+        hide();
+    case QDialogButtonBox::ApplyRole:
+        for_each(pages, [] (config_page *page) {
+            page->apply_changes();
+        });
+        break;
+    case QDialogButtonBox::RejectRole:
+        hide();
+        break;
+    }
+}
+
+void config_dialog::setVisible(bool ya) {
+    if (ya) {
+        for_each(pages, [] (config_page *page) {
+            page->refresh();
+        });
+    }
+    QDialog::setVisible(ya);
 }
 
 

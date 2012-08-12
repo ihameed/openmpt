@@ -12,7 +12,8 @@ namespace qt4 {
 class config_page : public QWidget, private modplug::pervasives::noncopyable {
     Q_OBJECT
 public:
-    virtual void refresh() { };
+    virtual void refresh() = 0;
+    virtual void apply_changes() = 0;
 };
 
 class config_treeview;
@@ -25,14 +26,16 @@ public:
 
 public slots:
     void change_page();
+    void button_clicked(QAbstractButton *);
+
+    virtual void setVisible(bool);
 
 private:
     config_treeview *category_list;
     QStackedWidget *category_pager;
 
-    QPushButton *button_ok;
-    QPushButton *button_cancel;
-    QPushButton *button_apply;
+    QDialogButtonBox buttons;
+    std::vector<config_page *> pages;
 };
 
 

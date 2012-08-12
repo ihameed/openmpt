@@ -961,6 +961,9 @@ void module_renderer::SanitizeMacros()
 BOOL module_renderer::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
 //----------------------------------------------------------------------------
 {
+    DEBUG_FUNC(
+        "thread id = %x; nRate = %d, nBits = %d, nChannels = %d, bMMX = %d",
+        GetCurrentThreadId(), nRate, nBits, nChannels, bMMX);
     BOOL bReset = FALSE;
     uint32_t d = gdwSoundSetup & ~SNDMIX_ENABLEMMX;
     if (bMMX) d |= SNDMIX_ENABLEMMX;
@@ -970,21 +973,6 @@ BOOL module_renderer::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChann
     gdwMixingFreq = nRate;
     gnBitsPerSample = nBits;
     InitPlayer(bReset);
-    return TRUE;
-}
-
-
-BOOL module_renderer::SetDspEffects(BOOL bSurround,BOOL bReverb,BOOL bMegaBass,BOOL bNR,BOOL bEQ)
-//------------------------------------------------------------------------------------------
-{
-    uint32_t d = gdwSoundSetup & ~(SNDMIX_SURROUND | SNDMIX_REVERB | SNDMIX_MEGABASS | SNDMIX_NOISEREDUCTION | SNDMIX_EQ);
-    if (bSurround) d |= SNDMIX_SURROUND;
-    if ((bReverb) && (gdwSysInfo & SYSMIX_ENABLEMMX)) d |= SNDMIX_REVERB;
-    if (bMegaBass) d |= SNDMIX_MEGABASS;
-    if (bNR) d |= SNDMIX_NOISEREDUCTION;
-    if (bEQ) d |= SNDMIX_EQ;
-    gdwSoundSetup = d;
-    InitPlayer(FALSE);
     return TRUE;
 }
 

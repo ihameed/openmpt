@@ -11,9 +11,7 @@ namespace qt4 {
 
 class app_config;
 
-class config_audioio_main :
-    public config_page,
-    private modplug::pervasives::noncopyable
+class config_audioio_main : public config_page
 {
     Q_OBJECT
 public:
@@ -23,6 +21,7 @@ public:
     );
 
     virtual void refresh();
+    virtual void apply_changes();
 
 private slots:
     void latency_event_with_int(int);
@@ -35,7 +34,6 @@ private:
 
     QComboBox devices;
     QComboBox rates;
-    QComboBox formats;
     QSpinBox channels;
     QSpinBox buflen;
     QLabel latency;

@@ -24,7 +24,7 @@
 #include "version.h"
 #include "ctrl_pat.h"
 
-#include <qwinwidget.h>
+#include "gui/qt4/mfc_root.h"
 
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
@@ -57,7 +57,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_WM_CREATE()
     ON_WM_RBUTTONDOWN()
     ON_COMMAND(ID_VIEW_OPTIONS,    			OnViewOptions)
-    ON_COMMAND(ID_VIEW_SOOPERSETUP,         OnDisplayConfigEditor)
+    ON_COMMAND(ID_VIEW_SOOPERSETUP,         display_config_editor)
 
 // -> CODE#0002
 // -> DESC="list box to choose VST plugin presets (programs)"
@@ -325,12 +325,6 @@ CMainFrame::CMainFrame() :
         }
     }
 
-    //XXXih: portaudio wip
-    DEBUG_FUNC("=================================================");
-    for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
-        DEBUG_FUNC("hostapi '%s' device '%s'", i->hostApi().name(), i->name());
-    }
-    DEBUG_FUNC("=================================================");
 
     auto &default_output = pa_system.defaultOutputDevice();
 
@@ -338,12 +332,11 @@ CMainFrame::CMainFrame() :
     stream_settings.latency  = default_output.defaultLowOutputLatency();
     stream_settings.host_api = default_output.hostApi().typeId();
     stream_settings.device   = default_output.index();
-    stream_settings.sample_format = portaudio::INT16;
     stream_settings.sample_rate   = 44100.0;
     stream_settings.channels      = 2;
     stream_settings.buffer_length = 512;
     global_config.change_audio_settings(stream_settings);
-    DEBUG_FUNC("stream_settings = %s", debug_json_dump(
+    DEBUG_FUNC("init stream_settings = %s", debug_json_dump(
         modplug::audioio::json_of_paudio_settings(stream_settings, pa_system)
     ).c_str());
     stream = std::make_shared<modplug::audioio::paudio>(stream_settings, pa_system, *this);
@@ -650,7 +643,7 @@ bool CMainFrame::LoadRegistrySettings()
 
 
 VOID CMainFrame::Initialize() {
-    qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this));
+    qwinwidget = std::unique_ptr<modplug::gui::qt4::mfc_root>(new modplug::gui::qt4::mfc_root(global_config, *this));
     config_dialog = new modplug::gui::qt4::config_dialog(global_config, qwinwidget.get());
 //    qwinwidget->showCentered();
 
@@ -691,7 +684,7 @@ VOID CMainFrame::Initialize() {
     // Setup Keyboard Hook
     ghKbdHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardProc, AfxGetInstanceHandle(), GetCurrentThreadId());
     // Initialize Audio Mixer
-    UpdateAudioParameters(TRUE);
+    //XXXih: UpdateAudioParameters(TRUE);
     // Update the tree
     m_wndTree.Init();
 }
@@ -1205,41 +1198,6 @@ DWORD WINAPI CMainFrame::NotifyThread(LPVOID)
 }
 
 
-LONG CMainFrame::deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec)
-//----------------------------------------------------------------------------------
-{
-    WAVEFORMATEXTENSIBLE WaveFormat;
-    UINT buflen = 75;
-
-    if (!m_pSndFile) return -1;
-
-    module_renderer::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
-    m_pSndFile->deprecated_SetWaveConfig(samplespersec, bits, channels, TRUE);
-    gbStopSent = FALSE;
-    m_pSndFile->deprecated_SetResamplingMode(m_nSrcMode);
-    return 0;
-}
-
-
-BOOL CMainFrame::deprecated_audioOpenDevice()
-//--------------------------------
-{
-    LONG err;
-
-    if ((!m_pSndFile) || (!m_pSndFile->GetType())) return FALSE;
-    if (m_dwStatus & MODSTATUS_PLAYING) return TRUE;
-    err = deprecated_audioTryOpeningDevice(2, 16, 44100);
-    // Display error message box
-    if (err != 0)
-    {
-        MessageBox("Unable to open sound device!", NULL, MB_OK|MB_ICONERROR);
-        return FALSE;
-    }
-    return TRUE;
-}
-
-
-
 void CMainFrame::CalcStereoVuMeters(int *pMix, unsigned long nSamples, unsigned long nChannels)
 //---------------------------------------------------------------------------------------------
 {
@@ -1374,25 +1332,6 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
 
     return FALSE;
 }
-
-
-void CMainFrame::UpdateAudioParameters(BOOL bReset)
-//-------------------------------------------------
-{
-    auto &stream_settings = global_config.audio_settings();
-    module_renderer::deprecated_SetWaveConfig(stream_settings.sample_rate, 16, 2, TRUE);
-    module_renderer::gdwSoundSetup &= ~SNDMIX_REVERSESTEREO;
-    // Soft panning
-    module_renderer::gdwSoundSetup &= ~SNDMIX_SOFTPANNING;
-
-    if (m_dwPatternSetup & PATTERN_MUTECHNMODE)
-        module_renderer::gdwSoundSetup |= SNDMIX_MUTECHNMODE;
-    else
-        module_renderer::gdwSoundSetup &= ~SNDMIX_MUTECHNMODE;
-    module_renderer::deprecated_SetResamplingMode(m_nSrcMode);
-    if (bReset) module_renderer::InitPlayer(TRUE);
-}
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1573,14 +1512,7 @@ BOOL CMainFrame::PlayMod(CModDoc *pModDoc, HWND hPat, uint32_t dwNotifyType)
     {
         module_renderer::sound_mix_callback = NULL;
     }
-    if (!deprecated_audioOpenDevice())
-    {
-        m_pSndFile = NULL;
-        m_pModPlaying = NULL;
-        m_hFollowSong = NULL;
-        debug_log("---------- CMainFrame::PlayMod: failed to open audio device");
-        return FALSE;
-    }
+
     m_nMixChn = m_nAvgMixChn = 0;
     gsdwTotalSamples = 0;
     if (!bPatLoop)
@@ -1692,12 +1624,7 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
         return FALSE;
     }
     m_pSndFile = pSndFile;
-    if (!deprecated_audioOpenDevice())
-    {
-        debug_log("CMainFrame::PlaySoundFile: failed to open audio device");
-        m_pSndFile = NULL;
-        return FALSE;
-    }
+
     gsdwTotalSamples = 0;
     m_pSndFile->SetMasterVolume(m_nPreAmp, true);
     m_pSndFile->InitPlayer(TRUE);
@@ -2062,7 +1989,8 @@ void CMainFrame::OnViewOptions()
     m_wndTree.OnOptionsChanged();
 }
 
-void CMainFrame::OnDisplayConfigEditor() {
+void CMainFrame::display_config_editor() {
+    DEBUG_FUNC("thread id = %x", GetCurrentThreadId());
     config_dialog->show();
 }
 

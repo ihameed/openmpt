@@ -241,6 +241,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mfc_root.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_app_config.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
@@ -254,6 +258,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_config_dialog.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mfc_root.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -273,12 +281,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_mfc_root.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="gui\mixgraph_view.cpp" />
     <ClCompile Include="gui\qt4\app_config.cpp" />
     <ClCompile Include="gui\qt4\comment_view.cpp" />
     <ClCompile Include="gui\qt4\config_audioio.cpp" />
     <ClCompile Include="gui\qt4\config_dialog.cpp" />
+    <ClCompile Include="gui\qt4\mfc_root.cpp" />
     <ClCompile Include="legacy_soundlib\Dlsbank.cpp" />
     <ClCompile Include="legacy_soundlib\Fastmix.cpp" />
     <ClCompile Include="legacy_soundlib\Load_669.cpp" />
@@ -369,6 +382,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="tagging.cpp" />
+    <ClCompile Include="tracker\module_renderer.cpp" />
     <ClCompile Include="Undo.cpp" />
     <ClCompile Include="view_com.cpp" />
     <ClCompile Include="view_gen.cpp" />
@@ -441,6 +455,20 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/app_config.h"  -DNDEBUG -DWIN32 -D_WINDOWS -DENABLE_MMX -DENABLE_EQ -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I." "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\..\soundlib" "-I.\..\include" "-I.\.." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I." "-I." "-I." "-I." "-I."</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Moc%27ing app_config.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -D_AFXDLL "-I." "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\..\soundlib" "-I.\..\include" "-I.\.." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I." "-I."</Command>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt4\mfc_root.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing mfc_root.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/mfc_root.h"  -D_DEBUG -DWIN32 -D_WINDOWS -DENABLE_EQ -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I." "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\..\soundlib" "-I.\..\include" "-I.\.." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I." "-I." "-I." "-I."</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing mfc_root.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/mfc_root.h"  -DNDEBUG -DWIN32 -D_WINDOWS -DENABLE_MMX -DENABLE_EQ -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I." "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\..\soundlib" "-I.\..\include" "-I.\.." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I." "-I." "-I." "-I." "-I."</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Moc%27ing mfc_root.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -D_AFXDLL "-I." "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\..\soundlib" "-I.\..\include" "-I.\.." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I." "-I."</Command>
     </CustomBuild>

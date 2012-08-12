@@ -5,6 +5,7 @@
 #include "../../audioio/paudio.h"
 #include "app_config.h"
 
+using namespace modplug::pervasives;
 using namespace modplug::audioio;
 
 namespace modplug {
@@ -46,6 +47,12 @@ const paudio_settings & app_config::audio_settings() const {
 }
 
 void app_config::change_audio_settings(const paudio_settings &settings) {
+    DEBUG_FUNC("thread id = %x, settings = %s",
+        GetCurrentThreadId(),
+        debug_json_dump(json_of_paudio_settings(
+            settings, globals->pa_system
+        )).c_str()
+    );
     store->audio = settings;
     emit audio_settings_changed();
 }

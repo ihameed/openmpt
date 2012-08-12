@@ -12,7 +12,6 @@ namespace audioio {
 
 struct paudio_settings {
     double sample_rate;
-    portaudio::SampleDataFormat sample_format;
 
     PaHostApiTypeId host_api;
     PaDeviceIndex device;
@@ -21,13 +20,14 @@ struct paudio_settings {
     unsigned int buffer_length;
     unsigned int channels;
 };
+
+bool settings_equal(const paudio_settings &, const paudio_settings &);
+
 Json::Value json_of_paudio_settings(
-    const paudio_settings &,
-    portaudio::System &
+    const paudio_settings &, portaudio::System &
 );
 paudio_settings paudio_settings_of_json(Json::Value &, portaudio::System &);
-
-
+PaHostApiTypeId hostapi_of_int(int);
 
 
 class paudio_callback {

@@ -64,6 +64,53 @@ size_t lookup_by_name(arr &names, const char *name) {
 
 
 
+uint8_t bits_per_sample(portaudio::SampleDataFormat format) {
+    switch (format) {
+    case portaudio::FLOAT32 : return 32;
+    case portaudio::INT32   : return 32;
+    case portaudio::INT24   : return 24;
+    case portaudio::INT16   : return 16;
+    case portaudio::INT8    : return 8;
+    case portaudio::UINT8   : return 8;
+    default:
+        DEBUG_FUNC("got unknown sample format %d", format);
+        return 0;
+    }
+}
+
+
+bool settings_equal(const paudio_settings &a, const paudio_settings &b) {
+    return a.buffer_length == b.buffer_length
+        && a.channels == b.channels
+        && a.device == b.device
+        && a.host_api == b.host_api
+        && a.latency == b.latency
+        && a.sample_rate == b.sample_rate;
+}
+
+
+PaHostApiTypeId hostapi_of_int(int apinum) {
+    switch (apinum) {
+    case paInDevelopment   : return paInDevelopment;
+    case paDirectSound     : return paDirectSound;
+    case paMME             : return paMME;
+    case paASIO            : return paASIO;
+    case paSoundManager    : return paSoundManager;
+    case paCoreAudio       : return paCoreAudio;
+    case paOSS             : return paOSS;
+    case paALSA            : return paALSA;
+    case paAL              : return paAL;
+    case paBeOS            : return paBeOS;
+    case paWDMKS           : return paWDMKS;
+    case paJACK            : return paJACK;
+    case paWASAPI          : return paWASAPI;
+    case paAudioScienceHPI : return paAudioScienceHPI;
+    default:
+        DEBUG_FUNC("got unknown hostapi value %d", apinum);
+        return paInDevelopment;
+    }
+};
+
 
 Json::Value json_of_paudio_settings(
     const paudio_settings &settings,
@@ -71,9 +118,6 @@ Json::Value json_of_paudio_settings(
 ) {
     Json::Value root;
     root["sample_rate"]   = settings.sample_rate;
-    root["sample_format"] = value_of_key(paudio_sample_format_names,
-                                         settings.sample_format,
-                                         "invalid");
 
     root["host_api"] = lookup_by_index(paudio_api_names, settings.host_api);
     root["device"]   = pa_system.deviceByIndex(settings.device).name();
@@ -91,17 +135,9 @@ paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa
     try {
         ret.sample_rate   = root["sample_rate"].asDouble();
 
-        ret.sample_format = key_of_value(
-            paudio_sample_format_names,
-            root["sample_format"].asCString(),
-            portaudio::INVALID_FORMAT,
-            strcmp
-        );
-
         ret.host_api = static_cast<PaHostApiTypeId>(
             lookup_by_name(paudio_api_names, root["host_api"].asCString())
         );
-
 
         ret.device = 0;
         auto &host_api = pa_system.hostApiByTypeId(ret.host_api);
@@ -117,7 +153,6 @@ paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa
         ret.channels      = root["channels"].asUInt();
     } catch (std::runtime_error e) {
         ret.sample_rate        = 0;
-        ret.sample_format      = portaudio::INVALID_FORMAT;
         ret.host_api           = paInDevelopment;
         ret.device             = 0;
         ret.latency            = 0;
@@ -136,6 +171,8 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
                             const PaStreamCallbackTimeInfo *time_info,
                             PaStreamCallbackFlags status_flags)
 {
+
+    //DEBUG_FUNC("thread id = %x", GetCurrentThreadId());
     auto ret = 0;
 
     const unsigned long width = sizeof(int16_t);
@@ -170,7 +207,7 @@ paudio::paudio(paudio_settings &settings, portaudio::System &system, CMainFrame 
             portaudio::DirectionSpecificStreamParameters(
                 system.deviceByIndex(settings.device),
                 settings.channels,
-                settings.sample_format,
+                portaudio::INT16,
                 interleaved,
                 settings.latency,
                 nullptr

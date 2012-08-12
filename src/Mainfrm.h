@@ -19,7 +19,7 @@
 
 #include "qwinwidget.h"
 
-//class QWinWidget;
+namespace modplug { namespace gui { namespace qt4 { class mfc_root; } } }
 
 class CInputHandler;
 class CMainFrame;
@@ -460,7 +460,7 @@ public:
     std::shared_ptr<modplug::audioio::paudio> stream;
     modplug::gui::qt4::app_config global_config;
     modplug::gui::qt4::config_dialog *config_dialog;
-    std::unique_ptr<QWinWidget> qwinwidget;
+    std::unique_ptr<modplug::gui::qt4::mfc_root> qwinwidget;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;
@@ -518,11 +518,8 @@ public:
 
 // Low-Level Audio
 public:
-    void UpdateAudioParameters(BOOL bReset=FALSE);
     static void CalcStereoVuMeters(int *, unsigned long, unsigned long);
     static DWORD WINAPI NotifyThread(LPVOID);
-    LONG deprecated_audioTryOpeningDevice(UINT channels, UINT bits, UINT samplespersec);
-    BOOL deprecated_audioOpenDevice();
     BOOL audioFillBuffers();
     LRESULT OnWOMDone(WPARAM, LPARAM);
     BOOL dsoundFillBuffers(LPBYTE lpBuf, uint32_t dwSize);
@@ -658,7 +655,7 @@ public:
     afx_msg void OnAddDlsBank();
     afx_msg void OnImportMidiLib();
     afx_msg void OnViewOptions();
-    afx_msg void OnDisplayConfigEditor();
+    afx_msg void display_config_editor();
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnRButtonDown(UINT, CPoint);

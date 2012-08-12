@@ -1680,7 +1680,7 @@ void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
     }
 
     m_SndFile.SetCurrentPos(pos);
-    CMainFrame::GetMainFrame()->UpdateAudioParameters(TRUE);
+    //XXXih: CMainFrame::GetMainFrame()->UpdateAudioParameters(TRUE);
 }
 
 
