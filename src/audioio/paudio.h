@@ -50,16 +50,17 @@ private:
 
 class paudio {
 public:
-    paudio(paudio_settings &settings, portaudio::System &system, CMainFrame &);
+    paudio(const paudio_settings &settings, portaudio::System &system, CMainFrame &);
     ~paudio();
 
     void start();
     void stop();
     void close();
+    const paudio_settings& settings() const;
 
 private:
     const bool interleaved;
-    paudio_settings settings;
+    paudio_settings _settings;
     paudio_callback callback;
 
     portaudio::MemFunCallbackStream<paudio_callback> stream;

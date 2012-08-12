@@ -8,7 +8,25 @@
 #include "mod2wave.h"
 #include "legacy_soundlib/Wav.h"
 
-extern UINT nMixingRates[NUMMIXRATE];
+UINT nMixingRates[NUMMIXRATE] = {
+    16000,
+    19800,
+    20000,
+    22050,
+    24000,
+    32000,
+    33075,
+    37800,
+    40000,
+    44100,
+    48000,
+    64000,
+    88200,
+    96000,
+    176400,
+    192000,
+};
+
 extern LPCSTR gszChnCfgNames[3];
 
 // this converts a buffer of 32-bit integer sample data to 32 bit floating point

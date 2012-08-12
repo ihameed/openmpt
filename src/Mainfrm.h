@@ -9,8 +9,6 @@
 #endif // _MSC_VER >= 1000
 
 #include "gui/qt4/app_config.h"
-#include "gui/qt4/config_dialog.h"
-#include "audioio/paudio.h"
 
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
@@ -19,7 +17,12 @@
 
 #include "qwinwidget.h"
 
-namespace modplug { namespace gui { namespace qt4 { class mfc_root; } } }
+namespace modplug { namespace gui { namespace qt4 {
+class mfc_root;
+class config_dialog;
+} } }
+
+namespace modplug { namespace audioio { class paudio; } }
 
 class CInputHandler;
 class CMainFrame;

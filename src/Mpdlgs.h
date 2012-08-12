@@ -6,41 +6,6 @@
 class module_renderer;
 class CMainFrame;
 
-//===========================================
-class COptionsSoundcard: public CPropertyPage
-//===========================================
-{
-protected:
-    CComboBoxEx m_CbnDevice;
-    CComboBox m_CbnBufferLength, m_CbnMixingFreq, m_CbnPolyphony, m_CbnQuality;
-    CSliderCtrl m_SliderStereoSep, m_SliderPreAmp;
-    uint32_t m_dwRate, m_dwSoundSetup, m_nBitsPerSample, m_nChannels;
-    uint32_t m_nBufferLength;
-    uint32_t m_nSoundDevice;
-    bool m_PreAmpNoteShowed;
-
-public:
-    COptionsSoundcard(uint32_t rate, uint32_t q, uint32_t bits, uint32_t chns, uint32_t bufsize, uint32_t sd):CPropertyPage(IDD_OPTIONS_SOUNDCARD)
-    	{ m_dwRate = rate; m_dwSoundSetup = q; m_nBitsPerSample = bits; m_nChannels = chns;
-    	  m_nBufferLength = bufsize; m_nSoundDevice = sd; m_PreAmpNoteShowed = false;}
-
-private:
-    void UpdateSampleRates(int dev);
-    void SetPreAmpSliderPosition();
-
-protected:
-    virtual BOOL OnInitDialog();
-    virtual void OnOK();
-    virtual BOOL OnSetActive();
-    virtual void DoDataExchange(CDataExchange* pDX);
-    void UpdateStereoSep();
-    afx_msg void OnDeviceChanged();
-    afx_msg void OnSettingsChanged() { SetModified(TRUE); }
-    afx_msg void OnHScroll(UINT, UINT, CScrollBar *);
-    afx_msg void OnVScroll(UINT, UINT, CScrollBar *);
-    DECLARE_MESSAGE_MAP()
-};
-
 
 //========================================
 class COptionsPlayer: public CPropertyPage

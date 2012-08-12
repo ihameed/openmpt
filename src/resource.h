@@ -84,7 +84,6 @@
 #define IDS_ERR_DIALOG                  355
 #define IDD_SOUNDBANK_INFO              401
 #define IDD_OPTIONS_GENERAL             402
-#define IDD_OPTIONS_SOUNDCARD           403
 #define IDD_MIDIMACRO                   404
 #define IDD_WAVECOMPRESSION             405
 #define IDD_CHORDEDIT                   406
@@ -574,7 +573,6 @@
 #define IDC_COMBO_INSTRUMENT            2002
 #define IDC_EDIT_COMMENTS               2004
 #define IDC_EDIT_SONGTITLE              2005
-#define IDC_SLIDER_PREAMP               2006
 #define IDC_EDIT_TEMPO                  2007
 #define IDC_EDIT_SPEED                  2008
 #define IDC_EDIT_GLOBALVOL              2009

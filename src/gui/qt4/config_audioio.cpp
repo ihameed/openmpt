@@ -26,11 +26,22 @@ struct sample_format_assoc {
 };
 
 static const sample_rate_assoc supported_sample_rates[] = {
-    { 22050.0,  "22050" },
     { 44100.0,  "44100" },
     { 48000.0,  "48000" },
     { 96000.0,  "96000" },
     { 192000.0, "192000" }
+};
+
+union devid_hostapi_pack {
+    struct {
+        uint16_t devid;
+        uint16_t hostapi;
+    };
+    uint32_t packed;
+};
+
+class config_audioio_asio : public config_page {
+
 };
 
 config_audioio_main::config_audioio_main(
@@ -75,10 +86,15 @@ config_audioio_main::config_audioio_main(
     auto &pa_system = context.audio_handle();
 
     for (auto i = pa_system.devicesBegin(); i != pa_system.devicesEnd(); ++i) {
-        devices.addItem(
-            QString("%1: %2").arg(i->hostApi().name()).arg(i->name()),
-            QVariant(i->hostApi().typeId())
-        );
+        if (i->maxOutputChannels() > 0) {
+            devid_hostapi_pack pack;
+            pack.devid = i->index();
+            pack.hostapi = i->hostApi().typeId();
+            devices.addItem(
+                QString("%1: %2").arg(i->hostApi().name()).arg(i->name()),
+                QVariant(pack.packed)
+            );
+        }
     }
 
     QObject::connect(
@@ -111,7 +127,11 @@ void config_audioio_main::refresh() {
         current_sample_rate
     ));
 
-    devices.setCurrentIndex(settings.device);
+    devid_hostapi_pack pack;
+    pack.devid = settings.device;
+    pack.hostapi = settings.host_api;
+
+    devices.setCurrentIndex(devices.findData(pack.packed));
 
     buflen.setValue(settings.buffer_length);
 
@@ -121,7 +141,7 @@ void config_audioio_main::refresh() {
 void config_audioio_main::apply_changes() {
     auto current_sample_rate = [&] () -> double {
         auto idx = rates.currentIndex();
-        return idx > 0 ? supported_sample_rates[idx].key : 0.0;
+        return idx >= 0 ? rates.itemData(idx).toDouble() : 0.0;
     };
 
     paudio_settings settings;
@@ -131,12 +151,18 @@ void config_audioio_main::apply_changes() {
     settings.host_api = paInDevelopment;
     settings.device = 0;
     auto idx = devices.currentIndex();
-    if (idx > 0) {
-        settings.host_api = hostapi_of_int(devices.itemData(idx).toInt());
-        settings.device = idx;
+    if (idx >= 0) {
+        devid_hostapi_pack pack;
+        pack.packed = devices.itemData(idx).toUInt();
+        settings.host_api = hostapi_of_int(pack.hostapi);
+        settings.device = pack.devid;
     }
 
-    settings.latency = 0;
+    settings.latency = context.audio_handle().deviceByIndex(settings.device)
+                                             .defaultLowOutputLatency();
+    if (settings.host_api == paASIO) {
+        settings.latency = 0;
+    }
     settings.sample_rate = current_sample_rate();
 
     context.change_audio_settings(settings);

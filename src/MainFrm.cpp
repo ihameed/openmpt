@@ -25,6 +25,7 @@
 #include "ctrl_pat.h"
 
 #include "gui/qt4/mfc_root.h"
+#include "gui/qt4/config_dialog.h"
 
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
@@ -1974,7 +1975,6 @@ void CMainFrame::OnViewOptions()
 
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
-    COptionsSoundcard sounddlg(44100, 0, 16, 2, 75, m_nWaveDevice);
     COptionsKeyboard keyboard;
     COptionsColors colors;
     COptionsPlayer playerdlg;
@@ -1982,7 +1982,6 @@ void CMainFrame::OnViewOptions()
     CEQSetupDlg eqdlg(&m_EqSettings);
     CAutoSaverGUI autosavedlg(m_pAutoSaver); //rewbs.AutoSaver
     dlg.AddPage(&general);
-    dlg.AddPage(&sounddlg);
     dlg.AddPage(&playerdlg);
     dlg.AddPage(&eqdlg);
     dlg.AddPage(&keyboard);

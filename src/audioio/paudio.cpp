@@ -172,11 +172,19 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
                             PaStreamCallbackFlags status_flags)
 {
 
-    //DEBUG_FUNC("thread id = %x", GetCurrentThreadId());
     auto ret = 0;
 
     const unsigned long width = sizeof(int16_t);
     size_t buf_len = frames * settings.channels * width;
+
+    /*
+    DEBUG_FUNC("thread id = %x, buf_len = %d, frames = %d, width = %d",
+        GetCurrentThreadId(),
+        buf_len,
+        frames,
+        width
+    );
+    */
 
     if (main_frame.IsPlaying() && main_frame.renderer && !gbStopSent) {
         ret = main_frame.renderer->ReadPattern(output, buf_len);
@@ -197,29 +205,32 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
     return paContinue;
 }
 
-paudio::paudio(paudio_settings &settings, portaudio::System &system, CMainFrame &main_frame) :
+paudio::paudio(const paudio_settings &settings, portaudio::System &system, CMainFrame &main_frame) :
     interleaved(true),
-    settings(settings),
-    callback(main_frame, this->settings),
+    _settings(settings),
+    callback(main_frame, _settings),
     stream(
         portaudio::StreamParameters(
             portaudio::DirectionSpecificStreamParameters::null(),
             portaudio::DirectionSpecificStreamParameters(
-                system.deviceByIndex(settings.device),
-                settings.channels,
+                system.deviceByIndex(_settings.device),
+                _settings.channels,
                 portaudio::INT16,
                 interleaved,
-                settings.latency,
+                _settings.latency,
                 nullptr
             ),
-            settings.sample_rate,
-            settings.buffer_length,
+            _settings.sample_rate,
+            _settings.buffer_length,
             false
         ),
         callback,
         &paudio_callback::invoke
     )
-{ }
+{
+    _settings.sample_rate = stream.sampleRate();
+    _settings.latency = stream.outputLatency();
+}
 
 paudio::~paudio() {
 }
@@ -234,6 +245,10 @@ void paudio::stop() {
 
 void paudio::close() {
     stream.close();
+}
+
+const paudio_settings& paudio::settings() const {
+    return _settings;
 }
 
 }
