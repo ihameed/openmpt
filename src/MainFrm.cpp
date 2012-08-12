@@ -1977,12 +1977,10 @@ void CMainFrame::OnViewOptions()
     COptionsGeneral general;
     COptionsKeyboard keyboard;
     COptionsColors colors;
-    COptionsPlayer playerdlg;
     CMidiSetupDlg mididlg(m_dwMidiSetup, m_nMidiDevice);
     CEQSetupDlg eqdlg(&m_EqSettings);
     CAutoSaverGUI autosavedlg(m_pAutoSaver); //rewbs.AutoSaver
     dlg.AddPage(&general);
-    dlg.AddPage(&playerdlg);
     dlg.AddPage(&eqdlg);
     dlg.AddPage(&keyboard);
     dlg.AddPage(&colors);

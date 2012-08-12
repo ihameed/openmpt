@@ -27,7 +27,12 @@ UINT nMixingRates[NUMMIXRATE] = {
     192000,
 };
 
-extern LPCSTR gszChnCfgNames[3];
+LPCSTR gszChnCfgNames[3] =
+{
+    "Mono",
+    "Stereo",
+    "Quad"
+};
 
 // this converts a buffer of 32-bit integer sample data to 32 bit floating point
 static void __cdecl M2W_32ToFloat(void *pBuffer, long nCount)

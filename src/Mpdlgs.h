@@ -7,39 +7,6 @@ class module_renderer;
 class CMainFrame;
 
 
-//========================================
-class COptionsPlayer: public CPropertyPage
-//========================================
-{
-protected:
-    CComboBox m_CbnResampling, m_CbnReverbPreset, m_CbnWFIRType; //rewbs.resamplerConf: added m_CbnWFIRType
-    CSliderCtrl m_SbXBassDepth, m_SbXBassRange;
-    CSliderCtrl m_SbSurroundDepth, m_SbSurroundDelay;
-    CSliderCtrl m_SbReverbDepth;
-    CEdit m_CEditWFIRCutoff;
-    CEdit m_CEditRampIn;
-    CEdit m_CEditRampOut;
-
-public:
-    COptionsPlayer():CPropertyPage(IDD_OPTIONS_PLAYER) {}
-
-protected:
-    virtual BOOL OnInitDialog();
-    virtual void OnOK();
-    virtual BOOL OnSetActive();
-    virtual void DoDataExchange(CDataExchange* pDX);
-    afx_msg void OnHScroll(UINT, UINT, CScrollBar *);
-    afx_msg void OnSettingsChanged() { SetModified(TRUE); }
-    //rewbs.resamplerConf
-    afx_msg void OnWFIRTypeChanged();
-    afx_msg void OnResamplerChanged();
-    afx_msg void OnDefaultResampling();
-    //end rewbs.resamplerConf
-
-    DECLARE_MESSAGE_MAP()
-};
-
-
 
 //=================================
 class CEQSlider: public CSliderCtrl

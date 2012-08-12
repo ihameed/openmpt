@@ -4,7 +4,6 @@
 //
 #define IDD_ABOUTBOX                    100
 #define IDD_FILE_NEW                    101
-#define IDD_OPTIONS_PLAYER              103
 #define IDD_DIRECTORIES                 104
 #define IDD_WAVECONVERT                 105
 #define IDD_PROGRESS                    106
@@ -698,13 +697,9 @@
 #define IDC_COMMAND_LIST                2129
 #define IDC_STATIC8                     2200
 #define IDC_PATINSTROPLUGGUI            2201
-#define IDC_WFIRCUTOFF                  2202
-#define IDC_WFIRTYPE                    2203
 #define IDC_RAMPING                     2204
-#define IDC_RAMPUP                      2204
 #define IDC_PLAYEROPTIONS               2205
 #define IDC_RAMPOUT                     2205
-#define IDC_RAMPDOWN                    2205
 #define IDC_CHORDDETECTWAITTIME         2206
 #define IDC_STATIC2                     2207
 #define IDC_STATIC1                     2208
@@ -852,7 +847,6 @@
 #define IDC_BUTTON_CHANGE_VSTDIR2       2358
 #define IDC_BUTTON_CHANGE_VSTPRESETSDIR 2358
 #define IDC_STATIC_VSTPRESETDIR         2359
-#define IDC_BUTTON_DEFAULT_RESAMPLING   2360
 #define IDC_STATIC_CREATEDWITH          2361
 #define IDC_TEXT_CREATEDWITH            2361
 #define IDC_STATIC_SAVEDWITH            2362
