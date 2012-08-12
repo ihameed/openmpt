@@ -3,3 +3,5 @@ build dependencies:
  - vst 2.4 sdk (disable by defining NO_VST)
  - asio sdk (disable by defining NO_ASIO)
  - directx sdk (disable by defining NO_DSOUND)
+ - qt 4.8
+ - qt visual studio add-in
