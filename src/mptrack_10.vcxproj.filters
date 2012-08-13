@@ -215,6 +215,21 @@
     <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="gui\qt4\util.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt4\config_gui.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_config_gui.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_config_gui.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_config_gui.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -333,6 +348,12 @@
     <ClInclude Include="tracker\modevent.h">
       <Filter>tracker</Filter>
     </ClInclude>
+    <ClInclude Include="gui\qt4\pattern_editor_column.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt4\util.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />
@@ -427,6 +448,9 @@
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="gui\qt4\pattern_editor.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt4\config_gui.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -2,7 +2,7 @@
 #include "mod_specifications.h"
 
 
-bool CModSpecifications::HasNote(modplug::tracker::modevent_t::NOTE note) const
+bool CModSpecifications::HasNote(modplug::tracker::modevent_t::note_t note) const
 //------------------------------------------------------------
 {
     if(note >= noteMin && note <= noteMax)
@@ -22,7 +22,7 @@ bool CModSpecifications::HasNote(modplug::tracker::modevent_t::NOTE note) const
     return false;
 }
 
-bool CModSpecifications::HasVolCommand(modplug::tracker::modevent_t::VOLCMD volcmd) const
+bool CModSpecifications::HasVolCommand(modplug::tracker::modevent_t::volcmd_t volcmd) const
 //---------------------------------------------------------------------
 {
     if(volcmd >= MAX_VOLCMDS) return false;
@@ -30,7 +30,7 @@ bool CModSpecifications::HasVolCommand(modplug::tracker::modevent_t::VOLCMD volc
     return true;
 }
 
-bool CModSpecifications::HasCommand(modplug::tracker::modevent_t::COMMAND cmd) const
+bool CModSpecifications::HasCommand(modplug::tracker::modevent_t::cmd_t cmd) const
 //----------------------------------------------------------------
 {
     if(cmd >= MAX_EFFECTS) return false;
@@ -38,14 +38,14 @@ bool CModSpecifications::HasCommand(modplug::tracker::modevent_t::COMMAND cmd) c
     return true;
 }
 
-char CModSpecifications::GetVolEffectLetter(modplug::tracker::modevent_t::VOLCMD volcmd) const
+char CModSpecifications::GetVolEffectLetter(modplug::tracker::modevent_t::volcmd_t volcmd) const
 //--------------------------------------------------------------------------
 {
     if(volcmd >= MAX_VOLCMDS) return '?';
     return volcommands[volcmd];
 }
 
-char CModSpecifications::GetEffectLetter(modplug::tracker::modevent_t::COMMAND cmd) const
+char CModSpecifications::GetEffectLetter(modplug::tracker::modevent_t::cmd_t cmd) const
 //---------------------------------------------------------------------
 {
     if(cmd >= MAX_EFFECTS) return '?';

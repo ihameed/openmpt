@@ -8,6 +8,7 @@
 #include "../../pervasives/pervasives.h"
 #include "config_dialog.h"
 #include "config_audioio.h"
+#include "config_gui.h"
 #include "../../MainFrm.h"
 
 using namespace modplug::pervasives;
@@ -69,13 +70,9 @@ config_dialog::config_dialog(app_config &context, QWidget *parent)
 {
     setWindowTitle("Preferences");
     static config_page_spec config_dialog_layout[] = {
-        { "Audio I/O", "root",
-            [&](app_config &context) {
-                return new config_audioio_main(context);
-            }
-        },
+        { "Audio I/O", "root", MAKE_PAGE(config_audioio_main) },
         { "Audio I/O", "Channel Assignment", MAKE_PAGE_IGNORE(empty_config_page) },
-        { "GUI", "root", MAKE_PAGE_IGNORE(empty_config_page) },
+        { "GUI", "root", MAKE_PAGE(config_gui_main) },
         { "GUI", "Keyboard", MAKE_PAGE_IGNORE(empty_config_page) },
         { "GUI", "Mouse", MAKE_PAGE_IGNORE(empty_config_page) },
         { "Plugins", "root", MAKE_PAGE_IGNORE(empty_config_page) },

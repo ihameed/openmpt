@@ -38,11 +38,13 @@ struct pattern_font_metrics_t {
 
 static const int32_t grid_height = 13;
 
-static const size_t elem_note  = 0;
-static const size_t elem_instr = 1;
-static const size_t elem_vol   = 2;
-static const size_t elem_cmd   = 3;
-static const size_t elem_param = 4;
+typedef size_t elem_t;
+
+static const elem_t elem_note  = 0;
+static const elem_t elem_instr = 1;
+static const elem_t elem_vol   = 2;
+static const elem_t elem_cmd   = 3;
+static const elem_t elem_param = 4;
 
 static const pattern_font_metrics_t medium_pattern_font = {
     92, 13,              // Column Width & Height
@@ -138,7 +140,7 @@ private:
 
     bool font_loaded;
     const pattern_font_metrics_t &font_metrics;
-    QPixmap font;
+    QImage font;
 };
 
 }

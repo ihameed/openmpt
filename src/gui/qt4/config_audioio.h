@@ -15,10 +15,7 @@ class config_audioio_main : public config_page
 {
     Q_OBJECT
 public:
-    config_audioio_main(
-        app_config &,
-        QWidget * = 0
-    );
+    config_audioio_main(app_config &);
 
     virtual void refresh();
     virtual void apply_changes();

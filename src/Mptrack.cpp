@@ -1223,6 +1223,7 @@ BOOL CAboutDlg::OnInitDialog()
         "Copyright (c) 1997-2003 Olivier Lapicque (olivier@modplug.com)\r\n"
         "\r\n"
         "Contributors:\r\n"
+        "Imran Hameed (2012)\r\n"
         "Ahti Leppanen (2005-2011)\r\n"
         "Johannes Schultz (2008-2011)\r\n"
         "Robin Fernandes (2004-2007)\r\n"

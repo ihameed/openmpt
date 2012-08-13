@@ -1225,7 +1225,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             {
                 // apply NNA to this Plug iff this plug is currently playing a note on this tracking chan
                 // (and if it is playing a note, we know that would be the last note played on this chan).
-                modplug::tracker::modevent_t::NOTE note = pChn->nNote;
+                modplug::tracker::modevent_t::note_t note = pChn->nNote;
                 // Caution: When in compatible mode, modplug::tracker::modchannel_t::nNote stores the "real" note, not the mapped note!
                 if(IsCompatibleMode(TRK_IMPULSETRACKER) && note < CountOf(pChn->instrument->NoteMap))
                 {

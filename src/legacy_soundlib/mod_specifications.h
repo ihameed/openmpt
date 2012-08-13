@@ -5,23 +5,23 @@
 #include "../tracker/tracker.h"
 #include "../SoundFilePlayConfig.h" // mixlevel constants.
 
-
+using modplug::tracker::modevent_t;
 
 struct CModSpecifications
 //=======================
 {
     // Return true if format supports given note.
-    bool HasNote(modplug::tracker::modevent_t::NOTE note) const;
-    bool HasVolCommand(modplug::tracker::modevent_t::VOLCMD volcmd) const;
-    bool HasCommand(modplug::tracker::modevent_t::COMMAND cmd) const;
+    bool HasNote(modevent_t::note_t note) const;
+    bool HasVolCommand(modevent_t::volcmd_t volcmd) const;
+    bool HasCommand(modevent_t::cmd_t cmd) const;
     // Return corresponding effect letter for this format
-    char GetEffectLetter(modplug::tracker::modevent_t::COMMAND cmd) const;
-    char GetVolEffectLetter(modplug::tracker::modevent_t::VOLCMD cmd) const;
+    char GetEffectLetter(modevent_t::cmd_t cmd) const;
+    char GetVolEffectLetter(modevent_t::volcmd_t cmd) const;
 
     // NOTE: If changing order, update all initializations below.
     char fileExtension[6];	  // File extension without dot.
-    modplug::tracker::modevent_t::NOTE noteMin; // Minimum note index (index starts from 1)
-    modplug::tracker::modevent_t::NOTE noteMax; // Maximum note index (index starts from 1)
+    modevent_t::note_t noteMin; // Minimum note index (index starts from 1)
+    modevent_t::note_t noteMax; // Maximum note index (index starts from 1)
     bool hasNoteCut;		  // True if format has notecut.
     bool hasNoteOff;		  // True if format has noteoff.
     bool hasNoteFade;		  // True if format has notefade.
@@ -109,8 +109,8 @@ const CModSpecifications mod =
 {
     // TODO: Set correct values.
     "mod",								// File extension
-    37,									// Minimum note index
-    108,								// Maximum note index
+    modevent_t::note_t(37),				// Minimum note index
+    modevent_t::note_t(108),			// Maximum note index
     false,								// No notecut.
     false,								// No noteoff.
     false,								// No notefade.
@@ -149,8 +149,8 @@ const CModSpecifications modEx =
 {
     // TODO: Set correct values.
     "mod",								// File extension
-    37,									// Minimum note index
-    108,								// Maximum note index
+    modevent_t::note_t(37),				// Minimum note index
+    modevent_t::note_t(108),			// Maximum note index
     false,								// No notecut.
     false,								// No noteoff.
     false,								// No notefade.
@@ -188,8 +188,8 @@ const CModSpecifications xm =
 {
     // TODO: Set correct values.
     "xm",								// File extension
-    13,									// Minimum note index
-    108,								// Maximum note index
+    modevent_t::note_t(13),				// Minimum note index
+    modevent_t::note_t(108),			// Maximum note index
     false,								// No notecut.
     true,								// Has noteoff.
     false,								// No notefade.
@@ -228,8 +228,8 @@ const CModSpecifications xmEx =
 {
     // TODO: Set correct values.
     "xm",								// File extension
-    13,									// Minimum note index
-    108,								// Maximum note index
+    modevent_t::note_t(13),				// Minimum note index
+    modevent_t::note_t(108),			// Maximum note index
     false,								// No notecut.
     true,								// Has noteoff.
     false,								// No notefade.
@@ -267,8 +267,8 @@ const CModSpecifications s3m =
 {
     // TODO: Set correct values.
     "s3m",								// File extension
-    13,									// Minimum note index
-    108,								// Maximum note index
+    modevent_t::note_t(13),				// Minimum note index
+    modevent_t::note_t(108),			// Maximum note index
     true,								// Has notecut.
     false,								// No noteoff.
     false,								// No notefade.
@@ -307,8 +307,8 @@ const CModSpecifications s3mEx =
 {
     // TODO: Set correct values.
     "s3m",								// File extension
-    13,									// Minimum note index
-    108,								// Maximum note index
+    modevent_t::note_t(13),				// Minimum note index
+    modevent_t::note_t(108),			// Maximum note index
     true,								// Has notecut.
     false,								// No noteoff.
     false,								// No notefade.
@@ -346,8 +346,8 @@ const CModSpecifications it =
 {
     // TODO: Set correct values.
     "it",								// File extension
-    1,									// Minimum note index
-    120,								// Maximum note index
+    modevent_t::note_t(1),				// Minimum note index
+    modevent_t::note_t(120),			// Maximum note index
     true,								// Has notecut.
     true,								// Has noteoff.
     true,								// Has notefade.
@@ -385,8 +385,8 @@ const CModSpecifications itEx =
 {
     // TODO: Set correct values.
     "it",								// File extension
-    1,									// Minimum note index
-    120,								// Maximum note index
+    modevent_t::note_t(1),				// Minimum note index
+    modevent_t::note_t(120),			// Maximum note index
     true,								// Has notecut.
     true,								// Has noteoff.
     true,								// Has notefade.

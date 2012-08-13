@@ -128,8 +128,8 @@ protected:
 
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-    uint8_t activeNoteChannel[NOTE_MAX + 1];
-    uint8_t splitActiveNoteChannel[NOTE_MAX + 1];
+    uint8_t activeNoteChannel[NOTE_COUNT + 1];
+    uint8_t splitActiveNoteChannel[NOTE_COUNT + 1];
     int oldrow,oldchn,oldsplitchn;
 // -! NEW_FEATURE#0012
 

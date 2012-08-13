@@ -106,7 +106,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
     	if(m->IsPcNote())
     	{
-    		modplug::tracker::modevent_t::COMMAND newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
+    		modplug::tracker::modevent_t::cmd_t newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
     		if(!GetModSpecifications(nNewType).HasCommand(newcommand))
     		{
     			newcommand = CMD_MIDI;	// assuming that this was CMD_SMOOTHMIDI
@@ -619,7 +619,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
 // "importance" of every FX command. Table is used for importing from formats with multiple effect colums
 // and is approximately the same as in SchismTracker.
-uint16_t module_renderer::GetEffectWeight(modplug::tracker::modevent_t::COMMAND cmd)
+uint16_t module_renderer::GetEffectWeight(modplug::tracker::modevent_t::cmd_t cmd)
 //---------------------------------------------------------
 {
     switch(cmd)

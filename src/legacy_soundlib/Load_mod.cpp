@@ -448,7 +448,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
             }
 
             size_t instrWithoutNoteCount = 0;    // For detecting PT1x mode
-            vector<modplug::tracker::modevent_t::INSTR> lastInstrument(m_nChannels, 0);
+            vector<modplug::tracker::modevent_t::instr_t> lastInstrument(m_nChannels, 0);
 
             const uint8_t *p = lpStream + dwMemPos;
 

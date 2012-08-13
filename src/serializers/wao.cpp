@@ -128,7 +128,7 @@ bool _wao_write_pattern(Json::Value &out, const MODPATTERN &pattern) {
             auto &note = pattern_data.append(Json::Value());
             note["row"]     = rowidx;
             note["channel"] = chnidx;
-            note["note"]    = command->note;
+            note["note"]    = (unsigned int) command->note;
             note["instr"]   = command->instr;
             note["volcmd"]  = command->volcmd;
             note["volval"]  = command->vol;

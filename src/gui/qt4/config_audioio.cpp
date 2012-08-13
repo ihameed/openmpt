@@ -44,10 +44,7 @@ class config_audioio_asio : public config_page {
 
 };
 
-config_audioio_main::config_audioio_main(
-    app_config &context,
-    QWidget *parent
-) : config_page(), context(context)
+config_audioio_main::config_audioio_main(app_config &context) : context(context)
 {
     auto layout = new QGridLayout(this);
 

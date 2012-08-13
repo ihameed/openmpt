@@ -1884,10 +1884,10 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     if ((!m_nInstruments) || (m_nPattern >= Patterns.Size())
          || (m_nRow >= Patterns[m_nPattern].GetNumRows()) || (!Patterns[m_nPattern])) return;
 
-    const modplug::tracker::modevent_t::NOTE note = pChn->nRowNote;
-    const modplug::tracker::modevent_t::INSTR instr = pChn->nRowInstr;
-    const modplug::tracker::modevent_t::VOL vol = pChn->nRowVolume;
-    const modplug::tracker::modevent_t::VOLCMD volcmd = pChn->nRowVolCmd;
+    const modplug::tracker::modevent_t::note_t note = pChn->nRowNote;
+    const modplug::tracker::modevent_t::instr_t instr = pChn->nRowInstr;
+    const modplug::tracker::modevent_t::vol_t vol = pChn->nRowVolume;
+    const modplug::tracker::modevent_t::volcmd_t volcmd = pChn->nRowVolCmd;
     // Debug
     {
         // Previously this function took modcommand directly from pattern. ASSERT is there
@@ -1927,7 +1927,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     {
         if(note)
         {
-            modplug::tracker::modevent_t::NOTE realNote = note;
+            modplug::tracker::modevent_t::note_t realNote = note;
             if((note >= NOTE_MIN) && (note <= NOTE_MAX))
                 realNote = pIns->NoteMap[note - 1];
             pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, pChn->nVolume, nChn);
@@ -1954,7 +1954,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
             break;
         }
 
-        modplug::tracker::modevent_t::NOTE realNote = note;
+        modplug::tracker::modevent_t::note_t realNote = note;
         if((note >= NOTE_MIN) && (note <= NOTE_MAX))
             realNote = pIns->NoteMap[note - 1];
         pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, velocity, nChn);

@@ -173,7 +173,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPat];
 
         // This is used for -> MOD/XM conversion
-        vector<vector<modplug::tracker::modevent_t::PARAM> > cEffectMemory;
+        vector<vector<modplug::tracker::modevent_t::param_t> > cEffectMemory;
         cEffectMemory.resize(m_SndFile.GetNumChannels());
         for(size_t i = 0; i < m_SndFile.GetNumChannels(); i++)
         {

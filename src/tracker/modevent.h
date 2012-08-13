@@ -3,19 +3,35 @@
 #include <algorithm>
 #include <cstdint>
 
+#include <boost/strong_typedef.hpp>
+
 // Note definitions
-#define NOTE_NONE    		0
-#define NOTE_MIDDLEC    	(5*12+1)
-#define NOTE_KEYOFF    		0xFF //255
-#define NOTE_NOTECUT    	0xFE //254
-#define NOTE_FADE    		0xFD //253, IT's action for illegal notes - DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
-#define NOTE_PC    			0xFC //252, Param Control 'note'. Changes param value on first tick.
-#define NOTE_PCS    		0xFB //251, Param Control(Smooth) 'note'. Changes param value during the whole row.
-#define NOTE_MIN    		1
-#define NOTE_MAX    		120  //Defines maximum notevalue(with index starting from 1) as well as maximum number of notes.
-#define NOTE_MAX_SPECIAL    NOTE_KEYOFF
-#define NOTE_MIN_SPECIAL    NOTE_PCS
-#define NOTE_IS_VALID(n)    ((n) == NOTE_NONE || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))	// Checks whether a number represents a valid note (a "normal" note or no note, but not something like note off)
+#define NOTE_NONE    (::modplug::tracker::modevent_t::note_t(0))
+#define NOTE_MIDDLEC (::modplug::tracker::modevent_t::note_t(5*12+1))
+#define NOTE_KEYOFF  (::modplug::tracker::modevent_t::note_t(0xFF))
+#define NOTE_NOTECUT (::modplug::tracker::modevent_t::note_t(0xFE))
+
+// 253, IT's action for illegal notes
+// DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
+#define NOTE_FADE    (::modplug::tracker::modevent_t::note_t(0xFD))
+
+// 252, Param Control 'note'. Changes param value on first tick.
+#define NOTE_PC      (::modplug::tracker::modevent_t::note_t(0xFC))
+
+// 251, Param Control(Smooth) 'note'. Changes param value during the whole row.
+#define NOTE_PCS     (::modplug::tracker::modevent_t::note_t(0xFB))
+
+#define NOTE_MIN     (::modplug::tracker::modevent_t::note_t(1))
+#define NOTE_MAX     (::modplug::tracker::modevent_t::note_t(120))
+#define NOTE_COUNT   120
+
+#define NOTE_MAX_SPECIAL NOTE_KEYOFF
+#define NOTE_MIN_SPECIAL NOTE_PCS
+
+// Checks whether a number represents a valid note
+// (a "normal" note or no note, but not something like note off)
+#define NOTE_IS_VALID(n) \
+    ((n) == NOTE_NONE || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
 
 
 namespace modplug {
@@ -24,24 +40,25 @@ namespace tracker {
 namespace std = ::std;
 
 struct modevent_t {
-    typedef uint8_t NOTE;
-    typedef uint8_t INSTR;
-    typedef uint8_t VOL;
-    typedef uint8_t VOLCMD;
-    typedef uint8_t COMMAND;
-    typedef uint8_t PARAM;
+    //BOOST_STRONG_TYPEDEF(uint8_t, note_t)
+    typedef uint8_t note_t;
+    typedef uint8_t instr_t;
+    typedef uint8_t vol_t;
+    typedef uint8_t volcmd_t;
+    typedef uint8_t cmd_t;
+    typedef uint8_t param_t;
 
     // Defines the maximum value for column data when interpreted as 2-byte value
     // (for example volcmd and vol). The valid value range is [0, maxColumnValue].
     enum {maxColumnValue = 999};
 
     // Returns empty modcommand.
-    static modevent_t Empty() {modevent_t m = {0,0,0,0,0,0}; return m;}
+    static modevent_t Empty() {modevent_t m = {note_t(0),0,0,0,0,0}; return m;}
 
     bool operator ==(const modevent_t& mc) const { return (memcmp(this, &mc, sizeof(modevent_t)) == 0); }
     bool operator !=(const modevent_t& mc) const { return !(*this == mc); }
 
-    void Set(NOTE n, INSTR ins, uint16_t volcol, uint16_t effectcol) {note = n; instr = ins; SetValueVolCol(volcol); SetValueEffectCol(effectcol);}
+    void Set(note_t n, instr_t ins, uint16_t volcol, uint16_t effectcol) {note = n; instr = ins; SetValueVolCol(volcol); SetValueEffectCol(effectcol);}
 
     uint16_t GetValueVolCol() const {return GetValueVolCol(volcmd, vol);}
     static uint16_t GetValueVolCol(uint8_t volcmd, uint8_t vol) {return (volcmd << 8) + vol;}
@@ -69,7 +86,7 @@ struct modevent_t {
 
     // Returns true if and only if note is NOTE_PC or NOTE_PCS.
     bool IsPcNote() const { return note == NOTE_PC || note == NOTE_PCS; }
-    static bool IsPcNote(const NOTE note_id) { return note_id == NOTE_PC || note_id == NOTE_PCS; }
+    static bool IsPcNote(const note_t note_id) { return note_id == NOTE_PC || note_id == NOTE_PCS; }
 
     // Swap volume and effect column (doesn't do any conversion as it's mainly for importing formats with multiple effect columns, so beware!)
     void SwapEffects()
@@ -78,12 +95,12 @@ struct modevent_t {
     	std::swap(vol, param);
     }
 
-    uint8_t note;
-    uint8_t instr;
-    uint8_t volcmd;
-    uint8_t command;
-    uint8_t vol;
-    uint8_t param;
+    note_t note;
+    instr_t instr;
+    volcmd_t volcmd;
+    cmd_t command;
+    vol_t vol;
+    param_t param;
 };
 
 

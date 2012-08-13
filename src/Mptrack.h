@@ -346,7 +346,7 @@ void AddPluginParameternamesToCombobox(CComboBox& CBox, SNDMIXPLUGIN& plugarray)
 void AddPluginParameternamesToCombobox(CComboBox& CBox, CVstPlugin& plug);
 
 // Append note names in range [noteStart, noteEnd] to given combobox. Index starts from 0.
-void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modevent_t::NOTE noteStart, const modplug::tracker::modevent_t::NOTE noteEnd);
+void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modevent_t::note_t noteStart, const modplug::tracker::modevent_t::note_t noteEnd);
 
 // Append note names to combobox. If pSndFile != nullprt, appends only notes that are
 // available in the module type. If nInstr is given, instrument specific note names are used instead of
@@ -354,7 +354,7 @@ void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modevent_
 void AppendNotesToControlEx(CComboBox& combobox, const module_renderer* const pSndFile = nullptr, const INSTRUMENTINDEX nInstr = MAX_INSTRUMENTS);
 
 // Returns note name(such as "C-5") of given note. Regular notes are in range [1,MAX_NOTE].
-LPCTSTR GetNoteStr(const modplug::tracker::modevent_t::NOTE);
+LPCTSTR GetNoteStr(const modplug::tracker::modevent_t::note_t);
 
 ///////////////////////////////////////////////////
 // Tables
@@ -362,10 +362,23 @@ LPCTSTR GetNoteStr(const modplug::tracker::modevent_t::NOTE);
 extern const uint8_t gEffectColors[MAX_EFFECTS];
 extern const uint8_t gVolEffectColors[MAX_VOLCMDS];
 extern const LPCSTR szNoteNames[12];
-extern const LPCTSTR szDefaultNoteNames[NOTE_MAX];
+extern const LPCTSTR szDefaultNoteNames[NOTE_COUNT];
 //const LPCTSTR szSpecialNoteNames[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("PCs"), TEXT("PC"), TEXT("~~"), TEXT("^^"), TEXT("==")};
-const LPCTSTR szSpecialNoteNames[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("PCs"), TEXT("PC"), TEXT("Note Fade"), TEXT("Note Cut"), TEXT("Note Off")};
-const LPCTSTR szSpecialNoteShortDesc[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("Param Control (Smooth)"), TEXT("Param Control"), TEXT("Note Fade"), TEXT("Note Cut"), TEXT("Note Off")};
+
+const LPCTSTR szSpecialNoteNames[(size_t)(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL) + 1] = {
+    TEXT("PCs"),
+    TEXT("PC"),
+    TEXT("Note Fade"),
+    TEXT("Note Cut"),
+    TEXT("Note Off")
+};
+const LPCTSTR szSpecialNoteShortDesc[(size_t)(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL) + 1] = {
+    TEXT("Param Control (Smooth)"),
+    TEXT("Param Control"),
+    TEXT("Note Fade"),
+    TEXT("Note Cut"),
+    TEXT("Note Off")
+};
 
 // Make sure that special note arrays include string for every note.
 STATIC_ASSERT(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == ARRAYELEMCOUNT(szSpecialNoteNames));

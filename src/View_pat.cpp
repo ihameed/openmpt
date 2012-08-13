@@ -26,14 +26,15 @@ using namespace modplug::tracker;
 
 FindReplaceStruct CViewPattern::m_findReplace =
 {
-    {0,0,0,0,0,0}, {0,0,0,0,0,0},
+    { modevent_t::note_t(0), 0, 0, 0, 0, 0 },
+    { modevent_t::note_t(0), 0, 0, 0, 0, 0 },
     PATSEARCH_FULLSEARCH, PATSEARCH_REPLACEALL,
     0, 0,
     0,
     0, 0,
 };
 
-modplug::tracker::modevent_t CViewPattern::m_cmdOld = {0,0,0,0,0,0};
+modevent_t CViewPattern::m_cmdOld = {0,0,0,0,0,0};
 
 IMPLEMENT_SERIAL(CViewPattern, CModScrollView, 0)
 
@@ -2354,7 +2355,7 @@ void CViewPattern::Interpolate(PatternColumns type)
         const modplug::tracker::modevent_t srcCmd = *pSndFile->Patterns[m_nPattern].GetpModCommand(row0, nchn);
         const modplug::tracker::modevent_t destCmd = *pSndFile->Patterns[m_nPattern].GetpModCommand(row1, nchn);
 
-        modplug::tracker::modevent_t::NOTE PCnote = 0;
+        modplug::tracker::modevent_t::note_t PCnote = 0;
         uint16_t PCinst = 0, PCparam = 0;
 
         switch(type)
@@ -2484,8 +2485,8 @@ BOOL CViewPattern::TransposeSelection(int transp)
         const UINT col0 = ((m_dwBeginSel & 0xFFFF)+7) >> 3, col1 = GetChanFromCursor(m_dwEndSel);
         module_renderer *pSndFile = pModDoc->GetSoundFile();
         modplug::tracker::modevent_t *pcmd = pSndFile->Patterns[m_nPattern];
-        const modplug::tracker::modevent_t::NOTE noteMin = pSndFile->GetModSpecifications().noteMin;
-        const modplug::tracker::modevent_t::NOTE noteMax = pSndFile->GetModSpecifications().noteMax;
+        const modplug::tracker::modevent_t::note_t noteMin = pSndFile->GetModSpecifications().noteMin;
+        const modplug::tracker::modevent_t::note_t noteMax = pSndFile->GetModSpecifications().noteMax;
 
         if ((!pcmd) || (col0 > col1) || (col1 >= pSndFile->m_nChannels)
          || (row0 > row1) || (row1 >= pSndFile->Patterns[m_nPattern].GetNumRows())) return FALSE;
@@ -4396,11 +4397,11 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
             if(pSndFile->GetModSpecifications().HasVolCommand(VOLCMD_VOLUME))
             {
                 newcmd.volcmd = VOLCMD_VOLUME;
-                newcmd.vol = (modplug::tracker::modevent_t::VOL)volWrite;
+                newcmd.vol = (modplug::tracker::modevent_t::vol_t)volWrite;
             } else
             {
                 newcmd.command = CMD_VOLUME;
-                newcmd.param = (modplug::tracker::modevent_t::PARAM)volWrite;
+                newcmd.param = (modplug::tracker::modevent_t::param_t)volWrite;
             }
         }
 
@@ -4879,7 +4880,7 @@ bool CViewPattern::HandleSplit(modplug::tracker::modevent_t* p, int note)
 {
     CModDoc *pModDoc = GetDocument(); if (!pModDoc) return false;
 
-    modplug::tracker::modevent_t::INSTR ins = GetCurrentInstrument();
+    modplug::tracker::modevent_t::instr_t ins = GetCurrentInstrument();
     bool isSplit = false;
 
     if(pModDoc->GetSplitKeyboardSettings()->IsSplitActive())
