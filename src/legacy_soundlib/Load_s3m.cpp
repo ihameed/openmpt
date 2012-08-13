@@ -74,7 +74,7 @@ enum
     S3I_TYPE_ADMEL = 2,
 };
 
-void module_renderer::S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const
+void module_renderer::S3MConvert(modplug::tracker::modevent_t *m, bool bIT) const
 //--------------------------------------------------------
 {
     UINT command = m->command;
@@ -419,7 +419,7 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
          || (fail) ) continue;
         LPBYTE src = (LPBYTE)(lpStream+nInd);
         // Unpacking pattern
-        modplug::tracker::modcommand_t *p = Patterns[iPat];
+        modplug::tracker::modevent_t *p = Patterns[iPat];
         UINT row = 0;
         UINT j = 0;
         while (row < 64) // this fixes ftp://us.aminet.net/pub/aminet/mods/8voic/s3m_hunt.lha (was: while (j < len))
@@ -434,7 +434,7 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
                 UINT chn = b & 0x1F;
                 if (chn < m_nChannels)
                 {
-                    modplug::tracker::modcommand_t *m = &p[row * m_nChannels + chn];
+                    modplug::tracker::modevent_t *m = &p[row * m_nChannels + chn];
                     if (b & 0x20)
                     {
                         if(j + nInd + 2 >= dwMemLength) break;
@@ -493,7 +493,7 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
         // there are enough Zxx commands, so let's assume this was made to be played with PixPlay
         for(PATTERNINDEX nPat = 0; nPat < Patterns.Size(); nPat++) if(Patterns[nPat])
         {
-            modplug::tracker::modcommand_t *m = Patterns[nPat];
+            modplug::tracker::modevent_t *m = Patterns[nPat];
             for(UINT len = Patterns[nPat].GetNumRows() * m_nChannels; len; m++, len--)
             {
                 if(m->command == CMD_MIDI)
@@ -653,13 +653,13 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
         if (Patterns[i])
         {
             len = 2;
-            modplug::tracker::modcommand_t *p = Patterns[i];
+            modplug::tracker::modevent_t *p = Patterns[i];
             for (UINT row=0; row<64; row++) if (row < Patterns[i].GetNumRows())
             {
                 for (UINT j=0; j<m_nChannels; j++)
                 {
                     UINT b = j;
-                    modplug::tracker::modcommand_t *m = &p[row*m_nChannels+j];
+                    modplug::tracker::modevent_t *m = &p[row*m_nChannels+j];
                     UINT note = m->note;
                     UINT volcmd = m->volcmd;
                     UINT vol = m->vol;

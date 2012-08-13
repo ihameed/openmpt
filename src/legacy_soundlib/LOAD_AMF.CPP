@@ -54,7 +54,7 @@ typedef struct _AMFSAMPLE
 extern void Log(LPCSTR, ...);
 #endif
 
-void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const uint8_t *pTrack, UINT nRows, UINT nChannels)
+void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT nRows, UINT nChannels)
 //-------------------------------------------------------------------------------
 {
     UINT lastinstr = 0;
@@ -67,7 +67,7 @@ void AMF_Unpack(modplug::tracker::modcommand_t *pPat, const uint8_t *pTrack, UIN
         UINT cmd = pTrack[1];
         UINT arg = pTrack[2];
         if (row >= nRows) break;
-        modplug::tracker::modcommand_t *m = pPat + row * nChannels;
+        modplug::tracker::modevent_t *m = pPat + row * nChannels;
         if (cmd < 0x7F) // note+vol
         {
             m->note = cmd+1;
@@ -224,7 +224,7 @@ bool module_renderer::ReadAMF(const uint8_t * const lpStream, const uint32_t dwM
         for (UINT iPat=0; iPat<numpats; iPat++)
         {
             Patterns.Insert(iPat, 64);
-            modplug::tracker::modcommand_t* p = Patterns[iPat];
+            modplug::tracker::modevent_t* p = Patterns[iPat];
             if (!p) break;
             const UCHAR *pin = lpStream + dwMemPos;
             for (UINT i=0; i<8*64; i++)

@@ -144,7 +144,7 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
         if (rows > 256) rows = 256;
         if (rows < 16) rows = 16;
         if(Patterns.Insert(ipat, rows)) return true;
-        modplug::tracker::modcommand_t *m = Patterns[ipat];
+        modplug::tracker::modevent_t *m = Patterns[ipat];
         UINT patbrk = lpStream[dwMemPos];
         const uint8_t *p = lpStream + dwMemPos + 2;
         UINT max = rows*16*4;

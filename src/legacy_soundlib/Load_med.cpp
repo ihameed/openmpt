@@ -266,7 +266,7 @@ typedef struct tagMMD0EXP
 
 
 
-static void MedConvert(modplug::tracker::modcommand_t *p, const MMD0SONGHEADER *pmsh)
+static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pmsh)
 //---------------------------------------------------------------
 {
     const uint8_t bpmvals[9] = { 179,164,152,141,131,123,116,110,104};
@@ -817,7 +817,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
             tracks = pmb->numtracks;
             if (!tracks) tracks = m_nChannels;
             if(Patterns.Insert(iBlk, lines)) continue;
-            modplug::tracker::modcommand_t *p = Patterns[iBlk];
+            modplug::tracker::modevent_t *p = Patterns[iBlk];
             LPBYTE s = (LPBYTE)(lpStream + dwPos + 2);
             UINT maxlen = tracks*lines*3;
             if (maxlen + dwPos > dwMemLength - 2) break;
@@ -882,7 +882,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
                     }
                 }
             }
-            modplug::tracker::modcommand_t *p = Patterns[iBlk];
+            modplug::tracker::modevent_t *p = Patterns[iBlk];
             LPBYTE s = (LPBYTE)(lpStream + dwPos + 8);
             UINT maxlen = tracks*lines*4;
             if (maxlen + dwPos > dwMemLength - 8) break;

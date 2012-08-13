@@ -50,7 +50,7 @@ bool CPatternContainer::Insert(const PATTERNINDEX index, const ROWINDEX rows)
     {
     	if(index < specs.patternsMax)
     		m_Patterns.push_back(MODPATTERN(*this));
-    	else 
+    	else
     	{
     		ErrorBox(IDS_ERR_TOOMANYPAT, CMainFrame::GetMainFrame());
     		return true;
@@ -87,8 +87,8 @@ bool CPatternContainer::IsPatternEmpty(const PATTERNINDEX nPat) const
 {
     if(!IsValidPat(nPat))
     	return false;
-    
-    const modplug::tracker::modcommand_t *m = m_Patterns[nPat].m_ModCommands;
+
+    const modplug::tracker::modevent_t *m = m_Patterns[nPat].m_ModCommands;
     for(size_t i = m_Patterns[nPat].GetNumChannels() * m_Patterns[nPat].GetNumRows(); i > 0; i--, m++)
     {
     	if(!m->IsEmpty(true))
@@ -203,10 +203,9 @@ void ReadModPatterns(std::istream& iStrm, CPatternContainer& patc, const size_t)
     	nPatterns = nCount;
     LimitMax(nPatterns, ModSpecs::mptm.patternsMax);
     if (nPatterns > patc.Size())
-    	patc.ResizeArray(nPatterns);	
+    	patc.ResizeArray(nPatterns);
     for(uint16_t i = 0; i < nPatterns; i++)
     {
     	ssb.ReadItem(patc[i], &i, sizeof(i), &ReadModPattern);
     }
 }
-

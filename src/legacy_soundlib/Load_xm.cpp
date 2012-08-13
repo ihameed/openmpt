@@ -141,7 +141,7 @@ uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t 
         if (dwMemPos + dwSize + 4 > dwMemLength) return 0;
         dwMemPos += dwSize;
         if (dwMemPos + packsize > dwMemLength) return 0;
-        modplug::tracker::modcommand_t *p;
+        modplug::tracker::modevent_t *p;
         if (ipatmap < MAX_PATTERNS)
         {
             if(pSndFile->Patterns.Insert(ipatmap, rows))
@@ -819,7 +819,7 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
     // Writing patterns
     for (i = 0; i < nPatterns; i++) if (Patterns[i])
     {
-        modplug::tracker::modcommand_t *p = Patterns[i];
+        modplug::tracker::modevent_t *p = Patterns[i];
         UINT len = 0;
         // Empty patterns are always loaded as 64-row patterns in FT2, regardless of their real size...
         bool emptyPatNeedsFixing = (Patterns[i].GetNumRows() != 64);

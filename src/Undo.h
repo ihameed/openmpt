@@ -22,7 +22,7 @@ struct PATTERNUNDOBUFFER
     ROWINDEX patternsize;
     CHANNELINDEX firstChannel, numChannels;
     ROWINDEX firstRow, numRows;
-    modplug::tracker::modcommand_t *pbuffer;
+    modplug::tracker::modevent_t *pbuffer;
     bool linkToPrevious;
 };
 

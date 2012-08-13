@@ -137,7 +137,7 @@ bool module_renderer::ReadDSM(const uint8_t * const lpStream, const uint32_t dwM
             if(Patterns.Insert(nPat, 64))
                 break;
 
-            modplug::tracker::modcommand_t *m = Patterns[nPat];
+            modplug::tracker::modevent_t *m = Patterns[nPat];
             UINT row = 0;
             while ((row < 64) && (dwPos + 2 <= dwMemPos))
             {

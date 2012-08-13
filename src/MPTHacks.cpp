@@ -34,7 +34,7 @@ struct FixHackedPatterns
     	*foundHacks = false;
     }
 
-    void operator()(modplug::tracker::modcommand_t& m)
+    void operator()(modplug::tracker::modevent_t& m)
     {
     	// definitely not perfect yet. :)
     	// Probably missing: Some extended effect parameters
@@ -78,7 +78,7 @@ struct FixHackedPatterns
 
     	}
     }
-    
+
     const CModSpecifications *originalSpecs;
     MODTYPE type;
     bool autofix;

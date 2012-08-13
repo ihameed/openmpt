@@ -84,7 +84,7 @@ bool module_renderer::ReadWav(const uint8_t *lpStream, const uint32_t dwMemLengt
     	ChnSettings[iChn].dwFlags = 0;
     }
     // Setting up speed command
-    modplug::tracker::modcommand_t *pcmd = Patterns[0];
+    modplug::tracker::modevent_t *pcmd = Patterns[0];
     pcmd[0].command = CMD_SPEED;
     pcmd[0].param = (uint8_t)m_nDefaultSpeed;
     pcmd[0].note = 5*12+1;

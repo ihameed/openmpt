@@ -55,10 +55,10 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
     BEGIN_CRITICAL();
     if (newRowCount > m_Rows)
     {
-    	modplug::tracker::modcommand_t *p = AllocatePattern(newRowCount, sndFile.m_nChannels);
+    	modplug::tracker::modevent_t *p = AllocatePattern(newRowCount, sndFile.m_nChannels);
     	if (p)
     	{
-    		memcpy(p, m_ModCommands, sndFile.m_nChannels*m_Rows*sizeof(modplug::tracker::modcommand_t));
+    		memcpy(p, m_ModCommands, sndFile.m_nChannels*m_Rows*sizeof(modplug::tracker::modevent_t));
     		FreePattern(m_ModCommands);
     		m_ModCommands = p;
     		m_Rows = newRowCount;
@@ -66,7 +66,7 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
     } else
     {
     	bool bOk = true;
-    	modplug::tracker::modcommand_t *p = m_ModCommands;
+    	modplug::tracker::modevent_t *p = m_ModCommands;
     	UINT ndif = (m_Rows - newRowCount) * sndFile.m_nChannels;
     	UINT npos = newRowCount * sndFile.m_nChannels;
 #ifdef MODPLUG_TRACKER
@@ -93,10 +93,10 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
 #endif // MODPLUG_TRACKER
     	if (bOk)
     	{
-    		modplug::tracker::modcommand_t *pnew = AllocatePattern(newRowCount, sndFile.m_nChannels);
+    		modplug::tracker::modevent_t *pnew = AllocatePattern(newRowCount, sndFile.m_nChannels);
     		if (pnew)
     		{
-    			memcpy(pnew, m_ModCommands, sndFile.m_nChannels*newRowCount*sizeof(modplug::tracker::modcommand_t));
+    			memcpy(pnew, m_ModCommands, sndFile.m_nChannels*newRowCount*sizeof(modplug::tracker::modevent_t));
     			FreePattern(m_ModCommands);
     			m_ModCommands = pnew;
     			m_Rows = newRowCount;
@@ -114,7 +114,7 @@ void CPattern::ClearCommands()
 //----------------------------
 {
     if (m_ModCommands != nullptr)
-    	memset(m_ModCommands, 0, GetNumRows() * GetNumChannels() * sizeof(modplug::tracker::modcommand_t));
+    	memset(m_ModCommands, 0, GetNumRows() * GetNumChannels() * sizeof(modplug::tracker::modevent_t));
 }
 
 
@@ -133,7 +133,7 @@ void CPattern::Deallocate()
 bool CPattern::Expand()
 //---------------------
 {
-    modplug::tracker::modcommand_t *newPattern, *oldPattern;
+    modplug::tracker::modevent_t *newPattern, *oldPattern;
 
     module_renderer& sndFile = m_rPatternContainer.GetSoundFile();
     if(sndFile.m_pModDoc == nullptr) return true;
@@ -153,7 +153,7 @@ bool CPattern::Expand()
     oldPattern = m_ModCommands;
     for (ROWINDEX y = 0; y < nRows; y++)
     {
-    	memcpy(newPattern + y * 2 * nChns, oldPattern + y * nChns, nChns * sizeof(modplug::tracker::modcommand_t));
+    	memcpy(newPattern + y * 2 * nChns, oldPattern + y * nChns, nChns * sizeof(modplug::tracker::modevent_t));
     }
     m_ModCommands = newPattern;
     m_Rows = nRows * 2;
@@ -182,8 +182,8 @@ bool CPattern::Shrink()
     nRows /= 2;
     for (ROWINDEX y = 0; y < nRows; y++)
     {
-    	modplug::tracker::modcommand_t *psrc = sndFile.Patterns[nPattern] + (y * 2 * nChns);
-    	modplug::tracker::modcommand_t *pdest = sndFile.Patterns[nPattern] + (y * nChns);
+    	modplug::tracker::modevent_t *psrc = sndFile.Patterns[nPattern] + (y * 2 * nChns);
+    	modplug::tracker::modevent_t *pdest = sndFile.Patterns[nPattern] + (y * nChns);
     	for (CHANNELINDEX x = 0; x < nChns; x++)
     	{
     		pdest[x] = psrc[x];
@@ -244,16 +244,16 @@ bool CPattern::GetName(char *buffer, size_t maxChars) const
 ////////////////////////////////////////////////////////////////////////
 
 
-modplug::tracker::modcommand_t *CPattern::AllocatePattern(ROWINDEX rows, CHANNELINDEX nchns)
+modplug::tracker::modevent_t *CPattern::AllocatePattern(ROWINDEX rows, CHANNELINDEX nchns)
 //----------------------------------------------------------------------
 {
-    modplug::tracker::modcommand_t *p = new modplug::tracker::modcommand_t[rows*nchns];
-    if (p) memset(p, 0, rows*nchns*sizeof(modplug::tracker::modcommand_t));
+    modplug::tracker::modevent_t *p = new modplug::tracker::modevent_t[rows*nchns];
+    if (p) memset(p, 0, rows*nchns*sizeof(modplug::tracker::modevent_t));
     return p;
 }
 
 
-void CPattern::FreePattern(modplug::tracker::modcommand_t *pat)
+void CPattern::FreePattern(modplug::tracker::modevent_t *pat)
 //-----------------------------------------
 {
     if (pat) delete[] pat;
@@ -274,8 +274,8 @@ bool CPattern::WriteITPdata(FILE* f) const
     {
     	for(CHANNELINDEX c = 0; c<GetNumChannels(); c++)
     	{
-    		modplug::tracker::modcommand_t mc = GetModCommand(r,c);
-    		fwrite(&mc, sizeof(modplug::tracker::modcommand_t), 1, f);
+    		modplug::tracker::modevent_t mc = GetModCommand(r,c);
+    		fwrite(&mc, sizeof(modplug::tracker::modevent_t), 1, f);
     	}
     }
     return false;
@@ -284,23 +284,23 @@ bool CPattern::WriteITPdata(FILE* f) const
 bool CPattern::ReadITPdata(const uint8_t* const lpStream, uint32_t& streamPos, const uint32_t datasize, const uint32_t dwMemLength)
 //-----------------------------------------------------------------------------------------------
 {
-    if(streamPos > dwMemLength || datasize >= dwMemLength - streamPos || datasize < sizeof(modplug::tracker::modcommand_t))
+    if(streamPos > dwMemLength || datasize >= dwMemLength - streamPos || datasize < sizeof(modplug::tracker::modevent_t))
     	return true;
 
     const uint32_t startPos = streamPos;
     size_t counter = 0;
-    while(streamPos - startPos + sizeof(modplug::tracker::modcommand_t) <= datasize)
+    while(streamPos - startPos + sizeof(modplug::tracker::modevent_t) <= datasize)
     {
-    	modplug::tracker::modcommand_t temp;
-    	memcpy(&temp, lpStream+streamPos, sizeof(modplug::tracker::modcommand_t));
-    	modplug::tracker::modcommand_t& mc = GetModCommand(counter);
+    	modplug::tracker::modevent_t temp;
+    	memcpy(&temp, lpStream+streamPos, sizeof(modplug::tracker::modevent_t));
+    	modplug::tracker::modevent_t& mc = GetModCommand(counter);
     	mc.command = temp.command;
     	mc.instr = temp.instr;
     	mc.note = temp.note;
     	mc.param = temp.param;
     	mc.vol = temp.vol;
     	mc.volcmd = temp.volcmd;
-    	streamPos += sizeof(modplug::tracker::modcommand_t);
+    	streamPos += sizeof(modplug::tracker::modevent_t);
     	counter++;
     }
     if(streamPos != startPos + datasize)
@@ -368,7 +368,7 @@ void ReadModPattern(std::istream& iStrm, CPattern& pat, const size_t)
 }
 
 
-uint8_t CreateDiffMask(modplug::tracker::modcommand_t chnMC, modplug::tracker::modcommand_t newMC)
+uint8_t CreateDiffMask(modplug::tracker::modevent_t chnMC, modplug::tracker::modevent_t newMC)
 //------------------------------------------------------
 {
     uint8_t mask = 0;
@@ -399,13 +399,13 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
 
     const ROWINDEX rows = pat.GetNumRows();
     const CHANNELINDEX chns = pat.GetNumChannels();
-    vector<modplug::tracker::modcommand_t> lastChnMC(chns);
+    vector<modplug::tracker::modevent_t> lastChnMC(chns);
 
     for(ROWINDEX r = 0; r<rows; r++)
     {
     	for(CHANNELINDEX c = 0; c<chns; c++)
     	{
-    		const modplug::tracker::modcommand_t m = *pat.GetpModCommand(r, c);
+    		const modplug::tracker::modevent_t m = *pat.GetpModCommand(r, c);
     		// Writing only commands not writting in IT-pattern writing:
     		// For now this means only NOTE_PC and NOTE_PCS.
     		if(!m.IsPcNote())
@@ -454,7 +454,7 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
     const CHANNELINDEX chns = pat.GetNumChannels();
     const ROWINDEX rows = pat.GetNumRows();
 
-    vector<modplug::tracker::modcommand_t> lastChnMC(chns);
+    vector<modplug::tracker::modevent_t> lastChnMC(chns);
 
     ROWINDEX row = 0;
     while(row < rows && iStrm.good())
@@ -476,8 +476,8 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
     		Binaryread<uint8_t>(iStrm, diffmask);
     	uint8_t temp = 0;
 
-    	modplug::tracker::modcommand_t dummy;
-    	modplug::tracker::modcommand_t& m = (ch < chns) ? *pat.GetpModCommand(row, ch) : dummy;
+    	modplug::tracker::modevent_t dummy;
+    	modplug::tracker::modevent_t& m = (ch < chns) ? *pat.GetpModCommand(row, ch) : dummy;
 
     	READITEM(noteBit, note);
     	READITEM(instrBit, instr);

@@ -229,8 +229,8 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
     if(nChannels == 0)
         return false;
 
-    modplug::tracker::modcommand_t *mrow = pSndFile->Patterns[nPat];
-    modplug::tracker::modcommand_t *m = mrow;
+    modplug::tracker::modevent_t *mrow = pSndFile->Patterns[nPat];
+    modplug::tracker::modevent_t *m = mrow;
     ROWINDEX nRow = 0;
 
     while((nRow < nRows) && (dwMemPos < dwMemLength))

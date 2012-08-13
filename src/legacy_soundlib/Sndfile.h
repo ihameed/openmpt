@@ -543,7 +543,7 @@ private:
 public:
     // "importance" of every FX command. Table is used for importing from formats with multiple effect columns
     // and is approximately the same as in SchismTracker.
-    static uint16_t module_renderer::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd);
+    static uint16_t module_renderer::GetEffectWeight(modplug::tracker::modevent_t::COMMAND cmd);
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce);
 
@@ -819,14 +819,14 @@ public:
     // MOD Convert function
     MODTYPE GetBestSaveFormat() const;
     MODTYPE GetSaveFormats() const;
-    void ConvertModCommand(modplug::tracker::modcommand_t *) const;
-    void S3MConvert(modplug::tracker::modcommand_t *m, bool bIT) const;
+    void ConvertModCommand(modplug::tracker::modevent_t *) const;
+    void S3MConvert(modplug::tracker::modevent_t *m, bool bIT) const;
     void S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCompatibilityExport = false) const;
-    uint16_t ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
+    uint16_t ModSaveCommand(const modplug::tracker::modevent_t *m, const bool bXM, const bool bCompatibilityExport = false) const;
 
-    static void ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
-    static void MODExx2S3MSxx(modplug::tracker::modcommand_t *m); // Convert Exx to Sxx
-    static void S3MSxx2MODExx(modplug::tracker::modcommand_t *m); // Convert Sxx to Exx
+    static void ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
+    static void MODExx2S3MSxx(modplug::tracker::modevent_t *m); // Convert Exx to Sxx
+    static void S3MSxx2MODExx(modplug::tracker::modevent_t *m); // Convert Sxx to Exx
     void SetupMODPanning(bool bForceSetup = false); // Setup LRRL panning, max channel volume
 };
 

@@ -155,9 +155,9 @@ struct SplitKeyboardSettings
 //==========================
 {
     bool IsSplitActive() const { return (octaveLink && (octaveModifier != 0)) || (splitInstrument > 0) || (splitVolume != 0); }
-    modplug::tracker::modcommand_t::NOTE splitNote;
-    modplug::tracker::modcommand_t::INSTR splitInstrument;
-    modplug::tracker::modcommand_t::VOL splitVolume;
+    modplug::tracker::modevent_t::NOTE splitNote;
+    modplug::tracker::modevent_t::INSTR splitInstrument;
+    modplug::tracker::modevent_t::VOL splitVolume;
     int octaveModifier;    // determines by how many octaves the notes should be transposed up or down
     bool octaveLink;    // apply octaveModifier
 };

@@ -528,7 +528,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
             break;
 
         // Read pattern.
-        modplug::tracker::modcommand_t *row_data;
+        modplug::tracker::modevent_t *row_data;
         row_data = Patterns[nPat];
 
         for(int nRow = 0; nRow < patternSize; nRow++)
@@ -543,7 +543,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 if(dwRowOffset + 1 > dwMemLength) return false;
                 uint8_t mask = lpStream[dwRowOffset];
                 // Point to the correct channel
-                modplug::tracker::modcommand_t *m = row_data + min(m_nChannels - 1, lpStream[dwRowOffset + 1]);
+                modplug::tracker::modevent_t *m = row_data + min(m_nChannels - 1, lpStream[dwRowOffset + 1]);
                 dwRowOffset += 2;
 
                 if(mask & 0x80)
@@ -789,7 +789,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
             if(subsongs[i].restartPos != ORDERINDEX_INVALID)
             {
                 ROWINDEX lastRow = Patterns[endPattern].GetNumRows() - 1;
-                modplug::tracker::modcommand_t *row_data;
+                modplug::tracker::modevent_t *row_data;
                 row_data = Patterns[endPattern];
                 for(uint32_t nCell = 0; nCell < m_nChannels * Patterns[endPattern].GetNumRows(); nCell++, row_data++)
                 {
@@ -1001,7 +1001,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
             if(Patterns.Insert(nPat, phdr->numRows))
                 break;
 
-            modplug::tracker::modcommand_t *row_data;
+            modplug::tracker::modevent_t *row_data;
             ROWINDEX iRow = 0;
 
             while(dwMemPos < dwNextPattern && iRow < phdr->numRows)

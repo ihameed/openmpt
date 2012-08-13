@@ -611,7 +611,7 @@ bool module_renderer::SaveITProject(LPCSTR lpszFileName)
     }
 
     // modcommand data length
-    id = sizeof(modplug::tracker::modcommand_t);
+    id = sizeof(modplug::tracker::modevent_t);
     fwrite(&id, 1, sizeof(id), f);
 
     // patterns data content

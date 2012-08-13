@@ -18,7 +18,7 @@ extern uint16_t ProTrackerPeriodTable[6*12];
 //////////////////////////////////////////////////////////
 // ProTracker / NoiseTracker MOD/NST file support
 
-void module_renderer::ConvertModCommand(modplug::tracker::modcommand_t *m) const
+void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
 //-----------------------------------------------------
 {
     UINT command = m->command, param = m->param;
@@ -65,7 +65,7 @@ void module_renderer::ConvertModCommand(modplug::tracker::modcommand_t *m) const
 }
 
 
-uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modcommand_t *m, const bool bXM, const bool bCompatibilityExport) const
+uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, const bool bXM, const bool bCompatibilityExport) const
 //---------------------------------------------------------------------------------------------------------
 {
     UINT command = m->command, param = m->param;
@@ -234,7 +234,7 @@ struct FixMODPatterns
         this->bPanning = bPanning;
     }
 
-    void operator()(modplug::tracker::modcommand_t& m)
+    void operator()(modplug::tracker::modevent_t& m)
     {
         // Fix VBlank MODs
         if(m.command == CMD_TEMPO && this->bVBlank)
@@ -432,7 +432,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
         {
             if (dwMemPos + nMaxChn * 256 > dwMemLength) break;
 
-            modplug::tracker::modcommand_t *m;
+            modplug::tracker::modevent_t *m;
             if(bFLT8)
             {
                 if((ipat & 1) == 0)
@@ -448,7 +448,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
             }
 
             size_t instrWithoutNoteCount = 0;    // For detecting PT1x mode
-            vector<modplug::tracker::modcommand_t::INSTR> lastInstrument(m_nChannels, 0);
+            vector<modplug::tracker::modevent_t::INSTR> lastInstrument(m_nChannels, 0);
 
             const uint8_t *p = lpStream + dwMemPos;
 
@@ -645,7 +645,7 @@ bool module_renderer::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCo
         uint8_t s[64*4];
         if (Patterns[ipat])    				//if pattern exists
         {
-            modplug::tracker::modcommand_t *m = Patterns[ipat];
+            modplug::tracker::modevent_t *m = Patterns[ipat];
             for (UINT i=0; i<64; i++) {    			//for all rows
                 if (i < Patterns[ipat].GetNumRows()) {    		//if row exists
                     LPBYTE p=s;

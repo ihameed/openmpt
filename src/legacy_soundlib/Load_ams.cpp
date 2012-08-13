@@ -184,7 +184,7 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
         dwMemPos += 4;
         if ((len >= dwMemLength) || (dwMemPos + len > dwMemLength)) return true;
         // Pattern has been inserted when reading pattern names
-        modplug::tracker::modcommand_t* m = Patterns[iPat];
+        modplug::tracker::modevent_t* m = Patterns[iPat];
         if (!m) return true;
         const uint8_t *p = lpStream + dwMemPos;
         UINT row = 0, i = 0;

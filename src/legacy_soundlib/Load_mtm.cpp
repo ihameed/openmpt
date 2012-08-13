@@ -117,7 +117,7 @@ bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
         for (UINT n=0; n<32; n++) if ((pSeq[n]) && (pSeq[n] <= pmh->numtracks) && (n < m_nChannels))
         {
             const uint8_t * p = pTracks + 192 * (pSeq[n]-1);
-            modplug::tracker::modcommand_t *m = Patterns[pat] + n;
+            modplug::tracker::modevent_t *m = Patterns[pat] + n;
             for (UINT i = 0; i < nPatRows; i++, m += m_nChannels, p += 3)
             {
                 if (p[0] & 0xFC) m->note = (p[0] >> 2) + 37;

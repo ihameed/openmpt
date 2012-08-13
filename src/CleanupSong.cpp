@@ -345,7 +345,7 @@ struct OrigPatSettings
     bool isPatUsed;				// Is pattern used in sequence?
     PATTERNINDEX newIndex;		// map old pattern index <-> new pattern index
     // This stuff is needed for copying the old pattern properties to the new pattern number
-    modplug::tracker::modcommand_t *data;			// original pattern data
+    modplug::tracker::modevent_t *data;			// original pattern data
     ROWINDEX numRows;			// original pattern sizes
     ROWINDEX rowsPerBeat;		// original pattern highlight
     ROWINDEX rowsPerMeasure;	// original pattern highlight
@@ -673,7 +673,7 @@ bool CModCleanupDlg::RearrangeSamples()
     {
     	for (PATTERNINDEX nPat = 0; nPat < pSndFile->Patterns.Size(); nPat++) if (pSndFile->Patterns[nPat])
     	{
-    		modplug::tracker::modcommand_t *m = pSndFile->Patterns[nPat];
+    		modplug::tracker::modevent_t *m = pSndFile->Patterns[nPat];
     		for(UINT len = pSndFile->Patterns[nPat].GetNumRows() * pSndFile->GetNumChannels(); len; m++, len--)
     		{
     			if(!m->IsPcNote() &&  m->instr <= pSndFile->GetNumSamples()) m->instr = (uint8_t)nSampleMap[m->instr];
@@ -780,7 +780,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
     	{
     		for (PATTERNINDEX iPat = 0; iPat < pSndFile->Patterns.Size(); iPat++) if (pSndFile->Patterns[iPat])
     		{
-    			modplug::tracker::modcommand_t *p = pSndFile->Patterns[iPat];
+    			modplug::tracker::modevent_t *p = pSndFile->Patterns[iPat];
     			UINT nLen = pSndFile->m_nChannels * pSndFile->Patterns[iPat].GetNumRows();
     			while (nLen--)
     			{
@@ -788,7 +788,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
     				{
     					for (UINT k=0; k<nSwap; k++)
     					{
-    						if (p->instr == swapmap[k]) p->instr = (modplug::tracker::modcommand_t::INSTR)swapdest[k];
+    						if (p->instr == swapmap[k]) p->instr = (modplug::tracker::modevent_t::INSTR)swapdest[k];
     					}
     				}
     				p++;

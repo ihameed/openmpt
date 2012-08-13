@@ -1103,7 +1103,7 @@ void module_renderer::SetCurrentPos(UINT nPos)
     UINT nRow = nPos;
     if ((nRow) && (Order[nPattern] < Patterns.Size()))
     {
-        modplug::tracker::modcommand_t *p = Patterns[Order[nPattern]];
+        modplug::tracker::modevent_t *p = Patterns[Order[nPattern]];
         if ((p) && (nRow < Patterns[Order[nPattern]].GetNumRows()))
         {
             bool bOk = false;
@@ -2489,7 +2489,7 @@ bool module_renderer::IsSampleUsed(SAMPLEINDEX nSample) const
     {
         for (UINT i=0; i<Patterns.Size(); i++) if (Patterns[i])
         {
-            const modplug::tracker::modcommand_t *m = Patterns[i];
+            const modplug::tracker::modevent_t *m = Patterns[i];
             for (UINT j=m_nChannels*Patterns[i].GetNumRows(); j; m++, j--)
             {
                 if (m->instr == nSample && !m->IsPcNote()) return true;
@@ -2506,7 +2506,7 @@ bool module_renderer::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
     if ((!nInstr) || (nInstr > GetNumInstruments()) || (!Instruments[nInstr])) return false;
     for (UINT i=0; i<Patterns.Size(); i++) if (Patterns[i])
     {
-        const modplug::tracker::modcommand_t *m = Patterns[i];
+        const modplug::tracker::modevent_t *m = Patterns[i];
         for (UINT j=m_nChannels*Patterns[i].GetNumRows(); j; m++, j--)
         {
             if (m->instr == nInstr && !m->IsPcNote()) return true;
@@ -2531,7 +2531,7 @@ SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
 
     for (PATTERNINDEX nPat = 0; nPat < GetNumPatterns(); nPat++)
     {
-        const modplug::tracker::modcommand_t *p = Patterns[nPat];
+        const modplug::tracker::modevent_t *p = Patterns[nPat];
         if(p == nullptr)
         {
             continue;

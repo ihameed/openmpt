@@ -260,7 +260,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
         // position in THIS pattern
         uint32_t iPatternPos = iPatternsOffset + 2;
 
-        modplug::tracker::modcommand_t *p = Patterns[iPat];
+        modplug::tracker::modevent_t *p = Patterns[iPat];
 
         for(UINT iRow = 0; iRow < 64; iRow++)
         {
@@ -275,7 +275,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                 UINT channel = bChannel & 0x1f;
                 if(channel >= m_nChannels) break; // better safe than sorry!
 
-                modplug::tracker::modcommand_t *m = &p[iRow * m_nChannels + channel];
+                modplug::tracker::modevent_t *m = &p[iRow * m_nChannels + channel];
 
                 if(bChannel & 0x20)
                 {

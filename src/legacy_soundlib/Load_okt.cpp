@@ -111,7 +111,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
     	return;
 
     const CHANNELINDEX nChns = pSndFile->GetNumChannels();
-    modplug::tracker::modcommand_t *mrow = pSndFile->Patterns[nPat], *m;
+    modplug::tracker::modevent_t *mrow = pSndFile->Patterns[nPat], *m;
 
     for(ROWINDEX nRow = 0; nRow < nRows; nRow++, mrow += nChns)
     {

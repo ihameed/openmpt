@@ -13,7 +13,7 @@ extern uint8_t ImpulseTrackerPortaVolCmd[16];
 
 
 // Convert an Exx command (MOD) to Sxx command (S3M)
-void module_renderer::MODExx2S3MSxx(modplug::tracker::modcommand_t *m)
+void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
 //-------------------------------------------
 {
     if(m->command != CMD_MODCMDEX) return;
@@ -38,7 +38,7 @@ void module_renderer::MODExx2S3MSxx(modplug::tracker::modcommand_t *m)
 
 
 // Convert an Sxx command (S3M) to Exx command (MOD)
-void module_renderer::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
+void module_renderer::S3MSxx2MODExx(modplug::tracker::modevent_t *m)
 //-------------------------------------------
 {
     if(m->command != CMD_S3MCMDEX) return;
@@ -61,7 +61,7 @@ void module_renderer::S3MSxx2MODExx(modplug::tracker::modcommand_t *m)
 
 
 // Convert a mod command from one format to another.
-void module_renderer::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE nOldType, MODTYPE nNewType)
+void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nOldType, MODTYPE nNewType)
 //--------------------------------------------------------------------------------
 {
     // helper variables
@@ -106,7 +106,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE 
     {
     	if(m->IsPcNote())
     	{
-    		modplug::tracker::modcommand_t::COMMAND newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
+    		modplug::tracker::modevent_t::COMMAND newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
     		if(!GetModSpecifications(nNewType).HasCommand(newcommand))
     		{
     			newcommand = CMD_MIDI;	// assuming that this was CMD_SMOOTHMIDI
@@ -116,7 +116,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE 
     			newcommand = CMD_NONE;
     		}
 
-    		m->param = (uint8_t)(min(modplug::tracker::modcommand_t::maxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modcommand_t::maxColumnValue);
+    		m->param = (uint8_t)(min(modplug::tracker::modevent_t::maxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::maxColumnValue);
     		m->command = newcommand; // might be removed later
     		m->volcmd = VOLCMD_NONE;
     		m->note = NOTE_NONE;
@@ -619,7 +619,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modcommand_t *m, MODTYPE 
 
 // "importance" of every FX command. Table is used for importing from formats with multiple effect colums
 // and is approximately the same as in SchismTracker.
-uint16_t module_renderer::GetEffectWeight(modplug::tracker::modcommand_t::COMMAND cmd)
+uint16_t module_renderer::GetEffectWeight(modplug::tracker::modevent_t::COMMAND cmd)
 //---------------------------------------------------------
 {
     switch(cmd)
@@ -688,7 +688,7 @@ bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t n
     }
 
     CHANNELINDEX nScanChnMin = nChn, nScanChnMax = nChn;
-    modplug::tracker::modcommand_t *p = Patterns[nPat], *m;
+    modplug::tracker::modevent_t *p = Patterns[nPat], *m;
 
     // Scan all channels
     if(nChn == CHANNELINDEX_INVALID)

@@ -200,9 +200,9 @@ void TestMisc()
     VERIFY_EQUAL(ConvertStrTo<double>("-0.5e-6"), -0.5e-6);
     VERIFY_EQUAL(ConvertStrTo<double>("58.65403492763"), 58.65403492763);
 
-    VERIFY_EQUAL(modplug::tracker::modcommand_t::IsPcNote(NOTE_MAX), false);
-    VERIFY_EQUAL(modplug::tracker::modcommand_t::IsPcNote(NOTE_PC), true);
-    VERIFY_EQUAL(modplug::tracker::modcommand_t::IsPcNote(NOTE_PCS), true);
+    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NOTE_MAX), false);
+    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NOTE_PC), true);
+    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NOTE_PCS), true);
 }
 
 
@@ -470,8 +470,8 @@ void GenerateCommands(CPattern& pat, const double dProbPcs, const double dProbPc
     			i->note = NOTE_PC;
 
     		i->instr = Rand<uint8_t>(0, MAX_MIXPLUGINS);
-    		i->SetValueVolCol(Rand<uint16_t>(0, modplug::tracker::modcommand_t::maxColumnValue));
-    		i->SetValueEffectCol(Rand<uint16_t>(0, modplug::tracker::modcommand_t::maxColumnValue));
+    		i->SetValueVolCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::maxColumnValue));
+    		i->SetValueEffectCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::maxColumnValue));
     	}
     	else
     		i->Clear();
@@ -506,7 +506,7 @@ void TestPCnoteSerialization()
     GenerateCommands(pSndFile->Patterns[2], 0.5, 0.5);
 
     //
-    vector<modplug::tracker::modcommand_t> pat[3];
+    vector<modplug::tracker::modevent_t> pat[3];
     const size_t numCommands[] = {	pSndFile->GetNumChannels() * pSndFile->Patterns[0].GetNumRows(),
     								pSndFile->GetNumChannels() * pSndFile->Patterns[1].GetNumRows(),
     								pSndFile->GetNumChannels() * pSndFile->Patterns[2].GetNumRows()

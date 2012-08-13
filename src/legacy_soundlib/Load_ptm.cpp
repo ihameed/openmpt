@@ -151,7 +151,7 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
         if(Patterns.Insert(ipat, 64))
             break;
         //
-        modplug::tracker::modcommand_t *m = Patterns[ipat];
+        modplug::tracker::modevent_t *m = Patterns[ipat];
         for (UINT row=0; ((row < 64) && (dwMemPos < dwMemLength)); )
         {
             UINT b = lpStream[dwMemPos++];

@@ -449,7 +449,7 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
     				// is this a valid pattern? adjust pattern jump commands, if necessary.
     				if(m_pSndFile->Patterns.IsValidPat(copyPat))
     				{
-    					modplug::tracker::modcommand_t *m = m_pSndFile->Patterns[copyPat];
+    					modplug::tracker::modevent_t *m = m_pSndFile->Patterns[copyPat];
     					for (UINT len = m_pSndFile->Patterns[copyPat].GetNumRows() * m_pSndFile->m_nChannels; len; m++, len--)
     					{
     						if(m->command == CMD_POSITIONJUMP && m->param >= startOrd)
@@ -513,7 +513,7 @@ bool ModSequenceSet::MergeSequences()
     		// Try to fix patterns (Bxx commands)
     		if(!m_pSndFile->Patterns.IsValidPat(nPat)) continue;
 
-    		modplug::tracker::modcommand_t *m = m_pSndFile->Patterns[nPat];
+    		modplug::tracker::modevent_t *m = m_pSndFile->Patterns[nPat];
     		for (UINT len = 0; len < m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels; m++, len++)
     		{
     			if(m->command == CMD_POSITIONJUMP)
@@ -526,9 +526,9 @@ bool ModSequenceSet::MergeSequences()
     					{
     						// could create new pattern - copy data over and continue from here.
     						At(nFirstOrder + nOrd) = nNewPat;
-    						modplug::tracker::modcommand_t *pSrc = m_pSndFile->Patterns[nPat];
-    						modplug::tracker::modcommand_t *pDest = m_pSndFile->Patterns[nNewPat];
-    						memcpy(pDest, pSrc, m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels * sizeof(modplug::tracker::modcommand_t));
+    						modplug::tracker::modevent_t *pSrc = m_pSndFile->Patterns[nPat];
+    						modplug::tracker::modevent_t *pDest = m_pSndFile->Patterns[nNewPat];
+    						memcpy(pDest, pSrc, m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels * sizeof(modplug::tracker::modevent_t));
     						m = pDest + len;
     						patternsFixed.resize(max(nNewPat + 1, (PATTERNINDEX)patternsFixed.size()), SEQUENCEINDEX_INVALID);
     						nPat = nNewPat;

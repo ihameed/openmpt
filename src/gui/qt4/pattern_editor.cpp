@@ -146,7 +146,7 @@ struct note_column: pattern_column {
     }
 
     void draw_note(const draw_state &state, int x, int y,
-        const modcommand_t &evt)
+        const modevent_t &evt)
     {
         auto &metrics = state.font_metrics;
         auto note = evt.note;
@@ -191,7 +191,7 @@ struct note_column: pattern_column {
     }
 
     void draw_instr(const draw_state &state, int x, int y,
-        const modcommand_t &evt)
+        const modevent_t &evt)
     {
         auto &metrics = state.font_metrics;
         auto instr = evt.instr;
@@ -225,7 +225,7 @@ struct note_column: pattern_column {
     }
 
     void draw_vol(const draw_state &state, int x, int y,
-        const modcommand_t &evt)
+        const modevent_t &evt)
     {
         auto &metrics = state.font_metrics;
         if (evt.volcmd) {
@@ -257,7 +257,7 @@ struct note_column: pattern_column {
     }
 
     void draw_cmd(const draw_state &state, int x, int y,
-        const modcommand_t &evt)
+        const modevent_t &evt)
     {
         auto &metrics = state.font_metrics;
         if (evt.command) {

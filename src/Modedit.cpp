@@ -176,15 +176,15 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     			first = false;
     		}
 
-    		modplug::tracker::modcommand_t *p = m_SndFile.Patterns[nPat];
-    		modplug::tracker::modcommand_t *newp = CPattern::AllocatePattern(m_SndFile.Patterns[nPat].GetNumRows(), nRemainingChannels);
+    		modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat];
+    		modplug::tracker::modevent_t *newp = CPattern::AllocatePattern(m_SndFile.Patterns[nPat].GetNumRows(), nRemainingChannels);
     		if(!newp)
     		{
     			END_CRITICAL();
     			CMainFrame::GetMainFrame()->MessageBox("ERROR: Pattern allocation failed in ReArrangechannels(...)" , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
     			return CHANNELINDEX_INVALID;
     		}
-    		modplug::tracker::modcommand_t *tmpsrc = p, *tmpdest = newp;
+    		modplug::tracker::modevent_t *tmpsrc = p, *tmpdest = newp;
     		for(ROWINDEX nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
     		{
     			for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
@@ -192,7 +192,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     				if(newOrder[nChn] < GetNumChannels()) //Case: getting old channel to the new channel order.
     					*tmpdest = tmpsrc[nRow * GetNumChannels() + newOrder[nChn]];
     				else //Case: figure newOrder[k] is not the index of any current channel, so adding a new channel.
-    					*tmpdest = modplug::tracker::modcommand_t::Empty();
+    					*tmpdest = modplug::tracker::modevent_t::Empty();
 
     			}
     		}
@@ -304,12 +304,12 @@ struct ConvertInstrumentsToSamplesInPatterns
     	this->pSndFile = pSndFile;
     }
 
-    void operator()(modplug::tracker::modcommand_t& m)
+    void operator()(modplug::tracker::modevent_t& m)
     {
     	if(m.instr)
     	{
-    		modplug::tracker::modcommand_t::INSTR instr = m.instr, newinstr = 0;
-    		modplug::tracker::modcommand_t::NOTE note = m.note, newnote = note;
+    		modplug::tracker::modevent_t::INSTR instr = m.instr, newinstr = 0;
+    		modplug::tracker::modevent_t::NOTE note = m.note, newnote = note;
     		if((note >= NOTE_MIN) && (note <= NOTE_MAX))
     			note--;
     		else
@@ -780,7 +780,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t d
     		p += strlen(p);
     		for (UINT row=0; row<nrows; row++)
     		{
-    			modplug::tracker::modcommand_t *m = m_SndFile.Patterns[nPattern];
+    			modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPattern];
     			if ((row + (dwBeginSel >> 16)) >= m_SndFile.Patterns[nPattern].GetNumRows()) break;
     			m += (row+(dwBeginSel >> 16))*m_SndFile.m_nChannels;
     			m += (colmin >> 3);
@@ -916,7 +916,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     		bool bFirstUndo = true;		// for chaining undos (see overflow paste)
     		MODTYPE origFormat = MOD_TYPE_IT;	// paste format
     		size_t pos, startPos = 0;
-    		modplug::tracker::modcommand_t *m = m_SndFile.Patterns[nPattern];
+    		modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPattern];
 
     		const bool doOverflowPaste = (CMainFrame::m_dwPatternSetup & PATTERN_OVERFLOWPASTE) && (pasteMode != pm_pasteflood) && (pasteMode != pm_pushforwardpaste);
     		const bool doITStyleMix = (pasteMode == pm_mixpaste_it);
@@ -993,7 +993,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
 
     					// ITSyle mixpaste requires that we keep a copy of the thing we are about to paste on
     					// so that we can refer back to check if there was anything in e.g. the note column before we pasted.
-    					const modplug::tracker::modcommand_t origModCmd = m[col];
+    					const modplug::tracker::modevent_t origModCmd = m[col];
 
     					// push channel data below paste point first.
     					if(pasteMode == pm_pushforwardpaste)
@@ -1373,7 +1373,7 @@ bool CModDoc::IsChannelUnused(CHANNELINDEX nChn) const
     {
     	if(m_SndFile.Patterns.IsValidPat(nPat))
     	{
-    		const modplug::tracker::modcommand_t *p = m_SndFile.Patterns[nPat] + nChn;
+    		const modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat] + nChn;
     		for(ROWINDEX nRow = m_SndFile.Patterns[nPat].GetNumRows(); nRow > 0; nRow--, p += nChannels)
     		{
     			if(!p->IsEmpty())

@@ -141,7 +141,7 @@ static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
     *pp = p;
 }
 
-static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpStream, uint32_t *dwMP, const uint32_t dwMemLength)
+static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStream, uint32_t *dwMP, const uint32_t dwMemLength)
 //---------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_ULTENV(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -211,7 +211,7 @@ static int ReadULTEvent(modplug::tracker::modcommand_t *note, const uint8_t *lpS
     }
     if (n < 5)
     {
-    	if (module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
+    	if (module_renderer::GetEffectWeight((modplug::tracker::modevent_t::COMMAND)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modevent_t::COMMAND)cmd2))
     	{
     		std::swap(cmd1, cmd2);
     		std::swap(param1, param2);
@@ -246,7 +246,7 @@ struct PostFixUltCommands
     	isPortaActive.resize(numChannels, false);
     }
 
-    void operator()(modplug::tracker::modcommand_t& m)
+    void operator()(modplug::tracker::modevent_t& m)
     {
     	// Attempt to fix portamentos.
     	// UltraTracker will slide until the destination note is reached or 300 is encountered.
@@ -434,8 +434,8 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
 
     for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
     {
-    	modplug::tracker::modcommand_t evnote;
-    	modplug::tracker::modcommand_t *note;
+    	modplug::tracker::modevent_t evnote;
+    	modplug::tracker::modevent_t *note;
     	int repeat;
     	evnote.Clear();
 

@@ -632,7 +632,7 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
             break;
         }
         dwGlobalFlags |= MIDIGLOBAL_SONGENDED;
-        modplug::tracker::modcommand_t *m = Patterns[pat] + row * m_nChannels;
+        modplug::tracker::modevent_t *m = Patterns[pat] + row * m_nChannels;
         // Parse Tracks
         for (UINT trk=0; trk<tracks; trk++) if (miditracks[trk].ptracks)
         {

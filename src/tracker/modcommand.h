@@ -23,7 +23,7 @@ namespace tracker {
 
 namespace std = ::std;
 
-struct modcommand_t {
+struct modevent_t {
     typedef uint8_t NOTE;
     typedef uint8_t INSTR;
     typedef uint8_t VOL;
@@ -36,10 +36,10 @@ struct modcommand_t {
     enum {maxColumnValue = 999};
 
     // Returns empty modcommand.
-    static modcommand_t Empty() {modcommand_t m = {0,0,0,0,0,0}; return m;}
+    static modevent_t Empty() {modevent_t m = {0,0,0,0,0,0}; return m;}
 
-    bool operator ==(const modcommand_t& mc) const { return (memcmp(this, &mc, sizeof(modcommand_t)) == 0); }
-    bool operator !=(const modcommand_t& mc) const { return !(*this == mc); }
+    bool operator ==(const modevent_t& mc) const { return (memcmp(this, &mc, sizeof(modevent_t)) == 0); }
+    bool operator !=(const modevent_t& mc) const { return !(*this == mc); }
 
     void Set(NOTE n, INSTR ins, uint16_t volcol, uint16_t effectcol) {note = n; instr = ins; SetValueVolCol(volcol); SetValueEffectCol(effectcol);}
 
@@ -52,7 +52,7 @@ struct modcommand_t {
     void SetValueEffectCol(const uint16_t val) {command = static_cast<uint8_t>(val >> 8); param = static_cast<uint8_t>(val & 0xFF);}
 
     // Clears modcommand.
-    void Clear() {memset(this, 0, sizeof(modcommand_t));}
+    void Clear() {memset(this, 0, sizeof(modevent_t));}
 
     // Returns true if modcommand is empty, false otherwise.
     // If ignoreEffectValues is true (default), effect values are ignored are ignored if there is no effect command present.

@@ -121,7 +121,7 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
     	if (dwMemPos + 64*4*4 > dwMemLength) return true;
     	if(Patterns.Insert(nPat, 64))
     		return true;
-    	modplug::tracker::modcommand_t *m = Patterns[nPat];
+    	modplug::tracker::modevent_t *m = Patterns[nPat];
     	STMNOTE *p = (STMNOTE *)(lpStream + dwMemPos);
     	for (UINT n=0; n<64*4; n++, p++, m++)
     	{

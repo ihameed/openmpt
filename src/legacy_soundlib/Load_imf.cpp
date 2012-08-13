@@ -145,7 +145,7 @@ static uint8_t imf_efftrans[] =
     CMD_NONE,    		// 0x23 Zxx Reverb - XXX
 };
 
-static void import_imf_effect(modplug::tracker::modcommand_t *note)
+static void import_imf_effect(modplug::tracker::modevent_t *note)
 //---------------------------------------------
 {
     uint8_t n;
@@ -358,7 +358,7 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
         uint8_t mask, channel;
         int row;
         unsigned int lostfx = 0;
-        modplug::tracker::modcommand_t *row_data, *note, junk_note;
+        modplug::tracker::modevent_t *row_data, *note, junk_note;
 
         ASSERT_CAN_READ(4);
         length = LittleEndianW(*((uint16_t *)(lpStream + dwMemPos)));

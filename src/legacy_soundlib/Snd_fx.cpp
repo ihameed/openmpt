@@ -196,8 +196,8 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
         }
 
         modplug::tracker::modchannel_t *pChn = Chn;
-        modplug::tracker::modcommand_t *p = Patterns[nPattern] + nRow * m_nChannels;
-        modplug::tracker::modcommand_t *nextRow = NULL;
+        modplug::tracker::modevent_t *p = Patterns[nPattern] + nRow * m_nChannels;
+        modplug::tracker::modevent_t *nextRow = NULL;
         for (CHANNELINDEX nChn = 0; nChn < m_nChannels; p++, pChn++, nChn++) if (*((uint32_t *)p))
         {
             if((GetType() == MOD_TYPE_S3M) && (ChnSettings[nChn].dwFlags & CHN_MUTE) != 0)    // not even effects are processed on muted S3M channels
@@ -1225,7 +1225,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             {
                 // apply NNA to this Plug iff this plug is currently playing a note on this tracking chan
                 // (and if it is playing a note, we know that would be the last note played on this chan).
-                modplug::tracker::modcommand_t::NOTE note = pChn->nNote;
+                modplug::tracker::modevent_t::NOTE note = pChn->nNote;
                 // Caution: When in compatible mode, modplug::tracker::modchannel_t::nNote stores the "real" note, not the mapped note!
                 if(IsCompatibleMode(TRK_IMPULSETRACKER) && note < CountOf(pChn->instrument->NoteMap))
                 {
@@ -1303,7 +1303,7 @@ BOOL module_renderer::ProcessEffects()
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
-    modplug::tracker::modcommand_t* m = nullptr;
+    modplug::tracker::modevent_t* m = nullptr;
 // -! NEW_FEATURE#0010
     for (CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++, pChn++)
     {
@@ -1322,8 +1322,8 @@ BOOL module_renderer::ProcessEffects()
         if(pChn->nRowNote == NOTE_PC)
         {
             const PLUGINDEX plug = pChn->nRowInstr;
-            const PlugParamIndex plugparam = modplug::tracker::modcommand_t::GetValueVolCol(pChn->nRowVolCmd, pChn->nRowVolume);
-            const PlugParamValue value = modplug::tracker::modcommand_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modcommand_t::maxColumnValue);
+            const PlugParamIndex plugparam = modplug::tracker::modevent_t::GetValueVolCol(pChn->nRowVolCmd, pChn->nRowVolume);
+            const PlugParamValue value = modplug::tracker::modevent_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modevent_t::maxColumnValue);
 
             if(plug > 0 && plug <= MAX_MIXPLUGINS && m_MixPlugins[plug-1].pMixPlugin)
                 m_MixPlugins[plug-1].pMixPlugin->SetParameter(plugparam, value);
@@ -1345,11 +1345,11 @@ BOOL module_renderer::ProcessEffects()
             if(hasValidPlug)
             {
                 if(isFirstTick)
-                    pChn->m_RowPlugParam = modplug::tracker::modcommand_t::GetValueVolCol(pChn->nRowVolCmd, pChn->nRowVolume);
+                    pChn->m_RowPlugParam = modplug::tracker::modevent_t::GetValueVolCol(pChn->nRowVolCmd, pChn->nRowVolume);
                 const PlugParamIndex plugparam = pChn->m_RowPlugParam;
                 if(isFirstTick)
                 {
-                    PlugParamValue targetvalue = modplug::tracker::modcommand_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modcommand_t::maxColumnValue);
+                    PlugParamValue targetvalue = modplug::tracker::modevent_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modevent_t::maxColumnValue);
                     // Hack: Use m_nPlugInitialParamValue to store the target value, not initial.
                     pChn->m_nPlugInitialParamValue = targetvalue;
                     pChn->m_nPlugParamValueStep = (targetvalue - m_MixPlugins[nPlug-1].pMixPlugin->GetParameter(plugparam)) / float(m_nMusicSpeed);
@@ -1367,7 +1367,7 @@ BOOL module_renderer::ProcessEffects()
 
         // Apart from changing parameters, parameter control notes are intended to be 'invisible'.
         // To achieve this, clearing the note data so that rest of the process sees the row as empty row.
-        if(modplug::tracker::modcommand_t::IsPcNote(pChn->nRowNote))
+        if(modplug::tracker::modevent_t::IsPcNote(pChn->nRowNote))
         {
             pChn->ClearRowCmd();
             instr = 0;
@@ -3300,7 +3300,7 @@ void module_renderer::SampleOffset(UINT nChn, UINT param, bool bPorta)
             //if (param) pChn->nOldOffset = param; else param = pChn->nOldOffset;
             //param <<= 8;
             //param |= (UINT)(pChn->nOldHiOffset) << 16;
-            modplug::tracker::modcommand_t *m;
+            modplug::tracker::modevent_t *m;
             m = NULL;
 
             if(m_nRow < Patterns[m_nPattern].GetNumRows()-1) m = Patterns[m_nPattern] + (m_nRow+1) * m_nChannels + nChn;

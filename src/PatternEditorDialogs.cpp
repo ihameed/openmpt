@@ -21,7 +21,7 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
 {
     if(xparam == NULL || multiplier == NULL) return;
 
-    modplug::tracker::modcommand_t mca = modplug::tracker::modcommand_t::Empty();
+    modplug::tracker::modevent_t mca = modplug::tracker::modevent_t::Empty();
     UINT i,xp = 0, ml = 1;
     int nCmdRow = (int)nRow;
 
@@ -423,7 +423,7 @@ BOOL CPatternPropertiesDlg::OnInitDialog()
     		m_nPattern,
     		pSndFile->Patterns[m_nPattern].GetNumRows(),
     		(pSndFile->Patterns[m_nPattern].GetNumRows() == 1) ? "" : "s",
-    		(pSndFile->Patterns[m_nPattern].GetNumRows() * pSndFile->m_nChannels * sizeof(modplug::tracker::modcommand_t)) / 1024);
+    		(pSndFile->Patterns[m_nPattern].GetNumRows() * pSndFile->m_nChannels * sizeof(modplug::tracker::modevent_t)) / 1024);
     	SetDlgItemText(IDC_TEXT1, s);
 
     	// Window title
@@ -663,7 +663,7 @@ void CEditCommand::UpdateNote(UINT note, UINT instr)
     	|| (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
     	|| (m_nChannel >= pSndFile->m_nChannels)
     	|| (!pSndFile->Patterns[m_nPattern])) return;
-    modplug::tracker::modcommand_t *m = pSndFile->Patterns[m_nPattern]+m_nRow*pSndFile->m_nChannels+m_nChannel;
+    modplug::tracker::modevent_t *m = pSndFile->Patterns[m_nPattern]+m_nRow*pSndFile->m_nChannels+m_nChannel;
     if ((m->note != note) || (m->instr != instr))
     {
     	if(!m_bModified)	// let's create just one undo step.
@@ -692,7 +692,7 @@ void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
     	|| (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
     	|| (m_nChannel >= pSndFile->m_nChannels)
     	|| (!pSndFile->Patterns[m_nPattern])) return;
-    modplug::tracker::modcommand_t *m = pSndFile->Patterns[m_nPattern]+m_nRow*pSndFile->m_nChannels+m_nChannel;
+    modplug::tracker::modevent_t *m = pSndFile->Patterns[m_nPattern]+m_nRow*pSndFile->m_nChannels+m_nChannel;
     if ((m->volcmd != volcmd) || (m->vol != vol))
     {
     	if(!m_bModified)	// let's create just one undo step.
@@ -720,7 +720,7 @@ void CEditCommand::UpdateEffect(UINT command, UINT param)
     	|| (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
     	|| (m_nChannel >= pSndFile->m_nChannels)
     	|| (!pSndFile->Patterns[m_nPattern])) return;
-    modplug::tracker::modcommand_t *m = pSndFile->Patterns[m_nPattern]+m_nRow*pSndFile->m_nChannels+m_nChannel;
+    modplug::tracker::modevent_t *m = pSndFile->Patterns[m_nPattern]+m_nRow*pSndFile->m_nChannels+m_nChannel;
 
     // -> CODE#0010
     // -> DESC="add extended parameter mechanism to pattern effects"
@@ -800,7 +800,7 @@ void CPageEditNote::UpdateDialog()
     	if (NOTE_IS_VALID(m_nNote))
     	{
     		// Normal note / no note
-    		const modplug::tracker::modcommand_t::NOTE noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
+    		const modplug::tracker::modevent_t::NOTE noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
     		combo->SetCurSel(m_nNote - (noteStart - 1));
     	}
     	else
@@ -822,7 +822,7 @@ void CPageEditNote::UpdateDialog()
     {
     	combo->ResetContent();
 
-    	if(modplug::tracker::modcommand_t::IsPcNote(m_nNote))
+    	if(modplug::tracker::modevent_t::IsPcNote(m_nNote))
     	{
     		// control plugin param note
     		combo->SetItemData(combo->AddString("No Effect"), 0);
@@ -855,7 +855,7 @@ void CPageEditNote::UpdateDialog()
 void CPageEditNote::OnNoteChanged()
 //---------------------------------
 {
-    const bool bWasParamControl = modplug::tracker::modcommand_t::IsPcNote(m_nNote);
+    const bool bWasParamControl = modplug::tracker::modevent_t::IsPcNote(m_nNote);
 
     CComboBox *combo;
     if ((combo = (CComboBox *)GetDlgItem(IDC_COMBO1)) != NULL)
@@ -872,14 +872,14 @@ void CPageEditNote::OnNoteChanged()
     		module_renderer* pSndFile = m_pModDoc->GetSoundFile();
     		m_nInstr = combo->GetItemData(n);
     		//Checking whether note names should be recreated.
-    		if(!modplug::tracker::modcommand_t::IsPcNote(m_nNote) && pSndFile && pSndFile->Instruments[m_nInstr] && pSndFile->Instruments[oldInstr])
+    		if(!modplug::tracker::modevent_t::IsPcNote(m_nNote) && pSndFile && pSndFile->Instruments[m_nInstr] && pSndFile->Instruments[oldInstr])
     		{
     			if(pSndFile->Instruments[m_nInstr]->pTuning != pSndFile->Instruments[oldInstr]->pTuning)
     				UpdateDialog();
     		}
     	}
     }
-    const bool bIsNowParamControl = modplug::tracker::modcommand_t::IsPcNote(m_nNote);
+    const bool bIsNowParamControl = modplug::tracker::modevent_t::IsPcNote(m_nNote);
     if(bWasParamControl != bIsNowParamControl)
     	UpdateDialog();
 

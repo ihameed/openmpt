@@ -492,7 +492,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
 //    uint8_t chnmask[64], channels_used[64];
 //    modplug::tracker::modcommand_t lastvalue[64];
     uint8_t chnmask[MAX_BASECHANNELS], channels_used[MAX_BASECHANNELS];
-    modplug::tracker::modcommand_t lastvalue[MAX_BASECHANNELS];
+    modplug::tracker::modevent_t lastvalue[MAX_BASECHANNELS];
 // -! BEHAVIOUR_CHANGE#0006
 
     bool interpretModPlugMade = false;
@@ -1086,7 +1086,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
 
         memset(lastvalue, 0, sizeof(lastvalue));
         memset(chnmask, 0, sizeof(chnmask));
-        modplug::tracker::modcommand_t *m = Patterns[npat];
+        modplug::tracker::modevent_t *m = Patterns[npat];
         UINT i = 0;
         const uint8_t *p = lpStream+patpos[npat]+8;
         UINT nrow = 0;
@@ -1375,7 +1375,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
 //    uint8_t chnmask[64];
 //    modplug::tracker::modcommand_t lastvalue[64];
     uint8_t chnmask[MAX_BASECHANNELS];
-    modplug::tracker::modcommand_t lastvalue[MAX_BASECHANNELS];
+    modplug::tracker::modevent_t lastvalue[MAX_BASECHANNELS];
 // -! BEHAVIOUR_CHANGE#0006
     uint8_t buf[8 * MAX_BASECHANNELS];
     FILE *f;
@@ -1704,7 +1704,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         dwPos += 8;
         memset(chnmask, 0xFF, sizeof(chnmask));
         memset(lastvalue, 0, sizeof(lastvalue));
-        modplug::tracker::modcommand_t *m = Patterns[npat];
+        modplug::tracker::modevent_t *m = Patterns[npat];
         for (UINT row=0; row<Patterns[npat].GetNumRows(); row++)
         {
             UINT len = 0;
@@ -2008,7 +2008,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
 // -> CODE#0006
 // -> DESC="misc quantity changes"
     uint8_t chnmask[IT_MAX_CHANNELS];
-    modplug::tracker::modcommand_t lastvalue[IT_MAX_CHANNELS];
+    modplug::tracker::modevent_t lastvalue[IT_MAX_CHANNELS];
     UINT nChannels = min(m_nChannels, IT_MAX_CHANNELS);
 // -! BEHAVIOUR_CHANGE#0006
     uint8_t buf[512];
@@ -2295,7 +2295,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         dwPos += 8;
         memset(chnmask, 0xFF, sizeof(chnmask));
         memset(lastvalue, 0, sizeof(lastvalue));
-        modplug::tracker::modcommand_t *m = Patterns[npat];
+        modplug::tracker::modevent_t *m = Patterns[npat];
         for (UINT row=0; row<Patterns[npat].GetNumRows(); row++)
         {
             len = 0;

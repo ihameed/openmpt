@@ -47,7 +47,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
     if(pSndFile == nullptr) return false;
 
     PATTERNUNDOBUFFER sUndo;
-    modplug::tracker::modcommand_t *pUndoData, *pPattern;
+    modplug::tracker::modevent_t *pUndoData, *pPattern;
     ROWINDEX nRows;
 
     if (!pSndFile->Patterns.IsValidPat(pattern)) return false;
@@ -57,7 +57,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
     if (firstRow + numRows >= nRows) numRows = nRows - firstRow;
     if (firstChn + numChns >= pSndFile->GetNumChannels()) numChns = pSndFile->GetNumChannels() - firstChn;
 
-    pUndoData = new modplug::tracker::modcommand_t[numChns * numRows];
+    pUndoData = new modplug::tracker::modevent_t[numChns * numRows];
     if (!pUndoData) return false;
 
     const bool bUpdate = !CanUndo(); // update undo status?
@@ -79,7 +79,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
     pPattern += firstChn + firstRow * pSndFile->GetNumChannels();
     for(ROWINDEX iy = 0; iy < numRows; iy++)
     {
-    	memcpy(pUndoData, pPattern, numChns * sizeof(modplug::tracker::modcommand_t));
+    	memcpy(pUndoData, pPattern, numChns * sizeof(modplug::tracker::modevent_t));
     	pUndoData += numChns;
     	pPattern += pSndFile->GetNumChannels();
     }
@@ -108,7 +108,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return PATTERNINDEX_INVALID;
 
-    modplug::tracker::modcommand_t *pUndoData, *pPattern;
+    modplug::tracker::modevent_t *pUndoData, *pPattern;
     PATTERNINDEX nPattern;
     ROWINDEX nRows;
     bool linkToPrevious = false;
@@ -133,14 +133,14 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
     {
     	if((!pSndFile->Patterns[nPattern]) || (pSndFile->Patterns[nPattern].GetNumRows() < nRows))
     	{
-    		modplug::tracker::modcommand_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
-    		modplug::tracker::modcommand_t *oldPattern = pSndFile->Patterns[nPattern];
+    		modplug::tracker::modevent_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
+    		modplug::tracker::modevent_t *oldPattern = pSndFile->Patterns[nPattern];
     		if (!newPattern) return PATTERNINDEX_INVALID;
     		const ROWINDEX nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
     		pSndFile->Patterns[nPattern].SetData(newPattern, nRows);
     		if(oldPattern)
     		{
-    			memcpy(newPattern, oldPattern, pSndFile->GetNumChannels() * nOldRowCount * sizeof(modplug::tracker::modcommand_t));
+    			memcpy(newPattern, oldPattern, pSndFile->GetNumChannels() * nOldRowCount * sizeof(modplug::tracker::modevent_t));
     			CPattern::FreePattern(oldPattern);
     		}
     	}
@@ -151,7 +151,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
     	pPattern += pUndo->firstChannel + (pUndo->firstRow * pSndFile->GetNumChannels());
     	for(ROWINDEX iy = 0; iy < pUndo->numRows; iy++)
     	{
-    		memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modplug::tracker::modcommand_t));
+    		memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modplug::tracker::modevent_t));
     		pPattern += pSndFile->GetNumChannels();
     		pUndoData += pUndo->numChannels;
     	}

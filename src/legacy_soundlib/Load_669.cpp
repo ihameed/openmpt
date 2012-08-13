@@ -113,11 +113,11 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
         if(Patterns.Insert(npat, 64))
             break;
 
-        modplug::tracker::modcommand_t *m = Patterns[npat];
+        modplug::tracker::modevent_t *m = Patterns[npat];
         const uint8_t *p = lpStream + dwMemPos;
         for (UINT row=0; row<64; row++)
         {
-            modplug::tracker::modcommand_t *mspeed = m;
+            modplug::tracker::modevent_t *mspeed = m;
             if ((row == pfh->breaks[npat]) && (row != 63))
             {
                 for (UINT i=0; i<8; i++)

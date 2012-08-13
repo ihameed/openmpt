@@ -336,14 +336,14 @@ void CViewPattern::DrawInstrument(int x, int y, UINT instr)
 }
 
 
-void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modcommand_t mc)
+void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modevent_t mc)
 //---------------------------------------------------------------------
 {
     const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
 
     if(mc.IsPcNote())
     {    //If note is parameter control note, drawing volume command differently.
-        const int val = min(modplug::tracker::modcommand_t::maxColumnValue, mc.GetValueVolCol());
+        const int val = min(modplug::tracker::modevent_t::maxColumnValue, mc.GetValueVolCol());
 
         m_Dib.TextBlt(x, y, 1, COLUMN_HEIGHT, pfnt->clear_x, pfnt->clear_y);
         m_Dib.TextBlt(x + 1, y, pfnt->vol_width, COLUMN_HEIGHT,
@@ -638,7 +638,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
 {
     uint8_t bColSel[MAX_BASECHANNELS];
     const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
-    modplug::tracker::modcommand_t m0, *pPattern = pSndFile->Patterns[nPattern];
+    modplug::tracker::modevent_t m0, *pPattern = pSndFile->Patterns[nPattern];
     CHAR s[256];
     CRect rect;
     int xpaint, ypaint = *pypaint;
@@ -763,14 +763,14 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
         do
         {
             uint32_t dwSpeedUpMask;
-            modplug::tracker::modcommand_t *m;
+            modplug::tracker::modevent_t *m;
             int x, bk_col, tx_col, col_sel, fx_col;
 
             m = (pPattern) ? &pPattern[row*ncols+col] : &m0;
             dwSpeedUpMask = 0;
             if ((bSpeedUp) && (bColSel[col] & 0x40) && (pPattern) && (row))
             {
-                modplug::tracker::modcommand_t *mold = m - ncols;
+                modplug::tracker::modevent_t *mold = m - ncols;
                 if (m->note == mold->note) dwSpeedUpMask |= 0x01;
                 if ((m->instr == mold->instr) || (m_nDetailLevel < 1)) dwSpeedUpMask |= 0x02;
                 if ( m->IsPcNote() || mold->IsPcNote() )
@@ -882,7 +882,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
             {
                 const bool isPCnote = m->IsPcNote();
                 uint16_t val = m->GetValueEffectCol();
-                if(val > modplug::tracker::modcommand_t::maxColumnValue) val = modplug::tracker::modcommand_t::maxColumnValue;
+                if(val > modplug::tracker::modevent_t::maxColumnValue) val = modplug::tracker::modevent_t::maxColumnValue;
                 fx_col = row_col;
                 if (!isPCnote && (m->command) && (m->command < MAX_EFFECTS) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
                 {
@@ -1402,7 +1402,7 @@ void CViewPattern::UpdateIndicator()
              && (m_dwBeginSel == m_dwEndSel) && (pSndFile->Patterns[m_nPattern])
              && (m_nRow < pSndFile->Patterns[m_nPattern].GetNumRows()) && (nChn < pSndFile->m_nChannels))
             {
-                modplug::tracker::modcommand_t *m = &pSndFile->Patterns[m_nPattern][m_nRow*pSndFile->m_nChannels+nChn];
+                modplug::tracker::modevent_t *m = &pSndFile->Patterns[m_nPattern][m_nRow*pSndFile->m_nChannels+nChn];
 
                 switch (GetColTypeFromCursor(m_dwCursor))
                 {

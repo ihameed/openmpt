@@ -95,7 +95,7 @@ typedef struct DBMSAMPLE
 #pragma pack()
 
 
-static modplug::tracker::modcommand_t::COMMAND dbm_efftrans[23] =
+static modplug::tracker::modevent_t::COMMAND dbm_efftrans[23] =
 {
     CMD_ARPEGGIO, CMD_PORTAMENTOUP, CMD_PORTAMENTODOWN, CMD_TONEPORTAMENTO,
     CMD_VIBRATO, CMD_TONEPORTAVOL, CMD_VIBRATOVOL, CMD_TREMOLO,
@@ -337,7 +337,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                 if ((nRows >= 4) && (nRows <= 256))
                 {
                     Patterns.Insert(iPat, nRows);
-                    modplug::tracker::modcommand_t *m = Patterns[iPat];
+                    modplug::tracker::modevent_t *m = Patterns[iPat];
                     if (m)
                     {
                         LPBYTE pkdata = (LPBYTE)&pph->patterndata;
@@ -397,7 +397,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                                         }
                                         if (n < 5)
                                         {
-                                            if (module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modcommand_t::COMMAND)cmd2))
+                                            if (module_renderer::GetEffectWeight((modplug::tracker::modevent_t::COMMAND)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modevent_t::COMMAND)cmd2))
                                             {
                                                 std::swap(cmd1, cmd2);
                                                 std::swap(param1, param2);

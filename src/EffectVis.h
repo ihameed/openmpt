@@ -54,7 +54,7 @@ protected:
     int m_nParamToErase;
 
     UINT m_nOldPlayPos;
-    modplug::tracker::modcommand_t m_templatePCNote;
+    modplug::tracker::modevent_t m_templatePCNote;
 
     CBrush m_brushBlack;
 

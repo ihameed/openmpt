@@ -120,7 +120,7 @@ bool _wao_write_pattern(Json::Value &out, const MODPATTERN &pattern) {
 
     auto &pattern_data = out["data"];
     for (size_t rowidx = 0; rowidx < num_rows; ++rowidx) {
-        const modplug::tracker::modcommand_t *command = pattern.GetpModCommand(rowidx, 0);
+        const modplug::tracker::modevent_t *command = pattern.GetpModCommand(rowidx, 0);
         if (!command) break;
 
         for (size_t chnidx = 0; chnidx < num_channels; ++chnidx) {

@@ -124,7 +124,7 @@ typedef struct _MT2GROUP
 #pragma pack()
 
 
-static void ConvertMT2Command(module_renderer *that, modplug::tracker::modcommand_t *m, MT2COMMAND *p)
+static void ConvertMT2Command(module_renderer *that, modplug::tracker::modevent_t *m, MT2COMMAND *p)
 //---------------------------------------------------------------------------
 {
     // Note
@@ -282,7 +282,7 @@ bool module_renderer::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
     #endif
             Patterns.Insert(iPat, nLines);
             if (!Patterns[iPat]) return true;
-            modplug::tracker::modcommand_t *m = Patterns[iPat];
+            modplug::tracker::modevent_t *m = Patterns[iPat];
             UINT len = wDataLen;
             if (pfh->fulFlags & 1) // Packed Patterns
             {

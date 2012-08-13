@@ -587,7 +587,7 @@ BOOL module_renderer::ProcessRow()
         }
         // Reset channel values
         modplug::tracker::modchannel_t *pChn = Chn;
-        modplug::tracker::modcommand_t *m = Patterns[m_nPattern] + m_nRow * m_nChannels;
+        modplug::tracker::modevent_t *m = Patterns[m_nPattern] + m_nRow * m_nChannels;
         for (UINT nChn=0; nChn<m_nChannels; pChn++, nChn++, m++)
         {
             pChn->nRowNote = m->note;
@@ -1884,15 +1884,15 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     if ((!m_nInstruments) || (m_nPattern >= Patterns.Size())
          || (m_nRow >= Patterns[m_nPattern].GetNumRows()) || (!Patterns[m_nPattern])) return;
 
-    const modplug::tracker::modcommand_t::NOTE note = pChn->nRowNote;
-    const modplug::tracker::modcommand_t::INSTR instr = pChn->nRowInstr;
-    const modplug::tracker::modcommand_t::VOL vol = pChn->nRowVolume;
-    const modplug::tracker::modcommand_t::VOLCMD volcmd = pChn->nRowVolCmd;
+    const modplug::tracker::modevent_t::NOTE note = pChn->nRowNote;
+    const modplug::tracker::modevent_t::INSTR instr = pChn->nRowInstr;
+    const modplug::tracker::modevent_t::VOL vol = pChn->nRowVolume;
+    const modplug::tracker::modevent_t::VOLCMD volcmd = pChn->nRowVolCmd;
     // Debug
     {
         // Previously this function took modcommand directly from pattern. ASSERT is there
         // to detect possible behaviour change now that the data is accessed from channel.
-        const modplug::tracker::modcommand_t mc = *Patterns[m_nPattern].GetpModCommand(m_nRow, static_cast<CHANNELINDEX>(nChn));
+        const modplug::tracker::modevent_t mc = *Patterns[m_nPattern].GetpModCommand(m_nRow, static_cast<CHANNELINDEX>(nChn));
         ASSERT( mc.IsPcNote() ||
             (note == mc.note && instr == mc.instr && volcmd == mc.volcmd && vol == mc.vol));
     }
@@ -1927,7 +1927,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     {
         if(note)
         {
-            modplug::tracker::modcommand_t::NOTE realNote = note;
+            modplug::tracker::modevent_t::NOTE realNote = note;
             if((note >= NOTE_MIN) && (note <= NOTE_MAX))
                 realNote = pIns->NoteMap[note - 1];
             pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, pChn->nVolume, nChn);
@@ -1954,7 +1954,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
             break;
         }
 
-        modplug::tracker::modcommand_t::NOTE realNote = note;
+        modplug::tracker::modevent_t::NOTE realNote = note;
         if((note >= NOTE_MIN) && (note <= NOTE_MAX))
             realNote = pIns->NoteMap[note - 1];
         pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, velocity, nChn);

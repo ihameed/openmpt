@@ -11,17 +11,17 @@ struct CModSpecifications
 //=======================
 {
     // Return true if format supports given note.
-    bool HasNote(modplug::tracker::modcommand_t::NOTE note) const;
-    bool HasVolCommand(modplug::tracker::modcommand_t::VOLCMD volcmd) const;
-    bool HasCommand(modplug::tracker::modcommand_t::COMMAND cmd) const;
+    bool HasNote(modplug::tracker::modevent_t::NOTE note) const;
+    bool HasVolCommand(modplug::tracker::modevent_t::VOLCMD volcmd) const;
+    bool HasCommand(modplug::tracker::modevent_t::COMMAND cmd) const;
     // Return corresponding effect letter for this format
-    char GetEffectLetter(modplug::tracker::modcommand_t::COMMAND cmd) const;
-    char GetVolEffectLetter(modplug::tracker::modcommand_t::VOLCMD cmd) const;
+    char GetEffectLetter(modplug::tracker::modevent_t::COMMAND cmd) const;
+    char GetVolEffectLetter(modplug::tracker::modevent_t::VOLCMD cmd) const;
 
     // NOTE: If changing order, update all initializations below.
     char fileExtension[6];	  // File extension without dot.
-    modplug::tracker::modcommand_t::NOTE noteMin; // Minimum note index (index starts from 1)
-    modplug::tracker::modcommand_t::NOTE noteMax; // Maximum note index (index starts from 1)
+    modplug::tracker::modevent_t::NOTE noteMin; // Minimum note index (index starts from 1)
+    modplug::tracker::modevent_t::NOTE noteMax; // Maximum note index (index starts from 1)
     bool hasNoteCut;		  // True if format has notecut.
     bool hasNoteOff;		  // True if format has noteoff.
     bool hasNoteFade;		  // True if format has notefade.

@@ -46,7 +46,7 @@ typedef struct MDLPATTERNDATA
 } MDLPATTERNDATA;
 
 
-void ConvertMDLCommand(modplug::tracker::modcommand_t *m, UINT eff, UINT data)
+void ConvertMDLCommand(modplug::tracker::modevent_t *m, UINT eff, UINT data)
 //--------------------------------------------------------
 {
     UINT command = 0, param = data;
@@ -141,10 +141,10 @@ void ConvertMDLEnvelope(const unsigned char *pMDLEnv, modplug::tracker::modenvel
 }
 
 
-void UnpackMDLTrack(modplug::tracker::modcommand_t *pat, UINT nChannels, UINT nRows, UINT nTrack, const uint8_t *lpTracks)
+void UnpackMDLTrack(modplug::tracker::modevent_t *pat, UINT nChannels, UINT nRows, UINT nTrack, const uint8_t *lpTracks)
 //-------------------------------------------------------------------------------------------------
 {
-    modplug::tracker::modcommand_t cmd, *m = pat;
+    modplug::tracker::modevent_t cmd, *m = pat;
     UINT len = *((uint16_t *)lpTracks);
     UINT pos = 0, row = 0, i;
     lpTracks += 2;
@@ -538,7 +538,7 @@ bool module_renderer::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLengt
             }
             for (UINT chn=0; chn<m_nChannels; chn++) if ((patterntracks[ipat*32+chn]) && (patterntracks[ipat*32+chn] <= ntracks))
             {
-                modplug::tracker::modcommand_t *m = Patterns[ipat] + chn;
+                modplug::tracker::modevent_t *m = Patterns[ipat] + chn;
                 UnpackMDLTrack(m, m_nChannels, Patterns[ipat].GetNumRows(), patterntracks[ipat*32+chn], lpStream+dwTrackPos);
             }
         }

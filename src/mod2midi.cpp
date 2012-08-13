@@ -434,7 +434,7 @@ BOOL CModToMidi::DoConvert()
     	for (UINT nChn=0; nChn<chnCount; nChn++)
     	{
     		PDYNMIDITRACK pTrk = &Tracks[nChn];
-    		modplug::tracker::modcommand_t *m = m_pSndFile->Patterns[nPat].GetpModCommand(nRow, nChn);
+    		modplug::tracker::modevent_t *m = m_pSndFile->Patterns[nPat].GetpModCommand(nRow, nChn);
     		UINT delta_time = nClock - pTrk->nLastEventClock;
     		UINT len = 0;
 
