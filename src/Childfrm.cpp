@@ -9,9 +9,10 @@
 #include "moddoc.h"
 #include "globals.h"
 #include "view_gen.h"
-#include ".\childfrm.h"
+#include "childfrm.h"
 
-#include <QtGui>
+#include "qwinwidget.h"
+#include "gui/qt4/pattern_editor.h"
 
 
 #ifdef _DEBUG
@@ -92,10 +93,23 @@ CChildFrame::~CChildFrame()
 }
 
 
+class test_dialog : public QDialog {
+public:
+    test_dialog(module_renderer *hoof, QWidget *dood) : QDialog(dood) {
+        auto hurf = new modplug::gui::qt4::pattern_editor(*hoof);
+        auto layout = new QHBoxLayout;
+        setLayout(layout);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setMargin(0);
+        layout->addWidget(hurf);
+    }
+};
+
 BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 //-----------------------------------------------------------------------------
 {
-    qwinwidget = std::make_shared<QWinWidget>(this);
+    qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this));
+
     // create a splitter with 1 row, 2 columns
     if (!m_wndSplitter.CreateStatic(this, 2, 1)) return FALSE;
 
@@ -111,6 +125,10 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
     {
     	m_hWndCtrl = pModView->m_hWnd;
     	pModView->SetMDIParentFrame(m_hWnd);
+
+        auto testwid = new test_dialog(pModView->GetDocument()->GetSoundFile(), qwinwidget.get());
+        testwid->resize(400, 400);
+        testwid->show();
     }
 
     const BOOL bStatus = ChangeViewClass(RUNTIME_CLASS(CViewGlobals), pContext);

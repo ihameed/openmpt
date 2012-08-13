@@ -15,8 +15,6 @@
 #include "inputhandler.h"
 #include "mptrack.h"
 
-#include "qwinwidget.h"
-
 namespace modplug { namespace gui { namespace qt4 {
 class mfc_root;
 class config_dialog;

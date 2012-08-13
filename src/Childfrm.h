@@ -151,7 +151,7 @@ public:
     afx_msg void OnSetFocus(CWnd* pOldWnd); //rewbs.customKeysAutoEffects
 
 private:
-    std::shared_ptr<QWinWidget> qwinwidget;
+    std::unique_ptr<QWinWidget> qwinwidget;
 };
 
 /////////////////////////////////////////////////////////////////////////////

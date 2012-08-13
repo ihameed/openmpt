@@ -1857,6 +1857,8 @@ BEGIN
         MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
         MENUITEM "&Goto",                       ID_EDIT_GOTO_MENU
         MENUITEM "Split &Keyboard Settings",    ID_EDIT_SPLITKEYBOARDSETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "Preferences...",              ID_VIEW_SOOPERSETUP
     END
     POPUP "&View"
     BEGIN
@@ -1873,7 +1875,6 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "S&etup...",                   ID_VIEW_OPTIONS
-        MENUITEM "Sooper Setup...",             ID_VIEW_SOOPERSETUP
         MENUITEM "Pl&ugin Manager...",          ID_PLUGIN_SETUP
         MENUITEM "Ch&annel Manager...",         ID_CHANNEL_MANAGER
         MENUITEM "Song P&roperties...",         ID_VIEW_SONGPROPERTIES

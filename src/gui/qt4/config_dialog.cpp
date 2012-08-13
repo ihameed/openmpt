@@ -67,6 +67,7 @@ class empty_config_page : public config_page {
 config_dialog::config_dialog(app_config &context, QWidget *parent)
     : QDialog(parent)
 {
+    setWindowTitle("Preferences");
     static config_page_spec config_dialog_layout[] = {
         { "Audio I/O", "root",
             [&](app_config &context) {

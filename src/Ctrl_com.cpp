@@ -7,6 +7,7 @@
 #include "view_com.h"
 
 #include "gui/qt4/comment_view.h"
+#include "qwinwidget.h"
 
 BEGIN_MESSAGE_MAP(CCtrlComments, CModControlDlg)
     //{{AFX_MSG_MAP(CCtrlComments)

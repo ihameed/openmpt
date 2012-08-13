@@ -1,28 +1,6 @@
 #ifndef _MODPLUGDLGS_
 #define _MODPLUGDLGS_
 
-#define NUMMIXRATE    16
-
-class module_renderer;
-class CMainFrame;
-
-
-
-//=================================
-class CEQSlider: public CSliderCtrl
-//=================================
-{
-public:
-    CWnd *m_pParent;
-    UINT m_nSliderNo;
-    short int m_x, m_y;
-public:
-    CEQSlider() {}
-    VOID Init(UINT nID, UINT n, CWnd *parent);
-    BOOL PreTranslateMessage(MSG *pMsg);
-};
-
-
 //=======================================
 class CMidiSetupDlg: public CPropertyPage
 //=======================================

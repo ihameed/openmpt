@@ -8,6 +8,8 @@
 #include "mod2wave.h"
 #include "legacy_soundlib/Wav.h"
 
+#define NUMMIXRATE    16
+
 UINT nMixingRates[NUMMIXRATE] = {
     16000,
     19800,
