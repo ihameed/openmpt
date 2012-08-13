@@ -40,11 +40,8 @@ union devid_hostapi_pack {
     uint32_t packed;
 };
 
-class config_audioio_asio : public config_page {
-
-};
-
-config_audioio_main::config_audioio_main(app_config &context) : context(context)
+config_audioio_main::config_audioio_main(app_config &context) :
+    context(context), _modified(false)
 {
     auto layout = new QGridLayout(this);
 
@@ -71,7 +68,8 @@ config_audioio_main::config_audioio_main(app_config &context) : context(context)
     layout->addItem(
         new QSpacerItem(
             0, 0,
-            QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding
+            QSizePolicy::MinimumExpanding,
+            QSizePolicy::MinimumExpanding
         ),
         row, 1
     );
@@ -93,6 +91,35 @@ config_audioio_main::config_audioio_main(app_config &context) : context(context)
             );
         }
     }
+
+    auto connect_change_notifiers = [&] () {
+        QObject::connect(
+            &devices, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(modified(int))
+        );
+
+        QObject::connect(
+            &rates, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(modified(int))
+        );
+
+        QObject::connect(
+            &rates, SIGNAL(valueChanged(int)),
+            this, SLOT(modified(int))
+        );
+
+        QObject::connect(
+            &channels, SIGNAL(valueChanged(int)),
+            this, SLOT(modified(int))
+        );
+
+        QObject::connect(
+            &buflen, SIGNAL(valueChanged(int)),
+            this, SLOT(modified(int))
+        );
+    };
+
+    connect_change_notifiers();
 
     QObject::connect(
         &rates, SIGNAL(currentIndexChanged(int)),
@@ -133,6 +160,8 @@ void config_audioio_main::refresh() {
     buflen.setValue(settings.buffer_length);
 
     channels.setValue(settings.channels);
+
+    _modified = false;
 }
 
 void config_audioio_main::apply_changes() {
@@ -162,7 +191,14 @@ void config_audioio_main::apply_changes() {
     }
     settings.sample_rate = current_sample_rate();
 
-    context.change_audio_settings(settings);
+    if (_modified) {
+        context.change_audio_settings(settings);
+        _modified = false;
+    }
+}
+
+void config_audioio_main::modified(int) {
+    _modified = true;
 }
 
 void config_audioio_main::latency_event_with_int(int) {

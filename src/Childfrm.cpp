@@ -96,7 +96,10 @@ CChildFrame::~CChildFrame()
 class test_dialog : public QDialog {
 public:
     test_dialog(module_renderer *hoof, QWidget *dood) : QDialog(dood) {
-        auto hurf = new modplug::gui::qt4::pattern_editor(*hoof);
+        auto hurf = new modplug::gui::qt4::pattern_editor(
+            *hoof,
+            CMainFrame::GetMainFrame()->global_config.colors()
+        );
         auto layout = new QHBoxLayout;
         setLayout(layout);
         layout->setContentsMargins(0, 0, 0, 0);

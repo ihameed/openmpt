@@ -13,9 +13,18 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-pattern_editor::pattern_editor(module_renderer &renderer) :
-    renderer(renderer), font_metrics(small_pattern_font), font_loaded(false)
+pattern_editor::pattern_editor(module_renderer &renderer,
+                               const colors_t &colors) :
+    renderer(renderer),
+    colors(colors),
+    font_metrics(small_pattern_font),
+    font_loaded(false)
 { }
+
+void pattern_editor::update_colors(const colors_t &colors) {
+    this->colors = colors;
+    repaint();
+}
 
 void pattern_editor::paintEvent(QPaintEvent *evt) {
     if (!font_loaded) {
@@ -24,16 +33,12 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         auto hdc      = GetDC(nullptr);
 
         font = load_bmp_resource(resource, instance, hdc)
-              .convertToFormat(QImage::Format_Mono);
+              .convertToFormat(QImage::Format_MonoLSB);
 
         ReleaseDC(nullptr, hdc);
 
         font_loaded = true;
-        font.setColor(0, qRgb(0, 0, 0));
-        font.setColor(1, qRgb(255, 255, 255));
     }
-
-    DEBUG_FUNC("");
 
     QPainter painter(this);
     painter.setRenderHints( QPainter::Antialiasing
@@ -56,13 +61,13 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         font_metrics.height,
         font,
         font_metrics,
-        0
+        0,
+        colors
     };
 
     for (CHANNELINDEX idx = 0; idx < channel_count; ++idx) {
         notehomie.draw_header(state, idx);
         notehomie.draw_column(state, idx);
-        painter.save();
     }
 }
 

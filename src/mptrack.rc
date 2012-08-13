@@ -1824,17 +1824,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
-    POPUP "P&layer"
-    BEGIN
-        MENUITEM "&Play\tF5",                   ID_PLAYER_PLAY
-        MENUITEM "P&lay from start\tF6",        ID_PLAYER_PLAYFROMSTART
-        MENUITEM "&Stop\tESC",                  ID_PLAYER_STOP
-        MENUITEM "P&ause\tF8",                  ID_PLAYER_PAUSE
-        MENUITEM "&MIDI Record\tF9",            ID_MIDI_RECORD
-        MENUITEM SEPARATOR
-        MENUITEM "&Estimate song length",       ID_ESTIMATESONGLENGTH
-        MENUITEM "Approx. real &BPM",           ID_APPROX_BPM
-    END
     POPUP "&Edit"
     BEGIN
         MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
@@ -1859,6 +1848,17 @@ BEGIN
         MENUITEM "Split &Keyboard Settings",    ID_EDIT_SPLITKEYBOARDSETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Preferences...",              ID_VIEW_SOOPERSETUP
+    END
+    POPUP "P&layer"
+    BEGIN
+        MENUITEM "&Play\tF5",                   ID_PLAYER_PLAY
+        MENUITEM "P&lay from start\tF6",        ID_PLAYER_PLAYFROMSTART
+        MENUITEM "&Stop\tESC",                  ID_PLAYER_STOP
+        MENUITEM "P&ause\tF8",                  ID_PLAYER_PAUSE
+        MENUITEM "&MIDI Record\tF9",            ID_MIDI_RECORD
+        MENUITEM SEPARATOR
+        MENUITEM "&Estimate song length",       ID_ESTIMATESONGLENGTH
+        MENUITEM "Approx. real &BPM",           ID_APPROX_BPM
     END
     POPUP "&View"
     BEGIN

@@ -58,7 +58,7 @@
       </PrecompiledHeader>
       <ProgramDataBaseFileName>$(IntDir)vc71.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)portaudiocpp-vc7_1-d.lib</OutputFile>

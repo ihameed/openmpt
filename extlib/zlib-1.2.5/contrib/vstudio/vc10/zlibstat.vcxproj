@@ -173,7 +173,7 @@
       <ProgramDataBaseFileName>$(OutDir)</ProgramDataBaseFileName>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
       <FloatingPointModel>Precise</FloatingPointModel>

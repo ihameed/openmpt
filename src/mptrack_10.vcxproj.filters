@@ -230,6 +230,9 @@
     <ClCompile Include="GeneratedFiles\Template\moc_config_gui.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="gui\qt4\colors.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -352,6 +355,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\qt4\util.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt4\colors.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

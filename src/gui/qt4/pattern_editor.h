@@ -2,6 +2,7 @@
 
 #include <QtGui>
 #include <cstdint>
+#include "colors.h"
 
 class module_renderer;
 
@@ -127,7 +128,9 @@ struct pattern_selection_t {
 class pattern_editor : public QWidget {
     Q_OBJECT
 public:
-    pattern_editor(module_renderer &renderer);
+    pattern_editor(module_renderer &renderer, const colors_t &colors);
+
+    void update_colors(const colors_t &colors);
 
 protected:
     virtual void paintEvent(QPaintEvent *) override;
@@ -141,6 +144,7 @@ private:
     bool font_loaded;
     const pattern_font_metrics_t &font_metrics;
     QImage font;
+    colors_t colors;
 };
 
 }

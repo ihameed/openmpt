@@ -3,6 +3,7 @@
 #include "../../pervasives/pervasives.h"
 
 #include "../../audioio/paudio.h"
+#include "colors.h"
 #include "app_config.h"
 
 using namespace modplug::pervasives;
@@ -14,6 +15,7 @@ namespace qt4 {
 
 struct private_configs {
     paudio_settings audio;
+    colors_t colors;
 };
 
 class misc_globals {
@@ -25,7 +27,9 @@ public:
 app_config::app_config(portaudio::System &system) :
     store(new private_configs()),
     globals(new misc_globals(system))
-{ }
+{
+    store->colors = default_colors();
+}
 
 app_config::~app_config()
 { }
@@ -60,6 +64,17 @@ void app_config::change_audio_settings(const paudio_settings &settings) {
 portaudio::System & app_config::audio_handle() {
     return globals->pa_system;
 }
+
+const colors_t &app_config::colors() const {
+    return store->colors;
+}
+
+void app_config::change_colors(const colors_t &colors) {
+    store->colors = colors;
+    emit colors_changed();
+}
+
+
 
 
 }

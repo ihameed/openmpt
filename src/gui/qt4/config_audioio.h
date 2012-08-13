@@ -22,10 +22,13 @@ public:
 
 private slots:
     void latency_event_with_int(int);
+    void modified(int);
 
 private:
     void update_latency_indicator();
     double current_sample_rate() const;
+
+    bool _modified;
 
     app_config &context;
 
