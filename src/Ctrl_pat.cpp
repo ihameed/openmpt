@@ -279,7 +279,7 @@ void CCtrlPatterns::UpdateView(uint32_t dwHintMask, CObject *pObj)
                     m_CbnInstrument.ResetContent();
                     m_CbnInstrument.SetItemData(m_CbnInstrument.AddString(" No Instrument"), 0);
                     const INSTRUMENTINDEX nSplitIns = m_pModDoc->GetSplitKeyboardSettings()->splitInstrument;
-                    const modplug::tracker::modevent_t::note_t noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
+                    const modplug::tracker::note_t noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
                     const CString sSplitInsName = m_pModDoc->GetPatternViewInstrumentName(nSplitIns, true, false);
                     if (m_pSndFile->m_nInstruments)
                     {

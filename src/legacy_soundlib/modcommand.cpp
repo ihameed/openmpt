@@ -7,6 +7,7 @@
  */
 
 #include "stdafx.h"
+
 #include "Sndfile.h"
 
 extern uint8_t ImpulseTrackerPortaVolCmd[16];
@@ -20,18 +21,18 @@ void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
     m->command = CMD_S3MCMDEX;
     switch(m->param & 0xF0)
     {
-    case 0x10:        m->command = CMD_PORTAMENTOUP; m->param |= 0xF0; break;
-    case 0x20:        m->command = CMD_PORTAMENTODOWN; m->param |= 0xF0; break;
-    case 0x30:        m->param = (m->param & 0x0F) | 0x10; break;
-    case 0x40:        m->param = (m->param & 0x03) | 0x30; break;
-    case 0x50:        m->param = (m->param & 0x0F) | 0x20; break;
-    case 0x60:        m->param = (m->param & 0x0F) | 0xB0; break;
-    case 0x70:        m->param = (m->param & 0x03) | 0x40; break;
-    case 0x90:        m->command = CMD_RETRIG; m->param = (m->param & 0x0F); break;
-    case 0xA0:        if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param = (m->param << 4) | 0x0F; } else m->command = 0; break;
-    case 0xB0:        if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param |= 0xF0; } else m->command = 0; break;
-    case 0xC0:  if (m->param == 0xC0) { m->command = CMD_NONE; m->note = NOTE_NOTECUT; }        // this does different things in IT and ST3
-    case 0xD0:  if (m->param == 0xD0) { m->command = CMD_NONE; }        // dito
+    case 0x10: m->command = CMD_PORTAMENTOUP; m->param |= 0xF0; break;
+    case 0x20: m->command = CMD_PORTAMENTODOWN; m->param |= 0xF0; break;
+    case 0x30: m->param = (m->param & 0x0F) | 0x10; break;
+    case 0x40: m->param = (m->param & 0x03) | 0x30; break;
+    case 0x50: m->param = (m->param & 0x0F) | 0x20; break;
+    case 0x60: m->param = (m->param & 0x0F) | 0xB0; break;
+    case 0x70: m->param = (m->param & 0x03) | 0x40; break;
+    case 0x90: m->command = CMD_RETRIG; m->param = (m->param & 0x0F); break;
+    case 0xA0: if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param = (m->param << 4) | 0x0F; } else m->command = 0; break;
+    case 0xB0: if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param |= 0xF0; } else m->command = 0; break;
+    case 0xC0: if (m->param == 0xC0) { m->command = CMD_NONE; m->note = NOTE_NOTECUT; }        // this does different things in IT and ST3
+    case 0xD0: if (m->param == 0xD0) { m->command = CMD_NONE; }        // dito
                             // rest are the same
     }
 }
@@ -45,16 +46,16 @@ void module_renderer::S3MSxx2MODExx(modplug::tracker::modevent_t *m)
     m->command = CMD_MODCMDEX;
     switch(m->param & 0xF0)
     {
-    case 0x10:        m->param = (m->param & 0x0F) | 0x30; break;
-    case 0x20:        m->param = (m->param & 0x0F) | 0x50; break;
-    case 0x30:        m->param = (m->param & 0x0F) | 0x40; break;
-    case 0x40:        m->param = (m->param & 0x0F) | 0x70; break;
+    case 0x10: m->param = (m->param & 0x0F) | 0x30; break;
+    case 0x20: m->param = (m->param & 0x0F) | 0x50; break;
+    case 0x30: m->param = (m->param & 0x0F) | 0x40; break;
+    case 0x40: m->param = (m->param & 0x0F) | 0x70; break;
     case 0x50:
     case 0x60:
     case 0x90:
-    case 0xA0:        m->command = CMD_XFINEPORTAUPDOWN; break;
-    case 0xB0:        m->param = (m->param & 0x0F) | 0x60; break;
-    case 0x70:  m->command = CMD_NONE;        // No NNA / envelope control in MOD/XM format
+    case 0xA0: m->command = CMD_XFINEPORTAUPDOWN; break;
+    case 0xB0: m->param = (m->param & 0x0F) | 0x60; break;
+    case 0x70: m->command = CMD_NONE;        // No NNA / envelope control in MOD/XM format
             // rest are the same
     }
 }
@@ -65,17 +66,23 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 //--------------------------------------------------------------------------------
 {
     // helper variables
-    const bool oldTypeIsMOD = (nOldType == MOD_TYPE_MOD), oldTypeIsXM = (nOldType == MOD_TYPE_XM),
-            oldTypeIsS3M = (nOldType == MOD_TYPE_S3M), oldTypeIsIT = (nOldType == MOD_TYPE_IT),
-            oldTypeIsMPT = (nOldType == MOD_TYPE_MPT), oldTypeIsMOD_XM = (oldTypeIsMOD || oldTypeIsXM),
-            oldTypeIsS3M_IT_MPT = (oldTypeIsS3M || oldTypeIsIT || oldTypeIsMPT),
-            oldTypeIsIT_MPT = (oldTypeIsIT || oldTypeIsMPT);
+    const bool oldTypeIsMOD        = (nOldType == MOD_TYPE_MOD);
+    const bool oldTypeIsXM         = (nOldType == MOD_TYPE_XM);
+    const bool oldTypeIsS3M        = (nOldType == MOD_TYPE_S3M);
+    const bool oldTypeIsIT         = (nOldType == MOD_TYPE_IT);
+    const bool oldTypeIsMPT        = (nOldType == MOD_TYPE_MPT);
+    const bool oldTypeIsMOD_XM     = (oldTypeIsMOD || oldTypeIsXM);
+    const bool oldTypeIsS3M_IT_MPT = (oldTypeIsS3M || oldTypeIsIT || oldTypeIsMPT);
+    const bool oldTypeIsIT_MPT     = (oldTypeIsIT || oldTypeIsMPT);
 
-    const bool newTypeIsMOD = (nNewType == MOD_TYPE_MOD), newTypeIsXM =  (nNewType == MOD_TYPE_XM),
-            newTypeIsS3M = (nNewType == MOD_TYPE_S3M), newTypeIsIT = (nNewType == MOD_TYPE_IT),
-            newTypeIsMPT = (nNewType == MOD_TYPE_MPT), newTypeIsMOD_XM = (newTypeIsMOD || newTypeIsXM),
-            newTypeIsS3M_IT_MPT = (newTypeIsS3M || newTypeIsIT || newTypeIsMPT),
-            newTypeIsIT_MPT = (newTypeIsIT || newTypeIsMPT);
+    const bool newTypeIsMOD        = (nNewType == MOD_TYPE_MOD);
+    const bool newTypeIsXM         = (nNewType == MOD_TYPE_XM);
+    const bool newTypeIsS3M        = (nNewType == MOD_TYPE_S3M);
+    const bool newTypeIsIT         = (nNewType == MOD_TYPE_IT);
+    const bool newTypeIsMPT        = (nNewType == MOD_TYPE_MPT);
+    const bool newTypeIsMOD_XM     = (newTypeIsMOD || newTypeIsXM);
+    const bool newTypeIsS3M_IT_MPT = (newTypeIsS3M || newTypeIsIT || newTypeIsMPT);
+    const bool newTypeIsIT_MPT     = (newTypeIsIT || newTypeIsMPT);
 
     //////////////////////////
     // Convert 8-bit Panning
@@ -106,7 +113,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             if(m->IsPcNote())
             {
-                    modplug::tracker::modevent_t::cmd_t newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
+                    modplug::tracker::cmd_t newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
                     if(!GetModSpecifications(nNewType).HasCommand(newcommand))
                     {
                             newcommand = CMD_MIDI;        // assuming that this was CMD_SMOOTHMIDI
@@ -619,49 +626,49 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
 // "importance" of every FX command. Table is used for importing from formats with multiple effect colums
 // and is approximately the same as in SchismTracker.
-uint16_t module_renderer::GetEffectWeight(modplug::tracker::modevent_t::cmd_t cmd)
+uint16_t module_renderer::GetEffectWeight(modplug::tracker::cmd_t cmd)
 //---------------------------------------------------------
 {
     switch(cmd)
     {
-    case CMD_PATTERNBREAK:                return 288;
-    case CMD_POSITIONJUMP:                return 280;
-    case CMD_SPEED:                                return 272;
-    case CMD_TEMPO:                                return 264;
-    case CMD_GLOBALVOLUME:                return 256;
-    case CMD_GLOBALVOLSLIDE:        return 248;
-    case CMD_CHANNELVOLUME:                return 240;
-    case CMD_CHANNELVOLSLIDE:        return 232;
-    case CMD_TONEPORTAVOL:                return 224;
-    case CMD_TONEPORTAMENTO:        return 216;
-    case CMD_ARPEGGIO:                        return 208;
-    case CMD_RETRIG:                        return 200;
-    case CMD_TREMOR:                        return 192;
-    case CMD_OFFSET:                        return 184;
-    case CMD_VOLUME:                        return 176;
-    case CMD_VIBRATOVOL:                return 168;
-    case CMD_VOLUMESLIDE:                return 160;
-    case CMD_PORTAMENTODOWN:        return 152;
-    case CMD_PORTAMENTOUP:                return 133;
-    case CMD_NOTESLIDEDOWN:                return 136;
-    case CMD_NOTESLIDEUP:                return 128;
-    case CMD_PANNING8:                        return 120;
-    case CMD_PANNINGSLIDE:                return 112;
-    case CMD_SMOOTHMIDI:                return 104;
-    case CMD_MIDI:                                return  96;
-    case CMD_DELAYCUT:                        return  88;
-    case CMD_MODCMDEX:                        return  80;
-    case CMD_S3MCMDEX:                        return  72;
-    case CMD_PANBRELLO:                        return  64;
-    case CMD_XFINEPORTAUPDOWN:        return  56;
-    case CMD_VIBRATO:                        return  48;
-    case CMD_FINEVIBRATO:                return  40;
-    case CMD_TREMOLO:                        return  32;
-    case CMD_KEYOFF:                        return  24;
-    case CMD_SETENVPOSITION:        return  16;
-    case CMD_XPARAM:                        return   8;
-    case CMD_NONE:
-    default:                                        return   0;
+    case CMD_PATTERNBREAK    : return 288;
+    case CMD_POSITIONJUMP    : return 280;
+    case CMD_SPEED           : return 272;
+    case CMD_TEMPO           : return 264;
+    case CMD_GLOBALVOLUME    : return 256;
+    case CMD_GLOBALVOLSLIDE  : return 248;
+    case CMD_CHANNELVOLUME   : return 240;
+    case CMD_CHANNELVOLSLIDE : return 232;
+    case CMD_TONEPORTAVOL    : return 224;
+    case CMD_TONEPORTAMENTO  : return 216;
+    case CMD_ARPEGGIO        : return 208;
+    case CMD_RETRIG          : return 200;
+    case CMD_TREMOR          : return 192;
+    case CMD_OFFSET          : return 184;
+    case CMD_VOLUME          : return 176;
+    case CMD_VIBRATOVOL      : return 168;
+    case CMD_VOLUMESLIDE     : return 160;
+    case CMD_PORTAMENTODOWN  : return 152;
+    case CMD_PORTAMENTOUP    : return 133;
+    case CMD_NOTESLIDEDOWN   : return 136;
+    case CMD_NOTESLIDEUP     : return 128;
+    case CMD_PANNING8        : return 120;
+    case CMD_PANNINGSLIDE    : return 112;
+    case CMD_SMOOTHMIDI      : return 104;
+    case CMD_MIDI            : return  96;
+    case CMD_DELAYCUT        : return  88;
+    case CMD_MODCMDEX        : return  80;
+    case CMD_S3MCMDEX        : return  72;
+    case CMD_PANBRELLO       : return  64;
+    case CMD_XFINEPORTAUPDOWN: return  56;
+    case CMD_VIBRATO         : return  48;
+    case CMD_FINEVIBRATO     : return  40;
+    case CMD_TREMOLO         : return  32;
+    case CMD_KEYOFF          : return  24;
+    case CMD_SETENVPOSITION  : return  16;
+    case CMD_XPARAM          : return   8;
+    case CMD_NONE            :
+    default                  : return   0;
     }
 }
 

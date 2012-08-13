@@ -541,7 +541,7 @@ private:
 public:
     // "importance" of every FX command. Table is used for importing from formats with multiple effect columns
     // and is approximately the same as in SchismTracker.
-    static uint16_t module_renderer::GetEffectWeight(modplug::tracker::modevent_t::cmd_t cmd);
+    static uint16_t module_renderer::GetEffectWeight(modplug::tracker::cmd_t cmd);
     // try to convert a an effect into a volume column effect.
     static bool ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce);
 

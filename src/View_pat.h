@@ -6,34 +6,32 @@ class CEditCommand;
 class CEffectVis;    //rewbs.fxvis
 class CPatternGotoDialog;
 class CPatternRandomizer;
-class COpenGLEditor;
 
 // Drag & Drop info
-#define DRAGITEM_VALUEMASK            0x00FFFF
-#define DRAGITEM_MASK                    0xFF0000
-#define DRAGITEM_CHNHEADER            0x010000
-#define DRAGITEM_PATTERNHEADER    0x020000
-#define DRAGITEM_PLUGNAME            0x040000        //rewbs.patPlugName
+#define DRAGITEM_VALUEMASK           0x00FFFF
+#define DRAGITEM_MASK                0xFF0000
+#define DRAGITEM_CHNHEADER           0x010000
+#define DRAGITEM_PATTERNHEADER       0x020000
+#define DRAGITEM_PLUGNAME            0x040000 //rewbs.patPlugName
 
-#define PATSTATUS_MOUSEDRAGSEL                    0x01        // Creating a selection using the mouse
-#define PATSTATUS_KEYDRAGSEL                    0x02        // Creating a selection using shortcuts
-#define PATSTATUS_FOCUS                                    0x04        // Is the pattern editor focussed
-#define PATSTATUS_FOLLOWSONG                    0x08        // Does the cursor follow playback
-#define PATSTATUS_RECORD                            0x10        // Recording enabled
-#define PATSTATUS_DRAGHSCROLL                    0x20        // Some weird dragging stuff (?)
-#define PATSTATUS_DRAGVSCROLL                    0x40        // Some weird dragging stuff (?)
-#define PATSTATUS_VUMETERS                            0x80        // Display channel VU meters?
-#define PATSTATUS_CHORDPLAYING                    0x100        // Is a chord playing? (pretty much unused)
-#define PATSTATUS_DRAGNDROPEDIT                    0x200        // Drag & Drop editing (?)
-#define PATSTATUS_DRAGNDROPPING                    0x400        // Dragging a selection around
-#define PATSTATUS_MIDISPACINGPENDING    0x800        // Unused (?)
-#define PATSTATUS_CTRLDRAGSEL                    0x1000        // Creating a selection using Ctrl
-#define PATSTATUS_PLUGNAMESINHEADERS    0x2000        // Show plugin names in channel headers //rewbs.patPlugName
-#define PATSTATUS_SELECTROW                            0x4000        // Selecting a whole pattern row by clicking the row numbers
-
+#define PATSTATUS_MOUSEDRAGSEL       0x01     // Creating a selection using the mouse
+#define PATSTATUS_KEYDRAGSEL         0x02     // Creating a selection using shortcuts
+#define PATSTATUS_FOCUS              0x04     // Is the pattern editor focussed
+#define PATSTATUS_FOLLOWSONG         0x08     // Does the cursor follow playback
+#define PATSTATUS_RECORD             0x10     // Recording enabled
+#define PATSTATUS_DRAGHSCROLL        0x20     // Some weird dragging stuff (?)
+#define PATSTATUS_DRAGVSCROLL        0x40     // Some weird dragging stuff (?)
+#define PATSTATUS_VUMETERS           0x80     // Display channel VU meters?
+#define PATSTATUS_CHORDPLAYING       0x100    // Is a chord playing? (pretty much unused)
+#define PATSTATUS_DRAGNDROPEDIT      0x200    // Drag & Drop editing (?)
+#define PATSTATUS_DRAGNDROPPING      0x400    // Dragging a selection around
+#define PATSTATUS_MIDISPACINGPENDING 0x800    // Unused (?)
+#define PATSTATUS_CTRLDRAGSEL        0x1000   // Creating a selection using Ctrl
+#define PATSTATUS_PLUGNAMESINHEADERS 0x2000   // Show plugin names in channel headers //rewbs.patPlugName
+#define PATSTATUS_SELECTROW          0x4000   // Selecting a whole pattern row by clicking the row numbers
 
 // Row Spacing
-#define MAX_SPACING            64 // MAX_PATTERN_ROWS
+#define MAX_SPACING                  64       // MAX_PATTERN_ROWS
 
 
 // Selection - bit masks
@@ -44,9 +42,8 @@ class COpenGLEditor;
 // It is followed by a channel index, which is 13 bits wide.
 // The lowest 3 bits are used for addressing the components of a channel. They are *not* used as a bit set, but treated as one of the following integer numbers:
 
-enum PatternColumns
-{
-    NOTE_COLUMN=0,
+enum PatternColumns {
+    NOTE_COLUMN = 0,
     INST_COLUMN,
     VOL_COLUMN,
     EFFECT_COLUMN,
@@ -59,31 +56,38 @@ static_assert(MAX_BASECHANNELS <= 0x1FFF, "Check: Channel index in pattern edito
 
 //Struct for controlling selection clearing. This is used to define which data fields
 //should be cleared.
-struct RowMask
-{
-      bool note;
-      bool instrument;
-      bool volume;
-      bool command;
-      bool parameter;
+struct RowMask {
+    bool note;
+    bool instrument;
+    bool volume;
+    bool command;
+    bool parameter;
 };
-const RowMask DefaultRowMask = {true, true, true, true, true};
+const RowMask DefaultRowMask = {
+    true,
+    true,
+    true,
+    true,
+    true
+};
 
-struct ModCommandPos
-{
+struct ModCommandPos {
     PATTERNINDEX nPat;
     ROWINDEX nRow;
     CHANNELINDEX nChn;
 };
 
 // Find/Replace data
-struct FindReplaceStruct
-{
-    modplug::tracker::modevent_t cmdFind, cmdReplace;                    // Find/replace notes/instruments/effects
-    uint32_t dwFindFlags, dwReplaceFlags;            // PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
-    CHANNELINDEX nFindMinChn, nFindMaxChn;    // Find in these channels (if PATSEARCH_CHANNEL is set)
-    signed char cInstrRelChange;                    // relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
-    uint32_t dwBeginSel, dwEndSel;                            // Find in this selection (if PATSEARCH_PATSELECTION is set)
+struct FindReplaceStruct {
+    modplug::tracker::modevent_t cmdFind;    // Find notes/instruments/effects
+    modplug::tracker::modevent_t cmdReplace;
+    uint32_t dwFindFlags;                    // PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
+    uint32_t dwReplaceFlags;
+    CHANNELINDEX nFindMinChn;                // Find in these channels (if PATSEARCH_CHANNEL is set)
+    CHANNELINDEX nFindMaxChn;
+    signed char cInstrRelChange;             // relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
+    uint32_t dwBeginSel;                     // Find in this selection (if PATSEARCH_PATSELECTION is set)
+    uint32_t dwEndSel;
 };
 
 
@@ -139,7 +143,6 @@ protected:
 // -! BEHAVIOUR_CHANGE#0018
 public:
     CEffectVis    *m_pEffectVis;    //rewbs.fxVis
-    COpenGLEditor *m_pOpenGLEditor;    //rewbs.fxVis
 
 
     CViewPattern();

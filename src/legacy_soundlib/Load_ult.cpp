@@ -211,7 +211,7 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
     }
     if (n < 5)
     {
-            if (module_renderer::GetEffectWeight((modplug::tracker::modevent_t::cmd_t)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::modevent_t::cmd_t)cmd2))
+            if (module_renderer::GetEffectWeight((modplug::tracker::cmd_t)cmd1) > module_renderer::GetEffectWeight((modplug::tracker::cmd_t)cmd2))
             {
                     std::swap(cmd1, cmd2);
                     std::swap(param1, param2);

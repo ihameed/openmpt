@@ -788,7 +788,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
                                     {
                                             for (UINT k=0; k<nSwap; k++)
                                             {
-                                                    if (p->instr == swapmap[k]) p->instr = (modplug::tracker::modevent_t::instr_t)swapdest[k];
+                                                    if (p->instr == swapmap[k]) p->instr = (modplug::tracker::instr_t)swapdest[k];
                                             }
                                     }
                                     p++;

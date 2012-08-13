@@ -800,7 +800,7 @@ void CPageEditNote::UpdateDialog()
             if (NOTE_IS_VALID(m_nNote))
             {
                     // Normal note / no note
-                    const modplug::tracker::modevent_t::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
+                    const modplug::tracker::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
                     combo->SetCurSel(m_nNote - (noteStart - 1));
             }
             else

@@ -126,8 +126,8 @@ struct DMF_PATTERNSETTINGS
     bool realBPMmode;						// true = BPM mode
     uint8_t internalTicks;					// Ticks per row in final pattern
     vector<bool> playDir;					// Sample play direction of each channel... false = forward (default)
-    vector<modplug::tracker::modevent_t::note_t> noteBuffer;	// Note buffer
-    vector<modplug::tracker::modevent_t::note_t> lastNote;		// Last played note on channel
+    vector<modplug::tracker::note_t> noteBuffer;	// Note buffer
+    vector<modplug::tracker::note_t> lastNote;		// Last played note on channel
 };
 
 
@@ -679,7 +679,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
                 }
                 if (n < 5)
                 {
-                    if (module_renderer::GetEffectWeight((modplug::tracker::modevent_t::cmd_t)effect2) > module_renderer::GetEffectWeight((modplug::tracker::modevent_t::cmd_t)effect3))
+                    if (module_renderer::GetEffectWeight((modplug::tracker::cmd_t)effect2) > module_renderer::GetEffectWeight((modplug::tracker::cmd_t)effect3))
                     {
                         std::swap(effect2, effect3);
                         std::swap(effectParam2, effectParam3);

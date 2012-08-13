@@ -1725,7 +1725,7 @@ const LPCTSTR szNullNote = TEXT("...");
 const LPCTSTR szUnknownNote = TEXT("???");
 
 
-LPCTSTR GetNoteStr(const modplug::tracker::modevent_t::note_t nNote)
+LPCTSTR GetNoteStr(const modplug::tracker::note_t nNote)
 //----------------------------------------------
 {
     if(nNote == 0)
@@ -1744,11 +1744,11 @@ LPCTSTR GetNoteStr(const modplug::tracker::modevent_t::note_t nNote)
 }
 
 
-void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modevent_t::note_t noteStart, const modplug::tracker::modevent_t::note_t noteEnd)
+void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::note_t noteStart, const modplug::tracker::note_t noteEnd)
 //------------------------------------------------------------------------------------------------------------------
 {
-    const modplug::tracker::modevent_t::note_t upperLimit = min(ARRAYELEMCOUNT(szDefaultNoteNames)-1, noteEnd);
-    for(modplug::tracker::modevent_t::note_t note = noteStart; note <= upperLimit; ++note)
+    const modplug::tracker::note_t upperLimit = min(ARRAYELEMCOUNT(szDefaultNoteNames)-1, noteEnd);
+    for(modplug::tracker::note_t note = noteStart; note <= upperLimit; ++note)
             combobox.SetItemData(combobox.AddString(szDefaultNoteNames[note]), note);
 }
 
@@ -1756,16 +1756,16 @@ void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::modevent_
 void AppendNotesToControlEx(CComboBox& combobox, const module_renderer* const pSndFile /* = nullptr*/, const INSTRUMENTINDEX nInstr/* = MAX_INSTRUMENTS*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 {
-    const modplug::tracker::modevent_t::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
-    const modplug::tracker::modevent_t::note_t noteEnd = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMax : NOTE_MAX;
-    for(modplug::tracker::modevent_t::note_t nNote = noteStart; nNote <= noteEnd; nNote++)
+    const modplug::tracker::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
+    const modplug::tracker::note_t noteEnd = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMax : NOTE_MAX;
+    for(modplug::tracker::note_t nNote = noteStart; nNote <= noteEnd; nNote++)
     {
             if(pSndFile != nullptr && nInstr != MAX_INSTRUMENTS)
                     combobox.SetItemData(combobox.AddString(pSndFile->GetNoteName(nNote, nInstr).c_str()), nNote);
             else
                     combobox.SetItemData(combobox.AddString(szDefaultNoteNames[nNote-1]), nNote);
     }
-    for(modplug::tracker::modevent_t::note_t nNote = NOTE_MIN_SPECIAL-1; nNote++ < NOTE_MAX_SPECIAL;)
+    for(modplug::tracker::note_t nNote = NOTE_MIN_SPECIAL-1; nNote++ < NOTE_MAX_SPECIAL;)
     {
             if(pSndFile == nullptr || pSndFile->GetModSpecifications().HasNote(nNote) == true)
                     combobox.SetItemData(combobox.AddString(szSpecialNoteNames[nNote-NOTE_MIN_SPECIAL]), nNote);

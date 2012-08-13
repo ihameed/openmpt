@@ -308,8 +308,8 @@ struct ConvertInstrumentsToSamplesInPatterns
     {
             if(m.instr)
             {
-                    modplug::tracker::modevent_t::instr_t instr = m.instr, newinstr = 0;
-                    modplug::tracker::modevent_t::note_t note = m.note, newnote = note;
+                    modplug::tracker::instr_t instr = m.instr, newinstr = 0;
+                    modplug::tracker::note_t note = m.note, newnote = note;
                     if((note >= NOTE_MIN) && (note <= NOTE_MAX))
                             note--;
                     else

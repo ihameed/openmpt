@@ -22,16 +22,16 @@ using namespace modplug::tracker;
 
 #define    PLUGNAME_HEIGHT        16        //rewbs.patPlugName
 
-#pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
-
-FindReplaceStruct CViewPattern::m_findReplace =
-{
-    { modevent_t::note_t(0), 0, 0, 0, 0, 0 },
-    { modevent_t::note_t(0), 0, 0, 0, 0, 0 },
-    PATSEARCH_FULLSEARCH, PATSEARCH_REPLACEALL,
-    0, 0,
+FindReplaceStruct CViewPattern::m_findReplace = {
+    { note_t(0), 0, 0, 0, 0, 0 },
+    { note_t(0), 0, 0, 0, 0, 0 },
+    PATSEARCH_FULLSEARCH,
+    PATSEARCH_REPLACEALL,
     0,
-    0, 0,
+    0,
+    0,
+    0,
+    0
 };
 
 modevent_t CViewPattern::m_cmdOld = {0,0,0,0,0,0};
@@ -52,77 +52,76 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_WM_KILLFOCUS()
     ON_WM_SYSKEYDOWN()
     ON_WM_DESTROY()
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg)                //rewbs.customKeys
-    ON_MESSAGE(WM_MOD_MIDIMSG,            OnMidiMsg)
-    ON_MESSAGE(WM_MOD_RECORDPARAM,  OnRecordPlugParamChange)
-    ON_COMMAND(ID_EDIT_CUT,                    OnEditCut)
-    ON_COMMAND(ID_EDIT_COPY,            OnEditCopy)
-    ON_COMMAND(ID_EDIT_PASTE,            OnEditPaste)
-    ON_COMMAND(ID_EDIT_MIXPASTE,    OnEditMixPaste)
-    ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,OnEditMixPasteITStyle)
-    ON_COMMAND(ID_EDIT_PASTEFLOOD,    OnEditPasteFlood)
-    ON_COMMAND(ID_EDIT_PUSHFORWARDPASTE,OnEditPushForwardPaste)
-    ON_COMMAND(ID_EDIT_SELECT_ALL,    OnEditSelectAll)
-    ON_COMMAND(ID_EDIT_SELECTCOLUMN,OnEditSelectColumn)
-    ON_COMMAND(ID_EDIT_SELECTCOLUMN2,OnSelectCurrentColumn)
-    ON_COMMAND(ID_EDIT_FIND,            OnEditFind)
-    ON_COMMAND(ID_EDIT_GOTO_MENU,    OnEditGoto)
-    ON_COMMAND(ID_EDIT_FINDNEXT,    OnEditFindNext)
-    ON_COMMAND(ID_EDIT_RECSELECT,    OnRecordSelect)
-// -> CODE#0012
-// -> DESC="midi keyboard split"
-    ON_COMMAND(ID_EDIT_SPLITRECSELECT,    OnSplitRecordSelect)
-    ON_COMMAND(ID_EDIT_SPLITKEYBOARDSETTINGS,    SetSplitKeyboardSettings)
-// -! NEW_FEATURE#0012
-    ON_COMMAND(ID_EDIT_UNDO,            OnEditUndo)
-    ON_COMMAND(ID_PATTERN_CHNRESET,    OnChannelReset)
-    ON_COMMAND(ID_PATTERN_MUTE,            OnMuteFromClick) //rewbs.customKeys
-    ON_COMMAND(ID_PATTERN_SOLO,            OnSoloFromClick) //rewbs.customKeys
-    ON_COMMAND(ID_PATTERN_TRANSITIONMUTE, OnTogglePendingMuteFromClick)
-    ON_COMMAND(ID_PATTERN_TRANSITIONSOLO, OnPendingSoloChnFromClick)
+    ON_MESSAGE(WM_MOD_KEYCOMMAND,               OnCustomKeyMsg) //rewbs.customKeys
+    ON_MESSAGE(WM_MOD_MIDIMSG,                  OnMidiMsg)
+    ON_MESSAGE(WM_MOD_RECORDPARAM,              OnRecordPlugParamChange)
+    ON_COMMAND(ID_EDIT_CUT,                     OnEditCut)
+    ON_COMMAND(ID_EDIT_COPY,                    OnEditCopy)
+    ON_COMMAND(ID_EDIT_PASTE,                   OnEditPaste)
+    ON_COMMAND(ID_EDIT_MIXPASTE,                OnEditMixPaste)
+    ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,        OnEditMixPasteITStyle)
+    ON_COMMAND(ID_EDIT_PASTEFLOOD,              OnEditPasteFlood)
+    ON_COMMAND(ID_EDIT_PUSHFORWARDPASTE,        OnEditPushForwardPaste)
+    ON_COMMAND(ID_EDIT_SELECT_ALL,              OnEditSelectAll)
+    ON_COMMAND(ID_EDIT_SELECTCOLUMN,            OnEditSelectColumn)
+    ON_COMMAND(ID_EDIT_SELECTCOLUMN2,           OnSelectCurrentColumn)
+    ON_COMMAND(ID_EDIT_FIND,                    OnEditFind)
+    ON_COMMAND(ID_EDIT_GOTO_MENU,               OnEditGoto)
+    ON_COMMAND(ID_EDIT_FINDNEXT,                OnEditFindNext)
+    ON_COMMAND(ID_EDIT_RECSELECT,               OnRecordSelect)
+    // -> CODE#0012
+    // -> DESC="midi keyboard split"
+    ON_COMMAND(ID_EDIT_SPLITRECSELECT,          OnSplitRecordSelect)
+    ON_COMMAND(ID_EDIT_SPLITKEYBOARDSETTINGS,   SetSplitKeyboardSettings)
+    // -! NEW_FEATURE#0012
+    ON_COMMAND(ID_EDIT_UNDO,                    OnEditUndo)
+    ON_COMMAND(ID_PATTERN_CHNRESET,             OnChannelReset)
+    ON_COMMAND(ID_PATTERN_MUTE,                 OnMuteFromClick) //rewbs.customKeys
+    ON_COMMAND(ID_PATTERN_SOLO,                 OnSoloFromClick) //rewbs.customKeys
+    ON_COMMAND(ID_PATTERN_TRANSITIONMUTE,       OnTogglePendingMuteFromClick)
+    ON_COMMAND(ID_PATTERN_TRANSITIONSOLO,       OnPendingSoloChnFromClick)
     ON_COMMAND(ID_PATTERN_TRANSITION_UNMUTEALL, OnPendingUnmuteAllChnFromClick)
-    ON_COMMAND(ID_PATTERN_UNMUTEALL,OnUnmuteAll)
-    ON_COMMAND(ID_PATTERN_DELETEROW,OnDeleteRows)
-    ON_COMMAND(ID_PATTERN_DELETEALLROW,OnDeleteRowsEx)
-    ON_COMMAND(ID_PATTERN_INSERTROW,OnInsertRows)
-    ON_COMMAND(ID_NEXTINSTRUMENT,    OnNextInstrument)
-    ON_COMMAND(ID_PREVINSTRUMENT,    OnPrevInstrument)
-    ON_COMMAND(ID_PATTERN_PLAYROW,    OnPatternStep)
-    ON_COMMAND(ID_CONTROLENTER,            OnPatternStep)
-    ON_COMMAND(ID_CONTROLTAB,            OnSwitchToOrderList)
-    ON_COMMAND(ID_PREVORDER,            OnPrevOrder)
-    ON_COMMAND(ID_NEXTORDER,            OnNextOrder)
-    ON_COMMAND(IDC_PATTERN_RECORD,    OnPatternRecord)
-    ON_COMMAND(ID_RUN_SCRIPT,                                    OnRunScript)
-    ON_COMMAND(ID_TRANSPOSE_UP,                                    OnTransposeUp)
-    ON_COMMAND(ID_TRANSPOSE_DOWN,                            OnTransposeDown)
-    ON_COMMAND(ID_TRANSPOSE_OCTUP,                            OnTransposeOctUp)
-    ON_COMMAND(ID_TRANSPOSE_OCTDOWN,                    OnTransposeOctDown)
-    ON_COMMAND(ID_PATTERN_PROPERTIES,                    OnPatternProperties)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_VOLUME,    OnInterpolateVolume)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_EFFECT,    OnInterpolateEffect)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,            OnInterpolateNote)
-    ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,            OnVisualizeEffect)                //rewbs.fxvis
-    ON_COMMAND(ID_GROW_SELECTION,                            OnGrowSelection)
-    ON_COMMAND(ID_SHRINK_SELECTION,                            OnShrinkSelection)
-    ON_COMMAND(ID_PATTERN_SETINSTRUMENT,            OnSetSelInstrument)
-    ON_COMMAND(ID_PATTERN_ADDCHANNEL_FRONT,            OnAddChannelFront)
-    ON_COMMAND(ID_PATTERN_ADDCHANNEL_AFTER,            OnAddChannelAfter)
-    ON_COMMAND(ID_PATTERN_DUPLICATECHANNEL,            OnDuplicateChannel)
-    ON_COMMAND(ID_PATTERN_REMOVECHANNEL,            OnRemoveChannel)
-    ON_COMMAND(ID_PATTERN_REMOVECHANNELDIALOG,    OnRemoveChannelDialog)
-    ON_COMMAND(ID_CURSORCOPY,                                    OnCursorCopy)
-    ON_COMMAND(ID_CURSORPASTE,                                    OnCursorPaste)
-    ON_COMMAND(ID_PATTERN_AMPLIFY,                            OnPatternAmplify)
-    ON_COMMAND(ID_CLEAR_SELECTION,                            OnClearSelectionFromMenu)
-    ON_COMMAND(ID_SHOWTIMEATROW,                            OnShowTimeAtRow)
-    ON_COMMAND(ID_CHANNEL_RENAME,                            OnRenameChannel)
-    ON_COMMAND(ID_PATTERN_EDIT_PCNOTE_PLUGIN,    OnTogglePCNotePluginEditor)
-    ON_COMMAND_RANGE(ID_CHANGE_INSTRUMENT, ID_CHANGE_INSTRUMENT+MAX_INSTRUMENTS, OnSelectInstrument)
-    ON_COMMAND_RANGE(ID_CHANGE_PCNOTE_PARAM, ID_CHANGE_PCNOTE_PARAM + modplug::tracker::modevent_t::maxColumnValue, OnSelectPCNoteParam)
-    ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,                    OnUpdateUndo)
-    ON_COMMAND_RANGE(ID_PLUGSELECT, ID_PLUGSELECT+MAX_MIXPLUGINS, OnSelectPlugin) //rewbs.patPlugName
-
+    ON_COMMAND(ID_PATTERN_UNMUTEALL,            OnUnmuteAll)
+    ON_COMMAND(ID_PATTERN_DELETEROW,            OnDeleteRows)
+    ON_COMMAND(ID_PATTERN_DELETEALLROW,         OnDeleteRowsEx)
+    ON_COMMAND(ID_PATTERN_INSERTROW,            OnInsertRows)
+    ON_COMMAND(ID_NEXTINSTRUMENT,               OnNextInstrument)
+    ON_COMMAND(ID_PREVINSTRUMENT,               OnPrevInstrument)
+    ON_COMMAND(ID_PATTERN_PLAYROW,              OnPatternStep)
+    ON_COMMAND(ID_CONTROLENTER,                 OnPatternStep)
+    ON_COMMAND(ID_CONTROLTAB,                   OnSwitchToOrderList)
+    ON_COMMAND(ID_PREVORDER,                    OnPrevOrder)
+    ON_COMMAND(ID_NEXTORDER,                    OnNextOrder)
+    ON_COMMAND(IDC_PATTERN_RECORD,              OnPatternRecord)
+    ON_COMMAND(ID_RUN_SCRIPT,                   OnRunScript)
+    ON_COMMAND(ID_TRANSPOSE_UP,                 OnTransposeUp)
+    ON_COMMAND(ID_TRANSPOSE_DOWN,               OnTransposeDown)
+    ON_COMMAND(ID_TRANSPOSE_OCTUP,              OnTransposeOctUp)
+    ON_COMMAND(ID_TRANSPOSE_OCTDOWN,            OnTransposeOctDown)
+    ON_COMMAND(ID_PATTERN_PROPERTIES,           OnPatternProperties)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_VOLUME,   OnInterpolateVolume)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_EFFECT,   OnInterpolateEffect)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,     OnInterpolateNote)
+    ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,     OnVisualizeEffect) //rewbs.fxvis
+    ON_COMMAND(ID_GROW_SELECTION,               OnGrowSelection)
+    ON_COMMAND(ID_SHRINK_SELECTION,             OnShrinkSelection)
+    ON_COMMAND(ID_PATTERN_SETINSTRUMENT,        OnSetSelInstrument)
+    ON_COMMAND(ID_PATTERN_ADDCHANNEL_FRONT,     OnAddChannelFront)
+    ON_COMMAND(ID_PATTERN_ADDCHANNEL_AFTER,     OnAddChannelAfter)
+    ON_COMMAND(ID_PATTERN_DUPLICATECHANNEL,     OnDuplicateChannel)
+    ON_COMMAND(ID_PATTERN_REMOVECHANNEL,        OnRemoveChannel)
+    ON_COMMAND(ID_PATTERN_REMOVECHANNELDIALOG,  OnRemoveChannelDialog)
+    ON_COMMAND(ID_CURSORCOPY,                   OnCursorCopy)
+    ON_COMMAND(ID_CURSORPASTE,                  OnCursorPaste)
+    ON_COMMAND(ID_PATTERN_AMPLIFY,              OnPatternAmplify)
+    ON_COMMAND(ID_CLEAR_SELECTION,              OnClearSelectionFromMenu)
+    ON_COMMAND(ID_SHOWTIMEATROW,                OnShowTimeAtRow)
+    ON_COMMAND(ID_CHANNEL_RENAME,               OnRenameChannel)
+    ON_COMMAND(ID_PATTERN_EDIT_PCNOTE_PLUGIN,   OnTogglePCNotePluginEditor)
+    ON_COMMAND_RANGE(ID_CHANGE_INSTRUMENT,      ID_CHANGE_INSTRUMENT+MAX_INSTRUMENTS, OnSelectInstrument)
+    ON_COMMAND_RANGE(ID_CHANGE_PCNOTE_PARAM,    ID_CHANGE_PCNOTE_PARAM + modplug::tracker::modevent_t::maxColumnValue, OnSelectPCNoteParam)
+    ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,          OnUpdateUndo)
+    ON_COMMAND_RANGE(ID_PLUGSELECT,             ID_PLUGSELECT+MAX_MIXPLUGINS, OnSelectPlugin) //rewbs.patPlugName
 
     //}}AFX_MSG_MAP
     ON_WM_INITMENU()
@@ -135,7 +134,6 @@ static_assert(modplug::tracker::modevent_t::maxColumnValue <= 999, "Command rang
 CViewPattern::CViewPattern()
 //--------------------------
 {
-    m_pOpenGLEditor = NULL; //rewbs.fxvis
     m_pEffectVis = NULL; //rewbs.fxvis
     m_bLastNoteEntryBlocked=false;
 
@@ -2281,13 +2279,6 @@ void CViewPattern::OnVisualizeEffect()
                 m_pEffectVis->OnSize(0,0,0);
 
             }
-            /*
-            m_pOpenGLEditor = new COpenGLEditor(this);
-            if (m_pOpenGLEditor) {
-                m_pOpenGLEditor->OpenEditor(CMainFrame::GetMainFrame());
-            }
-            */
-
         }
     }
 }
@@ -2355,7 +2346,7 @@ void CViewPattern::Interpolate(PatternColumns type)
         const modplug::tracker::modevent_t srcCmd = *pSndFile->Patterns[m_nPattern].GetpModCommand(row0, nchn);
         const modplug::tracker::modevent_t destCmd = *pSndFile->Patterns[m_nPattern].GetpModCommand(row1, nchn);
 
-        modplug::tracker::modevent_t::note_t PCnote = 0;
+        modplug::tracker::note_t PCnote = 0;
         uint16_t PCinst = 0, PCparam = 0;
 
         switch(type)
@@ -2485,8 +2476,8 @@ BOOL CViewPattern::TransposeSelection(int transp)
         const UINT col0 = ((m_dwBeginSel & 0xFFFF)+7) >> 3, col1 = GetChanFromCursor(m_dwEndSel);
         module_renderer *pSndFile = pModDoc->GetSoundFile();
         modplug::tracker::modevent_t *pcmd = pSndFile->Patterns[m_nPattern];
-        const modplug::tracker::modevent_t::note_t noteMin = pSndFile->GetModSpecifications().noteMin;
-        const modplug::tracker::modevent_t::note_t noteMax = pSndFile->GetModSpecifications().noteMax;
+        const modplug::tracker::note_t noteMin = pSndFile->GetModSpecifications().noteMin;
+        const modplug::tracker::note_t noteMax = pSndFile->GetModSpecifications().noteMax;
 
         if ((!pcmd) || (col0 > col1) || (col1 >= pSndFile->m_nChannels)
          || (row0 > row1) || (row1 >= pSndFile->Patterns[m_nPattern].GetNumRows())) return FALSE;
@@ -4397,11 +4388,11 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
             if(pSndFile->GetModSpecifications().HasVolCommand(VOLCMD_VOLUME))
             {
                 newcmd.volcmd = VOLCMD_VOLUME;
-                newcmd.vol = (modplug::tracker::modevent_t::vol_t)volWrite;
+                newcmd.vol = (modplug::tracker::vol_t)volWrite;
             } else
             {
                 newcmd.command = CMD_VOLUME;
-                newcmd.param = (modplug::tracker::modevent_t::param_t)volWrite;
+                newcmd.param = (modplug::tracker::param_t)volWrite;
             }
         }
 
@@ -4880,7 +4871,7 @@ bool CViewPattern::HandleSplit(modplug::tracker::modevent_t* p, int note)
 {
     CModDoc *pModDoc = GetDocument(); if (!pModDoc) return false;
 
-    modplug::tracker::modevent_t::instr_t ins = GetCurrentInstrument();
+    modplug::tracker::instr_t ins = GetCurrentInstrument();
     bool isSplit = false;
 
     if(pModDoc->GetSplitKeyboardSettings()->IsSplitActive())
