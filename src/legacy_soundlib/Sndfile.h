@@ -294,13 +294,13 @@ public:
     module_renderer();
     ~module_renderer();
 
-    void change_audio_settings(const modplug::audioio::paudio_settings &);
+    void change_audio_settings(const modplug::audioio::paudio_settings_t &);
 
     //XXXih:   <:(
     modplug::mixgraph::core mixgraph;
 
 private:
-    modplug::audioio::paudio_settings render_settings;
+    modplug::audioio::paudio_settings_t render_settings;
 
     //XXXih: old api follows:
 public:

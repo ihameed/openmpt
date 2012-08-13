@@ -326,7 +326,7 @@ CMainFrame::CMainFrame() :
 
     auto &default_output = pa_system.defaultOutputDevice();
 
-    modplug::audioio::paudio_settings stream_settings;
+    modplug::audioio::paudio_settings_t stream_settings;
     stream_settings.latency  = default_output.defaultLowOutputLatency();
     stream_settings.host_api = default_output.hostApi().typeId();
     stream_settings.device   = default_output.index();

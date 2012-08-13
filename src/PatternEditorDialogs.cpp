@@ -21,7 +21,7 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
 {
     if(xparam == NULL || multiplier == NULL) return;
 
-    modplug::tracker::modevent_t mca = modplug::tracker::modevent_t::Empty();
+    modplug::tracker::modevent_t mca = modplug::tracker::modevent_t::empty();
     UINT i,xp = 0, ml = 1;
     int nCmdRow = (int)nRow;
 

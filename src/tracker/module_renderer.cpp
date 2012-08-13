@@ -5,7 +5,7 @@
 
 using namespace modplug::audioio;
 
-void module_renderer::change_audio_settings(const paudio_settings &settings) {
+void module_renderer::change_audio_settings(const paudio_settings_t &settings) {
     auto set_deprecated_globals = [&settings] () {
         module_renderer::deprecated_global_bits_per_sample = 16;
         module_renderer::deprecated_global_channels = 2;

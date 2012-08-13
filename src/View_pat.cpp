@@ -119,7 +119,7 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_COMMAND(ID_CHANNEL_RENAME,               OnRenameChannel)
     ON_COMMAND(ID_PATTERN_EDIT_PCNOTE_PLUGIN,   OnTogglePCNotePluginEditor)
     ON_COMMAND_RANGE(ID_CHANGE_INSTRUMENT,      ID_CHANGE_INSTRUMENT+MAX_INSTRUMENTS, OnSelectInstrument)
-    ON_COMMAND_RANGE(ID_CHANGE_PCNOTE_PARAM,    ID_CHANGE_PCNOTE_PARAM + modplug::tracker::modevent_t::maxColumnValue, OnSelectPCNoteParam)
+    ON_COMMAND_RANGE(ID_CHANGE_PCNOTE_PARAM,    ID_CHANGE_PCNOTE_PARAM + modplug::tracker::modevent_t::MaxColumnValue, OnSelectPCNoteParam)
     ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,          OnUpdateUndo)
     ON_COMMAND_RANGE(ID_PLUGSELECT,             ID_PLUGSELECT+MAX_MIXPLUGINS, OnSelectPlugin) //rewbs.patPlugName
 
@@ -129,7 +129,7 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
-static_assert(modplug::tracker::modevent_t::maxColumnValue <= 999, "Command range for ID_CHANGE_PCNOTE_PARAM is designed for 999");
+static_assert(modplug::tracker::modevent_t::MaxColumnValue <= 999, "Command range for ID_CHANGE_PCNOTE_PARAM is designed for 999");
 
 CViewPattern::CViewPattern()
 //--------------------------
@@ -3121,7 +3121,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
         {
             pModDoc->GetPatternUndo()->PrepareUndo(nPattern, nChn, nRow, 1, 1);
 
-            pRow->Set(NOTE_PCS, plugSlot + 1, paramIndex, static_cast<uint16_t>(pPlug->GetParameter(paramIndex) * modplug::tracker::modevent_t::maxColumnValue));
+            pRow->Set(NOTE_PCS, plugSlot + 1, paramIndex, static_cast<uint16_t>(pPlug->GetParameter(paramIndex) * modplug::tracker::modevent_t::MaxColumnValue));
             InvalidateRow(nRow);
         }
     } else if(pSndFile->GetModSpecifications().HasCommand(CMD_SMOOTHMIDI))
@@ -3252,7 +3252,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
         ModCommandPos editpos = GetEditPos(*pSndFile, bLiveRecord);
         modplug::tracker::modevent_t* p = GetModCommand(*pSndFile, editpos);
         pModDoc->GetPatternUndo()->PrepareUndo(editpos.nPat, editpos.nChn, editpos.nRow, editpos.nChn, editpos.nRow);
-        p->Set(NOTE_PCS, mappedIndex, static_cast<uint16_t>(paramIndex), static_cast<uint16_t>((paramValue * modplug::tracker::modevent_t::maxColumnValue)/127));
+        p->Set(NOTE_PCS, mappedIndex, static_cast<uint16_t>(paramIndex), static_cast<uint16_t>((paramValue * modplug::tracker::modevent_t::MaxColumnValue)/127));
         if(bLiveRecord == false)
             InvalidateRow(editpos.nRow);
         pMainFrm->ThreadSafeSetModified(pModDoc);
@@ -3847,7 +3847,7 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
             /* Move existing digits to left, drop out leftmost digit and */ \
             /* push new digit to the least meaning digit. */ \
             val = (val % 100) * 10 + v; \
-            if(val > modplug::tracker::modevent_t::maxColumnValue) val = modplug::tracker::modevent_t::maxColumnValue; \
+            if(val > modplug::tracker::modevent_t::MaxColumnValue) val = modplug::tracker::modevent_t::MaxColumnValue; \
             p->Set##method##(val); \
         } \
     }

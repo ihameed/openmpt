@@ -79,7 +79,7 @@ uint8_t bits_per_sample(portaudio::SampleDataFormat format) {
 }
 
 
-bool settings_equal(const paudio_settings &a, const paudio_settings &b) {
+bool settings_equal(const paudio_settings_t &a, const paudio_settings_t &b) {
     return a.buffer_length == b.buffer_length
         && a.channels == b.channels
         && a.device == b.device
@@ -113,7 +113,7 @@ PaHostApiTypeId hostapi_of_int(int apinum) {
 
 
 Json::Value json_of_paudio_settings(
-    const paudio_settings &settings,
+    const paudio_settings_t &settings,
     portaudio::System &pa_system
 ) {
     Json::Value root;
@@ -129,8 +129,8 @@ Json::Value json_of_paudio_settings(
     return root;
 }
 
-paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa_system) {
-    paudio_settings ret;
+paudio_settings_t paudio_settings_of_json(Json::Value &root, portaudio::System &pa_system) {
+    paudio_settings_t ret;
 
     try {
         ret.sample_rate   = root["sample_rate"].asDouble();
@@ -162,7 +162,7 @@ paudio_settings paudio_settings_of_json(Json::Value &root, portaudio::System &pa
     return ret;
 }
 
-paudio_callback::paudio_callback(CMainFrame &main_frame, paudio_settings &settings) :
+paudio_callback::paudio_callback(CMainFrame &main_frame, paudio_settings_t &settings) :
     main_frame(main_frame),
     settings(settings)
 { }
@@ -205,7 +205,7 @@ int paudio_callback::invoke(const void *input, void *output, unsigned long frame
     return paContinue;
 }
 
-paudio::paudio(const paudio_settings &settings, portaudio::System &system, CMainFrame &main_frame) :
+paudio::paudio(const paudio_settings_t &settings, portaudio::System &system, CMainFrame &main_frame) :
     interleaved(true),
     _settings(settings),
     callback(main_frame, _settings),
@@ -247,7 +247,7 @@ void paudio::close() {
     stream.close();
 }
 
-const paudio_settings& paudio::settings() const {
+const paudio_settings_t& paudio::settings() const {
     return _settings;
 }
 

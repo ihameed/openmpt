@@ -1323,7 +1323,7 @@ BOOL module_renderer::ProcessEffects()
         {
             const PLUGINDEX plug = pChn->nRowInstr;
             const PlugParamIndex plugparam = modplug::tracker::modevent_t::GetValueVolCol(pChn->nRowVolCmd, pChn->nRowVolume);
-            const PlugParamValue value = modplug::tracker::modevent_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modevent_t::maxColumnValue);
+            const PlugParamValue value = modplug::tracker::modevent_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modevent_t::MaxColumnValue);
 
             if(plug > 0 && plug <= MAX_MIXPLUGINS && m_MixPlugins[plug-1].pMixPlugin)
                 m_MixPlugins[plug-1].pMixPlugin->SetParameter(plugparam, value);
@@ -1349,7 +1349,7 @@ BOOL module_renderer::ProcessEffects()
                 const PlugParamIndex plugparam = pChn->m_RowPlugParam;
                 if(isFirstTick)
                 {
-                    PlugParamValue targetvalue = modplug::tracker::modevent_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modevent_t::maxColumnValue);
+                    PlugParamValue targetvalue = modplug::tracker::modevent_t::GetValueEffectCol(pChn->nRowCommand, pChn->nRowParam) / PlugParamValue(modplug::tracker::modevent_t::MaxColumnValue);
                     // Hack: Use m_nPlugInitialParamValue to store the target value, not initial.
                     pChn->m_nPlugInitialParamValue = targetvalue;
                     pChn->m_nPlugParamValueStep = (targetvalue - m_MixPlugins[nPlug-1].pMixPlugin->GetParameter(plugparam)) / float(m_nMusicSpeed);

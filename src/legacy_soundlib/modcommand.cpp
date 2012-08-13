@@ -123,7 +123,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                             newcommand = CMD_NONE;
                     }
 
-                    m->param = (uint8_t)(min(modplug::tracker::modevent_t::maxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::maxColumnValue);
+                    m->param = (uint8_t)(min(modplug::tracker::modevent_t::MaxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::MaxColumnValue);
                     m->command = newcommand; // might be removed later
                     m->volcmd = VOLCMD_NONE;
                     m->note = NOTE_NONE;

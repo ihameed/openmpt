@@ -470,8 +470,8 @@ void GenerateCommands(CPattern& pat, const double dProbPcs, const double dProbPc
                             i->note = NOTE_PC;
 
                     i->instr = Rand<uint8_t>(0, MAX_MIXPLUGINS);
-                    i->SetValueVolCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::maxColumnValue));
-                    i->SetValueEffectCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::maxColumnValue));
+                    i->SetValueVolCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::MaxColumnValue));
+                    i->SetValueEffectCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::MaxColumnValue));
             }
             else
                     i->Clear();

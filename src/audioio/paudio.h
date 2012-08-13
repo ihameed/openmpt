@@ -10,7 +10,7 @@ class CMainFrame;
 namespace modplug {
 namespace audioio {
 
-struct paudio_settings {
+struct paudio_settings_t {
     double sample_rate;
 
     PaHostApiTypeId host_api;
@@ -21,18 +21,18 @@ struct paudio_settings {
     unsigned int channels;
 };
 
-bool settings_equal(const paudio_settings &, const paudio_settings &);
+bool settings_equal(const paudio_settings_t &, const paudio_settings_t &);
 
 Json::Value json_of_paudio_settings(
-    const paudio_settings &, portaudio::System &
+    const paudio_settings_t &, portaudio::System &
 );
-paudio_settings paudio_settings_of_json(Json::Value &, portaudio::System &);
+paudio_settings_t paudio_settings_of_json(Json::Value &, portaudio::System &);
 PaHostApiTypeId hostapi_of_int(int);
 
 
 class paudio_callback {
 public:
-    paudio_callback(CMainFrame &main_frame, paudio_settings &settings);
+    paudio_callback(CMainFrame &main_frame, paudio_settings_t &settings);
 
     int invoke(const void *,
                void *,
@@ -43,24 +43,24 @@ public:
 
 private:
     CMainFrame &main_frame;
-    paudio_settings &settings;
+    paudio_settings_t &settings;
 };
 
 
 
 class paudio {
 public:
-    paudio(const paudio_settings &settings, portaudio::System &system, CMainFrame &);
+    paudio(const paudio_settings_t &settings, portaudio::System &system, CMainFrame &);
     ~paudio();
 
     void start();
     void stop();
     void close();
-    const paudio_settings& settings() const;
+    const paudio_settings_t& settings() const;
 
 private:
     const bool interleaved;
-    paudio_settings _settings;
+    paudio_settings_t _settings;
     paudio_callback callback;
 
     portaudio::MemFunCallbackStream<paudio_callback> stream;

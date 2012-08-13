@@ -192,7 +192,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
                                     if(newOrder[nChn] < GetNumChannels()) //Case: getting old channel to the new channel order.
                                             *tmpdest = tmpsrc[nRow * GetNumChannels() + newOrder[nChn]];
                                     else //Case: figure newOrder[k] is not the index of any current channel, so adding a new channel.
-                                            *tmpdest = modplug::tracker::modevent_t::Empty();
+                                            *tmpdest = modplug::tracker::modevent_t::empty();
 
                             }
                     }

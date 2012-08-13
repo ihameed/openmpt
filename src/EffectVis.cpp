@@ -214,7 +214,7 @@ int CEffectVis::FXParamToScreenY(uint16_t param)
 
 int CEffectVis::PCParamToScreenY(uint16_t param)
 {
-    if ((param >= 0x00) || (param <= modplug::tracker::modevent_t::maxColumnValue))
+    if ((param >= 0x00) || (param <= modplug::tracker::modevent_t::MaxColumnValue))
             return (int) (m_rcDraw.bottom - param*m_pixelsPerPCParam + 0.5);
     return -1;
 }
@@ -232,8 +232,8 @@ uint8_t CEffectVis::ScreenYToFXParam(int y)
 
 uint16_t CEffectVis::ScreenYToPCParam(int y)
 {
-    if (y<=PCParamToScreenY(modplug::tracker::modevent_t::maxColumnValue))
-            return modplug::tracker::modevent_t::maxColumnValue;
+    if (y<=PCParamToScreenY(modplug::tracker::modevent_t::MaxColumnValue))
+            return modplug::tracker::modevent_t::MaxColumnValue;
 
     if (y>=PCParamToScreenY(0x00))
             return 0x00;
@@ -556,7 +556,7 @@ void CEffectVis::OnSize(UINT nType, int cx, int cy)
 
     m_pixelsPerRow   = (float)(m_rcDraw.Width()-INNERLEFTBORDER-INNERRIGHTBORDER)/(float)m_nRows;
     m_pixelsPerFXParam = (float)(m_rcDraw.Height())/(float)0xFF;
-    m_pixelsPerPCParam = (float)(m_rcDraw.Height())/(float)modplug::tracker::modevent_t::maxColumnValue;
+    m_pixelsPerPCParam = (float)(m_rcDraw.Height())/(float)modplug::tracker::modevent_t::MaxColumnValue;
     m_boolForceRedraw = TRUE;
     InvalidateRect(NULL, FALSE);     //redraw everything
 }

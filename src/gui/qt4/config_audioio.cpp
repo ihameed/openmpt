@@ -170,7 +170,7 @@ void config_audioio_main::apply_changes() {
         return idx >= 0 ? rates.itemData(idx).toDouble() : 0.0;
     };
 
-    paudio_settings settings;
+    paudio_settings_t settings;
     settings.buffer_length = buflen.value();
     settings.channels = channels.value();
 

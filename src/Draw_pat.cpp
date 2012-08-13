@@ -343,7 +343,7 @@ void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modev
 
     if(mc.IsPcNote())
     {    //If note is parameter control note, drawing volume command differently.
-        const int val = min(modplug::tracker::modevent_t::maxColumnValue, mc.GetValueVolCol());
+        const int val = min(modplug::tracker::modevent_t::MaxColumnValue, mc.GetValueVolCol());
 
         m_Dib.TextBlt(x, y, 1, COLUMN_HEIGHT, pfnt->clear_x, pfnt->clear_y);
         m_Dib.TextBlt(x + 1, y, pfnt->vol_width, COLUMN_HEIGHT,
@@ -882,7 +882,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
             {
                 const bool isPCnote = m->IsPcNote();
                 uint16_t val = m->GetValueEffectCol();
-                if(val > modplug::tracker::modevent_t::maxColumnValue) val = modplug::tracker::modevent_t::maxColumnValue;
+                if(val > modplug::tracker::modevent_t::MaxColumnValue) val = modplug::tracker::modevent_t::MaxColumnValue;
                 fx_col = row_col;
                 if (!isPCnote && (m->command) && (m->command < MAX_EFFECTS) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
                 {

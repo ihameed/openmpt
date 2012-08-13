@@ -22,6 +22,9 @@ public:
     virtual void refresh();
     virtual void apply_changes();
 
+public slots:
+    virtual void set_preset();
+
 private:
 
     app_config &context;

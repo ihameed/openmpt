@@ -55,9 +55,9 @@ struct modevent_t {
     // Defines the maximum value for column data when interpreted as 2-byte
     // value (for example volcmd and vol). The valid value range is
     // [0, maxColumnValue].
-    enum { maxColumnValue = 999 };
+    enum { MaxColumnValue = 999 };
 
-    static modevent_t Empty() {
+    static modevent_t empty() {
         modevent_t ret = { note_t(0), 0, 0, 0, 0, 0 };
         return ret;
     }
@@ -117,7 +117,7 @@ struct modevent_t {
                 && this->volcmd == 0
                 && this->command == 0;
         } else {
-            return *this == Empty();
+            return *this == empty();
         }
     }
 

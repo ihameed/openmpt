@@ -25,29 +25,19 @@ struct draw_state {
     const module_renderer &renderer;
     QPainter &painter;
     const QRect &clip;
-    int standard_width;
-    int row_height;
+    const int standard_width;
+    const int row_height;
     QImage &font;
     const pattern_font_metrics_t &font_metrics;
-    int pattern_number;
+    const int pattern_number;
     const colors_t &colors;
 
-    void set_foreground(const colorpair_t &color) {
-        font.setColor(1, color.foreground.rgba());
+    void set_foreground(const colors_t::colortype_t colortype) {
+        font.setColor(1, colors[colortype].foreground.rgba());
     }
 
-    void set_background(const colorpair_t &color) {
-        font.setColor(0, color.background.rgba());
-    }
-
-    void draw_glyph(const draw_state &state, int x, int y,
-                    int glyph_x, int glyph_y, int glyph_width)
-    {
-        painter.drawImage(
-            x, y, font,
-            glyph_x, glyph_y, glyph_width,
-            font_metrics.height
-        );
+    void set_background(const colors_t::colortype_t colortype) {
+        font.setColor(0, colors[colortype].background.rgba());
     }
 };
 
@@ -111,11 +101,11 @@ struct note_column: pattern_column {
         }
 
         if (row % measure_length == 0) {
-            state.set_background(state.colors.primary_highlight);
+            state.set_background(colors_t::HighlightPrimary);
         } else if (row % beat_length == 0) {
-            state.set_background(state.colors.secondary_highlight);
+            state.set_background(colors_t::HighlightSecondary);
         } else {
-            state.set_background(state.colors.normal);
+            state.set_background(colors_t::Normal);
         }
     }
 
@@ -150,36 +140,36 @@ struct note_column: pattern_column {
         auto srcy = metrics.note_y;
         auto width = metrics.element_widths[elem_note];
 
-        state.set_foreground(state.colors.note);
+        state.set_foreground(colors_t::Note);
 
         switch (note) {
         case 0:
             draw_spacer(state, x, y, elem_note);
             break;
         case NOTE_NOTECUT:
-            state.draw_glyph(state, x, y, srcx, srcy + 13 * grid_height, width);
+            draw_glyph(state, x, y, srcx, srcy + 13 * grid_height, width);
             break;
         case NOTE_KEYOFF:
-            state.draw_glyph(state, x, y, srcx, srcy + 14 * grid_height, width);
+            draw_glyph(state, x, y, srcx, srcy + 14 * grid_height, width);
             break;
         case NOTE_FADE:
-            state.draw_glyph(state, x, y, srcx, srcy + 17 * grid_height, width);
+            draw_glyph(state, x, y, srcx, srcy + 17 * grid_height, width);
             break;
         case NOTE_PC:
-            state.draw_glyph(state, x, y, srcx, srcy + 15 * grid_height, width);
+            draw_glyph(state, x, y, srcx, srcy + 15 * grid_height, width);
             break;
         case NOTE_PCS:
-            state.draw_glyph(state, x, y, srcx, srcy + 16 * grid_height, width);
+            draw_glyph(state, x, y, srcx, srcy + 16 * grid_height, width);
             break;
         default:
             unsigned int octave   = (note - 1) / 12;
             unsigned int notepart = (note - 1) % 12;
-            state.draw_glyph(state, x, y,
+            draw_glyph(state, x, y,
                 srcx, srcy + (notepart + 1) * grid_height,
                 metrics.note_width
             );
             if (octave <= 9) {
-                state.draw_glyph(state,
+                draw_glyph(state,
                     x + metrics.note_width, y,
                     metrics.num_x, metrics.num_y + octave * grid_height,
                     metrics.octave_width
@@ -199,22 +189,22 @@ struct note_column: pattern_column {
         if (instr) {
             auto width = metrics.instr_firstchar_width;
 
-            state.set_foreground(state.colors.instrument);
+            state.set_foreground(colors_t::Instrument);
 
             if (instr < 100) {
-                state.draw_glyph(state, x, y,
+                draw_glyph(state, x, y,
                     metrics.num_x + metrics.instr_offset,
                     metrics.num_y + (instr / 10) * grid_height,
                     width
                 );
             } else {
-                state.draw_glyph(state, x, y,
+                draw_glyph(state, x, y,
                     metrics.num_10_x + metrics.instr_10_offset,
                     metrics.num_10_y + ((instr - 100) / 10) * grid_height,
                     width
                 );
             }
-            state.draw_glyph(state, x + width, y,
+            draw_glyph(state, x + width, y,
                 metrics.num_x + 1, metrics.num_y + (instr % 10) * grid_height,
                 metrics.element_widths[elem_instr] - width
             );
@@ -234,20 +224,20 @@ struct note_column: pattern_column {
             auto volcmd = evt.volcmd & 0x0f;
             auto vol    = evt.vol & 0x7f;
 
-            state.set_foreground(state.colors.volume);
+            state.set_foreground(colors_t::Volume);
 
-            state.draw_glyph(state, x, y,
+            draw_glyph(state, x, y,
                 metrics.nVolX, metrics.nVolY + volcmd * grid_height,
                 metrics.vol_width
             );
 
-            state.draw_glyph(state, x + metrics.vol_width, y,
+            draw_glyph(state, x + metrics.vol_width, y,
                 metrics.num_x, metrics.num_y + (vol / 10) * grid_height,
                 metrics.vol_firstchar_width
             );
 
             auto extrawidth = metrics.vol_width + metrics.vol_firstchar_width;
-            state.draw_glyph(state,
+            draw_glyph(state,
                 x + extrawidth, y,
                 metrics.num_x, metrics.num_y + (vol / 10) * grid_height,
                 metrics.element_widths[elem_vol] - extrawidth
@@ -264,7 +254,7 @@ struct note_column: pattern_column {
         auto &metrics = state.font_metrics;
 
         if (evt.command) {
-            state.set_foreground(state.colors.pitch);
+            state.set_foreground(colors_t::Pitch);
             auto rawcommand = evt.command & 0x3f;
             char command = state.renderer.m_nType & (MOD_TYPE_MOD | MOD_TYPE_XM)
                 ? mod_command_glyphs[rawcommand]
@@ -285,14 +275,14 @@ struct note_column: pattern_column {
         auto &metrics = state.font_metrics;
 
         if (evt.command) {
-            state.set_foreground(state.colors.panning);
-            state.draw_glyph(state, x, y,
+            state.set_foreground(colors_t::Panning);
+            draw_glyph(state, x, y,
                 metrics.num_x,
                 metrics.num_y + (evt.param >> 4) * grid_height,
                 metrics.cmd_firstchar_width
             );
 
-            state.draw_glyph(state, x + metrics.cmd_firstchar_width, y,
+            draw_glyph(state, x + metrics.cmd_firstchar_width, y,
                 metrics.num_x + 1,
                 metrics.num_y + (evt.param & 0x0f) * grid_height,
                 metrics.element_widths[elem_param] - metrics.cmd_firstchar_width
@@ -350,7 +340,7 @@ struct note_column: pattern_column {
             break;
         }
 
-        state.draw_glyph(state, x, y,
+        draw_glyph(state, x, y,
             srcx + x_offset, srcy,
             width);
     }
@@ -360,8 +350,8 @@ struct note_column: pattern_column {
         for (elem_t i = 0; i < elem_type; ++i) {
             offset += state.font_metrics.element_widths[i];
         }
-        state.set_foreground(state.colors.normal);
-        state.draw_glyph(state, x, y,
+        state.set_foreground(colors_t::Normal);
+        draw_glyph(state, x, y,
             state.font_metrics.clear_x + offset,
             state.font_metrics.clear_y,
             state.font_metrics.element_widths[elem_type]);
@@ -369,11 +359,21 @@ struct note_column: pattern_column {
 
     void draw_debug(draw_state &state, int x, int y, elem_t elem_type) {
         if (false) {
-            state.set_foreground(state.colors.normal);
+            state.set_foreground(colors_t::Normal);
             state.painter.drawRect(x, y,
                 state.font_metrics.element_widths[elem_type],
                 state.font_metrics.height);
         }
+    }
+
+    void draw_glyph(draw_state &state, int x, int y,
+                    int glyph_x, int glyph_y, int glyph_width)
+    {
+        state.painter.drawImage(
+            x, y, state.font,
+            glyph_x, glyph_y, glyph_width,
+            state.font_metrics.height
+        );
     }
 };
 

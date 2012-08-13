@@ -14,7 +14,7 @@ namespace gui {
 namespace qt4 {
 
 struct private_configs {
-    paudio_settings audio;
+    paudio_settings_t audio;
     colors_t colors;
 };
 
@@ -46,11 +46,11 @@ void app_config::import_json(Json::Value &root) {
 }
 
 
-const paudio_settings & app_config::audio_settings() const {
+const paudio_settings_t & app_config::audio_settings() const {
     return store->audio;
 }
 
-void app_config::change_audio_settings(const paudio_settings &settings) {
+void app_config::change_audio_settings(const paudio_settings_t &settings) {
     DEBUG_FUNC("thread id = %x, settings = %s",
         GetCurrentThreadId(),
         debug_json_dump(json_of_paudio_settings(
