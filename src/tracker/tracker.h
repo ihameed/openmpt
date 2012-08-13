@@ -1,12 +1,11 @@
 #pragma once
 
 #include "../legacy_soundlib/Snd_defs.h"
-#include "../legacy_soundlib/modcommand.h"
 #include "../mixgraph/constants.h"
 #include <cstdint>
 
 
-#include "modcommand.h"
+#include "modevent.h"
 
 class CTuningBase;
 typedef CTuningBase CTuning;
@@ -233,10 +232,10 @@ __declspec(align(32)) struct modchannel_t {
     uint8_t nEFxSpeed, nEFxDelay; // memory for Invert Loop (EFx, .MOD only)
 
     uint16_t m_RowPlugParam;    		//NOTE_PCs memory.
-    float m_nPlugParamValueStep;  //rewbs.smoothVST 
+    float m_nPlugParamValueStep;  //rewbs.smoothVST
     float m_nPlugInitialParamValue; //rewbs.smoothVST
     PLUGINDEX m_RowPlug;    		//NOTE_PCs memory.
-    
+
     bool inactive() { return length == 0; }
     uint32_t muted() { return flags & CHN_MUTE; }
 
@@ -252,7 +251,7 @@ __declspec(align(32)) struct modchannel_t {
     //-->Variables used to make user-definable tuning modes work with pattern effects.
         bool m_ReCalculateFreqOnFirstTick;
         //If true, freq should be recalculated in ReadNote() on first tick.
-        //Currently used only for vibrato things - using in other context might be 
+        //Currently used only for vibrato things - using in other context might be
         //problematic.
 
         bool m_CalculateFreq;
@@ -266,7 +265,7 @@ __declspec(align(32)) struct modchannel_t {
     //<----
 };
 
-#define CHNRESET_CHNSETTINGS    1 //  1 b 
+#define CHNRESET_CHNSETTINGS    1 //  1 b
 #define CHNRESET_SETPOS_BASIC    2 // 10 b
 #define    CHNRESET_SETPOS_FULL	7 //111 b
 #define CHNRESET_TOTAL    		255 //11111111b

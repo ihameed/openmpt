@@ -51,8 +51,6 @@ extern uint8_t * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument
 
 
 
-#include "modcommand.h"
-
 ////////////////////////////////////////////////////////////////////
 // Mix Plugins
 #define MIXPLUG_MIXREADY    		0x01	// Set when cleared

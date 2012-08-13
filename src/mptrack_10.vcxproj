@@ -504,7 +504,6 @@
     <ClInclude Include="legacy_soundlib\IT_DEFS.H" />
     <ClInclude Include="legacy_soundlib\Loaders.h" />
     <ClInclude Include="legacy_soundlib\midi.h" />
-    <ClInclude Include="legacy_soundlib\modcommand.h" />
     <ClInclude Include="legacy_soundlib\ModSequence.h" />
     <ClInclude Include="legacy_soundlib\modsmp_ctrl.h" />
     <ClInclude Include="legacy_soundlib\mod_specifications.h" />
@@ -573,7 +572,7 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="tagging.h" />
     <ClInclude Include="tracker\constants.h" />
-    <ClInclude Include="tracker\modcommand.h" />
+    <ClInclude Include="tracker\modevent.h" />
     <ClInclude Include="tracker\tracker.h" />
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="Undo.h" />
