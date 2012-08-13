@@ -36,8 +36,8 @@ public:
     // Returns last accessible index, i.e. GetLength() - 1. Behaviour is undefined if length is zero.
     ORDERINDEX GetLastIndex() const {return m_nSize - 1;}
 
-    void Append() {Append(GetInvalidPatIndex());}	// Appends InvalidPatIndex.
-    void Append(PATTERNINDEX nPat);					// Appends given patindex.
+    void Append() {Append(GetInvalidPatIndex());}        // Appends InvalidPatIndex.
+    void Append(PATTERNINDEX nPat);                                        // Appends given patindex.
 
     // Inserts nCount orders starting from nPos using nFill as the pattern index for all inserted orders.
     // Sequence will automatically grow if needed and if it can't grow enough, some tail
@@ -99,16 +99,16 @@ protected:
     const_iterator end() const {return m_pArray + m_nSize;}
 
 public:
-    CString m_sName;				// Sequence name.
+    CString m_sName;                                // Sequence name.
 
 protected:
-    PATTERNINDEX* m_pArray;			// Pointer to sequence array.
-    ORDERINDEX m_nSize;				// Sequence length.
-    ORDERINDEX m_nCapacity;			// Capacity in m_pArray.
-    PATTERNINDEX m_nInvalidIndex;	// Invalid pat index.
-    PATTERNINDEX m_nIgnoreIndex;	// Ignore pat index.
-    bool m_bDeletableArray;			// True if m_pArray points the deletable(with delete[]) array.
-    module_renderer* m_pSndFile;			// Pointer to associated CSoundFile.
+    PATTERNINDEX* m_pArray;                        // Pointer to sequence array.
+    ORDERINDEX m_nSize;                                // Sequence length.
+    ORDERINDEX m_nCapacity;                        // Capacity in m_pArray.
+    PATTERNINDEX m_nInvalidIndex;        // Invalid pat index.
+    PATTERNINDEX m_nIgnoreIndex;        // Ignore pat index.
+    bool m_bDeletableArray;                        // True if m_pArray points the deletable(with delete[]) array.
+    module_renderer* m_pSndFile;                        // Pointer to associated CSoundFile.
 
     static const bool NoArrayDelete = false;
 };
@@ -135,10 +135,10 @@ public:
     const ModSequence& GetSequence(SEQUENCEINDEX nSeq) const;
     ModSequence& GetSequence(SEQUENCEINDEX nSeq);
     SEQUENCEINDEX GetNumSequences() const {return static_cast<SEQUENCEINDEX>(m_Sequences.size());}
-    void SetSequence(SEQUENCEINDEX);			// Sets working sequence.
-    SEQUENCEINDEX AddSequence(bool bDuplicate = true);	// Adds new sequence. If bDuplicate is true, new sequence is a duplicate of the old one. Returns the ID of the new sequence.
+    void SetSequence(SEQUENCEINDEX);                        // Sets working sequence.
+    SEQUENCEINDEX AddSequence(bool bDuplicate = true);        // Adds new sequence. If bDuplicate is true, new sequence is a duplicate of the old one. Returns the ID of the new sequence.
     void RemoveSequence() {RemoveSequence(GetCurrentSequenceIndex());}
-    void RemoveSequence(SEQUENCEINDEX);		// Removes given sequence
+    void RemoveSequence(SEQUENCEINDEX);                // Removes given sequence
     SEQUENCEINDEX GetCurrentSequenceIndex() const {return m_nCurrentSeq;}
 
     void OnModTypeChanged(const MODTYPE oldtype);
@@ -161,9 +161,9 @@ private:
     void CopyCacheToStorage();
     void CopyStorageToCache();
 
-    PATTERNINDEX m_Cache[s_nCacheSize];		// Local cache array.
-    std::vector<ModSequence> m_Sequences;	// Array of sequences.
-    SEQUENCEINDEX m_nCurrentSeq;			// Index of current sequence.
+    PATTERNINDEX m_Cache[s_nCacheSize];                // Local cache array.
+    std::vector<ModSequence> m_Sequences;        // Array of sequences.
+    SEQUENCEINDEX m_nCurrentSeq;                        // Index of current sequence.
 };
 
 

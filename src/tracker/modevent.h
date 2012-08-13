@@ -75,10 +75,10 @@ struct modevent_t {
     // If ignoreEffectValues is true (default), effect values are ignored are ignored if there is no effect command present.
     bool IsEmpty(const bool ignoreEffectValues = true) const
     {
-    	if(ignoreEffectValues)
-    		return (this->note == 0 && this->instr == 0 && this->volcmd == 0 && this->command == 0);
-    	else
-    		return (*this == Empty());
+            if(ignoreEffectValues)
+                    return (this->note == 0 && this->instr == 0 && this->volcmd == 0 && this->command == 0);
+            else
+                    return (*this == Empty());
     }
 
     // Returns true if instrument column represents plugin index.
@@ -91,8 +91,8 @@ struct modevent_t {
     // Swap volume and effect column (doesn't do any conversion as it's mainly for importing formats with multiple effect columns, so beware!)
     void SwapEffects()
     {
-    	std::swap(volcmd, command);
-    	std::swap(vol, param);
+            std::swap(volcmd, command);
+            std::swap(vol, param);
     }
 
     note_t note;
@@ -109,61 +109,61 @@ struct modevent_t {
 
 
 // Volume Column commands
-#define VOLCMD_NONE    			0
-#define VOLCMD_VOLUME    		1
-#define VOLCMD_PANNING    		2
-#define VOLCMD_VOLSLIDEUP    	3
-#define VOLCMD_VOLSLIDEDOWN    	4
-#define VOLCMD_FINEVOLUP    	5
-#define VOLCMD_FINEVOLDOWN    	6
-#define VOLCMD_VIBRATOSPEED    	7
-#define VOLCMD_VIBRATODEPTH    	8
-#define VOLCMD_PANSLIDELEFT    	9
+#define VOLCMD_NONE                            0
+#define VOLCMD_VOLUME                    1
+#define VOLCMD_PANNING                    2
+#define VOLCMD_VOLSLIDEUP            3
+#define VOLCMD_VOLSLIDEDOWN            4
+#define VOLCMD_FINEVOLUP            5
+#define VOLCMD_FINEVOLDOWN            6
+#define VOLCMD_VIBRATOSPEED            7
+#define VOLCMD_VIBRATODEPTH            8
+#define VOLCMD_PANSLIDELEFT            9
 #define VOLCMD_PANSLIDERIGHT    10
 #define VOLCMD_TONEPORTAMENTO    11
-#define VOLCMD_PORTAUP    		12
-#define VOLCMD_PORTADOWN    	13
-#define VOLCMD_DELAYCUT    		14 //currently unused
-#define VOLCMD_OFFSET    		15 //rewbs.volOff
-#define MAX_VOLCMDS    			16
+#define VOLCMD_PORTAUP                    12
+#define VOLCMD_PORTADOWN            13
+#define VOLCMD_DELAYCUT                    14 //currently unused
+#define VOLCMD_OFFSET                    15 //rewbs.volOff
+#define MAX_VOLCMDS                            16
 
 
 // Effect column commands
-#define CMD_NONE    			0
-#define CMD_ARPEGGIO    		1
-#define CMD_PORTAMENTOUP    	2
-#define CMD_PORTAMENTODOWN    	3
-#define CMD_TONEPORTAMENTO    	4
-#define CMD_VIBRATO    			5
-#define CMD_TONEPORTAVOL    	6
-#define CMD_VIBRATOVOL    		7
-#define CMD_TREMOLO    			8
-#define CMD_PANNING8    		9
-#define CMD_OFFSET    			10
-#define CMD_VOLUMESLIDE    		11
-#define CMD_POSITIONJUMP    	12
-#define CMD_VOLUME    			13
-#define CMD_PATTERNBREAK    	14
-#define CMD_RETRIG    			15
-#define CMD_SPEED    			16
-#define CMD_TEMPO    			17
-#define CMD_TREMOR    			18
-#define CMD_MODCMDEX    		19
-#define CMD_S3MCMDEX    		20
-#define CMD_CHANNELVOLUME    	21
-#define CMD_CHANNELVOLSLIDE    	22
-#define CMD_GLOBALVOLUME    	23
-#define CMD_GLOBALVOLSLIDE    	24
-#define CMD_KEYOFF    			25
-#define CMD_FINEVIBRATO    		26
-#define CMD_PANBRELLO    		27
+#define CMD_NONE                            0
+#define CMD_ARPEGGIO                    1
+#define CMD_PORTAMENTOUP            2
+#define CMD_PORTAMENTODOWN            3
+#define CMD_TONEPORTAMENTO            4
+#define CMD_VIBRATO                            5
+#define CMD_TONEPORTAVOL            6
+#define CMD_VIBRATOVOL                    7
+#define CMD_TREMOLO                            8
+#define CMD_PANNING8                    9
+#define CMD_OFFSET                            10
+#define CMD_VOLUMESLIDE                    11
+#define CMD_POSITIONJUMP            12
+#define CMD_VOLUME                            13
+#define CMD_PATTERNBREAK            14
+#define CMD_RETRIG                            15
+#define CMD_SPEED                            16
+#define CMD_TEMPO                            17
+#define CMD_TREMOR                            18
+#define CMD_MODCMDEX                    19
+#define CMD_S3MCMDEX                    20
+#define CMD_CHANNELVOLUME            21
+#define CMD_CHANNELVOLSLIDE            22
+#define CMD_GLOBALVOLUME            23
+#define CMD_GLOBALVOLSLIDE            24
+#define CMD_KEYOFF                            25
+#define CMD_FINEVIBRATO                    26
+#define CMD_PANBRELLO                    27
 #define CMD_XFINEPORTAUPDOWN    28
-#define CMD_PANNINGSLIDE    	29
-#define CMD_SETENVPOSITION    	30
-#define CMD_MIDI    			31
-#define CMD_SMOOTHMIDI    		32 //rewbs.smoothVST
-#define CMD_DELAYCUT    		33
-#define CMD_XPARAM    			34 // -> CODE#0010 -> DESC="add extended parameter mechanism to pattern effects" -! NEW_FEATURE#0010
+#define CMD_PANNINGSLIDE            29
+#define CMD_SETENVPOSITION            30
+#define CMD_MIDI                            31
+#define CMD_SMOOTHMIDI                    32 //rewbs.smoothVST
+#define CMD_DELAYCUT                    33
+#define CMD_XPARAM                            34 // -> CODE#0010 -> DESC="add extended parameter mechanism to pattern effects" -! NEW_FEATURE#0010
 #define CMD_NOTESLIDEUP         35 // IMF Gxy
 #define CMD_NOTESLIDEDOWN       36 // IMF Hxy
-#define MAX_EFFECTS    			37
+#define MAX_EFFECTS                            37

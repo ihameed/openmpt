@@ -24,7 +24,7 @@ protected:
     //m_nXScroll  : The order at the beginning of shown orderlist
     //m_nScrollPos: The same as order
     //m_nScrollPos2nd: 2nd selection point if multiple orders are selected
-    //	               (not neccessarily the higher order - GetCurSel() is taking care of that.)
+    //                       (not neccessarily the higher order - GetCurSel() is taking care of that.)
     ORDERINDEX m_nXScroll, m_nScrollPos, m_nScrollPos2nd, m_nDropPos;
     bool m_bScrolling, m_bDragging;
     ORDERINDEX m_nDragOrder;
@@ -46,8 +46,8 @@ public:
     UINT GetCurrentPattern() const;
     // make the current selection the secondary selection (used for keyboard orderlist navigation)
     inline void SetCurSelTo2ndSel(bool isSelectionKeyPressed)
-    {	if(isSelectionKeyPressed && m_nScrollPos2nd == ORDERINDEX_INVALID) m_nScrollPos2nd = m_nScrollPos;
-    	else if(!isSelectionKeyPressed && m_nScrollPos2nd != ORDERINDEX_INVALID) m_nScrollPos2nd = ORDERINDEX_INVALID;
+    {        if(isSelectionKeyPressed && m_nScrollPos2nd == ORDERINDEX_INVALID) m_nScrollPos2nd = m_nScrollPos;
+            else if(!isSelectionKeyPressed && m_nScrollPos2nd != ORDERINDEX_INVALID) m_nScrollPos2nd = ORDERINDEX_INVALID;
     };
     bool SetCurSel(ORDERINDEX sel, bool bEdit = true, bool bShiftClick = false, bool bIgnoreCurSel = false);
     BOOL UpdateScrollInfo();
@@ -176,7 +176,7 @@ protected:
 
 public:
     CCtrlPatterns();
-    LONG* GetSplitPosRef() {return &CMainFrame::glPatternWindowHeight;} 	//rewbs.varWindowSize
+    LONG* GetSplitPosRef() {return &CMainFrame::glPatternWindowHeight;}         //rewbs.varWindowSize
 
 public:
     void SetCurrentPattern(PATTERNINDEX nPat);
@@ -185,7 +185,7 @@ public:
     BOOL GetLoopPattern() {return IsDlgButtonChecked(IDC_PATTERN_LOOP);}
     //{{AFX_VIRTUAL(CCtrlPatterns)
     virtual BOOL OnInitDialog();
-    virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);        // DDX/DDV support
     virtual void RecalcLayout();
     virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual CRuntimeClass *GetAssociatedViewClass();
@@ -208,12 +208,12 @@ protected:
     afx_msg void OnPatternDuplicate();
     afx_msg void OnPatternStop();
     afx_msg void OnPatternPlay();
-    afx_msg void OnPatternPlayNoLoop();		//rewbs.playSongFromCursor
+    afx_msg void OnPatternPlayNoLoop();                //rewbs.playSongFromCursor
     afx_msg void OnPatternPlayRow();
     afx_msg void OnPatternPlayFromStart();
     afx_msg void OnPatternRecord();
     afx_msg void OnPatternVUMeters();
-    afx_msg void OnPatternViewPlugNames();	//rewbs.patPlugNames
+    afx_msg void OnPatternViewPlugNames();        //rewbs.patPlugNames
     afx_msg void OnPatternProperties();
     afx_msg void OnPatternExpand();
     afx_msg void OnPatternShrink();

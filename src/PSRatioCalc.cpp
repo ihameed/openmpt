@@ -6,7 +6,7 @@
 #include "mainfrm.h"
 #include "PSRatioCalc.h"
 #include ".\psratiocalc.h"
-#include "legacy_soundlib/sndfile.h"    	//for tempo mode enum
+#include "legacy_soundlib/sndfile.h"            //for tempo mode enum
 
 // CPSRatioCalc dialog
 
@@ -41,9 +41,9 @@ void CPSRatioCalc::DoDataExchange(CDataExchange* pDX)
 
     //These 2 CEdits must only be updated if they don't have focus (to preserve trailing . and 0s etc..)
     if (pDX->m_bSaveAndValidate || hasFocus != GetDlgItem(IDC_ROW_LENGTH_NEW2))
-    	DDX_Text(pDX, IDC_ROW_LENGTH_NEW2, m_dRowsNew);
+            DDX_Text(pDX, IDC_ROW_LENGTH_NEW2, m_dRowsNew);
     if (pDX->m_bSaveAndValidate || hasFocus != GetDlgItem(IDC_PSRATIO))
-    	DDX_Text(pDX, IDC_PSRATIO, m_dRatio);
+            DDX_Text(pDX, IDC_PSRATIO, m_dRatio);
 }
 
 
@@ -64,10 +64,10 @@ void CPSRatioCalc::OnEnChangeSamples()
     UpdateData();
     if (m_lSamplesOrig && m_lSamplesOrig)
     {
-    	m_dRatio = (double)m_lSamplesNew/(double)m_lSamplesOrig*100;
-    	CalcMs();
-    	CalcRows();
-    	UpdateData(FALSE);
+            m_dRatio = (double)m_lSamplesNew/(double)m_lSamplesOrig*100;
+            CalcMs();
+            CalcRows();
+            UpdateData(FALSE);
     }
 }
 
@@ -76,10 +76,10 @@ void CPSRatioCalc::OnEnChangeMs()
     UpdateData();
     if (m_lMsOrig && m_lMsNew)
     {
-    	m_dRatio = (double)m_lMsNew/(double)m_lMsOrig*100;
-    	CalcSamples();
-    	CalcRows();
-    	UpdateData(FALSE);
+            m_dRatio = (double)m_lMsNew/(double)m_lMsOrig*100;
+            CalcSamples();
+            CalcRows();
+            UpdateData(FALSE);
     }
     
 }
@@ -89,10 +89,10 @@ void CPSRatioCalc::OnEnChangeRows()
     UpdateData();
     if (m_dRowsOrig && m_dRowsNew && m_nTempo && m_nSpeed)
     {
-    	m_dRatio = m_dRowsNew/m_dRowsOrig*100.0;
-    	CalcSamples();
-    	CalcMs();	
-    	UpdateData(FALSE);
+            m_dRatio = m_dRowsNew/m_dRowsOrig*100.0;
+            CalcSamples();
+            CalcMs();        
+            UpdateData(FALSE);
     }
 
 }
@@ -111,9 +111,9 @@ void CPSRatioCalc::OnEnChangeratio()
     UpdateData();
     if (m_dRatio)
     {
-    	CalcSamples();
-    	CalcMs();
-    	CalcRows();
+            CalcSamples();
+            CalcMs();
+            CalcRows();
         UpdateData(FALSE);
     }
 }
@@ -138,18 +138,18 @@ void CPSRatioCalc::CalcRows()
 
     switch(m_nTempoMode) {
 
-    	case tempo_mode_alternative: 
-    		rowTime = 60000.0 / (1.65625 * (double)(m_nSpeed * m_nTempo));
-    		break;
+            case tempo_mode_alternative: 
+                    rowTime = 60000.0 / (1.65625 * (double)(m_nSpeed * m_nTempo));
+                    break;
 
-    	case tempo_mode_modern: 
-    		rowTime = 60000.0/(double)m_nTempo / (double)m_nRowsPerBeat;
-    		break;
+            case tempo_mode_modern: 
+                    rowTime = 60000.0/(double)m_nTempo / (double)m_nRowsPerBeat;
+                    break;
 
-    	case tempo_mode_classic: 
-    	default:
-    		rowTime = 2500.0 * (double)m_nSpeed/(double)m_nTempo;
-    		break;
+            case tempo_mode_classic: 
+            default:
+                    rowTime = 2500.0 * (double)m_nSpeed/(double)m_nTempo;
+                    break;
     }
 
     m_dRowsOrig = (double)m_lMsOrig/rowTime;
@@ -162,9 +162,9 @@ void CPSRatioCalc::OnBnClickedOk()
 {
     if (m_dRatio<50.0 || m_dRatio>200.0)
     {
-    	::MessageBox(NULL, "Error: ratio must be between 50% and 200%.", 
-    				       "Error", MB_ICONERROR | MB_OK);
-    	return;
+            ::MessageBox(NULL, "Error: ratio must be between 50% and 200%.", 
+                                           "Error", MB_ICONERROR | MB_OK);
+            return;
     }
     OnOK();
 }

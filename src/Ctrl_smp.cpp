@@ -48,52 +48,52 @@ int PowerOf2Exponent(const unsigned int v)
 }
 // -! TEST#0029
 
-#define    BASENOTE_MIN	(1*12)	// C-1
-#define    BASENOTE_MAX	(9*12)	// C-9
+#define    BASENOTE_MIN        (1*12)        // C-1
+#define    BASENOTE_MAX        (9*12)        // C-9
 
 BEGIN_MESSAGE_MAP(CCtrlSamples, CModControlDlg)
     //{{AFX_MSG_MAP(CCtrlSamples)
     ON_WM_VSCROLL()
-    ON_COMMAND(IDC_SAMPLE_NEW,    		OnSampleNew)
-    ON_COMMAND(IDC_SAMPLE_OPEN,    		OnSampleOpen)
-    ON_COMMAND(IDC_SAMPLE_SAVEAS,    	OnSampleSave)
-    ON_COMMAND(IDC_SAMPLE_PLAY,    		OnSamplePlay)
+    ON_COMMAND(IDC_SAMPLE_NEW,                    OnSampleNew)
+    ON_COMMAND(IDC_SAMPLE_OPEN,                    OnSampleOpen)
+    ON_COMMAND(IDC_SAMPLE_SAVEAS,            OnSampleSave)
+    ON_COMMAND(IDC_SAMPLE_PLAY,                    OnSamplePlay)
     ON_COMMAND(IDC_SAMPLE_NORMALIZE,    OnNormalize)
-    ON_COMMAND(IDC_SAMPLE_AMPLIFY,    	OnAmplify)
-    ON_COMMAND(IDC_SAMPLE_UPSAMPLE,    	OnUpsample)
+    ON_COMMAND(IDC_SAMPLE_AMPLIFY,            OnAmplify)
+    ON_COMMAND(IDC_SAMPLE_UPSAMPLE,            OnUpsample)
     ON_COMMAND(IDC_SAMPLE_DOWNSAMPLE,    OnDownsample)
-    ON_COMMAND(IDC_SAMPLE_REVERSE,    	OnReverse)
-    ON_COMMAND(IDC_SAMPLE_SILENCE,    	OnSilence)
-    ON_COMMAND(IDC_SAMPLE_INVERT,    	OnInvert)
+    ON_COMMAND(IDC_SAMPLE_REVERSE,            OnReverse)
+    ON_COMMAND(IDC_SAMPLE_SILENCE,            OnSilence)
+    ON_COMMAND(IDC_SAMPLE_INVERT,            OnInvert)
     ON_COMMAND(IDC_SAMPLE_SIGN_UNSIGN,  OnSignUnSign)
-    ON_COMMAND(IDC_SAMPLE_DCOFFSET,    	OnRemoveDCOffset)
-    ON_COMMAND(IDC_SAMPLE_XFADE,    	OnXFade)
-    ON_COMMAND(IDC_CHECK1,    			OnSetPanningChanged)
-    ON_COMMAND(ID_PREVINSTRUMENT,    	OnPrevInstrument)
-    ON_COMMAND(ID_NEXTINSTRUMENT,    	OnNextInstrument)
-    ON_COMMAND(IDC_BUTTON1,    			OnPitchShiftTimeStretch)
-    ON_COMMAND(IDC_BUTTON2,    			OnEstimateSampleSize)
-    ON_COMMAND(IDC_CHECK3,    			OnEnableStretchToSize)
-    ON_EN_CHANGE(IDC_SAMPLE_NAME,    	OnNameChanged)
+    ON_COMMAND(IDC_SAMPLE_DCOFFSET,            OnRemoveDCOffset)
+    ON_COMMAND(IDC_SAMPLE_XFADE,            OnXFade)
+    ON_COMMAND(IDC_CHECK1,                            OnSetPanningChanged)
+    ON_COMMAND(ID_PREVINSTRUMENT,            OnPrevInstrument)
+    ON_COMMAND(ID_NEXTINSTRUMENT,            OnNextInstrument)
+    ON_COMMAND(IDC_BUTTON1,                            OnPitchShiftTimeStretch)
+    ON_COMMAND(IDC_BUTTON2,                            OnEstimateSampleSize)
+    ON_COMMAND(IDC_CHECK3,                            OnEnableStretchToSize)
+    ON_EN_CHANGE(IDC_SAMPLE_NAME,            OnNameChanged)
     ON_EN_CHANGE(IDC_SAMPLE_FILENAME,    OnFileNameChanged)
-    ON_EN_CHANGE(IDC_EDIT_SAMPLE,    	OnSampleChanged)
-    ON_EN_CHANGE(IDC_EDIT1,    			OnLoopStartChanged)
-    ON_EN_CHANGE(IDC_EDIT2,    			OnLoopEndChanged)
-    ON_EN_CHANGE(IDC_EDIT3,    			OnSustainStartChanged)
-    ON_EN_CHANGE(IDC_EDIT4,    			OnSustainEndChanged)
-    ON_EN_CHANGE(IDC_EDIT5,    			OnFineTuneChanged)
-    ON_EN_CHANGE(IDC_EDIT7,    			OnVolumeChanged)
-    ON_EN_CHANGE(IDC_EDIT8,    			OnGlobalVolChanged)
-    ON_EN_CHANGE(IDC_EDIT9,    			OnPanningChanged)
-    ON_EN_CHANGE(IDC_EDIT14,    		OnVibSweepChanged)
-    ON_EN_CHANGE(IDC_EDIT15,    		OnVibDepthChanged)
-    ON_EN_CHANGE(IDC_EDIT16,    		OnVibRateChanged)
+    ON_EN_CHANGE(IDC_EDIT_SAMPLE,            OnSampleChanged)
+    ON_EN_CHANGE(IDC_EDIT1,                            OnLoopStartChanged)
+    ON_EN_CHANGE(IDC_EDIT2,                            OnLoopEndChanged)
+    ON_EN_CHANGE(IDC_EDIT3,                            OnSustainStartChanged)
+    ON_EN_CHANGE(IDC_EDIT4,                            OnSustainEndChanged)
+    ON_EN_CHANGE(IDC_EDIT5,                            OnFineTuneChanged)
+    ON_EN_CHANGE(IDC_EDIT7,                            OnVolumeChanged)
+    ON_EN_CHANGE(IDC_EDIT8,                            OnGlobalVolChanged)
+    ON_EN_CHANGE(IDC_EDIT9,                            OnPanningChanged)
+    ON_EN_CHANGE(IDC_EDIT14,                    OnVibSweepChanged)
+    ON_EN_CHANGE(IDC_EDIT15,                    OnVibDepthChanged)
+    ON_EN_CHANGE(IDC_EDIT16,                    OnVibRateChanged)
     ON_CBN_SELCHANGE(IDC_COMBO_BASENOTE,OnBaseNoteChanged)
     ON_CBN_SELCHANGE(IDC_COMBO_ZOOM,    OnZoomChanged)
-    ON_CBN_SELCHANGE(IDC_COMBO1,    	OnLoopTypeChanged)
-    ON_CBN_SELCHANGE(IDC_COMBO2,    	OnSustainTypeChanged)
-    ON_CBN_SELCHANGE(IDC_COMBO3,    	OnVibTypeChanged)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,    	OnCustomKeyMsg)	//rewbs.customKeys
+    ON_CBN_SELCHANGE(IDC_COMBO1,            OnLoopTypeChanged)
+    ON_CBN_SELCHANGE(IDC_COMBO2,            OnSustainTypeChanged)
+    ON_CBN_SELCHANGE(IDC_COMBO3,            OnVibTypeChanged)
+    ON_MESSAGE(WM_MOD_KEYCOMMAND,            OnCustomKeyMsg)        //rewbs.customKeys
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -103,46 +103,46 @@ void CCtrlSamples::DoDataExchange(CDataExchange* pDX)
 {
     CModControlDlg::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CCtrlSamples)
-    DDX_Control(pDX, IDC_TOOLBAR1,    			m_ToolBar1);
-    DDX_Control(pDX, IDC_TOOLBAR2,    			m_ToolBar2);
-    DDX_Control(pDX, IDC_SAMPLE_NAME,    		m_EditName);
-    DDX_Control(pDX, IDC_SAMPLE_FILENAME,    	m_EditFileName);
-    DDX_Control(pDX, IDC_SAMPLE_NAME,    		m_EditName);
-    DDX_Control(pDX, IDC_SAMPLE_FILENAME,    	m_EditFileName);
-    DDX_Control(pDX, IDC_COMBO_ZOOM,    		m_ComboZoom);
-    DDX_Control(pDX, IDC_COMBO_BASENOTE,    	m_CbnBaseNote);
-    DDX_Control(pDX, IDC_SPIN_SAMPLE,    		m_SpinSample);
-    DDX_Control(pDX, IDC_EDIT_SAMPLE,    		m_EditSample);
-    DDX_Control(pDX, IDC_CHECK1,    			m_CheckPanning);
-    DDX_Control(pDX, IDC_SPIN1,    				m_SpinLoopStart);
-    DDX_Control(pDX, IDC_SPIN2,    				m_SpinLoopEnd);
-    DDX_Control(pDX, IDC_SPIN3,    				m_SpinSustainStart);
-    DDX_Control(pDX, IDC_SPIN4,    				m_SpinSustainEnd);
-    DDX_Control(pDX, IDC_SPIN5,    				m_SpinFineTune);
-    DDX_Control(pDX, IDC_SPIN7,    				m_SpinVolume);
-    DDX_Control(pDX, IDC_SPIN8,    				m_SpinGlobalVol);
-    DDX_Control(pDX, IDC_SPIN9,    				m_SpinPanning);
-    DDX_Control(pDX, IDC_SPIN11,    			m_SpinVibSweep);
-    DDX_Control(pDX, IDC_SPIN12,    			m_SpinVibDepth);
-    DDX_Control(pDX, IDC_SPIN13,    			m_SpinVibRate);
-    DDX_Control(pDX, IDC_COMBO1,    			m_ComboLoopType);
-    DDX_Control(pDX, IDC_COMBO2,    			m_ComboSustainType);
-    DDX_Control(pDX, IDC_COMBO3,    			m_ComboAutoVib);
-    DDX_Control(pDX, IDC_EDIT1,    				m_EditLoopStart);
-    DDX_Control(pDX, IDC_EDIT2,    				m_EditLoopEnd);
-    DDX_Control(pDX, IDC_EDIT3,    				m_EditSustainStart);
-    DDX_Control(pDX, IDC_EDIT4,    				m_EditSustainEnd);
-    DDX_Control(pDX, IDC_EDIT5,    				m_EditFineTune);
-    DDX_Control(pDX, IDC_EDIT7,    				m_EditVolume);
-    DDX_Control(pDX, IDC_EDIT8,    				m_EditGlobalVol);
-    DDX_Control(pDX, IDC_EDIT9,    				m_EditPanning);
-    DDX_Control(pDX, IDC_EDIT14,    			m_EditVibSweep);
-    DDX_Control(pDX, IDC_EDIT15,    			m_EditVibDepth);
-    DDX_Control(pDX, IDC_EDIT16,    			m_EditVibRate);
-    DDX_Control(pDX, IDC_COMBO4,    			m_ComboPitch);
-    DDX_Control(pDX, IDC_COMBO5,    			m_ComboQuality);
-    DDX_Control(pDX, IDC_COMBO6,    			m_ComboFFT);
-    DDX_Text(pDX,     IDC_EDIT6,					m_dTimeStretchRatio); //rewbs.timeStretchMods
+    DDX_Control(pDX, IDC_TOOLBAR1,                            m_ToolBar1);
+    DDX_Control(pDX, IDC_TOOLBAR2,                            m_ToolBar2);
+    DDX_Control(pDX, IDC_SAMPLE_NAME,                    m_EditName);
+    DDX_Control(pDX, IDC_SAMPLE_FILENAME,            m_EditFileName);
+    DDX_Control(pDX, IDC_SAMPLE_NAME,                    m_EditName);
+    DDX_Control(pDX, IDC_SAMPLE_FILENAME,            m_EditFileName);
+    DDX_Control(pDX, IDC_COMBO_ZOOM,                    m_ComboZoom);
+    DDX_Control(pDX, IDC_COMBO_BASENOTE,            m_CbnBaseNote);
+    DDX_Control(pDX, IDC_SPIN_SAMPLE,                    m_SpinSample);
+    DDX_Control(pDX, IDC_EDIT_SAMPLE,                    m_EditSample);
+    DDX_Control(pDX, IDC_CHECK1,                            m_CheckPanning);
+    DDX_Control(pDX, IDC_SPIN1,                                    m_SpinLoopStart);
+    DDX_Control(pDX, IDC_SPIN2,                                    m_SpinLoopEnd);
+    DDX_Control(pDX, IDC_SPIN3,                                    m_SpinSustainStart);
+    DDX_Control(pDX, IDC_SPIN4,                                    m_SpinSustainEnd);
+    DDX_Control(pDX, IDC_SPIN5,                                    m_SpinFineTune);
+    DDX_Control(pDX, IDC_SPIN7,                                    m_SpinVolume);
+    DDX_Control(pDX, IDC_SPIN8,                                    m_SpinGlobalVol);
+    DDX_Control(pDX, IDC_SPIN9,                                    m_SpinPanning);
+    DDX_Control(pDX, IDC_SPIN11,                            m_SpinVibSweep);
+    DDX_Control(pDX, IDC_SPIN12,                            m_SpinVibDepth);
+    DDX_Control(pDX, IDC_SPIN13,                            m_SpinVibRate);
+    DDX_Control(pDX, IDC_COMBO1,                            m_ComboLoopType);
+    DDX_Control(pDX, IDC_COMBO2,                            m_ComboSustainType);
+    DDX_Control(pDX, IDC_COMBO3,                            m_ComboAutoVib);
+    DDX_Control(pDX, IDC_EDIT1,                                    m_EditLoopStart);
+    DDX_Control(pDX, IDC_EDIT2,                                    m_EditLoopEnd);
+    DDX_Control(pDX, IDC_EDIT3,                                    m_EditSustainStart);
+    DDX_Control(pDX, IDC_EDIT4,                                    m_EditSustainEnd);
+    DDX_Control(pDX, IDC_EDIT5,                                    m_EditFineTune);
+    DDX_Control(pDX, IDC_EDIT7,                                    m_EditVolume);
+    DDX_Control(pDX, IDC_EDIT8,                                    m_EditGlobalVol);
+    DDX_Control(pDX, IDC_EDIT9,                                    m_EditPanning);
+    DDX_Control(pDX, IDC_EDIT14,                            m_EditVibSweep);
+    DDX_Control(pDX, IDC_EDIT15,                            m_EditVibDepth);
+    DDX_Control(pDX, IDC_EDIT16,                            m_EditVibRate);
+    DDX_Control(pDX, IDC_COMBO4,                            m_ComboPitch);
+    DDX_Control(pDX, IDC_COMBO5,                            m_ComboQuality);
+    DDX_Control(pDX, IDC_COMBO6,                            m_ComboFFT);
+    DDX_Text(pDX,     IDC_EDIT6,                                        m_dTimeStretchRatio); //rewbs.timeStretchMods
     //}}AFX_DATA_MAP
 }
 
@@ -641,7 +641,7 @@ void CCtrlSamples::UpdateView(uint32_t dwHintMask, CObject *pObj)
         CheckDlgButton(IDC_CHECK1, (pSmp->flags & CHN_PANNING) ? MF_CHECKED : MF_UNCHECKED);
         //rewbs.fix36944
         if (m_pSndFile->m_nType == MOD_TYPE_XM) {
-            SetDlgItemInt(IDC_EDIT9, pSmp->default_pan);    	//displayed panning with XM is 0-256, just like MPT's internal engine
+            SetDlgItemInt(IDC_EDIT9, pSmp->default_pan);            //displayed panning with XM is 0-256, just like MPT's internal engine
         } else {
             SetDlgItemInt(IDC_EDIT9, pSmp->default_pan>>2);    //displayed panning with anything but XM is 0-64 so we divide by 4
         }
@@ -1662,7 +1662,7 @@ void CCtrlSamples::OnDownsample()
 
 
 #define MAX_BUFFER_LENGTH    8192
-#define CLIP_SOUND(v)    	Limit(v, -1.0f, 1.0f);
+#define CLIP_SOUND(v)            Limit(v, -1.0f, 1.0f);
 
 void CCtrlSamples::ReadTimeStretchParameters()
 //--------------------------------------------
@@ -2712,8 +2712,8 @@ void CCtrlSamples::OnPanningChanged()
     if (m_pSndFile->m_nType == MOD_TYPE_XM) {
         if (nPan>255) nPan = 255;    // displayed panning will be 0-255 with XM
     } else {
-        if (nPan>64) nPan = 64;    	// displayed panning will be 0-64 with anything but XM.
-        nPan = nPan << 2;    		// so we x4 to get MPT's internal 0-256 range.
+        if (nPan>64) nPan = 64;            // displayed panning will be 0-64 with anything but XM.
+        nPan = nPan << 2;                    // so we x4 to get MPT's internal 0-256 range.
     }
     //end rewbs.fix36944
     if (nPan != m_pSndFile->Samples[m_nSample].default_pan)
@@ -2994,8 +2994,8 @@ void CCtrlSamples::OnSustainEndChanged()
 }
 
 
-#define SMPLOOP_ACCURACY    7	// 5%
-#define BIDILOOP_ACCURACY    2	// 5%
+#define SMPLOOP_ACCURACY    7        // 5%
+#define BIDILOOP_ACCURACY    2        // 5%
 
 
 bool MPT_LoopCheck(int sstart0, int sstart1, int send0, int send1)

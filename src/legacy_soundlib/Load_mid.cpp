@@ -25,7 +25,7 @@ extern void Log(LPCSTR, ...);
 #endif
 
 #define MIDI_DRUMCHANNEL    10
-#define MIDI_MAXTRACKS    	64
+#define MIDI_MAXTRACKS            64
 
 UINT gnMidiImportSpeed = 3;
 UINT gnMidiPatternLen = 128;
@@ -34,10 +34,10 @@ UINT gnMidiPatternLen = 128;
 
 typedef struct MIDIFILEHEADER
 {
-    uint32_t id;    	// "MThd" = 0x6468544D
-    uint32_t len;    	// 6
-    uint16_t w1;    	// 1?
-    uint16_t wTrks;    	// 2?
+    uint32_t id;            // "MThd" = 0x6468544D
+    uint32_t len;            // 6
+    uint16_t w1;            // 1?
+    uint16_t wTrks;            // 2?
     uint16_t wDivision;    // F0
 } MIDIFILEHEADER;
 
@@ -51,7 +51,7 @@ typedef struct MIDITRACKHEADER
 //////////////////////////////////////////////////////////////////////
 // Midi Loader Internal Structures
 
-#define CHNSTATE_NOTEOFFPENDING    	0x0001
+#define CHNSTATE_NOTEOFFPENDING            0x0001
 
 // MOD Channel State description (current volume, panning, etc...)
 typedef struct MODCHANNELSTATE
@@ -60,24 +60,24 @@ typedef struct MODCHANNELSTATE
     uint16_t idlecount;
     uint16_t pitchsrc, pitchdest;    // Pitch Bend (current position/new position)
     uint8_t parent;    // Midi Channel parent
-    uint8_t pan;    	// Channel Panning			0-255
-    uint8_t note;    	// Note On # (0=available)
+    uint8_t pan;            // Channel Panning                        0-255
+    uint8_t note;            // Note On # (0=available)
 } MODCHANNELSTATE;
 
 // MIDI Channel State (Midi Channels 0-15)
 typedef struct MIDICHANNELSTATE
 {
-    uint32_t flags;    	// Channel Flags
-    uint16_t pitchbend;    	// Pitch Bend Amount (14-bits unsigned)
+    uint32_t flags;            // Channel Flags
+    uint16_t pitchbend;            // Pitch Bend Amount (14-bits unsigned)
     uint8_t note_on[128];    // If note=on -> MOD channel # + 1 (0 if note=off)
-    uint8_t program;    	// Channel Midi Program
-    uint16_t bank;    		// 0-16383
+    uint8_t program;            // Channel Midi Program
+    uint16_t bank;                    // 0-16383
     // -- Controllers --------- function ---------- CC# --- range  --- init (midi) ---
-    uint8_t pan;    		// Channel Panning			CC10	[0-255]		128 (64)
-    uint8_t expression;    // Channel Expression		CC11	0-128		128	(127)
-    uint8_t volume;    	// Channel Volume			CC7		0-128		80	(100)
-    uint8_t modulation;    // Modulation				CC1		0-127		0
-    uint8_t pitchbendrange;// Pitch Bend Range    							64
+    uint8_t pan;                    // Channel Panning                        CC10        [0-255]                128 (64)
+    uint8_t expression;    // Channel Expression                CC11        0-128                128        (127)
+    uint8_t volume;            // Channel Volume                        CC7                0-128                80        (100)
+    uint8_t modulation;    // Modulation                                CC1                0-127                0
+    uint8_t pitchbendrange;// Pitch Bend Range                                                            64
 } MIDICHANNELSTATE;
 
 typedef struct MIDITRACK
@@ -477,13 +477,13 @@ UINT module_renderer::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, U
 
 /////////////////////////////////////////////////////////////////
 // Loader Status
-#define MIDIGLOBAL_SONGENDED    	0x0001
-#define MIDIGLOBAL_FROZEN    		0x0002
-#define MIDIGLOBAL_UPDATETEMPO    	0x0004
+#define MIDIGLOBAL_SONGENDED            0x0001
+#define MIDIGLOBAL_FROZEN                    0x0002
+#define MIDIGLOBAL_UPDATETEMPO            0x0004
 #define MIDIGLOBAL_UPDATEMASTERVOL    0x0008
 // Midi Globals
-#define MIDIGLOBAL_GMSYSTEMON    	0x0100
-#define MIDIGLOBAL_XGSYSTEMON    	0x0200
+#define MIDIGLOBAL_GMSYSTEMON            0x0100
+#define MIDIGLOBAL_XGSYSTEMON            0x0200
 
 
 bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
@@ -612,9 +612,9 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
     // Initializing midi channels state
     for (UINT imidi=0; imidi<16; imidi++)
     {
-        midichstate[imidi].pan = 128;    		// middle
+        midichstate[imidi].pan = 128;                    // middle
         midichstate[imidi].expression = 128;    // no attenuation
-        midichstate[imidi].volume = 80;    		// GM specs defaults to 100
+        midichstate[imidi].volume = 80;                    // GM specs defaults to 100
         midichstate[imidi].pitchbend = 0x2000;    // Pitch Bend Amount
         midichstate[imidi].pitchbendrange = 64;    // Pitch Bend Range: +/- 2 semitones
     }
@@ -816,7 +816,7 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                     //////////////////////////////////
                     // Note Off:    80.note.velocity
                     case 0x80:
-                    // Note On:    	90.note.velocity
+                    // Note On:            90.note.velocity
                     case 0x90:
                         note = ptrk->ptracks[0] & 0x7F;
                         velocity = (midist == 0x90) ? (ptrk->ptracks[1] & 0x7F) : 0;

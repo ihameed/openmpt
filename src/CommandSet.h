@@ -12,7 +12,7 @@
 
 enum InputTargetContext
 {
-    kCtxUnknownContext = -1,	
+    kCtxUnknownContext = -1,        
     kCtxAllContexts = 0,
 
     kCtxViewGeneral,
@@ -34,16 +34,16 @@ enum InputTargetContext
     kCtxCtrlSamples,
     kCtxCtrlInstruments,
     kCtxCtrlComments,
-    kCtxCtrlOrderlist,	
+    kCtxCtrlOrderlist,        
     kCtxMaxInputContexts
 };
 
 enum KeyEventType
 {
-    kKeyEventDown	= 1 << 0,
-    kKeyEventUp		= 1 << 1,
-    kKeyEventRepeat	= 1 << 2,
-    kNumKeyEvents	= 1 << 3
+    kKeyEventDown        = 1 << 0,
+    kKeyEventUp                = 1 << 1,
+    kKeyEventRepeat        = 1 << 2,
+    kNumKeyEvents        = 1 << 3
 };
 
 enum CommandID
@@ -121,7 +121,7 @@ enum CommandID
     kcEndView=kcHelp,
 
     kcStartMisc,
-    kcPrevInstrument=kcStartMisc,	
+    kcPrevInstrument=kcStartMisc,        
     kcNextInstrument,
     kcPrevOctave,
     kcNextOctave,
@@ -162,7 +162,7 @@ enum CommandID
     kcEndHomeEnd=kcEndAbsolute,
     kcEndPatNavigation=kcEndHomeEnd,
     kcStartPatNavigationSelect,
-    	//with select. Order must match above.
+            //with select. Order must match above.
     kcPatternJumpDownh1Select=kcStartPatNavigationSelect,
     kcPatternJumpUph1Select,
     kcPatternJumpDownh2Select,
@@ -260,11 +260,11 @@ enum CommandID
     kcPatternSetInstrument,
     kcPatternGrowSelection,
     kcPatternShrinkSelection,
-    //	kcClearSelection,					
-    kcClearRow,				
+    //        kcClearSelection,                                        
+    kcClearRow,                                
     kcClearField,
     kcClearFieldITStyle,
-    kcClearRowStep,				
+    kcClearRowStep,                                
     kcClearFieldStep,
     kcClearFieldStepITStyle,
     kcDeleteRows,
@@ -477,22 +477,22 @@ enum CommandID
     kcSetVolume7,
     kcSetVolume8,
     kcSetVolume9,
-    kcSetVolumeVol,				//v
-    kcSetVolumePan,				//p
-    kcSetVolumeVolSlideUp,		//c
-    kcSetVolumeVolSlideDown,	//d
-    kcSetVolumeFineVolUp,		//a
-    kcSetVolumeFineVolDown,		//b
-    kcSetVolumeVibratoSpd,		//u
-    kcSetVolumeVibrato,			//h
-    kcSetVolumeXMPanLeft,		//l
-    kcSetVolumeXMPanRight,		//r
-    kcSetVolumePortamento,		//g
-    kcSetVolumeITPortaUp,		//f
-    kcSetVolumeITPortaDown,		//e
-    kcSetVolumeITUnused,		//:
-    kcSetVolumeITOffset,		//o
-    kcSetVolumeEnd=kcSetVolumeITOffset,		
+    kcSetVolumeVol,                                //v
+    kcSetVolumePan,                                //p
+    kcSetVolumeVolSlideUp,                //c
+    kcSetVolumeVolSlideDown,        //d
+    kcSetVolumeFineVolUp,                //a
+    kcSetVolumeFineVolDown,                //b
+    kcSetVolumeVibratoSpd,                //u
+    kcSetVolumeVibrato,                        //h
+    kcSetVolumeXMPanLeft,                //l
+    kcSetVolumeXMPanRight,                //r
+    kcSetVolumePortamento,                //g
+    kcSetVolumeITPortaUp,                //f
+    kcSetVolumeITPortaDown,                //e
+    kcSetVolumeITUnused,                //:
+    kcSetVolumeITOffset,                //o
+    kcSetVolumeEnd=kcSetVolumeITOffset,                
 
     //Effect params
     kcSetFXParam0,
@@ -515,41 +515,41 @@ enum CommandID
     //Effect commands. ORDER IS CRUCIAL.
     kcSetFXStart,
     kcFixedFXStart=kcSetFXStart,
-    kcSetFXarp=kcSetFXStart,	//0,j
-    kcSetFXportUp,		//1,f
-    kcSetFXportDown,	//2,e
-    kcSetFXport,		//3,g
-    kcSetFXvibrato,		//4,h
-    kcSetFXportSlide,	//5,l
-    kcSetFXvibSlide,	//6,k
-    kcSetFXtremolo,		//7,r
-    kcSetFXpan,			//8,x
-    kcSetFXoffset,		//9,o
-    kcSetFXvolSlide,	//a,d
-    kcSetFXgotoOrd,		//b,b
-    kcSetFXsetVol,		//c,?
-    kcSetFXgotoRow,		//d,c
-    kcSetFXretrig,		//r,q
-    kcSetFXspeed,		//?,a
-    kcSetFXtempo,		//f,t
-    kcSetFXtremor,		//t,i
-    kcSetFXextendedMOD,	//e,?
-    kcSetFXextendedS3M,	//?,s
-    kcSetFXchannelVol,	//?,m
-    kcSetFXchannelVols,	//?,n
-    kcSetFXglobalVol,	//g,v
-    kcSetFXglobalVols,	//h,w
-    kcSetFXkeyoff,		//k,?
-    kcSetFXfineVib,		//?,u
-    kcSetFXpanbrello,	//y,y
-    kcSetFXextendedXM,	//x,?
-    kcSetFXpanSlide,	//p,p
-    kcSetFXsetEnvPos,	//l,?
-    kcSetFXmacro,		//z,z
+    kcSetFXarp=kcSetFXStart,        //0,j
+    kcSetFXportUp,                //1,f
+    kcSetFXportDown,        //2,e
+    kcSetFXport,                //3,g
+    kcSetFXvibrato,                //4,h
+    kcSetFXportSlide,        //5,l
+    kcSetFXvibSlide,        //6,k
+    kcSetFXtremolo,                //7,r
+    kcSetFXpan,                        //8,x
+    kcSetFXoffset,                //9,o
+    kcSetFXvolSlide,        //a,d
+    kcSetFXgotoOrd,                //b,b
+    kcSetFXsetVol,                //c,?
+    kcSetFXgotoRow,                //d,c
+    kcSetFXretrig,                //r,q
+    kcSetFXspeed,                //?,a
+    kcSetFXtempo,                //f,t
+    kcSetFXtremor,                //t,i
+    kcSetFXextendedMOD,        //e,?
+    kcSetFXextendedS3M,        //?,s
+    kcSetFXchannelVol,        //?,m
+    kcSetFXchannelVols,        //?,n
+    kcSetFXglobalVol,        //g,v
+    kcSetFXglobalVols,        //h,w
+    kcSetFXkeyoff,                //k,?
+    kcSetFXfineVib,                //?,u
+    kcSetFXpanbrello,        //y,y
+    kcSetFXextendedXM,        //x,?
+    kcSetFXpanSlide,        //p,p
+    kcSetFXsetEnvPos,        //l,?
+    kcSetFXmacro,                //z,z
     kcFixedFXend=kcSetFXmacro,
-    kcSetFXmacroSlide,	//?,\ 
-    kcSetFXdelaycut,	//?,:
-    kcSetFXextension,	//?,#
+    kcSetFXmacroSlide,        //?,\ 
+    kcSetFXdelaycut,        //?,:
+    kcSetFXextension,        //?,#
     kcSetFXEnd=kcSetFXextension,
 
     kcStartInstrumentMisc,
@@ -1007,28 +1007,28 @@ enum CommandID
     kcEndVSTGUICommands=kcVSTGUIBypassPlug,
 
     kcStartOrderlistCommands,
-    	// Orderlist edit
+            // Orderlist edit
     kcStartOrderlistEdit=kcStartOrderlistCommands,
     kcOrderlistEditDelete=kcStartOrderlistEdit,
     kcOrderlistEditInsert,
     kcOrderlistEditPattern,
     kcOrderlistSwitchToPatternView,
     kcEndOrderlistEdit=kcOrderlistSwitchToPatternView,
-    	// Orderlist navigation
+            // Orderlist navigation
     kcStartOrderlistNavigation,
     kcOrderlistNavigateLeft=kcStartOrderlistNavigation,
     kcOrderlistNavigateRight,
     kcOrderlistNavigateFirst,
     kcOrderlistNavigateLast,
     kcEndOrderlistNavigation= kcOrderlistNavigateLast,
-    	// with selection key(must match order above)
+            // with selection key(must match order above)
     kcStartOrderlistNavigationSelect,
     kcOrderlistNavigateLeftSelect=kcStartOrderlistNavigationSelect,
     kcOrderlistNavigateRightSelect,
     kcOrderlistNavigateFirstSelect,
     kcOrderlistNavigateLastSelect,
     kcEndOrderlistNavigationSelect = kcOrderlistNavigateLastSelect,
-    	// Orderlist pattern list edit
+            // Orderlist pattern list edit
     kcStartOrderlistNum,
     kcOrderlistPat0=kcStartOrderlistNum,
     kcOrderlistPat1,
@@ -1079,7 +1079,7 @@ struct KeyCombination
     InputTargetContext ctx;
     KeyEventType event;
     bool operator==(const KeyCombination &other)
-    	{return (mod==other.mod && code==other.code && ctx==other.ctx && event==other.event);}
+            {return (mod==other.mod && code==other.code && ctx==other.ctx && event==other.event);}
 };
 
 struct CommandStruct
@@ -1094,12 +1094,12 @@ struct CommandStruct
     
     bool operator = (const CommandStruct &other)
     {
-    	UID = other.UID;
-    	Message = other.Message;
-    	isDummy = other.isDummy;
-    	isHidden = other.isHidden;
-    	kcList.Copy(other.kcList);
-    	return true;
+            UID = other.UID;
+            Message = other.Message;
+            isDummy = other.isDummy;
+            isHidden = other.isHidden;
+            kcList.Copy(other.kcList);
+            return true;
     }
 
 };
@@ -1197,8 +1197,8 @@ public:
     CString GetModifierText(UINT mod);
 
     //Pululation ;)
-    void Copy(CCommandSet *source);	// copy the contents of a commandset into this command set
-    void GenKeyMap(KeyMap &km);		// Generate a keymap from this command set
+    void Copy(CCommandSet *source);        // copy the contents of a commandset into this command set
+    void GenKeyMap(KeyMap &km);                // Generate a keymap from this command set
     bool SaveFile(CString FileName, bool debug);
     bool LoadFile(CString FileName);
     bool LoadFile(std::istream& iStrm, LPCTSTR szFilename);

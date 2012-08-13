@@ -5,7 +5,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 #include "stdafx.h"
@@ -125,28 +125,28 @@ void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCom
     UINT param = *pprm;
     switch(command)
     {
-    case CMD_SPEED:    			command = 'A'; break;
-    case CMD_POSITIONJUMP:    	command = 'B'; break;
-    case CMD_PATTERNBREAK:    	command = 'C'; if (!bIT) param = ((param / 10) << 4) + (param % 10); break;
-    case CMD_VOLUMESLIDE:    	command = 'D'; break;
+    case CMD_SPEED:                            command = 'A'; break;
+    case CMD_POSITIONJUMP:            command = 'B'; break;
+    case CMD_PATTERNBREAK:            command = 'C'; if (!bIT) param = ((param / 10) << 4) + (param % 10); break;
+    case CMD_VOLUMESLIDE:            command = 'D'; break;
     case CMD_PORTAMENTODOWN:    command = 'E'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
-    case CMD_PORTAMENTOUP:    	command = 'F'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
+    case CMD_PORTAMENTOUP:            command = 'F'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
     case CMD_TONEPORTAMENTO:    command = 'G'; break;
-    case CMD_VIBRATO:    		command = 'H'; break;
-    case CMD_TREMOR:    		command = 'I'; break;
-    case CMD_ARPEGGIO:    		command = 'J'; break;
-    case CMD_VIBRATOVOL:    	command = 'K'; break;
-    case CMD_TONEPORTAVOL:    	command = 'L'; break;
-    case CMD_CHANNELVOLUME:    	command = 'M'; break;
+    case CMD_VIBRATO:                    command = 'H'; break;
+    case CMD_TREMOR:                    command = 'I'; break;
+    case CMD_ARPEGGIO:                    command = 'J'; break;
+    case CMD_VIBRATOVOL:            command = 'K'; break;
+    case CMD_TONEPORTAVOL:            command = 'L'; break;
+    case CMD_CHANNELVOLUME:            command = 'M'; break;
     case CMD_CHANNELVOLSLIDE:    command = 'N'; break;
-    case CMD_OFFSET:    		command = 'O'; break;
-    case CMD_PANNINGSLIDE:    	command = 'P'; break;
-    case CMD_RETRIG:    		command = 'Q'; break;
-    case CMD_TREMOLO:    		command = 'R'; break;
-    case CMD_S3MCMDEX:    		command = 'S'; break;
-    case CMD_TEMPO:    			command = 'T'; break;
-    case CMD_FINEVIBRATO:    	command = 'U'; break;
-    case CMD_GLOBALVOLUME:    	command = 'V'; break;
+    case CMD_OFFSET:                    command = 'O'; break;
+    case CMD_PANNINGSLIDE:            command = 'P'; break;
+    case CMD_RETRIG:                    command = 'Q'; break;
+    case CMD_TREMOLO:                    command = 'R'; break;
+    case CMD_S3MCMDEX:                    command = 'S'; break;
+    case CMD_TEMPO:                            command = 'T'; break;
+    case CMD_FINEVIBRATO:            command = 'U'; break;
+    case CMD_GLOBALVOLUME:            command = 'V'; break;
     case CMD_GLOBALVOLSLIDE:    command = 'W'; break;
     case CMD_PANNING8:
         command = 'X';
@@ -161,8 +161,8 @@ void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCom
             param >>= 1;
         }
         break;
-    case CMD_PANBRELLO:    		command = 'Y'; break;
-    case CMD_MIDI:    			command = 'Z'; break;
+    case CMD_PANBRELLO:                    command = 'Y'; break;
+    case CMD_MIDI:                            command = 'Z'; break;
     case CMD_SMOOTHMIDI:  //rewbs.smoothVST
         if(bCompatibilityExport)
             command = 'Z';

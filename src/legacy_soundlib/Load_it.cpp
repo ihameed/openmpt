@@ -19,7 +19,7 @@
 #include "../version.h"
 
 #define str_tooMuchPatternData    (GetStrI18N((_TEXT("Warning: File format limit was reached. Some pattern data may not get written to file."))))
-#define str_pattern    			(GetStrI18N((_TEXT("pattern"))))
+#define str_pattern                            (GetStrI18N((_TEXT("pattern"))))
 #define str_PatternSetTruncationNote (GetStrI18N((_TEXT("The module contains %u patterns but only %u patterns can be loaded in this OpenMPT version.\n"))))
 #define str_SequenceTruncationNote (GetStrI18N((_TEXT("Module has sequence of length %u; it will be truncated to maximum supported length, %u.\n"))))
 #define str_LoadingIncompatibleVersion    TEXT("The file informed that it is incompatible with this version of OpenMPT. Loading was terminated.\n")
@@ -243,9 +243,9 @@ void MPTEnvToIT(const modplug::tracker::modenvelope_t *mptEnv, ITENVELOPE *itEnv
 //---------------------------------------------------------------------------------------------------------------
 {
     if(mptEnv->flags & ENV_ENABLED)    itEnv->flags |= 1;
-    if(mptEnv->flags & ENV_LOOP)    	itEnv->flags |= 2;
+    if(mptEnv->flags & ENV_LOOP)            itEnv->flags |= 2;
     if(mptEnv->flags & ENV_SUSTAIN)    itEnv->flags |= 4;
-    if(mptEnv->flags & ENV_CARRY)    	itEnv->flags |= 8;
+    if(mptEnv->flags & ENV_CARRY)            itEnv->flags |= 8;
     itEnv->num = (uint8_t)min(mptEnv->num_nodes, 25);
     itEnv->lpb = (uint8_t)mptEnv->loop_start;
     itEnv->lpe = (uint8_t)mptEnv->loop_end;
@@ -359,7 +359,7 @@ long module_renderer::ITInstrToMPT(const void *p, modinstrument_t *pIns, UINT tr
             pIns->midi_program = pis->mpr;
         pIns->midi_channel = pis->mch;
         if (pIns->midi_channel > 16)    //rewbs.instroVSTi
-        {    							//(handle old format where midichan
+        {                                                            //(handle old format where midichan
                                         // and mixplug are 1 value)
             pIns->nMixPlug = pIns->midi_channel-128;
             pIns->midi_channel = 0;
@@ -915,7 +915,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
             {
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-//    			if ((ch >= m_nChannels) && (ch < 64)) m_nChannels = ch+1;
+//                            if ((ch >= m_nChannels) && (ch < 64)) m_nChannels = ch+1;
                 if ((ch >= m_nChannels) && (ch < MAX_BASECHANNELS)) m_nChannels = ch+1;
 // -! BEHAVIOUR_CHANGE#0006
             }
@@ -1018,11 +1018,11 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                     if (pis->flags & 4 && pifh->cwtv >= 0x214) flags |= RSF_STEREO;    // some old version of IT didn't clear the stereo flag when importing samples. Luckily, all other trackers are identifying as IT 2.14+, so let's check for old IT versions.
                     if (pis->cvt == 0xFF) flags = RS_ADPCM4; else
                     // IT 2.14 8-bit packed sample?
-                    if (pis->flags & 8)    flags =	((pifh->cmwt >= 0x215) && (pis->cvt & 4)) ? RS_IT2158 : RS_IT2148;
+                    if (pis->flags & 8)    flags =        ((pifh->cmwt >= 0x215) && (pis->cvt & 4)) ? RS_IT2158 : RS_IT2148;
                 }
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
-//    			ReadSample(&Ins[nsmp+1], flags, (LPSTR)(lpStream+pis->samplepointer), dwMemLength - pis->samplepointer);
+//                            ReadSample(&Ins[nsmp+1], flags, (LPSTR)(lpStream+pis->samplepointer), dwMemLength - pis->samplepointer);
                 lastSampleOffset = pis->samplepointer + ReadSample(&Samples[nsmp+1], flags, (LPSTR)(lpStream+pis->samplepointer), dwMemLength - pis->samplepointer);
 // -! NEW_FEATURE#0027
             }
@@ -1636,7 +1636,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
             long modularInstSize = 0;
             UINT ModInstID = 'INSM';
             fwrite(&ModInstID, 1, sizeof(ModInstID), f);    // mark this as an instrument with modular extensions
-            long sizePos = ftell(f);    			// we will want to write the modular data's total size here
+            long sizePos = ftell(f);                            // we will want to write the modular data's total size here
             fwrite(&modularInstSize, 1, sizeof(modularInstSize), f);    // write a DUMMY size, just to move file pointer by a long
 
             //Write chunks
@@ -1649,7 +1649,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                 modularInstSize += sizeof(int)+sizeof(uint8_t);
             }
             //How to save your own modular instrument chunk:
-    /*    	{
+    /*            {
                 ID='MYID';
                 fwrite(&ID, 1, sizeof(int), f);
                 instModularDataSize+=sizeof(int);
@@ -1660,10 +1660,10 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
             }
     */
             //write modular data's total size
-            long curPos = ftell(f);    		// remember current pos
+            long curPos = ftell(f);                    // remember current pos
             fseek(f, sizePos, SEEK_SET);    // go back to  sizePos
             fwrite(&modularInstSize, 1, sizeof(modularInstSize), f);    // write data
-            fseek(f, curPos, SEEK_SET);    	// go back to where we were.
+            fseek(f, curPos, SEEK_SET);            // go back to where we were.
 
             //move forward
             dwPos+=sizeof(ModInstID)+sizeof(modularInstSize)+modularInstSize;
@@ -1728,19 +1728,19 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                     UINT volcmd = m->volcmd;
                     switch(volcmd)
                     {
-                    case VOLCMD_VOLUME:    		vol = m->vol; if (vol > 64) vol = 64; break;
-                    case VOLCMD_PANNING:    	vol = m->vol + 128; if (vol > 192) vol = 192; break;
-                    case VOLCMD_VOLSLIDEUP:    	vol = 85 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_VOLUME:                    vol = m->vol; if (vol > 64) vol = 64; break;
+                    case VOLCMD_PANNING:            vol = m->vol + 128; if (vol > 192) vol = 192; break;
+                    case VOLCMD_VOLSLIDEUP:            vol = 85 + ConvertVolParam(m->vol); break;
                     case VOLCMD_VOLSLIDEDOWN:    vol = 95 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_FINEVOLUP:    	vol = 65 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_FINEVOLUP:            vol = 65 + ConvertVolParam(m->vol); break;
                     case VOLCMD_FINEVOLDOWN:    vol = 75 + ConvertVolParam(m->vol); break;
                     case VOLCMD_VIBRATODEPTH:    vol = 203 + ConvertVolParam(m->vol); break;
                     case VOLCMD_VIBRATOSPEED:    vol = 0xFF /*203 + ConvertVolParam(m->vol)*/; break; // not supported!
                     case VOLCMD_TONEPORTAMENTO:    vol = 193 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTADOWN:    	vol = 105 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTAUP:    	vol = 115 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_OFFSET:    		vol = 223 + ConvertVolParam(m->vol); break; //rewbs.volOff
-                    default:    				vol = 0xFF;
+                    case VOLCMD_PORTADOWN:            vol = 105 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_PORTAUP:            vol = 115 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_OFFSET:                    vol = 223 + ConvertVolParam(m->vol); break; //rewbs.volOff
+                    default:                                    vol = 0xFF;
                     }
                 }
                 if (vol != 0xFF) b |= 4;
@@ -2077,7 +2077,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         if (ChnSettings[ich].dwFlags & CHN_SURROUND) header.chnpan[ich] = 100;
         header.chnvol[ich] = ChnSettings[ich].nVolume;
         if (ChnSettings[ich].dwFlags & CHN_MUTE) header.chnpan[ich] |= 0x80;
-/*    	if (ChnSettings[ich].szName[0])
+/*            if (ChnSettings[ich].szName[0])
         {
             dwChnNamLen = (ich+1) * MAX_CHANNELNAME;
         }
@@ -2225,12 +2225,12 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         }
 
         //------------ rewbs.modularInstData
-/*    	if (Instruments[nins])
+/*            if (Instruments[nins])
         {
             long modularInstSize = 0;
             UINT ModInstID = 'INSM';
             fwrite(&ModInstID, 1, sizeof(ModInstID), f);    // mark this as an instrument with modular extensions
-            long sizePos = ftell(f);    			// we will want to write the modular data's total size here
+            long sizePos = ftell(f);                            // we will want to write the modular data's total size here
             fwrite(&modularInstSize, 1, sizeof(modularInstSize), f);    // write a DUMMY size, just to move file pointer by a long
 
             //Write chunks
@@ -2242,8 +2242,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                 fwrite(&(pIns->nMixPlug), 1, sizeof(uint8_t), f);
                 modularInstSize += sizeof(int)+sizeof(uint8_t);
             }
-*/    		//How to save your own modular instrument chunk:
-    /*    	{
+*/                    //How to save your own modular instrument chunk:
+    /*            {
                 ID='MYID';
                 fwrite(&ID, 1, sizeof(int), f);
                 instModularDataSize+=sizeof(int);
@@ -2253,16 +2253,16 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                 instModularDataSize+=myDataSize;
             }
     */
-/*    		//write modular data's total size
-            long curPos = ftell(f);    		// remember current pos
+/*                    //write modular data's total size
+            long curPos = ftell(f);                    // remember current pos
             fseek(f, sizePos, SEEK_SET);    // go back to  sizePos
             fwrite(&modularInstSize, 1, sizeof(modularInstSize), f);    // write data
-            fseek(f, curPos, SEEK_SET);    	// go back to where we were.
+            fseek(f, curPos, SEEK_SET);            // go back to where we were.
 
             //move forward
             dwPos+=sizeof(ModInstID)+sizeof(modularInstSize)+modularInstSize;
         }
-*/    	//------------ end rewbs.modularInstData
+*/            //------------ end rewbs.modularInstData
     }
     // Writing sample headers
     memset(&itss, 0, sizeof(itss));
@@ -2317,11 +2317,11 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                     UINT volcmd = m->volcmd;
                     switch(volcmd)
                     {
-                    case VOLCMD_VOLUME:    		vol = m->vol; if (vol > 64) vol = 64; break;
-                    case VOLCMD_PANNING:    	vol = m->vol + 128; if (vol > 192) vol = 192; break;
-                    case VOLCMD_VOLSLIDEUP:    	vol = 85 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_VOLUME:                    vol = m->vol; if (vol > 64) vol = 64; break;
+                    case VOLCMD_PANNING:            vol = m->vol + 128; if (vol > 192) vol = 192; break;
+                    case VOLCMD_VOLSLIDEUP:            vol = 85 + ConvertVolParam(m->vol); break;
                     case VOLCMD_VOLSLIDEDOWN:    vol = 95 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_FINEVOLUP:    	vol = 65 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_FINEVOLUP:            vol = 65 + ConvertVolParam(m->vol); break;
                     case VOLCMD_FINEVOLDOWN:    vol = 75 + ConvertVolParam(m->vol); break;
                     case VOLCMD_VIBRATODEPTH:    vol = 203 + ConvertVolParam(m->vol); break;
                     case VOLCMD_VIBRATOSPEED:    if(command == CMD_NONE) { // illegal command -> move if possible
@@ -2329,9 +2329,9 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                                                 } else { vol = 203;}
                                                 break;
                     case VOLCMD_TONEPORTAMENTO:    vol = 193 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTADOWN:    	vol = 105 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTAUP:    	vol = 115 + ConvertVolParam(m->vol); break;
-                    default:    				vol = 0xFF;
+                    case VOLCMD_PORTADOWN:            vol = 105 + ConvertVolParam(m->vol); break;
+                    case VOLCMD_PORTAUP:            vol = 115 + ConvertVolParam(m->vol); break;
+                    default:                                    vol = 0xFF;
                     }
                 }
                 if (vol != 0xFF) b |= 4;
@@ -2779,7 +2779,7 @@ UINT module_renderer::SaveMixPlugins(FILE *f, BOOL bUpdate)
     {
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-//    	if (j < 64)
+//            if (j < 64)
         if (j < MAX_BASECHANNELS)
 // -! BEHAVIOUR_CHANGE#0006
         {
@@ -2835,7 +2835,7 @@ UINT module_renderer::LoadMixPlugins(const void *pData, UINT nLen)
         {
 // -> CODE#0006
 // -> DESC="misc quantity changes"
-//    		for (UINT ch=0; ch<64; ch++) if (ch*4 < nPluginSize)
+//                    for (UINT ch=0; ch<64; ch++) if (ch*4 < nPluginSize)
             for (UINT ch=0; ch<MAX_BASECHANNELS; ch++) if (ch*4 < nPluginSize)
 // -! BEHAVIOUR_CHANGE#0006
             {
@@ -2857,7 +2857,7 @@ UINT module_renderer::LoadMixPlugins(const void *pData, UINT nLen)
             {
                 break;
             }
-            nPlugin = (p[nPos+2]-'0')*10 + (p[nPos+3]-'0');    		//calculate plug-in number.
+            nPlugin = (p[nPos+2]-'0')*10 + (p[nPos+3]-'0');                    //calculate plug-in number.
 
             if ((nPlugin < MAX_MIXPLUGINS) && (nPluginSize >= sizeof(SNDMIXPLUGININFO)+4))
             {
@@ -2885,7 +2885,7 @@ UINT module_renderer::LoadMixPlugins(const void *pData, UINT nLen)
                 if ((dwXPlugData) && ((int)dwXPlugData <= (int)nPluginSize-(int)(sizeof(SNDMIXPLUGININFO)+dwExtra+8)))
                 {
                     uint32_t startPos = nPos+8+sizeof(SNDMIXPLUGININFO)+dwExtra+8; // start of extra data for this plug
-                    uint32_t endPos = startPos + dwXPlugData;    					// end of extra data for this plug
+                    uint32_t endPos = startPos + dwXPlugData;                                            // end of extra data for this plug
                     uint32_t currPos = startPos;
 
                     while (currPos < endPos) //cycle through all the bytes
@@ -2942,7 +2942,7 @@ void module_renderer::SaveExtendedInstrumentProperties(modinstrument_t *instrume
         return;
     }*/
 
-    code = 'MPTX';    						// write extension header code
+    code = 'MPTX';                                                    // write extension header code
     fwrite(&code, 1, sizeof(__int32), f);
 
     if (nInstruments == 0) {
@@ -2997,8 +2997,8 @@ void module_renderer::WriteInstrumentPropertyForAllInstruments(__int32 code,  __
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
     //XXXih: this is disgusting
-    fwrite(&code, 1, sizeof(__int32), f);    	//write code
-    fwrite(&size, 1, sizeof(__int16), f);    	//write size
+    fwrite(&code, 1, sizeof(__int32), f);            //write code
+    fwrite(&size, 1, sizeof(__int16), f);            //write size
     for (UINT nins = 1; nins <= nInstruments; nins++) {  //for all instruments...
         uint8_t* pField;
         if (instruments[nins]) {
@@ -3006,7 +3006,7 @@ void module_renderer::WriteInstrumentPropertyForAllInstruments(__int32 code,  __
         } else {
             pField = GetInstrumentHeaderFieldPointer(&m_defaultInstrument, code, size); //get ptr to field
         }
-        fwrite(pField, 1, size, f);    			//write field data
+        fwrite(pField, 1, size, f);                            //write field data
     }
 }
 
@@ -3014,35 +3014,35 @@ void module_renderer::SaveExtendedSongProperties(FILE* f)
 //--------------------------------------------------
 {  //Extra song data - Yet Another Hack.
     __int16 size;
-    __int32 code = 'MPTS';    				//Extra song file data
+    __int32 code = 'MPTS';                                    //Extra song file data
     fwrite(&code, 1, sizeof(__int32), f);
 
-    code = 'DT..';    						//write m_nDefaultTempo field code
+    code = 'DT..';                                                    //write m_nDefaultTempo field code
     fwrite(&code, 1, sizeof(__int32), f);
-    size = sizeof(m_nDefaultTempo);    		//write m_nDefaultTempo field size
+    size = sizeof(m_nDefaultTempo);                    //write m_nDefaultTempo field size
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nDefaultTempo, 1, size, f);    //write m_nDefaultTempo
 
-    code = 'RPB.';    						//write m_nRowsPerBeat
+    code = 'RPB.';                                                    //write m_nRowsPerBeat
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nDefaultRowsPerBeat);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nDefaultRowsPerBeat, 1, size, f);
 
-    code = 'RPM.';    						//write m_nRowsPerMeasure
+    code = 'RPM.';                                                    //write m_nRowsPerMeasure
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nDefaultRowsPerMeasure);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nDefaultRowsPerMeasure, 1, size, f);
 
-    code = 'C...';    						//write m_nChannels
+    code = 'C...';                                                    //write m_nChannels
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nChannels);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nChannels, 1, size, f);
 
     if(TypeIsIT_MPT() && m_nChannels > 64)    //IT header has room only for 64 channels. Save the
-    {    										//settings that do not fit to the header here as an extension.
+    {                                                                                    //settings that do not fit to the header here as an extension.
         code = 'ChnS';
         fwrite(&code, 1, sizeof(__int32), f);
         size = (m_nChannels - 64)*2;
@@ -3058,49 +3058,49 @@ void module_renderer::SaveExtendedSongProperties(FILE* f)
         }
     }
 
-    code = 'TM..';    						//write m_nTempoMode
+    code = 'TM..';                                                    //write m_nTempoMode
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nTempoMode);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nTempoMode, 1, size, f);
 
-    code = 'PMM.';    						//write m_nMixLevels
+    code = 'PMM.';                                                    //write m_nMixLevels
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nMixLevels);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nMixLevels, 1, size, f);
 
-    code = 'CWV.';    						//write m_dwCreatedWithVersion
+    code = 'CWV.';                                                    //write m_dwCreatedWithVersion
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_dwCreatedWithVersion);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_dwCreatedWithVersion, 1, size, f);
 
-    code = 'LSWV';    						//write m_dwLastSavedWithVersion
+    code = 'LSWV';                                                    //write m_dwLastSavedWithVersion
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_dwLastSavedWithVersion);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_dwLastSavedWithVersion, 1, size, f);
 
-    code = 'SPA.';    						//write m_nSamplePreAmp
+    code = 'SPA.';                                                    //write m_nSamplePreAmp
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nSamplePreAmp);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nSamplePreAmp, 1, size, f);
 
-    code = 'VSTV';    						//write m_nVSTiVolume
+    code = 'VSTV';                                                    //write m_nVSTiVolume
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nVSTiVolume);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nVSTiVolume, 1, size, f);
 
-    code = 'DGV.';    						//write m_nDefaultGlobalVolume
+    code = 'DGV.';                                                    //write m_nDefaultGlobalVolume
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nDefaultGlobalVolume);
     fwrite(&size, 1, sizeof(__int16), f);
     fwrite(&m_nDefaultGlobalVolume, 1, size, f);
 
-    code = 'RP..';    						//write m_nRestartPos
+    code = 'RP..';                                                    //write m_nRestartPos
     fwrite(&code, 1, sizeof(__int32), f);
     size = sizeof(m_nRestartPos);
     fwrite(&size, 1, sizeof(__int16), f);
@@ -3163,20 +3163,20 @@ const uint8_t * module_renderer::LoadExtendedInstrumentProperties(const uint8_t 
     if(pInterpretMptMade != NULL)
         *pInterpretMptMade = true;
 
-    ptr += sizeof(int32_t);    						// jump extension header code
+    ptr += sizeof(int32_t);                                                    // jump extension header code
     while( ptr < pEnd && uintptr_t(pEnd-ptr) >= 4) //Loop 'till beginning of end of file/mpt specific looking for inst. extensions
     {
         memcpy(&code, ptr, sizeof(code));    // read field code
-        if (code == 'MPTS')    				//Reached song extensions, break out of this loop
+        if (code == 'MPTS')                                    //Reached song extensions, break out of this loop
             return ptr;
 
-        ptr += sizeof(code);    			// jump field code
+        ptr += sizeof(code);                            // jump field code
 
         if((uintptr_t)(pEnd - ptr) < 2)
             return NULL;
 
         memcpy(&size, ptr, sizeof(size));    // read field size
-        ptr += sizeof(size);    			// jump field size
+        ptr += sizeof(size);                            // jump field size
 
         if(IsValidSizeField(ptr, pEnd, size) == false)
             return NULL;
@@ -3228,10 +3228,10 @@ void module_renderer::LoadExtendedSongProperties(const MODTYPE modtype,
     ptr += sizeof(code); // jump extension header code
     while( uintptr_t(ptr - lpStream) <= searchlimit-6 ) //Loop until given limit.
     {
-        code = (*((int32_t *)ptr));    		// read field code
-        ptr += sizeof(int32_t);    			// jump field code
-        size = (*((int16_t *)ptr));    		// read field size
-        ptr += sizeof(int16_t);    			// jump field size
+        code = (*((int32_t *)ptr));                    // read field code
+        ptr += sizeof(int32_t);                            // jump field code
+        size = (*((int16_t *)ptr));                    // read field size
+        ptr += sizeof(int16_t);                            // jump field size
 
         if(IsValidSizeField(ptr, pEnd, size) == false)
             break;
@@ -3239,7 +3239,7 @@ void module_renderer::LoadExtendedSongProperties(const MODTYPE modtype,
         size_t nMaxReadCount = 0;
         uint8_t * fadr = NULL;
 
-        switch (code)    				// interpret field code
+        switch (code)                                    // interpret field code
         {
             CASE('DT..', m_nDefaultTempo);
             CASE('RPB.', m_nDefaultRowsPerBeat);
@@ -3275,10 +3275,10 @@ void module_renderer::LoadExtendedSongProperties(const MODTYPE modtype,
             break;
         }
 
-        if (fadr != NULL)    				// if field code recognized
+        if (fadr != NULL)                                    // if field code recognized
             memcpy(fadr,ptr,nMaxReadCount);    // read field data
 
-        ptr += size;    					// jump field data
+        ptr += size;                                            // jump field data
     }
 
     // Validate read values.

@@ -5,7 +5,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 #include "stdafx.h"
@@ -43,7 +43,7 @@ void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
     case 0x0F:    command = (param <= ((m_nType & (MOD_TYPE_MOD)) ? 0x20 : 0x1F)) ? CMD_SPEED : CMD_TEMPO;
                 if ((param == 0xFF) && (m_nSamples == 15) && (m_nType & MOD_TYPE_MOD)) command = 0; break; //<rewbs> what the hell is this?! :) //<jojo> it's the "stop tune" command! :-P
     // Extension for XM extended effects
-    case 'G' - 55:    command = CMD_GLOBALVOLUME; break;		//16
+    case 'G' - 55:    command = CMD_GLOBALVOLUME; break;                //16
     case 'H' - 55:    command = CMD_GLOBALVOLSLIDE; if (param & 0xF0) param &= 0xF0; break;
     case 'K' - 55:    command = CMD_KEYOFF; break;
     case 'L' - 55:    command = CMD_SETENVPOSITION; break;
@@ -52,13 +52,13 @@ void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
     case 'P' - 55:    command = CMD_PANNINGSLIDE; if (param & 0xF0) param &= 0xF0; break;
     case 'R' - 55:    command = CMD_RETRIG; break;
     case 'T' - 55:    command = CMD_TREMOR; break;
-    case 'X' - 55:    command = CMD_XFINEPORTAUPDOWN;	break;
-    case 'Y' - 55:    command = CMD_PANBRELLO; break;			//34
-    case 'Z' - 55:    command = CMD_MIDI;	break;				//35
-    case '\\' - 56:    command = CMD_SMOOTHMIDI;	break;		//rewbs.smoothVST: 36 - note: this is actually displayed as "-" in FT2, but seems to be doing nothing.
-    //case ':' - 21:    command = CMD_DELAYCUT;	break;		//37
-    case '#' + 3:    command = CMD_XPARAM;	break;			//rewbs.XMfixes - XParam is 38
-    default:    	command = CMD_NONE;
+    case 'X' - 55:    command = CMD_XFINEPORTAUPDOWN;        break;
+    case 'Y' - 55:    command = CMD_PANBRELLO; break;                        //34
+    case 'Z' - 55:    command = CMD_MIDI;        break;                                //35
+    case '\\' - 56:    command = CMD_SMOOTHMIDI;        break;                //rewbs.smoothVST: 36 - note: this is actually displayed as "-" in FT2, but seems to be doing nothing.
+    //case ':' - 21:    command = CMD_DELAYCUT;        break;                //37
+    case '#' + 3:    command = CMD_XPARAM;        break;                        //rewbs.XMfixes - XParam is 38
+    default:            command = CMD_NONE;
     }
     m->command = command;
     m->param = param;
@@ -72,8 +72,8 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
 
     switch(command)
     {
-    case CMD_NONE:    			command = param = 0; break;
-    case CMD_ARPEGGIO:    		command = 0; break;
+    case CMD_NONE:                            command = param = 0; break;
+    case CMD_ARPEGGIO:                    command = 0; break;
     case CMD_PORTAMENTOUP:
         if (m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_STM|MOD_TYPE_MPT))
         {
@@ -91,10 +91,10 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
         command = 0x02;
         break;
     case CMD_TONEPORTAMENTO:    command = 0x03; break;
-    case CMD_VIBRATO:    		command = 0x04; break;
-    case CMD_TONEPORTAVOL:    	command = 0x05; break;
-    case CMD_VIBRATOVOL:    	command = 0x06; break;
-    case CMD_TREMOLO:    		command = 0x07; break;
+    case CMD_VIBRATO:                    command = 0x04; break;
+    case CMD_TONEPORTAVOL:            command = 0x05; break;
+    case CMD_VIBRATOVOL:            command = 0x06; break;
+    case CMD_TREMOLO:                    command = 0x07; break;
     case CMD_PANNING8:
         command = 0x08;
         if(m_nType & MOD_TYPE_S3M)
@@ -117,23 +117,23 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
             }
         }
         break;
-    case CMD_OFFSET:    		command = 0x09; break;
-    case CMD_VOLUMESLIDE:    	command = 0x0A; break;
-    case CMD_POSITIONJUMP:    	command = 0x0B; break;
-    case CMD_VOLUME:    		command = 0x0C; break;
-    case CMD_PATTERNBREAK:    	command = 0x0D; param = ((param / 10) << 4) | (param % 10); break;
-    case CMD_MODCMDEX:    		command = 0x0E; break;
-    case CMD_SPEED:    			command = 0x0F; param = min(param, (bXM) ? 0x1F : 0x20); break;
-    case CMD_TEMPO:    			command = 0x0F; param = max(param, (bXM) ? 0x20 : 0x21); break;
-    case CMD_GLOBALVOLUME:    	command = 'G' - 55; break;
+    case CMD_OFFSET:                    command = 0x09; break;
+    case CMD_VOLUMESLIDE:            command = 0x0A; break;
+    case CMD_POSITIONJUMP:            command = 0x0B; break;
+    case CMD_VOLUME:                    command = 0x0C; break;
+    case CMD_PATTERNBREAK:            command = 0x0D; param = ((param / 10) << 4) | (param % 10); break;
+    case CMD_MODCMDEX:                    command = 0x0E; break;
+    case CMD_SPEED:                            command = 0x0F; param = min(param, (bXM) ? 0x1F : 0x20); break;
+    case CMD_TEMPO:                            command = 0x0F; param = max(param, (bXM) ? 0x20 : 0x21); break;
+    case CMD_GLOBALVOLUME:            command = 'G' - 55; break;
     case CMD_GLOBALVOLSLIDE:    command = 'H' - 55; break;
-    case CMD_KEYOFF:    		command = 'K' - 55; break;
+    case CMD_KEYOFF:                    command = 'K' - 55; break;
     case CMD_SETENVPOSITION:    command = 'L' - 55; break;
-    case CMD_CHANNELVOLUME:    	command = 'M' - 55; break;
+    case CMD_CHANNELVOLUME:            command = 'M' - 55; break;
     case CMD_CHANNELVOLSLIDE:    command = 'N' - 55; break;
-    case CMD_PANNINGSLIDE:    	command = 'P' - 55; break;
-    case CMD_RETRIG:    		command = 'R' - 55; break;
-    case CMD_TREMOR:    		command = 'T' - 55; break;
+    case CMD_PANNINGSLIDE:            command = 'P' - 55; break;
+    case CMD_RETRIG:                    command = 'R' - 55; break;
+    case CMD_TREMOR:                    command = 'T' - 55; break;
     case CMD_XFINEPORTAUPDOWN:
         if(bCompatibilityExport && (param & 0xF0) > 2)    // X1x and X2x are legit, everything above are MPT extensions, which don't belong here.
             command = param = 0;
@@ -640,14 +640,14 @@ bool module_renderer::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCo
     }
     fwrite(bTab, 4, 1, f);
     // Writing patterns
-    for (UINT ipat=0; ipat<nbp; ipat++)    	//for all patterns
+    for (UINT ipat=0; ipat<nbp; ipat++)            //for all patterns
     {
         uint8_t s[64*4];
-        if (Patterns[ipat])    				//if pattern exists
+        if (Patterns[ipat])                                    //if pattern exists
         {
             modplug::tracker::modevent_t *m = Patterns[ipat];
-            for (UINT i=0; i<64; i++) {    			//for all rows
-                if (i < Patterns[ipat].GetNumRows()) {    		//if row exists
+            for (UINT i=0; i<64; i++) {                            //for all rows
+                if (i < Patterns[ipat].GetNumRows()) {                    //if row exists
                     LPBYTE p=s;
                     for (UINT c=0; c<m_nChannels; c++,p+=4,m++)
                     {
@@ -671,18 +671,18 @@ bool module_renderer::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCo
                         p[3] = param;
                     }
                     fwrite(s, m_nChannels, 4, f);
-                } else {    							//if row does not exist
-                    memset(s, 0, m_nChannels*4);    	//invent blank row
+                } else {                                                            //if row does not exist
+                    memset(s, 0, m_nChannels*4);            //invent blank row
                     fwrite(s, m_nChannels, 4, f);
                 }
-            }    									//end for all rows
+            }                                                                            //end for all rows
         } else    {
-            memset(s, 0, m_nChannels*4);    	//if pattern does not exist
-            for (UINT i=0; i<64; i++) {    		//invent blank pattern
+            memset(s, 0, m_nChannels*4);            //if pattern does not exist
+            for (UINT i=0; i<64; i++) {                    //invent blank pattern
                 fwrite(s, m_nChannels, 4, f);
             }
         }
-    }    									//end for all patterns
+    }                                                                            //end for all patterns
 
     //Check for unsaved patterns
 #ifdef MODPLUG_TRACKER

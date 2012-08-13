@@ -11,7 +11,7 @@ using std::string;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // ID3v1 Genres
 
-#define NUM_GENRES    	148
+#define NUM_GENRES            148
 
 static LPCSTR gpszGenreNames[NUM_GENRES] =
 {

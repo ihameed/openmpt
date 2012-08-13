@@ -12,30 +12,30 @@
 #pragma once
 
 #include "dlg_misc.h"    // for keyboard control
-#include "Moddoc.h"    	// for SplitKeyboardSettings
+#include "Moddoc.h"            // for SplitKeyboardSettings
 
 
 /////////////////////////////////////////////////////////////////////////
 // Search/Replace
 
-#define PATSEARCH_NOTE    		0x01	// Search for note
-#define PATSEARCH_INSTR    		0x02	// Search for instrument
-#define PATSEARCH_VOLCMD    	0x04	// Search for volume effect
-#define PATSEARCH_VOLUME    	0x08	// Search for volume
-#define PATSEARCH_COMMAND    	0x10	// Search for effect
-#define PATSEARCH_PARAM    		0x20	// Search for effect parameter
-#define PATSEARCH_CHANNEL    	0x40	// Limit search to channels
-#define PATSEARCH_FULLSEARCH    0x100	// Search whole song
-#define PATSEARCH_PATSELECTION    0x200	// Search in current pattern selection
-#define PATSEARCH_REPLACE    	0x400	// Replace
-#define PATSEARCH_REPLACEALL    0x800	// Replace all
+#define PATSEARCH_NOTE                    0x01        // Search for note
+#define PATSEARCH_INSTR                    0x02        // Search for instrument
+#define PATSEARCH_VOLCMD            0x04        // Search for volume effect
+#define PATSEARCH_VOLUME            0x08        // Search for volume
+#define PATSEARCH_COMMAND            0x10        // Search for effect
+#define PATSEARCH_PARAM                    0x20        // Search for effect parameter
+#define PATSEARCH_CHANNEL            0x40        // Limit search to channels
+#define PATSEARCH_FULLSEARCH    0x100        // Search whole song
+#define PATSEARCH_PATSELECTION    0x200        // Search in current pattern selection
+#define PATSEARCH_REPLACE            0x400        // Replace
+#define PATSEARCH_REPLACEALL    0x800        // Replace all
 
 //=========================================
 class CFindReplaceTab: public CPropertyPage
 //=========================================
 {
 protected:
-    bool m_bReplace;	// is this the replace tab?
+    bool m_bReplace;        // is this the replace tab?
     CModDoc *m_pModDoc;
 
 public:
@@ -47,19 +47,19 @@ public:
 
     enum findItem
     {
-    	findAny = NOTE_MIN_SPECIAL - 1
+            findAny = NOTE_MIN_SPECIAL - 1
     };
 
 
     enum replaceItem
     {
-    	replaceNotePlusOne = NOTE_MAX + 1,
-    	replaceNoteMinusOne = NOTE_MAX + 2,
-    	replaceNotePlusOctave = NOTE_MAX + 3,
-    	replaceNoteMinusOctave = NOTE_MAX + 4,
+            replaceNotePlusOne = NOTE_MAX + 1,
+            replaceNoteMinusOne = NOTE_MAX + 2,
+            replaceNotePlusOctave = NOTE_MAX + 3,
+            replaceNoteMinusOctave = NOTE_MAX + 4,
 
-    	replaceInstrumentPlusOne = MAX_INSTRUMENTS + 1,
-    	replaceInstrumentMinusOne = MAX_INSTRUMENTS + 2,
+            replaceInstrumentPlusOne = MAX_INSTRUMENTS + 1,
+            replaceInstrumentMinusOne = MAX_INSTRUMENTS + 2,
     };
 
     // Make sure there's unused notes between NOTE_MAX and NOTE_MIN_SPECIAL.
@@ -77,21 +77,21 @@ protected:
 
     // When a combobox is focussed, check the corresponding checkbox.
     void CheckOnChange(int nIDButton) { CheckDlgButton(nIDButton, BST_CHECKED); CheckReplace(nIDButton); };
-    afx_msg void OnNoteChanged()	{ CheckOnChange(IDC_CHECK1); };
-    afx_msg void OnInstrChanged()	{ CheckOnChange(IDC_CHECK2); };
-    afx_msg void OnVolCmdChanged()	{ CheckOnChange(IDC_CHECK3); };
-    afx_msg void OnVolumeChanged()	{ CheckOnChange(IDC_CHECK4); };
-    afx_msg void OnEffectChanged()	{ CheckOnChange(IDC_CHECK5); ChangeEffect(); };
-    afx_msg void OnParamChanged()	{ CheckOnChange(IDC_CHECK6); };
+    afx_msg void OnNoteChanged()        { CheckOnChange(IDC_CHECK1); };
+    afx_msg void OnInstrChanged()        { CheckOnChange(IDC_CHECK2); };
+    afx_msg void OnVolCmdChanged()        { CheckOnChange(IDC_CHECK3); };
+    afx_msg void OnVolumeChanged()        { CheckOnChange(IDC_CHECK4); };
+    afx_msg void OnEffectChanged()        { CheckOnChange(IDC_CHECK5); ChangeEffect(); };
+    afx_msg void OnParamChanged()        { CheckOnChange(IDC_CHECK6); };
     // When a checkbox is checked, also check "Replace By".
-    afx_msg void OnCheckNote()		{ CheckReplace(IDC_CHECK1); };
-    afx_msg void OnCheckInstr()		{ CheckReplace(IDC_CHECK2); };
-    afx_msg void OnCheckVolCmd()	{ CheckReplace(IDC_CHECK3); };
-    afx_msg void OnCheckVolume()	{ CheckReplace(IDC_CHECK4); };
-    afx_msg void OnCheckEffect()	{ CheckReplace(IDC_CHECK5); };
-    afx_msg void OnCheckParam()		{ CheckReplace(IDC_CHECK6); };
+    afx_msg void OnCheckNote()                { CheckReplace(IDC_CHECK1); };
+    afx_msg void OnCheckInstr()                { CheckReplace(IDC_CHECK2); };
+    afx_msg void OnCheckVolCmd()        { CheckReplace(IDC_CHECK3); };
+    afx_msg void OnCheckVolume()        { CheckReplace(IDC_CHECK4); };
+    afx_msg void OnCheckEffect()        { CheckReplace(IDC_CHECK5); };
+    afx_msg void OnCheckParam()                { CheckReplace(IDC_CHECK6); };
     // Check "Replace By"
-    afx_msg void CheckReplace(int nIDButton)	{ if(m_bReplace && IsDlgButtonChecked(nIDButton)) CheckDlgButton(IDC_CHECK7, BST_CHECKED); };
+    afx_msg void CheckReplace(int nIDButton)        { if(m_bReplace && IsDlgButtonChecked(nIDButton)) CheckDlgButton(IDC_CHECK7, BST_CHECKED); };
 
     afx_msg void OnCheckChannelSearch();
     DECLARE_MESSAGE_MAP()
@@ -253,13 +253,13 @@ public:
 
 protected:
     //{{AFX_VIRTUAL(CEditCommand)
-    virtual void OnOK()		{ ShowWindow(SW_HIDE); }
-    virtual void OnCancel()	{ ShowWindow(SW_HIDE); }
+    virtual void OnOK()                { ShowWindow(SW_HIDE); }
+    virtual void OnCancel()        { ShowWindow(SW_HIDE); }
     virtual BOOL PreTranslateMessage(MSG *pMsg);
     //}}AFX_VIRTUAL
     //{{AFX_MSG(CEditCommand)
     afx_msg void OnActivate(UINT nState, CWnd *pWndOther, BOOL bMinimized);
-    afx_msg void OnClose()	{ ShowWindow(SW_HIDE); }
+    afx_msg void OnClose()        { ShowWindow(SW_HIDE); }
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 public:
@@ -311,8 +311,8 @@ public:
 
     CSplitKeyboadSettings(CWnd *parent, module_renderer *pSndFile, SplitKeyboardSettings *pOptions):CDialog(IDD_KEYBOARD_SPLIT, parent)
     {
-    	m_pSndFile = pSndFile;
-    	m_pOptions = pOptions;
+            m_pSndFile = pSndFile;
+            m_pOptions = pOptions;
     }
 
 protected:
@@ -344,9 +344,9 @@ public:
 public:
     CChannelRenameDlg(CWnd *parent, CHAR *sName, CHANNELINDEX nChannel) : CDialog(IDD_CHANNEL_NAME, parent)
     {
-    	strcpy(m_sName, sName);
-    	m_nChannel = nChannel;
-    	bChanged = false;
+            strcpy(m_sName, sName);
+            m_nChannel = nChannel;
+            bChanged = false;
     }
 
     virtual BOOL OnInitDialog();

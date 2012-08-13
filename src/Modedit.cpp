@@ -43,54 +43,54 @@ bool CModDoc::ChangeNumChannels(CHANNELINDEX nNewChannels, const bool showCancel
 
     if (nNewChannels > maxChans)
     {
-    	CString error;
-    	error.Format("Error: Max number of channels for this file type is %d", maxChans);
-    	::AfxMessageBox(error, MB_OK|MB_ICONEXCLAMATION);
-    	return false;
+            CString error;
+            error.Format("Error: Max number of channels for this file type is %d", maxChans);
+            ::AfxMessageBox(error, MB_OK|MB_ICONEXCLAMATION);
+            return false;
     }
 
     if (nNewChannels == GetNumChannels()) return false;
 
     if (nNewChannels < GetNumChannels())
     {
-    	// Remove channels
-    	UINT nChnToRemove = 0;
-    	CHANNELINDEX nFound = 0;
+            // Remove channels
+            UINT nChnToRemove = 0;
+            CHANNELINDEX nFound = 0;
 
-    	//nNewChannels = 0 means user can choose how many channels to remove
-    	if(nNewChannels > 0)
-    	{
-    		nChnToRemove = GetNumChannels() - nNewChannels;
-    		nFound = nChnToRemove;
-    	} else
-    	{
-    		nChnToRemove = 0;
-    		nFound = GetNumChannels();
-    	}
+            //nNewChannels = 0 means user can choose how many channels to remove
+            if(nNewChannels > 0)
+            {
+                    nChnToRemove = GetNumChannels() - nNewChannels;
+                    nFound = nChnToRemove;
+            } else
+            {
+                    nChnToRemove = 0;
+                    nFound = GetNumChannels();
+            }
 
-    	CRemoveChannelsDlg rem(&m_SndFile, nChnToRemove, showCancelInRemoveDlg);
-    	CheckUsedChannels(rem.m_bKeepMask, nFound);
-    	if (rem.DoModal() != IDOK) return false;
+            CRemoveChannelsDlg rem(&m_SndFile, nChnToRemove, showCancelInRemoveDlg);
+            CheckUsedChannels(rem.m_bKeepMask, nFound);
+            if (rem.DoModal() != IDOK) return false;
 
-    	// Removing selected channels
-    	return RemoveChannels(rem.m_bKeepMask);
+            // Removing selected channels
+            return RemoveChannels(rem.m_bKeepMask);
     } else
     {
-    	// Increasing number of channels
-    	BeginWaitCursor();
-    	vector<CHANNELINDEX> channels(nNewChannels, CHANNELINDEX_INVALID);
-    	for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
-    	{
-    		channels[nChn] = nChn;
-    	}
+            // Increasing number of channels
+            BeginWaitCursor();
+            vector<CHANNELINDEX> channels(nNewChannels, CHANNELINDEX_INVALID);
+            for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
+            {
+                    channels[nChn] = nChn;
+            }
 
-    	const bool success = (ReArrangeChannels(channels) == nNewChannels);
-    	if(success)
-    	{
-    		SetModified();
-    		UpdateAllViews(NULL, HINT_MODTYPE);
-    	}
-    	return success;
+            const bool success = (ReArrangeChannels(channels) == nNewChannels);
+            if(success)
+            {
+                    SetModified();
+                    UpdateAllViews(NULL, HINT_MODTYPE);
+            }
+            return success;
     }
 }
 
@@ -104,15 +104,15 @@ bool CModDoc::RemoveChannels(const vector<bool> &keepMask)
     //First calculating how many channels are to be left
     for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
     {
-    	if(keepMask[nChn]) nRemainingChannels++;
+            if(keepMask[nChn]) nRemainingChannels++;
     }
     if(nRemainingChannels == GetNumChannels() || nRemainingChannels < m_SndFile.GetModSpecifications().channelsMin)
     {
-    	CString str;
-    	if(nRemainingChannels == GetNumChannels()) str.Format("No channels chosen to be removed.");
-    	else str.Format("No removal done - channel number is already at minimum.");
-    	CMainFrame::GetMainFrame()->MessageBox(str, "Remove channel", MB_OK | MB_ICONINFORMATION);
-    	return false;
+            CString str;
+            if(nRemainingChannels == GetNumChannels()) str.Format("No channels chosen to be removed.");
+            else str.Format("No removal done - channel number is already at minimum.");
+            CMainFrame::GetMainFrame()->MessageBox(str, "Remove channel", MB_OK | MB_ICONINFORMATION);
+            return false;
     }
 
     BeginWaitCursor();
@@ -121,16 +121,16 @@ bool CModDoc::RemoveChannels(const vector<bool> &keepMask)
     CHANNELINDEX i = 0;
     for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
     {
-    	if(keepMask[nChn])
-    	{
-    		channels[i++] = nChn;
-    	}
+            if(keepMask[nChn])
+            {
+                    channels[i++] = nChn;
+            }
     }
     const bool success = (ReArrangeChannels(channels) == nRemainingChannels);
     if(success)
     {
-    	SetModified();
-    	UpdateAllViews(NULL, HINT_MODTYPE);
+            SetModified();
+            UpdateAllViews(NULL, HINT_MODTYPE);
     }
     EndWaitCursor();
     return success;
@@ -152,53 +152,53 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 
     if(nRemainingChannels > m_SndFile.GetModSpecifications().channelsMax || nRemainingChannels < m_SndFile.GetModSpecifications().channelsMin)
     {
-    	CString str;
-    	str.Format(GetStrI18N(_TEXT("Can't apply change: Number of channels should be within [%u,%u]")), m_SndFile.GetModSpecifications().channelsMin, m_SndFile.GetModSpecifications().channelsMax);
-    	CMainFrame::GetMainFrame()->MessageBox(str , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
-    	return CHANNELINDEX_INVALID;
+            CString str;
+            str.Format(GetStrI18N(_TEXT("Can't apply change: Number of channels should be within [%u,%u]")), m_SndFile.GetModSpecifications().channelsMin, m_SndFile.GetModSpecifications().channelsMax);
+            CMainFrame::GetMainFrame()->MessageBox(str , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
+            return CHANNELINDEX_INVALID;
     }
 
     bool first = true;
     if(nRemainingChannels != GetNumChannels())
     {
-    	// For now, changing number of channels can't be undone
-    	GetPatternUndo()->ClearUndo();
+            // For now, changing number of channels can't be undone
+            GetPatternUndo()->ClearUndo();
     }
 
     BEGIN_CRITICAL();
     for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
     {
-    	if(m_SndFile.Patterns[nPat])
-    	{
-    		if(nRemainingChannels == GetNumChannels())
-    		{
-    			GetPatternUndo()->PrepareUndo(nPat, 0, 0, GetNumChannels(), m_SndFile.Patterns[nPat].GetNumRows(), !first);
-    			first = false;
-    		}
+            if(m_SndFile.Patterns[nPat])
+            {
+                    if(nRemainingChannels == GetNumChannels())
+                    {
+                            GetPatternUndo()->PrepareUndo(nPat, 0, 0, GetNumChannels(), m_SndFile.Patterns[nPat].GetNumRows(), !first);
+                            first = false;
+                    }
 
-    		modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat];
-    		modplug::tracker::modevent_t *newp = CPattern::AllocatePattern(m_SndFile.Patterns[nPat].GetNumRows(), nRemainingChannels);
-    		if(!newp)
-    		{
-    			END_CRITICAL();
-    			CMainFrame::GetMainFrame()->MessageBox("ERROR: Pattern allocation failed in ReArrangechannels(...)" , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
-    			return CHANNELINDEX_INVALID;
-    		}
-    		modplug::tracker::modevent_t *tmpsrc = p, *tmpdest = newp;
-    		for(ROWINDEX nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
-    		{
-    			for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
-    			{
-    				if(newOrder[nChn] < GetNumChannels()) //Case: getting old channel to the new channel order.
-    					*tmpdest = tmpsrc[nRow * GetNumChannels() + newOrder[nChn]];
-    				else //Case: figure newOrder[k] is not the index of any current channel, so adding a new channel.
-    					*tmpdest = modplug::tracker::modevent_t::Empty();
+                    modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat];
+                    modplug::tracker::modevent_t *newp = CPattern::AllocatePattern(m_SndFile.Patterns[nPat].GetNumRows(), nRemainingChannels);
+                    if(!newp)
+                    {
+                            END_CRITICAL();
+                            CMainFrame::GetMainFrame()->MessageBox("ERROR: Pattern allocation failed in ReArrangechannels(...)" , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
+                            return CHANNELINDEX_INVALID;
+                    }
+                    modplug::tracker::modevent_t *tmpsrc = p, *tmpdest = newp;
+                    for(ROWINDEX nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
+                    {
+                            for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
+                            {
+                                    if(newOrder[nChn] < GetNumChannels()) //Case: getting old channel to the new channel order.
+                                            *tmpdest = tmpsrc[nRow * GetNumChannels() + newOrder[nChn]];
+                                    else //Case: figure newOrder[k] is not the index of any current channel, so adding a new channel.
+                                            *tmpdest = modplug::tracker::modevent_t::Empty();
 
-    			}
-    		}
-    		m_SndFile.Patterns[nPat] = newp;
-    		CPattern::FreePattern(p);
-    	}
+                            }
+                    }
+                    m_SndFile.Patterns[nPat] = newp;
+                    CPattern::FreePattern(p);
+            }
     }
 
     modplug::tracker::modchannel_t chns[MAX_BASECHANNELS];
@@ -208,28 +208,28 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 
     for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
     {
-    	settings[nChn] = m_SndFile.ChnSettings[nChn];
-    	chns[nChn] = m_SndFile.Chn[nChn];
-    	recordStates[nChn] = IsChannelRecord(nChn);
-    	chnMutePendings[nChn] = m_SndFile.m_bChannelMuteTogglePending[nChn];
+            settings[nChn] = m_SndFile.ChnSettings[nChn];
+            chns[nChn] = m_SndFile.Chn[nChn];
+            recordStates[nChn] = IsChannelRecord(nChn);
+            chnMutePendings[nChn] = m_SndFile.m_bChannelMuteTogglePending[nChn];
     }
 
     ReinitRecordState();
 
     for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++)
     {
-    	if(newOrder[nChn] < GetNumChannels())
-    	{
-    		m_SndFile.ChnSettings[nChn] = settings[newOrder[nChn]];
-    		m_SndFile.Chn[nChn] = chns[newOrder[nChn]];
-    		if(recordStates[newOrder[nChn]] == 1) Record1Channel(nChn, true);
-    		if(recordStates[newOrder[nChn]] == 2) Record2Channel(nChn, true);
-    		m_SndFile.m_bChannelMuteTogglePending[nChn] = chnMutePendings[newOrder[nChn]];
-    	}
-    	else
-    	{
-    		m_SndFile.InitChannel(nChn);
-    	}
+            if(newOrder[nChn] < GetNumChannels())
+            {
+                    m_SndFile.ChnSettings[nChn] = settings[newOrder[nChn]];
+                    m_SndFile.Chn[nChn] = chns[newOrder[nChn]];
+                    if(recordStates[newOrder[nChn]] == 1) Record1Channel(nChn, true);
+                    if(recordStates[newOrder[nChn]] == 2) Record2Channel(nChn, true);
+                    m_SndFile.m_bChannelMuteTogglePending[nChn] = chnMutePendings[newOrder[nChn]];
+            }
+            else
+            {
+                    m_SndFile.InitChannel(nChn);
+            }
     }
     // Reset MOD panning (won't affect other module formats)
     m_SndFile.SetupMODPanning();
@@ -239,8 +239,8 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     // Reset removed channels. Most notably, clear the channel name.
     for(CHANNELINDEX nChn = GetNumChannels(); nChn < MAX_BASECHANNELS; nChn++)
     {
-    	m_SndFile.InitChannel(nChn);
-    	m_SndFile.Chn[nChn].flags |= CHN_MUTE;
+            m_SndFile.InitChannel(nChn);
+            m_SndFile.Chn[nChn].flags |= CHN_MUTE;
     }
 
     END_CRITICAL();
@@ -257,39 +257,39 @@ bool CModDoc::MoveChannel(CHANNELINDEX chnFrom, CHANNELINDEX chnTo)
     if(chnFrom == chnTo) return false;
     if(chnFrom >= GetNumChannels() || chnTo >= GetNumChannels())
     {
-    	CString str = "Error: Bad move indexes in CSoundFile::MoveChannel(...)";
-    	CMainFrame::GetMainFrame()->MessageBox(str , "MoveChannel(...)", MB_OK | MB_ICONINFORMATION);
-    	return true;
+            CString str = "Error: Bad move indexes in CSoundFile::MoveChannel(...)";
+            CMainFrame::GetMainFrame()->MessageBox(str , "MoveChannel(...)", MB_OK | MB_ICONINFORMATION);
+            return true;
     }
     vector<CHANNELINDEX> newOrder;
     //First creating new order identical to current order...
     for(CHANNELINDEX i = 0; i < GetNumChannels(); i++)
     {
-    	newOrder.push_back(i);
+            newOrder.push_back(i);
     }
     //...and then add the move channel effect.
     if(chnFrom < chnTo)
     {
-    	CHANNELINDEX temp = newOrder[chnFrom];
-    	for(UINT i = chnFrom; i < chnTo; i++)
-    	{
-    		newOrder[i] = newOrder[i + 1];
-    	}
-    	newOrder[chnTo] = temp;
+            CHANNELINDEX temp = newOrder[chnFrom];
+            for(UINT i = chnFrom; i < chnTo; i++)
+            {
+                    newOrder[i] = newOrder[i + 1];
+            }
+            newOrder[chnTo] = temp;
     }
     else //case chnFrom > chnTo(can't be equal, since it has been examined earlier.)
     {
-    	CHANNELINDEX temp = newOrder[chnFrom];
-    	for(UINT i = chnFrom; i >= chnTo + 1; i--)
-    	{
-    		newOrder[i] = newOrder[i - 1];
-    	}
-    	newOrder[chnTo] = temp;
+            CHANNELINDEX temp = newOrder[chnFrom];
+            for(UINT i = chnFrom; i >= chnTo + 1; i--)
+            {
+                    newOrder[i] = newOrder[i - 1];
+            }
+            newOrder[chnTo] = temp;
     }
 
     if(newOrder.size() != ReArrangeChannels(newOrder))
     {
-    	CMainFrame::GetMainFrame()->MessageBox("BUG: Channel number changed in MoveChannel()" , "", MB_OK | MB_ICONINFORMATION);
+            CMainFrame::GetMainFrame()->MessageBox("BUG: Channel number changed in MoveChannel()" , "", MB_OK | MB_ICONINFORMATION);
     }
     return false;
 }
@@ -301,30 +301,30 @@ struct ConvertInstrumentsToSamplesInPatterns
 {
     ConvertInstrumentsToSamplesInPatterns(module_renderer *pSndFile)
     {
-    	this->pSndFile = pSndFile;
+            this->pSndFile = pSndFile;
     }
 
     void operator()(modplug::tracker::modevent_t& m)
     {
-    	if(m.instr)
-    	{
-    		modplug::tracker::modevent_t::instr_t instr = m.instr, newinstr = 0;
-    		modplug::tracker::modevent_t::note_t note = m.note, newnote = note;
-    		if((note >= NOTE_MIN) && (note <= NOTE_MAX))
-    			note--;
-    		else
-    			note = NOTE_MIDDLEC - 1;
+            if(m.instr)
+            {
+                    modplug::tracker::modevent_t::instr_t instr = m.instr, newinstr = 0;
+                    modplug::tracker::modevent_t::note_t note = m.note, newnote = note;
+                    if((note >= NOTE_MIN) && (note <= NOTE_MAX))
+                            note--;
+                    else
+                            note = NOTE_MIDDLEC - 1;
 
-    		if((instr < MAX_INSTRUMENTS) && (pSndFile->Instruments[instr]))
-    		{
-    			const modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[instr];
-    			newinstr = pIns->Keyboard[note];
-    			newnote = pIns->NoteMap[note];
-    			if(newinstr >= MAX_SAMPLES) newinstr = 0;
-    		}
-    		m.instr = newinstr;
-    		m.note = newnote;
-    	}
+                    if((instr < MAX_INSTRUMENTS) && (pSndFile->Instruments[instr]))
+                    {
+                            const modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[instr];
+                            newinstr = pIns->Keyboard[note];
+                            newnote = pIns->NoteMap[note];
+                            if(newinstr >= MAX_SAMPLES) newinstr = 0;
+                    }
+                    m.instr = newinstr;
+                    m.note = newnote;
+            }
     }
 
     module_renderer *pSndFile;
@@ -335,7 +335,7 @@ bool CModDoc::ConvertInstrumentsToSamples()
 //-----------------------------------------
 {
     if (!m_SndFile.GetNumInstruments())
-    	return false;
+            return false;
     m_SndFile.Patterns.ForEachModCommand(ConvertInstrumentsToSamplesInPatterns(&m_SndFile));
     return true;
 }
@@ -349,34 +349,34 @@ UINT CModDoc::RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS])
     UINT nRemoved=0;
     for (PLUGINDEX nPlug=0; nPlug<MAX_MIXPLUGINS; nPlug++)
     {
-    	SNDMIXPLUGIN* pPlug = &m_SndFile.m_MixPlugins[nPlug];
-    	if (keepMask[nPlug] || !pPlug)
-    	{
-    		Log("Keeping mixplug addess (%d): %X\n", nPlug, &(pPlug->pMixPlugin));
-    		continue;
-    	}
+            SNDMIXPLUGIN* pPlug = &m_SndFile.m_MixPlugins[nPlug];
+            if (keepMask[nPlug] || !pPlug)
+            {
+                    Log("Keeping mixplug addess (%d): %X\n", nPlug, &(pPlug->pMixPlugin));
+                    continue;
+            }
 
-    	if (pPlug->pPluginData)
-    	{
-    		delete[] pPlug->pPluginData;
-    		pPlug->pPluginData = NULL;
-    	}
-    	if (pPlug->pMixPlugin)
-    	{
-    		pPlug->pMixPlugin->Release();
-    		pPlug->pMixPlugin=NULL;
-    	}
-    	if (pPlug->pMixState)
-    	{
-    		delete pPlug->pMixState;
-    	}
+            if (pPlug->pPluginData)
+            {
+                    delete[] pPlug->pPluginData;
+                    pPlug->pPluginData = NULL;
+            }
+            if (pPlug->pMixPlugin)
+            {
+                    pPlug->pMixPlugin->Release();
+                    pPlug->pMixPlugin=NULL;
+            }
+            if (pPlug->pMixState)
+            {
+                    delete pPlug->pMixState;
+            }
 
-    	MemsetZero(pPlug->Info);
-    	Log("Zeroing range (%d) %X - %X\n", nPlug, &(pPlug->Info),  &(pPlug->Info)+sizeof(SNDMIXPLUGININFO));
-    	pPlug->nPluginDataSize=0;
-    	pPlug->fDryRatio=0;
-    	pPlug->defaultProgram=0;
-    	nRemoved++;
+            MemsetZero(pPlug->Info);
+            Log("Zeroing range (%d) %X - %X\n", nPlug, &(pPlug->Info),  &(pPlug->Info)+sizeof(SNDMIXPLUGININFO));
+            pPlug->nPluginDataSize=0;
+            pPlug->fDryRatio=0;
+            pPlug->defaultProgram=0;
+            nRemoved++;
     }
 
     return nRemoved;
@@ -402,34 +402,34 @@ PATTERNINDEX CModDoc::InsertPattern(ORDERINDEX nOrd, ROWINDEX nRows)
 {
     const PATTERNINDEX i = m_SndFile.Patterns.Insert(nRows);
     if(i == PATTERNINDEX_INVALID)
-    	return i;
+            return i;
 
     //Increasing orderlist size if given order is beyond current limit,
     //or if the last order already has a pattern.
     if((nOrd == m_SndFile.Order.size() ||
-    	m_SndFile.Order.Last() < m_SndFile.Patterns.Size() ) &&
-    	m_SndFile.Order.GetLength() < m_SndFile.GetModSpecifications().ordersMax)
+            m_SndFile.Order.Last() < m_SndFile.Patterns.Size() ) &&
+            m_SndFile.Order.GetLength() < m_SndFile.GetModSpecifications().ordersMax)
     {
-    	m_SndFile.Order.Append();
+            m_SndFile.Order.Append();
     }
 
     for (UINT j=0; j<m_SndFile.Order.size(); j++)
     {
-    	if (m_SndFile.Order[j] == i) break;
-    	if (m_SndFile.Order[j] == m_SndFile.Order.GetInvalidPatIndex() && nOrd == ORDERINDEX_INVALID)
-    	{
-    		m_SndFile.Order[j] = i;
-    		break;
-    	}
-    	if ((nOrd >= 0) && (j == (UINT)nOrd))
-    	{
-    		for (UINT k=m_SndFile.Order.size()-1; k>j; k--)
-    		{
-    			m_SndFile.Order[k] = m_SndFile.Order[k-1];
-    		}
-    		m_SndFile.Order[j] = i;
-    		break;
-    	}
+            if (m_SndFile.Order[j] == i) break;
+            if (m_SndFile.Order[j] == m_SndFile.Order.GetInvalidPatIndex() && nOrd == ORDERINDEX_INVALID)
+            {
+                    m_SndFile.Order[j] = i;
+                    break;
+            }
+            if ((nOrd >= 0) && (j == (UINT)nOrd))
+            {
+                    for (UINT k=m_SndFile.Order.size()-1; k>j; k--)
+                    {
+                            m_SndFile.Order[k] = m_SndFile.Order[k-1];
+                    }
+                    m_SndFile.Order[j] = i;
+                    break;
+            }
     }
 
     SetModified();
@@ -443,17 +443,17 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
     SAMPLEINDEX i = 1;
     for(i = 1; i <= m_SndFile.m_nSamples; i++)
     {
-    	if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].sample_data == NULL))
-    	{
-    		if ((!m_SndFile.m_nInstruments) || (!m_SndFile.IsSampleUsed(i)))
-    		break;
-    	}
+            if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].sample_data == NULL))
+            {
+                    if ((!m_SndFile.m_nInstruments) || (!m_SndFile.IsSampleUsed(i)))
+                    break;
+            }
     }
     if (((bLimit) && (i >= 200) && (!m_SndFile.m_nInstruments))
      || (i > m_SndFile.GetModSpecifications().samplesMax))
     {
-    	ErrorBox(IDS_ERR_TOOMANYSMP, CMainFrame::GetMainFrame());
-    	return SAMPLEINDEX_INVALID;
+            ErrorBox(IDS_ERR_TOOMANYSMP, CMainFrame::GetMainFrame());
+            return SAMPLEINDEX_INVALID;
     }
     if (!m_SndFile.m_szNames[i][0]) strcpy(m_SndFile.m_szNames[i], "untitled");
     modplug::tracker::modsample_t *pSmp = &m_SndFile.Samples[i];
@@ -485,98 +485,98 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
     if ((m_SndFile.m_nType != MOD_TYPE_XM) && !(m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))) return INSTRUMENTINDEX_INVALID;
     if ((nDuplicate > 0) && (nDuplicate <= m_SndFile.m_nInstruments))
     {
-    	pDup = m_SndFile.Instruments[nDuplicate];
+            pDup = m_SndFile.Instruments[nDuplicate];
     }
     if ((!m_SndFile.m_nInstruments) && ((m_SndFile.m_nSamples > 1) || (m_SndFile.Samples[1].sample_data)))
     {
-    	if (pDup) return INSTRUMENTINDEX_INVALID;
-    	UINT n = CMainFrame::GetMainFrame()->MessageBox("Convert existing samples to instruments first?", NULL, MB_YESNOCANCEL|MB_ICONQUESTION);
-    	if (n == IDYES)
-    	{
-    		SAMPLEINDEX nInstruments = m_SndFile.m_nSamples;
-    		if (nInstruments > nInstrumentMax) nInstruments = nInstrumentMax;
-    		for (SAMPLEINDEX smp = 1; smp <= nInstruments; smp++)
-    		{
-    			m_SndFile.Samples[smp].flags &= ~CHN_MUTE;
-    			if (!m_SndFile.Instruments[smp])
-    			{
-    				modplug::tracker::modinstrument_t *p = new modplug::tracker::modinstrument_t;
-    				if (!p)
-    				{
-    					ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
-    					return INSTRUMENTINDEX_INVALID;
-    				}
-    				InitializeInstrument(p, smp);
-    				m_SndFile.Instruments[smp] = p;
-    				lstrcpyn(p->name, m_SndFile.m_szNames[smp], sizeof(p->name));
-    			}
-    		}
-    		m_SndFile.m_nInstruments = nInstruments;
-    	} else
-    	if (n != IDNO) return INSTRUMENTINDEX_INVALID;
+            if (pDup) return INSTRUMENTINDEX_INVALID;
+            UINT n = CMainFrame::GetMainFrame()->MessageBox("Convert existing samples to instruments first?", NULL, MB_YESNOCANCEL|MB_ICONQUESTION);
+            if (n == IDYES)
+            {
+                    SAMPLEINDEX nInstruments = m_SndFile.m_nSamples;
+                    if (nInstruments > nInstrumentMax) nInstruments = nInstrumentMax;
+                    for (SAMPLEINDEX smp = 1; smp <= nInstruments; smp++)
+                    {
+                            m_SndFile.Samples[smp].flags &= ~CHN_MUTE;
+                            if (!m_SndFile.Instruments[smp])
+                            {
+                                    modplug::tracker::modinstrument_t *p = new modplug::tracker::modinstrument_t;
+                                    if (!p)
+                                    {
+                                            ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
+                                            return INSTRUMENTINDEX_INVALID;
+                                    }
+                                    InitializeInstrument(p, smp);
+                                    m_SndFile.Instruments[smp] = p;
+                                    lstrcpyn(p->name, m_SndFile.m_szNames[smp], sizeof(p->name));
+                            }
+                    }
+                    m_SndFile.m_nInstruments = nInstruments;
+            } else
+            if (n != IDNO) return INSTRUMENTINDEX_INVALID;
     }
     UINT newins = 0;
     for (INSTRUMENTINDEX i = 1; i <= m_SndFile.m_nInstruments; i++)
     {
-    	if (!m_SndFile.Instruments[i])
-    	{
-    		newins = i;
-    		break;
-    	}
+            if (!m_SndFile.Instruments[i])
+            {
+                    newins = i;
+                    break;
+            }
     }
     if (!newins)
     {
-    	if (m_SndFile.m_nInstruments >= nInstrumentMax)
-    	{
-    		ErrorBox(IDS_ERR_TOOMANYINS, CMainFrame::GetMainFrame());
-    		return INSTRUMENTINDEX_INVALID;
-    	}
-    	newins = ++m_SndFile.m_nInstruments;
+            if (m_SndFile.m_nInstruments >= nInstrumentMax)
+            {
+                    ErrorBox(IDS_ERR_TOOMANYINS, CMainFrame::GetMainFrame());
+                    return INSTRUMENTINDEX_INVALID;
+            }
+            newins = ++m_SndFile.m_nInstruments;
     }
     modplug::tracker::modinstrument_t *pIns = new modplug::tracker::modinstrument_t;
     if (pIns)
     {
-    	SAMPLEINDEX newsmp = 0;
-    	if (nSample < m_SndFile.GetModSpecifications().samplesMax)
-    	{
-    		newsmp = nSample;
-    	} else
-    	if (!pDup)
-    	{
-    		for(SAMPLEINDEX k = 1; k <= m_SndFile.m_nSamples; k++)
-    		{
-    			if (!m_SndFile.IsSampleUsed(k))
-    			{
-    				newsmp = k;
-    				break;
-    			}
-    		}
-    		if (!newsmp)
-    		{
-    			int inssmp = InsertSample();
-    			if (inssmp != SAMPLEINDEX_INVALID) newsmp = inssmp;
-    		}
-    	}
-    	BEGIN_CRITICAL();
-    	if (pDup)
-    	{
-    		*pIns = *pDup;
+            SAMPLEINDEX newsmp = 0;
+            if (nSample < m_SndFile.GetModSpecifications().samplesMax)
+            {
+                    newsmp = nSample;
+            } else
+            if (!pDup)
+            {
+                    for(SAMPLEINDEX k = 1; k <= m_SndFile.m_nSamples; k++)
+                    {
+                            if (!m_SndFile.IsSampleUsed(k))
+                            {
+                                    newsmp = k;
+                                    break;
+                            }
+                    }
+                    if (!newsmp)
+                    {
+                            int inssmp = InsertSample();
+                            if (inssmp != SAMPLEINDEX_INVALID) newsmp = inssmp;
+                    }
+            }
+            BEGIN_CRITICAL();
+            if (pDup)
+            {
+                    *pIns = *pDup;
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
-    		strcpy(m_SndFile.m_szInstrumentPath[newins - 1], m_SndFile.m_szInstrumentPath[nDuplicate - 1]);
-    		m_bsInstrumentModified.reset(newins - 1);
+                    strcpy(m_SndFile.m_szInstrumentPath[newins - 1], m_SndFile.m_szInstrumentPath[nDuplicate - 1]);
+                    m_bsInstrumentModified.reset(newins - 1);
 // -! NEW_FEATURE#0023
-    	} else
-    	{
-    		InitializeInstrument(pIns, newsmp);
-    	}
-    	m_SndFile.Instruments[newins] = pIns;
-    	END_CRITICAL();
-    	SetModified();
+            } else
+            {
+                    InitializeInstrument(pIns, newsmp);
+            }
+            m_SndFile.Instruments[newins] = pIns;
+            END_CRITICAL();
+            SetModified();
     } else
     {
-    	ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
-    	return INSTRUMENTINDEX_INVALID;
+            ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
+            return INSTRUMENTINDEX_INVALID;
     }
     return newins;
 }
@@ -586,7 +586,7 @@ void CModDoc::InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT
 //-------------------------------------------------------------------
 {
     if(pIns == nullptr)
-    	return;
+            return;
     MemsetZero(*pIns);
     pIns->fadeout = 256;
     pIns->global_volume = 64;
@@ -595,8 +595,8 @@ void CModDoc::InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT
     m_SndFile.SetDefaultInstrumentValues(pIns);
     for (UINT n=0; n<128; n++)
     {
-    	pIns->Keyboard[n] = nsample;
-    	pIns->NoteMap[n] = n+1;
+            pIns->Keyboard[n] = nsample;
+            pIns->NoteMap[n] = n+1;
     }
     pIns->pTuning = pIns->s_DefaultTuning;
 }
@@ -606,14 +606,14 @@ bool CModDoc::RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd)
 //------------------------------------------------------------
 {
     if (nSeq >= m_SndFile.Order.GetNumSequences() || nOrd >= m_SndFile.Order.GetSequence(nSeq).size())
-    	return false;
+            return false;
 
     BEGIN_CRITICAL();
     SEQUENCEINDEX nOldSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     m_SndFile.Order.SetSequence(nSeq);
     for (ORDERINDEX i = nOrd; i < m_SndFile.Order.GetSequence(nSeq).size() - 1; i++)
     {
-    	m_SndFile.Order[i] = m_SndFile.Order[i + 1];
+            m_SndFile.Order[i] = m_SndFile.Order[i + 1];
     }
     m_SndFile.Order[m_SndFile.Order.GetLastIndex()] = m_SndFile.Order.GetInvalidPatIndex();
     m_SndFile.Order.SetSequence(nOldSeq);
@@ -629,11 +629,11 @@ bool CModDoc::RemovePattern(PATTERNINDEX nPat)
 {
     if ((nPat < m_SndFile.Patterns.Size()) && (m_SndFile.Patterns[nPat]))
     {
-    	BEGIN_CRITICAL();
-    	m_SndFile.Patterns.Remove(nPat);
-    	END_CRITICAL();
-    	SetModified();
-    	return true;
+            BEGIN_CRITICAL();
+            m_SndFile.Patterns.Remove(nPat);
+            END_CRITICAL();
+            SetModified();
+            return true;
     }
     return false;
 }
@@ -644,15 +644,15 @@ bool CModDoc::RemoveSample(SAMPLEINDEX nSmp)
 {
     if ((nSmp) && (nSmp <= m_SndFile.m_nSamples))
     {
-    	BEGIN_CRITICAL();
-    	m_SndFile.DestroySample(nSmp);
-    	m_SndFile.m_szNames[nSmp][0] = 0;
-    	while ((m_SndFile.m_nSamples > 1)
-    	 && (!m_SndFile.m_szNames[m_SndFile.m_nSamples][0])
-    	 && (!m_SndFile.Samples[m_SndFile.m_nSamples].sample_data)) m_SndFile.m_nSamples--;
-    	END_CRITICAL();
-    	SetModified();
-    	return true;
+            BEGIN_CRITICAL();
+            m_SndFile.DestroySample(nSmp);
+            m_SndFile.m_szNames[nSmp][0] = 0;
+            while ((m_SndFile.m_nSamples > 1)
+             && (!m_SndFile.m_szNames[m_SndFile.m_nSamples][0])
+             && (!m_SndFile.Samples[m_SndFile.m_nSamples].sample_data)) m_SndFile.m_nSamples--;
+            END_CRITICAL();
+            SetModified();
+            return true;
     }
     return false;
 }
@@ -663,15 +663,15 @@ bool CModDoc::RemoveInstrument(INSTRUMENTINDEX nIns)
 {
     if ((nIns) && (nIns <= m_SndFile.m_nInstruments) && (m_SndFile.Instruments[nIns]))
     {
-    	BOOL bIns = FALSE;
-    	BEGIN_CRITICAL();
-    	m_SndFile.DestroyInstrument(nIns);
-    	if (nIns == m_SndFile.m_nInstruments) m_SndFile.m_nInstruments--;
-    	for (UINT i=1; i<MAX_INSTRUMENTS; i++) if (m_SndFile.Instruments[i]) bIns = TRUE;
-    	if (!bIns) m_SndFile.m_nInstruments = 0;
-    	END_CRITICAL();
-    	SetModified();
-    	return true;
+            BOOL bIns = FALSE;
+            BEGIN_CRITICAL();
+            m_SndFile.DestroyInstrument(nIns);
+            if (nIns == m_SndFile.m_nInstruments) m_SndFile.m_nInstruments--;
+            for (UINT i=1; i<MAX_INSTRUMENTS; i++) if (m_SndFile.Instruments[i]) bIns = TRUE;
+            if (!bIns) m_SndFile.m_nInstruments = 0;
+            END_CRITICAL();
+            SetModified();
+            return true;
     }
     return false;
 }
@@ -694,9 +694,9 @@ bool CModDoc::MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate
     // Delete source
     if (!bCopy)
     {
-    	m_SndFile.Order.SetSequence(nSourceSeq);
-    	for (ORDERINDEX i = nSourceNdx; i < m_SndFile.Order.size() - 1; i++) m_SndFile.Order[i] = m_SndFile.Order[i + 1];
-    	if (nSourceNdx < nDestNdx) nDestNdx--;
+            m_SndFile.Order.SetSequence(nSourceSeq);
+            for (ORDERINDEX i = nSourceNdx; i < m_SndFile.Order.size() - 1; i++) m_SndFile.Order[i] = m_SndFile.Order[i + 1];
+            if (nSourceNdx < nDestNdx) nDestNdx--;
     }
     // Insert at dest
     m_SndFile.Order.SetSequence(nDestSeq);
@@ -704,7 +704,7 @@ bool CModDoc::MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate
     m_SndFile.Order[nDestNdx] = nSourcePat;
     if (bUpdate)
     {
-    	UpdateAllViews(NULL, HINT_MODSEQUENCE, NULL);
+            UpdateAllViews(NULL, HINT_MODSEQUENCE, NULL);
     }
 
     m_SndFile.Order.SetSequence(nWorkingSeq);
@@ -720,9 +720,9 @@ BOOL CModDoc::ExpandPattern(PATTERNINDEX nPattern)
 
     if ((nPattern >= m_SndFile.Patterns.Size()) || (!m_SndFile.Patterns[nPattern])) return FALSE;
     if(m_SndFile.Patterns[nPattern].Expand())
-    	return FALSE;
+            return FALSE;
     else
-    	return TRUE;
+            return TRUE;
 }
 
 
@@ -731,9 +731,9 @@ BOOL CModDoc::ShrinkPattern(PATTERNINDEX nPattern)
 {
     if ((nPattern >= m_SndFile.Patterns.Size()) || (!m_SndFile.Patterns[nPattern])) return FALSE;
     if(m_SndFile.Patterns[nPattern].Shrink())
-    	return FALSE;
+            return FALSE;
     else
-    	return TRUE;
+            return TRUE;
 }
 
 
@@ -761,132 +761,132 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t d
     dwMemSize += nrows * (ncols * 12 + 2);
     if ((pMainFrm->OpenClipboard()) && ((hCpy = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, dwMemSize))!=NULL))
     {
-    	LPCSTR pszFormatName;
-    	EmptyClipboard();
-    	switch(m_SndFile.m_nType)
-    	{
-    	case MOD_TYPE_S3M:	pszFormatName = "S3M"; break;
-    	case MOD_TYPE_XM:	pszFormatName = "XM"; break;
-    	case MOD_TYPE_IT:	pszFormatName = "IT"; break;
-    	case MOD_TYPE_MPT:	pszFormatName = "MPT"; break;
-    	default:			pszFormatName = "MOD"; break;
-    	}
-    	LPSTR p = (LPSTR)GlobalLock(hCpy);
-    	if (p)
-    	{
-    		UINT colmin = dwBeginSel & 0xFFFF;
-    		UINT colmax = dwEndSel & 0xFFFF;
-    		wsprintf(p, lpszClipboardPatternHdr, pszFormatName);
-    		p += strlen(p);
-    		for (UINT row=0; row<nrows; row++)
-    		{
-    			modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPattern];
-    			if ((row + (dwBeginSel >> 16)) >= m_SndFile.Patterns[nPattern].GetNumRows()) break;
-    			m += (row+(dwBeginSel >> 16))*m_SndFile.m_nChannels;
-    			m += (colmin >> 3);
-    			for (UINT col=0; col<ncols; col++, m++, p+=12)
-    			{
-    				UINT ncursor = ((colmin>>3)+col) << 3;
-    				p[0] = '|';
-    				// Note
-    				if ((ncursor >= colmin) && (ncursor <= colmax))
-    				{
-    					UINT note = m->note;
-    					switch(note)
-    					{
-    					case NOTE_NONE:		p[1] = p[2] = p[3] = '.'; break;
-    					case NOTE_KEYOFF:	p[1] = p[2] = p[3] = '='; break;
-    					case NOTE_NOTECUT:	p[1] = p[2] = p[3] = '^'; break;
-    					case NOTE_FADE:	p[1] = p[2] = p[3] = '~'; break;
-    					case NOTE_PC: p[1] = 'P'; p[2] = 'C'; p[3] = ' '; break;
-    					case NOTE_PCS: p[1] = 'P'; p[2] = 'C'; p[3] = 'S'; break;
-    					default:
-    						p[1] = szNoteNames[(note-1) % 12][0];
-    						p[2] = szNoteNames[(note-1) % 12][1];
-    						p[3] = '0' + (note-1) / 12;
-    					}
-    				} else
-    				{
-    					// No note
-    					p[1] = p[2] = p[3] = ' ';
-    				}
-    				// Instrument
-    				ncursor++;
-    				if ((ncursor >= colmin) && (ncursor <= colmax))
-    				{
-    					if (m->instr)
-    					{
-    						p[4] = '0' + (m->instr / 10);
-    						p[5] = '0' + (m->instr % 10);
-    					} else p[4] = p[5] = '.';
-    				} else
-    				{
-    					p[4] = p[5] = ' ';
-    				}
-    				// Volume
-    				ncursor++;
-    				if ((ncursor >= colmin) && (ncursor <= colmax))
-    				{
-    					if(m->IsPcNote())
-    					{
-    						const uint16_t val = m->GetValueVolCol();
-    						p[6] = GetDigit<2>(val);
-    						p[7] = GetDigit<1>(val);
-    						p[8] = GetDigit<0>(val);
-    					}
-    					else
-    					{
-    						if ((m->volcmd) && (m->volcmd <= MAX_VOLCMDS))
-    						{
-    							p[6] = vol_command_glyphs[m->volcmd];
-    							p[7] = '0' + (m->vol / 10);
-    							p[8] = '0' + (m->vol % 10);
-    						} else p[6] = p[7] = p[8] = '.';
-    					}
-    				} else
-    				{
-    					p[6] = p[7] = p[8] = ' ';
-    				}
-    				// Effect
-    				ncursor++;
-    				if (((ncursor >= colmin) && (ncursor <= colmax))
-    				 || ((ncursor+1 >= colmin) && (ncursor+1 <= colmax)))
-    				{
-    					if(m->IsPcNote())
-    					{
-    						const uint16_t val = m->GetValueEffectCol();
-    						p[9] = GetDigit<2>(val);
-    						p[10] = GetDigit<1>(val);
-    						p[11] = GetDigit<0>(val);
-    					}
-    					else
-    					{
-    						if (m->command)
-    						{
-    							if (m_SndFile.m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
-    								p[9] = s3m_command_glyphs[m->command];
-    							else
-    								p[9] = mod_command_glyphs[m->command];
-    						} else p[9] = '.';
-    						if (m->param)
-    						{
-    							p[10] = hex_chars[m->param >> 4];
-    							p[11] = hex_chars[m->param & 0x0F];
-    						} else p[10] = p[11] = '.';
-    					}
-    				} else
-    				{
-    					p[9] = p[10] = p[11] = ' ';
-    				}
-    			}
-    			*p++ = '\r';
-    			*p++ = '\n';
-    		}
-    		*p = 0;
-    	}
-    	GlobalUnlock(hCpy);
-    	SetClipboardData (CF_TEXT, (HANDLE) hCpy);
-    	CloseClipboard();
+            LPCSTR pszFormatName;
+            EmptyClipboard();
+            switch(m_SndFile.m_nType)
+            {
+            case MOD_TYPE_S3M:        pszFormatName = "S3M"; break;
+            case MOD_TYPE_XM:        pszFormatName = "XM"; break;
+            case MOD_TYPE_IT:        pszFormatName = "IT"; break;
+            case MOD_TYPE_MPT:        pszFormatName = "MPT"; break;
+            default:                        pszFormatName = "MOD"; break;
+            }
+            LPSTR p = (LPSTR)GlobalLock(hCpy);
+            if (p)
+            {
+                    UINT colmin = dwBeginSel & 0xFFFF;
+                    UINT colmax = dwEndSel & 0xFFFF;
+                    wsprintf(p, lpszClipboardPatternHdr, pszFormatName);
+                    p += strlen(p);
+                    for (UINT row=0; row<nrows; row++)
+                    {
+                            modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPattern];
+                            if ((row + (dwBeginSel >> 16)) >= m_SndFile.Patterns[nPattern].GetNumRows()) break;
+                            m += (row+(dwBeginSel >> 16))*m_SndFile.m_nChannels;
+                            m += (colmin >> 3);
+                            for (UINT col=0; col<ncols; col++, m++, p+=12)
+                            {
+                                    UINT ncursor = ((colmin>>3)+col) << 3;
+                                    p[0] = '|';
+                                    // Note
+                                    if ((ncursor >= colmin) && (ncursor <= colmax))
+                                    {
+                                            UINT note = m->note;
+                                            switch(note)
+                                            {
+                                            case NOTE_NONE:                p[1] = p[2] = p[3] = '.'; break;
+                                            case NOTE_KEYOFF:        p[1] = p[2] = p[3] = '='; break;
+                                            case NOTE_NOTECUT:        p[1] = p[2] = p[3] = '^'; break;
+                                            case NOTE_FADE:        p[1] = p[2] = p[3] = '~'; break;
+                                            case NOTE_PC: p[1] = 'P'; p[2] = 'C'; p[3] = ' '; break;
+                                            case NOTE_PCS: p[1] = 'P'; p[2] = 'C'; p[3] = 'S'; break;
+                                            default:
+                                                    p[1] = szNoteNames[(note-1) % 12][0];
+                                                    p[2] = szNoteNames[(note-1) % 12][1];
+                                                    p[3] = '0' + (note-1) / 12;
+                                            }
+                                    } else
+                                    {
+                                            // No note
+                                            p[1] = p[2] = p[3] = ' ';
+                                    }
+                                    // Instrument
+                                    ncursor++;
+                                    if ((ncursor >= colmin) && (ncursor <= colmax))
+                                    {
+                                            if (m->instr)
+                                            {
+                                                    p[4] = '0' + (m->instr / 10);
+                                                    p[5] = '0' + (m->instr % 10);
+                                            } else p[4] = p[5] = '.';
+                                    } else
+                                    {
+                                            p[4] = p[5] = ' ';
+                                    }
+                                    // Volume
+                                    ncursor++;
+                                    if ((ncursor >= colmin) && (ncursor <= colmax))
+                                    {
+                                            if(m->IsPcNote())
+                                            {
+                                                    const uint16_t val = m->GetValueVolCol();
+                                                    p[6] = GetDigit<2>(val);
+                                                    p[7] = GetDigit<1>(val);
+                                                    p[8] = GetDigit<0>(val);
+                                            }
+                                            else
+                                            {
+                                                    if ((m->volcmd) && (m->volcmd <= MAX_VOLCMDS))
+                                                    {
+                                                            p[6] = vol_command_glyphs[m->volcmd];
+                                                            p[7] = '0' + (m->vol / 10);
+                                                            p[8] = '0' + (m->vol % 10);
+                                                    } else p[6] = p[7] = p[8] = '.';
+                                            }
+                                    } else
+                                    {
+                                            p[6] = p[7] = p[8] = ' ';
+                                    }
+                                    // Effect
+                                    ncursor++;
+                                    if (((ncursor >= colmin) && (ncursor <= colmax))
+                                     || ((ncursor+1 >= colmin) && (ncursor+1 <= colmax)))
+                                    {
+                                            if(m->IsPcNote())
+                                            {
+                                                    const uint16_t val = m->GetValueEffectCol();
+                                                    p[9] = GetDigit<2>(val);
+                                                    p[10] = GetDigit<1>(val);
+                                                    p[11] = GetDigit<0>(val);
+                                            }
+                                            else
+                                            {
+                                                    if (m->command)
+                                                    {
+                                                            if (m_SndFile.m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
+                                                                    p[9] = s3m_command_glyphs[m->command];
+                                                            else
+                                                                    p[9] = mod_command_glyphs[m->command];
+                                                    } else p[9] = '.';
+                                                    if (m->param)
+                                                    {
+                                                            p[10] = hex_chars[m->param >> 4];
+                                                            p[11] = hex_chars[m->param & 0x0F];
+                                                    } else p[10] = p[11] = '.';
+                                            }
+                                    } else
+                                    {
+                                            p[9] = p[10] = p[11] = ' ';
+                                    }
+                            }
+                            *p++ = '\r';
+                            *p++ = '\n';
+                    }
+                    *p = 0;
+            }
+            GlobalUnlock(hCpy);
+            SetClipboardData (CF_TEXT, (HANDLE) hCpy);
+            CloseClipboard();
     }
     EndWaitCursor();
     return true;
@@ -901,283 +901,283 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     BeginWaitCursor();
     if (pMainFrm->OpenClipboard())
     {
-    	HGLOBAL hCpy = ::GetClipboardData(CF_TEXT);
-    	LPSTR p;
+            HGLOBAL hCpy = ::GetClipboardData(CF_TEXT);
+            LPSTR p;
 
-    	if ((hCpy) && ((p = (LPSTR)GlobalLock(hCpy)) != NULL))
-    	{
-    		const TEMPO spdmax = m_SndFile.GetModSpecifications().speedMax;
-    		const uint32_t dwMemSize = GlobalSize(hCpy);
-    		CHANNELINDEX ncol = (dwBeginSel & 0xFFFF) >> 3, col;
-    		const ROWINDEX startRow = (ROWINDEX)(dwBeginSel >> 16);
-    		ROWINDEX nrow = startRow;
-    		bool bOk = false;
-    		bool bPrepareUndo = true;	// prepare pattern for undo next time
-    		bool bFirstUndo = true;		// for chaining undos (see overflow paste)
-    		MODTYPE origFormat = MOD_TYPE_IT;	// paste format
-    		size_t pos, startPos = 0;
-    		modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPattern];
+            if ((hCpy) && ((p = (LPSTR)GlobalLock(hCpy)) != NULL))
+            {
+                    const TEMPO spdmax = m_SndFile.GetModSpecifications().speedMax;
+                    const uint32_t dwMemSize = GlobalSize(hCpy);
+                    CHANNELINDEX ncol = (dwBeginSel & 0xFFFF) >> 3, col;
+                    const ROWINDEX startRow = (ROWINDEX)(dwBeginSel >> 16);
+                    ROWINDEX nrow = startRow;
+                    bool bOk = false;
+                    bool bPrepareUndo = true;        // prepare pattern for undo next time
+                    bool bFirstUndo = true;                // for chaining undos (see overflow paste)
+                    MODTYPE origFormat = MOD_TYPE_IT;        // paste format
+                    size_t pos, startPos = 0;
+                    modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPattern];
 
-    		const bool doOverflowPaste = (CMainFrame::m_dwPatternSetup & PATTERN_OVERFLOWPASTE) && (pasteMode != pm_pasteflood) && (pasteMode != pm_pushforwardpaste);
-    		const bool doITStyleMix = (pasteMode == pm_mixpaste_it);
-    		const bool doMixPaste = ((pasteMode == pm_mixpaste) || doITStyleMix);
+                    const bool doOverflowPaste = (CMainFrame::m_dwPatternSetup & PATTERN_OVERFLOWPASTE) && (pasteMode != pm_pasteflood) && (pasteMode != pm_pushforwardpaste);
+                    const bool doITStyleMix = (pasteMode == pm_mixpaste_it);
+                    const bool doMixPaste = ((pasteMode == pm_mixpaste) || doITStyleMix);
 
-    		ORDERINDEX oCurrentOrder; //jojo.echopaste
-    		ROWINDEX rTemp;
-    		PATTERNINDEX pTemp;
-    		GetEditPosition(rTemp, pTemp, oCurrentOrder);
+                    ORDERINDEX oCurrentOrder; //jojo.echopaste
+                    ROWINDEX rTemp;
+                    PATTERNINDEX pTemp;
+                    GetEditPosition(rTemp, pTemp, oCurrentOrder);
 
-    		if ((nrow >= m_SndFile.Patterns[nPattern].GetNumRows()) || (ncol >= m_SndFile.GetNumChannels())) goto PasteDone;
-    		m += nrow * m_SndFile.m_nChannels;
+                    if ((nrow >= m_SndFile.Patterns[nPattern].GetNumRows()) || (ncol >= m_SndFile.GetNumChannels())) goto PasteDone;
+                    m += nrow * m_SndFile.m_nChannels;
 
-    		// Search for signature
-    		for (pos = startPos; p[pos] != 0 && pos < dwMemSize; pos++)
-    		{
-    			CHAR szFormat[4];	// adjust this if the "%3s" part in the format string changes.
-    			if(sscanf(p + pos, lpszClipboardPatternHdr, szFormat) > 0)
-    			{
-    				if(!strcmp(szFormat, "S3M")) origFormat = MOD_TYPE_S3M;
-    				if(!strcmp(szFormat, "XM")) origFormat = MOD_TYPE_XM;
-    				if(!strcmp(szFormat, "IT")) origFormat = MOD_TYPE_IT;
-    				if(!strcmp(szFormat, "MPT")) origFormat = MOD_TYPE_MPT;
-    				if(!strcmp(szFormat, "MOD")) origFormat = MOD_TYPE_MOD;
-    				startPos = pos;	// start reading patterns from here
-    				break;
-    			}
-    		}
+                    // Search for signature
+                    for (pos = startPos; p[pos] != 0 && pos < dwMemSize; pos++)
+                    {
+                            CHAR szFormat[4];        // adjust this if the "%3s" part in the format string changes.
+                            if(sscanf(p + pos, lpszClipboardPatternHdr, szFormat) > 0)
+                            {
+                                    if(!strcmp(szFormat, "S3M")) origFormat = MOD_TYPE_S3M;
+                                    if(!strcmp(szFormat, "XM")) origFormat = MOD_TYPE_XM;
+                                    if(!strcmp(szFormat, "IT")) origFormat = MOD_TYPE_IT;
+                                    if(!strcmp(szFormat, "MPT")) origFormat = MOD_TYPE_MPT;
+                                    if(!strcmp(szFormat, "MOD")) origFormat = MOD_TYPE_MOD;
+                                    startPos = pos;        // start reading patterns from here
+                                    break;
+                            }
+                    }
 
-    		const bool bS3MCommands = (origFormat & (MOD_TYPE_IT|MOD_TYPE_MPT|MOD_TYPE_S3M)) != 0 ? true : false;
-    		pos = startPos;
+                    const bool bS3MCommands = (origFormat & (MOD_TYPE_IT|MOD_TYPE_MPT|MOD_TYPE_S3M)) != 0 ? true : false;
+                    pos = startPos;
 
-    		while ((nrow < m_SndFile.Patterns[nPattern].GetNumRows()))
-    		{
-    			// Search for column separator or end of paste data
-    			while ((pos + 11 >= dwMemSize) || p[pos] != '|')
-    			{
-    				if (pos + 11 >= dwMemSize || !p[pos])
-    				{
-    					if((pasteMode == pm_pasteflood) && (nrow != startRow)) // prevent infinite loop with malformed clipboard data
-    						pos = startPos; // paste from beginning
-    					else
-    						goto PasteDone;
-    				} else
-    				{
-    					pos++;
-    				}
-    			}
-    			bOk = true;
-    			col = ncol;
-    			// Paste columns
-    			while ((p[pos] == '|') && (pos + 11 < dwMemSize))
-    			{
-    				LPSTR s = p+pos+1;
+                    while ((nrow < m_SndFile.Patterns[nPattern].GetNumRows()))
+                    {
+                            // Search for column separator or end of paste data
+                            while ((pos + 11 >= dwMemSize) || p[pos] != '|')
+                            {
+                                    if (pos + 11 >= dwMemSize || !p[pos])
+                                    {
+                                            if((pasteMode == pm_pasteflood) && (nrow != startRow)) // prevent infinite loop with malformed clipboard data
+                                                    pos = startPos; // paste from beginning
+                                            else
+                                                    goto PasteDone;
+                                    } else
+                                    {
+                                            pos++;
+                                    }
+                            }
+                            bOk = true;
+                            col = ncol;
+                            // Paste columns
+                            while ((p[pos] == '|') && (pos + 11 < dwMemSize))
+                            {
+                                    LPSTR s = p+pos+1;
 
-    				// Check valid paste condition. Paste will be skipped if
-    				// -col is not a valid channelindex or
-    				// -doing mix paste and paste destination modcommand is a PCnote or
-    				// -doing mix paste and trying to paste PCnote on non-empty modcommand.
-    				const bool bSkipPaste =
-    					(col >= m_SndFile.GetNumChannels()) ||
-    					(doMixPaste && m[col].IsPcNote()) ||
-    					(doMixPaste && s[0] == 'P' && !m[col].IsEmpty());
+                                    // Check valid paste condition. Paste will be skipped if
+                                    // -col is not a valid channelindex or
+                                    // -doing mix paste and paste destination modcommand is a PCnote or
+                                    // -doing mix paste and trying to paste PCnote on non-empty modcommand.
+                                    const bool bSkipPaste =
+                                            (col >= m_SndFile.GetNumChannels()) ||
+                                            (doMixPaste && m[col].IsPcNote()) ||
+                                            (doMixPaste && s[0] == 'P' && !m[col].IsEmpty());
 
-    				if (bSkipPaste == false)
-    				{
-    					// Before changing anything in this pattern, we have to create an undo point.
-    					if(bPrepareUndo)
-    					{
-    						GetPatternUndo()->PrepareUndo(nPattern, 0, 0, m_SndFile.m_nChannels, m_SndFile.Patterns[nPattern].GetNumRows(), !bFirstUndo);
-    						bPrepareUndo = false;
-    						bFirstUndo = false;
-    					}
+                                    if (bSkipPaste == false)
+                                    {
+                                            // Before changing anything in this pattern, we have to create an undo point.
+                                            if(bPrepareUndo)
+                                            {
+                                                    GetPatternUndo()->PrepareUndo(nPattern, 0, 0, m_SndFile.m_nChannels, m_SndFile.Patterns[nPattern].GetNumRows(), !bFirstUndo);
+                                                    bPrepareUndo = false;
+                                                    bFirstUndo = false;
+                                            }
 
-    					// ITSyle mixpaste requires that we keep a copy of the thing we are about to paste on
-    					// so that we can refer back to check if there was anything in e.g. the note column before we pasted.
-    					const modplug::tracker::modevent_t origModCmd = m[col];
+                                            // ITSyle mixpaste requires that we keep a copy of the thing we are about to paste on
+                                            // so that we can refer back to check if there was anything in e.g. the note column before we pasted.
+                                            const modplug::tracker::modevent_t origModCmd = m[col];
 
-    					// push channel data below paste point first.
-    					if(pasteMode == pm_pushforwardpaste)
-    					{
-    						for(ROWINDEX nPushRow = m_SndFile.Patterns[nPattern].GetNumRows() - 1 - nrow; nPushRow > 0; nPushRow--)
-    						{
-    							m[col + nPushRow * m_SndFile.m_nChannels] = m[col + (nPushRow - 1) * m_SndFile.m_nChannels];
-    						}
-    						m[col].Clear();
-    					}
+                                            // push channel data below paste point first.
+                                            if(pasteMode == pm_pushforwardpaste)
+                                            {
+                                                    for(ROWINDEX nPushRow = m_SndFile.Patterns[nPattern].GetNumRows() - 1 - nrow; nPushRow > 0; nPushRow--)
+                                                    {
+                                                            m[col + nPushRow * m_SndFile.m_nChannels] = m[col + (nPushRow - 1) * m_SndFile.m_nChannels];
+                                                    }
+                                                    m[col].Clear();
+                                            }
 
-    					// Note
-    					if (s[0] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.note==0) ||
-    											     (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
-    					{
-    						m[col].note = NOTE_NONE;
-    						if (s[0] == '=') m[col].note = NOTE_KEYOFF; else
-    						if (s[0] == '^') m[col].note = NOTE_NOTECUT; else
-    						if (s[0] == '~') m[col].note = NOTE_FADE; else
-    						if (s[0] == 'P')
-    						{
-    							if(s[2] == 'S')
-    								m[col].note = NOTE_PCS;
-    							else
-    								m[col].note = NOTE_PC;
-    						} else
-    						if (s[0] != '.')
-    						{
-    							for (UINT i=0; i<12; i++)
-    							{
-    								if ((s[0] == szNoteNames[i][0])
-    								 && (s[1] == szNoteNames[i][1])) m[col].note = i+1;
-    							}
-    							if (m[col].note) m[col].note += (s[2] - '0') * 12;
-    						}
-    					}
-    					// Instrument
-    					if (s[3] > ' ' && (!doMixPaste || ( (!doITStyleMix && origModCmd.instr==0) ||
-    											     (doITStyleMix  && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0) ) ))
+                                            // Note
+                                            if (s[0] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.note==0) ||
+                                                                                                 (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
+                                            {
+                                                    m[col].note = NOTE_NONE;
+                                                    if (s[0] == '=') m[col].note = NOTE_KEYOFF; else
+                                                    if (s[0] == '^') m[col].note = NOTE_NOTECUT; else
+                                                    if (s[0] == '~') m[col].note = NOTE_FADE; else
+                                                    if (s[0] == 'P')
+                                                    {
+                                                            if(s[2] == 'S')
+                                                                    m[col].note = NOTE_PCS;
+                                                            else
+                                                                    m[col].note = NOTE_PC;
+                                                    } else
+                                                    if (s[0] != '.')
+                                                    {
+                                                            for (UINT i=0; i<12; i++)
+                                                            {
+                                                                    if ((s[0] == szNoteNames[i][0])
+                                                                     && (s[1] == szNoteNames[i][1])) m[col].note = i+1;
+                                                            }
+                                                            if (m[col].note) m[col].note += (s[2] - '0') * 12;
+                                                    }
+                                            }
+                                            // Instrument
+                                            if (s[3] > ' ' && (!doMixPaste || ( (!doITStyleMix && origModCmd.instr==0) ||
+                                                                                                 (doITStyleMix  && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0) ) ))
 
-    					{
-    						if ((s[3] >= '0') && (s[3] <= ('0'+(MAX_SAMPLES/10))))
-    						{
-    							m[col].instr = (s[3]-'0') * 10 + (s[4]-'0');
-    						} else m[col].instr = 0;
-    					}
-    					// Volume
-    					if (s[5] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.volcmd==0) ||
-    											     (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
+                                            {
+                                                    if ((s[3] >= '0') && (s[3] <= ('0'+(MAX_SAMPLES/10))))
+                                                    {
+                                                            m[col].instr = (s[3]-'0') * 10 + (s[4]-'0');
+                                                    } else m[col].instr = 0;
+                                            }
+                                            // Volume
+                                            if (s[5] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.volcmd==0) ||
+                                                                                                 (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
 
-    					{
-    						if (s[5] != '.')
-    						{
-    							if(m[col].IsPcNote())
-    							{
-    								char val[4];
-    								memcpy(val, s+5, 3);
-    								val[3] = 0;
-    								m[col].SetValueVolCol(ConvertStrTo<uint16_t>(val));
-    							}
-    							else
-    							{
-    								m[col].volcmd = 0;
-    								for (UINT i=1; i<MAX_VOLCMDS; i++)
-    								{
-    									if (s[5] == vol_command_glyphs[i])
-    									{
-    										m[col].volcmd = i;
-    										break;
-    									}
-    								}
-    								m[col].vol = (s[6]-'0')*10 + (s[7]-'0');
-    							}
-    						} else m[col].volcmd = m[col].vol = 0;
-    					}
+                                            {
+                                                    if (s[5] != '.')
+                                                    {
+                                                            if(m[col].IsPcNote())
+                                                            {
+                                                                    char val[4];
+                                                                    memcpy(val, s+5, 3);
+                                                                    val[3] = 0;
+                                                                    m[col].SetValueVolCol(ConvertStrTo<uint16_t>(val));
+                                                            }
+                                                            else
+                                                            {
+                                                                    m[col].volcmd = 0;
+                                                                    for (UINT i=1; i<MAX_VOLCMDS; i++)
+                                                                    {
+                                                                            if (s[5] == vol_command_glyphs[i])
+                                                                            {
+                                                                                    m[col].volcmd = i;
+                                                                                    break;
+                                                                            }
+                                                                    }
+                                                                    m[col].vol = (s[6]-'0')*10 + (s[7]-'0');
+                                                            }
+                                                    } else m[col].volcmd = m[col].vol = 0;
+                                            }
 
-    					if (m[col].IsPcNote())
-    					{
-    						if (s[8] != '.' && s[8] > ' ')
-    						{
-    							char val[4];
-    							memcpy(val, s+8, 3);
-    							val[3] = 0;
-    							m[col].SetValueEffectCol(ConvertStrTo<uint16_t>(val));
-    						}
-    					}
-    					else
-    					{
-    						if (s[8] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.command==0) ||
-    													(doITStyleMix && origModCmd.command==0 && origModCmd.param==0))))
-    						{
-    							m[col].command = 0;
-    							if (s[8] != '.')
-    							{
-    								LPCSTR psc = (bS3MCommands) ? s3m_command_glyphs : mod_command_glyphs;
-    								for (UINT i=1; i<MAX_EFFECTS; i++)
-    								{
-    									if ((s[8] == psc[i]) && (psc[i] != '?')) m[col].command = i;
-    								}
-    							}
-    						}
-    						// Effect value
-    						if (s[9] > ' ' && (!doMixPaste || ((!doITStyleMix && (origModCmd.command == CMD_NONE || origModCmd.param == 0)) ||
-    													(doITStyleMix && origModCmd.command == CMD_NONE && origModCmd.param == 0))))
-    						{
-    							m[col].param = 0;
-    							if (s[9] != '.')
-    							{
-    								for (UINT i=0; i<16; i++)
-    								{
-    									if (s[9] == hex_chars[i]) m[col].param |= (i<<4);
-    									if (s[10] == hex_chars[i]) m[col].param |= i;
-    								}
-    							}
-    						}
-    						// Checking command
-    						if (m_SndFile.m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-    						{
-    							switch (m[col].command)
-    							{
-    							case CMD_SPEED:
-    							case CMD_TEMPO:
-    								if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CMD_SPEED : CMD_TEMPO;
-    								else
-    								{
-    									if ((m[col].command == CMD_SPEED) && (m[col].param > spdmax)) m[col].param = CMD_TEMPO; else
-    									if ((m[col].command == CMD_TEMPO) && (m[col].param <= spdmax)) m[col].param = CMD_SPEED;
-    								}
-    								break;
-    							}
-    						} else
-    						{
-    							switch (m[col].command)
-    							{
-    							case CMD_SPEED:
-    							case CMD_TEMPO:
-    								if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CMD_SPEED : CMD_TEMPO;
-    								break;
-    							}
-    						}
-    					}
+                                            if (m[col].IsPcNote())
+                                            {
+                                                    if (s[8] != '.' && s[8] > ' ')
+                                                    {
+                                                            char val[4];
+                                                            memcpy(val, s+8, 3);
+                                                            val[3] = 0;
+                                                            m[col].SetValueEffectCol(ConvertStrTo<uint16_t>(val));
+                                                    }
+                                            }
+                                            else
+                                            {
+                                                    if (s[8] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.command==0) ||
+                                                                                                            (doITStyleMix && origModCmd.command==0 && origModCmd.param==0))))
+                                                    {
+                                                            m[col].command = 0;
+                                                            if (s[8] != '.')
+                                                            {
+                                                                    LPCSTR psc = (bS3MCommands) ? s3m_command_glyphs : mod_command_glyphs;
+                                                                    for (UINT i=1; i<MAX_EFFECTS; i++)
+                                                                    {
+                                                                            if ((s[8] == psc[i]) && (psc[i] != '?')) m[col].command = i;
+                                                                    }
+                                                            }
+                                                    }
+                                                    // Effect value
+                                                    if (s[9] > ' ' && (!doMixPaste || ((!doITStyleMix && (origModCmd.command == CMD_NONE || origModCmd.param == 0)) ||
+                                                                                                            (doITStyleMix && origModCmd.command == CMD_NONE && origModCmd.param == 0))))
+                                                    {
+                                                            m[col].param = 0;
+                                                            if (s[9] != '.')
+                                                            {
+                                                                    for (UINT i=0; i<16; i++)
+                                                                    {
+                                                                            if (s[9] == hex_chars[i]) m[col].param |= (i<<4);
+                                                                            if (s[10] == hex_chars[i]) m[col].param |= i;
+                                                                    }
+                                                            }
+                                                    }
+                                                    // Checking command
+                                                    if (m_SndFile.m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
+                                                    {
+                                                            switch (m[col].command)
+                                                            {
+                                                            case CMD_SPEED:
+                                                            case CMD_TEMPO:
+                                                                    if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CMD_SPEED : CMD_TEMPO;
+                                                                    else
+                                                                    {
+                                                                            if ((m[col].command == CMD_SPEED) && (m[col].param > spdmax)) m[col].param = CMD_TEMPO; else
+                                                                            if ((m[col].command == CMD_TEMPO) && (m[col].param <= spdmax)) m[col].param = CMD_SPEED;
+                                                                    }
+                                                                    break;
+                                                            }
+                                                    } else
+                                                    {
+                                                            switch (m[col].command)
+                                                            {
+                                                            case CMD_SPEED:
+                                                            case CMD_TEMPO:
+                                                                    if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CMD_SPEED : CMD_TEMPO;
+                                                                    break;
+                                                            }
+                                                    }
+                                            }
 
-    					// convert some commands, if necessary. With mix paste convert only
-    					// if the original modcommand was empty as otherwise the unchanged parts
-    					// of the old modcommand would falsely be interpreted being of type
-    					// origFormat and ConvertCommand could change them.
-    					if (origFormat != m_SndFile.m_nType && (doMixPaste == false || origModCmd.IsEmpty(false)))
-    						m_SndFile.ConvertCommand(&(m[col]), origFormat, m_SndFile.m_nType);
-    				}
+                                            // convert some commands, if necessary. With mix paste convert only
+                                            // if the original modcommand was empty as otherwise the unchanged parts
+                                            // of the old modcommand would falsely be interpreted being of type
+                                            // origFormat and ConvertCommand could change them.
+                                            if (origFormat != m_SndFile.m_nType && (doMixPaste == false || origModCmd.IsEmpty(false)))
+                                                    m_SndFile.ConvertCommand(&(m[col]), origFormat, m_SndFile.m_nType);
+                                    }
 
-    				pos += 12;
-    				col++;
-    			}
-    			// Next row
-    			m += m_SndFile.m_nChannels;
-    			nrow++;
+                                    pos += 12;
+                                    col++;
+                            }
+                            // Next row
+                            m += m_SndFile.m_nChannels;
+                            nrow++;
 
-    			// Overflow paste. Continue pasting in next pattern if enabled.
-    			// If Paste Flood is enabled, this won't be called due to obvious reasons.
-    			if(doOverflowPaste)
-    			{
-    				while(nrow >= m_SndFile.Patterns[nPattern].GetNumRows())
-    				{
-    					nrow = 0;
-    					ORDERINDEX oNextOrder = m_SndFile.Order.GetNextOrderIgnoringSkips(oCurrentOrder);
-    					if((oNextOrder == 0) || (oNextOrder >= m_SndFile.Order.size())) goto PasteDone;
-    					nPattern = m_SndFile.Order[oNextOrder];
-    					if(m_SndFile.Patterns.IsValidPat(nPattern) == false) goto PasteDone;
-    					m = m_SndFile.Patterns[nPattern];
-    					oCurrentOrder = oNextOrder;
-    					bPrepareUndo = true;
-    				}
-    			}
+                            // Overflow paste. Continue pasting in next pattern if enabled.
+                            // If Paste Flood is enabled, this won't be called due to obvious reasons.
+                            if(doOverflowPaste)
+                            {
+                                    while(nrow >= m_SndFile.Patterns[nPattern].GetNumRows())
+                                    {
+                                            nrow = 0;
+                                            ORDERINDEX oNextOrder = m_SndFile.Order.GetNextOrderIgnoringSkips(oCurrentOrder);
+                                            if((oNextOrder == 0) || (oNextOrder >= m_SndFile.Order.size())) goto PasteDone;
+                                            nPattern = m_SndFile.Order[oNextOrder];
+                                            if(m_SndFile.Patterns.IsValidPat(nPattern) == false) goto PasteDone;
+                                            m = m_SndFile.Patterns[nPattern];
+                                            oCurrentOrder = oNextOrder;
+                                            bPrepareUndo = true;
+                                    }
+                            }
 
-    		}
-    	PasteDone:
-    		GlobalUnlock(hCpy);
-    		if (bOk)
-    		{
-    			SetModified();
-    			UpdateAllViews(NULL, HINT_PATTERNDATA | (nPattern << HINT_SHIFT_PAT), NULL);
-    		}
-    	}
-    	CloseClipboard();
+                    }
+            PasteDone:
+                    GlobalUnlock(hCpy);
+                    if (bOk)
+                    {
+                            SetModified();
+                            UpdateAllViews(NULL, HINT_PATTERNDATA | (nPattern << HINT_SHIFT_PAT), NULL);
+                    }
+            }
+            CloseClipboard();
     }
     EndWaitCursor();
     return true;
@@ -1209,43 +1209,43 @@ bool CModDoc::CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     switch(nEnv)
     {
     case ENV_PANNING:
-    	pEnv = &pIns->panning_envelope;
-    	break;
+            pEnv = &pIns->panning_envelope;
+            break;
     case ENV_PITCH:
-    	pEnv = &pIns->pitch_envelope;
-    	break;
+            pEnv = &pIns->pitch_envelope;
+            break;
     default:
-    	pEnv = &pIns->volume_envelope;
-    	break;
+            pEnv = &pIns->volume_envelope;
+            break;
     }
 
     // We don't want to copy empty envelopes
     if(pEnv->num_nodes == 0)
     {
-    	return false;
+            return false;
     }
 
     strcpy(s, pszEnvHdr);
     wsprintf(s + strlen(s), pszEnvFmt, pEnv->num_nodes, pEnv->sustain_start, pEnv->sustain_end, pEnv->loop_start, pEnv->loop_end, (pEnv->flags & ENV_SUSTAIN) ? 1 : 0, (pEnv->flags & ENV_LOOP) ? 1 : 0, (pEnv->flags & ENV_CARRY) ? 1 : 0);
     for (UINT i = 0; i < pEnv->num_nodes; i++)
     {
-    	if (strlen(s) >= sizeof(s)-32) break;
-    	wsprintf(s+strlen(s), "%d,%d\r\n", pEnv->Ticks[i], pEnv->Values[i]);
+            if (strlen(s) >= sizeof(s)-32) break;
+            wsprintf(s+strlen(s), "%d,%d\r\n", pEnv->Ticks[i], pEnv->Values[i]);
     }
 
     //Writing release node
     if(strlen(s) < sizeof(s) - 32)
-    	wsprintf(s+strlen(s), "%u\r\n", pEnv->release_node);
+            wsprintf(s+strlen(s), "%u\r\n", pEnv->release_node);
 
     dwMemSize = strlen(s)+1;
     if ((pMainFrm->OpenClipboard()) && ((hCpy = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, dwMemSize))!=NULL))
     {
-    	EmptyClipboard();
-    	LPBYTE p = (LPBYTE)GlobalLock(hCpy);
-    	memcpy(p, s, dwMemSize);
-    	GlobalUnlock(hCpy);
-    	SetClipboardData (CF_TEXT, (HANDLE)hCpy);
-    	CloseClipboard();
+            EmptyClipboard();
+            LPBYTE p = (LPBYTE)GlobalLock(hCpy);
+            memcpy(p, s, dwMemSize);
+            GlobalUnlock(hCpy);
+            SetClipboardData (CF_TEXT, (HANDLE)hCpy);
+            CloseClipboard();
     }
     EndWaitCursor();
     return true;
@@ -1261,80 +1261,80 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
     BeginWaitCursor();
     if (!pMainFrm->OpenClipboard())
     {
-    	EndWaitCursor();
-    	return false;
+            EndWaitCursor();
+            return false;
     }
     HGLOBAL hCpy = ::GetClipboardData(CF_TEXT);
     LPCSTR p;
     if ((hCpy) && ((p = (LPSTR)GlobalLock(hCpy)) != NULL))
     {
-    	modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
-    	modplug::tracker::modenvelope_t *pEnv = nullptr;
+            modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
+            modplug::tracker::modenvelope_t *pEnv = nullptr;
 
-    	UINT susBegin = 0, susEnd = 0, loopBegin = 0, loopEnd = 0, bSus = 0, bLoop = 0, bCarry = 0, nPoints = 0, releaseNode = ENV_RELEASE_NODE_UNSET;
-    	uint32_t dwMemSize = GlobalSize(hCpy), dwPos = strlen(pszEnvHdr);
-    	if ((dwMemSize > dwPos) && (!_strnicmp(p, pszEnvHdr, dwPos - 2)))
-    	{
-    		sscanf(p + dwPos, pszEnvFmt, &nPoints, &susBegin, &susEnd, &loopBegin, &loopEnd, &bSus, &bLoop, &bCarry);
-    		while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;
+            UINT susBegin = 0, susEnd = 0, loopBegin = 0, loopEnd = 0, bSus = 0, bLoop = 0, bCarry = 0, nPoints = 0, releaseNode = ENV_RELEASE_NODE_UNSET;
+            uint32_t dwMemSize = GlobalSize(hCpy), dwPos = strlen(pszEnvHdr);
+            if ((dwMemSize > dwPos) && (!_strnicmp(p, pszEnvHdr, dwPos - 2)))
+            {
+                    sscanf(p + dwPos, pszEnvFmt, &nPoints, &susBegin, &susEnd, &loopBegin, &loopEnd, &bSus, &bLoop, &bCarry);
+                    while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;
 
-    		nPoints = min(nPoints, m_SndFile.GetModSpecifications().envelopePointsMax);
-    		if (susEnd >= nPoints) susEnd = 0;
-    		if (susBegin > susEnd) susBegin = susEnd;
-    		if (loopEnd >= nPoints) loopEnd = 0;
-    		if (loopBegin > loopEnd) loopBegin = loopEnd;
+                    nPoints = min(nPoints, m_SndFile.GetModSpecifications().envelopePointsMax);
+                    if (susEnd >= nPoints) susEnd = 0;
+                    if (susBegin > susEnd) susBegin = susEnd;
+                    if (loopEnd >= nPoints) loopEnd = 0;
+                    if (loopBegin > loopEnd) loopBegin = loopEnd;
 
-    		switch(nEnv)
-    		{
-    		case ENV_PANNING:
-    			pEnv = &pIns->panning_envelope;
-    			break;
-    		case ENV_PITCH:
-    			pEnv = &pIns->pitch_envelope;
-    			break;
-    		default:
-    			pEnv = &pIns->volume_envelope;
-    			break;
-    		}
-    		pEnv->num_nodes = nPoints;
-    		pEnv->sustain_start = susBegin;
-    		pEnv->sustain_end = susEnd;
-    		pEnv->loop_start = loopBegin;
-    		pEnv->loop_end = loopEnd;
-    		pEnv->release_node = releaseNode;
-    		pEnv->flags = (pEnv->flags & ~(ENV_LOOP|ENV_SUSTAIN|ENV_CARRY)) | (bLoop ? ENV_LOOP : 0) | (bSus ? ENV_SUSTAIN : 0) | (bCarry ? ENV_CARRY: 0) | (nPoints > 0 ? ENV_ENABLED : 0);
+                    switch(nEnv)
+                    {
+                    case ENV_PANNING:
+                            pEnv = &pIns->panning_envelope;
+                            break;
+                    case ENV_PITCH:
+                            pEnv = &pIns->pitch_envelope;
+                            break;
+                    default:
+                            pEnv = &pIns->volume_envelope;
+                            break;
+                    }
+                    pEnv->num_nodes = nPoints;
+                    pEnv->sustain_start = susBegin;
+                    pEnv->sustain_end = susEnd;
+                    pEnv->loop_start = loopBegin;
+                    pEnv->loop_end = loopEnd;
+                    pEnv->release_node = releaseNode;
+                    pEnv->flags = (pEnv->flags & ~(ENV_LOOP|ENV_SUSTAIN|ENV_CARRY)) | (bLoop ? ENV_LOOP : 0) | (bSus ? ENV_SUSTAIN : 0) | (bCarry ? ENV_CARRY: 0) | (nPoints > 0 ? ENV_ENABLED : 0);
 
-    		int oldn = 0;
-    		for (UINT i=0; i<nPoints; i++)
-    		{
-    			while ((dwPos < dwMemSize) && ((p[dwPos] < '0') || (p[dwPos] > '9'))) dwPos++;
-    			if (dwPos >= dwMemSize) break;
-    			int n1 = atoi(p+dwPos);
-    			while ((dwPos < dwMemSize) && (p[dwPos] != ',')) dwPos++;
-    			while ((dwPos < dwMemSize) && ((p[dwPos] < '0') || (p[dwPos] > '9'))) dwPos++;
-    			if (dwPos >= dwMemSize) break;
-    			int n2 = atoi(p+dwPos);
-    			if ((n1 < oldn) || (n1 > ENVELOPE_MAX_LENGTH)) n1 = oldn + 1;
-    			pEnv->Ticks[i] = (uint16_t)n1;
-    			pEnv->Values[i] = (uint8_t)n2;
-    			oldn = n1;
-    			while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;
-    			if (dwPos >= dwMemSize) break;
-    		}
+                    int oldn = 0;
+                    for (UINT i=0; i<nPoints; i++)
+                    {
+                            while ((dwPos < dwMemSize) && ((p[dwPos] < '0') || (p[dwPos] > '9'))) dwPos++;
+                            if (dwPos >= dwMemSize) break;
+                            int n1 = atoi(p+dwPos);
+                            while ((dwPos < dwMemSize) && (p[dwPos] != ',')) dwPos++;
+                            while ((dwPos < dwMemSize) && ((p[dwPos] < '0') || (p[dwPos] > '9'))) dwPos++;
+                            if (dwPos >= dwMemSize) break;
+                            int n2 = atoi(p+dwPos);
+                            if ((n1 < oldn) || (n1 > ENVELOPE_MAX_LENGTH)) n1 = oldn + 1;
+                            pEnv->Ticks[i] = (uint16_t)n1;
+                            pEnv->Values[i] = (uint8_t)n2;
+                            oldn = n1;
+                            while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;
+                            if (dwPos >= dwMemSize) break;
+                    }
 
-    		//Read releasenode information.
-    		if(dwPos < dwMemSize)
-    		{
-    			uint8_t r = static_cast<uint8_t>(atoi(p + dwPos));
-    			if(r == 0 || r >= nPoints || !m_SndFile.GetModSpecifications().hasReleaseNode)
-    				r = ENV_RELEASE_NODE_UNSET;
-    			pEnv->release_node = r;
-    		}
-    	}
-    	GlobalUnlock(hCpy);
-    	CloseClipboard();
-    	SetModified();
-    	UpdateAllViews(NULL, (nIns << HINT_SHIFT_INS) | HINT_ENVELOPE, NULL);
+                    //Read releasenode information.
+                    if(dwPos < dwMemSize)
+                    {
+                            uint8_t r = static_cast<uint8_t>(atoi(p + dwPos));
+                            if(r == 0 || r >= nPoints || !m_SndFile.GetModSpecifications().hasReleaseNode)
+                                    r = ENV_RELEASE_NODE_UNSET;
+                            pEnv->release_node = r;
+                    }
+            }
+            GlobalUnlock(hCpy);
+            CloseClipboard();
+            SetModified();
+            UpdateAllViews(NULL, (nIns << HINT_SHIFT_INS) | HINT_ENVELOPE, NULL);
     }
     EndWaitCursor();
     return true;
@@ -1350,12 +1350,12 @@ void CModDoc::CheckUsedChannels(vector<bool> &usedMask, CHANNELINDEX maxRemoveCo
     usedMask.resize(nChannels);
     for(int iRst = nChannels - 1; iRst >= 0; iRst--)
     {
-    	usedMask[iRst] = !IsChannelUnused(iRst);
-    	if(!usedMask[iRst])
-    	{
-    		// Found enough empty channels yet?
-    		if((--maxRemoveCount) == 0) break;
-    	}
+            usedMask[iRst] = !IsChannelUnused(iRst);
+            if(!usedMask[iRst])
+            {
+                    // Found enough empty channels yet?
+                    if((--maxRemoveCount) == 0) break;
+            }
     }
 }
 
@@ -1367,21 +1367,21 @@ bool CModDoc::IsChannelUnused(CHANNELINDEX nChn) const
     const CHANNELINDEX nChannels = GetNumChannels();
     if(nChn >= nChannels)
     {
-    	return true;
+            return true;
     }
     for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
     {
-    	if(m_SndFile.Patterns.IsValidPat(nPat))
-    	{
-    		const modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat] + nChn;
-    		for(ROWINDEX nRow = m_SndFile.Patterns[nPat].GetNumRows(); nRow > 0; nRow--, p += nChannels)
-    		{
-    			if(!p->IsEmpty())
-    			{
-    				return false;
-    			}
-    		}
-    	}
+            if(m_SndFile.Patterns.IsValidPat(nPat))
+            {
+                    const modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat] + nChn;
+                    for(ROWINDEX nRow = m_SndFile.Patterns[nPat].GetNumRows(); nRow > 0; nRow--, p += nChannels)
+                    {
+                            if(!p->IsEmpty())
+                            {
+                                    return false;
+                            }
+                    }
+            }
     }
     return true;
 }
@@ -1395,7 +1395,7 @@ bool CModDoc::RestartPosToPattern()
     GetLengthType length = m_SndFile.GetLength(eNoAdjust);
     if(length.endOrder != ORDERINDEX_INVALID && length.endRow != ROWINDEX_INVALID)
     {
-    	result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+            result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, CHANNELINDEX_INVALID, false, weTryNextRow);
     }
     m_SndFile.m_nRestartPos = 0;
     return result;

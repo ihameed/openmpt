@@ -6,14 +6,14 @@
 
 #ifndef NO_VST
     #define VST_FORCE_DEPRECATED 0
-    #include <aeffectx.h>			// VST
+    #include <aeffectx.h>                        // VST
     #include <vstfxstore.h>
 #endif
 
 class CVstPluginManager;
 class CVstPlugin;
 class CVstEditor;
-class Cfxp;    			//rewbs.VSTpresets
+class Cfxp;                            //rewbs.VSTpresets
 class CModDoc;
 class module_renderer;
 
@@ -43,7 +43,7 @@ typedef struct _VSTPLUGINLIB
 
 typedef struct _VSTINSTCH
 {
-    //uint8_t uNoteOnMap[128/8];			rewbs.deMystifyMidiNoteMap
+    //uint8_t uNoteOnMap[128/8];                        rewbs.deMystifyMidiNoteMap
     uint8_t uNoteOnMap[128][MAX_VIRTUAL_CHANNELS];
     UINT nProgram;
     uint16_t wMidiBank; //rewbs.MidiBank
@@ -53,8 +53,8 @@ typedef struct _VSTINSTCH
 class CVstPlugin: public IMixPlugin
 //=================================
 {
-    friend class CAbstractVstEditor;	//rewbs.defaultPlugGUI
-    friend class COwnerVstEditor;		//rewbs.defaultPlugGUI
+    friend class CAbstractVstEditor;        //rewbs.defaultPlugGUI
+    friend class COwnerVstEditor;                //rewbs.defaultPlugGUI
     friend class CVstPluginManager;
 
 #ifndef NO_VST
@@ -71,24 +71,24 @@ protected:
     PSNDMIXPLUGIN m_pMixStruct;
     AEffect *m_pEffect;
     void (*m_pProcessFP)(AEffect*, float**, float**, VstInt32); //Function pointer to AEffect processReplacing if supported, else process.
-    CAbstractVstEditor *m_pEditor;		//rewbs.defaultPlugGUI
+    CAbstractVstEditor *m_pEditor;                //rewbs.defaultPlugGUI
     UINT m_nSampleRate;
     bool m_bIsVst2;
     SNDMIXPLUGINSTATE m_MixState;
     VstEvents *m_pEvList;
     VSTINSTCH m_MidiCh[16];
     short m_nMidiPitchBendPos[16];
-    float **m_pTempBuffer;					//rewbs.dryRatio: changed from * to **
+    float **m_pTempBuffer;                                        //rewbs.dryRatio: changed from * to **
     float **m_pInputs;
     float **m_pOutputs;
     int m_nEditorX, m_nEditorY;
-    int m_MixBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2+2];		// Stereo interleaved
-    float m_FloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*(2+32)+34];	// 2ch separated + up to 32 VSTi outputs...
+    int m_MixBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2+2];                // Stereo interleaved
+    float m_FloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*(2+32)+34];        // 2ch separated + up to 32 VSTi outputs...
     float dummyBuffer_[modplug::mixgraph::MIX_BUFFER_SIZE + 2];
     VstMidiEvent m_ev_queue[VSTEVENT_QUEUE_LEN];
-    CModDoc* m_pModDoc;			 //rewbs.plugDocAware
-    module_renderer* m_pSndFile;			 //rewbs.plugDocAware
-//    PSNDMIXPLUGIN m_pSndMixPlugin;	 //rewbs.plugDocAware
+    CModDoc* m_pModDoc;                         //rewbs.plugDocAware
+    module_renderer* m_pSndFile;                         //rewbs.plugDocAware
+//    PSNDMIXPLUGIN m_pSndMixPlugin;         //rewbs.plugDocAware
     UINT m_nPreviousMidiChan; //rewbs.VSTCompliance
     bool m_bSongPlaying; //rewbs.VSTCompliance
     bool m_bPlugResumed; //rewbs.VSTCompliance
@@ -110,14 +110,14 @@ public:
     long GetNumPrograms();
     PlugParamIndex GetNumParameters();
     long GetCurrentProgram();
-    long GetNumProgramCategories();	//rewbs.VSTpresets
-    bool GetProgramNameIndexed(long index, long category, char *text);	//rewbs.VSTpresets
+    long GetNumProgramCategories();        //rewbs.VSTpresets
+    bool GetProgramNameIndexed(long index, long category, char *text);        //rewbs.VSTpresets
     bool LoadProgram(CString fileName);
     bool SaveProgram(CString fileName);
-    VstInt32 GetUID();			//rewbs.VSTpresets
-    VstInt32 GetVersion();		//rewbs.VSTpresets
-    bool GetParams(float* param, VstInt32 min, VstInt32 max); 	//rewbs.VSTpresets
-    bool RandomizeParams(VstInt32 minParam = 0, VstInt32 maxParam = 0); 	//rewbs.VSTpresets
+    VstInt32 GetUID();                        //rewbs.VSTpresets
+    VstInt32 GetVersion();                //rewbs.VSTpresets
+    bool GetParams(float* param, VstInt32 min, VstInt32 max);         //rewbs.VSTpresets
+    bool RandomizeParams(VstInt32 minParam = 0, VstInt32 maxParam = 0);         //rewbs.VSTpresets
     bool isModified() {return m_bModified;}
     inline CModDoc* GetModDoc() {return m_pModDoc;}
     inline module_renderer* GetSoundFile() {return m_pSndFile;}
@@ -176,13 +176,13 @@ public:
     void MidiPitchBend(UINT nMidiCh, int nParam, UINT trackChannel);
     void MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, UINT note, UINT vol, UINT trackChan);
     void HardAllNotesOff(); //rewbs.VSTiNoteHoldonStopFix
-    bool isPlaying(UINT note, UINT midiChn, UINT trackerChn);	//rewbs.instroVST
+    bool isPlaying(UINT note, UINT midiChn, UINT trackerChn);        //rewbs.instroVST
     bool MoveNote(UINT note, UINT midiChn, UINT sourceTrackerChn, UINT destTrackerChn); //rewbs.instroVST
     bool m_bNeedIdle; //rewbs.VSTCompliance
     bool m_bRecordAutomation;
     bool m_bPassKeypressesToPlug;
-    void NotifySongPlaying(bool playing);	//rewbs.VSTCompliance
-    bool IsSongPlaying() {return m_bSongPlaying;}	//rewbs.VSTCompliance
+    void NotifySongPlaying(bool playing);        //rewbs.VSTCompliance
+    bool IsSongPlaying() {return m_bSongPlaying;}        //rewbs.VSTCompliance
     bool IsResumed() {return m_bPlugResumed;}
     void Resume();
     void Suspend();
@@ -250,7 +250,7 @@ protected:
     VstIntPtr VstFileSelector(const bool destructor, VstFileSelect *pFileSel, const AEffect *effect);
     static VstIntPtr VSTCALLBACK MasterCallBack(AEffect *effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void *ptr, float opt);
     static BOOL __cdecl CreateMixPluginProc(PSNDMIXPLUGIN, module_renderer*);
-    VstTimeInfo timeInfo;	//rewbs.VSTcompliance
+    VstTimeInfo timeInfo;        //rewbs.VSTcompliance
 
 public:
     static char s_szHostProductString[64];

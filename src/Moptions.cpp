@@ -20,18 +20,18 @@ typedef struct MPTCOLORDEF
 
 static MPTCOLORDEF gColorDefs[] =
 {
-    {"Pattern Editor",	0,	MODCOLOR_BACKNORMAL, MODCOLOR_TEXTNORMAL, MODCOLOR_BACKHILIGHT, "Background:", "Foreground:", "Highlighted:"},
-    {"Active Row",		0,	MODCOLOR_BACKCURROW, MODCOLOR_TEXTCURROW, 0, "Background:", "Foreground:", NULL},
-    {"Pattern Selection",0,	MODCOLOR_BACKSELECTED, MODCOLOR_TEXTSELECTED, 0, "Background:", "Foreground:", NULL},
-    {"Play Cursor",		0,	MODCOLOR_BACKPLAYCURSOR, MODCOLOR_TEXTPLAYCURSOR, 0, "Background:", "Foreground:", NULL},
-    {"Note Highlight",	0,	MODCOLOR_NOTE, MODCOLOR_INSTRUMENT, MODCOLOR_VOLUME, "Note:", "Instrument:", "Volume:"},
-    {"Effect Highlight",0,	MODCOLOR_PANNING, MODCOLOR_PITCH, MODCOLOR_GLOBALS, "Panning Effects:", "Pitch Effects:", "Global Effects:"},
-    {"Invalid Commands",0,	MODCOLOR_DODGY_COMMANDS, 0, 0, "Invalid Note:", NULL, NULL},
-    {"Channel Separator",0,	MODCOLOR_SEPHILITE, MODCOLOR_SEPFACE, MODCOLOR_SEPSHADOW, "Highlight:", "Face:", "Shadow:"},
-    {"Next/Prev Pattern",0,	MODCOLOR_BLENDCOLOR, 0, 0, "Blend color:", NULL, NULL},
-    {"Sample Editor",	1,	MODCOLOR_SAMPLE, 0, 0, "Sample Data:", NULL, NULL},
-    {"Instrument Editor",2,	MODCOLOR_ENVELOPES, 0, 0, "Envelopes:", NULL, NULL},
-    {"VU-Meters",		0,	MODCOLOR_VUMETER_HI, MODCOLOR_VUMETER_MED, MODCOLOR_VUMETER_LO, "Hi:", "Med:", "Lo:"}
+    {"Pattern Editor",        0,        MODCOLOR_BACKNORMAL, MODCOLOR_TEXTNORMAL, MODCOLOR_BACKHILIGHT, "Background:", "Foreground:", "Highlighted:"},
+    {"Active Row",                0,        MODCOLOR_BACKCURROW, MODCOLOR_TEXTCURROW, 0, "Background:", "Foreground:", NULL},
+    {"Pattern Selection",0,        MODCOLOR_BACKSELECTED, MODCOLOR_TEXTSELECTED, 0, "Background:", "Foreground:", NULL},
+    {"Play Cursor",                0,        MODCOLOR_BACKPLAYCURSOR, MODCOLOR_TEXTPLAYCURSOR, 0, "Background:", "Foreground:", NULL},
+    {"Note Highlight",        0,        MODCOLOR_NOTE, MODCOLOR_INSTRUMENT, MODCOLOR_VOLUME, "Note:", "Instrument:", "Volume:"},
+    {"Effect Highlight",0,        MODCOLOR_PANNING, MODCOLOR_PITCH, MODCOLOR_GLOBALS, "Panning Effects:", "Pitch Effects:", "Global Effects:"},
+    {"Invalid Commands",0,        MODCOLOR_DODGY_COMMANDS, 0, 0, "Invalid Note:", NULL, NULL},
+    {"Channel Separator",0,        MODCOLOR_SEPHILITE, MODCOLOR_SEPFACE, MODCOLOR_SEPSHADOW, "Highlight:", "Face:", "Shadow:"},
+    {"Next/Prev Pattern",0,        MODCOLOR_BLENDCOLOR, 0, 0, "Blend color:", NULL, NULL},
+    {"Sample Editor",        1,        MODCOLOR_SAMPLE, 0, 0, "Sample Data:", NULL, NULL},
+    {"Instrument Editor",2,        MODCOLOR_ENVELOPES, 0, 0, "Envelopes:", NULL, NULL},
+    {"VU-Meters",                0,        MODCOLOR_VUMETER_HI, MODCOLOR_VUMETER_MED, MODCOLOR_VUMETER_LO, "Hi:", "Med:", "Lo:"}
 };
 
 #define PREVIEWBMP_WIDTH    88
@@ -40,22 +40,22 @@ static MPTCOLORDEF gColorDefs[] =
 
 BEGIN_MESSAGE_MAP(COptionsColors, CPropertyPage)
     ON_WM_DRAWITEM()
-    ON_CBN_SELCHANGE(IDC_COMBO1,		OnColorSelChanged)
-    ON_EN_CHANGE(IDC_PRIMARYHILITE,		OnSettingsChanged)
-    ON_EN_CHANGE(IDC_SECONDARYHILITE,	OnSettingsChanged)
-    ON_COMMAND(IDC_BUTTON1,				OnSelectColor1)
-    ON_COMMAND(IDC_BUTTON2,				OnSelectColor2)
-    ON_COMMAND(IDC_BUTTON3,				OnSelectColor3)
-    ON_COMMAND(IDC_BUTTON5,				OnPresetMPT)
-    ON_COMMAND(IDC_BUTTON6,				OnPresetFT2)
-    ON_COMMAND(IDC_BUTTON7,				OnPresetIT)
-    ON_COMMAND(IDC_BUTTON8,				OnPresetBuzz)
-    ON_COMMAND(IDC_LOAD_COLORSCHEME,	OnLoadColorScheme)
-    ON_COMMAND(IDC_SAVE_COLORSCHEME,	OnSaveColorScheme)
-    ON_COMMAND(IDC_CHECK1,				OnSettingsChanged)
-    ON_COMMAND(IDC_CHECK2,				OnPreviewChanged)
-    ON_COMMAND(IDC_CHECK3,				OnSettingsChanged)
-    ON_COMMAND(IDC_CHECK4,				OnPreviewChanged)
+    ON_CBN_SELCHANGE(IDC_COMBO1,                OnColorSelChanged)
+    ON_EN_CHANGE(IDC_PRIMARYHILITE,                OnSettingsChanged)
+    ON_EN_CHANGE(IDC_SECONDARYHILITE,        OnSettingsChanged)
+    ON_COMMAND(IDC_BUTTON1,                                OnSelectColor1)
+    ON_COMMAND(IDC_BUTTON2,                                OnSelectColor2)
+    ON_COMMAND(IDC_BUTTON3,                                OnSelectColor3)
+    ON_COMMAND(IDC_BUTTON5,                                OnPresetMPT)
+    ON_COMMAND(IDC_BUTTON6,                                OnPresetFT2)
+    ON_COMMAND(IDC_BUTTON7,                                OnPresetIT)
+    ON_COMMAND(IDC_BUTTON8,                                OnPresetBuzz)
+    ON_COMMAND(IDC_LOAD_COLORSCHEME,        OnLoadColorScheme)
+    ON_COMMAND(IDC_SAVE_COLORSCHEME,        OnSaveColorScheme)
+    ON_COMMAND(IDC_CHECK1,                                OnSettingsChanged)
+    ON_COMMAND(IDC_CHECK2,                                OnPreviewChanged)
+    ON_COMMAND(IDC_CHECK3,                                OnSettingsChanged)
+    ON_COMMAND(IDC_CHECK4,                                OnPreviewChanged)
 END_MESSAGE_MAP()
 
 
@@ -64,14 +64,14 @@ void COptionsColors::DoDataExchange(CDataExchange* pDX)
 {
     CPropertyPage::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(COptionsColors)
-    DDX_Control(pDX, IDC_COMBO1,		m_ComboItem);
-    DDX_Control(pDX, IDC_BUTTON1,		m_BtnColor1);
-    DDX_Control(pDX, IDC_BUTTON2,		m_BtnColor2);
-    DDX_Control(pDX, IDC_BUTTON3,		m_BtnColor3);
-    DDX_Control(pDX, IDC_BUTTON4,		m_BtnPreview);
-    DDX_Control(pDX, IDC_TEXT1,			m_TxtColor1);
-    DDX_Control(pDX, IDC_TEXT2,			m_TxtColor2);
-    DDX_Control(pDX, IDC_TEXT3,			m_TxtColor3);
+    DDX_Control(pDX, IDC_COMBO1,                m_ComboItem);
+    DDX_Control(pDX, IDC_BUTTON1,                m_BtnColor1);
+    DDX_Control(pDX, IDC_BUTTON2,                m_BtnColor2);
+    DDX_Control(pDX, IDC_BUTTON3,                m_BtnColor3);
+    DDX_Control(pDX, IDC_BUTTON4,                m_BtnPreview);
+    DDX_Control(pDX, IDC_TEXT1,                        m_TxtColor1);
+    DDX_Control(pDX, IDC_TEXT2,                        m_TxtColor2);
+    DDX_Control(pDX, IDC_TEXT3,                        m_TxtColor3);
     //}}AFX_DATA_MAP
 }
 
@@ -84,7 +84,7 @@ BOOL COptionsColors::OnInitDialog()
     memcpy(CustomColors, CMainFrame::rgbCustomColors, sizeof(CustomColors));
     for (UINT i = 0; i < CountOf(gColorDefs); i++)
     {
-    	m_ComboItem.SetItemData(m_ComboItem.AddString(gColorDefs[i].pszName), i);
+            m_ComboItem.SetItemData(m_ComboItem.AddString(gColorDefs[i].pszName), i);
     }
     m_ComboItem.SetCurSel(0);
     m_BtnPreview.SetWindowPos(NULL, 0,0, PREVIEWBMP_WIDTH*2+2, PREVIEWBMP_HEIGHT*2+2, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);
@@ -108,9 +108,9 @@ BOOL COptionsColors::OnKillActive()
 
     if ((temp_nRowSpacing2 > temp_nRowSpacing))
     {
-    	::AfxMessageBox("Error: Primary highlight must be greater than or equal secondary highlight.", MB_OK|MB_ICONEXCLAMATION);
-    	::SetFocus(::GetDlgItem(m_hWnd, IDC_PRIMARYHILITE));
-    	return 0;
+            ::AfxMessageBox("Error: Primary highlight must be greater than or equal secondary highlight.", MB_OK|MB_ICONEXCLAMATION);
+            ::SetFocus(::GetDlgItem(m_hWnd, IDC_PRIMARYHILITE));
+            return 0;
     }
 
     return CPropertyPage::OnKillActive();
@@ -150,119 +150,119 @@ void COptionsColors::OnDrawItem(int nIdCtl, LPDRAWITEMSTRUCT lpdis)
     int nColor = -1;
     switch(nIdCtl)
     {
-    case IDC_BUTTON1:	nColor = gColorDefs[m_nColorItem].nColNdx1; break;
-    case IDC_BUTTON2:	nColor = gColorDefs[m_nColorItem].nColNdx2; break;
-    case IDC_BUTTON3:	nColor = gColorDefs[m_nColorItem].nColNdx3; break;
+    case IDC_BUTTON1:        nColor = gColorDefs[m_nColorItem].nColNdx1; break;
+    case IDC_BUTTON2:        nColor = gColorDefs[m_nColorItem].nColNdx2; break;
+    case IDC_BUTTON3:        nColor = gColorDefs[m_nColorItem].nColNdx3; break;
     }
     if (!lpdis) return;
     if (nColor >= 0)
     {
-    	HPEN pen1, pen2;
-    	pen1 = (HPEN)::GetStockObject(WHITE_PEN);
-    	pen2 = (HPEN)::GetStockObject(BLACK_PEN);
-    	if (lpdis->itemState & ODS_SELECTED)
-    	{
-    		HPEN pentmp = pen1;
-    		pen1 = pen2;
-    		pen2 = pentmp;
-    	}
-    	HDC hdc = lpdis->hDC;
-    	HBRUSH brush = ::CreateSolidBrush(CustomColors[nColor]);
-    	::FillRect(hdc, &lpdis->rcItem, brush);
-    	::DeleteObject(brush);
-    	HPEN oldpen = (HPEN)::SelectObject(hdc, pen1);
-    	::MoveToEx(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1, NULL);
-    	::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.top);
-    	::LineTo(hdc, lpdis->rcItem.right, lpdis->rcItem.top);
-    	::SelectObject(hdc, pen2);
-    	::MoveToEx(hdc, lpdis->rcItem.right-1, lpdis->rcItem.top, NULL);
-    	::LineTo(hdc, lpdis->rcItem.right-1, lpdis->rcItem.bottom-1);
-    	::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1);
-    	if (oldpen) ::SelectObject(hdc, oldpen);
+            HPEN pen1, pen2;
+            pen1 = (HPEN)::GetStockObject(WHITE_PEN);
+            pen2 = (HPEN)::GetStockObject(BLACK_PEN);
+            if (lpdis->itemState & ODS_SELECTED)
+            {
+                    HPEN pentmp = pen1;
+                    pen1 = pen2;
+                    pen2 = pentmp;
+            }
+            HDC hdc = lpdis->hDC;
+            HBRUSH brush = ::CreateSolidBrush(CustomColors[nColor]);
+            ::FillRect(hdc, &lpdis->rcItem, brush);
+            ::DeleteObject(brush);
+            HPEN oldpen = (HPEN)::SelectObject(hdc, pen1);
+            ::MoveToEx(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1, NULL);
+            ::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.top);
+            ::LineTo(hdc, lpdis->rcItem.right, lpdis->rcItem.top);
+            ::SelectObject(hdc, pen2);
+            ::MoveToEx(hdc, lpdis->rcItem.right-1, lpdis->rcItem.top, NULL);
+            ::LineTo(hdc, lpdis->rcItem.right-1, lpdis->rcItem.bottom-1);
+            ::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1);
+            if (oldpen) ::SelectObject(hdc, oldpen);
     } else
     if ((nIdCtl == IDC_BUTTON4) && (m_pPreviewDib))
     {
-    	int y = gColorDefs[m_nColorItem].nPreview;
-    	RGBQUAD *p = m_pPreviewDib->bmiColors;
-    	if (IsDlgButtonChecked(IDC_CHECK2))
-    	{
-    		p[1] = rgb2quad(CustomColors[MODCOLOR_GLOBALS]);
-    		p[3] = rgb2quad(CustomColors[MODCOLOR_PITCH]);
-    		p[5] = rgb2quad(CustomColors[MODCOLOR_INSTRUMENT]);
-    		p[6] = rgb2quad(CustomColors[MODCOLOR_VOLUME]);
-    		p[12] = rgb2quad(CustomColors[MODCOLOR_NOTE]);
-    		p[14] = rgb2quad(CustomColors[MODCOLOR_PANNING]);
-    	} else
-    	{
-    		p[1] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    		p[3] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    		p[5] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    		p[6] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    		p[12] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    		p[14] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    	}
-    	p[4] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    	p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
-    	p[9] = rgb2quad(CustomColors[MODCOLOR_SAMPLE]);
-    	p[10] = rgb2quad(CustomColors[MODCOLOR_BACKNORMAL]);
-    	p[11] = rgb2quad(CustomColors[MODCOLOR_BACKHILIGHT]);
-    	p[13] = rgb2quad(CustomColors[MODCOLOR_ENVELOPES]);
-    	p[15] = rgb2quad((y) ? RGB(255,255,255) : CustomColors[MODCOLOR_BACKNORMAL]);
-    	// Special cases: same bitmap, different palette
-    	switch(m_nColorItem)
-    	{
-    	// Current Row
-    	case 1:
-    		p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTCURROW]);
-    		p[11] = rgb2quad(CustomColors[MODCOLOR_BACKCURROW]);
-    		break;
-    	// Selection
-    	case 2:
-    		p[5] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
-    		p[6] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
-    		p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
-    		p[11] = rgb2quad(CustomColors[MODCOLOR_BACKSELECTED]);
-    		p[12] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
-    		break;
-    	// Play Cursor
-    	case 3:
-    		p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTPLAYCURSOR]);
-    		p[11] = rgb2quad(CustomColors[MODCOLOR_BACKPLAYCURSOR]);
-    		break;
-    	}
-    	HDC hdc = lpdis->hDC;
-    	HPEN oldpen = (HPEN)::SelectObject(hdc, CMainFrame::penDarkGray);
-    	::MoveToEx(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1, NULL);
-    	::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.top);
-    	::LineTo(hdc, lpdis->rcItem.right, lpdis->rcItem.top);
-    	::SelectObject(hdc, CMainFrame::penLightGray);
-    	::MoveToEx(hdc, lpdis->rcItem.right-1, lpdis->rcItem.top, NULL);
-    	::LineTo(hdc, lpdis->rcItem.right-1, lpdis->rcItem.bottom-1);
-    	::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1);
-    	if (oldpen) ::SelectObject(hdc, oldpen);
-    	StretchDIBits(	hdc,
-    					lpdis->rcItem.left+1,
-    					lpdis->rcItem.top+1,
-    					lpdis->rcItem.right - lpdis->rcItem.left - 2,
-    					lpdis->rcItem.bottom - lpdis->rcItem.top - 2,
-    					0,
-    					m_pPreviewDib->bmiHeader.biHeight - ((y+1) * PREVIEWBMP_HEIGHT),
-    					m_pPreviewDib->bmiHeader.biWidth,
-    					PREVIEWBMP_HEIGHT,
-    					m_pPreviewDib->lpDibBits,
-    					(LPBITMAPINFO)m_pPreviewDib,
-    				   DIB_RGB_COLORS,
-    				   SRCCOPY);
+            int y = gColorDefs[m_nColorItem].nPreview;
+            RGBQUAD *p = m_pPreviewDib->bmiColors;
+            if (IsDlgButtonChecked(IDC_CHECK2))
+            {
+                    p[1] = rgb2quad(CustomColors[MODCOLOR_GLOBALS]);
+                    p[3] = rgb2quad(CustomColors[MODCOLOR_PITCH]);
+                    p[5] = rgb2quad(CustomColors[MODCOLOR_INSTRUMENT]);
+                    p[6] = rgb2quad(CustomColors[MODCOLOR_VOLUME]);
+                    p[12] = rgb2quad(CustomColors[MODCOLOR_NOTE]);
+                    p[14] = rgb2quad(CustomColors[MODCOLOR_PANNING]);
+            } else
+            {
+                    p[1] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+                    p[3] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+                    p[5] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+                    p[6] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+                    p[12] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+                    p[14] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+            }
+            p[4] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+            p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTNORMAL]);
+            p[9] = rgb2quad(CustomColors[MODCOLOR_SAMPLE]);
+            p[10] = rgb2quad(CustomColors[MODCOLOR_BACKNORMAL]);
+            p[11] = rgb2quad(CustomColors[MODCOLOR_BACKHILIGHT]);
+            p[13] = rgb2quad(CustomColors[MODCOLOR_ENVELOPES]);
+            p[15] = rgb2quad((y) ? RGB(255,255,255) : CustomColors[MODCOLOR_BACKNORMAL]);
+            // Special cases: same bitmap, different palette
+            switch(m_nColorItem)
+            {
+            // Current Row
+            case 1:
+                    p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTCURROW]);
+                    p[11] = rgb2quad(CustomColors[MODCOLOR_BACKCURROW]);
+                    break;
+            // Selection
+            case 2:
+                    p[5] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
+                    p[6] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
+                    p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
+                    p[11] = rgb2quad(CustomColors[MODCOLOR_BACKSELECTED]);
+                    p[12] = rgb2quad(CustomColors[MODCOLOR_TEXTSELECTED]);
+                    break;
+            // Play Cursor
+            case 3:
+                    p[8] = rgb2quad(CustomColors[MODCOLOR_TEXTPLAYCURSOR]);
+                    p[11] = rgb2quad(CustomColors[MODCOLOR_BACKPLAYCURSOR]);
+                    break;
+            }
+            HDC hdc = lpdis->hDC;
+            HPEN oldpen = (HPEN)::SelectObject(hdc, CMainFrame::penDarkGray);
+            ::MoveToEx(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1, NULL);
+            ::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.top);
+            ::LineTo(hdc, lpdis->rcItem.right, lpdis->rcItem.top);
+            ::SelectObject(hdc, CMainFrame::penLightGray);
+            ::MoveToEx(hdc, lpdis->rcItem.right-1, lpdis->rcItem.top, NULL);
+            ::LineTo(hdc, lpdis->rcItem.right-1, lpdis->rcItem.bottom-1);
+            ::LineTo(hdc, lpdis->rcItem.left, lpdis->rcItem.bottom-1);
+            if (oldpen) ::SelectObject(hdc, oldpen);
+            StretchDIBits(        hdc,
+                                            lpdis->rcItem.left+1,
+                                            lpdis->rcItem.top+1,
+                                            lpdis->rcItem.right - lpdis->rcItem.left - 2,
+                                            lpdis->rcItem.bottom - lpdis->rcItem.top - 2,
+                                            0,
+                                            m_pPreviewDib->bmiHeader.biHeight - ((y+1) * PREVIEWBMP_HEIGHT),
+                                            m_pPreviewDib->bmiHeader.biWidth,
+                                            PREVIEWBMP_HEIGHT,
+                                            m_pPreviewDib->lpDibBits,
+                                            (LPBITMAPINFO)m_pPreviewDib,
+                                       DIB_RGB_COLORS,
+                                       SRCCOPY);
     }
 }
 
 
 static COLORREF rgbCustomColors[16] =
 {
-    0x808080,	0x0000FF,	0x00FF00,	0x00FFFF,
-    0xFF0000,	0xFF00FF,	0xFFFF00,	0xFFFFFF,
-    0xC0C0C0,	0x80FFFF,	0xE0E8E0,	0x606060,
-    0x505050,	0x404040,	0x004000,	0x000000,
+    0x808080,        0x0000FF,        0x00FF00,        0x00FFFF,
+    0xFF0000,        0xFF00FF,        0xFFFF00,        0xFFFFFF,
+    0xC0C0C0,        0x80FFFF,        0xE0E8E0,        0x606060,
+    0x505050,        0x404040,        0x004000,        0x000000,
 };
 
 
@@ -281,9 +281,9 @@ void COptionsColors::SelectColor(COLORREF *lprgb)
     cc.lpTemplateName = NULL;
     if (::ChooseColor(&cc))
     {
-    	*lprgb = cc.rgbResult;
-    	InvalidateRect(NULL, FALSE);
-    	OnSettingsChanged();
+            *lprgb = cc.rgbResult;
+            InvalidateRect(NULL, FALSE);
+            OnSettingsChanged();
     }
 }
 
@@ -315,8 +315,8 @@ void COptionsColors::OnColorSelChanged()
     int sel = m_ComboItem.GetCurSel();
     if (sel >= 0)
     {
-    	m_nColorItem = m_ComboItem.GetItemData(sel);
-    	OnUpdateDialog();
+            m_nColorItem = m_ComboItem.GetItemData(sel);
+            OnUpdateDialog();
     }
 }
 
@@ -333,25 +333,25 @@ void COptionsColors::OnUpdateDialog()
     if (p->pszTxt1) m_TxtColor1.SetWindowText(p->pszTxt1);
     if (p->pszTxt2)
     {
-    	m_TxtColor2.SetWindowText(p->pszTxt2);
-    	m_TxtColor2.ShowWindow(SW_SHOW);
-    	m_BtnColor2.ShowWindow(SW_SHOW);
-    	m_BtnColor2.InvalidateRect(NULL, FALSE);
+            m_TxtColor2.SetWindowText(p->pszTxt2);
+            m_TxtColor2.ShowWindow(SW_SHOW);
+            m_BtnColor2.ShowWindow(SW_SHOW);
+            m_BtnColor2.InvalidateRect(NULL, FALSE);
     } else
     {
-    	m_TxtColor2.ShowWindow(SW_HIDE);
-    	m_BtnColor2.ShowWindow(SW_HIDE);
+            m_TxtColor2.ShowWindow(SW_HIDE);
+            m_BtnColor2.ShowWindow(SW_HIDE);
     }
     if (p->pszTxt3)
     {
-    	m_TxtColor3.SetWindowText(p->pszTxt3);
-    	m_TxtColor3.ShowWindow(SW_SHOW);
-    	m_BtnColor3.ShowWindow(SW_SHOW);
-    	m_BtnColor3.InvalidateRect(NULL, FALSE);
+            m_TxtColor3.SetWindowText(p->pszTxt3);
+            m_TxtColor3.ShowWindow(SW_SHOW);
+            m_BtnColor3.ShowWindow(SW_SHOW);
+            m_BtnColor3.InvalidateRect(NULL, FALSE);
     } else
     {
-    	m_TxtColor3.ShowWindow(SW_HIDE);
-    	m_BtnColor3.ShowWindow(SW_HIDE);
+            m_TxtColor3.ShowWindow(SW_HIDE);
+            m_BtnColor3.ShowWindow(SW_HIDE);
     }
     m_BtnColor1.InvalidateRect(NULL, FALSE);
     m_BtnPreview.InvalidateRect(NULL, FALSE);
@@ -501,17 +501,17 @@ void COptionsColors::OnLoadColorScheme()
 //--------------------------------------
 {
     FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(true, "mptcolor", "",
-    	"OpenMPT Color Schemes|*.mptcolor||",
-    	theApp.GetConfigPath());
+            "OpenMPT Color Schemes|*.mptcolor||",
+            theApp.GetConfigPath());
     if(files.abort) return;
 
     // Ensure that all colours are reset (for outdated colour schemes)
     OnPresetMPT();
     for(int i = 0; i < MAX_MODCOLORS; i++)
     {
-    	TCHAR sKeyName[16];
-    	wsprintf(sKeyName, "Color%02d", i);
-    	CustomColors[i] = CMainFrame::GetPrivateProfileLong("Colors", sKeyName, CustomColors[i], files.first_file.c_str());
+            TCHAR sKeyName[16];
+            wsprintf(sKeyName, "Color%02d", i);
+            CustomColors[i] = CMainFrame::GetPrivateProfileLong("Colors", sKeyName, CustomColors[i], files.first_file.c_str());
     }
     OnPreviewChanged();
 }
@@ -520,15 +520,15 @@ void COptionsColors::OnSaveColorScheme()
 //--------------------------------------
 {
     FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(false, "mptcolor", "",
-    	"OpenMPT Color Schemes|*.mptcolor||",
-    	theApp.GetConfigPath());
+            "OpenMPT Color Schemes|*.mptcolor||",
+            theApp.GetConfigPath());
     if(files.abort) return;
 
     for(int i = 0; i < MAX_MODCOLORS; i++)
     {
-    	TCHAR sKeyName[16];
-    	wsprintf(sKeyName, "Color%02d", i);
-    	CMainFrame::WritePrivateProfileLong("Colors", sKeyName, CustomColors[i], files.first_file.c_str());
+            TCHAR sKeyName[16];
+            wsprintf(sKeyName, "Color%02d", i);
+            CMainFrame::WritePrivateProfileLong("Colors", sKeyName, CustomColors[i], files.first_file.c_str());
     }
 }
 
@@ -537,17 +537,17 @@ void COptionsColors::OnSaveColorScheme()
 // COptionsGeneral
 
 BEGIN_MESSAGE_MAP(COptionsGeneral, CPropertyPage)
-    ON_EN_CHANGE(IDC_OPTIONS_DIR_MODS,			OnSettingsChanged)
-    ON_EN_CHANGE(IDC_OPTIONS_DIR_SAMPS,			OnSettingsChanged)
-    ON_EN_CHANGE(IDC_OPTIONS_DIR_INSTS,			OnSettingsChanged)
-    ON_EN_CHANGE(IDC_OPTIONS_DIR_VSTPRESETS,	OnSettingsChanged)
-    ON_LBN_SELCHANGE(IDC_LIST1,					OnOptionSelChanged)
-    ON_COMMAND(IDC_BUTTON_CHANGE_MODDIR,		OnBrowseSongs)
-    ON_COMMAND(IDC_BUTTON_CHANGE_SAMPDIR,		OnBrowseSamples)
-    ON_COMMAND(IDC_BUTTON_CHANGE_INSTRDIR,		OnBrowseInstruments)
-    ON_COMMAND(IDC_BUTTON_CHANGE_VSTDIR,		OnBrowsePlugins)
-    ON_COMMAND(IDC_BUTTON_CHANGE_VSTPRESETSDIR,	OnBrowsePresets)
-    ON_CLBN_CHKCHANGE(IDC_LIST1,				OnSettingsChanged)
+    ON_EN_CHANGE(IDC_OPTIONS_DIR_MODS,                        OnSettingsChanged)
+    ON_EN_CHANGE(IDC_OPTIONS_DIR_SAMPS,                        OnSettingsChanged)
+    ON_EN_CHANGE(IDC_OPTIONS_DIR_INSTS,                        OnSettingsChanged)
+    ON_EN_CHANGE(IDC_OPTIONS_DIR_VSTPRESETS,        OnSettingsChanged)
+    ON_LBN_SELCHANGE(IDC_LIST1,                                        OnOptionSelChanged)
+    ON_COMMAND(IDC_BUTTON_CHANGE_MODDIR,                OnBrowseSongs)
+    ON_COMMAND(IDC_BUTTON_CHANGE_SAMPDIR,                OnBrowseSamples)
+    ON_COMMAND(IDC_BUTTON_CHANGE_INSTRDIR,                OnBrowseInstruments)
+    ON_COMMAND(IDC_BUTTON_CHANGE_VSTDIR,                OnBrowsePlugins)
+    ON_COMMAND(IDC_BUTTON_CHANGE_VSTPRESETSDIR,        OnBrowsePresets)
+    ON_CLBN_CHKCHANGE(IDC_LIST1,                                OnSettingsChanged)
 END_MESSAGE_MAP()
 
 
@@ -559,30 +559,30 @@ struct OPTGENDESC
 
 static OPTGENDESC gOptGenDesc[] =
 {
-    {PATTERN_PLAYNEWNOTE,	"Play new notes while recording",	"When this option is enabled, notes entered in the pattern editor will always be played (If not checked, notes won't be played in record mode)."},
-    {PATTERN_PLAYEDITROW,	"Play whole row while recording",	"When this option is enabled, all notes on the current row are played when entering notes in the pattern editor."},
-    {PATTERN_CENTERROW,		"Always center active row",			"Turn on this option to have the active row always centered in the pattern editor (requires \"Always center active row\")."},
-    {PATTERN_LARGECOMMENTS,	"Use large font for comments",		"With this option enabled, the song message editor will use a larger font."},
-    {PATTERN_HEXDISPLAY,	"Display rows in hex",				"With this option enabled, row numbers and sequence numbers will be displayed in hexadecimal."},
-    {PATTERN_WRAP,			"Cursor wrap in pattern editor",	"When this option is active, going past the end of a pattern row or channel will move the cursor to the beginning. When \"Continuous scroll\"-option is enabled, row wrap is disabled."},
-    {PATTERN_CREATEBACKUP,	"Create backup files (*.bak)",		"When this option is active, saving a file will create a backup copy of the original."},
-    {PATTERN_DRAGNDROPEDIT,	"Drag and Drop Editing",			"Enable moving a selection in the pattern editor (copying if pressing shift while dragging)\n"},
-    {PATTERN_FLATBUTTONS,	"Flat Buttons",						"Use flat buttons in toolbars"},
-    {PATTERN_SINGLEEXPAND,	"Single click to expand tree",		"Single-clicking in the left tree view will expand a branch"},
-    {PATTERN_MUTECHNMODE,	"Ignored muted channels",			"Notes will not be played on muted channels (unmuting will only start on a new note)."},
-    {PATTERN_NOEXTRALOUD,	"No loud samples",					"Disable loud playback of samples in the sample/instrument editor. Sample volume depends on the sample volume slider on the general tab when activated (if activated, a sample volume of 256 is used)."},
-    {PATTERN_SHOWPREVIOUS,	"Show Prev/Next patterns",			"Displays grayed-out version of the previous/next patterns in the pattern editor. Does not work if \"always center active row\" is disabled."},
-    {PATTERN_CONTSCROLL,	"Continuous scroll",				"Jumps to the next pattern when moving past the end of a pattern"},
-    {PATTERN_KBDNOTEOFF,	"Record note off",					"Record note off when a key is released on the PC keyboard (Only works in instrument mode)."},
-    {PATTERN_FOLLOWSONGOFF,	"Follow song off by default",		"Ensure follow song is off when opening or starting a new song."},
-    {PATTERN_MIDIRECORD,	"Midi record",						"Enable midi in record by default."},
+    {PATTERN_PLAYNEWNOTE,        "Play new notes while recording",        "When this option is enabled, notes entered in the pattern editor will always be played (If not checked, notes won't be played in record mode)."},
+    {PATTERN_PLAYEDITROW,        "Play whole row while recording",        "When this option is enabled, all notes on the current row are played when entering notes in the pattern editor."},
+    {PATTERN_CENTERROW,                "Always center active row",                        "Turn on this option to have the active row always centered in the pattern editor (requires \"Always center active row\")."},
+    {PATTERN_LARGECOMMENTS,        "Use large font for comments",                "With this option enabled, the song message editor will use a larger font."},
+    {PATTERN_HEXDISPLAY,        "Display rows in hex",                                "With this option enabled, row numbers and sequence numbers will be displayed in hexadecimal."},
+    {PATTERN_WRAP,                        "Cursor wrap in pattern editor",        "When this option is active, going past the end of a pattern row or channel will move the cursor to the beginning. When \"Continuous scroll\"-option is enabled, row wrap is disabled."},
+    {PATTERN_CREATEBACKUP,        "Create backup files (*.bak)",                "When this option is active, saving a file will create a backup copy of the original."},
+    {PATTERN_DRAGNDROPEDIT,        "Drag and Drop Editing",                        "Enable moving a selection in the pattern editor (copying if pressing shift while dragging)\n"},
+    {PATTERN_FLATBUTTONS,        "Flat Buttons",                                                "Use flat buttons in toolbars"},
+    {PATTERN_SINGLEEXPAND,        "Single click to expand tree",                "Single-clicking in the left tree view will expand a branch"},
+    {PATTERN_MUTECHNMODE,        "Ignored muted channels",                        "Notes will not be played on muted channels (unmuting will only start on a new note)."},
+    {PATTERN_NOEXTRALOUD,        "No loud samples",                                        "Disable loud playback of samples in the sample/instrument editor. Sample volume depends on the sample volume slider on the general tab when activated (if activated, a sample volume of 256 is used)."},
+    {PATTERN_SHOWPREVIOUS,        "Show Prev/Next patterns",                        "Displays grayed-out version of the previous/next patterns in the pattern editor. Does not work if \"always center active row\" is disabled."},
+    {PATTERN_CONTSCROLL,        "Continuous scroll",                                "Jumps to the next pattern when moving past the end of a pattern"},
+    {PATTERN_KBDNOTEOFF,        "Record note off",                                        "Record note off when a key is released on the PC keyboard (Only works in instrument mode)."},
+    {PATTERN_FOLLOWSONGOFF,        "Follow song off by default",                "Ensure follow song is off when opening or starting a new song."},
+    {PATTERN_MIDIRECORD,        "Midi record",                                                "Enable midi in record by default."},
     {PATTERN_OLDCTXMENUSTYLE, "Old style pattern context menu", "Check this option to hide unavailable items in the pattern editor context menu. Uncheck to grey-out unavailable items instead."}, 
-    {PATTERN_SYNCMUTE,		"Maintain sample sync on mute",		"Samples continue to be processed when channels are muted (like in IT2 and FT2)"},
-    {PATTERN_AUTODELAY,		"Automatic delay commands",			"Automatically insert appropriate note-delay commands when recording notes during live playback."},
-    {PATTERN_NOTEFADE,		"Note fade on key up",				"Enable to fade / stop notes on key up in pattern tab." },
-    {PATTERN_OVERFLOWPASTE,	"Overflow paste mode",				"Wrap pasted pattern data into next pattern. This is useful for creating echo channels."},
-    {PATTERN_RESETCHANNELS,	"Reset channels on loop",			"If enabled, channels will be reset to their initial state when song looping is enabled.\nNote: This does not affect manual song loops (i.e. triggered by pattern commands) and is recommended to be enabled."},
-    {PATTERN_LIVEUPDATETREE,"Update sample status in tree",		"If enabled, active samples and instruments will be indicated by a different icon in the treeview."}
+    {PATTERN_SYNCMUTE,                "Maintain sample sync on mute",                "Samples continue to be processed when channels are muted (like in IT2 and FT2)"},
+    {PATTERN_AUTODELAY,                "Automatic delay commands",                        "Automatically insert appropriate note-delay commands when recording notes during live playback."},
+    {PATTERN_NOTEFADE,                "Note fade on key up",                                "Enable to fade / stop notes on key up in pattern tab." },
+    {PATTERN_OVERFLOWPASTE,        "Overflow paste mode",                                "Wrap pasted pattern data into next pattern. This is useful for creating echo channels."},
+    {PATTERN_RESETCHANNELS,        "Reset channels on loop",                        "If enabled, channels will be reset to their initial state when song looping is enabled.\nNote: This does not affect manual song loops (i.e. triggered by pattern commands) and is recommended to be enabled."},
+    {PATTERN_LIVEUPDATETREE,"Update sample status in tree",                "If enabled, active samples and instruments will be indicated by a different icon in the treeview."}
 };
 
 
@@ -591,7 +591,7 @@ void COptionsGeneral::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CModTypeDlg)
-    DDX_Control(pDX, IDC_LIST1,			m_CheckList);
+    DDX_Control(pDX, IDC_LIST1,                        m_CheckList);
     //}}AFX_DATA_MAP
 }
 
@@ -604,23 +604,23 @@ BOOL COptionsGeneral::OnInitDialog()
     CPropertyPage::OnInitDialog();
     for (UINT i = 0; i < CountOf(gOptGenDesc); i++)
     {
-    	wsprintf(sname, "Setup.Gen.Opt%d.Name", i + 1);
-    	if ((theApp.GetLocalizedString(sname, s, sizeof(s))) && (s[0]))
-    		m_CheckList.AddString(s);
-    	else
-    		m_CheckList.AddString(gOptGenDesc[i].pszListName);
+            wsprintf(sname, "Setup.Gen.Opt%d.Name", i + 1);
+            if ((theApp.GetLocalizedString(sname, s, sizeof(s))) && (s[0]))
+                    m_CheckList.AddString(s);
+            else
+                    m_CheckList.AddString(gOptGenDesc[i].pszListName);
 
-    	const int check = (CMainFrame::m_dwPatternSetup & gOptGenDesc[i].dwFlagID) != 0 ? BST_CHECKED : BST_UNCHECKED;
-    	m_CheckList.SetCheck(i, check);
+            const int check = (CMainFrame::m_dwPatternSetup & gOptGenDesc[i].dwFlagID) != 0 ? BST_CHECKED : BST_UNCHECKED;
+            m_CheckList.SetCheck(i, check);
     }
     m_CheckList.SetCurSel(0);
     OnOptionSelChanged();
 
-    SetDlgItemText(IDC_OPTIONS_DIR_MODS,		CMainFrame::GetDefaultDirectory(DIR_MODS));
-    SetDlgItemText(IDC_OPTIONS_DIR_SAMPS,		CMainFrame::GetDefaultDirectory(DIR_SAMPLES));
-    SetDlgItemText(IDC_OPTIONS_DIR_INSTS,		CMainFrame::GetDefaultDirectory(DIR_INSTRUMENTS));
-    SetDlgItemText(IDC_OPTIONS_DIR_VSTS,		CMainFrame::GetDefaultDirectory(DIR_PLUGINS));
-    SetDlgItemText(IDC_OPTIONS_DIR_VSTPRESETS,	CMainFrame::GetDefaultDirectory(DIR_PLUGINPRESETS));
+    SetDlgItemText(IDC_OPTIONS_DIR_MODS,                CMainFrame::GetDefaultDirectory(DIR_MODS));
+    SetDlgItemText(IDC_OPTIONS_DIR_SAMPS,                CMainFrame::GetDefaultDirectory(DIR_SAMPLES));
+    SetDlgItemText(IDC_OPTIONS_DIR_INSTS,                CMainFrame::GetDefaultDirectory(DIR_INSTRUMENTS));
+    SetDlgItemText(IDC_OPTIONS_DIR_VSTS,                CMainFrame::GetDefaultDirectory(DIR_PLUGINS));
+    SetDlgItemText(IDC_OPTIONS_DIR_VSTPRESETS,        CMainFrame::GetDefaultDirectory(DIR_PLUGINPRESETS));
 
     return TRUE;
 }
@@ -632,25 +632,25 @@ void COptionsGeneral::OnOK()
     // Default paths
     TCHAR szModDir[_MAX_PATH], szSmpDir[_MAX_PATH], szInsDir[_MAX_PATH], szVstDir[_MAX_PATH], szPresetDir[_MAX_PATH];
     szModDir[0] = szInsDir[0] = szSmpDir[0] = szVstDir[0] = szPresetDir[0] = 0;
-    GetDlgItemText(IDC_OPTIONS_DIR_MODS,		szModDir, _MAX_PATH);
-    GetDlgItemText(IDC_OPTIONS_DIR_SAMPS,		szSmpDir, _MAX_PATH);
-    GetDlgItemText(IDC_OPTIONS_DIR_INSTS,		szInsDir, _MAX_PATH);
-    GetDlgItemText(IDC_OPTIONS_DIR_VSTS,		szVstDir, _MAX_PATH);
-    GetDlgItemText(IDC_OPTIONS_DIR_VSTPRESETS,	szPresetDir, _MAX_PATH);
+    GetDlgItemText(IDC_OPTIONS_DIR_MODS,                szModDir, _MAX_PATH);
+    GetDlgItemText(IDC_OPTIONS_DIR_SAMPS,                szSmpDir, _MAX_PATH);
+    GetDlgItemText(IDC_OPTIONS_DIR_INSTS,                szInsDir, _MAX_PATH);
+    GetDlgItemText(IDC_OPTIONS_DIR_VSTS,                szVstDir, _MAX_PATH);
+    GetDlgItemText(IDC_OPTIONS_DIR_VSTPRESETS,        szPresetDir, _MAX_PATH);
 
     for (UINT i = 0; i < CountOf(gOptGenDesc); i++)
     {
-    	const bool check = (m_CheckList.GetCheck(i) != BST_UNCHECKED);
+            const bool check = (m_CheckList.GetCheck(i) != BST_UNCHECKED);
 
-    	if(check) CMainFrame::m_dwPatternSetup |= gOptGenDesc[i].dwFlagID;
-    	else CMainFrame::m_dwPatternSetup &= ~gOptGenDesc[i].dwFlagID;
+            if(check) CMainFrame::m_dwPatternSetup |= gOptGenDesc[i].dwFlagID;
+            else CMainFrame::m_dwPatternSetup &= ~gOptGenDesc[i].dwFlagID;
     }
 
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if (pMainFrm)
     {
-    	pMainFrm->SetupDirectories(szModDir, szSmpDir, szInsDir, szVstDir, szPresetDir);
-    	pMainFrm->SetupMiscOptions();
+            pMainFrm->SetupDirectories(szModDir, szSmpDir, szInsDir, szVstDir, szPresetDir);
+            pMainFrm->SetupMiscOptions();
     }
 
     CPropertyPage::OnOK();
@@ -680,9 +680,9 @@ void COptionsGeneral::BrowseForFolder(UINT nID)
     LPITEMIDLIST pid = SHBrowseForFolder(&bi);
     if (pid != NULL)
     {
-    	SHGetPathFromIDList(pid, szPath);
-    	SetDlgItemText(nID, szPath);
-    	OnSettingsChanged();
+            SHGetPathFromIDList(pid, szPath);
+            SetDlgItemText(nID, szPath);
+            OnSettingsChanged();
     }
 }
 
@@ -695,9 +695,9 @@ void COptionsGeneral::OnOptionSelChanged()
     const int sel = m_CheckList.GetCurSel();
     if ((sel >= 0) && (sel < CountOf(gOptGenDesc)))
     {
-    	pszDesc = gOptGenDesc[sel].pszDescription;
-    	wsprintf(sname, "Setup.Gen.Opt%d.Desc", sel+1);
-    	if ((theApp.GetLocalizedString(sname, s, sizeof(s))) && (s[0])) pszDesc = s;
+            pszDesc = gOptGenDesc[sel].pszDescription;
+            wsprintf(sname, "Setup.Gen.Opt%d.Desc", sel+1);
+            if ((theApp.GetLocalizedString(sname, s, sizeof(s))) && (s[0])) pszDesc = s;
     }
     SetDlgItemText(IDC_TEXT1, (pszDesc) ? pszDesc : "");
 }

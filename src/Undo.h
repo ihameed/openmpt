@@ -53,12 +53,12 @@ public:
 
     CPatternUndo()
     {
-    	UndoBuffer.clear();
-    	m_pModDoc = nullptr;
+            UndoBuffer.clear();
+            m_pModDoc = nullptr;
     };
     ~CPatternUndo()
     {
-    	ClearUndo();
+            ClearUndo();
     };
 
 };
@@ -71,14 +71,14 @@ public:
 // We will differentiate between different types of undo actions so that we don't have to copy the whole sample everytime.
 enum sampleUndoTypes
 {
-    sundo_none,		// no changes to sample itself, e.g. loop point update
-    sundo_update,	// silence, amplify, normalize, dc offset - update complete sample section
-    sundo_delete,	// delete part of the sample
-    sundo_invert,	// invert sample phase, apply again to undo
-    sundo_reverse,	// reverse sample, dito
-    sundo_unsign,	// unsign sample, dito
-    sundo_insert,	// insert data, delete inserted data to undo
-    sundo_replace,	// replace complete sample (16->8Bit, up/downsample, downmix to mono, pitch shifting / time stretching, trimming, pasting)
+    sundo_none,                // no changes to sample itself, e.g. loop point update
+    sundo_update,        // silence, amplify, normalize, dc offset - update complete sample section
+    sundo_delete,        // delete part of the sample
+    sundo_invert,        // invert sample phase, apply again to undo
+    sundo_reverse,        // reverse sample, dito
+    sundo_unsign,        // unsign sample, dito
+    sundo_insert,        // insert data, delete inserted data to undo
+    sundo_replace,        // replace complete sample (16->8Bit, up/downsample, downmix to mono, pitch shifting / time stretching, trimming, pasting)
 };
 
 struct SAMPLEUNDOBUFFER
@@ -121,12 +121,12 @@ public:
 
     CSampleUndo()
     {
-    	UndoBuffer.clear();
-    	m_pModDoc = nullptr;
+            UndoBuffer.clear();
+            m_pModDoc = nullptr;
     };
     ~CSampleUndo()
     {
-    	ClearUndo();
+            ClearUndo();
     };
 
 };

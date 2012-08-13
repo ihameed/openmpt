@@ -82,31 +82,31 @@
 #define MAKE_ART(src, ctl, dst)    ( ((dst)<<16) | ((ctl)<<8) | (src) )
 
 // Vibrato / Tremolo
-#define ART_LFO_FREQUENCY    MAKE_ART	(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_LFO_FREQUENCY)
-#define ART_LFO_STARTDELAY    MAKE_ART	(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_LFO_STARTDELAY)
-#define ART_LFO_ATTENUATION    MAKE_ART	(CONN_SRC_LFO,	CONN_SRC_NONE,	CONN_DST_ATTENUATION)
-#define ART_LFO_PITCH    	MAKE_ART	(CONN_SRC_LFO,	CONN_SRC_NONE,	CONN_DST_PITCH)
-#define ART_LFO_MODWTOATTN    MAKE_ART	(CONN_SRC_LFO,	CONN_SRC_CC1,	CONN_DST_ATTENUATION)
-#define ART_LFO_MODWTOPITCH    MAKE_ART	(CONN_SRC_LFO,	CONN_SRC_CC1,	CONN_DST_PITCH)
+#define ART_LFO_FREQUENCY    MAKE_ART        (CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_LFO_FREQUENCY)
+#define ART_LFO_STARTDELAY    MAKE_ART        (CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_LFO_STARTDELAY)
+#define ART_LFO_ATTENUATION    MAKE_ART        (CONN_SRC_LFO,        CONN_SRC_NONE,        CONN_DST_ATTENUATION)
+#define ART_LFO_PITCH            MAKE_ART        (CONN_SRC_LFO,        CONN_SRC_NONE,        CONN_DST_PITCH)
+#define ART_LFO_MODWTOATTN    MAKE_ART        (CONN_SRC_LFO,        CONN_SRC_CC1,        CONN_DST_ATTENUATION)
+#define ART_LFO_MODWTOPITCH    MAKE_ART        (CONN_SRC_LFO,        CONN_SRC_CC1,        CONN_DST_PITCH)
 
 // Volume Envelope
-#define ART_VOL_EG_ATTACKTIME    MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG1_ATTACKTIME)
-#define ART_VOL_EG_DECAYTIME    MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG1_DECAYTIME)
-#define ART_VOL_EG_SUSTAINLEVEL    MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG1_SUSTAINLEVEL)
-#define ART_VOL_EG_RELEASETIME    MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG1_RELEASETIME)
-#define ART_VOL_EG_VELTOATTACK    MAKE_ART(CONN_SRC_KEYONVELOCITY,	CONN_SRC_NONE,	CONN_DST_EG1_ATTACKTIME)
-#define ART_VOL_EG_KEYTODECAY    MAKE_ART(CONN_SRC_KEYNUMBER,		CONN_SRC_NONE,	CONN_DST_EG1_DECAYTIME)
+#define ART_VOL_EG_ATTACKTIME    MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG1_ATTACKTIME)
+#define ART_VOL_EG_DECAYTIME    MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG1_DECAYTIME)
+#define ART_VOL_EG_SUSTAINLEVEL    MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG1_SUSTAINLEVEL)
+#define ART_VOL_EG_RELEASETIME    MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG1_RELEASETIME)
+#define ART_VOL_EG_VELTOATTACK    MAKE_ART(CONN_SRC_KEYONVELOCITY,        CONN_SRC_NONE,        CONN_DST_EG1_ATTACKTIME)
+#define ART_VOL_EG_KEYTODECAY    MAKE_ART(CONN_SRC_KEYNUMBER,                CONN_SRC_NONE,        CONN_DST_EG1_DECAYTIME)
 
 // Pitch Envelope
-#define ART_PITCH_EG_ATTACKTIME    	MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG2_ATTACKTIME)
-#define ART_PITCH_EG_DECAYTIME    	MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG2_DECAYTIME)
-#define ART_PITCH_EG_SUSTAINLEVEL    MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG2_SUSTAINLEVEL)
-#define ART_PITCH_EG_RELEASETIME    MAKE_ART(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_EG2_RELEASETIME)
-#define ART_PITCH_EG_VELTOATTACK    MAKE_ART(CONN_SRC_KEYONVELOCITY,	CONN_SRC_NONE,	CONN_DST_EG2_ATTACKTIME)
-#define ART_PITCH_EG_KEYTODECAY    	MAKE_ART(CONN_SRC_KEYNUMBER,		CONN_SRC_NONE,	CONN_DST_EG2_DECAYTIME)
+#define ART_PITCH_EG_ATTACKTIME            MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG2_ATTACKTIME)
+#define ART_PITCH_EG_DECAYTIME            MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG2_DECAYTIME)
+#define ART_PITCH_EG_SUSTAINLEVEL    MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG2_SUSTAINLEVEL)
+#define ART_PITCH_EG_RELEASETIME    MAKE_ART(CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_EG2_RELEASETIME)
+#define ART_PITCH_EG_VELTOATTACK    MAKE_ART(CONN_SRC_KEYONVELOCITY,        CONN_SRC_NONE,        CONN_DST_EG2_ATTACKTIME)
+#define ART_PITCH_EG_KEYTODECAY            MAKE_ART(CONN_SRC_KEYNUMBER,                CONN_SRC_NONE,        CONN_DST_EG2_DECAYTIME)
 
 // Default Pan
-#define ART_DEFAULTPAN    	MAKE_ART	(CONN_SRC_NONE,	CONN_SRC_NONE,	CONN_DST_PAN)
+#define ART_DEFAULTPAN            MAKE_ART        (CONN_SRC_NONE,        CONN_SRC_NONE,        CONN_DST_PAN)
 
 
 #pragma pack(1)
@@ -114,22 +114,22 @@
 //////////////////////////////////////////////////////////
 // DLS IFF Chunk IDs
 
-#define IFFID_XDLS    	0x534c4458
-#define IFFID_DLS    	0x20534C44
-#define IFFID_MLS    	0x20534C4D
-#define IFFID_RMID    	0x44494D52
-#define IFFID_colh    	0x686C6F63
-#define IFFID_vers    	0x73726576
-#define IFFID_msyn    	0x6E79736D
-#define IFFID_lins    	0x736E696C
-#define IFFID_ins    	0x20736E69
-#define IFFID_insh    	0x68736E69
-#define IFFID_ptbl    	0x6C627470
-#define IFFID_wvpl    	0x6C707677
-#define IFFID_rgn    	0x206E6772
-#define IFFID_rgnh    	0x686E6772
-#define IFFID_wlnk    	0x6B6E6C77
-#define IFFID_art1    	0x31747261
+#define IFFID_XDLS            0x534c4458
+#define IFFID_DLS            0x20534C44
+#define IFFID_MLS            0x20534C4D
+#define IFFID_RMID            0x44494D52
+#define IFFID_colh            0x686C6F63
+#define IFFID_vers            0x73726576
+#define IFFID_msyn            0x6E79736D
+#define IFFID_lins            0x736E696C
+#define IFFID_ins            0x20736E69
+#define IFFID_insh            0x68736E69
+#define IFFID_ptbl            0x6C627470
+#define IFFID_wvpl            0x6C707677
+#define IFFID_rgn            0x206E6772
+#define IFFID_rgnh            0x686E6772
+#define IFFID_wlnk            0x6B6E6C77
+#define IFFID_art1            0x31747261
 
 //////////////////////////////////////////////////////////
 // DLS Structures definitions
@@ -253,34 +253,34 @@ typedef struct WSMPSAMPLELOOP
 /////////////////////////////////////////////////////////////////////
 // SF2 IFF Chunk IDs
 
-#define IFFID_sfbk    	0x6b626673
-#define IFFID_sdta    	0x61746473
-#define IFFID_pdta    	0x61746470
-#define IFFID_phdr    	0x72646870
-#define IFFID_pbag    	0x67616270
-#define IFFID_pgen    	0x6E656770
-#define IFFID_inst    	0x74736E69
-#define IFFID_ibag    	0x67616269
-#define IFFID_igen    	0x6E656769
-#define IFFID_shdr    	0x72646873
+#define IFFID_sfbk            0x6b626673
+#define IFFID_sdta            0x61746473
+#define IFFID_pdta            0x61746470
+#define IFFID_phdr            0x72646870
+#define IFFID_pbag            0x67616270
+#define IFFID_pgen            0x6E656770
+#define IFFID_inst            0x74736E69
+#define IFFID_ibag            0x67616269
+#define IFFID_igen            0x6E656769
+#define IFFID_shdr            0x72646873
 
 ///////////////////////////////////////////
 // SF2 Generators IDs
 
-#define SF2_GEN_MODENVTOFILTERFC    	11
-#define SF2_GEN_PAN    					17
-#define SF2_GEN_DECAYMODENV    			28
-#define SF2_GEN_DECAYVOLENV    			36
-#define SF2_GEN_RELEASEVOLENV    		38
-#define SF2_GEN_INSTRUMENT    			41
-#define SF2_GEN_KEYRANGE    			43
-#define SF2_GEN_ATTENUATION    			48
-#define SF2_GEN_COARSETUNE    			51
-#define SF2_GEN_FINETUNE    			52
-#define SF2_GEN_SAMPLEID    			53
-#define SF2_GEN_SAMPLEMODES    			54
-#define SF2_GEN_KEYGROUP    			57
-#define SF2_GEN_UNITYNOTE    			58
+#define SF2_GEN_MODENVTOFILTERFC            11
+#define SF2_GEN_PAN                                            17
+#define SF2_GEN_DECAYMODENV                            28
+#define SF2_GEN_DECAYVOLENV                            36
+#define SF2_GEN_RELEASEVOLENV                    38
+#define SF2_GEN_INSTRUMENT                            41
+#define SF2_GEN_KEYRANGE                            43
+#define SF2_GEN_ATTENUATION                            48
+#define SF2_GEN_COARSETUNE                            51
+#define SF2_GEN_FINETUNE                            52
+#define SF2_GEN_SAMPLEID                            53
+#define SF2_GEN_SAMPLEMODES                            54
+#define SF2_GEN_KEYGROUP                            57
+#define SF2_GEN_UNITYNOTE                            58
 
 /////////////////////////////////////////////////////////////////////
 // SF2 Structures Definitions
@@ -433,21 +433,21 @@ void CDLSBank::Destroy()
 {
     if (m_pWaveForms)
     {
-    	delete[] m_pWaveForms;
-    	m_pWaveForms = NULL;
-    	m_nWaveForms = 0;
+            delete[] m_pWaveForms;
+            m_pWaveForms = NULL;
+            m_nWaveForms = 0;
     }
     if (m_pSamplesEx)
     {
-    	delete[] m_pSamplesEx;
-    	m_pSamplesEx = NULL;
-    	m_nSamplesEx = 0;
+            delete[] m_pSamplesEx;
+            m_pSamplesEx = NULL;
+            m_nSamplesEx = 0;
     }
     if (m_pInstruments)
     {
-    	delete[] m_pInstruments;
-    	m_pInstruments = NULL;
-    	m_nInstruments = 0;
+            delete[] m_pInstruments;
+            m_pInstruments = NULL;
+            m_nInstruments = 0;
     }
 }
 
@@ -464,31 +464,31 @@ BOOL CDLSBank::IsDLSBank(LPCSTR lpszFileName)
     // Check for embedded DLS sections
     if (riff.id_RIFF == IFFID_FORM)
     {
-    	do {
-    		int len = BigEndian(riff.riff_len);
-    		if (len <= 4) break;
-    		if (riff.id_DLS == IFFID_XDLS)
-    		{
-    			fread(&riff, sizeof(RIFFCHUNKID), 1, f);
-    			break;
-    		}
-    		if (fseek(f, len-4, SEEK_CUR) != 0) break;
-    	} while (fread(&riff, sizeof(RIFFCHUNKID), 1, f) != 0);
+            do {
+                    int len = BigEndian(riff.riff_len);
+                    if (len <= 4) break;
+                    if (riff.id_DLS == IFFID_XDLS)
+                    {
+                            fread(&riff, sizeof(RIFFCHUNKID), 1, f);
+                            break;
+                    }
+                    if (fseek(f, len-4, SEEK_CUR) != 0) break;
+            } while (fread(&riff, sizeof(RIFFCHUNKID), 1, f) != 0);
     } else
     if ((riff.id_RIFF == IFFID_RIFF) && (riff.id_DLS == IFFID_RMID))
     {
-    	for (;;)
-    	{
-    		fread(&riff, sizeof(RIFFCHUNKID), 1, f);
-    		if (riff.id_DLS == IFFID_DLS) break; // found it
-    		int len = riff.riff_len;
-    		if ((len <= 4) || (fseek(f, len-4, SEEK_CUR) != 0)) break;
-    	}
+            for (;;)
+            {
+                    fread(&riff, sizeof(RIFFCHUNKID), 1, f);
+                    if (riff.id_DLS == IFFID_DLS) break; // found it
+                    int len = riff.riff_len;
+                    if ((len <= 4) || (fseek(f, len-4, SEEK_CUR) != 0)) break;
+            }
     }
     fclose(f);
     return ((riff.id_RIFF == IFFID_RIFF)
-    	 && ((riff.id_DLS == IFFID_DLS) || (riff.id_DLS == IFFID_MLS) || (riff.id_DLS == IFFID_sfbk))
-    	 && (riff.riff_len >= 256));
+             && ((riff.id_DLS == IFFID_DLS) || (riff.id_DLS == IFFID_MLS) || (riff.id_DLS == IFFID_sfbk))
+             && (riff.riff_len >= 256));
 }
 
 
@@ -501,40 +501,40 @@ DLSINSTRUMENT *CDLSBank::FindInstrument(BOOL bDrum, UINT nBank, uint32_t dwProgr
     if ((!m_pInstruments) || (!m_nInstruments)) return NULL;
     for (UINT iIns=0; iIns<m_nInstruments; iIns++)
     {
-    	DLSINSTRUMENT *pDlsIns = &m_pInstruments[iIns];
-    	UINT insbank = ((pDlsIns->ulBank & 0x7F00) >> 1) | (pDlsIns->ulBank & 0x7F);
-    	if ((nBank >= 0x4000) || (insbank == nBank))
-    	{
-    		if (bDrum)
-    		{
-    			if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
-    			{
-    				if ((dwProgram >= 0x80) || (dwProgram == (pDlsIns->ulInstrument & 0x7F)))
-    				{
-    					for (UINT iRgn=0; iRgn<pDlsIns->nRegions; iRgn++)
-    					{
-    						if ((!dwKey) || (dwKey >= 0x80)
-    						 || ((dwKey >= pDlsIns->Regions[iRgn].uKeyMin)
-    						  && (dwKey <= pDlsIns->Regions[iRgn].uKeyMax)))
-    						{
-    							if (pInsNo) *pInsNo = iIns;
-    							return pDlsIns;
-    						}
-    					}
-    				}
-    			}
-    		} else
-    		{
-    			if (!(pDlsIns->ulBank & F_INSTRUMENT_DRUMS))
-    			{
-    				if ((dwProgram >= 0x80) || (dwProgram == (pDlsIns->ulInstrument & 0x7F)))
-    				{
-    					if (pInsNo) *pInsNo = iIns;
-    					return pDlsIns;
-    				}
-    			}
-    		}
-    	}
+            DLSINSTRUMENT *pDlsIns = &m_pInstruments[iIns];
+            UINT insbank = ((pDlsIns->ulBank & 0x7F00) >> 1) | (pDlsIns->ulBank & 0x7F);
+            if ((nBank >= 0x4000) || (insbank == nBank))
+            {
+                    if (bDrum)
+                    {
+                            if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
+                            {
+                                    if ((dwProgram >= 0x80) || (dwProgram == (pDlsIns->ulInstrument & 0x7F)))
+                                    {
+                                            for (UINT iRgn=0; iRgn<pDlsIns->nRegions; iRgn++)
+                                            {
+                                                    if ((!dwKey) || (dwKey >= 0x80)
+                                                     || ((dwKey >= pDlsIns->Regions[iRgn].uKeyMin)
+                                                      && (dwKey <= pDlsIns->Regions[iRgn].uKeyMax)))
+                                                    {
+                                                            if (pInsNo) *pInsNo = iIns;
+                                                            return pDlsIns;
+                                                    }
+                                            }
+                                    }
+                            }
+                    } else
+                    {
+                            if (!(pDlsIns->ulBank & F_INSTRUMENT_DRUMS))
+                            {
+                                    if ((dwProgram >= 0x80) || (dwProgram == (pDlsIns->ulInstrument & 0x7F)))
+                                    {
+                                            if (pInsNo) *pInsNo = iIns;
+                                            return pDlsIns;
+                                    }
+                            }
+                    }
+            }
     }
     return NULL;
 }
@@ -550,204 +550,204 @@ BOOL CDLSBank::UpdateInstrumentDefinition(DLSINSTRUMENT *pDlsIns, LPVOID pvchunk
     if ((!pchunk->len) || (pchunk->len+8 > dwMaxLen)) return FALSE;
     if (pchunk->id == IFFID_LIST)
     {
-    	LISTCHUNK *plist = (LISTCHUNK *)pchunk;
-    	uint32_t dwPos = 12;
-    	while (dwPos < plist->len)
-    	{
-    		LPIFFCHUNK p = (LPIFFCHUNK)(((LPBYTE)plist) + dwPos);
-    		if (!(p->id & 0xFF))
-    		{
-    			p = (LPIFFCHUNK)( ((LPBYTE)p)+1  );
-    			dwPos++;
-    		}
-    		if (dwPos + p->len + 8 <= plist->len + 12)
-    		{
-    			UpdateInstrumentDefinition(pDlsIns, p, p->len+8);
-    		}
-    		dwPos += p->len + 8;
-    	}
-    	switch(plist->listid)
-    	{
-    	case IFFID_rgn:
-    		if (pDlsIns->nRegions < DLSMAXREGIONS) pDlsIns->nRegions++;
-    		break;
-    	}
+            LISTCHUNK *plist = (LISTCHUNK *)pchunk;
+            uint32_t dwPos = 12;
+            while (dwPos < plist->len)
+            {
+                    LPIFFCHUNK p = (LPIFFCHUNK)(((LPBYTE)plist) + dwPos);
+                    if (!(p->id & 0xFF))
+                    {
+                            p = (LPIFFCHUNK)( ((LPBYTE)p)+1  );
+                            dwPos++;
+                    }
+                    if (dwPos + p->len + 8 <= plist->len + 12)
+                    {
+                            UpdateInstrumentDefinition(pDlsIns, p, p->len+8);
+                    }
+                    dwPos += p->len + 8;
+            }
+            switch(plist->listid)
+            {
+            case IFFID_rgn:
+                    if (pDlsIns->nRegions < DLSMAXREGIONS) pDlsIns->nRegions++;
+                    break;
+            }
     } else
     {
-    	switch(pchunk->id)
-    	{
-    	case IFFID_insh:
-    		pDlsIns->ulBank = ((INSHCHUNK *)pchunk)->ulBank;
-    		pDlsIns->ulInstrument = ((INSHCHUNK *)pchunk)->ulInstrument;
-    		//Log("%3d regions, bank 0x%04X instrument %3d\n", ((INSHCHUNK *)pchunk)->cRegions, pDlsIns->ulBank, pDlsIns->ulInstrument);
-    		break;
+            switch(pchunk->id)
+            {
+            case IFFID_insh:
+                    pDlsIns->ulBank = ((INSHCHUNK *)pchunk)->ulBank;
+                    pDlsIns->ulInstrument = ((INSHCHUNK *)pchunk)->ulInstrument;
+                    //Log("%3d regions, bank 0x%04X instrument %3d\n", ((INSHCHUNK *)pchunk)->cRegions, pDlsIns->ulBank, pDlsIns->ulInstrument);
+                    break;
 
-    	case IFFID_rgnh:
-    		if (pDlsIns->nRegions < DLSMAXREGIONS)
-    		{
-    			RGNHCHUNK *p = (RGNHCHUNK *)pchunk;
-    			DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
-    			pregion->uKeyMin = (uint8_t)p->RangeKey.usLow;
-    			pregion->uKeyMax = (uint8_t)p->RangeKey.usHigh;
-    			pregion->fuOptions = (uint8_t)(p->usKeyGroup & DLSREGION_KEYGROUPMASK);
-    			if (p->fusOptions & F_RGN_OPTION_SELFNONEXCLUSIVE) pregion->fuOptions |= DLSREGION_SELFNONEXCLUSIVE;
-    			//Log("  Region %d: fusOptions=0x%02X usKeyGroup=0x%04X ", pDlsIns->nRegions, p->fusOptions, p->usKeyGroup);
-    			//Log("KeyRange[%3d,%3d] ", p->RangeKey.usLow, p->RangeKey.usHigh);
-    		}
-    		break;
+            case IFFID_rgnh:
+                    if (pDlsIns->nRegions < DLSMAXREGIONS)
+                    {
+                            RGNHCHUNK *p = (RGNHCHUNK *)pchunk;
+                            DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
+                            pregion->uKeyMin = (uint8_t)p->RangeKey.usLow;
+                            pregion->uKeyMax = (uint8_t)p->RangeKey.usHigh;
+                            pregion->fuOptions = (uint8_t)(p->usKeyGroup & DLSREGION_KEYGROUPMASK);
+                            if (p->fusOptions & F_RGN_OPTION_SELFNONEXCLUSIVE) pregion->fuOptions |= DLSREGION_SELFNONEXCLUSIVE;
+                            //Log("  Region %d: fusOptions=0x%02X usKeyGroup=0x%04X ", pDlsIns->nRegions, p->fusOptions, p->usKeyGroup);
+                            //Log("KeyRange[%3d,%3d] ", p->RangeKey.usLow, p->RangeKey.usHigh);
+                    }
+                    break;
 
-    	case IFFID_wlnk:
-    		if (pDlsIns->nRegions < DLSMAXREGIONS)
-    		{
-    			DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
-    			WLNKCHUNK *p = (WLNKCHUNK *)pchunk;
-    			pregion->nWaveLink = (uint16_t)p->ulTableIndex;
-    			if ((pregion->nWaveLink < 16384) && (pregion->nWaveLink >= m_nMaxWaveLink)) m_nMaxWaveLink = pregion->nWaveLink + 1;
-    			//Log("  WaveLink %d: fusOptions=0x%02X usPhaseGroup=0x%04X ", pDlsIns->nRegions, p->fusOptions, p->usPhaseGroup);
-    			//Log("ulChannel=%d ulTableIndex=%4d\n", p->ulChannel, p->ulTableIndex);
-    		}
-    		break;
+            case IFFID_wlnk:
+                    if (pDlsIns->nRegions < DLSMAXREGIONS)
+                    {
+                            DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
+                            WLNKCHUNK *p = (WLNKCHUNK *)pchunk;
+                            pregion->nWaveLink = (uint16_t)p->ulTableIndex;
+                            if ((pregion->nWaveLink < 16384) && (pregion->nWaveLink >= m_nMaxWaveLink)) m_nMaxWaveLink = pregion->nWaveLink + 1;
+                            //Log("  WaveLink %d: fusOptions=0x%02X usPhaseGroup=0x%04X ", pDlsIns->nRegions, p->fusOptions, p->usPhaseGroup);
+                            //Log("ulChannel=%d ulTableIndex=%4d\n", p->ulChannel, p->ulTableIndex);
+                    }
+                    break;
 
-    	case IFFID_wsmp:
-    		if (pDlsIns->nRegions < DLSMAXREGIONS)
-    		{
-    			DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
-    			WSMPCHUNK *p = (WSMPCHUNK *)pchunk;
-    			pregion->fuOptions |= DLSREGION_OVERRIDEWSMP;
-    			pregion->uUnityNote = (uint8_t)p->usUnityNote;
-    			pregion->sFineTune = p->sFineTune;
-    			LONG lVolume = DLS32BitRelativeGainToLinear(p->lAttenuation) / 256;
-    			if (lVolume > 256) lVolume = 256;
-    			if (lVolume < 4) lVolume = 4;
-    			pregion->usVolume = (uint16_t)lVolume;
-    			//Log("  WaveSample %d: usUnityNote=%2d sFineTune=%3d ", pDlsEnv->nRegions, p->usUnityNote, p->sFineTune);
-    			//Log("fulOptions=0x%04X loops=%d\n", p->fulOptions, p->cSampleLoops);
-    			if ((p->cSampleLoops) && (p->cbSize + sizeof(WSMPSAMPLELOOP) <= p->len))
-    			{
-    				WSMPSAMPLELOOP *ploop = (WSMPSAMPLELOOP *)(((LPBYTE)p)+8+p->cbSize);
-    				//Log("looptype=%2d loopstart=%5d loopend=%5d\n", ploop->ulLoopType, ploop->ulLoopStart, ploop->ulLoopLength);
-    				if (ploop->ulLoopLength > 3)
-    				{
-    					pregion->fuOptions |= DLSREGION_SAMPLELOOP;
-    					//if (ploop->ulLoopType) pregion->fuOptions |= DLSREGION_PINGPONGLOOP;
-    					pregion->ulLoopStart = ploop->ulLoopStart;
-    					pregion->ulLoopEnd = ploop->ulLoopStart + ploop->ulLoopLength;
-    				}
-    			}
-    		}
-    		break;
+            case IFFID_wsmp:
+                    if (pDlsIns->nRegions < DLSMAXREGIONS)
+                    {
+                            DLSREGION *pregion = &pDlsIns->Regions[pDlsIns->nRegions];
+                            WSMPCHUNK *p = (WSMPCHUNK *)pchunk;
+                            pregion->fuOptions |= DLSREGION_OVERRIDEWSMP;
+                            pregion->uUnityNote = (uint8_t)p->usUnityNote;
+                            pregion->sFineTune = p->sFineTune;
+                            LONG lVolume = DLS32BitRelativeGainToLinear(p->lAttenuation) / 256;
+                            if (lVolume > 256) lVolume = 256;
+                            if (lVolume < 4) lVolume = 4;
+                            pregion->usVolume = (uint16_t)lVolume;
+                            //Log("  WaveSample %d: usUnityNote=%2d sFineTune=%3d ", pDlsEnv->nRegions, p->usUnityNote, p->sFineTune);
+                            //Log("fulOptions=0x%04X loops=%d\n", p->fulOptions, p->cSampleLoops);
+                            if ((p->cSampleLoops) && (p->cbSize + sizeof(WSMPSAMPLELOOP) <= p->len))
+                            {
+                                    WSMPSAMPLELOOP *ploop = (WSMPSAMPLELOOP *)(((LPBYTE)p)+8+p->cbSize);
+                                    //Log("looptype=%2d loopstart=%5d loopend=%5d\n", ploop->ulLoopType, ploop->ulLoopStart, ploop->ulLoopLength);
+                                    if (ploop->ulLoopLength > 3)
+                                    {
+                                            pregion->fuOptions |= DLSREGION_SAMPLELOOP;
+                                            //if (ploop->ulLoopType) pregion->fuOptions |= DLSREGION_PINGPONGLOOP;
+                                            pregion->ulLoopStart = ploop->ulLoopStart;
+                                            pregion->ulLoopEnd = ploop->ulLoopStart + ploop->ulLoopLength;
+                                    }
+                            }
+                    }
+                    break;
 
-    	case IFFID_art1:
-    		if (m_nEnvelopes < DLSMAXENVELOPES)
-    		{
-    			ART1CHUNK *p = (ART1CHUNK *)pchunk;
-    			if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
-    			{
-    				if (pDlsIns->nRegions >= DLSMAXREGIONS) break;
-    			} else
-    			{
-    				pDlsIns->nMelodicEnv = m_nEnvelopes + 1;
-    			}
-    			if (p->cbSize+p->cConnectionBlocks*sizeof(CONNECTIONBLOCK) > p->len) break;
-    			DLSENVELOPE *pDlsEnv = &m_Envelopes[m_nEnvelopes];
-    			memset(pDlsEnv, 0, sizeof(DLSENVELOPE));
-    			pDlsEnv->nDefPan = 128;
-    			pDlsEnv->nVolSustainLevel = 128;
-    			//Log("  art1 (%3d bytes): cbSize=%d cConnectionBlocks=%d\n", p->len, p->cbSize, p->cConnectionBlocks);
-    			CONNECTIONBLOCK *pblk = (CONNECTIONBLOCK *)( ((LPBYTE)p)+8+p->cbSize );
-    			for (UINT iblk=0; iblk<p->cConnectionBlocks; iblk++, pblk++)
-    			{
-    				// [4-bit transform][12-bit dest][8-bit control][8-bit source] = 32-bit ID
-    				uint32_t dwArticulation = pblk->usTransform;
-    				dwArticulation = (dwArticulation << 12) | (pblk->usDestination & 0x0FFF);
-    				dwArticulation = (dwArticulation << 8) | (pblk->usControl & 0x00FF);
-    				dwArticulation = (dwArticulation << 8) | (pblk->usSource & 0x00FF);
-    				switch(dwArticulation)
-    				{
-    				case ART_DEFAULTPAN:
-    					{
-    						LONG pan = 128 + pblk->lScale / (65536000/128);
-    						if (pan < 0) pan = 0;
-    						if (pan > 255) pan = 255;
-    						pDlsEnv->nDefPan = (uint8_t)pan;
-    					}
-    					break;
+            case IFFID_art1:
+                    if (m_nEnvelopes < DLSMAXENVELOPES)
+                    {
+                            ART1CHUNK *p = (ART1CHUNK *)pchunk;
+                            if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
+                            {
+                                    if (pDlsIns->nRegions >= DLSMAXREGIONS) break;
+                            } else
+                            {
+                                    pDlsIns->nMelodicEnv = m_nEnvelopes + 1;
+                            }
+                            if (p->cbSize+p->cConnectionBlocks*sizeof(CONNECTIONBLOCK) > p->len) break;
+                            DLSENVELOPE *pDlsEnv = &m_Envelopes[m_nEnvelopes];
+                            memset(pDlsEnv, 0, sizeof(DLSENVELOPE));
+                            pDlsEnv->nDefPan = 128;
+                            pDlsEnv->nVolSustainLevel = 128;
+                            //Log("  art1 (%3d bytes): cbSize=%d cConnectionBlocks=%d\n", p->len, p->cbSize, p->cConnectionBlocks);
+                            CONNECTIONBLOCK *pblk = (CONNECTIONBLOCK *)( ((LPBYTE)p)+8+p->cbSize );
+                            for (UINT iblk=0; iblk<p->cConnectionBlocks; iblk++, pblk++)
+                            {
+                                    // [4-bit transform][12-bit dest][8-bit control][8-bit source] = 32-bit ID
+                                    uint32_t dwArticulation = pblk->usTransform;
+                                    dwArticulation = (dwArticulation << 12) | (pblk->usDestination & 0x0FFF);
+                                    dwArticulation = (dwArticulation << 8) | (pblk->usControl & 0x00FF);
+                                    dwArticulation = (dwArticulation << 8) | (pblk->usSource & 0x00FF);
+                                    switch(dwArticulation)
+                                    {
+                                    case ART_DEFAULTPAN:
+                                            {
+                                                    LONG pan = 128 + pblk->lScale / (65536000/128);
+                                                    if (pan < 0) pan = 0;
+                                                    if (pan > 255) pan = 255;
+                                                    pDlsEnv->nDefPan = (uint8_t)pan;
+                                            }
+                                            break;
 
-    				case ART_VOL_EG_ATTACKTIME:
-    					// 32-bit time cents units. range = [0s, 20s]
-    					pDlsEnv->wVolAttack = 0;
-    					if (pblk->lScale > -0x40000000)
-    					{
-    						LONG l = pblk->lScale - 78743200; // maximum velocity
-    						if (l > 0) l = 0;
-    						LONG attacktime = DLS32BitTimeCentsToMilliseconds(l);
-    						if (attacktime < 0) attacktime = 0;
-    						if (attacktime > 20000) attacktime = 20000;
-    						if (attacktime >= 20) pDlsEnv->wVolAttack = (uint16_t)(attacktime / 20);
-    						//Log("%3d: Envelope Attack Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), attacktime, pblk->lScale);
-    					}
-    					break;
+                                    case ART_VOL_EG_ATTACKTIME:
+                                            // 32-bit time cents units. range = [0s, 20s]
+                                            pDlsEnv->wVolAttack = 0;
+                                            if (pblk->lScale > -0x40000000)
+                                            {
+                                                    LONG l = pblk->lScale - 78743200; // maximum velocity
+                                                    if (l > 0) l = 0;
+                                                    LONG attacktime = DLS32BitTimeCentsToMilliseconds(l);
+                                                    if (attacktime < 0) attacktime = 0;
+                                                    if (attacktime > 20000) attacktime = 20000;
+                                                    if (attacktime >= 20) pDlsEnv->wVolAttack = (uint16_t)(attacktime / 20);
+                                                    //Log("%3d: Envelope Attack Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), attacktime, pblk->lScale);
+                                            }
+                                            break;
 
-    				case ART_VOL_EG_DECAYTIME:
-    					// 32-bit time cents units. range = [0s, 20s]
-    					pDlsEnv->wVolDecay = 0;
-    					if (pblk->lScale > -0x40000000)
-    					{
-    						LONG decaytime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
-    						if (decaytime > 20000) decaytime = 20000;
-    						if (decaytime >= 20) pDlsEnv->wVolDecay = (uint16_t)(decaytime / 20);
-    						//Log("%3d: Envelope Decay Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), decaytime, pblk->lScale);
-    					}
-    					break;
+                                    case ART_VOL_EG_DECAYTIME:
+                                            // 32-bit time cents units. range = [0s, 20s]
+                                            pDlsEnv->wVolDecay = 0;
+                                            if (pblk->lScale > -0x40000000)
+                                            {
+                                                    LONG decaytime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
+                                                    if (decaytime > 20000) decaytime = 20000;
+                                                    if (decaytime >= 20) pDlsEnv->wVolDecay = (uint16_t)(decaytime / 20);
+                                                    //Log("%3d: Envelope Decay Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), decaytime, pblk->lScale);
+                                            }
+                                            break;
 
-    				case ART_VOL_EG_RELEASETIME:
-    					// 32-bit time cents units. range = [0s, 20s]
-    					pDlsEnv->wVolRelease = 0;
-    					if (pblk->lScale > -0x40000000)
-    					{
-    						LONG releasetime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
-    						if (releasetime > 20000) releasetime = 20000;
-    						if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
-    						//Log("%3d: Envelope Release Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), pDlsEnv->wVolRelease, pblk->lScale);
-    					}
-    					break;
+                                    case ART_VOL_EG_RELEASETIME:
+                                            // 32-bit time cents units. range = [0s, 20s]
+                                            pDlsEnv->wVolRelease = 0;
+                                            if (pblk->lScale > -0x40000000)
+                                            {
+                                                    LONG releasetime = DLS32BitTimeCentsToMilliseconds(pblk->lScale);
+                                                    if (releasetime > 20000) releasetime = 20000;
+                                                    if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
+                                                    //Log("%3d: Envelope Release Time set to %d (%d time cents)\n", (uint32_t)(pDlsEnv->ulInstrument & 0x7F)|((pDlsEnv->ulBank >> 16) & 0x8000), pDlsEnv->wVolRelease, pblk->lScale);
+                                            }
+                                            break;
 
-    				case ART_VOL_EG_SUSTAINLEVEL:
-    					// 0.1% units
-    					if (pblk->lScale >= 0)
-    					{
-    						LONG l = pblk->lScale / (1000*512);
-    						if ((l >= 0) || (l <= 128)) pDlsEnv->nVolSustainLevel = (uint8_t)l;
-    						//Log("%3d: Envelope Sustain Level set to %d (%d)\n", (uint32_t)(pDlsIns->ulInstrument & 0x7F)|((pDlsIns->ulBank >> 16) & 0x8000), l, pblk->lScale);
-    					}
-    					break;
+                                    case ART_VOL_EG_SUSTAINLEVEL:
+                                            // 0.1% units
+                                            if (pblk->lScale >= 0)
+                                            {
+                                                    LONG l = pblk->lScale / (1000*512);
+                                                    if ((l >= 0) || (l <= 128)) pDlsEnv->nVolSustainLevel = (uint8_t)l;
+                                                    //Log("%3d: Envelope Sustain Level set to %d (%d)\n", (uint32_t)(pDlsIns->ulInstrument & 0x7F)|((pDlsIns->ulBank >> 16) & 0x8000), l, pblk->lScale);
+                                            }
+                                            break;
 
-    				//default:
-    				//	Log("    Articulation = 0x%08X value=%d\n", dwArticulation, pblk->lScale);
-    				}
-    			}
-    			m_nEnvelopes++;
-    		}
-    		break;
+                                    //default:
+                                    //        Log("    Articulation = 0x%08X value=%d\n", dwArticulation, pblk->lScale);
+                                    }
+                            }
+                            m_nEnvelopes++;
+                    }
+                    break;
 
-    	case IFFID_INAM:
-    		{
-    			UINT len = (pchunk->len < 32) ? pchunk->len : 31;
-    			if (len) memcpy(pDlsIns->szName, ((LPCSTR)pchunk)+8, len);
-    			pDlsIns->szName[31] = 0;
-    			//Log("%s\n", (uint32_t)pDlsIns->szName);
-    		}
-    		break;
+            case IFFID_INAM:
+                    {
+                            UINT len = (pchunk->len < 32) ? pchunk->len : 31;
+                            if (len) memcpy(pDlsIns->szName, ((LPCSTR)pchunk)+8, len);
+                            pDlsIns->szName[31] = 0;
+                            //Log("%s\n", (uint32_t)pDlsIns->szName);
+                    }
+                    break;
     #if 0
-    	default:
-    		{
-    			CHAR sid[5];
-    			memcpy(sid, &pchunk->id, 4);
-    			sid[4] = 0;
-    			Log("    \"%s\": %d bytes\n", (uint32_t)sid, pchunk->len);
-    		}
+            default:
+                    {
+                            CHAR sid[5];
+                            memcpy(sid, &pchunk->id, 4);
+                            sid[4] = 0;
+                            Log("    \"%s\": %d bytes\n", (uint32_t)sid, pchunk->len);
+                    }
     #endif
-    	}
+            }
     }
     return TRUE;
 }
@@ -764,141 +764,141 @@ BOOL CDLSBank::UpdateSF2PresetData(LPVOID pvsf2, LPVOID pvchunk, uint32_t dwMaxL
     switch(pchunk->id)
     {
     case IFFID_phdr:
-    	if (m_nInstruments) break;
-    	m_nInstruments = pchunk->len / sizeof(SFPRESETHEADER);
-    	if (m_nInstruments) m_nInstruments--; // Disgard EOP
-    	if (!m_nInstruments) break;
-    	m_pInstruments = new DLSINSTRUMENT[m_nInstruments];
-    	if (m_pInstruments)
-    	{
-    		memset(m_pInstruments, 0, m_nInstruments * sizeof(DLSINSTRUMENT));
-    	#ifdef DLSBANK_LOG
-    		Log("phdr: %d instruments\n", m_nInstruments);
-    	#endif
-    		SFPRESETHEADER *psfh = (SFPRESETHEADER *)(pchunk+1);
-    		DLSINSTRUMENT *pDlsIns = m_pInstruments;
-    		for (UINT i=0; i<m_nInstruments; i++, psfh++, pDlsIns++)
-    		{
-    			memcpy(pDlsIns->szName, psfh->achPresetName, 20);
-    			pDlsIns->szName[20] = 0;
-    			pDlsIns->ulInstrument = psfh->wPreset & 0x7F;
-    			pDlsIns->ulBank = (psfh->wBank >= 128) ? F_INSTRUMENT_DRUMS : (psfh->wBank << 8);
-    			pDlsIns->wPresetBagNdx = psfh->wPresetBagNdx;
-    			pDlsIns->wPresetBagNum = 1;
-    			if (psfh[1].wPresetBagNdx > pDlsIns->wPresetBagNdx) pDlsIns->wPresetBagNum = (uint16_t)(psfh[1].wPresetBagNdx - pDlsIns->wPresetBagNdx);
-    		}
-    	}
-    	break;
+            if (m_nInstruments) break;
+            m_nInstruments = pchunk->len / sizeof(SFPRESETHEADER);
+            if (m_nInstruments) m_nInstruments--; // Disgard EOP
+            if (!m_nInstruments) break;
+            m_pInstruments = new DLSINSTRUMENT[m_nInstruments];
+            if (m_pInstruments)
+            {
+                    memset(m_pInstruments, 0, m_nInstruments * sizeof(DLSINSTRUMENT));
+            #ifdef DLSBANK_LOG
+                    Log("phdr: %d instruments\n", m_nInstruments);
+            #endif
+                    SFPRESETHEADER *psfh = (SFPRESETHEADER *)(pchunk+1);
+                    DLSINSTRUMENT *pDlsIns = m_pInstruments;
+                    for (UINT i=0; i<m_nInstruments; i++, psfh++, pDlsIns++)
+                    {
+                            memcpy(pDlsIns->szName, psfh->achPresetName, 20);
+                            pDlsIns->szName[20] = 0;
+                            pDlsIns->ulInstrument = psfh->wPreset & 0x7F;
+                            pDlsIns->ulBank = (psfh->wBank >= 128) ? F_INSTRUMENT_DRUMS : (psfh->wBank << 8);
+                            pDlsIns->wPresetBagNdx = psfh->wPresetBagNdx;
+                            pDlsIns->wPresetBagNum = 1;
+                            if (psfh[1].wPresetBagNdx > pDlsIns->wPresetBagNdx) pDlsIns->wPresetBagNum = (uint16_t)(psfh[1].wPresetBagNdx - pDlsIns->wPresetBagNdx);
+                    }
+            }
+            break;
 
     case IFFID_pbag:
-    	if (m_pInstruments)
-    	{
-    		UINT nBags = pchunk->len / sizeof(SFPRESETBAG);
-    		if (nBags)
-    		{
-    			psf2->nPresetBags = nBags;
-    			psf2->pPresetBags = (SFPRESETBAG *)(pchunk+1);
-    		}
-    	}
+            if (m_pInstruments)
+            {
+                    UINT nBags = pchunk->len / sizeof(SFPRESETBAG);
+                    if (nBags)
+                    {
+                            psf2->nPresetBags = nBags;
+                            psf2->pPresetBags = (SFPRESETBAG *)(pchunk+1);
+                    }
+            }
     #ifdef DLSINSTR_LOG
-    	else Log("pbag: no instruments!\n");
+            else Log("pbag: no instruments!\n");
     #endif
-    	break;
+            break;
 
     case IFFID_pgen:
-    	if (m_pInstruments)
-    	{
-    		UINT nGens = pchunk->len / sizeof(SFGENLIST);
-    		if (nGens)
-    		{
-    			psf2->nPresetGens = nGens;
-    			psf2->pPresetGens = (SFGENLIST *)(pchunk+1);
-    		}
-    	}
+            if (m_pInstruments)
+            {
+                    UINT nGens = pchunk->len / sizeof(SFGENLIST);
+                    if (nGens)
+                    {
+                            psf2->nPresetGens = nGens;
+                            psf2->pPresetGens = (SFGENLIST *)(pchunk+1);
+                    }
+            }
     #ifdef DLSINSTR_LOG
-    	else Log("pgen: no instruments!\n");
+            else Log("pgen: no instruments!\n");
     #endif
-    	break;
+            break;
 
     case IFFID_inst:
-    	if (m_pInstruments)
-    	{
-    		UINT nIns = pchunk->len / sizeof(SFINST);
-    		psf2->nInsts = nIns;
-    		psf2->pInsts = (SFINST *)(pchunk+1);
-    	}
-    	break;
+            if (m_pInstruments)
+            {
+                    UINT nIns = pchunk->len / sizeof(SFINST);
+                    psf2->nInsts = nIns;
+                    psf2->pInsts = (SFINST *)(pchunk+1);
+            }
+            break;
 
     case IFFID_ibag:
-    	if (m_pInstruments)
-    	{
-    		UINT nBags = pchunk->len / sizeof(SFINSTBAG);
-    		if (nBags)
-    		{
-    			psf2->nInstBags = nBags;
-    			psf2->pInstBags = (SFINSTBAG *)(pchunk+1);
-    		}
-    	}
-    	break;
+            if (m_pInstruments)
+            {
+                    UINT nBags = pchunk->len / sizeof(SFINSTBAG);
+                    if (nBags)
+                    {
+                            psf2->nInstBags = nBags;
+                            psf2->pInstBags = (SFINSTBAG *)(pchunk+1);
+                    }
+            }
+            break;
 
     case IFFID_igen:
-    	if (m_pInstruments)
-    	{
-    		UINT nGens = pchunk->len / sizeof(SFINSTGENLIST);
-    		if (nGens)
-    		{
-    			psf2->nInstGens = nGens;
-    			psf2->pInstGens = (SFINSTGENLIST *)(pchunk+1);
-    		}
-    	}
-    	break;
+            if (m_pInstruments)
+            {
+                    UINT nGens = pchunk->len / sizeof(SFINSTGENLIST);
+                    if (nGens)
+                    {
+                            psf2->nInstGens = nGens;
+                            psf2->pInstGens = (SFINSTGENLIST *)(pchunk+1);
+                    }
+            }
+            break;
 
     case IFFID_shdr:
-    	if (m_pSamplesEx) break;
-    	m_nSamplesEx = pchunk->len / sizeof(SFSAMPLE);
+            if (m_pSamplesEx) break;
+            m_nSamplesEx = pchunk->len / sizeof(SFSAMPLE);
     #ifdef DLSINSTR_LOG
-    	Log("shdr: %d samples\n", m_nSamplesEx);
+            Log("shdr: %d samples\n", m_nSamplesEx);
     #endif
-    	if (m_nSamplesEx < 1) break;
-    	m_nWaveForms = m_nSamplesEx;
-    	m_pSamplesEx = new DLSSAMPLEEX[m_nSamplesEx];
-    	m_pWaveForms = new uint32_t[m_nWaveForms];
-    	if ((m_pSamplesEx) && (m_pWaveForms))
-    	{
-    		memset(m_pSamplesEx, 0, sizeof(DLSSAMPLEEX)*m_nSamplesEx);
-    		memset(m_pWaveForms, 0, sizeof(uint32_t)*m_nWaveForms);
-    		DLSSAMPLEEX *pDlsSmp = m_pSamplesEx;
-    		SFSAMPLE *p = (SFSAMPLE *)(pchunk+1);
-    		for (UINT i=0; i<m_nSamplesEx; i++, pDlsSmp++, p++)
-    		{
-    			memcpy(pDlsSmp->szName, p->achSampleName, 20);
-    			pDlsSmp->dwLen = 0;
-    			pDlsSmp->dwSampleRate = p->dwSampleRate;
-    			pDlsSmp->byOriginalPitch = p->byOriginalPitch;
-    			pDlsSmp->chPitchCorrection = p->chPitchCorrection;
-    			if (((p->sfSampleType & 0x7FFF) <= 4) && (p->dwStart < 0x08000000) && (p->dwEnd >= p->dwStart+8))
-    			{
-    				pDlsSmp->dwLen = (p->dwEnd - p->dwStart) * 2;
-    				if ((p->dwEndloop > p->dwStartloop + 7) && (p->dwStartloop > p->dwStart))
-    				{
-    					pDlsSmp->dwStartloop = p->dwStartloop - p->dwStart;
-    					pDlsSmp->dwEndloop = p->dwEndloop - p->dwStart;
-    				}
-    				m_pWaveForms[i] = p->dwStart * 2;
-    				//Log("  offset[%d]=%d len=%d\n", i, p->dwStart*2, psmp->dwLen);
-    			}
-    		}
-    	}
-    	break;
+            if (m_nSamplesEx < 1) break;
+            m_nWaveForms = m_nSamplesEx;
+            m_pSamplesEx = new DLSSAMPLEEX[m_nSamplesEx];
+            m_pWaveForms = new uint32_t[m_nWaveForms];
+            if ((m_pSamplesEx) && (m_pWaveForms))
+            {
+                    memset(m_pSamplesEx, 0, sizeof(DLSSAMPLEEX)*m_nSamplesEx);
+                    memset(m_pWaveForms, 0, sizeof(uint32_t)*m_nWaveForms);
+                    DLSSAMPLEEX *pDlsSmp = m_pSamplesEx;
+                    SFSAMPLE *p = (SFSAMPLE *)(pchunk+1);
+                    for (UINT i=0; i<m_nSamplesEx; i++, pDlsSmp++, p++)
+                    {
+                            memcpy(pDlsSmp->szName, p->achSampleName, 20);
+                            pDlsSmp->dwLen = 0;
+                            pDlsSmp->dwSampleRate = p->dwSampleRate;
+                            pDlsSmp->byOriginalPitch = p->byOriginalPitch;
+                            pDlsSmp->chPitchCorrection = p->chPitchCorrection;
+                            if (((p->sfSampleType & 0x7FFF) <= 4) && (p->dwStart < 0x08000000) && (p->dwEnd >= p->dwStart+8))
+                            {
+                                    pDlsSmp->dwLen = (p->dwEnd - p->dwStart) * 2;
+                                    if ((p->dwEndloop > p->dwStartloop + 7) && (p->dwStartloop > p->dwStart))
+                                    {
+                                            pDlsSmp->dwStartloop = p->dwStartloop - p->dwStart;
+                                            pDlsSmp->dwEndloop = p->dwEndloop - p->dwStart;
+                                    }
+                                    m_pWaveForms[i] = p->dwStart * 2;
+                                    //Log("  offset[%d]=%d len=%d\n", i, p->dwStart*2, psmp->dwLen);
+                            }
+                    }
+            }
+            break;
 
     #ifdef DLSINSTR_LOG
     default:
-    	{
-    		CHAR sdbg[5];
-    		memcpy(sdbg, &pchunk->id, 4);
-    		sdbg[4] = 0;
-    		Log("Unsupported SF2 chunk: %s (%d bytes)\n", sdbg, pchunk->len);
-    	}
+            {
+                    CHAR sdbg[5];
+                    memcpy(sdbg, &pchunk->id, 4);
+                    sdbg[4] = 0;
+                    Log("Unsupported SF2 chunk: %s (%d bytes)\n", sdbg, pchunk->len);
+            }
     #endif
     }
     return TRUE;
@@ -917,169 +917,169 @@ BOOL CDLSBank::ConvertSF2ToDLS(LPVOID pvsf2info)
     pDlsIns = m_pInstruments;
     for (UINT nIns=0; nIns<m_nInstruments; nIns++, pDlsIns++)
     {
-    	DLSENVELOPE dlsEnv;
-    	UINT nInstrNdx = 0;
-    	LONG lAttenuation = 0;
-    	// Default Envelope Values
-    	dlsEnv.wVolAttack = 0;
-    	dlsEnv.wVolDecay = 0;
-    	dlsEnv.wVolRelease = 0;
-    	dlsEnv.nVolSustainLevel = 128;
-    	dlsEnv.nDefPan = 128;
-    	// Load Preset Bags
-    	for (UINT ipbagcnt=0; ipbagcnt<(UINT)pDlsIns->wPresetBagNum; ipbagcnt++)
-    	{
-    		UINT ipbagndx = pDlsIns->wPresetBagNdx + ipbagcnt;
-    		if ((ipbagndx+1 >= psf2->nPresetBags) || (!psf2->pPresetBags)) break;
-    		// Load generators for each preset bag
-    		SFPRESETBAG *pbag = psf2->pPresetBags + ipbagndx;
-    		for (UINT ipgenndx=pbag[0].wGenNdx; ipgenndx<pbag[1].wGenNdx; ipgenndx++)
-    		{
-    			if ((!psf2->pPresetGens) || (ipgenndx+1 >= psf2->nPresetGens)) break;
-    			SFGENLIST *pgen = psf2->pPresetGens + ipgenndx;
-    			switch(pgen->sfGenOper)
-    			{
-    			case SF2_GEN_DECAYVOLENV:
-    				{
-    					LONG decaytime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
-    					if (decaytime > 20000) decaytime = 20000;
-    					if (decaytime >= 20) dlsEnv.wVolDecay = (uint16_t)(decaytime / 20);
-    					//Log("  vol decay time set to %d\n", decaytime);
-    				}
-    				break;
-    			case SF2_GEN_RELEASEVOLENV:
-    				{
-    					LONG releasetime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
-    					if (releasetime > 20000) releasetime = 20000;
-    					if (releasetime >= 20) dlsEnv.wVolRelease = (uint16_t)(releasetime / 20);
-    					//Log("  vol release time set to %d\n", releasetime);
-    				}
-    				break;
-    			case SF2_GEN_INSTRUMENT:
-    				nInstrNdx = pgen->genAmount + 1;
-    				break;
-    			case SF2_GEN_ATTENUATION:
-    				lAttenuation = - (int)(uint16_t)(pgen->genAmount);
-    				break;
+            DLSENVELOPE dlsEnv;
+            UINT nInstrNdx = 0;
+            LONG lAttenuation = 0;
+            // Default Envelope Values
+            dlsEnv.wVolAttack = 0;
+            dlsEnv.wVolDecay = 0;
+            dlsEnv.wVolRelease = 0;
+            dlsEnv.nVolSustainLevel = 128;
+            dlsEnv.nDefPan = 128;
+            // Load Preset Bags
+            for (UINT ipbagcnt=0; ipbagcnt<(UINT)pDlsIns->wPresetBagNum; ipbagcnt++)
+            {
+                    UINT ipbagndx = pDlsIns->wPresetBagNdx + ipbagcnt;
+                    if ((ipbagndx+1 >= psf2->nPresetBags) || (!psf2->pPresetBags)) break;
+                    // Load generators for each preset bag
+                    SFPRESETBAG *pbag = psf2->pPresetBags + ipbagndx;
+                    for (UINT ipgenndx=pbag[0].wGenNdx; ipgenndx<pbag[1].wGenNdx; ipgenndx++)
+                    {
+                            if ((!psf2->pPresetGens) || (ipgenndx+1 >= psf2->nPresetGens)) break;
+                            SFGENLIST *pgen = psf2->pPresetGens + ipgenndx;
+                            switch(pgen->sfGenOper)
+                            {
+                            case SF2_GEN_DECAYVOLENV:
+                                    {
+                                            LONG decaytime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
+                                            if (decaytime > 20000) decaytime = 20000;
+                                            if (decaytime >= 20) dlsEnv.wVolDecay = (uint16_t)(decaytime / 20);
+                                            //Log("  vol decay time set to %d\n", decaytime);
+                                    }
+                                    break;
+                            case SF2_GEN_RELEASEVOLENV:
+                                    {
+                                            LONG releasetime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
+                                            if (releasetime > 20000) releasetime = 20000;
+                                            if (releasetime >= 20) dlsEnv.wVolRelease = (uint16_t)(releasetime / 20);
+                                            //Log("  vol release time set to %d\n", releasetime);
+                                    }
+                                    break;
+                            case SF2_GEN_INSTRUMENT:
+                                    nInstrNdx = pgen->genAmount + 1;
+                                    break;
+                            case SF2_GEN_ATTENUATION:
+                                    lAttenuation = - (int)(uint16_t)(pgen->genAmount);
+                                    break;
 #if 0
-    			default:
-    				Log("Ins %3d: bag %3d gen %3d: ", nIns, ipbagndx, ipgenndx);
-    				Log("genoper=%d amount=0x%04X ", pgen->sfGenOper, pgen->genAmount);
-    				Log((pSmp->ulBank & F_INSTRUMENT_DRUMS) ? "(drum)\n" : "\n");
+                            default:
+                                    Log("Ins %3d: bag %3d gen %3d: ", nIns, ipbagndx, ipgenndx);
+                                    Log("genoper=%d amount=0x%04X ", pgen->sfGenOper, pgen->genAmount);
+                                    Log((pSmp->ulBank & F_INSTRUMENT_DRUMS) ? "(drum)\n" : "\n");
 #endif
-    			}
-    		}
-    	}
-    	// Envelope
-    	if ((m_nEnvelopes < DLSMAXENVELOPES) && (!(pDlsIns->ulBank & F_INSTRUMENT_DRUMS)))
-    	{
-    		m_Envelopes[m_nEnvelopes] = dlsEnv;
-    		m_nEnvelopes++;
-    		pDlsIns->nMelodicEnv = m_nEnvelopes;
-    	}
-    	// Load Instrument Bags
-    	if ((!nInstrNdx) || (nInstrNdx >= psf2->nInsts) || (!psf2->pInsts)) continue;
-    	nInstrNdx--;
-    	pDlsIns->nRegions = psf2->pInsts[nInstrNdx+1].wInstBagNdx - psf2->pInsts[nInstrNdx].wInstBagNdx;
-    	//Log("\nIns %3d, %2d regions:\n", nIns, pSmp->nRegions);
-    	if (pDlsIns->nRegions > DLSMAXREGIONS) pDlsIns->nRegions = DLSMAXREGIONS;
-    	DLSREGION *pRgn = pDlsIns->Regions;
-    	for (UINT nRgn=0; nRgn<pDlsIns->nRegions; nRgn++, pRgn++)
-    	{
-    		UINT ibagcnt = psf2->pInsts[nInstrNdx].wInstBagNdx + nRgn;
-    		if ((ibagcnt >= psf2->nInstBags) || (!psf2->pInstBags)) break;
-    		// Create a new envelope for drums
-    		DLSENVELOPE *pDlsEnv = &dlsEnv;
-    		if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
-    		{
-    			if ((m_nEnvelopes < DLSMAXENVELOPES) && (!(pDlsIns->ulBank & F_INSTRUMENT_DRUMS)))
-    			{
-    				m_Envelopes[m_nEnvelopes] = dlsEnv;
-    				pDlsEnv = &m_Envelopes[m_nEnvelopes];
-    				m_nEnvelopes++;
-    				pRgn->uPercEnv = (uint16_t)m_nEnvelopes;
-    			}
-    		} else
-    		if (pDlsIns->nMelodicEnv)
-    		{
-    			pDlsEnv = &m_Envelopes[pDlsIns->nMelodicEnv-1];
-    		}
-    		// Region Default Values
-    		LONG lAttn = lAttenuation;
-    		pRgn->uUnityNote = 0xFF;	// 0xFF means undefined -> use sample
-    		// Load Generators
-    		SFINSTBAG *pbag = psf2->pInstBags + ibagcnt;
-    		for (UINT igenndx=pbag[0].wGenNdx; igenndx<pbag[1].wGenNdx; igenndx++)
-    		{
-    			if ((igenndx >= psf2->nInstGens) || (!psf2->pInstGens)) break;
-    			SFINSTGENLIST *pgen = psf2->pInstGens + igenndx;
-    			uint16_t value = pgen->genAmount;
-    			switch(pgen->sfGenOper)
-    			{
-    			case SF2_GEN_KEYRANGE:
-    				pRgn->uKeyMin = (uint8_t)(value & 0xFF);
-    				pRgn->uKeyMax = (uint8_t)(value >> 8);
-    				if (pRgn->uKeyMin > pRgn->uKeyMax)
-    				{
-    					uint8_t b = pRgn->uKeyMax;
-    					pRgn->uKeyMax = pRgn->uKeyMin;
-    					pRgn->uKeyMin = b;
-    				}
-    				//if (nIns == 9) Log("  keyrange: %d-%d\n", pRgn->uKeyMin, pRgn->uKeyMax);
-    				break;
-    			case SF2_GEN_UNITYNOTE:
-    				if (value < 128) pRgn->uUnityNote = (uint8_t)value;
-    				break;
-    			case SF2_GEN_RELEASEVOLENV:
-    				{
-    					LONG releasetime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
-    					if (releasetime > 20000) releasetime = 20000;
-    					if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
-    					//Log("  vol release time set to %d\n", releasetime);
-    				}
-    				break;
-    			case SF2_GEN_PAN:
-    				{
-    					int pan = (short int)value;
-    					pan = (((pan + 500) * 127) / 500) + 128;
-    					if (pan < 0) pan = 0;
-    					if (pan > 255) pan = 255;
-    					pDlsEnv->nDefPan = (uint8_t)pan;
-    				}
-    				break;
-    			case SF2_GEN_ATTENUATION:
-    				lAttn = -(int)value;
-    				break;
-    			case SF2_GEN_SAMPLEID:
-    				//if (nIns == 9) Log("Region %d/%d: SampleID = %d\n", nRgn, pSmp->nRegions, value);
-    				if ((m_pSamplesEx) && ((UINT)value < m_nSamplesEx))
-    				{
-    					pRgn->nWaveLink = value;
-    					pRgn->ulLoopStart = m_pSamplesEx[value].dwStartloop;
-    					pRgn->ulLoopEnd = m_pSamplesEx[value].dwEndloop;
-    				}
-    				break;
-    			case SF2_GEN_SAMPLEMODES:
-    				value &= 3;
-    				pRgn->fuOptions &= ~(DLSREGION_SAMPLELOOP|DLSREGION_PINGPONGLOOP|DLSREGION_SUSTAINLOOP);
-    				if (value == 1) pRgn->fuOptions |= DLSREGION_SAMPLELOOP; else
-    				if (value == 2) pRgn->fuOptions |= DLSREGION_SAMPLELOOP|DLSREGION_PINGPONGLOOP; else
-    				if (value == 3) pRgn->fuOptions |= DLSREGION_SAMPLELOOP|DLSREGION_SUSTAINLOOP;
-    				pRgn->fuOptions |= DLSREGION_OVERRIDEWSMP;
-    				break;
-    			case SF2_GEN_KEYGROUP:
-    				pRgn->fuOptions |= (uint8_t)(value & DLSREGION_KEYGROUPMASK);
-    				break;
-    			//default:
-    			//	Log("    gen=%d value=%04X\n", pgen->sfGenOper, pgen->genAmount);
-    			}
-    		}
-    		LONG lVolume = DLS32BitRelativeGainToLinear((lAttn/10) << 16) / 256;
-    		if (lVolume < 16) lVolume = 16;
-    		if (lVolume > 256) lVolume = 256;
-    		pRgn->usVolume = (uint16_t)lVolume;
-    		//Log("\n");
-    	}
+                            }
+                    }
+            }
+            // Envelope
+            if ((m_nEnvelopes < DLSMAXENVELOPES) && (!(pDlsIns->ulBank & F_INSTRUMENT_DRUMS)))
+            {
+                    m_Envelopes[m_nEnvelopes] = dlsEnv;
+                    m_nEnvelopes++;
+                    pDlsIns->nMelodicEnv = m_nEnvelopes;
+            }
+            // Load Instrument Bags
+            if ((!nInstrNdx) || (nInstrNdx >= psf2->nInsts) || (!psf2->pInsts)) continue;
+            nInstrNdx--;
+            pDlsIns->nRegions = psf2->pInsts[nInstrNdx+1].wInstBagNdx - psf2->pInsts[nInstrNdx].wInstBagNdx;
+            //Log("\nIns %3d, %2d regions:\n", nIns, pSmp->nRegions);
+            if (pDlsIns->nRegions > DLSMAXREGIONS) pDlsIns->nRegions = DLSMAXREGIONS;
+            DLSREGION *pRgn = pDlsIns->Regions;
+            for (UINT nRgn=0; nRgn<pDlsIns->nRegions; nRgn++, pRgn++)
+            {
+                    UINT ibagcnt = psf2->pInsts[nInstrNdx].wInstBagNdx + nRgn;
+                    if ((ibagcnt >= psf2->nInstBags) || (!psf2->pInstBags)) break;
+                    // Create a new envelope for drums
+                    DLSENVELOPE *pDlsEnv = &dlsEnv;
+                    if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
+                    {
+                            if ((m_nEnvelopes < DLSMAXENVELOPES) && (!(pDlsIns->ulBank & F_INSTRUMENT_DRUMS)))
+                            {
+                                    m_Envelopes[m_nEnvelopes] = dlsEnv;
+                                    pDlsEnv = &m_Envelopes[m_nEnvelopes];
+                                    m_nEnvelopes++;
+                                    pRgn->uPercEnv = (uint16_t)m_nEnvelopes;
+                            }
+                    } else
+                    if (pDlsIns->nMelodicEnv)
+                    {
+                            pDlsEnv = &m_Envelopes[pDlsIns->nMelodicEnv-1];
+                    }
+                    // Region Default Values
+                    LONG lAttn = lAttenuation;
+                    pRgn->uUnityNote = 0xFF;        // 0xFF means undefined -> use sample
+                    // Load Generators
+                    SFINSTBAG *pbag = psf2->pInstBags + ibagcnt;
+                    for (UINT igenndx=pbag[0].wGenNdx; igenndx<pbag[1].wGenNdx; igenndx++)
+                    {
+                            if ((igenndx >= psf2->nInstGens) || (!psf2->pInstGens)) break;
+                            SFINSTGENLIST *pgen = psf2->pInstGens + igenndx;
+                            uint16_t value = pgen->genAmount;
+                            switch(pgen->sfGenOper)
+                            {
+                            case SF2_GEN_KEYRANGE:
+                                    pRgn->uKeyMin = (uint8_t)(value & 0xFF);
+                                    pRgn->uKeyMax = (uint8_t)(value >> 8);
+                                    if (pRgn->uKeyMin > pRgn->uKeyMax)
+                                    {
+                                            uint8_t b = pRgn->uKeyMax;
+                                            pRgn->uKeyMax = pRgn->uKeyMin;
+                                            pRgn->uKeyMin = b;
+                                    }
+                                    //if (nIns == 9) Log("  keyrange: %d-%d\n", pRgn->uKeyMin, pRgn->uKeyMax);
+                                    break;
+                            case SF2_GEN_UNITYNOTE:
+                                    if (value < 128) pRgn->uUnityNote = (uint8_t)value;
+                                    break;
+                            case SF2_GEN_RELEASEVOLENV:
+                                    {
+                                            LONG releasetime = DLS32BitTimeCentsToMilliseconds(((LONG)(short int)pgen->genAmount)<<16);
+                                            if (releasetime > 20000) releasetime = 20000;
+                                            if (releasetime >= 20) pDlsEnv->wVolRelease = (uint16_t)(releasetime / 20);
+                                            //Log("  vol release time set to %d\n", releasetime);
+                                    }
+                                    break;
+                            case SF2_GEN_PAN:
+                                    {
+                                            int pan = (short int)value;
+                                            pan = (((pan + 500) * 127) / 500) + 128;
+                                            if (pan < 0) pan = 0;
+                                            if (pan > 255) pan = 255;
+                                            pDlsEnv->nDefPan = (uint8_t)pan;
+                                    }
+                                    break;
+                            case SF2_GEN_ATTENUATION:
+                                    lAttn = -(int)value;
+                                    break;
+                            case SF2_GEN_SAMPLEID:
+                                    //if (nIns == 9) Log("Region %d/%d: SampleID = %d\n", nRgn, pSmp->nRegions, value);
+                                    if ((m_pSamplesEx) && ((UINT)value < m_nSamplesEx))
+                                    {
+                                            pRgn->nWaveLink = value;
+                                            pRgn->ulLoopStart = m_pSamplesEx[value].dwStartloop;
+                                            pRgn->ulLoopEnd = m_pSamplesEx[value].dwEndloop;
+                                    }
+                                    break;
+                            case SF2_GEN_SAMPLEMODES:
+                                    value &= 3;
+                                    pRgn->fuOptions &= ~(DLSREGION_SAMPLELOOP|DLSREGION_PINGPONGLOOP|DLSREGION_SUSTAINLOOP);
+                                    if (value == 1) pRgn->fuOptions |= DLSREGION_SAMPLELOOP; else
+                                    if (value == 2) pRgn->fuOptions |= DLSREGION_SAMPLELOOP|DLSREGION_PINGPONGLOOP; else
+                                    if (value == 3) pRgn->fuOptions |= DLSREGION_SAMPLELOOP|DLSREGION_SUSTAINLOOP;
+                                    pRgn->fuOptions |= DLSREGION_OVERRIDEWSMP;
+                                    break;
+                            case SF2_GEN_KEYGROUP:
+                                    pRgn->fuOptions |= (uint8_t)(value & DLSREGION_KEYGROUPMASK);
+                                    break;
+                            //default:
+                            //        Log("    gen=%d value=%04X\n", pgen->sfGenOper, pgen->genAmount);
+                            }
+                    }
+                    LONG lVolume = DLS32BitRelativeGainToLinear((lAttn/10) << 16) / 256;
+                    if (lVolume < 16) lVolume = 16;
+                    if (lVolume > 256) lVolume = 256;
+                    pRgn->usVolume = (uint16_t)lVolume;
+                    //Log("\n");
+            }
     }
     return TRUE;
 }
@@ -1092,7 +1092,7 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
 //--------------------------------------
 {
     SF2LOADERINFO sf2info;
-    const uint8_t *lpMemFile;	// Pointer to memory-mapped file
+    const uint8_t *lpMemFile;        // Pointer to memory-mapped file
     RIFFCHUNKID *priff;
     uint32_t dwMemPos, dwMemLength;
     UINT nInsDef;
@@ -1107,8 +1107,8 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     if (dwMemLength >= 256) lpMemFile = MapFile.Lock();
     if (!lpMemFile)
     {
-    	MapFile.Close();
-    	return FALSE;
+            MapFile.Close();
+            return FALSE;
     }
 
 #ifdef DLSBANK_LOG
@@ -1121,41 +1121,41 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     // Check DLS sections embedded in RMI midi files
     if ((priff->id_RIFF == IFFID_RIFF) && (priff->id_DLS == IFFID_RMID))
     {
-    	dwMemPos = 12;
-    	while (dwMemPos + 12 <= dwMemLength)
-    	{
-    		priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
-    		if ((priff->id_RIFF == IFFID_RIFF) && (priff->id_DLS == IFFID_DLS)) break;
-    		dwMemPos += priff->riff_len + 8;
-    	}
+            dwMemPos = 12;
+            while (dwMemPos + 12 <= dwMemLength)
+            {
+                    priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
+                    if ((priff->id_RIFF == IFFID_RIFF) && (priff->id_DLS == IFFID_DLS)) break;
+                    dwMemPos += priff->riff_len + 8;
+            }
     }
 
     // Check XDLS sections embedded in big endian IFF files
     if (priff->id_RIFF == IFFID_FORM)
     {
-    	do {
-    		priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
-    		int len = BigEndian(priff->riff_len);
-    		if ((len <= 4) || ((uint32_t)len >= dwMemLength - dwMemPos)) break;
-    		if (priff->id_DLS == IFFID_XDLS)
-    		{
-    			dwMemPos += 12;
-    			priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
-    			break;
-    		}
-    		dwMemPos += len + 8;
-    	} while (dwMemPos + 24 < dwMemLength);
+            do {
+                    priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
+                    int len = BigEndian(priff->riff_len);
+                    if ((len <= 4) || ((uint32_t)len >= dwMemLength - dwMemPos)) break;
+                    if (priff->id_DLS == IFFID_XDLS)
+                    {
+                            dwMemPos += 12;
+                            priff = (RIFFCHUNKID *)(lpMemFile + dwMemPos);
+                            break;
+                    }
+                    dwMemPos += len + 8;
+            } while (dwMemPos + 24 < dwMemLength);
     }
     if ((priff->id_RIFF != IFFID_RIFF)
      || ((priff->id_DLS != IFFID_DLS) && (priff->id_DLS != IFFID_MLS) && (priff->id_DLS != IFFID_sfbk))
      || (dwMemPos + priff->riff_len > dwMemLength-8))
     {
-    	MapFile.Unlock();
-    	MapFile.Close();
+            MapFile.Unlock();
+            MapFile.Close();
     #ifdef DLSBANK_LOG
-    	Log("Invalid DLS bank!\n");
+            Log("Invalid DLS bank!\n");
     #endif
-    	return FALSE;
+            return FALSE;
     }
     memset(&sf2info, 0, sizeof(sf2info));
     m_nType = (priff->id_DLS == IFFID_sfbk) ? SOUNDBANK_TYPE_SF2 : SOUNDBANK_TYPE_DLS;
@@ -1170,165 +1170,165 @@ BOOL CDLSBank::Open(LPCSTR lpszFileName)
     dwMemPos += sizeof(RIFFCHUNKID);
     while (dwMemPos + sizeof(IFFCHUNK) < dwMemLength)
     {
-    	IFFCHUNK *pchunk = (IFFCHUNK *)(lpMemFile + dwMemPos);
+            IFFCHUNK *pchunk = (IFFCHUNK *)(lpMemFile + dwMemPos);
 
-    	if (dwMemPos + 8 + pchunk->len > dwMemLength) break;
-    	switch(pchunk->id)
-    	{
-    	// DLS 1.0: Instruments Collection Header
-    	case IFFID_colh:
-    	#ifdef DLSBANK_LOG
-    		Log("colh (%d bytes)\n", pchunk->len);
-    	#endif
-    		if (!m_pInstruments)
-    		{
-    			m_nInstruments = ((COLHCHUNK *)pchunk)->ulInstruments;
-    			if (m_nInstruments)
-    			{
-    				m_pInstruments = new DLSINSTRUMENT[m_nInstruments];
-    				if (m_pInstruments) memset(m_pInstruments, 0, m_nInstruments * sizeof(DLSINSTRUMENT));
-    			}
-    		#ifdef DLSBANK_LOG
-    			Log("  %d instruments\n", m_nInstruments);
-    		#endif
-    		}
-    		break;
+            if (dwMemPos + 8 + pchunk->len > dwMemLength) break;
+            switch(pchunk->id)
+            {
+            // DLS 1.0: Instruments Collection Header
+            case IFFID_colh:
+            #ifdef DLSBANK_LOG
+                    Log("colh (%d bytes)\n", pchunk->len);
+            #endif
+                    if (!m_pInstruments)
+                    {
+                            m_nInstruments = ((COLHCHUNK *)pchunk)->ulInstruments;
+                            if (m_nInstruments)
+                            {
+                                    m_pInstruments = new DLSINSTRUMENT[m_nInstruments];
+                                    if (m_pInstruments) memset(m_pInstruments, 0, m_nInstruments * sizeof(DLSINSTRUMENT));
+                            }
+                    #ifdef DLSBANK_LOG
+                            Log("  %d instruments\n", m_nInstruments);
+                    #endif
+                    }
+                    break;
 
-    	// DLS 1.0: Instruments Pointers Table
-    	case IFFID_ptbl:
-    	#ifdef DLSBANK_LOG
-    		Log("ptbl (%d bytes)\n", pchunk->len);
-    	#endif
-    		if (!m_pWaveForms)
-    		{
-    			m_nWaveForms = ((PTBLCHUNK *)pchunk)->cCues;
-    			if (m_nWaveForms)
-    			{
-    				m_pWaveForms = new uint32_t[m_nWaveForms];
-    				if (m_pWaveForms)
-    				{
-    					memcpy(m_pWaveForms, (lpMemFile + dwMemPos + 8 + ((PTBLCHUNK *)pchunk)->cbSize), m_nWaveForms * sizeof(uint32_t));
-    				}
-    			}
-    		#ifdef DLSBANK_LOG
-    			Log("  %d waveforms\n", m_nWaveForms);
-    		#endif
-    		}
-    		break;
+            // DLS 1.0: Instruments Pointers Table
+            case IFFID_ptbl:
+            #ifdef DLSBANK_LOG
+                    Log("ptbl (%d bytes)\n", pchunk->len);
+            #endif
+                    if (!m_pWaveForms)
+                    {
+                            m_nWaveForms = ((PTBLCHUNK *)pchunk)->cCues;
+                            if (m_nWaveForms)
+                            {
+                                    m_pWaveForms = new uint32_t[m_nWaveForms];
+                                    if (m_pWaveForms)
+                                    {
+                                            memcpy(m_pWaveForms, (lpMemFile + dwMemPos + 8 + ((PTBLCHUNK *)pchunk)->cbSize), m_nWaveForms * sizeof(uint32_t));
+                                    }
+                            }
+                    #ifdef DLSBANK_LOG
+                            Log("  %d waveforms\n", m_nWaveForms);
+                    #endif
+                    }
+                    break;
 
-    	// DLS 1.0: LIST section
-    	case IFFID_LIST:
-    	#ifdef DLSBANK_LOG
-    		Log("LIST\n");
-    	#endif
-    		{
-    			LISTCHUNK *plist = (LISTCHUNK *)pchunk;
-    			uint32_t dwPos = dwMemPos + sizeof(LISTCHUNK);
-    			uint32_t dwMaxPos = dwMemPos + 8 + plist->len;
-    			if (dwMaxPos > dwMemLength) dwMaxPos = dwMemLength;
-    			if (((plist->listid == IFFID_wvpl) && (m_nType & SOUNDBANK_TYPE_DLS))
-    			 || ((plist->listid == IFFID_sdta) && (m_nType & SOUNDBANK_TYPE_SF2)))
-    			{
-    				m_dwWavePoolOffset = dwPos;
-    			#ifdef DLSBANK_LOG
-    				Log("Wave Pool offset: %d\n", m_dwWavePoolOffset);
-    			#endif
-    				break;
-    			}
-    			while (dwPos + 12 < dwMaxPos)
-    			{
-    				if (!(lpMemFile[dwPos])) dwPos++;
-    				LISTCHUNK *psublist = (LISTCHUNK *)(lpMemFile+dwPos);
-    				if (dwPos + psublist->len + 8 > dwMemLength) break;
-    				// DLS Instrument Headers
-    				if ((psublist->id == IFFID_LIST) && (m_nType & SOUNDBANK_TYPE_DLS))
-    				{
-    					if ((psublist->listid == IFFID_ins) && (nInsDef < m_nInstruments) && (m_pInstruments))
-    					{
-    						DLSINSTRUMENT *pDlsIns = &m_pInstruments[nInsDef];
-    						//Log("Instrument %d:\n", nInsDef);
-    						UpdateInstrumentDefinition(pDlsIns, (IFFCHUNK *)psublist, psublist->len + 8);
-    						nInsDef++;
-    					}
-    				} else
-    				// DLS/SF2 Bank Information
-    				if ((plist->listid == IFFID_INFO) && (psublist->len))
-    				{
-    					UINT len = (psublist->len < 255) ? psublist->len : 255;
-    					LPCSTR pszInfo = (LPCSTR)(lpMemFile+dwPos+8);
-    					switch(psublist->id)
-    					{
-    					case IFFID_INAM:
-    						lstrcpyn(m_BankInfo.szBankName, pszInfo, len);
-    						break;
-    					case IFFID_IENG:
-    						lstrcpyn(m_BankInfo.szEngineer, pszInfo, len);
-    						break;
-    					case IFFID_ICOP:
-    						lstrcpyn(m_BankInfo.szCopyRight, pszInfo, len);
-    						break;
-    					case IFFID_ICMT:
-    						len = psublist->len;
-    						if (len > sizeof(m_BankInfo.szComments)-1) len = sizeof(m_BankInfo.szComments)-1;
-    						lstrcpyn(m_BankInfo.szComments, pszInfo, len);
-    						break;
-    					case IFFID_ISFT:
-    						lstrcpyn(m_BankInfo.szSoftware, pszInfo, len);
-    						break;
-    					case IFFID_ISBJ:
-    						lstrcpyn(m_BankInfo.szDescription, pszInfo, len);
-    						break;
-    					}
-    				} else
-    				if ((plist->listid == IFFID_pdta) && (m_nType & SOUNDBANK_TYPE_SF2))
-    				{
-    					UpdateSF2PresetData(&sf2info, (IFFCHUNK *)psublist, psublist->len + 8);
-    				}
-    				dwPos += 8 + psublist->len;
-    			}
-    		}
-    		break;
+            // DLS 1.0: LIST section
+            case IFFID_LIST:
+            #ifdef DLSBANK_LOG
+                    Log("LIST\n");
+            #endif
+                    {
+                            LISTCHUNK *plist = (LISTCHUNK *)pchunk;
+                            uint32_t dwPos = dwMemPos + sizeof(LISTCHUNK);
+                            uint32_t dwMaxPos = dwMemPos + 8 + plist->len;
+                            if (dwMaxPos > dwMemLength) dwMaxPos = dwMemLength;
+                            if (((plist->listid == IFFID_wvpl) && (m_nType & SOUNDBANK_TYPE_DLS))
+                             || ((plist->listid == IFFID_sdta) && (m_nType & SOUNDBANK_TYPE_SF2)))
+                            {
+                                    m_dwWavePoolOffset = dwPos;
+                            #ifdef DLSBANK_LOG
+                                    Log("Wave Pool offset: %d\n", m_dwWavePoolOffset);
+                            #endif
+                                    break;
+                            }
+                            while (dwPos + 12 < dwMaxPos)
+                            {
+                                    if (!(lpMemFile[dwPos])) dwPos++;
+                                    LISTCHUNK *psublist = (LISTCHUNK *)(lpMemFile+dwPos);
+                                    if (dwPos + psublist->len + 8 > dwMemLength) break;
+                                    // DLS Instrument Headers
+                                    if ((psublist->id == IFFID_LIST) && (m_nType & SOUNDBANK_TYPE_DLS))
+                                    {
+                                            if ((psublist->listid == IFFID_ins) && (nInsDef < m_nInstruments) && (m_pInstruments))
+                                            {
+                                                    DLSINSTRUMENT *pDlsIns = &m_pInstruments[nInsDef];
+                                                    //Log("Instrument %d:\n", nInsDef);
+                                                    UpdateInstrumentDefinition(pDlsIns, (IFFCHUNK *)psublist, psublist->len + 8);
+                                                    nInsDef++;
+                                            }
+                                    } else
+                                    // DLS/SF2 Bank Information
+                                    if ((plist->listid == IFFID_INFO) && (psublist->len))
+                                    {
+                                            UINT len = (psublist->len < 255) ? psublist->len : 255;
+                                            LPCSTR pszInfo = (LPCSTR)(lpMemFile+dwPos+8);
+                                            switch(psublist->id)
+                                            {
+                                            case IFFID_INAM:
+                                                    lstrcpyn(m_BankInfo.szBankName, pszInfo, len);
+                                                    break;
+                                            case IFFID_IENG:
+                                                    lstrcpyn(m_BankInfo.szEngineer, pszInfo, len);
+                                                    break;
+                                            case IFFID_ICOP:
+                                                    lstrcpyn(m_BankInfo.szCopyRight, pszInfo, len);
+                                                    break;
+                                            case IFFID_ICMT:
+                                                    len = psublist->len;
+                                                    if (len > sizeof(m_BankInfo.szComments)-1) len = sizeof(m_BankInfo.szComments)-1;
+                                                    lstrcpyn(m_BankInfo.szComments, pszInfo, len);
+                                                    break;
+                                            case IFFID_ISFT:
+                                                    lstrcpyn(m_BankInfo.szSoftware, pszInfo, len);
+                                                    break;
+                                            case IFFID_ISBJ:
+                                                    lstrcpyn(m_BankInfo.szDescription, pszInfo, len);
+                                                    break;
+                                            }
+                                    } else
+                                    if ((plist->listid == IFFID_pdta) && (m_nType & SOUNDBANK_TYPE_SF2))
+                                    {
+                                            UpdateSF2PresetData(&sf2info, (IFFCHUNK *)psublist, psublist->len + 8);
+                                    }
+                                    dwPos += 8 + psublist->len;
+                            }
+                    }
+                    break;
 
-    	#ifdef DLSBANK_LOG
-    	default:
-    		{
-    			CHAR sdbg[5];
-    			memcpy(sdbg, &pchunk->id, 4);
-    			sdbg[4] = 0;
-    			Log("Unsupported chunk: %s (%d bytes)\n", sdbg, pchunk->len);
-    		}
-    		break;
-    	#endif
-    	}
-    	dwMemPos += 8 + pchunk->len;
+            #ifdef DLSBANK_LOG
+            default:
+                    {
+                            CHAR sdbg[5];
+                            memcpy(sdbg, &pchunk->id, 4);
+                            sdbg[4] = 0;
+                            Log("Unsupported chunk: %s (%d bytes)\n", sdbg, pchunk->len);
+                    }
+                    break;
+            #endif
+            }
+            dwMemPos += 8 + pchunk->len;
     }
     // Build the ptbl is not present in file
     if ((!m_pWaveForms) && (m_dwWavePoolOffset) && (m_nType & SOUNDBANK_TYPE_DLS) && (m_nMaxWaveLink > 0))
     {
     #ifdef DLSBANK_LOG
-    	Log("ptbl not present: building table (%d wavelinks)...\n", m_nMaxWaveLink);
+            Log("ptbl not present: building table (%d wavelinks)...\n", m_nMaxWaveLink);
     #endif
-    	m_pWaveForms = new uint32_t[m_nMaxWaveLink];
-    	if (m_pWaveForms)
-    	{
-    		memset(m_pWaveForms, 0, m_nMaxWaveLink * sizeof(uint32_t));
-    		dwMemPos = m_dwWavePoolOffset;
-    		while (dwMemPos + sizeof(IFFCHUNK) < dwMemLength)
-    		{
-    			IFFCHUNK *pchunk = (IFFCHUNK *)(lpMemFile + dwMemPos);
-    			if (pchunk->id == IFFID_LIST) m_pWaveForms[m_nWaveForms++] = dwMemPos - m_dwWavePoolOffset;
-    			dwMemPos += 8 + pchunk->len;
-    			if (m_nWaveForms >= m_nMaxWaveLink) break;
-    		}
-    	#ifdef DLSBANK_LOG
-    		Log("Found %d waveforms\n", m_nWaveForms);
-    	#endif
-    	}
+            m_pWaveForms = new uint32_t[m_nMaxWaveLink];
+            if (m_pWaveForms)
+            {
+                    memset(m_pWaveForms, 0, m_nMaxWaveLink * sizeof(uint32_t));
+                    dwMemPos = m_dwWavePoolOffset;
+                    while (dwMemPos + sizeof(IFFCHUNK) < dwMemLength)
+                    {
+                            IFFCHUNK *pchunk = (IFFCHUNK *)(lpMemFile + dwMemPos);
+                            if (pchunk->id == IFFID_LIST) m_pWaveForms[m_nWaveForms++] = dwMemPos - m_dwWavePoolOffset;
+                            dwMemPos += 8 + pchunk->len;
+                            if (m_nWaveForms >= m_nMaxWaveLink) break;
+                    }
+            #ifdef DLSBANK_LOG
+                    Log("Found %d waveforms\n", m_nWaveForms);
+            #endif
+            }
     }
     // Convert the SF2 data to DLS
     if ((m_nType & SOUNDBANK_TYPE_SF2) && (m_pSamplesEx) && (m_pInstruments))
     {
-    	ConvertSF2ToDLS(&sf2info);
+            ConvertSF2ToDLS(&sf2info);
     }
     MapFile.Unlock();
     MapFile.Close();
@@ -1350,10 +1350,10 @@ UINT CDLSBank::GetRegionFromKey(UINT nIns, UINT nKey)
     pDlsIns = &m_pInstruments[nIns];
     for (UINT rgn=0; rgn<pDlsIns->nRegions; rgn++)
     {
-    	if ((nKey >= pDlsIns->Regions[rgn].uKeyMin) && (nKey <= pDlsIns->Regions[rgn].uKeyMax))
-    	{
-    		return rgn;
-    	}
+            if ((nKey >= pDlsIns->Regions[rgn].uKeyMin) && (nKey <= pDlsIns->Regions[rgn].uKeyMax))
+            {
+                    return rgn;
+            }
     }
     return 0;
 }
@@ -1380,9 +1380,9 @@ BOOL CDLSBank::ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, uint32_t *p
      || (!m_dwWavePoolOffset) || (!m_pWaveForms))
     {
     #ifdef DLSBANK_LOG
-    	Log("ExtractWaveForm(%d) failed: m_nInstruments=%d m_dwWavePoolOffset=%d m_pWaveForms=0x%08X\n", nIns, m_nInstruments, m_dwWavePoolOffset, m_pWaveForms);
+            Log("ExtractWaveForm(%d) failed: m_nInstruments=%d m_dwWavePoolOffset=%d m_pWaveForms=0x%08X\n", nIns, m_nInstruments, m_dwWavePoolOffset, m_pWaveForms);
     #endif
-    	return FALSE;
+            return FALSE;
     }
     *ppWave = NULL;
     *pLen = 0;
@@ -1390,52 +1390,52 @@ BOOL CDLSBank::ExtractWaveForm(UINT nIns, UINT nRgn, LPBYTE *ppWave, uint32_t *p
     if (nRgn >= pDlsIns->nRegions)
     {
     #ifdef DLSBANK_LOG
-    	Log("invalid waveform region: nIns=%d nRgn=%d pSmp->nRegions=%d\n", nIns, nRgn, pSmp->nRegions);
+            Log("invalid waveform region: nIns=%d nRgn=%d pSmp->nRegions=%d\n", nIns, nRgn, pSmp->nRegions);
     #endif
-    	return FALSE;
+            return FALSE;
     }
     nWaveLink = pDlsIns->Regions[nRgn].nWaveLink;
     if (nWaveLink >= m_nWaveForms)
     {
     #ifdef DLSBANK_LOG
-    	Log("Invalid wavelink id: nWaveLink=%d nWaveForms=%d\n", nWaveLink, m_nWaveForms);
+            Log("Invalid wavelink id: nWaveLink=%d nWaveForms=%d\n", nWaveLink, m_nWaveForms);
     #endif
-    	return FALSE;
+            return FALSE;
     }
     dwOffset = m_pWaveForms[nWaveLink] + m_dwWavePoolOffset;
     if ((f = fopen(m_szFileName, "rb")) == NULL) return FALSE;
     if (fseek(f, dwOffset, SEEK_SET) == 0)
     {
-    	if (m_nType & SOUNDBANK_TYPE_SF2)
-    	{
-    		if ((m_pSamplesEx) && (m_pSamplesEx[nWaveLink].dwLen))
-    		{
-    			if (fseek(f, 8, SEEK_CUR) == 0)
-    			{
-    				*pLen = m_pSamplesEx[nWaveLink].dwLen;
-    				*ppWave = (LPBYTE)GlobalAllocPtr(GHND, *pLen + 8);
-    				fread((*ppWave), 1, *pLen, f);
-    				bOk = TRUE;
-    			}
-    		}
-    	} else
-    	{
-    		LISTCHUNK chunk;
-    		if (fread(&chunk, 1, 12, f) == 12)
-    		{
-    			if ((chunk.id == IFFID_LIST) && (chunk.listid == IFFID_wave) && (chunk.len > 4))
-    			{
-    				*pLen = chunk.len + 8;
-    				*ppWave = (LPBYTE)GlobalAllocPtr(GHND, chunk.len + 8);
-    				if (*ppWave)
-    				{
-    					memcpy((*ppWave), &chunk, 12);
-    					fread((*ppWave)+12, 1, *pLen-12, f);
-    					bOk = TRUE;
-    				}
-    			}
-    		}
-    	}
+            if (m_nType & SOUNDBANK_TYPE_SF2)
+            {
+                    if ((m_pSamplesEx) && (m_pSamplesEx[nWaveLink].dwLen))
+                    {
+                            if (fseek(f, 8, SEEK_CUR) == 0)
+                            {
+                                    *pLen = m_pSamplesEx[nWaveLink].dwLen;
+                                    *ppWave = (LPBYTE)GlobalAllocPtr(GHND, *pLen + 8);
+                                    fread((*ppWave), 1, *pLen, f);
+                                    bOk = TRUE;
+                            }
+                    }
+            } else
+            {
+                    LISTCHUNK chunk;
+                    if (fread(&chunk, 1, 12, f) == 12)
+                    {
+                            if ((chunk.id == IFFID_LIST) && (chunk.listid == IFFID_wave) && (chunk.len > 4))
+                            {
+                                    *pLen = chunk.len + 8;
+                                    *ppWave = (LPBYTE)GlobalAllocPtr(GHND, chunk.len + 8);
+                                    if (*ppWave)
+                                    {
+                                            memcpy((*ppWave), &chunk, 12);
+                                            fread((*ppWave)+12, 1, *pLen-12, f);
+                                            bOk = TRUE;
+                                    }
+                            }
+                    }
+            }
     }
     fclose(f);
     return bOk;
@@ -1484,118 +1484,118 @@ BOOL CDLSBank::ExtractSample(module_renderer *pSndFile, UINT nSample, UINT nIns,
     bOk = FALSE;
     if (m_nType & SOUNDBANK_TYPE_SF2)
     {
-    	pSndFile->DestroySample(nSample);
-    	UINT nWaveLink = pDlsIns->Regions[nRgn].nWaveLink;
-    	modplug::tracker::modsample_t *psmp = &pSndFile->Samples[nSample];
-    	if (pSndFile->m_nSamples < nSample) pSndFile->m_nSamples = nSample;
-    	if ((nWaveLink < m_nSamplesEx) && (m_pSamplesEx))
-    	{
-    		DLSSAMPLEEX *p = &m_pSamplesEx[nWaveLink];
-    	#ifdef DLSINSTR_LOG
-    		Log("  SF2 WaveLink #%3d: %5dHz\n", nWaveLink, p->dwSampleRate);
-    	#endif
-    		psmp->length = dwLen / 2;
-    		psmp->flags = CHN_16BIT;
-    		psmp->loop_start = pDlsIns->Regions[nRgn].ulLoopStart;
-    		psmp->loop_end = pDlsIns->Regions[nRgn].ulLoopEnd;
-    		psmp->c5_samplerate = p->dwSampleRate;
-    		psmp->global_volume = 64;
-    		psmp->default_volume = 256;
-    		psmp->default_pan = 128;
-    		pSndFile->ReadSample(psmp, RS_PCM16S, (LPSTR)pWaveForm, dwLen);
-    		psmp->RelativeTone = p->byOriginalPitch;
-    		psmp->nFineTune = p->chPitchCorrection;
-    	}
-    	bWaveForm = (psmp->sample_data) ? TRUE : FALSE;
+            pSndFile->DestroySample(nSample);
+            UINT nWaveLink = pDlsIns->Regions[nRgn].nWaveLink;
+            modplug::tracker::modsample_t *psmp = &pSndFile->Samples[nSample];
+            if (pSndFile->m_nSamples < nSample) pSndFile->m_nSamples = nSample;
+            if ((nWaveLink < m_nSamplesEx) && (m_pSamplesEx))
+            {
+                    DLSSAMPLEEX *p = &m_pSamplesEx[nWaveLink];
+            #ifdef DLSINSTR_LOG
+                    Log("  SF2 WaveLink #%3d: %5dHz\n", nWaveLink, p->dwSampleRate);
+            #endif
+                    psmp->length = dwLen / 2;
+                    psmp->flags = CHN_16BIT;
+                    psmp->loop_start = pDlsIns->Regions[nRgn].ulLoopStart;
+                    psmp->loop_end = pDlsIns->Regions[nRgn].ulLoopEnd;
+                    psmp->c5_samplerate = p->dwSampleRate;
+                    psmp->global_volume = 64;
+                    psmp->default_volume = 256;
+                    psmp->default_pan = 128;
+                    pSndFile->ReadSample(psmp, RS_PCM16S, (LPSTR)pWaveForm, dwLen);
+                    psmp->RelativeTone = p->byOriginalPitch;
+                    psmp->nFineTune = p->chPitchCorrection;
+            }
+            bWaveForm = (psmp->sample_data) ? TRUE : FALSE;
     } else
     {
-    	bWaveForm = pSndFile->ReadWAVSample(nSample, pWaveForm, dwLen, &dwWSMPOffset);
+            bWaveForm = pSndFile->ReadWAVSample(nSample, pWaveForm, dwLen, &dwWSMPOffset);
     }
     if (bWaveForm)
     {
-    	modplug::tracker::modsample_t *psmp = &pSndFile->Samples[nSample];
-    	DLSREGION *pRgn = &pDlsIns->Regions[nRgn];
-    	psmp->flags &= ~(CHN_LOOP|CHN_PINGPONGLOOP|CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
-    	if (pRgn->fuOptions & DLSREGION_SAMPLELOOP) psmp->flags |= CHN_LOOP;
-    	if (pRgn->fuOptions & DLSREGION_SUSTAINLOOP) psmp->flags |= CHN_SUSTAINLOOP;
-    	if (pRgn->fuOptions & DLSREGION_PINGPONGLOOP) psmp->flags |= CHN_PINGPONGLOOP;
-    	if (psmp->flags & (CHN_LOOP|CHN_SUSTAINLOOP))
-    	{
-    		if (pRgn->ulLoopEnd > pRgn->ulLoopStart)
-    		{
-    			if (psmp->flags & CHN_SUSTAINLOOP)
-    			{
-    				psmp->sustain_start = pRgn->ulLoopStart;
-    				psmp->sustain_end = pRgn->ulLoopEnd;
-    			} else
-    			{
-    				psmp->loop_start = pRgn->ulLoopStart;
-    				psmp->loop_end = pRgn->ulLoopEnd;
-    			}
-    		} else
-    		{
-    			psmp->flags &= ~(CHN_LOOP|CHN_SUSTAINLOOP);
-    		}
-    	}
-    	// WSMP chunk
-    	{
-    		UINT usUnityNote = pRgn->uUnityNote;
-    		int sFineTune = pRgn->sFineTune;
-    		int lVolume = pRgn->usVolume;
-    		if ((dwWSMPOffset) && (!(pRgn->fuOptions & DLSREGION_OVERRIDEWSMP)))
-    		{
-    			WSMPCHUNK *p = (WSMPCHUNK *)(pWaveForm + dwWSMPOffset);
-    			usUnityNote = p->usUnityNote;
-    			sFineTune = p->sFineTune;
-    			lVolume = DLS32BitRelativeGainToLinear(p->lAttenuation) / 256;
-    			if (p->cSampleLoops)
-    			{
-    				WSMPSAMPLELOOP *ploop = (WSMPSAMPLELOOP *)(pWaveForm+dwWSMPOffset+8+p->cbSize);
-    				if (ploop->ulLoopLength > 3)
-    				{
-    					psmp->flags |= CHN_LOOP;
-    					//if (ploop->ulLoopType) psmp->flags |= CHN_PINGPONGLOOP;
-    					psmp->loop_start = ploop->ulLoopStart;
-    					psmp->loop_end = ploop->ulLoopStart + ploop->ulLoopLength;
-    				}
-    			}
-    		} else
-    		if (m_nType & SOUNDBANK_TYPE_SF2)
-    		{
-    			usUnityNote += psmp->RelativeTone - 60;
-    			sFineTune += psmp->nFineTune;
-    		}
-    	#ifdef DLSINSTR_LOG
-    		Log("WSMP: usUnityNote=%d.%d, %dHz (transp=%d)\n", usUnityNote, sFineTune, psmp->c5_samplerate, transpose);
-    	#endif
-    		if (usUnityNote > 0x7F) usUnityNote = 60;
-    		int nBaseTune = DlsFreqToTranspose(
-    							psmp->c5_samplerate,
-    							sFineTune+(60 + transpose - usUnityNote)*100);
-    		psmp->nFineTune = (CHAR)(nBaseTune & 0x7F);
-    		psmp->RelativeTone = (CHAR)(nBaseTune >> 7);
-    		psmp->c5_samplerate = module_renderer::TransposeToFrequency(psmp->RelativeTone, psmp->nFineTune);
-    		if (lVolume > 256) lVolume = 256;
-    		if (lVolume < 16) lVolume = 16;
-    		psmp->global_volume = (uint8_t)(lVolume / 4);	// 0-64
-    	}
-    	if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
-    	{
-    		if ((pRgn->uPercEnv) && (pRgn->uPercEnv <= m_nEnvelopes))
-    		{
-    			psmp->default_pan = m_Envelopes[pRgn->uPercEnv-1].nDefPan;
-    			if (pSndFile->m_nType & MOD_TYPE_XM) psmp->flags |= CHN_PANNING;
-    		}
-    	} else
-    	{
-    		if ((pDlsIns->nMelodicEnv) && (pDlsIns->nMelodicEnv <= m_nEnvelopes))
-    		{
-    			psmp->default_pan = m_Envelopes[pDlsIns->nMelodicEnv-1].nDefPan;
-    			if (pSndFile->m_nType & MOD_TYPE_XM) psmp->flags |= CHN_PANNING;
-    		}
-    	}
-    	if (pDlsIns->szName[0]) memcpy(pSndFile->m_szNames[nSample], pDlsIns->szName, MAX_SAMPLENAME - 1);
-    	bOk = TRUE;
+            modplug::tracker::modsample_t *psmp = &pSndFile->Samples[nSample];
+            DLSREGION *pRgn = &pDlsIns->Regions[nRgn];
+            psmp->flags &= ~(CHN_LOOP|CHN_PINGPONGLOOP|CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
+            if (pRgn->fuOptions & DLSREGION_SAMPLELOOP) psmp->flags |= CHN_LOOP;
+            if (pRgn->fuOptions & DLSREGION_SUSTAINLOOP) psmp->flags |= CHN_SUSTAINLOOP;
+            if (pRgn->fuOptions & DLSREGION_PINGPONGLOOP) psmp->flags |= CHN_PINGPONGLOOP;
+            if (psmp->flags & (CHN_LOOP|CHN_SUSTAINLOOP))
+            {
+                    if (pRgn->ulLoopEnd > pRgn->ulLoopStart)
+                    {
+                            if (psmp->flags & CHN_SUSTAINLOOP)
+                            {
+                                    psmp->sustain_start = pRgn->ulLoopStart;
+                                    psmp->sustain_end = pRgn->ulLoopEnd;
+                            } else
+                            {
+                                    psmp->loop_start = pRgn->ulLoopStart;
+                                    psmp->loop_end = pRgn->ulLoopEnd;
+                            }
+                    } else
+                    {
+                            psmp->flags &= ~(CHN_LOOP|CHN_SUSTAINLOOP);
+                    }
+            }
+            // WSMP chunk
+            {
+                    UINT usUnityNote = pRgn->uUnityNote;
+                    int sFineTune = pRgn->sFineTune;
+                    int lVolume = pRgn->usVolume;
+                    if ((dwWSMPOffset) && (!(pRgn->fuOptions & DLSREGION_OVERRIDEWSMP)))
+                    {
+                            WSMPCHUNK *p = (WSMPCHUNK *)(pWaveForm + dwWSMPOffset);
+                            usUnityNote = p->usUnityNote;
+                            sFineTune = p->sFineTune;
+                            lVolume = DLS32BitRelativeGainToLinear(p->lAttenuation) / 256;
+                            if (p->cSampleLoops)
+                            {
+                                    WSMPSAMPLELOOP *ploop = (WSMPSAMPLELOOP *)(pWaveForm+dwWSMPOffset+8+p->cbSize);
+                                    if (ploop->ulLoopLength > 3)
+                                    {
+                                            psmp->flags |= CHN_LOOP;
+                                            //if (ploop->ulLoopType) psmp->flags |= CHN_PINGPONGLOOP;
+                                            psmp->loop_start = ploop->ulLoopStart;
+                                            psmp->loop_end = ploop->ulLoopStart + ploop->ulLoopLength;
+                                    }
+                            }
+                    } else
+                    if (m_nType & SOUNDBANK_TYPE_SF2)
+                    {
+                            usUnityNote += psmp->RelativeTone - 60;
+                            sFineTune += psmp->nFineTune;
+                    }
+            #ifdef DLSINSTR_LOG
+                    Log("WSMP: usUnityNote=%d.%d, %dHz (transp=%d)\n", usUnityNote, sFineTune, psmp->c5_samplerate, transpose);
+            #endif
+                    if (usUnityNote > 0x7F) usUnityNote = 60;
+                    int nBaseTune = DlsFreqToTranspose(
+                                                            psmp->c5_samplerate,
+                                                            sFineTune+(60 + transpose - usUnityNote)*100);
+                    psmp->nFineTune = (CHAR)(nBaseTune & 0x7F);
+                    psmp->RelativeTone = (CHAR)(nBaseTune >> 7);
+                    psmp->c5_samplerate = module_renderer::TransposeToFrequency(psmp->RelativeTone, psmp->nFineTune);
+                    if (lVolume > 256) lVolume = 256;
+                    if (lVolume < 16) lVolume = 16;
+                    psmp->global_volume = (uint8_t)(lVolume / 4);        // 0-64
+            }
+            if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
+            {
+                    if ((pRgn->uPercEnv) && (pRgn->uPercEnv <= m_nEnvelopes))
+                    {
+                            psmp->default_pan = m_Envelopes[pRgn->uPercEnv-1].nDefPan;
+                            if (pSndFile->m_nType & MOD_TYPE_XM) psmp->flags |= CHN_PANNING;
+                    }
+            } else
+            {
+                    if ((pDlsIns->nMelodicEnv) && (pDlsIns->nMelodicEnv <= m_nEnvelopes))
+                    {
+                            psmp->default_pan = m_Envelopes[pDlsIns->nMelodicEnv-1].nDefPan;
+                            if (pSndFile->m_nType & MOD_TYPE_XM) psmp->flags |= CHN_PANNING;
+                    }
+            }
+            if (pDlsIns->szName[0]) memcpy(pSndFile->m_szNames[nSample], pDlsIns->szName, MAX_SAMPLENAME - 1);
+            bOk = TRUE;
     }
     FreeWaveForm(pWaveForm);
     return bOk;
@@ -1614,16 +1614,16 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
     pDlsIns = &m_pInstruments[nIns];
     if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
     {
-    	if (nDrumRgn >= pDlsIns->nRegions) return FALSE;
-    	nRgnMin = nDrumRgn;
-    	nRgnMax = nDrumRgn+1;
-    	nEnv = pDlsIns->Regions[nDrumRgn].uPercEnv;
+            if (nDrumRgn >= pDlsIns->nRegions) return FALSE;
+            nRgnMin = nDrumRgn;
+            nRgnMax = nDrumRgn+1;
+            nEnv = pDlsIns->Regions[nDrumRgn].uPercEnv;
     } else
     {
-    	if (!pDlsIns->nRegions) return FALSE;
-    	nRgnMin = 0;
-    	nRgnMax = pDlsIns->nRegions;
-    	nEnv = pDlsIns->nMelodicEnv;
+            if (!pDlsIns->nRegions) return FALSE;
+            nRgnMin = 0;
+            nRgnMax = pDlsIns->nRegions;
+            nEnv = pDlsIns->nMelodicEnv;
     }
 #ifdef DLSINSTR_LOG
     Log("DLS Instrument #%d: %s\n", nIns, pDlsIns->szName);
@@ -1631,12 +1631,12 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
     Log("  %2d regions, nMelodicEnv=%d\n", pDlsIns->nRegions, pDlsIns->nMelodicEnv);
     for (UINT iDbg=0; iDbg<pDlsIns->nRegions; iDbg++)
     {
-    	DLSREGION *prgn = &pDlsIns->Regions[iDbg];
-    	Log(" Region %d:\n", iDbg);
-    	Log("  WaveLink = %d (loop [%5d, %5d])\n", prgn->nWaveLink, prgn->ulLoopStart, prgn->ulLoopEnd);
-    	Log("  Key Range: [%2d, %2d]\n", prgn->uKeyMin, prgn->uKeyMax);
-    	Log("  fuOptions = 0x%04X\n", prgn->fuOptions);
-    	Log("  usVolume = %3d, Unity Note = %d\n", prgn->usVolume, prgn->uUnityNote);
+            DLSREGION *prgn = &pDlsIns->Regions[iDbg];
+            Log(" Region %d:\n", iDbg);
+            Log("  WaveLink = %d (loop [%5d, %5d])\n", prgn->nWaveLink, prgn->ulLoopStart, prgn->ulLoopEnd);
+            Log("  Key Range: [%2d, %2d]\n", prgn->uKeyMin, prgn->uKeyMax);
+            Log("  fuOptions = 0x%04X\n", prgn->fuOptions);
+            Log("  usVolume = %3d, Unity Note = %d\n", prgn->usVolume, prgn->uUnityNote);
     }
 #endif
     pIns = new modplug::tracker::modinstrument_t;
@@ -1647,59 +1647,59 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
     {
 // -> CODE#0003
 // -> DESC="remove instrument's samples"
-//    	pSndFile->RemoveInstrumentSamples(nInstr);
-//    	pSndFile->DestroyInstrument(nInstr);
-    	pSndFile->DestroyInstrument(nInstr,1);
+//            pSndFile->RemoveInstrumentSamples(nInstr);
+//            pSndFile->DestroyInstrument(nInstr);
+            pSndFile->DestroyInstrument(nInstr,1);
 // -! BEHAVIOUR_CHANGE#0003
     }
     // Initializes Instrument
     if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
     {
-    	CHAR s[64] = "";
-    	UINT key = pDlsIns->Regions[nDrumRgn].uKeyMin;
-    	if ((key >= 24) && (key <= 84)) lstrcpy(s, szMidiPercussionNames[key-24]);
-    	if (pDlsIns->szName[0])
-    	{
-    		wsprintf(&s[strlen(s)], " (%s", pDlsIns->szName);
-    		int n = strlen(s);
-    		while ((n) && (s[n-1] == ' '))
-    		{
-    			n--;
-    			s[n] = 0;
-    		}
-    		lstrcat(s, ")");
-    	}
-    	s[31] = 0;
-    	strcpy(pIns->name, s);
+            CHAR s[64] = "";
+            UINT key = pDlsIns->Regions[nDrumRgn].uKeyMin;
+            if ((key >= 24) && (key <= 84)) lstrcpy(s, szMidiPercussionNames[key-24]);
+            if (pDlsIns->szName[0])
+            {
+                    wsprintf(&s[strlen(s)], " (%s", pDlsIns->szName);
+                    int n = strlen(s);
+                    while ((n) && (s[n-1] == ' '))
+                    {
+                            n--;
+                            s[n] = 0;
+                    }
+                    lstrcat(s, ")");
+            }
+            s[31] = 0;
+            strcpy(pIns->name, s);
     } else
     {
-    	memcpy(pIns->name, pDlsIns->szName, 32);
-    	SetNullTerminator(pIns->name);
+            memcpy(pIns->name, pDlsIns->szName, 32);
+            SetNullTerminator(pIns->name);
     }
     int nTranspose = 0;
     for (UINT iNoteMap=0; iNoteMap<NOTE_MAX; iNoteMap++)
     {
-    	pIns->NoteMap[iNoteMap] = (uint8_t)(iNoteMap+1);
-    	if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
-    	{
-    		if (pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_MID|MOD_TYPE_MPT))
-    		{
-    			if (iNoteMap < pDlsIns->Regions[nDrumRgn].uKeyMin) pIns->NoteMap[iNoteMap] = (uint8_t)(pDlsIns->Regions[nDrumRgn].uKeyMin + 1);
-    			if (iNoteMap > pDlsIns->Regions[nDrumRgn].uKeyMax) pIns->NoteMap[iNoteMap] = (uint8_t)(pDlsIns->Regions[nDrumRgn].uKeyMax + 1);
-    		} else
-    		if (iNoteMap == pDlsIns->Regions[nDrumRgn].uKeyMin)
-    		{
-    			nTranspose = pDlsIns->Regions[nDrumRgn].uKeyMin - 60;
-    		}
-    	}
+            pIns->NoteMap[iNoteMap] = (uint8_t)(iNoteMap+1);
+            if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
+            {
+                    if (pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_MID|MOD_TYPE_MPT))
+                    {
+                            if (iNoteMap < pDlsIns->Regions[nDrumRgn].uKeyMin) pIns->NoteMap[iNoteMap] = (uint8_t)(pDlsIns->Regions[nDrumRgn].uKeyMin + 1);
+                            if (iNoteMap > pDlsIns->Regions[nDrumRgn].uKeyMax) pIns->NoteMap[iNoteMap] = (uint8_t)(pDlsIns->Regions[nDrumRgn].uKeyMax + 1);
+                    } else
+                    if (iNoteMap == pDlsIns->Regions[nDrumRgn].uKeyMin)
+                    {
+                            nTranspose = pDlsIns->Regions[nDrumRgn].uKeyMin - 60;
+                    }
+            }
     }
     pIns->fadeout = 1024;
-    pIns->global_volume = 64;	// Maximum
-    pIns->default_pan = 128;		// Center Pan
+    pIns->global_volume = 64;        // Maximum
+    pIns->default_pan = 128;                // Center Pan
     pIns->midi_program = (uint8_t)(pDlsIns->ulInstrument & 0x7F);
     pIns->midi_channel = (uint8_t)((pDlsIns->ulBank & F_INSTRUMENT_DRUMS) ? 10 : 0);
     pIns->midi_bank = (uint16_t)(((pDlsIns->ulBank & 0x7F00) >> 1) | (pDlsIns->ulBank & 0x7F));
-    pIns->pitch_pan_center = 60;		// C-5
+    pIns->pitch_pan_center = 60;                // C-5
     pIns->new_note_action = NNA_NOTEOFF;
     pIns->duplicate_check_type = DCT_NOTE;
     pIns->duplicate_note_action = DNA_NOTEFADE;
@@ -1714,192 +1714,192 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
     // Extract Samples
     for (UINT nRgn=nRgnMin; nRgn<nRgnMax; nRgn++)
     {
-    	BOOL bDupRgn;
-    	UINT nSmp;
-    	DLSREGION *pRgn = &pDlsIns->Regions[nRgn];
-    	// Elimitate Duplicate Regions
-    	nSmp = 0;
-    	bDupRgn = FALSE;
-    	for (UINT iDup=nRgnMin; iDup<nRgn; iDup++)
-    	{
-    		DLSREGION *pRgn2 = &pDlsIns->Regions[iDup];
-    		if (((pRgn2->nWaveLink == pRgn->nWaveLink)
-    		  && (pRgn2->ulLoopEnd == pRgn->ulLoopEnd)
-    		  && (pRgn2->ulLoopStart == pRgn->ulLoopStart))
-    		 || ((pRgn2->uKeyMin == pRgn->uKeyMin)
-    		  && (pRgn2->uKeyMax == pRgn->uKeyMax)))
-    		{
-    			bDupRgn = TRUE;
-    			nSmp = RgnToSmp[iDup];
-    			break;
-    		}
-    	}
-    	// Create a new sample
-    	if (pRgn->nWaveLink == 0) nSmp = 0; else
-    	if (!bDupRgn)
-    	{
-    		UINT nmaxsmp = (m_nType & MOD_TYPE_XM) ? 16 : 32;
-    		if (nLoadedSmp >= nmaxsmp)
-    		{
-    			nSmp = RgnToSmp[nRgn-1];
-    		} else
-    		{
-    			while ((nSample < MAX_SAMPLES) && ((pSndFile->Samples[nSample].sample_data) || (pSndFile->m_szNames[nSample][0]))) nSample++;
-    			if (nSample >= MAX_SAMPLES) break;
-    			if (nSample > pSndFile->m_nSamples) pSndFile->m_nSamples = nSample;
-    			nSmp = nSample;
-    			nLoadedSmp++;
-    		}
-    	}
-    	RgnToSmp[nRgn] = (uint8_t)nSmp;
-    	// Map all notes to the right sample
-    	if (nSmp)
-    	{
-    		for (UINT iKey=0; iKey<NOTE_MAX; iKey++)
-    		{
-    			if ((nRgn == nRgnMin) || ((iKey >= pRgn->uKeyMin) && (iKey <= pRgn->uKeyMax)))
-    			{
-    				pIns->Keyboard[iKey] = (uint8_t)nSmp;
-    			}
-    		}
-    		// Load the sample
-    		if (!bDupRgn) ExtractSample(pSndFile, nSample, nIns, nRgn, nTranspose);
-    	}
+            BOOL bDupRgn;
+            UINT nSmp;
+            DLSREGION *pRgn = &pDlsIns->Regions[nRgn];
+            // Elimitate Duplicate Regions
+            nSmp = 0;
+            bDupRgn = FALSE;
+            for (UINT iDup=nRgnMin; iDup<nRgn; iDup++)
+            {
+                    DLSREGION *pRgn2 = &pDlsIns->Regions[iDup];
+                    if (((pRgn2->nWaveLink == pRgn->nWaveLink)
+                      && (pRgn2->ulLoopEnd == pRgn->ulLoopEnd)
+                      && (pRgn2->ulLoopStart == pRgn->ulLoopStart))
+                     || ((pRgn2->uKeyMin == pRgn->uKeyMin)
+                      && (pRgn2->uKeyMax == pRgn->uKeyMax)))
+                    {
+                            bDupRgn = TRUE;
+                            nSmp = RgnToSmp[iDup];
+                            break;
+                    }
+            }
+            // Create a new sample
+            if (pRgn->nWaveLink == 0) nSmp = 0; else
+            if (!bDupRgn)
+            {
+                    UINT nmaxsmp = (m_nType & MOD_TYPE_XM) ? 16 : 32;
+                    if (nLoadedSmp >= nmaxsmp)
+                    {
+                            nSmp = RgnToSmp[nRgn-1];
+                    } else
+                    {
+                            while ((nSample < MAX_SAMPLES) && ((pSndFile->Samples[nSample].sample_data) || (pSndFile->m_szNames[nSample][0]))) nSample++;
+                            if (nSample >= MAX_SAMPLES) break;
+                            if (nSample > pSndFile->m_nSamples) pSndFile->m_nSamples = nSample;
+                            nSmp = nSample;
+                            nLoadedSmp++;
+                    }
+            }
+            RgnToSmp[nRgn] = (uint8_t)nSmp;
+            // Map all notes to the right sample
+            if (nSmp)
+            {
+                    for (UINT iKey=0; iKey<NOTE_MAX; iKey++)
+                    {
+                            if ((nRgn == nRgnMin) || ((iKey >= pRgn->uKeyMin) && (iKey <= pRgn->uKeyMax)))
+                            {
+                                    pIns->Keyboard[iKey] = (uint8_t)nSmp;
+                            }
+                    }
+                    // Load the sample
+                    if (!bDupRgn) ExtractSample(pSndFile, nSample, nIns, nRgn, nTranspose);
+            }
     }
     // Initializes Envelope
     if ((nEnv) && (nEnv <= m_nEnvelopes))
     {
-    	DLSENVELOPE *part = &m_Envelopes[nEnv-1];
-    	UINT nPoint = 0;
-    	// Volume Envelope
-    	if ((part->wVolAttack) || (part->wVolDecay < 20*50) || (part->nVolSustainLevel) || (part->wVolRelease < 20*50))
-    	{
-    		pIns->volume_envelope.flags |= ENV_ENABLED;
-    		// Delay section
-    		// -> DLS level 2
-    		// Attack section
-    		pIns->volume_envelope.Ticks[nPoint] = 0;
-    		if (part->wVolAttack)
-    		{
-    			pIns->volume_envelope.Values[nPoint] = (uint8_t)(ENVELOPE_MAX / (part->wVolAttack / 2 + 2) + 8);   //	/-----
-    			pIns->volume_envelope.Ticks[nPoint+1] = part->wVolAttack;                                       //	|
-    		} else
-    		{
-    			pIns->volume_envelope.Values[nPoint] = ENVELOPE_MAX;  //	|-----
-    			pIns->volume_envelope.Ticks[nPoint + 1] = 1;          //	|
-    		}
-    		pIns->volume_envelope.Values[nPoint + 1] = ENVELOPE_MAX;
-    		nPoint += 2;
-    		// Hold section
-    		// -> DLS Level 2
-    		// Sustain Level
-    		if (part->nVolSustainLevel > 0)
-    		{
-    			if (part->nVolSustainLevel < 128)
-    			{
-    				LONG lStartTime = pIns->volume_envelope.Ticks[nPoint-1];
-    				LONG lSusLevel = - DLS32BitRelativeLinearToGain(part->nVolSustainLevel << 9) / 65536;
-    				LONG lDecayTime = 1;
-    				if (lSusLevel > 0)
-    				{
-    					lDecayTime = (lSusLevel * (LONG)part->wVolDecay) / 960;
-    					for (UINT i=0; i<7; i++)
-    					{
-    						LONG lFactor = 128 - (1 << i);
-    						if (lFactor <= part->nVolSustainLevel) break;
-    						LONG lev = - DLS32BitRelativeLinearToGain(lFactor << 9) / 65536;
-    						if (lev > 0)
-    						{
-    							LONG ltime = (lev * (LONG)part->wVolDecay) / 960;
-    							if ((ltime > 1) && (ltime < lDecayTime))
-    							{
-    								ltime += lStartTime;
-    								if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
-    								{
-    									pIns->volume_envelope.Ticks[nPoint] = (uint16_t)ltime;
-    									pIns->volume_envelope.Values[nPoint] = (uint8_t)(lFactor / 2);
-    									nPoint++;
-    								}
-    							}
-    						}
-    					}
-    				}
+            DLSENVELOPE *part = &m_Envelopes[nEnv-1];
+            UINT nPoint = 0;
+            // Volume Envelope
+            if ((part->wVolAttack) || (part->wVolDecay < 20*50) || (part->nVolSustainLevel) || (part->wVolRelease < 20*50))
+            {
+                    pIns->volume_envelope.flags |= ENV_ENABLED;
+                    // Delay section
+                    // -> DLS level 2
+                    // Attack section
+                    pIns->volume_envelope.Ticks[nPoint] = 0;
+                    if (part->wVolAttack)
+                    {
+                            pIns->volume_envelope.Values[nPoint] = (uint8_t)(ENVELOPE_MAX / (part->wVolAttack / 2 + 2) + 8);   //        /-----
+                            pIns->volume_envelope.Ticks[nPoint+1] = part->wVolAttack;                                       //        |
+                    } else
+                    {
+                            pIns->volume_envelope.Values[nPoint] = ENVELOPE_MAX;  //        |-----
+                            pIns->volume_envelope.Ticks[nPoint + 1] = 1;          //        |
+                    }
+                    pIns->volume_envelope.Values[nPoint + 1] = ENVELOPE_MAX;
+                    nPoint += 2;
+                    // Hold section
+                    // -> DLS Level 2
+                    // Sustain Level
+                    if (part->nVolSustainLevel > 0)
+                    {
+                            if (part->nVolSustainLevel < 128)
+                            {
+                                    LONG lStartTime = pIns->volume_envelope.Ticks[nPoint-1];
+                                    LONG lSusLevel = - DLS32BitRelativeLinearToGain(part->nVolSustainLevel << 9) / 65536;
+                                    LONG lDecayTime = 1;
+                                    if (lSusLevel > 0)
+                                    {
+                                            lDecayTime = (lSusLevel * (LONG)part->wVolDecay) / 960;
+                                            for (UINT i=0; i<7; i++)
+                                            {
+                                                    LONG lFactor = 128 - (1 << i);
+                                                    if (lFactor <= part->nVolSustainLevel) break;
+                                                    LONG lev = - DLS32BitRelativeLinearToGain(lFactor << 9) / 65536;
+                                                    if (lev > 0)
+                                                    {
+                                                            LONG ltime = (lev * (LONG)part->wVolDecay) / 960;
+                                                            if ((ltime > 1) && (ltime < lDecayTime))
+                                                            {
+                                                                    ltime += lStartTime;
+                                                                    if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
+                                                                    {
+                                                                            pIns->volume_envelope.Ticks[nPoint] = (uint16_t)ltime;
+                                                                            pIns->volume_envelope.Values[nPoint] = (uint8_t)(lFactor / 2);
+                                                                            nPoint++;
+                                                                    }
+                                                            }
+                                                    }
+                                            }
+                                    }
 
-    				if (lStartTime + lDecayTime > (LONG)pIns->volume_envelope.Ticks[nPoint-1])
-    				{
-    					pIns->volume_envelope.Values[nPoint] = (uint8_t)((part->nVolSustainLevel+1) / 2);
-    					pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(lStartTime+lDecayTime);
-    					nPoint++;
-    				}
-    			}
-    			pIns->volume_envelope.flags |= ENV_SUSTAIN;
-    		} else
-    		{
-    			pIns->volume_envelope.flags |= ENV_SUSTAIN;
-    			pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(pIns->volume_envelope.Ticks[nPoint-1]+1);
-    			pIns->volume_envelope.Values[nPoint] = pIns->volume_envelope.Values[nPoint-1];
-    			nPoint++;
-    		}
-    		pIns->volume_envelope.sustain_start = pIns->volume_envelope.sustain_end = (uint8_t)(nPoint - 1);
-    		// Release section
-    		if ((part->wVolRelease) && (pIns->volume_envelope.Values[nPoint-1] > 1))
-    		{
-    			LONG lReleaseTime = part->wVolRelease;
-    			LONG lStartTime = pIns->volume_envelope.Ticks[nPoint-1];
-    			LONG lStartFactor = pIns->volume_envelope.Values[nPoint-1];
-    			LONG lSusLevel = - DLS32BitRelativeLinearToGain(lStartFactor << 10) / 65536;
-    			LONG lDecayEndTime = (lReleaseTime * lSusLevel) / 960;
-    			lReleaseTime -= lDecayEndTime;
-    			for (UINT i=0; i<5; i++)
-    			{
-    				LONG lFactor = 1 + ((lStartFactor * 3) >> (i+2));
-    				if ((lFactor <= 1) || (lFactor >= lStartFactor)) continue;
-    				LONG lev = - DLS32BitRelativeLinearToGain(lFactor << 10) / 65536;
-    				if (lev > 0)
-    				{
-    					LONG ltime = (((LONG)part->wVolRelease * lev) / 960) - lDecayEndTime;
-    					if ((ltime > 1) && (ltime < lReleaseTime))
-    					{
-    						ltime += lStartTime;
-    						if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
-    						{
-    							pIns->volume_envelope.Ticks[nPoint] = (uint16_t)ltime;
-    							pIns->volume_envelope.Values[nPoint] = (uint8_t)lFactor;
-    							nPoint++;
-    						}
-    					}
-    				}
-    			}
-    			if (lReleaseTime < 1) lReleaseTime = 1;
-    			pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(lStartTime + lReleaseTime);
-    			pIns->volume_envelope.Values[nPoint] = ENVELOPE_MIN;
-    			nPoint++;
-    		} else
-    		{
-    			pIns->volume_envelope.Ticks[nPoint] = (uint8_t)(pIns->volume_envelope.Ticks[nPoint-1] + 1);
-    			pIns->volume_envelope.Values[nPoint] = ENVELOPE_MIN;
-    			nPoint++;
-    		}
-    		pIns->volume_envelope.num_nodes = (uint8_t)nPoint;
-    	}
+                                    if (lStartTime + lDecayTime > (LONG)pIns->volume_envelope.Ticks[nPoint-1])
+                                    {
+                                            pIns->volume_envelope.Values[nPoint] = (uint8_t)((part->nVolSustainLevel+1) / 2);
+                                            pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(lStartTime+lDecayTime);
+                                            nPoint++;
+                                    }
+                            }
+                            pIns->volume_envelope.flags |= ENV_SUSTAIN;
+                    } else
+                    {
+                            pIns->volume_envelope.flags |= ENV_SUSTAIN;
+                            pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(pIns->volume_envelope.Ticks[nPoint-1]+1);
+                            pIns->volume_envelope.Values[nPoint] = pIns->volume_envelope.Values[nPoint-1];
+                            nPoint++;
+                    }
+                    pIns->volume_envelope.sustain_start = pIns->volume_envelope.sustain_end = (uint8_t)(nPoint - 1);
+                    // Release section
+                    if ((part->wVolRelease) && (pIns->volume_envelope.Values[nPoint-1] > 1))
+                    {
+                            LONG lReleaseTime = part->wVolRelease;
+                            LONG lStartTime = pIns->volume_envelope.Ticks[nPoint-1];
+                            LONG lStartFactor = pIns->volume_envelope.Values[nPoint-1];
+                            LONG lSusLevel = - DLS32BitRelativeLinearToGain(lStartFactor << 10) / 65536;
+                            LONG lDecayEndTime = (lReleaseTime * lSusLevel) / 960;
+                            lReleaseTime -= lDecayEndTime;
+                            for (UINT i=0; i<5; i++)
+                            {
+                                    LONG lFactor = 1 + ((lStartFactor * 3) >> (i+2));
+                                    if ((lFactor <= 1) || (lFactor >= lStartFactor)) continue;
+                                    LONG lev = - DLS32BitRelativeLinearToGain(lFactor << 10) / 65536;
+                                    if (lev > 0)
+                                    {
+                                            LONG ltime = (((LONG)part->wVolRelease * lev) / 960) - lDecayEndTime;
+                                            if ((ltime > 1) && (ltime < lReleaseTime))
+                                            {
+                                                    ltime += lStartTime;
+                                                    if (ltime > pIns->volume_envelope.Ticks[nPoint-1])
+                                                    {
+                                                            pIns->volume_envelope.Ticks[nPoint] = (uint16_t)ltime;
+                                                            pIns->volume_envelope.Values[nPoint] = (uint8_t)lFactor;
+                                                            nPoint++;
+                                                    }
+                                            }
+                                    }
+                            }
+                            if (lReleaseTime < 1) lReleaseTime = 1;
+                            pIns->volume_envelope.Ticks[nPoint] = (uint16_t)(lStartTime + lReleaseTime);
+                            pIns->volume_envelope.Values[nPoint] = ENVELOPE_MIN;
+                            nPoint++;
+                    } else
+                    {
+                            pIns->volume_envelope.Ticks[nPoint] = (uint8_t)(pIns->volume_envelope.Ticks[nPoint-1] + 1);
+                            pIns->volume_envelope.Values[nPoint] = ENVELOPE_MIN;
+                            nPoint++;
+                    }
+                    pIns->volume_envelope.num_nodes = (uint8_t)nPoint;
+            }
     }
     if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
     {
-    	// Create a default envelope for drums
-    	pIns->volume_envelope.flags &= ~ENV_SUSTAIN;
-    	if (!(pIns->volume_envelope.flags & ENV_ENABLED))
-    	{
-    		pIns->volume_envelope.flags |= ENV_ENABLED;
-    		pIns->volume_envelope.Ticks[0] = 0;
-    		pIns->volume_envelope.Values[0] = ENVELOPE_MAX;
-    		pIns->volume_envelope.Ticks[1] = 5;
-    		pIns->volume_envelope.Values[1] = ENVELOPE_MAX;
-    		pIns->volume_envelope.Ticks[2] = 10;
-    		pIns->volume_envelope.Values[2] = ENVELOPE_MID;
-    		pIns->volume_envelope.Ticks[3] = 20;	// 1 second max. for drums
-    		pIns->volume_envelope.Values[3] = ENVELOPE_MIN;
-    		pIns->volume_envelope.num_nodes = 4;
-    	}
+            // Create a default envelope for drums
+            pIns->volume_envelope.flags &= ~ENV_SUSTAIN;
+            if (!(pIns->volume_envelope.flags & ENV_ENABLED))
+            {
+                    pIns->volume_envelope.flags |= ENV_ENABLED;
+                    pIns->volume_envelope.Ticks[0] = 0;
+                    pIns->volume_envelope.Values[0] = ENVELOPE_MAX;
+                    pIns->volume_envelope.Ticks[1] = 5;
+                    pIns->volume_envelope.Values[1] = ENVELOPE_MAX;
+                    pIns->volume_envelope.Ticks[2] = 10;
+                    pIns->volume_envelope.Values[2] = ENVELOPE_MID;
+                    pIns->volume_envelope.Ticks[3] = 20;        // 1 second max. for drums
+                    pIns->volume_envelope.Values[3] = ENVELOPE_MIN;
+                    pIns->volume_envelope.num_nodes = 4;
+            }
     }
     return TRUE;
 }

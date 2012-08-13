@@ -22,9 +22,9 @@ bool CPattern::SetSignature(const ROWINDEX rowsPerBeat, const ROWINDEX rowsPerMe
 //------------------------------------------------------------------------------------
 {
     if(rowsPerBeat < GetSoundFile().GetModSpecifications().patternRowsMin || rowsPerBeat > GetSoundFile().GetModSpecifications().patternRowsMax
-    	|| rowsPerMeasure < rowsPerBeat || rowsPerMeasure > GetSoundFile().GetModSpecifications().patternRowsMax
-    	/*|| rowsPerBeat > m_Rows || rowsPerMeasure > m_Rows*/)
-    	return false;
+            || rowsPerMeasure < rowsPerBeat || rowsPerMeasure > GetSoundFile().GetModSpecifications().patternRowsMax
+            /*|| rowsPerBeat > m_Rows || rowsPerMeasure > m_Rows*/)
+            return false;
     m_RowsPerBeat = rowsPerBeat;
     m_RowsPerMeasure = rowsPerMeasure;
     return true;
@@ -36,10 +36,10 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
 {
     if(m_ModCommands == nullptr)
     {
-    	//For mimicing old behavior of setting patternsize before even having the
-    	//actual pattern allocated.
-    	m_Rows = newRowCount;
-    	return false;
+            //For mimicing old behavior of setting patternsize before even having the
+            //actual pattern allocated.
+            m_Rows = newRowCount;
+            return false;
     }
 
 
@@ -48,60 +48,60 @@ bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning
     if(sndFile.m_pModDoc == nullptr) return true;
     CModDoc& rModDoc = *sndFile.m_pModDoc;
     if(newRowCount > specs.patternRowsMax || newRowCount < specs.patternRowsMin)
-    	return true;
+            return true;
 
     if (newRowCount == m_Rows) return false;
     rModDoc.BeginWaitCursor();
     BEGIN_CRITICAL();
     if (newRowCount > m_Rows)
     {
-    	modplug::tracker::modevent_t *p = AllocatePattern(newRowCount, sndFile.m_nChannels);
-    	if (p)
-    	{
-    		memcpy(p, m_ModCommands, sndFile.m_nChannels*m_Rows*sizeof(modplug::tracker::modevent_t));
-    		FreePattern(m_ModCommands);
-    		m_ModCommands = p;
-    		m_Rows = newRowCount;
-    	}
+            modplug::tracker::modevent_t *p = AllocatePattern(newRowCount, sndFile.m_nChannels);
+            if (p)
+            {
+                    memcpy(p, m_ModCommands, sndFile.m_nChannels*m_Rows*sizeof(modplug::tracker::modevent_t));
+                    FreePattern(m_ModCommands);
+                    m_ModCommands = p;
+                    m_Rows = newRowCount;
+            }
     } else
     {
-    	bool bOk = true;
-    	modplug::tracker::modevent_t *p = m_ModCommands;
-    	UINT ndif = (m_Rows - newRowCount) * sndFile.m_nChannels;
-    	UINT npos = newRowCount * sndFile.m_nChannels;
+            bool bOk = true;
+            modplug::tracker::modevent_t *p = m_ModCommands;
+            UINT ndif = (m_Rows - newRowCount) * sndFile.m_nChannels;
+            UINT npos = newRowCount * sndFile.m_nChannels;
 #ifdef MODPLUG_TRACKER
-    	if(showDataLossWarning)
-    	{
-    		for (UINT i=0; i<ndif; i++)
-    		{
-    			if (*((uint32_t *)(p+i+npos)))
-    			{
-    				bOk = false;
-    				break;
-    			}
-    		}
-    		if (!bOk)
-    		{
-    			END_CRITICAL();
-    			rModDoc.EndWaitCursor();
-    			if (CMainFrame::GetMainFrame()->MessageBox("Data at the end of the pattern will be lost.\nDo you want to continue?",
-    								"Shrink Pattern", MB_YESNO|MB_ICONQUESTION) == IDYES) bOk = true;
-    			rModDoc.BeginWaitCursor();
-    			BEGIN_CRITICAL();
-    		}
-    	}
+            if(showDataLossWarning)
+            {
+                    for (UINT i=0; i<ndif; i++)
+                    {
+                            if (*((uint32_t *)(p+i+npos)))
+                            {
+                                    bOk = false;
+                                    break;
+                            }
+                    }
+                    if (!bOk)
+                    {
+                            END_CRITICAL();
+                            rModDoc.EndWaitCursor();
+                            if (CMainFrame::GetMainFrame()->MessageBox("Data at the end of the pattern will be lost.\nDo you want to continue?",
+                                                                    "Shrink Pattern", MB_YESNO|MB_ICONQUESTION) == IDYES) bOk = true;
+                            rModDoc.BeginWaitCursor();
+                            BEGIN_CRITICAL();
+                    }
+            }
 #endif // MODPLUG_TRACKER
-    	if (bOk)
-    	{
-    		modplug::tracker::modevent_t *pnew = AllocatePattern(newRowCount, sndFile.m_nChannels);
-    		if (pnew)
-    		{
-    			memcpy(pnew, m_ModCommands, sndFile.m_nChannels*newRowCount*sizeof(modplug::tracker::modevent_t));
-    			FreePattern(m_ModCommands);
-    			m_ModCommands = pnew;
-    			m_Rows = newRowCount;
-    		}
-    	}
+            if (bOk)
+            {
+                    modplug::tracker::modevent_t *pnew = AllocatePattern(newRowCount, sndFile.m_nChannels);
+                    if (pnew)
+                    {
+                            memcpy(pnew, m_ModCommands, sndFile.m_nChannels*newRowCount*sizeof(modplug::tracker::modevent_t));
+                            FreePattern(m_ModCommands);
+                            m_ModCommands = pnew;
+                            m_Rows = newRowCount;
+                    }
+            }
     }
     END_CRITICAL();
     rModDoc.EndWaitCursor();
@@ -114,7 +114,7 @@ void CPattern::ClearCommands()
 //----------------------------
 {
     if (m_ModCommands != nullptr)
-    	memset(m_ModCommands, 0, GetNumRows() * GetNumChannels() * sizeof(modplug::tracker::modevent_t));
+            memset(m_ModCommands, 0, GetNumRows() * GetNumChannels() * sizeof(modplug::tracker::modevent_t));
 }
 
 
@@ -153,7 +153,7 @@ bool CPattern::Expand()
     oldPattern = m_ModCommands;
     for (ROWINDEX y = 0; y < nRows; y++)
     {
-    	memcpy(newPattern + y * 2 * nChns, oldPattern + y * nChns, nChns * sizeof(modplug::tracker::modevent_t));
+            memcpy(newPattern + y * 2 * nChns, oldPattern + y * nChns, nChns * sizeof(modplug::tracker::modevent_t));
     }
     m_ModCommands = newPattern;
     m_Rows = nRows * 2;
@@ -182,27 +182,27 @@ bool CPattern::Shrink()
     nRows /= 2;
     for (ROWINDEX y = 0; y < nRows; y++)
     {
-    	modplug::tracker::modevent_t *psrc = sndFile.Patterns[nPattern] + (y * 2 * nChns);
-    	modplug::tracker::modevent_t *pdest = sndFile.Patterns[nPattern] + (y * nChns);
-    	for (CHANNELINDEX x = 0; x < nChns; x++)
-    	{
-    		pdest[x] = psrc[x];
-    		if ((!pdest[x].note) && (!pdest[x].instr))
-    		{
-    			pdest[x].note = psrc[x+nChns].note;
-    			pdest[x].instr = psrc[x+nChns].instr;
-    			if (psrc[x+nChns].volcmd)
-    			{
-    				pdest[x].volcmd = psrc[x+nChns].volcmd;
-    				pdest[x].vol = psrc[x+nChns].vol;
-    			}
-    			if (!pdest[x].command)
-    			{
-    				pdest[x].command = psrc[x+nChns].command;
-    				pdest[x].param = psrc[x+nChns].param;
-    			}
-    		}
-    	}
+            modplug::tracker::modevent_t *psrc = sndFile.Patterns[nPattern] + (y * 2 * nChns);
+            modplug::tracker::modevent_t *pdest = sndFile.Patterns[nPattern] + (y * nChns);
+            for (CHANNELINDEX x = 0; x < nChns; x++)
+            {
+                    pdest[x] = psrc[x];
+                    if ((!pdest[x].note) && (!pdest[x].instr))
+                    {
+                            pdest[x].note = psrc[x+nChns].note;
+                            pdest[x].instr = psrc[x+nChns].instr;
+                            if (psrc[x+nChns].volcmd)
+                            {
+                                    pdest[x].volcmd = psrc[x+nChns].volcmd;
+                                    pdest[x].vol = psrc[x+nChns].vol;
+                            }
+                            if (!pdest[x].command)
+                            {
+                                    pdest[x].command = psrc[x+nChns].command;
+                                    pdest[x].param = psrc[x+nChns].param;
+                            }
+                    }
+            }
     }
     m_Rows = nRows;
     rModDoc.SetModified();
@@ -217,7 +217,7 @@ bool CPattern::SetName(char *newName, size_t maxChars)
 {
     if(newName == nullptr || maxChars == 0)
     {
-    	return false;
+            return false;
     }
     m_PatternName.SetString(newName, maxChars - 1);
     return true;
@@ -229,7 +229,7 @@ bool CPattern::GetName(char *buffer, size_t maxChars) const
 {
     if(buffer == nullptr || maxChars == 0)
     {
-    	return false;
+            return false;
     }
     strncpy(buffer, m_PatternName, maxChars - 1);
     buffer[maxChars - 1] = '\0';
@@ -272,11 +272,11 @@ bool CPattern::WriteITPdata(FILE* f) const
 {
     for(ROWINDEX r = 0; r<GetNumRows(); r++)
     {
-    	for(CHANNELINDEX c = 0; c<GetNumChannels(); c++)
-    	{
-    		modplug::tracker::modevent_t mc = GetModCommand(r,c);
-    		fwrite(&mc, sizeof(modplug::tracker::modevent_t), 1, f);
-    	}
+            for(CHANNELINDEX c = 0; c<GetNumChannels(); c++)
+            {
+                    modplug::tracker::modevent_t mc = GetModCommand(r,c);
+                    fwrite(&mc, sizeof(modplug::tracker::modevent_t), 1, f);
+            }
     }
     return false;
 }
@@ -285,31 +285,31 @@ bool CPattern::ReadITPdata(const uint8_t* const lpStream, uint32_t& streamPos, c
 //-----------------------------------------------------------------------------------------------
 {
     if(streamPos > dwMemLength || datasize >= dwMemLength - streamPos || datasize < sizeof(modplug::tracker::modevent_t))
-    	return true;
+            return true;
 
     const uint32_t startPos = streamPos;
     size_t counter = 0;
     while(streamPos - startPos + sizeof(modplug::tracker::modevent_t) <= datasize)
     {
-    	modplug::tracker::modevent_t temp;
-    	memcpy(&temp, lpStream+streamPos, sizeof(modplug::tracker::modevent_t));
-    	modplug::tracker::modevent_t& mc = GetModCommand(counter);
-    	mc.command = temp.command;
-    	mc.instr = temp.instr;
-    	mc.note = temp.note;
-    	mc.param = temp.param;
-    	mc.vol = temp.vol;
-    	mc.volcmd = temp.volcmd;
-    	streamPos += sizeof(modplug::tracker::modevent_t);
-    	counter++;
+            modplug::tracker::modevent_t temp;
+            memcpy(&temp, lpStream+streamPos, sizeof(modplug::tracker::modevent_t));
+            modplug::tracker::modevent_t& mc = GetModCommand(counter);
+            mc.command = temp.command;
+            mc.instr = temp.instr;
+            mc.note = temp.note;
+            mc.param = temp.param;
+            mc.vol = temp.vol;
+            mc.volcmd = temp.volcmd;
+            streamPos += sizeof(modplug::tracker::modevent_t);
+            counter++;
     }
     if(streamPos != startPos + datasize)
     {
-    	ASSERT(false);
-    	return true;
+            ASSERT(false);
+            return true;
     }
     else
-    	return false;
+            return false;
 }
 
 
@@ -324,13 +324,13 @@ bool CPattern::ReadITPdata(const uint8_t* const lpStream, uint32_t& streamPos, c
 
 static enum maskbits
 {
-    noteBit			= (1 << 0),
-    instrBit		= (1 << 1),
-    volcmdBit		= (1 << 2),
-    volBit			= (1 << 3),
-    commandBit		= (1 << 4),
-    effectParamBit	= (1 << 5),
-    extraData		= (1 << 6)
+    noteBit                        = (1 << 0),
+    instrBit                = (1 << 1),
+    volcmdBit                = (1 << 2),
+    volBit                        = (1 << 3),
+    commandBit                = (1 << 4),
+    effectParamBit        = (1 << 5),
+    extraData                = (1 << 6)
 };
 
 void WriteData(std::ostream& oStrm, const CPattern& pat);
@@ -345,8 +345,8 @@ void WriteModPattern(std::ostream& oStrm, const CPattern& pat)
     // pattern time signature
     if(pat.GetOverrideSignature())
     {
-    	ssb.WriteItem<uint32_t>(pat.GetRowsPerBeat(), "RPB.");
-    	ssb.WriteItem<uint32_t>(pat.GetRowsPerMeasure(), "RPM.");
+            ssb.WriteItem<uint32_t>(pat.GetRowsPerBeat(), "RPB.");
+            ssb.WriteItem<uint32_t>(pat.GetRowsPerMeasure(), "RPM.");
     }
     ssb.FinishWrite();
 }
@@ -358,7 +358,7 @@ void ReadModPattern(std::istream& iStrm, CPattern& pat, const size_t)
     srlztn::Ssb ssb(iStrm);
     ssb.BeginRead(FileIdPattern, MptVersion::num);
     if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
-    	return;
+            return;
     ssb.ReadItem(pat, "data", strlen("data"), &ReadData);
     // pattern time signature
     uint32_t nRPB = 0, nRPM = 0;
@@ -373,17 +373,17 @@ uint8_t CreateDiffMask(modplug::tracker::modevent_t chnMC, modplug::tracker::mod
 {
     uint8_t mask = 0;
     if(chnMC.note != newMC.note)
-    	mask |= noteBit;
+            mask |= noteBit;
     if(chnMC.instr != newMC.instr)
-    	mask |= instrBit;
+            mask |= instrBit;
     if(chnMC.volcmd != newMC.volcmd)
-    	mask |= volcmdBit;
+            mask |= volcmdBit;
     if(chnMC.vol != newMC.vol)
-    	mask |= volBit;
+            mask |= volBit;
     if(chnMC.command != newMC.command)
-    	mask |= commandBit;
+            mask |= commandBit;
     if(chnMC.param != newMC.param)
-    	mask |= effectParamBit;
+            mask |= effectParamBit;
     return mask;
 }
 
@@ -395,7 +395,7 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
 //------------------------------------------------------
 {
     if(!pat)
-    	return;
+            return;
 
     const ROWINDEX rows = pat.GetNumRows();
     const CHANNELINDEX chns = pat.GetNumChannels();
@@ -403,45 +403,45 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
 
     for(ROWINDEX r = 0; r<rows; r++)
     {
-    	for(CHANNELINDEX c = 0; c<chns; c++)
-    	{
-    		const modplug::tracker::modevent_t m = *pat.GetpModCommand(r, c);
-    		// Writing only commands not writting in IT-pattern writing:
-    		// For now this means only NOTE_PC and NOTE_PCS.
-    		if(!m.IsPcNote())
-    			continue;
-    		uint8_t diffmask = CreateDiffMask(lastChnMC[c], m);
-    		uint8_t chval = static_cast<uint8_t>(c+1);
-    		if(diffmask != 0)
-    			chval |= IT_bitmask_patternChanEnabled_c;
+            for(CHANNELINDEX c = 0; c<chns; c++)
+            {
+                    const modplug::tracker::modevent_t m = *pat.GetpModCommand(r, c);
+                    // Writing only commands not writting in IT-pattern writing:
+                    // For now this means only NOTE_PC and NOTE_PCS.
+                    if(!m.IsPcNote())
+                            continue;
+                    uint8_t diffmask = CreateDiffMask(lastChnMC[c], m);
+                    uint8_t chval = static_cast<uint8_t>(c+1);
+                    if(diffmask != 0)
+                            chval |= IT_bitmask_patternChanEnabled_c;
 
-    		Binarywrite<uint8_t>(oStrm, chval);
+                    Binarywrite<uint8_t>(oStrm, chval);
 
-    		if(diffmask)
-    		{
-    			lastChnMC[c] = m;
-    			Binarywrite<uint8_t>(oStrm, diffmask);
-    			if(diffmask & noteBit) Binarywrite<uint8_t>(oStrm, m.note);
-    			if(diffmask & instrBit) Binarywrite<uint8_t>(oStrm, m.instr);
-    			if(diffmask & volcmdBit) Binarywrite<uint8_t>(oStrm, m.volcmd);
-    			if(diffmask & volBit) Binarywrite<uint8_t>(oStrm, m.vol);
-    			if(diffmask & commandBit) Binarywrite<uint8_t>(oStrm, m.command);
-    			if(diffmask & effectParamBit) Binarywrite<uint8_t>(oStrm, m.param);
-    		}
-    	}
-    	Binarywrite<uint8_t>(oStrm, 0); // Write end of row marker.
+                    if(diffmask)
+                    {
+                            lastChnMC[c] = m;
+                            Binarywrite<uint8_t>(oStrm, diffmask);
+                            if(diffmask & noteBit) Binarywrite<uint8_t>(oStrm, m.note);
+                            if(diffmask & instrBit) Binarywrite<uint8_t>(oStrm, m.instr);
+                            if(diffmask & volcmdBit) Binarywrite<uint8_t>(oStrm, m.volcmd);
+                            if(diffmask & volBit) Binarywrite<uint8_t>(oStrm, m.vol);
+                            if(diffmask & commandBit) Binarywrite<uint8_t>(oStrm, m.command);
+                            if(diffmask & effectParamBit) Binarywrite<uint8_t>(oStrm, m.param);
+                    }
+            }
+            Binarywrite<uint8_t>(oStrm, 0); // Write end of row marker.
     }
 }
 
 
-#define READITEM(itembit,id)    	\
-if(diffmask & itembit)    			\
-{    								\
-    Binaryread<uint8_t>(iStrm, temp);	\
-    if(ch < chns)					\
-    	lastChnMC[ch].id = temp;	\
-}    								\
-if(ch < chns)    					\
+#define READITEM(itembit,id)            \
+if(diffmask & itembit)                            \
+{                                                                    \
+    Binaryread<uint8_t>(iStrm, temp);        \
+    if(ch < chns)                                        \
+            lastChnMC[ch].id = temp;        \
+}                                                                    \
+if(ch < chns)                                            \
     m.id = lastChnMC[ch].id;
 
 
@@ -449,7 +449,7 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
 //-------------------------------------------------------------
 {
     if (!pat) // Expecting patterns to be allocated and resized properly.
-    	return;
+            return;
 
     const CHANNELINDEX chns = pat.GetNumChannels();
     const ROWINDEX rows = pat.GetNumRows();
@@ -459,39 +459,39 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
     ROWINDEX row = 0;
     while(row < rows && iStrm.good())
     {
-    	uint8_t t = 0;
-    	Binaryread<uint8_t>(iStrm, t);
-    	if(t == 0)
-    	{
-    		row++;
-    		continue;
-    	}
+            uint8_t t = 0;
+            Binaryread<uint8_t>(iStrm, t);
+            if(t == 0)
+            {
+                    row++;
+                    continue;
+            }
 
-    	CHANNELINDEX ch = (t & IT_bitmask_patternChanField_c);
-    	if(ch > 0)
-    		ch--;
+            CHANNELINDEX ch = (t & IT_bitmask_patternChanField_c);
+            if(ch > 0)
+                    ch--;
 
-    	uint8_t diffmask = 0;
-    	if((t & IT_bitmask_patternChanEnabled_c) != 0)
-    		Binaryread<uint8_t>(iStrm, diffmask);
-    	uint8_t temp = 0;
+            uint8_t diffmask = 0;
+            if((t & IT_bitmask_patternChanEnabled_c) != 0)
+                    Binaryread<uint8_t>(iStrm, diffmask);
+            uint8_t temp = 0;
 
-    	modplug::tracker::modevent_t dummy;
-    	modplug::tracker::modevent_t& m = (ch < chns) ? *pat.GetpModCommand(row, ch) : dummy;
+            modplug::tracker::modevent_t dummy;
+            modplug::tracker::modevent_t& m = (ch < chns) ? *pat.GetpModCommand(row, ch) : dummy;
 
-    	READITEM(noteBit, note);
-    	READITEM(instrBit, instr);
-    	READITEM(volcmdBit, volcmd);
-    	READITEM(volBit, vol);
-    	READITEM(commandBit, command);
-    	READITEM(effectParamBit, param);
-    	if(diffmask & extraData)
-    	{
-    		//Ignore additional data.
-    		uint8_t temp;
-    		Binaryread<uint8_t>(iStrm, temp);
-    		iStrm.ignore(temp);
-    	}
+            READITEM(noteBit, note);
+            READITEM(instrBit, instr);
+            READITEM(volcmdBit, volcmd);
+            READITEM(volBit, vol);
+            READITEM(commandBit, command);
+            READITEM(effectParamBit, param);
+            if(diffmask & extraData)
+            {
+                    //Ignore additional data.
+                    uint8_t temp;
+                    Binaryread<uint8_t>(iStrm, temp);
+                    iStrm.ignore(temp);
+            }
     }
 }
 

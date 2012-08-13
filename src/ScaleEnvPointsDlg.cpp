@@ -26,7 +26,7 @@ BOOL CScaleEnvPointsDlg::OnInitDialog()
     SetDlgItemText(IDC_EDIT_FACTORY, buffer);
     GetDlgItem(IDC_EDIT_FACTORX)->SetFocus();
 
-    return FALSE;	// return TRUE unless you set the focus to a control
+    return FALSE;        // return TRUE unless you set the focus to a control
 }
 
 
@@ -42,22 +42,22 @@ void CScaleEnvPointsDlg::OnOK()
 
     if(m_fFactorX > 0 && m_fFactorX != 1)
     {
-    	for(UINT i = 0; i < m_pEnv->num_nodes; i++)
-    	{
-    		m_pEnv->Ticks[i] = static_cast<uint16_t>(m_fFactorX * m_pEnv->Ticks[i]);
+            for(UINT i = 0; i < m_pEnv->num_nodes; i++)
+            {
+                    m_pEnv->Ticks[i] = static_cast<uint16_t>(m_fFactorX * m_pEnv->Ticks[i]);
 
-    		// Checking that the order of points is preserved.
-    		if(i > 0 && m_pEnv->Ticks[i] <= m_pEnv->Ticks[i - 1])
-    			m_pEnv->Ticks[i] = m_pEnv->Ticks[i - 1] + 1;
-    	}
+                    // Checking that the order of points is preserved.
+                    if(i > 0 && m_pEnv->Ticks[i] <= m_pEnv->Ticks[i - 1])
+                            m_pEnv->Ticks[i] = m_pEnv->Ticks[i - 1] + 1;
+            }
     }
 
     if(m_fFactorY != 1)
     {
-    	for(UINT i = 0; i < m_pEnv->num_nodes; i++)
-    	{
-    		m_pEnv->Values[i] = CLAMP(static_cast<uint8_t>((m_fFactorY * ((int)m_pEnv->Values[i] - m_nCenter)) + m_nCenter), ENVELOPE_MIN, ENVELOPE_MAX);
-    	}
+            for(UINT i = 0; i < m_pEnv->num_nodes; i++)
+            {
+                    m_pEnv->Values[i] = CLAMP(static_cast<uint8_t>((m_fFactorY * ((int)m_pEnv->Values[i] - m_nCenter)) + m_nCenter), ENVELOPE_MIN, ENVELOPE_MAX);
+            }
     }
 
     CDialog::OnOK();

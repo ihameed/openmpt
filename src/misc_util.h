@@ -25,12 +25,12 @@ inline T ConvertStrTo(LPCSTR psz)
 //-------------------------------
 {
     #if _HAS_TR1
-    	static_assert(std::tr1::is_const<T>::value == false && std::tr1::is_volatile<T>::value == false, "Const and volatile types are not handled correctly.");
+            static_assert(std::tr1::is_const<T>::value == false && std::tr1::is_volatile<T>::value == false, "Const and volatile types are not handled correctly.");
     #endif
     if(std::numeric_limits<T>::is_integer)
-    	return static_cast<T>(atoi(psz));
+            return static_cast<T>(atoi(psz));
     else
-    	return static_cast<T>(atof(psz));
+            return static_cast<T>(atof(psz));
 }
 
 template<> inline uint32_t ConvertStrTo(LPCSTR psz) {return strtoul(psz, nullptr, 10);}
@@ -53,8 +53,8 @@ template <class T>
 inline void MemsetZero(T& a)
 {
     #if _HAS_TR1
-    	static_assert(std::tr1::is_pointer<T>::value == false, "Won't memset pointers.");
-    	static_assert(std::tr1::is_pod<T>::value == true, "Won't memset non-pods.");
+            static_assert(std::tr1::is_pointer<T>::value == false, "Won't memset pointers.");
+            static_assert(std::tr1::is_pod<T>::value == true, "Won't memset non-pods.");
     #endif
     memset(&a, 0, sizeof(T));
 }
@@ -79,7 +79,7 @@ inline void LimitMax(T& val, const C upperLimit)
 //----------------------------------------------
 {
     if(val > upperLimit)
-    	val = upperLimit;
+            val = upperLimit;
 }
 
 
@@ -101,21 +101,21 @@ void SanitizeFilename(char (&buffer)[size])
     STATIC_ASSERT(size > 0);
     for(size_t i = 0; i < size; i++)
     {
-    	if(	buffer[i] == '\\' ||
-    		buffer[i] == '\"' ||
-    		buffer[i] == '/'  ||
-    		buffer[i] == ':'  ||
-    		buffer[i] == '?'  ||
-    		buffer[i] == '<'  ||
-    		buffer[i] == '>'  ||
-    		buffer[i] == '*')
-    	{
-    		for(size_t j = i + 1; j < size; j++)
-    		{
-    			buffer[j - 1] = buffer[j];
-    		}
-    		buffer[size - 1] = 0;
-    	}
+            if(        buffer[i] == '\\' ||
+                    buffer[i] == '\"' ||
+                    buffer[i] == '/'  ||
+                    buffer[i] == ':'  ||
+                    buffer[i] == '?'  ||
+                    buffer[i] == '<'  ||
+                    buffer[i] == '>'  ||
+                    buffer[i] == '*')
+            {
+                    for(size_t j = i + 1; j < size; j++)
+                    {
+                            buffer[j - 1] = buffer[j];
+                    }
+                    buffer[size - 1] = 0;
+            }
     }
 }
 
@@ -128,8 +128,8 @@ void NullToSpaceString(char (&buffer)[size])
     STATIC_ASSERT(size > 0);
     size_t pos = size;
     while (pos-- > 0)
-    	if (buffer[pos] == 0)
-    		buffer[pos] = 32;
+            if (buffer[pos] == 0)
+                    buffer[pos] = 32;
     buffer[size - 1] = 0;
 }
 
@@ -145,10 +145,10 @@ void SpaceToNullString(char (&buffer)[size])
     size_t pos = size;
     while (pos-- > 0)
     {
-    	if (buffer[pos] == 32)
-    		buffer[pos] = 0;
-    	else if(buffer[pos] != 0)
-    		break;
+            if (buffer[pos] == 32)
+                    buffer[pos] = 0;
+            else if(buffer[pos] != 0)
+                    break;
     }
     buffer[size - 1] = 0;
 }
@@ -164,12 +164,12 @@ void FixNullString(char (&buffer)[size])
     // Find the first null char.
     while(buffer[pos] != '\0' && pos < size)
     {
-    	pos++;
+            pos++;
     }
     // Remove everything after the null char.
     while(pos < size)
     {
-    	buffer[pos++] = '\0';
+            buffer[pos++] = '\0';
     }
 }
 
@@ -188,7 +188,7 @@ void SpaceToNullStringFixed(char (&buffer)[size])
     // Overwrite trailing chars
     for(size_t pos = length; pos < size; pos++)
     {
-    	buffer[pos] = 0;
+            buffer[pos] = 0;
     }
 }
 
@@ -207,7 +207,7 @@ void SpaceToNullStringFixed(char (&buffer)[size], size_t length)
     // Overwrite trailing chars
     for(size_t pos = length; pos < size; pos++)
     {
-    	buffer[pos] = 0;
+            buffer[pos] = 0;
     }
 }
 

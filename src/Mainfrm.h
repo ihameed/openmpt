@@ -30,11 +30,11 @@ class ISoundDevice;
 class ISoundSource;
 class CPerformanceCounter;
 
-#define NUM_AUDIO_BUFFERS    		3
-#define MIN_AUDIO_BUFFERSIZE    	1024
-#define MAX_AUDIO_BUFFERSIZE    	32768	// 32K buffers max
-#define MAINFRAME_TITLE    			"Open ModPlug Tracker"
-#define INIBUFFERSIZE    			MAX_PATH
+#define NUM_AUDIO_BUFFERS                    3
+#define MIN_AUDIO_BUFFERSIZE            1024
+#define MAX_AUDIO_BUFFERSIZE            32768        // 32K buffers max
+#define MAINFRAME_TITLE                            "Open ModPlug Tracker"
+#define INIBUFFERSIZE                            MAX_PATH
 
 enum {
     CTRLMSG_BASE=0,
@@ -51,9 +51,9 @@ enum {
     CTRLMSG_PAT_PREVINSTRUMENT,
     CTRLMSG_PAT_NEXTINSTRUMENT,
     CTRLMSG_PAT_SETINSTRUMENT,
-    CTRLMSG_PAT_FOLLOWSONG,		//rewbs.customKeys
+    CTRLMSG_PAT_FOLLOWSONG,                //rewbs.customKeys
     CTRLMSG_PAT_LOOP,
-    CTRLMSG_PAT_NEWPATTERN,		//rewbs.customKeys
+    CTRLMSG_PAT_NEWPATTERN,                //rewbs.customKeys
     CTRLMSG_SETUPMACROS,
     CTRLMSG_GETCURRENTINSTRUMENT,
     CTRLMSG_SETCURRENTINSTRUMENT,
@@ -99,7 +99,7 @@ enum {
     VIEWMSG_SETSPACING,
     VIEWMSG_PATTERNPROPERTIES,
     VIEWMSG_SETVUMETERS,
-    VIEWMSG_SETPLUGINNAMES,	//rewbs.patPlugNames
+    VIEWMSG_SETPLUGINNAMES,        //rewbs.patPlugNames
     VIEWMSG_DOMIDISPACING,
     VIEWMSG_EXPANDPATTERN,
     VIEWMSG_SHRINKPATTERN,
@@ -116,8 +116,8 @@ enum {
 };
 
 
-#define MODSTATUS_PLAYING    	0x01
-#define MODSTATUS_BUSY    		0x02
+#define MODSTATUS_PLAYING            0x01
+#define MODSTATUS_BUSY                    0x02
 #define MODSTATUS_RENDERING     0x04 //rewbs.VSTTimeInfo
 
 #define SOUNDSETUP_ENABLEMMX    0x08
@@ -127,11 +127,11 @@ enum {
 #define SOUNDSETUP_RESTARTMASK    SOUNDSETUP_SECONDARY
 
 #define QUALITY_NOISEREDUCTION    0x01
-#define QUALITY_MEGABASS    	0x02
-#define QUALITY_SURROUND    	0x08
-#define QUALITY_REVERB    		0x20
-#define QUALITY_AGC    			0x40
-#define QUALITY_EQ    			0x80
+#define QUALITY_MEGABASS            0x02
+#define QUALITY_SURROUND            0x08
+#define QUALITY_REVERB                    0x20
+#define QUALITY_AGC                            0x40
+#define QUALITY_EQ                            0x80
 
 
 // User-defined colors
@@ -168,53 +168,53 @@ enum
     MAX_MODPALETTECOLORS
 };
 
-#define NUM_VUMETER_PENS    	32
+#define NUM_VUMETER_PENS            32
 
 // Pattern Setup (contains also non-pattern related settings)
 // Feel free to replace the deprecated flags by new flags, but be sure to
 // update CMainFrame::LoadIniSettings() as well.
-#define PATTERN_PLAYNEWNOTE    		0x01		// play new notes while recording
-#define PATTERN_LARGECOMMENTS    	0x02		// use large font in comments
-#define PATTERN_STDHIGHLIGHT    	0x04		// enable primary highlight (measures)
-#define PATTERN_SMALLFONT    		0x08		// use small font in pattern editor
-#define PATTERN_CENTERROW    		0x10		// always center active row
-#define PATTERN_WRAP    			0x20		// wrap around cursor in editor
-#define PATTERN_EFFECTHILIGHT    	0x40		// effect syntax highlighting
-#define PATTERN_HEXDISPLAY    		0x80		// display row number in hex
-#define PATTERN_FLATBUTTONS    		0x100		// flat toolbar buttons
-#define PATTERN_CREATEBACKUP    	0x200		// create .bak files when saving
-#define PATTERN_SINGLEEXPAND    	0x400		// single click to expand tree
-#define PATTERN_PLAYEDITROW    		0x800		// play all notes on the current row while entering notes
-#define PATTERN_NOEXTRALOUD    		0x1000		// no loud samples in sample editor
-#define PATTERN_DRAGNDROPEDIT    	0x2000		// enable drag and drop editing
-#define PATTERN_2NDHIGHLIGHT    	0x4000		// activate secondary highlight (beats)
-#define PATTERN_MUTECHNMODE    		0x8000		// ignore muted channels
-#define PATTERN_SHOWPREVIOUS    	0x10000		// show prev/next patterns
-#define PATTERN_CONTSCROLL    		0x20000		// continous pattern scrolling
-#define PATTERN_KBDNOTEOFF    		0x40000		// Record note-off events
-#define PATTERN_FOLLOWSONGOFF    	0x80000		// follow song off by default
-#define PATTERN_MIDIRECORD    		0x100000	// MIDI Record on by default
-//#define PATTERN_ALTERNTIVEBPMSPEED    0x200000	// deprecated
-//#define PATTERN_HILITETIMESIGS    	0x400000	// highlight on song signature, deprecated (now always enabled)
-#define PATTERN_OLDCTXMENUSTYLE    	0x800000	// mpt 1.16 pattern context menu style
-#define PATTERN_SYNCMUTE    		0x1000000	// maintain sample sync on mute
-#define PATTERN_AUTODELAY    		0x2000000	// automatically insert delay commands in pattern when entering notes
-#define PATTERN_NOTEFADE    		0x4000000	// alt. note fade behaviour when entering notes
-#define PATTERN_OVERFLOWPASTE    	0x8000000	// continue paste in the next pattern instead of cutting off
-//#define PATTERN_POSITIONAWARETIMER    0x10000000	// try to set the timer in the statusbar when jumping around in modules (deprecated, it generated too much load in the code due to some bugs, hence it was made optional. those bugs are now resolved, so there's no point in keeping this flag.)
-#define PATTERN_RESETCHANNELS    	0x20000000	// reset channels when looping
-#define PATTERN_LIVEUPDATETREE    	0x40000000	// update active sample / instr icons in treeview
+#define PATTERN_PLAYNEWNOTE                    0x01                // play new notes while recording
+#define PATTERN_LARGECOMMENTS            0x02                // use large font in comments
+#define PATTERN_STDHIGHLIGHT            0x04                // enable primary highlight (measures)
+#define PATTERN_SMALLFONT                    0x08                // use small font in pattern editor
+#define PATTERN_CENTERROW                    0x10                // always center active row
+#define PATTERN_WRAP                            0x20                // wrap around cursor in editor
+#define PATTERN_EFFECTHILIGHT            0x40                // effect syntax highlighting
+#define PATTERN_HEXDISPLAY                    0x80                // display row number in hex
+#define PATTERN_FLATBUTTONS                    0x100                // flat toolbar buttons
+#define PATTERN_CREATEBACKUP            0x200                // create .bak files when saving
+#define PATTERN_SINGLEEXPAND            0x400                // single click to expand tree
+#define PATTERN_PLAYEDITROW                    0x800                // play all notes on the current row while entering notes
+#define PATTERN_NOEXTRALOUD                    0x1000                // no loud samples in sample editor
+#define PATTERN_DRAGNDROPEDIT            0x2000                // enable drag and drop editing
+#define PATTERN_2NDHIGHLIGHT            0x4000                // activate secondary highlight (beats)
+#define PATTERN_MUTECHNMODE                    0x8000                // ignore muted channels
+#define PATTERN_SHOWPREVIOUS            0x10000                // show prev/next patterns
+#define PATTERN_CONTSCROLL                    0x20000                // continous pattern scrolling
+#define PATTERN_KBDNOTEOFF                    0x40000                // Record note-off events
+#define PATTERN_FOLLOWSONGOFF            0x80000                // follow song off by default
+#define PATTERN_MIDIRECORD                    0x100000        // MIDI Record on by default
+//#define PATTERN_ALTERNTIVEBPMSPEED    0x200000        // deprecated
+//#define PATTERN_HILITETIMESIGS            0x400000        // highlight on song signature, deprecated (now always enabled)
+#define PATTERN_OLDCTXMENUSTYLE            0x800000        // mpt 1.16 pattern context menu style
+#define PATTERN_SYNCMUTE                    0x1000000        // maintain sample sync on mute
+#define PATTERN_AUTODELAY                    0x2000000        // automatically insert delay commands in pattern when entering notes
+#define PATTERN_NOTEFADE                    0x4000000        // alt. note fade behaviour when entering notes
+#define PATTERN_OVERFLOWPASTE            0x8000000        // continue paste in the next pattern instead of cutting off
+//#define PATTERN_POSITIONAWARETIMER    0x10000000        // try to set the timer in the statusbar when jumping around in modules (deprecated, it generated too much load in the code due to some bugs, hence it was made optional. those bugs are now resolved, so there's no point in keeping this flag.)
+#define PATTERN_RESETCHANNELS            0x20000000        // reset channels when looping
+#define PATTERN_LIVEUPDATETREE            0x40000000        // update active sample / instr icons in treeview
 
 
 // Midi Setup
-#define MIDISETUP_RECORDVELOCITY    		0x01	// Record MIDI velocity
-#define MIDISETUP_TRANSPOSEKEYBOARD    		0x02	// Apply transpose value to MIDI Notes
-#define MIDISETUP_MIDITOPLUG    			0x04	// Pass MIDI messages to plugins
-#define MIDISETUP_MIDIVOL_TO_NOTEVOL    	0x08	// Combine MIDI volume to note velocity
-#define MIDISETUP_RECORDNOTEOFF    			0x10	// Record MIDI Note Off to pattern
-#define MIDISETUP_RESPONDTOPLAYCONTROLMSGS    0x20	// Respond to Restart/Continue/Stop MIDI commands
-#define MIDISETUP_AMPLIFYVELOCITY    		0x40	// Amplify velocity of recorded notes
-#define MIDISETUP_MIDIMACROCONTROL    		0x80	// Record MIDI controller changes a MIDI macro changes in pattern
+#define MIDISETUP_RECORDVELOCITY                    0x01        // Record MIDI velocity
+#define MIDISETUP_TRANSPOSEKEYBOARD                    0x02        // Apply transpose value to MIDI Notes
+#define MIDISETUP_MIDITOPLUG                            0x04        // Pass MIDI messages to plugins
+#define MIDISETUP_MIDIVOL_TO_NOTEVOL            0x08        // Combine MIDI volume to note velocity
+#define MIDISETUP_RECORDNOTEOFF                            0x10        // Record MIDI Note Off to pattern
+#define MIDISETUP_RESPONDTOPLAYCONTROLMSGS    0x20        // Respond to Restart/Continue/Stop MIDI commands
+#define MIDISETUP_AMPLIFYVELOCITY                    0x40        // Amplify velocity of recorded notes
+#define MIDISETUP_MIDIMACROCONTROL                    0x80        // Record MIDI controller changes a MIDI macro changes in pattern
 #define MIDISETUP_PLAYPATTERNONMIDIIN       0x100    // Play pattern if MIDI Note is received and playback is paused
 
 
@@ -342,29 +342,29 @@ enum
 /////////////////////////////////////////////////////////////////////////
 // Player position notification
 
-#define MAX_UPDATE_HISTORY    	8
+#define MAX_UPDATE_HISTORY            8
 
-#define MPTNOTIFY_TYPEMASK    	0x00FF0000	// HiWord = type, LoWord = subtype (smp/instr #)
-#define MPTNOTIFY_PENDING    	0x01000000	// Being processed
-#define MPTNOTIFY_DEFAULT    	0x00010000
-#define MPTNOTIFY_POSITION    	0x00010000
-#define MPTNOTIFY_SAMPLE    	0x00020000
-#define MPTNOTIFY_VOLENV    	0x00040000
-#define MPTNOTIFY_PANENV    	0x00080000
-#define MPTNOTIFY_PITCHENV    	0x00100000
-#define MPTNOTIFY_VUMETERS    	0x00200000
-#define MPTNOTIFY_MASTERVU    	0x00400000
-#define MPTNOTIFY_STOP    		0x00800000
-#define MPTNOTIFY_POSVALID    	0x80000000	// dwPos[i] is valid
+#define MPTNOTIFY_TYPEMASK            0x00FF0000        // HiWord = type, LoWord = subtype (smp/instr #)
+#define MPTNOTIFY_PENDING            0x01000000        // Being processed
+#define MPTNOTIFY_DEFAULT            0x00010000
+#define MPTNOTIFY_POSITION            0x00010000
+#define MPTNOTIFY_SAMPLE            0x00020000
+#define MPTNOTIFY_VOLENV            0x00040000
+#define MPTNOTIFY_PANENV            0x00080000
+#define MPTNOTIFY_PITCHENV            0x00100000
+#define MPTNOTIFY_VUMETERS            0x00200000
+#define MPTNOTIFY_MASTERVU            0x00400000
+#define MPTNOTIFY_STOP                    0x00800000
+#define MPTNOTIFY_POSVALID            0x80000000        // dwPos[i] is valid
 
 typedef struct MPTNOTIFICATION
 {
     uint32_t dwType;
     uint32_t dwLatency;
-    ORDERINDEX nOrder;			// Always valid
-    PATTERNINDEX nPattern;		// dito
-    ROWINDEX nRow;				// dito
-    uint32_t dwPos[MAX_VIRTUAL_CHANNELS];	// sample/envelope pos for each channel if >= 0
+    ORDERINDEX nOrder;                        // Always valid
+    PATTERNINDEX nPattern;                // dito
+    ROWINDEX nRow;                                // dito
+    uint32_t dwPos[MAX_VIRTUAL_CHANNELS];        // sample/envelope pos for each channel if >= 0
 } MPTNOTIFICATION, *PMPTNOTIFICATION;
 
 /////////////////////////////////////////////////////////////////////////
@@ -399,8 +399,8 @@ enum Directory
 
 
 #define DeleteGDIObject(h) if (h) { ::DeleteObject(h); h = NULL; }
-#define BEGIN_CRITICAL()    	EnterCriticalSection(&CMainFrame::m_csAudio)
-#define END_CRITICAL()    		LeaveCriticalSection(&CMainFrame::m_csAudio)
+#define BEGIN_CRITICAL()            EnterCriticalSection(&CMainFrame::m_csAudio)
+#define END_CRITICAL()                    LeaveCriticalSection(&CMainFrame::m_csAudio)
 
 #include "mainbar.h"
 
@@ -421,7 +421,7 @@ public:
     static bool gbShowHackControls;
     static LONG glTreeWindowWidth, glTreeSplitRatio;
     static LONG glGeneralWindowHeight, glPatternWindowHeight, glSampleWindowHeight,
-    	        glInstrumentWindowHeight, glCommentsWindowHeight, glGraphWindowHeight; //rewbs.varWindowSize
+                    glInstrumentWindowHeight, glCommentsWindowHeight, glGraphWindowHeight; //rewbs.varWindowSize
     static HHOOK ghKbdHook;
     static uint32_t gdwNotificationType;
     static CString gcsPreviousVersion;
@@ -435,7 +435,7 @@ public:
     static UINT gnPatternSpacing;
     static BOOL gbPatternVUMeters, gbPatternPluginNames, gbPatternRecord;
     static uint32_t m_dwPatternSetup, m_dwMidiSetup, m_nKeyboardCfg, gnHotKeyMask;
-    static uint32_t m_nRowSpacing, m_nRowSpacing2;	// primary (measures) and secondary (beats) highlight
+    static uint32_t m_nRowSpacing, m_nRowSpacing2;        // primary (measures) and secondary (beats) highlight
     static bool m_bHideUnavailableCtxMenuItems;
     // Sample Editor Setup
     static UINT m_nSampleUndoMaxBuffer;
@@ -506,7 +506,7 @@ protected:
     // Notification Buffer
     MPTNOTIFICATION NotifyBuffer[MAX_UPDATE_HISTORY];
     // Misc
-    bool m_bOptionsLocked; 	 	//rewbs.customKeys
+    bool m_bOptionsLocked;                  //rewbs.customKeys
     double m_dTotalCPU;
     CModDoc* m_pJustModifiedDoc;
 
@@ -545,7 +545,7 @@ public:
     static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam);
     static void TranslateKeyboardMap(LPSTR pszKbd);
     static VOID GetKeyName(LONG lParam, LPSTR pszName, UINT cbSize);
-    static CInputHandler *m_InputHandler; 	//rewbs.customKeys
+    static CInputHandler *m_InputHandler;         //rewbs.customKeys
     static CPerformanceCounter *m_pPerfCounter;
 
     static bool WritePrivateProfileLong(const CString section, const CString key, const long value, const CString iniFile);
@@ -564,19 +564,19 @@ public:
     VOID SetHelpText(LPCSTR lpszText);
     UINT GetBaseOctave();
     CModDoc *GetActiveDoc();
-    CView *GetActiveView();  	//rewbs.customKeys
+    CView *GetActiveView();          //rewbs.customKeys
     CImageList *GetImageList() { return &m_ImageList; }
     PMPTCHORD GetChords() { return Chords; }
     VOID OnDocumentCreated(CModDoc *pModDoc);
     VOID OnDocumentClosed(CModDoc *pModDoc);
     VOID UpdateTree(CModDoc *pModDoc, uint32_t lHint=0, CObject *pHint=NULL);
-    static CInputHandler* GetInputHandler() { return m_InputHandler; }  	//rewbs.customKeys
-    bool m_bModTreeHasFocus;  	//rewbs.customKeys
-    CWnd *m_pNoteMapHasFocus;  	//rewbs.customKeys
+    static CInputHandler* GetInputHandler() { return m_InputHandler; }          //rewbs.customKeys
+    bool m_bModTreeHasFocus;          //rewbs.customKeys
+    CWnd *m_pNoteMapHasFocus;          //rewbs.customKeys
     CWnd* m_pOrderlistHasFocus;
-    long GetSampleRate();  		//rewbs.VSTTimeInfo
+    long GetSampleRate();                  //rewbs.VSTTimeInfo
     long GetTotalSampleCount(); //rewbs.VSTTimeInfo
-    double GetApproxBPM();		//rewbs.VSTTimeInfo
+    double GetApproxBPM();                //rewbs.VSTTimeInfo
     void ThreadSafeSetModified(CModDoc* modified) {m_pJustModifiedDoc=modified;}
 
 // Player functions
@@ -589,8 +589,8 @@ public:
     BOOL PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nSample, UINT nNote=0);
     BOOL PlayDLSInstrument(UINT nDLSBank, UINT nIns, UINT nRgn);
     BOOL StopSoundFile(module_renderer *);
-    inline BOOL IsPlaying() const { return (m_dwStatus & MODSTATUS_PLAYING); 	}
-    inline BOOL IsRendering() const { return (m_dwStatus & MODSTATUS_RENDERING); 	} //rewbs.VSTTimeInfo
+    inline BOOL IsPlaying() const { return (m_dwStatus & MODSTATUS_PLAYING);         }
+    inline BOOL IsRendering() const { return (m_dwStatus & MODSTATUS_RENDERING);         } //rewbs.VSTTimeInfo
     uint32_t GetElapsedTime() const { return m_dwElapsedTime; }
     void ResetElapsedTime() { m_dwElapsedTime = 0; }
     void SetElapsedTime(uint32_t dwElapsedTime) { m_dwElapsedTime = dwElapsedTime; }
@@ -685,7 +685,7 @@ protected:
     afx_msg void OnNextOctave();
     afx_msg void OnOctaveChanged();
     afx_msg void OnPanic();
-    afx_msg void OnReportBug();	//rewbs.customKeys
+    afx_msg void OnReportBug();        //rewbs.customKeys
     afx_msg BOOL OnInternetLink(UINT nID);
     afx_msg LRESULT OnUpdatePosition(WPARAM, LPARAM lParam);
     afx_msg LRESULT OnInvalidatePatterns(WPARAM, LPARAM);

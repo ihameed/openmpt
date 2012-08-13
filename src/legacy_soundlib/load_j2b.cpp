@@ -41,11 +41,11 @@
 // Envelope flags
 #define AMENV_ENABLED    0x01
 #define AMENV_SUSTAIN    0x02
-#define AMENV_LOOP    	0x04
+#define AMENV_LOOP            0x04
 
 // Sample flags
-#define AMSMP_16BIT    	0x04
-#define AMSMP_LOOP    	0x08
+#define AMSMP_16BIT            0x04
+#define AMSMP_LOOP            0x08
 #define AMSMP_PINGPONG    0x10
 #define AMSMP_PANNING    0x20
 #define AMSMP_EXISTS    0x80
@@ -57,10 +57,10 @@
 // header for compressed j2b files
 struct J2BHEADER
 {
-    uint32_t signature;    	// MUSE
-    uint32_t deadbeaf;    	// 0xDEADBEAF (AM) or 0xDEADBABE (AMFF)
-    uint32_t j2blength;    	// complete filesize
-    uint32_t crc32;    		// checksum of the compressed data block
+    uint32_t signature;            // MUSE
+    uint32_t deadbeaf;            // 0xDEADBEAF (AM) or 0xDEADBABE (AMFF)
+    uint32_t j2blength;            // complete filesize
+    uint32_t crc32;                    // checksum of the compressed data block
     uint32_t packed_length;    // length of the compressed data block
     uint32_t unpacked_length;    // length of the decompressed module
 };
@@ -81,7 +81,7 @@ struct AMFFCHUNK_MAIN
     uint8_t  channels;
     uint8_t  speed;
     uint8_t  tempo;
-    uint32_t unknown;    	// 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
+    uint32_t unknown;            // 0x16078035 if original file was MOD, 0xC50100FF for everything else? it's 0xFF00FFFF in Carrotus.j2b (AMFF version)
     uint8_t  globalvolume;
 };
 
@@ -95,8 +95,8 @@ struct AMFFINST_ENVPOINT
 // AMFF instrument header
 struct AMFFCHUNK_INSTRUMENT
 {
-    uint8_t  unknown;    			// 0x00
-    uint8_t  index;    			// actual instrument number
+    uint8_t  unknown;                            // 0x00
+    uint8_t  index;                            // actual instrument number
     char   name[28];
     uint8_t  numsamples;
     uint8_t  samplemap[120];
@@ -104,11 +104,11 @@ struct AMFFCHUNK_INSTRUMENT
     uint16_t autovib_sweep;
     uint16_t autovib_depth;
     uint16_t autovib_rate;
-    uint8_t  envflags;    		// high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
-    uint8_t  envnumpoints;    	// high nibble = pan env length, low nibble = vol env length
+    uint8_t  envflags;                    // high nibble = pan env flags, low nibble = vol env flags (both nibbles work the same way)
+    uint8_t  envnumpoints;            // high nibble = pan env length, low nibble = vol env length
     uint8_t  envsustainpoints;    // you guessed it... high nibble = pan env sustain point, low nibble = vol env sustain point
-    uint8_t  envloopstarts;    	// i guess you know the pattern now.
-    uint8_t  envloopends;    		// same here.
+    uint8_t  envloopstarts;            // i guess you know the pattern now.
+    uint8_t  envloopends;                    // same here.
     AMFFINST_ENVPOINT volenv[10];
     AMFFINST_ENVPOINT panenv[10];
     uint16_t fadeout;
@@ -147,14 +147,14 @@ struct AMINST_ENVELOPE
     uint8_t  loopstart;
     uint8_t  loopend;
     AMINST_ENVPOINT values[10];
-    uint16_t fadeout;    	// why is this here? it's only needed for the volume envelope...
+    uint16_t fadeout;            // why is this here? it's only needed for the volume envelope...
 };
 
 // AM instrument header
 struct AMCHUNK_INSTRUMENT
 {
     uint8_t  unknown1;    // 0x00
-    uint8_t  index;    	// actual instrument number
+    uint8_t  index;            // actual instrument number
     char   name[32];
     uint8_t  samplemap[128];
     uint8_t  autovib_type;
@@ -178,7 +178,7 @@ struct AMCHUNK_SAMPLE
     uint16_t pan;
     uint16_t volume;
     uint16_t flags;
-    uint16_t unkown;    	// 0x0000 / 0x0080?
+    uint16_t unkown;            // 0x0000 / 0x0080?
     uint32_t length;
     uint32_t loopstart;
     uint32_t loopend;
@@ -428,7 +428,7 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
         case ENV_VOLUME:    // 0....32767
             pMPTEnv->Values[i] = (uint8_t)((val + 1) >> 9);
             break;
-        case ENV_PITCH:    	// -4096....4096
+        case ENV_PITCH:            // -4096....4096
             pMPTEnv->Values[i] = (uint8_t)((((int16_t)val) + 0x1001) >> 7);
             break;
         case ENV_PANNING:    // -32768...32767

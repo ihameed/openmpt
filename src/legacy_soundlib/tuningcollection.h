@@ -39,15 +39,15 @@ public:
 public:
     enum 
     {
-    	EM_ADD = 1, //true <~> allowed
-    	EM_REMOVE = 2,
-    	EM_ALLOWALL = 0xffff,
-    	EM_CONST = 0,
+            EM_ADD = 1, //true <~> allowed
+            EM_REMOVE = 2,
+            EM_ALLOWALL = 0xffff,
+            EM_CONST = 0,
 
         s_SerializationVersion = 3,
 
-    	SERIALIZATION_SUCCESS = false,
-    	SERIALIZATION_FAILURE = true
+            SERIALIZATION_SUCCESS = false,
+            SERIALIZATION_FAILURE = true
     };
 
     static const TCHAR s_FileExtension[4];

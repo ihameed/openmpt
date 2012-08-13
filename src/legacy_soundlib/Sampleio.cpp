@@ -55,10 +55,10 @@ bool module_renderer::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMe
     if ((!lpMemFile) || (dwFileLength < 128)) return false;
     if (((psig[0] == LittleEndian(0x46464952)) && (psig[2] == LittleEndian(0x45564157)))    // RIFF....WAVE signature
      || ((psig[0] == LittleEndian(0x5453494C)) && (psig[2] == LittleEndian(0x65766177)))    // LIST....wave
-     || (psig[76/4] == LittleEndian(0x53524353))    										// S3I signature
+     || (psig[76/4] == LittleEndian(0x53524353))                                                                                    // S3I signature
      || ((psig[0] == LittleEndian(0x4D524F46)) && (psig[2] == LittleEndian(0x46464941)))    // AIFF signature
      || ((psig[0] == LittleEndian(0x4D524F46)) && (psig[2] == LittleEndian(0x58565338)))    // 8SVX signature
-     || (psig[0] == LittleEndian(LittleEndian(IT_IMPS)))    								// ITS signature
+     || (psig[0] == LittleEndian(LittleEndian(IT_IMPS)))                                                                    // ITS signature
     )
     {
         // Loading Instrument
@@ -68,7 +68,7 @@ bool module_renderer::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMe
         pIns->pTuning = pIns->s_DefaultTuning;
 // -> CODE#0003
 // -> DESC="remove instrument's samples"
-//    	RemoveInstrumentSamples(nInstr);
+//            RemoveInstrumentSamples(nInstr);
         DestroyInstrument(nInstr,1);
 // -! BEHAVIOUR_CHANGE#0003
         Instruments[nInstr] = pIns;
@@ -615,15 +615,15 @@ bool module_renderer::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     // "LIST" field
     list.list_id = IFFID_LIST;
     list.list_len = sizeof(list) - 8    // LIST
-                    + 8 + 32    		// "INAM".dwLen.szSampleName
-                    + 8 + 16;    		// "ISFT".dwLen."ModPlug Tracker".0
+                    + 8 + 32                    // "INAM".dwLen.szSampleName
+                    + 8 + 16;                    // "ISFT".dwLen."ModPlug Tracker".0
     list.info = IFFID_INFO;
     fwrite(&list, 1, sizeof(list), f);
-    list.list_id = IFFID_INAM;    		// "INAM"
+    list.list_id = IFFID_INAM;                    // "INAM"
     list.list_len = 32;
     fwrite(&list, 1, 8, f);
     fwrite(m_szNames[nSample], 1, 32, f);
-    list.list_id = IFFID_ISFT;    		// "ISFT"
+    list.list_id = IFFID_ISFT;                    // "ISFT"
     list.list_len = 16;
     fwrite(&list, 1, 8, f);
     fwrite(lpszMPT, 1, list.list_len, f);
@@ -672,16 +672,16 @@ bool module_renderer::SaveRAWSample(UINT nSample, LPCSTR lpszFileName)
 
 typedef struct GF1PATCHFILEHEADER
 {
-    uint32_t gf1p;    			// "GF1P"
-    uint32_t atch;    			// "ATCH"
-    CHAR version[4];    	// "100", or "110"
-    CHAR id[10];    		// "ID#000002"
-    CHAR copyright[60];    	// Copyright
-    uint8_t instrum;    		// Number of instruments in patch
-    uint8_t voices;    		// Number of voices, usually 14
-    uint8_t channels;    		// Number of wav channels that can be played concurently to the patch
-    uint16_t samples;    		// Total number of waveforms for all the .PAT
-    uint16_t volume;    		// Master volume
+    uint32_t gf1p;                            // "GF1P"
+    uint32_t atch;                            // "ATCH"
+    CHAR version[4];            // "100", or "110"
+    CHAR id[10];                    // "ID#000002"
+    CHAR copyright[60];            // Copyright
+    uint8_t instrum;                    // Number of instruments in patch
+    uint8_t voices;                    // Number of voices, usually 14
+    uint8_t channels;                    // Number of wav channels that can be played concurently to the patch
+    uint16_t samples;                    // Total number of waveforms for all the .PAT
+    uint16_t volume;                    // Master volume
     uint32_t data_size;
     uint8_t reserved2[36];
 } GF1PATCHFILEHEADER;
@@ -689,27 +689,27 @@ typedef struct GF1PATCHFILEHEADER
 
 typedef struct GF1INSTRUMENT
 {
-    uint16_t id;    			// Instrument id: 0-65535
-    CHAR name[16];    		// Name of instrument. Gravis doesn't seem to use it
-    uint32_t size;    			// Number of bytes for the instrument with header. (To skip to next instrument)
-    uint8_t layers;    		// Number of layers in instrument: 1-4
+    uint16_t id;                            // Instrument id: 0-65535
+    CHAR name[16];                    // Name of instrument. Gravis doesn't seem to use it
+    uint32_t size;                            // Number of bytes for the instrument with header. (To skip to next instrument)
+    uint8_t layers;                    // Number of layers in instrument: 1-4
     uint8_t reserved[40];
 } GF1INSTRUMENT;
 
 
 typedef struct GF1SAMPLEHEADER
 {
-    CHAR name[7];    		// null terminated string. name of the wave.
-    uint8_t fractions;    		// Start loop point fraction in 4 bits + End loop point fraction in the 4 other bits.
-    uint32_t length;    		// total size of wavesample. limited to 65535 now by the drivers, not the card.
-    uint32_t loopstart;    	// start loop position in the wavesample
-    uint32_t loopend;    		// end loop position in the wavesample
-    uint16_t freq;    			// Rate at which the wavesample has been sampled
+    CHAR name[7];                    // null terminated string. name of the wave.
+    uint8_t fractions;                    // Start loop point fraction in 4 bits + End loop point fraction in the 4 other bits.
+    uint32_t length;                    // total size of wavesample. limited to 65535 now by the drivers, not the card.
+    uint32_t loopstart;            // start loop position in the wavesample
+    uint32_t loopend;                    // end loop position in the wavesample
+    uint16_t freq;                            // Rate at which the wavesample has been sampled
     uint32_t low_freq, high_freq, root_freq;    // check note.h for the correspondance.
-    SHORT finetune;    		// fine tune. -512 to +512, EXCLUDING 0 cause it is a multiplier. 512 is one octave off, and 1 is a neutral value
-    uint8_t balance;    		// Balance: 0-15. 0=full left, 15 = full right
-    uint8_t env_rate[6];    	// attack rates
-    uint8_t env_volume[6];    	// attack volumes
+    SHORT finetune;                    // fine tune. -512 to +512, EXCLUDING 0 cause it is a multiplier. 512 is one octave off, and 1 is a neutral value
+    uint8_t balance;                    // Balance: 0-15. 0=full left, 15 = full right
+    uint8_t env_rate[6];            // attack rates
+    uint8_t env_volume[6];            // attack volumes
     uint8_t tremolo_sweep, tremolo_rate, tremolo_depth;
     uint8_t vibrato_sweep, vibrato_rate, vibrato_depth;
     uint8_t flags;
@@ -732,10 +732,10 @@ typedef struct GF1SAMPLEHEADER
 //    ---------------------------- | | | | | |
 //    <---> attack rate 0          0 1 2 3 4 5 amplitudes
 //         <----> attack rate 1
-//    	     <> attack rate 2
-//    		 <--> attack rate 3
-//    		     <> attack rate 4
-//    			 <-----> attack rate 5
+//                 <> attack rate 2
+//                     <--> attack rate 3
+//                         <> attack rate 4
+//                             <-----> attack rate 5
 //
 // -- GF1 Flags --
 //
@@ -750,10 +750,10 @@ typedef struct GF1SAMPLEHEADER
 
 typedef struct GF1LAYER
 {
-    uint8_t previous;    		// If !=0 the wavesample to use is from the previous layer. The waveheader is still needed
-    uint8_t id;    			// Layer id: 0-3
-    uint32_t size;    			// data size in bytes in the layer, without the header. to skip to next layer for example:
-    uint8_t samples;    		// number of wavesamples
+    uint8_t previous;                    // If !=0 the wavesample to use is from the previous layer. The waveheader is still needed
+    uint8_t id;                            // Layer id: 0-3
+    uint32_t size;                            // data size in bytes in the layer, without the header. to skip to next layer for example:
+    uint8_t samples;                    // number of wavesamples
     uint8_t reserved[40];
 } GF1LAYER;
 
@@ -1034,10 +1034,10 @@ bool module_renderer::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint3
 
 typedef struct XIFILEHEADER
 {
-    CHAR extxi[21];    	// Extended Instrument:
-    CHAR name[23];    	// Name, 1Ah
+    CHAR extxi[21];            // Extended Instrument:
+    CHAR name[23];            // Name, 1Ah
     CHAR trkname[20];    // FastTracker v2.00
-    uint16_t shsize;    	// 0x0102
+    uint16_t shsize;            // 0x0102
 } XIFILEHEADER;
 
 
@@ -1680,7 +1680,7 @@ UINT module_renderer::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint3
         if (pis->flags & 4) flags |= RSF_STEREO;
         if (pis->cvt == 0xFF) flags = RS_ADPCM4; else
         // IT 2.14 8-bit packed sample ?
-        if (pis->flags & 8)    flags =	RS_IT2148;
+        if (pis->flags & 8)    flags =        RS_IT2148;
     }
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
@@ -1739,7 +1739,7 @@ bool module_renderer::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
         samplemap[i] = nsmp;
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
-//    	ReadITSSample(nsmp, lpMemFile+dwMemPos, dwFileLength-dwMemPos, dwMemPos);
+//            ReadITSSample(nsmp, lpMemFile+dwMemPos, dwFileLength-dwMemPos, dwMemPos);
         lastSampleSize = ReadITSSample(nsmp, lpMemFile+dwMemPos, dwFileLength-dwMemPos, dwMemPos);
 // -! NEW_FEATURE#0027
         dwMemPos += sizeof(ITSAMPLESTRUCT);
@@ -1749,7 +1749,7 @@ bool module_renderer::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
     {
 // -> CODE#0019
 // -> DESC="correctly load ITI & XI instruments sample note map"
-//    	if ((pIns->Keyboard[j]) && (pIns->Keyboard[j] <= 64))
+//            if ((pIns->Keyboard[j]) && (pIns->Keyboard[j] <= 64))
         if (pIns->Keyboard[j])
 // -! BUG_FIX#0019
         {
@@ -1816,7 +1816,7 @@ bool module_renderer::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileN
     iti->ifc = pIns->default_filter_cutoff;
     iti->ifr = pIns->default_filter_resonance;
     //iti->trkvers = 0x202;
-    iti->trkvers =    0x220;	 //rewbs.ITVersion (was 0x202)
+    iti->trkvers =    0x220;         //rewbs.ITVersion (was 0x202)
     iti->nos = 0;
     for (UINT i=0; i<NOTE_MAX; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
     {
@@ -1831,7 +1831,7 @@ bool module_renderer::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileN
         iti->keyboard[i*2] = pIns->NoteMap[i] - 1;
 // -> CODE#0019
 // -> DESC="correctly load ITI & XI instruments sample note map"
-//    	iti->keyboard[i*2+1] = smpmap[smp] + 1;
+//            iti->keyboard[i*2+1] = smpmap[smp] + 1;
         iti->keyboard[i*2+1] = smp ? smpmap[smp] + 1 : 0;
 // -! BUG_FIX#0019
     }
@@ -1941,7 +1941,7 @@ bool module_renderer::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileN
     //rewbs.enableStereoITI
     uint16_t sampleType=0;
     if (itss.flags | 0x02) sampleType=RS_PCM16S; else sampleType=RS_PCM8S;    //8 or 16 bit signed
-    if (itss.flags | 0x04) sampleType |= RSF_STEREO;    					//mono or stereo
+    if (itss.flags | 0x04) sampleType |= RSF_STEREO;                                            //mono or stereo
     for (UINT k=0; k<iti->nos; k++)
     {
 //rewbs.enableStereoITI - using eric's code as it is better here.
@@ -1985,7 +1985,7 @@ void ReadInstrumentExtensionField(modplug::tracker::modinstrument_t* pIns, const
 
     if(fadr && code != 'K[..')    // copy field data in instrument's header
         memcpy(fadr,ptr,size);  // (except for keyboard mapping)
-    ptr += size;    			// jump field
+    ptr += size;                            // jump field
 
     if (code == 'dF..' && fadr != nullptr) // 'dF..' field requires additional processing.
         ConvertReadExtendedFlags(pIns);
@@ -2000,7 +2000,7 @@ void ReadExtendedInstrumentProperty(modplug::tracker::modinstrument_t* pIns, con
 
     int16_t size;
     memcpy(&size, pData, sizeof(size)); // read field size
-    pData += sizeof(size);    			// jump field size
+    pData += sizeof(size);                            // jump field size
 
     if(IsValidSizeField(pData, pEnd, size) == false)
         return;
@@ -2029,7 +2029,7 @@ void ReadExtendedInstrumentProperties(modplug::tracker::modinstrument_t* pIns, c
         while( (uintptr_t)(pData - pDataStart) <= nMemLength - 4)
         {
             memcpy(&code, pData, sizeof(code)); // read field code
-            pData += sizeof(code);    			 // jump field code
+            pData += sizeof(code);                             // jump field code
             ReadExtendedInstrumentProperty(pIns, code, pData, pEnd);
         }
     }
@@ -2041,21 +2041,21 @@ void ConvertReadExtendedFlags(modplug::tracker::modinstrument_t *pIns)
 {
     const uint32_t dwOldFlags = pIns->flags;
     pIns->flags = pIns->volume_envelope.flags = pIns->panning_envelope.flags = pIns->pitch_envelope.flags = 0;
-    if(dwOldFlags & dFdd_VOLUME)    	pIns->volume_envelope.flags |= ENV_ENABLED;
+    if(dwOldFlags & dFdd_VOLUME)            pIns->volume_envelope.flags |= ENV_ENABLED;
     if(dwOldFlags & dFdd_VOLSUSTAIN)    pIns->volume_envelope.flags |= ENV_SUSTAIN;
-    if(dwOldFlags & dFdd_VOLLOOP)    	pIns->volume_envelope.flags |= ENV_LOOP;
-    if(dwOldFlags & dFdd_PANNING)    	pIns->panning_envelope.flags |= ENV_ENABLED;
+    if(dwOldFlags & dFdd_VOLLOOP)            pIns->volume_envelope.flags |= ENV_LOOP;
+    if(dwOldFlags & dFdd_PANNING)            pIns->panning_envelope.flags |= ENV_ENABLED;
     if(dwOldFlags & dFdd_PANSUSTAIN)    pIns->panning_envelope.flags |= ENV_SUSTAIN;
-    if(dwOldFlags & dFdd_PANLOOP)    	pIns->panning_envelope.flags |= ENV_LOOP;
-    if(dwOldFlags & dFdd_PITCH)    		pIns->pitch_envelope.flags |= ENV_ENABLED;
+    if(dwOldFlags & dFdd_PANLOOP)            pIns->panning_envelope.flags |= ENV_LOOP;
+    if(dwOldFlags & dFdd_PITCH)                    pIns->pitch_envelope.flags |= ENV_ENABLED;
     if(dwOldFlags & dFdd_PITCHSUSTAIN)    pIns->pitch_envelope.flags |= ENV_SUSTAIN;
-    if(dwOldFlags & dFdd_PITCHLOOP)    	pIns->pitch_envelope.flags |= ENV_LOOP;
+    if(dwOldFlags & dFdd_PITCHLOOP)            pIns->pitch_envelope.flags |= ENV_LOOP;
     if(dwOldFlags & dFdd_SETPANNING)    pIns->flags |= INS_SETPANNING;
-    if(dwOldFlags & dFdd_FILTER)    	pIns->pitch_envelope.flags |= ENV_FILTER;
-    if(dwOldFlags & dFdd_VOLCARRY)    	pIns->volume_envelope.flags |= ENV_CARRY;
-    if(dwOldFlags & dFdd_PANCARRY)    	pIns->panning_envelope.flags |= ENV_CARRY;
+    if(dwOldFlags & dFdd_FILTER)            pIns->pitch_envelope.flags |= ENV_FILTER;
+    if(dwOldFlags & dFdd_VOLCARRY)            pIns->volume_envelope.flags |= ENV_CARRY;
+    if(dwOldFlags & dFdd_PANCARRY)            pIns->panning_envelope.flags |= ENV_CARRY;
     if(dwOldFlags & dFdd_PITCHCARRY)    pIns->pitch_envelope.flags |= ENV_CARRY;
-    if(dwOldFlags & dFdd_MUTE)    		pIns->flags |= INS_MUTE;
+    if(dwOldFlags & dFdd_MUTE)                    pIns->flags |= INS_MUTE;
 }
 
 
@@ -2081,12 +2081,12 @@ typedef struct IFFVHDR
 {
     uint32_t dwVHDR;    // "VHDR"
     uint32_t dwSize;
-    ULONG oneShotHiSamples,    		/* # samples in the high octave 1-shot part */
-            repeatHiSamples,    	/* # samples in the high octave repeat part */
-            samplesPerHiCycle;    	/* # samples/cycle in high octave, else 0 */
-    uint16_t samplesPerSec;    			/* data sampling rate */
-    uint8_t    ctOctave,				/* # octaves of waveforms */
-            sCompression;    		/* data compression technique used */
+    ULONG oneShotHiSamples,                    /* # samples in the high octave 1-shot part */
+            repeatHiSamples,            /* # samples in the high octave repeat part */
+            samplesPerHiCycle;            /* # samples/cycle in high octave, else 0 */
+    uint16_t samplesPerSec;                            /* data sampling rate */
+    uint8_t    ctOctave,                                /* # octaves of waveforms */
+            sCompression;                    /* data compression technique used */
     uint32_t Volume;
 } IFFVHDR;
 

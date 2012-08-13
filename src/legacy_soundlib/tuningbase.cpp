@@ -30,7 +30,7 @@ const TYPENAME CTUNINGBASE::SERIALIZATION_VERSION CTUNINGBASE::s_SerializationVe
 Version history:
     4->5: Lots of changes, finestep interpretation revamp, fileformat revamp.
     3->4: Changed sizetypes in serialisation from size_t(uint32_t) to
-    		smaller types (uint8_t, USTEPTYPE) (March 2007)
+                    smaller types (uint8_t, USTEPTYPE) (March 2007)
 */
 
 
@@ -82,12 +82,12 @@ void CTUNINGBASE::TuningCopy(CTuningBase& to, const CTuningBase& from, const boo
 //------------------------------------------------------------------------------------
 {
     if(!to.MayEdit(EM_ALLOWALL))
-    	return;
+            return;
 
     if(allowExactnamecopy)
-    	to.m_TuningName = from.m_TuningName;
+            to.m_TuningName = from.m_TuningName;
     else
-    	to.m_TuningName = string("Copy of ") + from.m_TuningName;
+            to.m_TuningName = string("Copy of ") + from.m_TuningName;
 
     to.m_NoteNameMap = from.m_NoteNameMap;
     to.m_EditMask = from.m_EditMask;
@@ -101,7 +101,7 @@ void CTUNINGBASE::TuningCopy(CTuningBase& to, const CTuningBase& from, const boo
     //Copying ratios
     for(NOTEINDEXTYPE i = rp.first; i<=rp.second; i++)
     {
-    	to.ProSetRatio(i, from.GetRatio(i));
+            to.ProSetRatio(i, from.GetRatio(i));
     }
     to.ProSetGroupSize(from.GetGroupSize());
     to.ProSetGroupRatio(from.GetGroupRatio());
@@ -115,12 +115,12 @@ bool CTUNINGBASE::SetRatio(const NOTEINDEXTYPE& s, const RATIOTYPE& r)
 {
     if(MayEdit(EM_RATIOS))
     {
-    	if(ProSetRatio(s, r))
-    		return true;
-    	else
-    		SetType(TT_GENERAL);
+            if(ProSetRatio(s, r))
+                    return true;
+            else
+                    SetType(TT_GENERAL);
 
-    	return false;
+            return false;
     }
     return true;
 
@@ -133,15 +133,15 @@ TYPENAME CTUNINGBASE::USTEPINDEXTYPE CTUNINGBASE::SetFineStepCount(const USTEPIN
     VRPAIR vrp = GetValidityRange();
 
     if( (vrp.first > vrp.second)
-    	||
-    	(!IsStepCountRangeSufficient(fs, vrp))
-    	||
-    	(!MayEdit(EM_FINETUNE))
+            ||
+            (!IsStepCountRangeSufficient(fs, vrp))
+            ||
+            (!MayEdit(EM_FINETUNE))
       ) return GetFineStepCount();
     else
     {
-    	ProSetFineStepCount(fs);
-    	return GetFineStepCount();
+            ProSetFineStepCount(fs);
+            return GetFineStepCount();
     }
 }
 
@@ -150,9 +150,9 @@ TYPENAME CTUNINGBASE::TUNINGTYPE CTUNINGBASE::GetTuningType(const char* str)
 //--------------------------------------------------------------------------
 {
     if(!strcmp(str, s_TuningTypeStrGroupGeometric))
-    	return TT_GROUPGEOMETRIC;
+            return TT_GROUPGEOMETRIC;
     if(!strcmp(str, s_TuningTypeStrGeometric))
-    	return TT_GEOMETRIC;
+            return TT_GEOMETRIC;
 
     return TT_GENERAL;
 }
@@ -162,11 +162,11 @@ string CTUNINGBASE::GetTuningTypeStr(const TUNINGTYPE& tt)
 //----------------------------------------------------------------
 {
     if(tt == TT_GENERAL)
-    	return s_TuningTypeStrGeneral;
+            return s_TuningTypeStrGeneral;
     if(tt == TT_GROUPGEOMETRIC)
-    	return s_TuningTypeStrGroupGeometric;
+            return s_TuningTypeStrGroupGeometric;
     if(tt == TT_GEOMETRIC)
-    	return s_TuningTypeStrGeometric;
+            return s_TuningTypeStrGeometric;
     return "Unknown";
 }
 
@@ -186,9 +186,9 @@ TYPENAME CTUNINGBASE::NOTESTR CTUNINGBASE::ProGetNoteName(const NOTEINDEXTYPE& x
 {
     NNM_CITER i = m_NoteNameMap.find(x);
     if(i != m_NoteNameMap.end())
-    	return i->second;
+            return i->second;
     else
-    	return Stringify(x);
+            return Stringify(x);
 }
 
 
@@ -197,19 +197,19 @@ bool CTUNINGBASE::IsOfType(const TUNINGTYPE& type) const
 //----------------------------------------------------
 {
     if(type == TT_GENERAL)
-    	return true;
+            return true;
     //Using interpretation that every tuning is also
     //a general tuning.
 
     //Note: Here type != TT_GENERAL
     if(m_TuningType == TT_GENERAL)
-    	return false;
+            return false;
     //Every non-general tuning should not include all tunings.
 
     if( (m_TuningType & type) == type)
-    	return true;
+            return true;
     else
-    	return false;
+            return false;
 }
 
 TEMPLATEDEC
@@ -218,8 +218,8 @@ bool CTUNINGBASE::SetNoteName(const NOTEINDEXTYPE& n, const string& str)
 {
     if(MayEdit(EM_NOTENAME))
     {
-    	m_NoteNameMap[n] = str;
-    	return false;
+            m_NoteNameMap[n] = str;
+            return false;
     }
     return true;
 }
@@ -232,20 +232,20 @@ bool CTUNINGBASE::ClearNoteName(const NOTEINDEXTYPE& n, const bool eraseAll)
 {
     if(MayEdit(EM_NOTENAME))
     {
-    	if(eraseAll)
-    	{
-    		m_NoteNameMap.clear();
-    		return false;
-    	}
+            if(eraseAll)
+            {
+                    m_NoteNameMap.clear();
+                    return false;
+            }
 
-    	NNM_ITER iter = m_NoteNameMap.find(n);
-    	if(iter != m_NoteNameMap.end())
-    	{
-    		m_NoteNameMap.erase(iter);
-    		return false;
-    	}
-    	else
-    		return true;
+            NNM_ITER iter = m_NoteNameMap.find(n);
+            if(iter != m_NoteNameMap.end())
+            {
+                    m_NoteNameMap.erase(iter);
+                    return false;
+            }
+            else
+                    return true;
     }
     return true;
 }
@@ -256,15 +256,15 @@ bool CTUNINGBASE::Multiply(const RATIOTYPE& r)
 //---------------------------------------------------
 {
     if(r <= 0 || !MayEdit(EM_RATIOS))
-    	return true;
+            return true;
 
     //Note: Multiplying ratios by constant doesn't
     //change, e.g. 'geometricness' status.
     VRPAIR vrp = GetValidityRange();
     for(NOTEINDEXTYPE i = vrp.first; i<vrp.second; i++)
     {
-    	if(ProSetRatio(i, r*GetRatio(i)))
-    		return true;
+            if(ProSetRatio(i, r*GetRatio(i)))
+                    return true;
     }
     return false;
 }
@@ -274,12 +274,12 @@ bool CTUNINGBASE::CreateGroupGeometric(const NOTEINDEXTYPE& s, const RATIOTYPE& 
 //-------------------------------------------------------------
 {
     if(s < 1 || r <= 0 || startindex < GetValidityRange().first)
-    	return true;
+            return true;
 
     vector<RATIOTYPE> v;
     v.reserve(s);
     for(NOTEINDEXTYPE i = startindex; i<startindex+s; i++)
-    	v.push_back(GetRatio(i));
+            v.push_back(GetRatio(i));
     return CreateGroupGeometric(v, r, GetValidityRange(), startindex);
 }
 
@@ -288,23 +288,23 @@ bool CTUNINGBASE::CreateGroupGeometric(const vector<RATIOTYPE>& v, const RATIOTY
 //------------------------------------------------------------------------------------------
 {
     if(MayEdit(EM_RATIOS) &&
-    	(MayEdit(EM_TYPE) || GetType() == TT_GROUPGEOMETRIC))
+            (MayEdit(EM_TYPE) || GetType() == TT_GROUPGEOMETRIC))
     {
-    	if(vr.first > vr.second || v.size() == 0) return true;
-    	if(ratiostartpos < vr.first || vr.second < ratiostartpos || static_cast<UNOTEINDEXTYPE>(vr.second - ratiostartpos) < static_cast<UNOTEINDEXTYPE>(v.size() - 1)) return true;
-    	if(!IsStepCountRangeSufficient(GetFineStepCount(), vr)) return true;
-    	for(size_t i = 0; i<v.size(); i++) {if(v[i] < 0) return true;}
-    	if(ProCreateGroupGeometric(v,r, vr, ratiostartpos))
-    		return true;
-    	else
-    	{
-    		SetType(TT_GROUPGEOMETRIC);
-    		ProSetFineStepCount(GetFineStepCount());
-    		return false;
-    	}
+            if(vr.first > vr.second || v.size() == 0) return true;
+            if(ratiostartpos < vr.first || vr.second < ratiostartpos || static_cast<UNOTEINDEXTYPE>(vr.second - ratiostartpos) < static_cast<UNOTEINDEXTYPE>(v.size() - 1)) return true;
+            if(!IsStepCountRangeSufficient(GetFineStepCount(), vr)) return true;
+            for(size_t i = 0; i<v.size(); i++) {if(v[i] < 0) return true;}
+            if(ProCreateGroupGeometric(v,r, vr, ratiostartpos))
+                    return true;
+            else
+            {
+                    SetType(TT_GROUPGEOMETRIC);
+                    ProSetFineStepCount(GetFineStepCount());
+                    return false;
+            }
     }
     else
-    	return true;
+            return true;
 }
 
 
@@ -315,19 +315,19 @@ bool CTUNINGBASE::CreateGeometric(const UNOTEINDEXTYPE& s, const RATIOTYPE& r, c
     if(MayEdit(EM_RATIOS) &&
       (MayEdit(EM_TYPE) || GetType() == TT_GEOMETRIC))
     {
-    	if(vr.first > vr.second) return true;
-    	if(s < 1 || r <= 0) return true;
-    	if(ProCreateGeometric(s,r,vr))
-    		return true;
-    	else
-    	{
-    		SetType(TT_GEOMETRIC);
-    		ProSetFineStepCount(GetFineStepCount());
-    		return false;
-    	}
+            if(vr.first > vr.second) return true;
+            if(s < 1 || r <= 0) return true;
+            if(ProCreateGeometric(s,r,vr))
+                    return true;
+            else
+            {
+                    SetType(TT_GEOMETRIC);
+                    ProSetFineStepCount(GetFineStepCount());
+                    return false;
+            }
     }
     else
-    	return true;
+            return true;
 }
 
 
@@ -337,13 +337,13 @@ bool CTUNINGBASE::ChangeGroupsize(const NOTEINDEXTYPE& s)
 //---------------------------------------------------
 {
     if(!MayEdit(EM_RATIOS) || s < 1)
-    	return true;
+            return true;
 
     if(m_TuningType == TT_GROUPGEOMETRIC)
-    	return CreateGroupGeometric(s, GetGroupRatio(), 0);
+            return CreateGroupGeometric(s, GetGroupRatio(), 0);
 
     if(m_TuningType == TT_GEOMETRIC)
-    	return CreateGeometric(s, GetGroupRatio());
+            return CreateGeometric(s, GetGroupRatio());
 
     return true;
 }
@@ -354,13 +354,13 @@ bool CTUNINGBASE::ChangeGroupRatio(const RATIOTYPE& r)
 //---------------------------------------------------
 {
     if(!MayEdit(EM_RATIOS) || r <= 0)
-    	return true;
+            return true;
 
     if(m_TuningType == TT_GROUPGEOMETRIC)
-    	return CreateGroupGeometric(GetGroupSize(), r, 0);
+            return CreateGroupGeometric(GetGroupSize(), r, 0);
 
     if(m_TuningType == TT_GEOMETRIC)
-    	return CreateGeometric(GetGroupSize(), r);
+            return CreateGeometric(GetGroupSize(), r);
 
     return true;
 }
@@ -371,11 +371,11 @@ const char* CTUNINGBASE::GetTuningTypeDescription(const TUNINGTYPE& type)
 //---------------------------------------------------------------------------------------
 {
     if(type == TT_GENERAL)
-    	return s_TuningDescriptionGeneral;
+            return s_TuningDescriptionGeneral;
     if(type == TT_GROUPGEOMETRIC)
-    	return s_TuningDescriptionGroupGeometric;
+            return s_TuningDescriptionGroupGeometric;
     if(type == TT_GEOMETRIC)
-    	return s_TuningDescriptionGeometric;
+            return s_TuningDescriptionGeometric;
     return "Unknown";
 }
 
@@ -385,12 +385,12 @@ TYPENAME CTUNINGBASE::VRPAIR CTUNINGBASE::SetValidityRange(const VRPAIR& vrp)
 {
     if(vrp.second < vrp.first) return GetValidityRange();
     if(IsStepCountRangeSufficient(GetFineStepCount(), vrp)
-    	&&
-    	MayEdit(EM_VALIDITYRANGE)
+            &&
+            MayEdit(EM_VALIDITYRANGE)
        )
-    	return ProSetValidityRange(vrp);
+            return ProSetValidityRange(vrp);
     else
-    	return GetValidityRange();
+            return GetValidityRange();
 }
 
 
@@ -402,18 +402,18 @@ bool CTUNINGBASE::SetType(const TUNINGTYPE& tt)
     //are consistent with given type.
     if(MayEdit(EM_TYPE))
     {
-    	m_TuningType = tt;
+            m_TuningType = tt;
 
-    	if(m_TuningType == TT_GENERAL)
-    	{
-    		ProSetGroupSize(0);
-    		ProSetGroupRatio(0);
-    	}
+            if(m_TuningType == TT_GENERAL)
+            {
+                    ProSetGroupSize(0);
+                    ProSetGroupRatio(0);
+            }
 
-    	return false;
+            return false;
     }
     else
-    	return true;
+            return true;
 }
 
 
@@ -432,7 +432,7 @@ bool CTUNINGBASE::DeserializeOLD(istream& inStrm)
 
     //Tuning name
     if(StringFromBinaryStream<uint8_t>(inStrm, m_TuningName))
-    	return SERIALIZATION_FAILURE;
+            return SERIALIZATION_FAILURE;
 
     //Const mask
     int16_t em = 0;
@@ -449,12 +449,12 @@ bool CTUNINGBASE::DeserializeOLD(istream& inStrm)
     inStrm.read(reinterpret_cast<char*>(&size), sizeof(size));
     for(size_t i = 0; i<size; i++)
     {
-    	NOTEINDEXTYPE n;
-    	string str;
-    	inStrm.read(reinterpret_cast<char*>(&n), sizeof(n));
-    	if(StringFromBinaryStream<uint8_t>(inStrm, str))
-    		return SERIALIZATION_FAILURE;
-    	m_NoteNameMap[n] = str;
+            NOTEINDEXTYPE n;
+            string str;
+            inStrm.read(reinterpret_cast<char*>(&n), sizeof(n));
+            if(StringFromBinaryStream<uint8_t>(inStrm, str))
+                    return SERIALIZATION_FAILURE;
+            m_NoteNameMap[n] = str;
     }
 
     //End marker

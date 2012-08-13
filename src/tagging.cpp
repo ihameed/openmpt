@@ -30,8 +30,8 @@ uint32_t CFileTagging::intToSynchsafe(uint32_t iIn)
     uint32_t iOut = 0, iSteps = 0;
     do
     {
-    	iOut |= (iIn & 0x7F) << iSteps;
-    	iSteps += 8;
+            iOut |= (iIn & 0x7F) << iSteps;
+            iSteps += 8;
     } while(iIn >>= 7);
     return BigEndian(iOut);
 }
@@ -62,7 +62,7 @@ void CFileTagging::WriteID3v2Tags(FILE *f)
     WriteID3v2Frame("TCOM", artist, f);
     WriteID3v2Frame("TALB", album, f);
     WriteID3v2Frame("TCON", genre, f);
-    //WriteID3v2Frame("TYER", year, f);		// Deprecated
+    //WriteID3v2Frame("TYER", year, f);                // Deprecated
     WriteID3v2Frame("TDRC", year, f);
     WriteID3v2Frame("TBPM", bpm, f);
     WriteID3v2Frame("WXXX", url, f);
@@ -72,7 +72,7 @@ void CFileTagging::WriteID3v2Tags(FILE *f)
     // Write Padding
     for(size_t i = 0; i < ID3v2_PADDING; i++)
     {
-    	fputc(0, f);
+            fputc(0, f);
     }
     totalID3v2Size += ID3v2_PADDING;
 
@@ -92,14 +92,14 @@ void CFileTagging::WriteID3v2Frame(char cFrameID[4], string sFramecontent, FILE 
 
     if(!memcmp(cFrameID, "COMM", 4))
     {
-    	// English language for comments - no description following (hence the text ending nullchar(s))
-    	// For language IDs, see http://en.wikipedia.org/wiki/ISO-639-2
-    	sFramecontent = "eng" + (ID3v2_TEXTENDING + sFramecontent);
+            // English language for comments - no description following (hence the text ending nullchar(s))
+            // For language IDs, see http://en.wikipedia.org/wiki/ISO-639-2
+            sFramecontent = "eng" + (ID3v2_TEXTENDING + sFramecontent);
     }
     if(!memcmp(cFrameID, "WXXX", 4))
     {
-    	// User-defined URL field (we have no description for the URL, so we leave it out)
-    	sFramecontent = ID3v2_TEXTENDING + sFramecontent;
+            // User-defined URL field (we have no description for the URL, so we leave it out)
+            sFramecontent = ID3v2_TEXTENDING + sFramecontent;
     }
     sFramecontent = ID3v2_CHARSET + sFramecontent;
     sFramecontent += ID3v2_TEXTENDING;
@@ -131,26 +131,26 @@ void CFileTagging::WriteWaveTags(WAVEDATAHEADER *wdh, WAVEFILEHEADER *wfh, FILE 
 
     struct
     {
-    	uint32_t id;
-    	string *data;
+            uint32_t id;
+            string *data;
     } chunks[] =
     {
-    	{ IFFID_ICMT, &comments },
-    	{ IFFID_INAM, &title },
-    	{ IFFID_IART, &artist },
-    	{ IFFID_IPRD, &album },
-    	{ IFFID_ICOP, &url },
-    	{ IFFID_IGNR, &genre },
-    	{ IFFID_ISFT, &encoder },
-    	{ IFFID_ICRD, &year },
+            { IFFID_ICMT, &comments },
+            { IFFID_INAM, &title },
+            { IFFID_IART, &artist },
+            { IFFID_IPRD, &album },
+            { IFFID_ICOP, &url },
+            { IFFID_IGNR, &genre },
+            { IFFID_ISFT, &encoder },
+            { IFFID_ICRD, &year },
     };
 
     info_ofs = ftell(f);
     if (info_ofs & 1)
     {
-    	wdh->length++;
-    	fwrite(&zero, 1, 1, f);
-    	info_ofs++;
+            wdh->length++;
+            fwrite(&zero, 1, 1, f);
+            info_ofs++;
     }
     list.id_RIFF = IFFID_LIST;
     list.id_WAVE = IFFID_INFO;
@@ -159,31 +159,31 @@ void CFileTagging::WriteWaveTags(WAVEDATAHEADER *wdh, WAVEFILEHEADER *wfh, FILE 
 
     for(size_t iCmt = 0; iCmt < CountOf(chunks); iCmt++)
     {
-    	if(chunks[iCmt].data->empty())
-    	{
-    		continue;
-    	}
+            if(chunks[iCmt].data->empty())
+            {
+                    continue;
+            }
 
-    	string data = *chunks[iCmt].data;
-    	// Special case: Expand year to full date
-    	if(chunks[iCmt].id == IFFID_ICRD)
-    	{
-    		data += "-01-01";
-    	}
+            string data = *chunks[iCmt].data;
+            // Special case: Expand year to full date
+            if(chunks[iCmt].id == IFFID_ICRD)
+            {
+                    data += "-01-01";
+            }
 
-    	chunk.id_data = chunks[iCmt].id;
-    	chunk.length = data.length() + 1;
+            chunk.id_data = chunks[iCmt].id;
+            chunk.length = data.length() + 1;
 
-    	fwrite(&chunk, 1, sizeof(chunk), f);
-    	fwrite(data.c_str(), 1, chunk.length, f);
-    	list.filesize += chunk.length + sizeof(chunk);
+            fwrite(&chunk, 1, sizeof(chunk), f);
+            fwrite(data.c_str(), 1, chunk.length, f);
+            list.filesize += chunk.length + sizeof(chunk);
 
-    	// Chunks must be even-sized
-    	if(chunk.length & 1)
-    	{
-    		fwrite(&zero, 1, 1, f);
-    		list.filesize++;
-    	}
+            // Chunks must be even-sized
+            if(chunk.length & 1)
+            {
+                    fwrite(&zero, 1, 1, f);
+                    list.filesize++;
+            }
     }
     // Update INFO size
     end_ofs = ftell(f);

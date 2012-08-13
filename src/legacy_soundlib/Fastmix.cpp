@@ -567,8 +567,8 @@ BEGIN_RAMPMIX_INTERFACE(Mono16BitHQRampMix)
 END_RAMPMIX_INTERFACE()
 
 #else
-#define    Mono8BitHQRampMix	Mono8BitLinearRampMix
-#define    Mono16BitHQRampMix	Mono16BitLinearRampMix
+#define    Mono8BitHQRampMix        Mono8BitLinearRampMix
+#define    Mono16BitHQRampMix        Mono16BitLinearRampMix
 #endif
 
 //////////////////////////////////////////////////////
@@ -608,8 +608,8 @@ END_RAMPMIX_INTERFACE()
 
 
 #else
-#define Mono8BitKaiserMix    	Mono8BitHQMix
-#define Mono16BitKaiserMix    	Mono16BitHQMix
+#define Mono8BitKaiserMix            Mono8BitHQMix
+#define Mono16BitKaiserMix            Mono16BitHQMix
 #define Mono8BitKaiserRampMix    Mono8BitHQRampMix
 #define Mono16BitKaiserRampMix    Mono16BitHQRampMix
 #endif
@@ -654,8 +654,8 @@ END_RAMPMIX_INTERFACE()
 
 
 #else
-#define Mono8BitFIRFilterMix    	Mono8BitHQMix
-#define Mono16BitFIRFilterMix    	Mono16BitHQMix
+#define Mono8BitFIRFilterMix            Mono8BitHQMix
+#define Mono16BitFIRFilterMix            Mono16BitHQMix
 #define Mono8BitFIRFilterRampMix    Mono8BitHQRampMix
 #define Mono16BitFIRFilterRampMix    Mono16BitHQRampMix
 #endif
@@ -1203,45 +1203,45 @@ END_RAMPMIX_STFLT_INTERFACE()
 /*
 #else
 // Mono
-#define FilterMono8BitMix    			Mono8BitMix
-#define FilterMono16BitMix    			Mono16BitMix
-#define FilterMono8BitLinearMix    		Mono8BitLinearMix
-#define FilterMono16BitLinearMix    	Mono16BitLinearMix
-#define FilterMono8BitRampMix    		Mono8BitRampMix
-#define FilterMono16BitRampMix    		Mono16BitRampMix
-#define FilterMono8BitLinearRampMix    	Mono8BitLinearRampMix
+#define FilterMono8BitMix                            Mono8BitMix
+#define FilterMono16BitMix                            Mono16BitMix
+#define FilterMono8BitLinearMix                    Mono8BitLinearMix
+#define FilterMono16BitLinearMix            Mono16BitLinearMix
+#define FilterMono8BitRampMix                    Mono8BitRampMix
+#define FilterMono16BitRampMix                    Mono16BitRampMix
+#define FilterMono8BitLinearRampMix            Mono8BitLinearRampMix
 #define FilterMono16BitLinearRampMix    Mono16BitLinearRampMix
 // -> CODE#0025
 // -> DESC="enable polyphase resampling on stereo samples"
-#define FilterMono8BitHQMix    			Mono8BitHQMix
-#define FilterMono16BitHQMix    		Mono16BitHQMix
-#define FilterMono8BitKaiserMix    		Mono8BitKaiserMix
-#define FilterMono16BitKaiserMix    	Mono16BitKaiserMix
-#define FilterMono8BitHQRampMix    		Mono8BitHQRampMix
-#define FilterMono16BitHQRampMix    	Mono16BitHQRampMix
-#define FilterMono8BitKaiserRampMix    	Mono8BitKaiserRampMix
+#define FilterMono8BitHQMix                            Mono8BitHQMix
+#define FilterMono16BitHQMix                    Mono16BitHQMix
+#define FilterMono8BitKaiserMix                    Mono8BitKaiserMix
+#define FilterMono16BitKaiserMix            Mono16BitKaiserMix
+#define FilterMono8BitHQRampMix                    Mono8BitHQRampMix
+#define FilterMono16BitHQRampMix            Mono16BitHQRampMix
+#define FilterMono8BitKaiserRampMix            Mono8BitKaiserRampMix
 #define FilterMono16BitKaiserRampMix    Mono16BitKaiserRampMix
-#define FilterMono8BitFIRFilterRampMix    	Mono8BitFIRFilterRampMix
+#define FilterMono8BitFIRFilterRampMix            Mono8BitFIRFilterRampMix
 #define FilterMono16BitFIRFilterRampMix    Mono16BitFIRFilterRampMix
 // -! BEHAVIOUR_CHANGE#0025
 
 // Stereo
-#define FilterStereo8BitMix    			Stereo8BitMix
-#define FilterStereo16BitMix    		Stereo16BitMix
-#define FilterStereo8BitLinearMix    	Stereo8BitLinearMix
-#define FilterStereo16BitLinearMix    	Stereo16BitLinearMix
-#define FilterStereo8BitRampMix    		Stereo8BitRampMix
-#define FilterStereo16BitRampMix    	Stereo16BitRampMix
+#define FilterStereo8BitMix                            Stereo8BitMix
+#define FilterStereo16BitMix                    Stereo16BitMix
+#define FilterStereo8BitLinearMix            Stereo8BitLinearMix
+#define FilterStereo16BitLinearMix            Stereo16BitLinearMix
+#define FilterStereo8BitRampMix                    Stereo8BitRampMix
+#define FilterStereo16BitRampMix            Stereo16BitRampMix
 #define FilterStereo8BitLinearRampMix    Stereo8BitLinearRampMix
 #define FilterStereo16BitLinearRampMix    Stereo16BitLinearRampMix
 // -> CODE#0025
 // -> DESC="enable polyphase resampling on stereo samples"
-#define FilterStereo8BitHQMix    		Stereo8BitHQMix
-#define FilterStereo16BitHQMix    		Stereo16BitHQMix
-#define FilterStereo8BitKaiserMix    	Stereo8BitKaiserMix
-#define FilterStereo16BitKaiserMix    	Stereo16BitKaiserMix
-#define FilterStereo8BitHQRampMix    	Stereo8BitHQRampMix
-#define FilterStereo16BitHQRampMix    	Stereo16BitHQRampMix
+#define FilterStereo8BitHQMix                    Stereo8BitHQMix
+#define FilterStereo16BitHQMix                    Stereo16BitHQMix
+#define FilterStereo8BitKaiserMix            Stereo8BitKaiserMix
+#define FilterStereo16BitKaiserMix            Stereo16BitKaiserMix
+#define FilterStereo8BitHQRampMix            Stereo8BitHQRampMix
+#define FilterStereo16BitHQRampMix            Stereo16BitHQRampMix
 #define FilterStereo8BitKaiserRampMix    Stereo8BitKaiserRampMix
 #define FilterStereo16BitKaiserRampMix    Stereo16BitKaiserRampMix
 #define FilterStereo8BitFIRFilterRampMix    Stereo8BitFIRFilterRampMix
@@ -1256,19 +1256,19 @@ END_RAMPMIX_STFLT_INTERFACE()
 //
 //
 // Index is as follow:
-//    [b1-b0]	format (8-bit-mono, 16-bit-mono, 8-bit-stereo, 16-bit-stereo)
-//    [b2]	ramp
-//    [b3]	filter
-//    [b5-b4]	src type
+//    [b1-b0]        format (8-bit-mono, 16-bit-mono, 8-bit-stereo, 16-bit-stereo)
+//    [b2]        ramp
+//    [b3]        filter
+//    [b5-b4]        src type
 //
 
 #define MIXNDX_16BIT    0x01
 #define MIXNDX_STEREO    0x02
-#define MIXNDX_RAMP    	0x04
+#define MIXNDX_RAMP            0x04
 #define MIXNDX_FILTER    0x08
 
 #define MIXNDX_LINEARSRC    0x10
-#define MIXNDX_HQSRC    	0x20
+#define MIXNDX_HQSRC            0x20
 #define MIXNDX_KAISERSRC    0x30
 #define MIXNDX_FIRFILTERSRC    0x40 // rewbs.resamplerConf
 
@@ -1278,51 +1278,51 @@ END_RAMPMIX_STFLT_INTERFACE()
 const LPMIXINTERFACE gpMixFunctionTable[5*16] =    //rewbs.resamplerConf: increased to 5 to cope with FIR
 {
     // No SRC
-    Mono8BitMix,    			Mono16BitMix,				Stereo8BitMix,			Stereo16BitMix,
-    Mono8BitRampMix,    		Mono16BitRampMix,			Stereo8BitRampMix,		Stereo16BitRampMix,
+    Mono8BitMix,                            Mono16BitMix,                                Stereo8BitMix,                        Stereo16BitMix,
+    Mono8BitRampMix,                    Mono16BitRampMix,                        Stereo8BitRampMix,                Stereo16BitRampMix,
     // No SRC, Filter
-    FilterMono8BitMix,    		FilterMono16BitMix,			FilterStereo8BitMix,	FilterStereo16BitMix,
-    FilterMono8BitRampMix,    	FilterMono16BitRampMix,		FilterStereo8BitRampMix,FilterStereo16BitRampMix,
+    FilterMono8BitMix,                    FilterMono16BitMix,                        FilterStereo8BitMix,        FilterStereo16BitMix,
+    FilterMono8BitRampMix,            FilterMono16BitRampMix,                FilterStereo8BitRampMix,FilterStereo16BitRampMix,
     // Linear SRC
-    Mono8BitLinearMix,    		Mono16BitLinearMix,			Stereo8BitLinearMix,	Stereo16BitLinearMix,
-    Mono8BitLinearRampMix,    	Mono16BitLinearRampMix,		Stereo8BitLinearRampMix,Stereo16BitLinearRampMix,
+    Mono8BitLinearMix,                    Mono16BitLinearMix,                        Stereo8BitLinearMix,        Stereo16BitLinearMix,
+    Mono8BitLinearRampMix,            Mono16BitLinearRampMix,                Stereo8BitLinearRampMix,Stereo16BitLinearRampMix,
     // Linear SRC, Filter
-    FilterMono8BitLinearMix,    FilterMono16BitLinearMix,	FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
+    FilterMono8BitLinearMix,    FilterMono16BitLinearMix,        FilterStereo8BitLinearMix,        FilterStereo16BitLinearMix,
     FilterMono8BitLinearRampMix,FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
     // HQ SRC
-    Mono8BitHQMix,    			Mono16BitHQMix,				Stereo8BitHQMix,		Stereo16BitHQMix,
-    Mono8BitHQRampMix,    		Mono16BitHQRampMix,			Stereo8BitHQRampMix,	Stereo16BitHQRampMix,
+    Mono8BitHQMix,                            Mono16BitHQMix,                                Stereo8BitHQMix,                Stereo16BitHQMix,
+    Mono8BitHQRampMix,                    Mono16BitHQRampMix,                        Stereo8BitHQRampMix,        Stereo16BitHQRampMix,
     // HQ SRC, Filter
 
 // -> CODE#0025
 // -> DESC="enable polyphase resampling on stereo samples"
-//    FilterMono8BitLinearMix,	FilterMono16BitLinearMix,	FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
+//    FilterMono8BitLinearMix,        FilterMono16BitLinearMix,        FilterStereo8BitLinearMix,        FilterStereo16BitLinearMix,
 //    FilterMono8BitLinearRampMix,FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
-    FilterMono8BitHQMix,    	FilterMono16BitHQMix,		FilterStereo8BitHQMix,		FilterStereo16BitHQMix,
-    FilterMono8BitHQRampMix,    FilterMono16BitHQRampMix,	FilterStereo8BitHQRampMix,	FilterStereo16BitHQRampMix,
+    FilterMono8BitHQMix,            FilterMono16BitHQMix,                FilterStereo8BitHQMix,                FilterStereo16BitHQMix,
+    FilterMono8BitHQRampMix,    FilterMono16BitHQRampMix,        FilterStereo8BitHQRampMix,        FilterStereo16BitHQRampMix,
 // -! BEHAVIOUR_CHANGE#0025
 
     // Kaiser SRC
 // -> CODE#0025
 // -> DESC="enable polyphase resampling on stereo samples"
-//    Mono8BitKaiserMix,			Mono16BitKaiserMix,			Stereo8BitHQMix,		Stereo16BitHQMix,
-//    Mono8BitKaiserRampMix,		Mono16BitKaiserRampMix,		Stereo8BitHQRampMix,	Stereo16BitHQRampMix,
-    Mono8BitKaiserMix,    		Mono16BitKaiserMix,			Stereo8BitKaiserMix,	Stereo16BitKaiserMix,
-    Mono8BitKaiserRampMix,    	Mono16BitKaiserRampMix,		Stereo8BitKaiserRampMix,Stereo16BitKaiserRampMix,
+//    Mono8BitKaiserMix,                        Mono16BitKaiserMix,                        Stereo8BitHQMix,                Stereo16BitHQMix,
+//    Mono8BitKaiserRampMix,                Mono16BitKaiserRampMix,                Stereo8BitHQRampMix,        Stereo16BitHQRampMix,
+    Mono8BitKaiserMix,                    Mono16BitKaiserMix,                        Stereo8BitKaiserMix,        Stereo16BitKaiserMix,
+    Mono8BitKaiserRampMix,            Mono16BitKaiserRampMix,                Stereo8BitKaiserRampMix,Stereo16BitKaiserRampMix,
 // -! BEHAVIOUR_CHANGE#0025
 
     // Kaiser SRC, Filter
-//    FilterMono8BitLinearMix,	FilterMono16BitLinearMix,	FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
+//    FilterMono8BitLinearMix,        FilterMono16BitLinearMix,        FilterStereo8BitLinearMix,        FilterStereo16BitLinearMix,
 //    FilterMono8BitLinearRampMix,FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
-    FilterMono8BitKaiserMix,    FilterMono16BitKaiserMix,	FilterStereo8BitKaiserMix,	FilterStereo16BitKaiserMix,
+    FilterMono8BitKaiserMix,    FilterMono16BitKaiserMix,        FilterStereo8BitKaiserMix,        FilterStereo16BitKaiserMix,
     FilterMono8BitKaiserRampMix,FilterMono16BitKaiserRampMix,FilterStereo8BitKaiserRampMix,FilterStereo16BitKaiserRampMix,
 
     // FIR Filter SRC
-    Mono8BitFIRFilterMix,    		Mono16BitFIRFilterMix,			Stereo8BitFIRFilterMix,	Stereo16BitFIRFilterMix,
-    Mono8BitFIRFilterRampMix,    	Mono16BitFIRFilterRampMix,		Stereo8BitFIRFilterRampMix,Stereo16BitFIRFilterRampMix,
+    Mono8BitFIRFilterMix,                    Mono16BitFIRFilterMix,                        Stereo8BitFIRFilterMix,        Stereo16BitFIRFilterMix,
+    Mono8BitFIRFilterRampMix,            Mono16BitFIRFilterRampMix,                Stereo8BitFIRFilterRampMix,Stereo16BitFIRFilterRampMix,
 
     // FIR Filter SRC, Filter
-    FilterMono8BitFIRFilterMix,    FilterMono16BitFIRFilterMix,	FilterStereo8BitFIRFilterMix,	FilterStereo16BitFIRFilterMix,
+    FilterMono8BitFIRFilterMix,    FilterMono16BitFIRFilterMix,        FilterStereo8BitFIRFilterMix,        FilterStereo16BitFIRFilterMix,
     FilterMono8BitFIRFilterRampMix,FilterMono16BitFIRFilterRampMix,FilterStereo8BitFIRFilterRampMix,FilterStereo16BitFIRFilterRampMix,
 
 // -! BEHAVIOUR_CHANGE#0025
@@ -1331,16 +1331,16 @@ const LPMIXINTERFACE gpMixFunctionTable[5*16] =    //rewbs.resamplerConf: increa
 const LPMIXINTERFACE gpFastMixFunctionTable[2*16] =
 {
     // No SRC
-    FastMono8BitMix,    		FastMono16BitMix,			Stereo8BitMix,			Stereo16BitMix,
-    FastMono8BitRampMix,    	FastMono16BitRampMix,		Stereo8BitRampMix,		Stereo16BitRampMix,
+    FastMono8BitMix,                    FastMono16BitMix,                        Stereo8BitMix,                        Stereo16BitMix,
+    FastMono8BitRampMix,            FastMono16BitRampMix,                Stereo8BitRampMix,                Stereo16BitRampMix,
     // No SRC, Filter
-    FilterMono8BitMix,    		FilterMono16BitMix,			FilterStereo8BitMix,	FilterStereo16BitMix,
-    FilterMono8BitRampMix,    	FilterMono16BitRampMix,		FilterStereo8BitRampMix,FilterStereo16BitRampMix,
+    FilterMono8BitMix,                    FilterMono16BitMix,                        FilterStereo8BitMix,        FilterStereo16BitMix,
+    FilterMono8BitRampMix,            FilterMono16BitRampMix,                FilterStereo8BitRampMix,FilterStereo16BitRampMix,
     // Linear SRC
-    FastMono8BitLinearMix,    	FastMono16BitLinearMix,		Stereo8BitLinearMix,	Stereo16BitLinearMix,
-    FastMono8BitLinearRampMix,    FastMono16BitLinearRampMix,	Stereo8BitLinearRampMix,Stereo16BitLinearRampMix,
+    FastMono8BitLinearMix,            FastMono16BitLinearMix,                Stereo8BitLinearMix,        Stereo16BitLinearMix,
+    FastMono8BitLinearRampMix,    FastMono16BitLinearRampMix,        Stereo8BitLinearRampMix,Stereo16BitLinearRampMix,
     // Linear SRC, Filter
-    FilterMono8BitLinearMix,    FilterMono16BitLinearMix,	FilterStereo8BitLinearMix,	FilterStereo16BitLinearMix,
+    FilterMono8BitLinearMix,    FilterMono16BitLinearMix,        FilterStereo8BitLinearMix,        FilterStereo16BitLinearMix,
     FilterMono8BitLinearRampMix,FilterMono16BitLinearRampMix,FilterStereo8BitLinearRampMix,FilterStereo16BitLinearRampMix,
 };
 */
@@ -1518,7 +1518,7 @@ UINT module_renderer::CreateStereoMix(int count)
         UINT nMixPlugin = GetBestPlugin(ChnMix[nChn], PRIORITISE_INSTRUMENT, RESPECT_MUTES);
 
         //rewbs.instroVSTi
-/*    	UINT nMixPlugin=0;
+/*            UINT nMixPlugin=0;
         if (pChannel->instrument && pChannel->pInstrument) {    // first try intrument VST
             if (!(pChannel->pInstrument->uFlags & ENV_MUTE))
                 nMixPlugin = pChannel->instrument->nMixPlug;
@@ -1661,14 +1661,14 @@ UINT module_renderer::GetResamplingFlag(const modplug::tracker::modchannel_t *pC
             case SRCMODE_SPLINE:    return MIXNDX_HQSRC;
             case SRCMODE_POLYPHASE: return MIXNDX_KAISERSRC;
             case SRCMODE_FIRFILTER: return MIXNDX_FIRFILTERSRC;
-//    		default: ;
+//                    default: ;
         }
     }
 
     //didn't manage to get flag from instrument header, use channel flags.
     if (pChannel->flags & CHN_HQSRC)
     {
-        if (deprecated_global_sound_setup_bitmask & SNDMIX_SPLINESRCMODE)    	return MIXNDX_HQSRC;
+        if (deprecated_global_sound_setup_bitmask & SNDMIX_SPLINESRCMODE)            return MIXNDX_HQSRC;
         if (deprecated_global_sound_setup_bitmask & SNDMIX_POLYPHASESRCMODE)    return MIXNDX_KAISERSRC;
         if (deprecated_global_sound_setup_bitmask & SNDMIX_FIRFILTERSRCMODE)    return MIXNDX_FIRFILTERSRC;
     } else if (!(pChannel->flags & CHN_NOIDO)) {
@@ -1938,7 +1938,7 @@ void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits)
     __asm {
     mov esi, pBuffer    // esi = pBuffer+i
     mov eax, nSamples    // ebp = i
-    mov ecx, nBits    	// ecx = number of bits of noise
+    mov ecx, nBits            // ecx = number of bits of noise
     mov edi, gDitherA    // Noise generation
     mov ebx, gDitherB
     add ecx, modplug::mixgraph::MIXING_ATTENUATION+1

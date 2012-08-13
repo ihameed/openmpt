@@ -20,12 +20,12 @@ LPCCH LoadResource(LPCTSTR lpName, LPCTSTR lpType, LPCCH& pData, size_t& nSize, 
     HRSRC hrsrc = FindResource(hInstance, lpName, lpType); 
     if (hrsrc != NULL)
     {
-    	hglob = LoadResource(hInstance, hrsrc);
-    	if (hglob != NULL)
-    	{
-    		pData = reinterpret_cast<const char*>(LockResource(hglob));
-    		nSize = SizeofResource(hInstance, hrsrc);
-    	}
+            hglob = LoadResource(hInstance, hrsrc);
+            if (hglob != NULL)
+            {
+                    pData = reinterpret_cast<const char*>(LockResource(hglob));
+                    nSize = SizeofResource(hInstance, hrsrc);
+            }
     }
     return pData;
 }
@@ -40,12 +40,12 @@ CString GetErrorMessage(uint32_t nErrorCode)
     LPTSTR pszBuf = sMsg.GetBuffer(nBufferSize);
 
     FormatMessage(  FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-    				NULL,
-    				nErrorCode,
-    				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-    				pszBuf,
-    				nBufferSize,
-    				NULL );
+                                    NULL,
+                                    nErrorCode,
+                                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                    pszBuf,
+                                    nBufferSize,
+                                    NULL );
 
     sMsg.ReleaseBuffer();
 

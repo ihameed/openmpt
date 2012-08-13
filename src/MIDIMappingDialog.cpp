@@ -49,7 +49,7 @@ BEGIN_MESSAGE_MAP(CMIDIMappingDialog, CDialog)
     ON_BN_CLICKED(IDC_BUTTON_ADD, OnBnClickedButtonAdd)
     ON_BN_CLICKED(IDC_BUTTON_REPLACE, OnBnClickedButtonReplace)
     ON_BN_CLICKED(IDC_BUTTON_REMOVE, OnBnClickedButtonRemove)
-    ON_MESSAGE(WM_MOD_MIDIMSG,		OnMidiMsg)
+    ON_MESSAGE(WM_MOD_MIDIMSG,                OnMidiMsg)
     ON_NOTIFY(UDN_DELTAPOS, IDC_SPINMOVEMAPPING, OnDeltaposSpinmovemapping)
     ON_BN_CLICKED(IDC_CHECK_PATRECORD, OnBnClickedCheckPatRecord)
 END_MESSAGE_MAP()
@@ -61,13 +61,13 @@ LRESULT CMIDIMappingDialog::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
     const uint8_t event = GetFromMIDIMsg_Event(dwMidiDataParam);
     if(event == 0xB && IsDlgButtonChecked(IDC_CHECK_MIDILEARN))
     {
-    	m_ChannelCBox.SetCurSel(1+GetFromMIDIMsg_Channel(dwMidiDataParam));
-    	m_EventCBox.SetCurSel(0);
-    	m_ControllerCBox.SetCurSel(GetFromMIDIMsg_DataByte1(dwMidiDataParam));
-    	OnCbnSelchangeComboChannel();
-    	OnCbnSelchangeComboEvent();
-    	OnCbnSelchangeComboController();
-    	UpdateString();
+            m_ChannelCBox.SetCurSel(1+GetFromMIDIMsg_Channel(dwMidiDataParam));
+            m_EventCBox.SetCurSel(0);
+            m_ControllerCBox.SetCurSel(GetFromMIDIMsg_DataByte1(dwMidiDataParam));
+            OnCbnSelchangeComboChannel();
+            OnCbnSelchangeComboEvent();
+            OnCbnSelchangeComboController();
+            UpdateString();
     }
     return 0;
 }
@@ -83,9 +83,9 @@ BOOL CMIDIMappingDialog::OnInitDialog()
     //Add controller names.
     for(size_t i = MIDICC_start; i<=MIDICC_end; i++)
     {
-    	CString temp;
-    	temp.Format("%3d %s", i, MidiCCNames[i]);
-    	m_ControllerCBox.AddString(temp);
+            CString temp;
+            temp.Format("%3d %s", i, MidiCCNames[i]);
+            m_ControllerCBox.AddString(temp);
     }
 
     //Add Pluginnames
@@ -100,21 +100,21 @@ BOOL CMIDIMappingDialog::OnInitDialog()
     typedef CMIDIMapper::const_iterator CITER;
     for(CITER iter = m_rMIDIMapper.Begin(); iter != m_rMIDIMapper.End(); iter++)
     {
-    	m_List.AddString(CreateListString(*iter));
+            m_List.AddString(CreateListString(*iter));
     }
     if(m_rMIDIMapper.GetCount() > 0 && m_Setting.IsDefault())
     {
-    	m_List.SetCurSel(0);
-    	OnLbnSelchangeList1();
+            m_List.SetCurSel(0);
+            OnLbnSelchangeList1();
     }
     else
     {
-    	m_ChannelCBox.SetCurSel(m_Setting.GetChannel());
-    	m_ControllerCBox.SetCurSel(m_Setting.GetController());
-    	CheckDlgButton(IDC_CHECKACTIVE, m_Setting.IsActive() ? BST_CHECKED : BST_UNCHECKED);
-    	CheckDlgButton(IDC_CHECKCAPTURE, m_Setting.GetCaptureMIDI() ? BST_CHECKED : BST_UNCHECKED);
-    	GetDlgItem(IDC_CHECK_PATRECORD)->ShowWindow((m_rSndFile.GetType() == MOD_TYPE_MPT) ? SW_SHOW : SW_HIDE);
-    	CheckDlgButton(IDC_CHECK_PATRECORD, m_Setting.GetAllowPatternEdit() ? BST_CHECKED : BST_UNCHECKED);
+            m_ChannelCBox.SetCurSel(m_Setting.GetChannel());
+            m_ControllerCBox.SetCurSel(m_Setting.GetController());
+            CheckDlgButton(IDC_CHECKACTIVE, m_Setting.IsActive() ? BST_CHECKED : BST_UNCHECKED);
+            CheckDlgButton(IDC_CHECKCAPTURE, m_Setting.GetCaptureMIDI() ? BST_CHECKED : BST_UNCHECKED);
+            GetDlgItem(IDC_CHECK_PATRECORD)->ShowWindow((m_rSndFile.GetType() == MOD_TYPE_MPT) ? SW_SHOW : SW_HIDE);
+            CheckDlgButton(IDC_CHECK_PATRECORD, m_Setting.GetAllowPatternEdit() ? BST_CHECKED : BST_UNCHECKED);
     }
 
     UpdateString();
@@ -140,9 +140,9 @@ void CMIDIMappingDialog::OnLbnSelchangeList1()
     m_ChannelCBox.SetCurSel(activeSetting.GetChannel());
 
     if(m_Setting.GetEvent() == 0xB)
-    	m_EventCBox.SetCurSel(0);
+            m_EventCBox.SetCurSel(0);
     else
-    	m_EventCBox.SetCurSel(-1);
+            m_EventCBox.SetCurSel(-1);
 
 
     m_ControllerCBox.SetCurSel(activeSetting.GetController());
@@ -232,10 +232,10 @@ void CMIDIMappingDialog::OnCbnSelchangeComboEvent()
     if(m_EventCBox.GetCurSel() == 0)
     {
         m_Setting.SetEvent(0xB);
-    	m_ControllerCBox.EnableWindow();
+            m_ControllerCBox.EnableWindow();
     }
     else
-    	m_ControllerCBox.EnableWindow(FALSE);
+            m_ControllerCBox.EnableWindow(FALSE);
 
     UpdateString();
 }
@@ -246,17 +246,17 @@ void CMIDIMappingDialog::OnBnClickedButtonAdd()
 {
     if(m_rSndFile.GetModSpecifications().MIDIMappingDirectivesMax <= m_rMIDIMapper.GetCount())
     {
-    	MessageBox("Max limit reached", 0, MB_ICONINFORMATION);
+            MessageBox("Max limit reached", 0, MB_ICONINFORMATION);
     }
     else
     {
-    	const size_t i = m_rMIDIMapper.AddDirective(m_Setting);
-    	if(m_rSndFile.GetpModDoc())
-    		m_rSndFile.GetpModDoc()->SetModified();
+            const size_t i = m_rMIDIMapper.AddDirective(m_Setting);
+            if(m_rSndFile.GetpModDoc())
+                    m_rSndFile.GetpModDoc()->SetModified();
 
-    	m_List.InsertString(i, CreateListString(m_Setting));
-    	m_List.SetCurSel(i);
-    	OnLbnSelchangeList1();
+            m_List.InsertString(i, CreateListString(m_Setting));
+            m_List.SetCurSel(i);
+            OnLbnSelchangeList1();
     }
 }
 
@@ -267,14 +267,14 @@ void CMIDIMappingDialog::OnBnClickedButtonReplace()
     const int i = m_List.GetCurSel();
     if(i >= 0 && (size_t)i < m_rMIDIMapper.GetCount())
     {
-    	const size_t newIndex = m_rMIDIMapper.SetDirective(i, m_Setting);
-    	if(m_rSndFile.GetpModDoc())
-    		m_rSndFile.GetpModDoc()->SetModified();
+            const size_t newIndex = m_rMIDIMapper.SetDirective(i, m_Setting);
+            if(m_rSndFile.GetpModDoc())
+                    m_rSndFile.GetpModDoc()->SetModified();
 
-    	m_List.DeleteString(i);
+            m_List.DeleteString(i);
         m_List.InsertString(newIndex, CreateListString(m_Setting));
-    	m_List.SetCurSel(newIndex);
-    	OnLbnSelchangeList1();
+            m_List.SetCurSel(newIndex);
+            OnLbnSelchangeList1();
     }
 }
 
@@ -285,23 +285,23 @@ void CMIDIMappingDialog::OnBnClickedButtonRemove()
     int i = m_List.GetCurSel();
     if(i >= 0 && (size_t)i < m_rMIDIMapper.GetCount())
     {
-    	m_rMIDIMapper.RemoveDirective(i);
-    	if(m_rSndFile.GetpModDoc())
-    		m_rSndFile.GetpModDoc()->SetModified();
+            m_rMIDIMapper.RemoveDirective(i);
+            if(m_rSndFile.GetpModDoc())
+                    m_rSndFile.GetpModDoc()->SetModified();
 
-    	m_List.DeleteString(i);
-    	if(m_List.GetCount() > 0)
-    	{
-    		if(i < m_List.GetCount())
-    			m_List.SetCurSel(i);
-    		else
-    			m_List.SetCurSel(i-1);
-    	}
-    	i = m_List.GetCurSel();
-    	if(i >= 0 && (size_t)i < m_rMIDIMapper.GetCount())
-    		m_Setting = m_rMIDIMapper.GetDirective(i);
+            m_List.DeleteString(i);
+            if(m_List.GetCount() > 0)
+            {
+                    if(i < m_List.GetCount())
+                            m_List.SetCurSel(i);
+                    else
+                            m_List.SetCurSel(i-1);
+            }
+            i = m_List.GetCurSel();
+            if(i >= 0 && (size_t)i < m_rMIDIMapper.GetCount())
+                    m_Setting = m_rMIDIMapper.GetDirective(i);
 
-    	OnLbnSelchangeList1();
+            OnLbnSelchangeList1();
 
     }
 }
@@ -322,9 +322,9 @@ CString CMIDIMappingDialog::CreateListString(const CMIDIMappingDirective& s)
     //Controller name
     if(s.GetController() <= MIDICC_end)
     {
-    	CString tstr;
-    	tstr.Format("%d %s", s.GetController(), MidiCCNames[s.GetController()]);
-    	str.Insert(20, tstr);
+            CString tstr;
+            tstr.Format("%d %s", s.GetController(), MidiCCNames[s.GetController()]);
+            str.Insert(20, tstr);
     }
 
     while(str.GetLength() < 54) str.AppendChar('.');
@@ -333,15 +333,15 @@ CString CMIDIMappingDialog::CreateListString(const CMIDIMappingDirective& s)
     //Plugname
     if(plugindex > 0 && plugindex < MAX_MIXPLUGINS && m_rSndFile.m_MixPlugins[plugindex-1].pMixPlugin)
     {
-    	str.Insert(55, m_rSndFile.m_MixPlugins[plugindex-1].GetName());
-    	while(str.GetLength() < 79) str.AppendChar('.');
-    	str.AppendChar('.');
+            str.Insert(55, m_rSndFile.m_MixPlugins[plugindex-1].GetName());
+            while(str.GetLength() < 79) str.AppendChar('.');
+            str.AppendChar('.');
 
-    	//Param name
-    	str.Insert(80, m_rSndFile.m_MixPlugins[plugindex-1].GetParamName(s.GetParamIndex()));
+            //Param name
+            str.Insert(80, m_rSndFile.m_MixPlugins[plugindex-1].GetParamName(s.GetParamIndex()));
     }
     else
-    	str.Insert(55, "No plugin");
+            str.Insert(55, "No plugin");
 
     return str;
 }
@@ -357,27 +357,27 @@ void CMIDIMappingDialog::OnDeltaposSpinmovemapping(NMHDR *pNMHDR, LRESULT *pResu
 
     if(pNMUpDown->iDelta < 0) //Up
     {
-    	if(index - 1 >= 0 && m_rMIDIMapper.AreOrderEqual(index-1, index))
-    	{
-    		CString str;
-    		m_List.GetText(index, str);
-    		m_List.DeleteString(index);
-    		m_List.InsertString(index-1, str);
-    		m_rMIDIMapper.Swap(size_t(index-1), size_t(index));
-    		m_List.SetCurSel(index-1);
-    	}
+            if(index - 1 >= 0 && m_rMIDIMapper.AreOrderEqual(index-1, index))
+            {
+                    CString str;
+                    m_List.GetText(index, str);
+                    m_List.DeleteString(index);
+                    m_List.InsertString(index-1, str);
+                    m_rMIDIMapper.Swap(size_t(index-1), size_t(index));
+                    m_List.SetCurSel(index-1);
+            }
     }
     else //Down
     {
-    	if(index + 1 < m_List.GetCount() && m_rMIDIMapper.AreOrderEqual(index, index+1))
-    	{
-    		CString str;
-    		m_List.GetText(index, str);
-    		m_List.DeleteString(index);
-    		m_List.InsertString(index+1, str);
-    		m_rMIDIMapper.Swap(size_t(index), size_t(index+1));
-    		m_List.SetCurSel(index+1);
-    	}
+            if(index + 1 < m_List.GetCount() && m_rMIDIMapper.AreOrderEqual(index, index+1))
+            {
+                    CString str;
+                    m_List.GetText(index, str);
+                    m_List.DeleteString(index);
+                    m_List.InsertString(index+1, str);
+                    m_rMIDIMapper.Swap(size_t(index), size_t(index+1));
+                    m_List.SetCurSel(index+1);
+            }
     }
 
 

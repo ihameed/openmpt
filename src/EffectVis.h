@@ -3,8 +3,8 @@
 class CViewPattern;
 //class CModScrollView;
 
-#define FXVSTATUS_LDRAGGING    	0x01
-#define FXVSTATUS_RDRAGGING    	0x02
+#define FXVSTATUS_LDRAGGING            0x01
+#define FXVSTATUS_RDRAGGING            0x02
 //#define FXVSTATUS_NCLBTNDOWN    0x02
 //#define INSSTATUS_SPLITCURSOR    0x04
 
@@ -16,11 +16,11 @@ class CEffectVis : public CModControlDlg
 public:
     enum
     {
-    	kAction_OverwriteFX=0,
-    	kAction_FillFX,
-    	kAction_OverwritePC,
-    	kAction_FillPC,
-    	kAction_Preserve
+            kAction_OverwriteFX=0,
+            kAction_FillFX,
+            kAction_OverwritePC,
+            kAction_FillPC,
+            kAction_Preserve
     };
 
     CEffectVis(CViewPattern *pViewPattern, UINT startRow, UINT endRow, UINT nchn, CModDoc* pModDoc, UINT pat);
@@ -102,7 +102,7 @@ public:
     BOOL OpenEditor(CWnd *parent);
     VOID DoClose();
     afx_msg void OnClose();
-    LONG* GetSplitPosRef() {return NULL;} 	//rewbs.varWindowSize
+    LONG* GetSplitPosRef() {return NULL;}         //rewbs.varWindowSize
 
     CViewPattern *m_pViewPattern;
 

@@ -58,9 +58,9 @@ class CTuningBase
     //UNOTEINDEXTYPE: Unsigned NOTEINDEXTYPE
     //RATIOTYPE: Some 'real figure' type able to present ratios.
     //STEPINDEXTYPE: Counter of steps between notes. If there is no 'finetune'(finestepcount == 0),
-    		//then 'step difference' between notes is the
-    		//same as differences in NOTEINDEXTYPE. In a way similar to ticks and rows in pattern - 
-    		//ticks <-> STEPINDEX, rows <-> NOTEINDEX
+                    //then 'step difference' between notes is the
+                    //same as differences in NOTEINDEXTYPE. In a way similar to ticks and rows in pattern - 
+                    //ticks <-> STEPINDEX, rows <-> NOTEINDEX
 
 public:
 //BEGIN TYPEDEFS:
@@ -280,11 +280,11 @@ protected:
 
 protected:
     CTuningBase(const string name = "Unnamed") :
-    	m_TuningName(name),
-    	m_TuningType(TT_GENERAL), //Unspecific tuning by default.
-    	m_FineStepCount(0),
-    	m_EditMask(UINT16_MAX) //All bits to true - allow all by default.
-    	{}
+            m_TuningName(name),
+            m_TuningType(TT_GENERAL), //Unspecific tuning by default.
+            m_FineStepCount(0),
+            m_EditMask(UINT16_MAX) //All bits to true - allow all by default.
+            {}
 private:
     CTuningBase(CTuningBase&) {}
     CTuningBase& operator=(const CTuningBase&) {}
@@ -343,9 +343,9 @@ inline bool CTUNINGBASE::SetEditMask(const EDITMASK& em)
 //------------------------------------------------------
 {
     if(MayEdit(EM_EDITMASK))
-    	{m_EditMask = em; return false;}
+            {m_EditMask = em; return false;}
     else
-    	return true;
+            return true;
 }
 
 

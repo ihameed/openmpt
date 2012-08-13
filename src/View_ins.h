@@ -1,12 +1,12 @@
 #ifndef _VIEW_INSTRUMENTS_H_
 #define _VIEW_INSTRUMENTS_H_
 
-#define INSSTATUS_DRAGGING    	0x01
+#define INSSTATUS_DRAGGING            0x01
 #define INSSTATUS_NCLBTNDOWN    0x02
 #define INSSTATUS_SPLITCURSOR    0x04
 
 // Non-Client toolbar buttons
-#define ENV_LEFTBAR_BUTTONS    	19
+#define ENV_LEFTBAR_BUTTONS            19
 
 //==========================================
 class CViewInstrument: public CModScrollView
@@ -135,8 +135,8 @@ protected:
     void DrawNcButton(CDC *pDC, UINT nBtn);
     BOOL GetNcButtonRect(UINT nBtn, LPRECT lpRect);
     void UpdateNcButtonState();
-    void PlayNote(UINT note);				//rewbs.customKeys
-    void DrawGrid(CDC *memDC, UINT speed);	//rewbs.envRowGrid
+    void PlayNote(UINT note);                                //rewbs.customKeys
+    void DrawGrid(CDC *memDC, UINT speed);        //rewbs.envRowGrid
 
     void OnEnvZoomIn() { EnvSetZoom(m_fZoom + 1); };
     void OnEnvZoomOut() { EnvSetZoom(m_fZoom - 1); };

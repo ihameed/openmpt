@@ -5,7 +5,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 ////////////////////////////////////////////////////////////
@@ -19,10 +19,10 @@
 
 typedef struct tagFILEHEADER669
 {
-    uint16_t sig;    			// 'if' or 'JN'
+    uint16_t sig;                            // 'if' or 'JN'
     char songmessage[108];    // Song Message
-    uint8_t samples;    		// number of samples (1-64)
-    uint8_t patterns;    		// number of patterns (1-128)
+    uint8_t samples;                    // number of samples (1-64)
+    uint8_t patterns;                    // number of patterns (1-128)
     uint8_t restartpos;
     uint8_t orders[128];
     uint8_t tempolist[128];

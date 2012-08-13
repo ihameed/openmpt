@@ -28,32 +28,32 @@
 
 MODFORMATINFO gModFormatInfo[] =
 {
-    { MOD_TYPE_MOD,	"ProTracker", ".mod",			0 },
-    { MOD_TYPE_S3M,	"ScreamTracker III", ".s3m",	0 },
-    { MOD_TYPE_XM,	"FastTracker II", ".xm",		0 },
-    { MOD_TYPE_IT,	"Impulse Tracker", ".it",		0 },
-    { MOD_TYPE_MDL, "DigiTracker", ".mdl",			0 },
-    { MOD_TYPE_MTM,	"MultiTracker", ".mtm",			0 },
-    { MOD_TYPE_STM,	"ScreamTracker II", ".stm",		0 },
-    { MOD_TYPE_OKT, "Oktalyzer", ".okt",			0 },
-    { MOD_TYPE_MED,	"OctaMed", ".med",				0 },
-    { MOD_TYPE_669,	"UNIS 669", ".669",				0 },
-    { MOD_TYPE_FAR,	"Farandole Composer", ".far",	0 },
-    { MOD_TYPE_ULT,	"UltraTracker", ".ult",			0 },
-    { MOD_TYPE_PTM, "PolyTracker", ".ptm",			0 },
-    { MOD_TYPE_WAV,	"Wave", ".wav",					0 },
-    { MOD_TYPE_MID, "Midi", ".mid",					0 },
-    { MOD_TYPE_AMS, "Extreme's Tracker", ".ams",	0 },
+    { MOD_TYPE_MOD,        "ProTracker", ".mod",                        0 },
+    { MOD_TYPE_S3M,        "ScreamTracker III", ".s3m",        0 },
+    { MOD_TYPE_XM,        "FastTracker II", ".xm",                0 },
+    { MOD_TYPE_IT,        "Impulse Tracker", ".it",                0 },
+    { MOD_TYPE_MDL, "DigiTracker", ".mdl",                        0 },
+    { MOD_TYPE_MTM,        "MultiTracker", ".mtm",                        0 },
+    { MOD_TYPE_STM,        "ScreamTracker II", ".stm",                0 },
+    { MOD_TYPE_OKT, "Oktalyzer", ".okt",                        0 },
+    { MOD_TYPE_MED,        "OctaMed", ".med",                                0 },
+    { MOD_TYPE_669,        "UNIS 669", ".669",                                0 },
+    { MOD_TYPE_FAR,        "Farandole Composer", ".far",        0 },
+    { MOD_TYPE_ULT,        "UltraTracker", ".ult",                        0 },
+    { MOD_TYPE_PTM, "PolyTracker", ".ptm",                        0 },
+    { MOD_TYPE_WAV,        "Wave", ".wav",                                        0 },
+    { MOD_TYPE_MID, "Midi", ".mid",                                        0 },
+    { MOD_TYPE_AMS, "Extreme's Tracker", ".ams",        0 },
     { MOD_TYPE_AMF|MOD_TYPE_AMF0,"Asylum / DSMI", ".amf", 0 },
-    { MOD_TYPE_DSM, "DSIK Format", ".dsm",			0 },
-    { MOD_TYPE_DMF, "X-Tracker", ".dmf",			0 },
-    { MOD_TYPE_DBM, "DigiBooster Pro", ".dbm",		0 },
-    { MOD_TYPE_PSM, "Epic Megagames MASI", ".psm",	0 },
-    { MOD_TYPE_UMX, "Unreal Music", ".umx",			0 },
-    { MOD_TYPE_MT2, "MadTracker 2", ".mt2",			0 },
-    { MOD_TYPE_MPT, "OpenMPT", ".mptm",				0 },
-    { MOD_TYPE_J2B, "Galaxy Sound System", ".j2b",	0 },
-    { MOD_TYPE_IMF, "Imago Orpheus", ".imf",		0 },
+    { MOD_TYPE_DSM, "DSIK Format", ".dsm",                        0 },
+    { MOD_TYPE_DMF, "X-Tracker", ".dmf",                        0 },
+    { MOD_TYPE_DBM, "DigiBooster Pro", ".dbm",                0 },
+    { MOD_TYPE_PSM, "Epic Megagames MASI", ".psm",        0 },
+    { MOD_TYPE_UMX, "Unreal Music", ".umx",                        0 },
+    { MOD_TYPE_MT2, "MadTracker 2", ".mt2",                        0 },
+    { MOD_TYPE_MPT, "OpenMPT", ".mptm",                                0 },
+    { MOD_TYPE_J2B, "Galaxy Sound System", ".j2b",        0 },
+    { MOD_TYPE_IMF, "Imago Orpheus", ".imf",                0 },
 };
 
 #endif
@@ -123,7 +123,7 @@ uint16_t FreqS3MTable[16] =
 uint16_t S3MFineTuneTable[16] = 
 {
     7895,7941,7985,8046,8107,8169,8232,8280,
-    8363,8413,8463,8529,8581,8651,8723,8757,	// 8363*2^((i-8)/(12*8))
+    8363,8413,8463,8529,8581,8651,8723,8757,        // 8363*2^((i-8)/(12*8))
 };
 
 
@@ -375,7 +375,7 @@ signed char ft2VibratoTable[256] =
 
 uint32_t FineLinearSlideUpTable[16] =
 {
-    65536, 65595, 65654, 65714,	65773, 65832, 65892, 65951,
+    65536, 65595, 65654, 65714,        65773, 65832, 65892, 65951,
     66011, 66071, 66130, 66190, 66250, 66309, 66369, 66429
 };
 
@@ -577,10 +577,10 @@ short int gFastSinc[256*4] =
 
 
 
-#define SINC_PHASES    	4096
-short int gKaiserSinc[SINC_PHASES*8];    	// Upsampling
+#define SINC_PHASES            4096
+short int gKaiserSinc[SINC_PHASES*8];            // Upsampling
 short int gDownsample13x[SINC_PHASES*8];    // Downsample 1.333x
-short int gDownsample2x[SINC_PHASES*8];    	// Downsample 2x
+short int gDownsample2x[SINC_PHASES*8];            // Downsample 2x
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -607,19 +607,19 @@ static void getsinc(short int *psinc, double beta, double lowpass_factor)
     const double kPi = 4.0*atan(1.0)*lowpass_factor;
     for (int isrc=0; isrc<8*SINC_PHASES; isrc++)
     {
-    	double fsinc;
-    	int ix = 7 - (isrc & 7);
-    	ix = (ix*SINC_PHASES)+(isrc>>3);
-    	if (ix == (4*SINC_PHASES))
-    	{
-    		fsinc = 1.0;
-    	} else
-    	{
-    		double x = (double)(ix - (4*SINC_PHASES)) * (double)(1.0/SINC_PHASES);
-    		fsinc = sin(x*kPi) * izero(beta*sqrt(1-x*x*(1.0/16.0))) / (izero_beta*x*kPi); // Kaiser window
-    	}
-    	int n = (int)(fsinc * lowpass_factor * (16384*256));
-    	*psinc++ = (n+0x80)>>8; // force rounding
+            double fsinc;
+            int ix = 7 - (isrc & 7);
+            ix = (ix*SINC_PHASES)+(isrc>>3);
+            if (ix == (4*SINC_PHASES))
+            {
+                    fsinc = 1.0;
+            } else
+            {
+                    double x = (double)(ix - (4*SINC_PHASES)) * (double)(1.0/SINC_PHASES);
+                    fsinc = sin(x*kPi) * izero(beta*sqrt(1-x*x*(1.0/16.0))) / (izero_beta*x*kPi); // Kaiser window
+            }
+            int n = (int)(fsinc * lowpass_factor * (16384*256));
+            *psinc++ = (n+0x80)>>8; // force rounding
     }
 }
 
@@ -641,15 +641,15 @@ static void getdownsample2x(short int *psinc)
 {
     for (int i=0; i<SINC_PHASES; i++)
     {
-    	double x = (double)i * (double)(0.5/SINC_PHASES);
-    	psinc[i*8+7] = (short int)(GetSpline(x,     0, 0, 0, 1) * 8192);
-    	psinc[i*8+6] = (short int)(GetSpline(x+0.5, 0, 0, 0, 1) * 8192);
-    	psinc[i*8+5] = (short int)(GetSpline(x,     0, 0, 1, 0) * 8192);
-    	psinc[i*8+4] = (short int)(GetSpline(x+0.5, 0, 0, 1, 0) * 8192);
-    	psinc[i*8+3] = (short int)(GetSpline(x,     0, 1, 0, 0) * 8192);
-    	psinc[i*8+2] = (short int)(GetSpline(x+0.5, 0, 1, 0, 0) * 8192);
-    	psinc[i*8+1] = (short int)(GetSpline(x,     1, 0, 0, 0) * 8192);
-    	psinc[i*8+0] = (short int)(GetSpline(x+0.5, 1, 0, 0, 0) * 8192);
+            double x = (double)i * (double)(0.5/SINC_PHASES);
+            psinc[i*8+7] = (short int)(GetSpline(x,     0, 0, 0, 1) * 8192);
+            psinc[i*8+6] = (short int)(GetSpline(x+0.5, 0, 0, 0, 1) * 8192);
+            psinc[i*8+5] = (short int)(GetSpline(x,     0, 0, 1, 0) * 8192);
+            psinc[i*8+4] = (short int)(GetSpline(x+0.5, 0, 0, 1, 0) * 8192);
+            psinc[i*8+3] = (short int)(GetSpline(x,     0, 1, 0, 0) * 8192);
+            psinc[i*8+2] = (short int)(GetSpline(x+0.5, 0, 1, 0, 0) * 8192);
+            psinc[i*8+1] = (short int)(GetSpline(x,     1, 0, 0, 0) * 8192);
+            psinc[i*8+0] = (short int)(GetSpline(x+0.5, 1, 0, 0, 0) * 8192);
     }
 }
 
@@ -663,7 +663,7 @@ VOID SndMixInitializeTables()
      //ericus' downsampling improvement.
      //getsinc(gDownsample13x, 8.5, 3.0/4.0);
     //getdownsample2x(gDownsample2x);
-    getsinc(gDownsample13x, 8.5, 0.5);	   
+    getsinc(gDownsample13x, 8.5, 0.5);           
     getsinc(gDownsample2x, 2.7625, 0.425); 
     //end ericus' downsampling improvement.
 }

@@ -25,9 +25,9 @@ typedef OutStream::off_type Offtype;
 typedef Offtype Postype;
 typedef std::streamsize Streamsize;
 
-typedef UINT_PTR    DataSize;	// Data size type.
-typedef UINT_PTR    RposType;	// Relative position type.
-typedef UINT_PTR    NumType;	// Entry count type.
+typedef UINT_PTR    DataSize;        // Data size type.
+typedef UINT_PTR    RposType;        // Relative position type.
+typedef UINT_PTR    NumType;        // Entry count type.
 const DataSize DataSize_max = MAXUINT_PTR;
 const RposType RposType_max = MAXUINT_PTR;
 const NumType NumType_max = MAXUINT_PTR;
@@ -40,36 +40,36 @@ typedef std::basic_string<TCHAR> String;
 
 enum 
 {
-    SNT_PROGRESS =		0x80000000, // = 1 << 31
-    SNT_FAILURE =		0x40000000, // = 1 << 30
-    SNT_NOTE =			0x20000000, // = 1 << 29
-    SNT_WARNING =		0x10000000, // = 1 << 28
+    SNT_PROGRESS =                0x80000000, // = 1 << 31
+    SNT_FAILURE =                0x40000000, // = 1 << 30
+    SNT_NOTE =                        0x20000000, // = 1 << 29
+    SNT_WARNING =                0x10000000, // = 1 << 28
     SNT_NONE = 0,
     SNT_ALL_ENABLED = -1,
     SNT_DEFAULT_MASK = SNT_FAILURE | SNT_WARNING,
 
-    SNRW_BADGIVEN_STREAM =								1	| SNT_FAILURE,
+    SNRW_BADGIVEN_STREAM =                                                                1        | SNT_FAILURE,
 
     // Read failures.
-    SNR_BADSTREAM_AFTER_MAPHEADERSEEK =					2	| SNT_FAILURE,
-    SNR_STARTBYTE_MISMATCH =							3	| SNT_FAILURE,
-    SNR_BADSTREAM_AT_MAP_READ =							4	| SNT_FAILURE,
-    SNR_INSUFFICIENT_STREAM_OFFTYPE =					5	| SNT_FAILURE,
-    SNR_OBJECTCLASS_IDMISMATCH =						6	| SNT_FAILURE,
-    SNR_TOO_MANY_ENTRIES_TO_READ =						7	| SNT_FAILURE,
+    SNR_BADSTREAM_AFTER_MAPHEADERSEEK =                                        2        | SNT_FAILURE,
+    SNR_STARTBYTE_MISMATCH =                                                        3        | SNT_FAILURE,
+    SNR_BADSTREAM_AT_MAP_READ =                                                        4        | SNT_FAILURE,
+    SNR_INSUFFICIENT_STREAM_OFFTYPE =                                        5        | SNT_FAILURE,
+    SNR_OBJECTCLASS_IDMISMATCH =                                                6        | SNT_FAILURE,
+    SNR_TOO_MANY_ENTRIES_TO_READ =                                                7        | SNT_FAILURE,
 
     // Read notes and warnings.
-    SNR_ZEROENTRYCOUNT =								0x80	| SNT_NOTE, // 0x80 == 1 << 7
-    SNR_NO_ENTRYIDS_WITH_CUSTOMID_DEFINED =				0x100	| SNT_NOTE,
-    SNR_LOADING_OBJECT_WITH_LARGER_VERSION =			0x200	| SNT_NOTE,
+    SNR_ZEROENTRYCOUNT =                                                                0x80        | SNT_NOTE, // 0x80 == 1 << 7
+    SNR_NO_ENTRYIDS_WITH_CUSTOMID_DEFINED =                                0x100        | SNT_NOTE,
+    SNR_LOADING_OBJECT_WITH_LARGER_VERSION =                        0x200        | SNT_NOTE,
     
     // Write failures.
-    SNW_INSUFFICIENT_FIXEDSIZE =						(0x10)	| SNT_FAILURE,
-    SNW_CHANGING_IDSIZE_WITH_FIXED_IDSIZESETTING =		(0x11)	| SNT_FAILURE,
-    SNW_INSUFFICIENT_MAPSIZE =							(0x12)	| SNT_FAILURE,
-    SNW_DATASIZETYPE_OVERFLOW =							(0x13)	| SNT_FAILURE,
-    SNW_MAX_WRITE_COUNT_REACHED =						(0x14)	| SNT_FAILURE,
-    SNW_SUBENTRY_FAILURE =								(0x15)	| SNT_FAILURE,
+    SNW_INSUFFICIENT_FIXEDSIZE =                                                (0x10)        | SNT_FAILURE,
+    SNW_CHANGING_IDSIZE_WITH_FIXED_IDSIZESETTING =                (0x11)        | SNT_FAILURE,
+    SNW_INSUFFICIENT_MAPSIZE =                                                        (0x12)        | SNT_FAILURE,
+    SNW_DATASIZETYPE_OVERFLOW =                                                        (0x13)        | SNT_FAILURE,
+    SNW_MAX_WRITE_COUNT_REACHED =                                                (0x14)        | SNT_FAILURE,
+    SNW_SUBENTRY_FAILURE =                                                                (0x15)        | SNT_FAILURE,
 };
 
 bool IsPrintableId(const void* pvId, const size_t nLength); // Return true if given id is printable, false otherwise. 
@@ -90,28 +90,28 @@ struct ReadEntry
 {
     ReadEntry() : nIdpos(0), rposStart(0), nSize(invalidDatasize), nIdLength(0) {}
 
-    uintptr_t nIdpos;	// Index of id start in ID array.
-    RposType rposStart;	// Entry start position.
-    DataSize nSize;		// Entry size.
-    uint16_t nIdLength;	// Length of id.
+    uintptr_t nIdpos;        // Index of id start in ID array.
+    RposType rposStart;        // Entry start position.
+    DataSize nSize;                // Entry size.
+    uint16_t nIdLength;        // Length of id.
 };
 
 
 enum Rwf
 {
-    RwfWMapStartPosEntry,	// Write. True to include data start pos entry to map.
-    RwfWMapSizeEntry,		// Write. True to include data size entry to map.
-    RwfWMapDescEntry,		// Write. True to include description entry to map.
-    RwfWVersionNum,			// Write. True to include version numeric.
-    RwfRPartialIdMatch,		// Read. True to allow partial ID match.
-    RwfRMapCached,			// Read. True if map has been cached.
-    RwfRMapHasId,			// Read. True if map has IDs
-    RwfRMapHasStartpos,		// Read. True if map data start pos.
-    RwfRMapHasSize,			// Read. True if map has entry size.
-    RwfRMapHasDesc,			// Read. True if map has entry description.
-    RwfRTwoBytesDescChar,	// Read. True if map description characters are two bytes.
-    RwfRHeaderIsRead,		// Read. True when header is read.
-    RwfRwHasMap,			// Read/write. True if map exists.
+    RwfWMapStartPosEntry,        // Write. True to include data start pos entry to map.
+    RwfWMapSizeEntry,                // Write. True to include data size entry to map.
+    RwfWMapDescEntry,                // Write. True to include description entry to map.
+    RwfWVersionNum,                        // Write. True to include version numeric.
+    RwfRPartialIdMatch,                // Read. True to allow partial ID match.
+    RwfRMapCached,                        // Read. True if map has been cached.
+    RwfRMapHasId,                        // Read. True if map has IDs
+    RwfRMapHasStartpos,                // Read. True if map data start pos.
+    RwfRMapHasSize,                        // Read. True if map has entry size.
+    RwfRMapHasDesc,                        // Read. True if map has entry description.
+    RwfRTwoBytesDescChar,        // Read. True if map description characters are two bytes.
+    RwfRHeaderIsRead,                // Read. True when header is read.
+    RwfRwHasMap,                        // Read/write. True if map exists.
     RwfNumFlags
 };
 
@@ -124,12 +124,12 @@ public:
 
     enum ReadRv // Read return value.
     {
-    	EntryRead,
-    	EntryNotFound
+            EntryRead,
+            EntryNotFound
     };
     enum IdMatchStatus
     {
-    	IdMatch, IdMismatch
+            IdMatch, IdMismatch
     };
     typedef std::vector<ReadEntry>::const_iterator ReadIterator;
 
@@ -231,8 +231,8 @@ public:
     void Log(LPCTSTR psz) {if (m_fpLogFunc) m_fpLogFunc(psz);}
 
     SsbStatus m_Status;
-    uint32_t m_nFixedEntrySize;			// Read/write: If > 0, data entries have given fixed size.
-    fpLogFunc_t m_fpLogFunc;			// Pointer to log function.
+    uint32_t m_nFixedEntrySize;                        // Read/write: If > 0, data entries have given fixed size.
+    fpLogFunc_t m_fpLogFunc;                        // Pointer to log function.
 
 private:
     // Reads map to cache.
@@ -261,17 +261,17 @@ private:
 
     void AddWriteNote(const SsbStatus s);
     void AddWriteNote(const void* pId,
-    				  const size_t nIdLength,
-    				  const NumType nEntryNum,
-    				  const DataSize nBytecount,
-    				  const RposType rposStart);
+                                      const size_t nIdLength,
+                                      const NumType nEntryNum,
+                                      const DataSize nBytecount,
+                                      const RposType rposStart);
 
     // Writes mapping item to mapstream.
     void WriteMapItem(const void* pId, 
-    			  const size_t nIdSize,
-    			  const RposType& rposDataStart,
-    			  const DataSize& nDatasize,
-    			  const TCHAR* pszDesc);
+                              const size_t nIdSize,
+                              const RposType& rposDataStart,
+                              const DataSize& nDatasize,
+                              const TCHAR* pszDesc);
 
     void ResetReadstatus();
     void ResetWritestatus() {m_Status = SNT_NONE;}
@@ -279,36 +279,36 @@ private:
     void IncrementWriteCounter();
 
 private:
-    SsbStatus m_Readlogmask;			// Read: Controls which read messages will be written to log.
-    SsbStatus m_Writelogmask;			// Write: Controls which write messages will be written to log.
+    SsbStatus m_Readlogmask;                        // Read: Controls which read messages will be written to log.
+    SsbStatus m_Writelogmask;                        // Write: Controls which write messages will be written to log.
     
-    std::vector<char> m_Idarray;		// Read: Holds entry ids.
+    std::vector<char> m_Idarray;                // Read: Holds entry ids.
     
-    InStream* m_pIstrm;					// Read: Pointer to read stream.
-    OutStream* m_pOstrm;				// Write: Pointer to write stream.
+    InStream* m_pIstrm;                                        // Read: Pointer to read stream.
+    OutStream* m_pOstrm;                                // Write: Pointer to write stream.
 
-    Postype m_posStart;					// Read/write: Stream position at the beginning of object.
-    std::vector<ReadEntry> mapData;		// Read: Contains map information.
-    uint64_t m_nReadVersion;				// Read: Version is placed here when reading.
-    NumType m_nMaxReadEntryCount;		// Read: Limits the number of entries allowed to be read.
-    RposType m_rposMapBegin;			// Read: If map exists, rpos of map begin, else m_rposEndofHdrData.
-    Postype m_posMapEnd;				// Read: If map exists, map end position, else pos of end of hdrData.
-    Postype m_posDataBegin;				// Read: Data begin position.
-    RposType m_rposEndofHdrData;		// Read: rpos of end of header data.
-    NumType m_nReadEntrycount;			// Read: Number of entries.
+    Postype m_posStart;                                        // Read/write: Stream position at the beginning of object.
+    std::vector<ReadEntry> mapData;                // Read: Contains map information.
+    uint64_t m_nReadVersion;                                // Read: Version is placed here when reading.
+    NumType m_nMaxReadEntryCount;                // Read: Limits the number of entries allowed to be read.
+    RposType m_rposMapBegin;                        // Read: If map exists, rpos of map begin, else m_rposEndofHdrData.
+    Postype m_posMapEnd;                                // Read: If map exists, map end position, else pos of end of hdrData.
+    Postype m_posDataBegin;                                // Read: Data begin position.
+    RposType m_rposEndofHdrData;                // Read: rpos of end of header data.
+    NumType m_nReadEntrycount;                        // Read: Number of entries.
 
-    uint16_t m_nIdbytes;					// Read/Write: Tells map ID entry size in bytes. If size is variable, value is IdSizeVariable.
-    NumType m_nCounter;					// Read/write: Keeps count of entries written/read.
-    NumType m_nNextReadHint;			// Read: Hint where to start looking for the next read entry.
-    std::bitset<RwfNumFlags> m_Flags;	// Read/write: Various flags.
+    uint16_t m_nIdbytes;                                        // Read/Write: Tells map ID entry size in bytes. If size is variable, value is IdSizeVariable.
+    NumType m_nCounter;                                        // Read/write: Keeps count of entries written/read.
+    NumType m_nNextReadHint;                        // Read: Hint where to start looking for the next read entry.
+    std::bitset<RwfNumFlags> m_Flags;        // Read/write: Various flags.
 
-    Ssb* m_pSubEntry;					// Read/Write: Pointer to SubEntry.
-    Postype m_posSubEntryStart;			// Write: Holds data position where SubEntry started.
-    uint32_t m_nMapReserveSize;			// Write: Number of bytes to reserve for map if writing it before data.			
-    Postype m_posEntrycount;			// Write: Pos of entrycount field. 
-    Postype m_posMapPosField;			// Write: Pos of map position field.
-    Postype m_posMapStart;				// Write: Pos of map start.
-    OstrStream m_MapStream;				// Write: Map stream.
+    Ssb* m_pSubEntry;                                        // Read/Write: Pointer to SubEntry.
+    Postype m_posSubEntryStart;                        // Write: Holds data position where SubEntry started.
+    uint32_t m_nMapReserveSize;                        // Write: Number of bytes to reserve for map if writing it before data.                        
+    Postype m_posEntrycount;                        // Write: Pos of entrycount field. 
+    Postype m_posMapPosField;                        // Write: Pos of map position field.
+    Postype m_posMapStart;                                // Write: Pos of map start.
+    OstrStream m_MapStream;                                // Write: Map stream.
 
 private:
     static const uint8_t HeaderId_FlagByte = 0;
@@ -319,8 +319,8 @@ public:
     static fpLogFunc_t s_DefaultLogFunc;
     static const char s_EntryID[3];
     static const int32_t s_DefaultFlags = (1 << RwfWMapStartPosEntry) +
-    									 (1 << RwfWMapSizeEntry) + (1 << RwfWVersionNum) +
-    									 (1 << RwfRPartialIdMatch);
+                                                                             (1 << RwfWMapSizeEntry) + (1 << RwfWVersionNum) +
+                                                                             (1 << RwfRPartialIdMatch);
 };
 
 
@@ -340,7 +340,7 @@ Ssb::ReadRv Ssb::ReadItem(T& obj, const void* pId, const size_t nIdSize, FuncObj
     const ReadEntry* pE = Find(pId, nIdSize);
     const Postype pos = m_pIstrm->tellg();
     if (pE != nullptr || GetFlag(RwfRMapHasId) == false)
-    	Func(*m_pIstrm, obj, (pE) ? (pE->nSize) : invalidDatasize);
+            Func(*m_pIstrm, obj, (pE) ? (pE->nSize) : invalidDatasize);
     return OnReadEntry(pE, pId, nIdSize, pos);
 }
 
@@ -351,7 +351,7 @@ Ssb::ReadRv Ssb::ReadItem(const ReadIterator& iter, T& obj, FuncObj func)
 {
     m_pIstrm->clear();
     if (iter->rposStart != 0)
-    	m_pIstrm->seekg(m_posStart + Postype(iter->rposStart));
+            m_pIstrm->seekg(m_posStart + Postype(iter->rposStart));
     const Postype pos = m_pIstrm->tellg();
     func(*m_pIstrm, obj, iter->nSize);
     return OnReadEntry(&(*iter), &m_Idarray[iter->nIdpos], iter->nIdLength, pos);
@@ -362,9 +362,9 @@ inline Ssb::IdMatchStatus Ssb::CompareId(const ReadIterator& iter, const void* p
 //-------------------------------------------------------------------------------------------------------
 {
     if (nIdSize == iter->nIdLength && memcmp(&m_Idarray[iter->nIdpos], pId, iter->nIdLength) == 0)
-    	return IdMatch;
+            return IdMatch;
     else
-    	return IdMismatch;
+            return IdMismatch;
 }
 
 
@@ -373,7 +373,7 @@ inline Ssb::ReadIterator Ssb::GetReadBegin()
 {
     ASSERT(GetFlag(RwfRMapHasId) && (GetFlag(RwfRMapHasStartpos) || GetFlag(RwfRMapHasSize) || m_nFixedEntrySize > 0));
     if (GetFlag(RwfRMapCached) == false)
-    	CacheMap();
+            CacheMap();
     return mapData.begin();
 }
 
@@ -382,7 +382,7 @@ inline Ssb::ReadIterator Ssb::GetReadEnd()
 //----------------------------------------
 {
     if (GetFlag(RwfRMapCached) == false)
-    	CacheMap();
+            CacheMap();
     return mapData.end();
 }
 
@@ -407,7 +407,7 @@ inline void WriteItem(OutStream& oStrm, const T& data)
 //----------------------------------------------------
 {
     #if _HAS_TR1
-    	STATIC_ASSERT(std::tr1::has_trivial_assign<T>::value == true);
+            STATIC_ASSERT(std::tr1::has_trivial_assign<T>::value == true);
     #endif
     Binarywrite(oStrm, data);
 }
@@ -433,7 +433,7 @@ inline void Binaryread(InStream& iStrm, T& data, const Offtype bytecount)
 //-----------------------------------------------------------------------
 {
     #if _HAS_TR1
-    	static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
+            static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
     #endif
     memset(&data, 0, sizeof(data));
     iStrm.read(reinterpret_cast<char*>(&data), (std::min)((size_t)bytecount, sizeof(data)));
@@ -445,12 +445,12 @@ inline void ReadItem(InStream& iStrm, T& data, const DataSize nSize)
 //------------------------------------------------------------------
 {
     #if _HAS_TR1
-    	static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
+            static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
     #endif
     if (nSize == sizeof(T) || nSize == invalidDatasize)
-    	Binaryread(iStrm, data);
+            Binaryread(iStrm, data);
     else
-    	Binaryread(iStrm, data, nSize);
+            Binaryread(iStrm, data, nSize);
 }
 
 // Read specialization for float. If data size is 8, read double and assign it to given float.
@@ -460,12 +460,12 @@ inline void ReadItem<float>(InStream& iStrm, float& f, const DataSize nSize)
 {
     if (nSize == 8)
     {
-    	double d;
-    	Binaryread(iStrm, d);
-    	f = static_cast<float>(d);
+            double d;
+            Binaryread(iStrm, d);
+            f = static_cast<float>(d);
     }
     else
-    	Binaryread(iStrm, f);
+            Binaryread(iStrm, f);
 }
 
 // Read specialization for double. If data size is 4, read float and assign it to given double.
@@ -475,12 +475,12 @@ inline void ReadItem<double>(InStream& iStrm, double& d, const DataSize nSize)
 {
     if (nSize == 4)
     {
-    	float f;
-    	Binaryread(iStrm, f);
-    	d = f;
+            float f;
+            Binaryread(iStrm, f);
+            d = f;
     }
     else
-    	Binaryread(iStrm, d);
+            Binaryread(iStrm, d);
 }
 
 void ReadItemString(InStream& iStrm, std::string& str, const DataSize); 
@@ -536,10 +536,10 @@ bool StringFromBinaryStream(std::istream& iStrm, std::string& str, const SIZETYP
     SIZETYPE strSize;
     iStrm.read(reinterpret_cast<char*>(&strSize), sizeof(strSize));
     if(strSize > maxSize)
-    	return true;
+            return true;
     str.resize(strSize);
     for(SIZETYPE i = 0; i<strSize; i++)
-    	iStrm.read(&str[i], 1);
+            iStrm.read(&str[i], 1);
     if(iStrm.good()) return false;
     else return true;
 }

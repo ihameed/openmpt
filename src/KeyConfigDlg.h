@@ -12,35 +12,35 @@ class CommandCategory
 public:
     CommandCategory(CString n, InputTargetContext d)
     {
-    	CommandCategory();
-    	name=n;
-    	id=d;
+            CommandCategory();
+            name=n;
+            id=d;
     }
     
 
     //copy constructor; necessary if we want to use arrays of this class
     CommandCategory(const CommandCategory &copy )
     {
-    	name = copy.name;
-    	id = copy.id;
-    	commands.Copy(copy.commands);
-    	separators.Copy(copy.separators);
+            name = copy.name;
+            id = copy.id;
+            commands.Copy(copy.commands);
+            separators.Copy(copy.separators);
     }
     void operator=(const CommandCategory& copy)
     {
-    	name = copy.name;
-    	id = copy.id;
-    	commands.Copy(copy.commands);
-    	separators.Copy(copy.separators);
+            name = copy.name;
+            id = copy.id;
+            commands.Copy(copy.commands);
+            separators.Copy(copy.separators);
     }
     bool separatorAt(int c)
     {
-    	for (int p=0; p<separators.GetSize(); p++)
-    	{
-    		if (separators[p]==c)
+            for (int p=0; p<separators.GetSize(); p++)
+            {
+                    if (separators[p]==c)
                 return true;
-    	}
-    	return false;
+            }
+            return false;
     }
 
 
@@ -83,8 +83,8 @@ protected:
 //    CNotifyHotKey m_HotKey;
     //CNotifyHotKey m_CommandHotKey;  //rewbs.keys
     CListBox m_lbnHotKeys;
-    CListBox m_lbnCommandKeys;		//rewbs.keys
-    CComboBox m_cmbKeyChoice;		//rewbs.keys
+    CListBox m_lbnCommandKeys;                //rewbs.keys
+    CComboBox m_cmbKeyChoice;                //rewbs.keys
     CComboBox m_cmbCategory;
     CButton m_bKeyDown, m_bKeyHold, m_bKeyUp;
     CButton m_bnReset;

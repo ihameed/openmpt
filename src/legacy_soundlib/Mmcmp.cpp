@@ -54,11 +54,11 @@ typedef struct MMCMPSUBBLOCK
     uint32_t unpk_size;
 } MMCMPSUBBLOCK, *LPMMCMPSUBBLOCK;
 
-#define MMCMP_COMP    	0x0001
-#define MMCMP_DELTA    	0x0002
-#define MMCMP_16BIT    	0x0004
+#define MMCMP_COMP            0x0001
+#define MMCMP_DELTA            0x0002
+#define MMCMP_16BIT            0x0004
 #define MMCMP_STEREO    0x0100
-#define MMCMP_ABS16    	0x0200
+#define MMCMP_ABS16            0x0200
 #define MMCMP_ENDIAN    0x0400
 
 typedef struct MMCMPBITBUFFER
@@ -90,7 +90,7 @@ uint32_t MMCMPBITBUFFER::GetBits(UINT nBits)
 
 const uint32_t MMCMP8BitCommands[8] =
 {
-    0x01, 0x03,    0x07, 0x0F,	0x1E, 0x3C,	0x78, 0xF8
+    0x01, 0x03,    0x07, 0x0F,        0x1E, 0x3C,        0x78, 0xF8
 };
 
 const UINT MMCMP8BitFetch[8] =
@@ -100,7 +100,7 @@ const UINT MMCMP8BitFetch[8] =
 
 const uint32_t MMCMP16BitCommands[16] =
 {
-    0x01, 0x03,    0x07, 0x0F,	0x1E, 0x3C,	0x78, 0xF0,
+    0x01, 0x03,    0x07, 0x0F,        0x1E, 0x3C,        0x78, 0xF0,
     0x1F0, 0x3F0, 0x7F0, 0xFF0, 0x1FF0, 0x3FF0, 0x7FF0, 0xFFF0
 };
 

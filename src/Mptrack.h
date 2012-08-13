@@ -36,7 +36,7 @@ typedef struct MODPLUGDIB
 
 typedef struct MIDILIBSTRUCT
 {
-    LPTSTR MidiMap[128*2];	// 128 instruments + 128 percussions
+    LPTSTR MidiMap[128*2];        // 128 instruments + 128 percussions
 } MIDILIBSTRUCT, *LPMIDILIBSTRUCT;
 
 
@@ -70,16 +70,16 @@ typedef struct DRAGONDROP
 } DRAGONDROP, *LPDRAGONDROP;
 
 enum {
-    DRAGONDROP_NOTHING=0,	// |------< Drop Type >-------------|--< dwDropItem >---|--< lDropParam >---|
-    DRAGONDROP_DLS,			// | Instrument from a DLS bank		|	  DLS Bank #	|	DLS Instrument	|
-    DRAGONDROP_SAMPLE,		// | Sample from a song				|     Sample #		|	    NULL		|
-    DRAGONDROP_INSTRUMENT,	// | Instrument from a song			|	  Instrument #	|	    NULL		|
-    DRAGONDROP_SOUNDFILE,	// | File from instrument library	|		?			|	pszFileName		|
-    DRAGONDROP_MIDIINSTR,	// | File from midi library			| Midi Program/Perc	|	pszFileName		|
-    DRAGONDROP_PATTERN,		// | Pattern from a song			|      Pattern #    |       NULL        |
-    DRAGONDROP_ORDER,		// | Pattern index in a song		|       Order #     |       NULL        |
-    DRAGONDROP_SONG,		// | Song file (mod/s3m/xm/it)		|		0			|	pszFileName		|
-    DRAGONDROP_SEQUENCE		// | Sequence (a set of orders)		|    Sequence #     |       NULL        |
+    DRAGONDROP_NOTHING=0,        // |------< Drop Type >-------------|--< dwDropItem >---|--< lDropParam >---|
+    DRAGONDROP_DLS,                        // | Instrument from a DLS bank                |          DLS Bank #        |        DLS Instrument        |
+    DRAGONDROP_SAMPLE,                // | Sample from a song                                |     Sample #                |            NULL                |
+    DRAGONDROP_INSTRUMENT,        // | Instrument from a song                        |          Instrument #        |            NULL                |
+    DRAGONDROP_SOUNDFILE,        // | File from instrument library        |                ?                        |        pszFileName                |
+    DRAGONDROP_MIDIINSTR,        // | File from midi library                        | Midi Program/Perc        |        pszFileName                |
+    DRAGONDROP_PATTERN,                // | Pattern from a song                        |      Pattern #    |       NULL        |
+    DRAGONDROP_ORDER,                // | Pattern index in a song                |       Order #     |       NULL        |
+    DRAGONDROP_SONG,                // | Song file (mod/s3m/xm/it)                |                0                        |        pszFileName                |
+    DRAGONDROP_SEQUENCE                // | Sequence (a set of orders)                |    Sequence #     |       NULL        |
 };
 
 
@@ -87,11 +87,11 @@ enum {
 // File dialog (open/save) results
 struct FileDlgResult
 {
-    std::string workingDirectory;			// working directory. will include filename, so beware.
-    std::string first_file;					// for some convenience, this will keep the first filename of the filenames vector.
-    std::vector <std::string> filenames;	// all selected filenames in one vector.
-    std::string extension;					// extension used. beware of this when multiple files can be selected!
-    bool abort;								// no selection has been made.
+    std::string workingDirectory;                        // working directory. will include filename, so beware.
+    std::string first_file;                                        // for some convenience, this will keep the first filename of the filenames vector.
+    std::vector <std::string> filenames;        // all selected filenames in one vector.
+    std::string extension;                                        // extension used. beware of this when multiple files can be selected!
+    bool abort;                                                                // no selection has been made.
 };
 
 
@@ -218,7 +218,7 @@ public:
 private:
     static void LoadRegistryDLS();
 
-    #ifdef WIN32	// Legacy stuff
+    #ifdef WIN32        // Legacy stuff
     bool MoveConfigFile(TCHAR sFileName[_MAX_PATH], TCHAR sSubDir[_MAX_PATH] = "", TCHAR sNewFileName[_MAX_PATH] = "");
     #endif
 };
@@ -285,9 +285,9 @@ public:
 //////////////////////////////////////////////////////////////////
 // More Bitmap Helpers
 
-#define FASTBMP_XSHIFT    		13	// 4K pixels
-#define FASTBMP_MAXWIDTH    	(1 << FASTBMP_XSHIFT)
-#define FASTBMP_MAXHEIGHT    	16
+#define FASTBMP_XSHIFT                    13        // 4K pixels
+#define FASTBMP_MAXWIDTH            (1 << FASTBMP_XSHIFT)
+#define FASTBMP_MAXHEIGHT            16
 
 typedef struct MODPLUGFASTDIB
 {
@@ -387,7 +387,7 @@ STATIC_ASSERT(ARRAYELEMCOUNT(szSpecialNoteShortDesc) == ARRAYELEMCOUNT(szSpecial
 // Defined in load_mid.cpp
 extern const LPCSTR szMidiProgramNames[128];
 extern const LPCSTR szMidiPercussionNames[61]; // notes 25..85
-extern const LPCSTR szMidiGroupNames[17];    	// 16 groups + Percussions
+extern const LPCSTR szMidiGroupNames[17];            // 16 groups + Percussions
 
 /////////////////////////////////////////////////////////////////////////////
 

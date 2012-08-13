@@ -18,68 +18,68 @@ class CBijectiveMap
 {
 public:
     CBijectiveMap(const T1& a, const T2& b)
-    	:	m_NotFoundT1(a),
-    		m_NotFoundT2(b)
+            :        m_NotFoundT1(a),
+                    m_NotFoundT2(b)
     {}
 
     void AddPair(const T1& a, const T2& b)
     {
-    	m_T1.push_back(a);
-    	m_T2.push_back(b);
+            m_T1.push_back(a);
+            m_T2.push_back(b);
     }
 
     void ClearMapping()
     {
-    	m_T1.clear();
-    	m_T2.clear();
+            m_T1.clear();
+            m_T2.clear();
     }
 
     size_t Size() const
     {
-    	ASSERT(m_T1.size() == m_T2.size());
-    	return m_T1.size();
+            ASSERT(m_T1.size() == m_T2.size());
+            return m_T1.size();
     }
 
     void RemoveValue_1(const T1& a)
     {
-    	typename vector<T1>::iterator iter = find(m_T1.begin(), m_T1.end(), a);
-    	if(iter != m_T1.end())
-    	{
-    		m_T2.erase(m_T2.begin() + (iter-m_T1.begin()));
-    		m_T1.erase(iter);
-    	}
+            typename vector<T1>::iterator iter = find(m_T1.begin(), m_T1.end(), a);
+            if(iter != m_T1.end())
+            {
+                    m_T2.erase(m_T2.begin() + (iter-m_T1.begin()));
+                    m_T1.erase(iter);
+            }
     }
 
     void RemoveValue_2(const T2& b)
     {
-    	typename vector<T2>::iterator iter = find(m_T2.begin(), m_T2.end(), b);
-    	if(iter != m_T2.end())
-    	{
-    		m_T1.erase(m_T1.begin() + (iter-m_T2.begin()));
-    		m_T2.erase(iter);
-    	}
+            typename vector<T2>::iterator iter = find(m_T2.begin(), m_T2.end(), b);
+            if(iter != m_T2.end())
+            {
+                    m_T1.erase(m_T1.begin() + (iter-m_T2.begin()));
+                    m_T2.erase(iter);
+            }
     }
 
     T2 GetMapping_12(const T1& a) const
     {
-    	typename vector<T1>::const_iterator iter = find(m_T1.begin(), m_T1.end(), a);
-    	if(iter != m_T1.end())
-    	{
-    		return m_T2[iter-m_T1.begin()];
-    	}
-    	else
-    		return m_NotFoundT2;
+            typename vector<T1>::const_iterator iter = find(m_T1.begin(), m_T1.end(), a);
+            if(iter != m_T1.end())
+            {
+                    return m_T2[iter-m_T1.begin()];
+            }
+            else
+                    return m_NotFoundT2;
     }
 
     T1 GetMapping_21(const T2& b) const
     {
-    	typename vector<T2>::const_iterator iter = find(m_T2.begin(), m_T2.end(), b);
-    	if(iter != m_T2.end())
-    	{
-    		return m_T1[iter-m_T2.begin()];
-    	}
-    	else
-    		return m_NotFoundT1;
+            typename vector<T2>::const_iterator iter = find(m_T2.begin(), m_T2.end(), b);
+            if(iter != m_T2.end())
+            {
+                    return m_T1[iter-m_T2.begin()];
+            }
+            else
+                    return m_NotFoundT1;
     }
 
 private:
@@ -111,7 +111,7 @@ private:
     bool m_Dragging;
 
     afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-    DECLARE_MESSAGE_MAP()	
+    DECLARE_MESSAGE_MAP()        
 };
 
 //===================
@@ -124,26 +124,26 @@ private:
 
 public:
     CTuningTreeItem() : m_pTuning(NULL),
-    					m_pTuningCollection(NULL)
+                                            m_pTuningCollection(NULL)
     {}
 
     CTuningTreeItem(CTuning* pT) : 
-    				m_pTuning(pT),
-    				m_pTuningCollection(NULL)
+                                    m_pTuning(pT),
+                                    m_pTuningCollection(NULL)
     {}
 
     CTuningTreeItem(CTuningCollection* pTC) : 
-    				m_pTuning(NULL),
-    				m_pTuningCollection(pTC)
+                                    m_pTuning(NULL),
+                                    m_pTuningCollection(pTC)
     {}
 
     bool operator==(const CTuningTreeItem& ti) const
     {
-    	if(m_pTuning == ti.m_pTuning &&
-    		m_pTuningCollection == ti.m_pTuningCollection)
-    		return true;
-    	else
-    		return false;
+            if(m_pTuning == ti.m_pTuning &&
+                    m_pTuningCollection == ti.m_pTuningCollection)
+                    return true;
+            else
+                    return false;
     }
 
     void Reset() {m_pTuning = NULL; m_pTuningCollection = NULL;}
@@ -151,25 +151,25 @@ public:
 
     void Set(CTuning* pT)
     {
-    	m_pTuning = pT;
-    	m_pTuningCollection = NULL;
+            m_pTuning = pT;
+            m_pTuningCollection = NULL;
     }
 
     void Set(CTuningCollection* pTC)
     {
-    	m_pTuning = NULL;
-    	m_pTuningCollection = pTC;
+            m_pTuning = NULL;
+            m_pTuningCollection = pTC;
     }
 
     operator void*()
     {
-    	//Mimicing pointer behavior: if(CTuningTreeItemInstance) equals
-    	//if(CTuningTreeItemInstance.m_pTuning != NULL ||
-    	//	 CTuningTreeItemInstance.m_pTuningCollection != NULL)
-    	if(m_pTuning)
-    		return m_pTuning; 
-    	else 
-    		return m_pTuningCollection;
+            //Mimicing pointer behavior: if(CTuningTreeItemInstance) equals
+            //if(CTuningTreeItemInstance.m_pTuning != NULL ||
+            //         CTuningTreeItemInstance.m_pTuningCollection != NULL)
+            if(m_pTuning)
+                    return m_pTuning; 
+            else 
+                    return m_pTuningCollection;
     }
 
     CTuningCollection* GetTC() {return m_pTuningCollection;}
@@ -189,15 +189,15 @@ class CTuningDialog : public CDialog
 
     enum EnSclImport
     {
-    	enSclImportOk,
-    	enSclImportFailTooLargeNumDenomIntegers,
-    	enSclImportFailZeroDenominator,
-    	enSclImportFailNegativeRatio,
-    	enSclImportFailUnableToOpenFile,
-    	enSclImportLineCountMismatch,
-    	enSclImportTuningCreationFailure,
-    	enSclImportAddTuningFailure,
-    	enSclImportFailTooManyNotes
+            enSclImportOk,
+            enSclImportFailTooLargeNumDenomIntegers,
+            enSclImportFailZeroDenominator,
+            enSclImportFailNegativeRatio,
+            enSclImportFailUnableToOpenFile,
+            enSclImportLineCountMismatch,
+            enSclImportTuningCreationFailure,
+            enSclImportAddTuningFailure,
+            enSclImportFailTooManyNotes
     };
 
 public:
@@ -310,8 +310,8 @@ private:
 
     enum
     {
-    	TT_TUNINGCOLLECTION = 1,
-    	TT_TUNING
+            TT_TUNINGCOLLECTION = 1,
+            TT_TUNING
     };
 
     static CString GetSclImportFailureMsg(EnSclImport);
@@ -326,8 +326,8 @@ private:
     
     enum
     {
-    	UM_TUNINGDATA = 1, //UM <-> Update Mask
-    	UM_TUNINGCOLLECTION = 2,
+            UM_TUNINGDATA = 1, //UM <-> Update Mask
+            UM_TUNINGCOLLECTION = 2,
     };
 
     static const TUNINGTREEITEM s_notFoundItemTuning;
@@ -374,7 +374,7 @@ public:
     afx_msg void OnTvnSelchangedTreeTuning(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnTvnDeleteitemTreeTuning(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnNMRclickTreeTuning(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnTvnBegindragTreeTuning(NMHDR *pNMHDR, LRESULT *pResult);	
+    afx_msg void OnTvnBegindragTreeTuning(NMHDR *pNMHDR, LRESULT *pResult);        
 
     DECLARE_MESSAGE_MAP()
 };

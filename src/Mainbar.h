@@ -1,8 +1,8 @@
 #ifndef _MAINBAR_H_
 #define _MAINBAR_H_
 
-#define MIN_BASEOCTAVE    	0
-#define MAX_BASEOCTAVE    	8
+#define MIN_BASEOCTAVE            0
+#define MAX_BASEOCTAVE            8
 
 class module_renderer;
 class CModDoc;
@@ -72,9 +72,9 @@ protected:
 
 
 #define MTB_VERTICAL    0x01
-#define MTB_CAPTURE    	0x02
+#define MTB_CAPTURE            0x02
 #define MTB_DRAGGING    0x04
-#define MTB_TRACKER    	0x08
+#define MTB_TRACKER            0x08
 
 //==================================
 class CModTreeBar: public CDialogBar

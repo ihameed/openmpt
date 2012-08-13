@@ -75,12 +75,12 @@ loopdone:
 // CWaveConvert - setup for converting a wave file
 
 BEGIN_MESSAGE_MAP(CWaveConvert, CDialog)
-    ON_COMMAND(IDC_CHECK1,    		OnCheck1)
-    ON_COMMAND(IDC_CHECK2,    		OnCheck2)
-    ON_COMMAND(IDC_CHECK4,    		OnCheckChannelMode)
-    ON_COMMAND(IDC_CHECK6,    		OnCheckInstrMode)
-    ON_COMMAND(IDC_RADIO1,    		UpdateDialog)
-    ON_COMMAND(IDC_RADIO2,    		UpdateDialog)
+    ON_COMMAND(IDC_CHECK1,                    OnCheck1)
+    ON_COMMAND(IDC_CHECK2,                    OnCheck2)
+    ON_COMMAND(IDC_CHECK4,                    OnCheckChannelMode)
+    ON_COMMAND(IDC_CHECK6,                    OnCheckInstrMode)
+    ON_COMMAND(IDC_RADIO1,                    UpdateDialog)
+    ON_COMMAND(IDC_RADIO2,                    UpdateDialog)
     ON_COMMAND(IDC_PLAYEROPTIONS,   OnPlayerOptions) //rewbs.resamplerConf
     ON_CBN_SELCHANGE(IDC_COMBO2,    OnFormatChanged)
 END_MESSAGE_MAP()
@@ -122,8 +122,8 @@ void CWaveConvert::DoDataExchange(CDataExchange *pDX)
     CDialog::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_COMBO1,    m_CbnSampleRate);
     DDX_Control(pDX, IDC_COMBO2,    m_CbnSampleFormat);
-    DDX_Control(pDX, IDC_EDIT3,    	m_EditMinOrder);
-    DDX_Control(pDX, IDC_EDIT4,    	m_EditMaxOrder);
+    DDX_Control(pDX, IDC_EDIT3,            m_EditMinOrder);
+    DDX_Control(pDX, IDC_EDIT4,            m_EditMaxOrder);
 }
 
 
@@ -135,7 +135,7 @@ BOOL CWaveConvert::OnInitDialog()
     CDialog::OnInitDialog();
     CheckRadioButton(IDC_RADIO1, IDC_RADIO2, m_bSelectPlay ? IDC_RADIO2 : IDC_RADIO1);
 
-    CheckDlgButton(IDC_CHECK3, MF_CHECKED);    	// HQ resampling
+    CheckDlgButton(IDC_CHECK3, MF_CHECKED);            // HQ resampling
     CheckDlgButton(IDC_CHECK5, MF_UNCHECKED);    // rewbs.NoNormalize
 
 // -> CODE#0024
@@ -163,9 +163,9 @@ BOOL CWaveConvert::OnInitDialog()
     {
 // -> CODE#0024
 // -> DESC="wav export update"
-//    	UINT n = 3*3-1-j;
-//    	UINT nBits = 8 << (n % 3);
-//    	UINT nChannels = 1 << (n/3);
+//            UINT n = 3*3-1-j;
+//            UINT nBits = 8 << (n % 3);
+//            UINT nChannels = 1 << (n/3);
         UINT n = 3*4-1-j;
         UINT nBits = 8 * (1 + n % 4);
         UINT nChannels = 1 << (n/4);
@@ -174,7 +174,7 @@ BOOL CWaveConvert::OnInitDialog()
         {
 // -> CODE#0024
 // -> DESC="wav export update"
-//    		wsprintf(s, "%s, %d Bit", gszChnCfgNames[j/3], nBits);
+//                    wsprintf(s, "%s, %d Bit", gszChnCfgNames[j/3], nBits);
             wsprintf(s, "%s, %d-Bit", gszChnCfgNames[n/4], nBits);
 // -! NEW_FEATURE#0024
             UINT ndx = m_CbnSampleFormat.AddString(s);
@@ -333,10 +333,10 @@ void CWaveConvert::OnOK()
         WaveFormat.Samples.wValidBitsPerSample = WaveFormat.Format.wBitsPerSample;
         switch(WaveFormat.Format.nChannels)
         {
-        case 1:    	WaveFormat.dwChannelMask = 0x0004; break; // FRONT_CENTER
-        case 2:    	WaveFormat.dwChannelMask = 0x0003; break; // FRONT_LEFT | FRONT_RIGHT
-        case 3:    	WaveFormat.dwChannelMask = 0x0103; break; // FRONT_LEFT|FRONT_RIGHT|BACK_CENTER
-        case 4:    	WaveFormat.dwChannelMask = 0x0033; break; // FRONT_LEFT|FRONT_RIGHT|BACK_LEFT|BACK_RIGHT
+        case 1:            WaveFormat.dwChannelMask = 0x0004; break; // FRONT_CENTER
+        case 2:            WaveFormat.dwChannelMask = 0x0003; break; // FRONT_LEFT | FRONT_RIGHT
+        case 3:            WaveFormat.dwChannelMask = 0x0103; break; // FRONT_LEFT|FRONT_RIGHT|BACK_CENTER
+        case 4:            WaveFormat.dwChannelMask = 0x0033; break; // FRONT_LEFT|FRONT_RIGHT|BACK_LEFT|BACK_RIGHT
         default:    WaveFormat.dwChannelMask = 0; break;
         }
         WaveFormat.SubFormat = guid_MEDIASUBTYPE_PCM;
@@ -489,7 +489,7 @@ void CDoWaveConvert::OnButton1()
             iter->processed = true;
         }
 
-/*    	if (m_bGivePlugsIdleTime) {
+/*            if (m_bGivePlugsIdleTime) {
             LARGE_INTEGER startTime, endTime, duration,Freq;
             QueryPerformanceFrequency(&Freq);
             long samplesprocessed = sizeof(buffer)/(m_pWaveFormat->nChannels * m_pWaveFormat->wBitsPerSample / 8);
@@ -640,8 +640,8 @@ void CDoWaveConvert::OnButton1()
             cuepoint.cp_id = LittleEndian(num);
             cuepoint.cp_pos = LittleEndian((uint32_t)iter->offset);
             cuepoint.cp_chunkid = LittleEndian(IFFID_data);
-            cuepoint.cp_chunkstart = 0;    	// we use no Wave List Chunk (wavl) as we have only one data block, so this should be 0.
-            cuepoint.cp_blockstart = 0;    	// dito
+            cuepoint.cp_chunkstart = 0;            // we use no Wave List Chunk (wavl) as we have only one data block, so this should be 0.
+            cuepoint.cp_blockstart = 0;            // dito
             cuepoint.cp_offset = LittleEndian((uint32_t)iter->offset);
             fwrite(&cuepoint, 1, sizeof(WAVCUEPOINT), f);
         }

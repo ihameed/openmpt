@@ -10,10 +10,10 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#define VC_EXTRALEAN    	// Exclude rarely-used stuff from Windows headers
+#define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 
 #if _MSC_VER >= 1500
-    #define _WIN32_WINNT    0x0500	// 0x0500 = Windows 2000
+    #define _WIN32_WINNT    0x0500        // 0x0500 = Windows 2000
 #else
     #define WINVER    0x0401
 #endif
@@ -29,14 +29,14 @@
 #define MMNODRV
 #define MMNOMCI
 
-#define _CRT_SECURE_NO_WARNINGS    	// Define to disable the "This function or variable may be unsafe" warnings.
-#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES    		1
+#define _CRT_SECURE_NO_WARNINGS            // Define to disable the "This function or variable may be unsafe" warnings.
+#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES                    1
 #define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT    1
 
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
-#include <afxcmn.h>    		// MFC support for Windows Common Controls
+#include <afxcmn.h>                    // MFC support for Windows Common Controls
 #include <afxcview.h>
 #include <afxole.h>
 #include <winreg.h>
@@ -54,7 +54,7 @@
 #include <strstream>
 
 #ifndef OFN_FORCESHOWHIDDEN
-#define OFN_FORCESHOWHIDDEN    	0x10000000
+#define OFN_FORCESHOWHIDDEN            0x10000000
 #endif
 
 #ifndef _WAVEFORMATEXTENSIBLE_
@@ -102,14 +102,14 @@ void Log(LPCSTR format,...);
 
 // Definitions for MSVC versions to write more understandable conditional-compilation,
 // e.g. #if (_MSC_VER > MSVC_VER_2008) instead of #if (_MSC_VER > 1500) 
-#define MSVC_VER_VC71    	1310
-#define MSVC_VER_2003    	MSVC_VER_VC71
-#define MSVC_VER_VC8    	1400
-#define MSVC_VER_2005    	MSVC_VER_VC8
-#define MSVC_VER_VC9    	1500
-#define MSVC_VER_2008    	MSVC_VER_VC9
-#define MSVC_VER_VC10    	1600
-#define MSVC_VER_2010    	MSVC_VER_VC10
+#define MSVC_VER_VC71            1310
+#define MSVC_VER_2003            MSVC_VER_VC71
+#define MSVC_VER_VC8            1400
+#define MSVC_VER_2005            MSVC_VER_VC8
+#define MSVC_VER_VC9            1500
+#define MSVC_VER_2008            MSVC_VER_VC9
+#define MSVC_VER_VC10            1600
+#define MSVC_VER_2010            MSVC_VER_VC10
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.

@@ -28,12 +28,12 @@ protected:
 
 public:
     CTuningRatioMapWnd() : m_cxFont(0),
-    	m_cyFont(0),
-    	m_hFont(NULL),
-    	m_pTuning(NULL),
-    	m_pParent(NULL),
-    	m_nNoteCentre(61),
-    	m_nNote(61) {}
+            m_cyFont(0),
+            m_hFont(NULL),
+            m_pTuning(NULL),
+            m_pParent(NULL),
+            m_nNoteCentre(61),
+            m_nNote(61) {}
 
     VOID Init(CTuningDialog* const pParent, CTuning* const pTun) { m_pParent = pParent; m_pTuning = pTun;}
 

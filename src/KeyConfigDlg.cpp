@@ -17,19 +17,19 @@ BOOL CCustEdit::PreTranslateMessage(MSG *pMsg)
 {
     if (pMsg)
     {
-    	if ((pMsg->message == WM_KEYDOWN)    || (pMsg->message == WM_SYSKEYDOWN))
-    	{
-    		//if (!(pMsg->lparam & 0x40000000)) { // only on first presss
-    			SetKey(CMainFrame::GetInputHandler()->GetModifierMask(), pMsg->wParam);
-    		//}
-    		return -1; // Keypress handled, don't pass on message.
-    	}
-    	else if ((pMsg->message == WM_KEYUP)    || (pMsg->message == WM_SYSKEYUP))
-    	{
-    		//if a key has been released but custom edit box is empty, we have probably just
-    		//navigated into the box with TAB or SHIFT-TAB. No need to set keychoice.
-    		if (code!=0)
-    		  m_pOptKeyDlg->OnSetKeyChoice();         
+            if ((pMsg->message == WM_KEYDOWN)    || (pMsg->message == WM_SYSKEYDOWN))
+            {
+                    //if (!(pMsg->lparam & 0x40000000)) { // only on first presss
+                            SetKey(CMainFrame::GetInputHandler()->GetModifierMask(), pMsg->wParam);
+                    //}
+                    return -1; // Keypress handled, don't pass on message.
+            }
+            else if ((pMsg->message == WM_KEYUP)    || (pMsg->message == WM_SYSKEYUP))
+            {
+                    //if a key has been released but custom edit box is empty, we have probably just
+                    //navigated into the box with TAB or SHIFT-TAB. No need to set keychoice.
+                    if (code!=0)
+                      m_pOptKeyDlg->OnSetKeyChoice();         
         }
     }
     return CEdit::PreTranslateMessage(pMsg);
@@ -83,9 +83,9 @@ void CCustEdit::OnKillFocus(CWnd* pNewWnd)
 //-----------------------------------------------------------
 
 BEGIN_MESSAGE_MAP(COptionsKeyboard, CPropertyPage)
-    ON_LBN_SELCHANGE(IDC_CHOICECOMBO,	OnKeyChoiceSelect)
-    ON_LBN_SELCHANGE(IDC_COMMAND_LIST,	OnCommandKeySelChanged)
-    ON_LBN_SELCHANGE(IDC_KEYCATEGORY,	OnCategorySelChanged)
+    ON_LBN_SELCHANGE(IDC_CHOICECOMBO,        OnKeyChoiceSelect)
+    ON_LBN_SELCHANGE(IDC_COMMAND_LIST,        OnCommandKeySelChanged)
+    ON_LBN_SELCHANGE(IDC_KEYCATEGORY,        OnCategorySelChanged)
     ON_EN_UPDATE(IDC_CHORDDETECTWAITTIME, OnChordWaitTimeChanged) //rewbs.autochord
     ON_COMMAND(IDC_SET, OnSetKeyChoice)
     ON_COMMAND(IDC_DELETE, OnDeleteKeyChoice)
@@ -107,17 +107,17 @@ void COptionsKeyboard::DoDataExchange(CDataExchange *pDX)
 //-------------------------------------------------------
 {
     CPropertyPage::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_KEYCATEGORY,	m_cmbCategory);
-    DDX_Control(pDX, IDC_COMMAND_LIST,	m_lbnCommandKeys); 
-    DDX_Control(pDX, IDC_CHOICECOMBO,	m_cmbKeyChoice);
+    DDX_Control(pDX, IDC_KEYCATEGORY,        m_cmbCategory);
+    DDX_Control(pDX, IDC_COMMAND_LIST,        m_lbnCommandKeys); 
+    DDX_Control(pDX, IDC_CHOICECOMBO,        m_cmbKeyChoice);
     DDX_Control(pDX, IDC_CHORDDETECTWAITTIME, m_eChordWaitTime);//rewbs.autochord
-    DDX_Control(pDX, IDC_KEYREPORT,		m_eReport);
-    DDX_Control(pDX, IDC_CUSTHOTKEY,	m_eCustHotKey);
-    DDX_Control(pDX, IDC_CHECKKEYDOWN,	m_bKeyDown);
-    DDX_Control(pDX, IDC_CHECKKEYHOLD,	m_bKeyHold);
-    DDX_Control(pDX, IDC_CHECKKEYUP,	m_bKeyUp);
+    DDX_Control(pDX, IDC_KEYREPORT,                m_eReport);
+    DDX_Control(pDX, IDC_CUSTHOTKEY,        m_eCustHotKey);
+    DDX_Control(pDX, IDC_CHECKKEYDOWN,        m_bKeyDown);
+    DDX_Control(pDX, IDC_CHECKKEYHOLD,        m_bKeyHold);
+    DDX_Control(pDX, IDC_CHECKKEYUP,        m_bKeyUp);
     
-    DDX_Control(pDX, IDC_DEBUGSAVE,		m_bDebugSave);
+    DDX_Control(pDX, IDC_DEBUGSAVE,                m_bDebugSave);
 }
 
 
@@ -148,9 +148,9 @@ BOOL COptionsKeyboard::OnInitDialog()
     DefineCommandCategories();
     for (int c=0; c<commandCategories.GetSize(); c++)
     {
-    	if (commandCategories[c].name && commandCategories[c].commands.GetCount())
-    		m_cmbCategory.SetItemData(m_cmbCategory.AddString(commandCategories[c].name), c);
-    }	
+            if (commandCategories[c].name && commandCategories[c].commands.GetCount())
+                    m_cmbCategory.SetItemData(m_cmbCategory.AddString(commandCategories[c].name), c);
+    }        
     m_cmbCategory.SetCurSel(0);
     UpdateDialog();
 
@@ -174,20 +174,20 @@ void COptionsKeyboard::DefineCommandCategories()
 
     newCat = new CommandCategory("Global keys", kCtxAllContexts);
     for (int c=kcStartFile; c<=kcEndFile; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndFile);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndFile);                        //--------------------------------------
     for (int c=kcStartPlayCommands; c<=kcEndPlayCommands; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndPlayCommands);	//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndPlayCommands);        //--------------------------------------
     for (int c=kcStartEditCommands; c<=kcEndEditCommands; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndEditCommands);	//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndEditCommands);        //--------------------------------------
     for (int c=kcStartView; c<=kcEndView; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndView);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndView);                        //--------------------------------------
     for (int c=kcStartMisc; c<=kcEndMisc; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndMisc);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndMisc);                        //--------------------------------------
 
     commandCategories.Add(*newCat);
     delete newCat;
@@ -207,9 +207,9 @@ void COptionsKeyboard::DefineCommandCategories()
     newCat = new CommandCategory("  Pattern Editor - Orderlist", kCtxCtrlOrderlist);
 
     for (int c=kcStartOrderlistCommands; c<=kcEndOrderlistCommands; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndOrderlistNavigation);			//--------------------------------------
-    newCat->separators.Add(kcEndOrderlistEdit);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndOrderlistNavigation);                        //--------------------------------------
+    newCat->separators.Add(kcEndOrderlistEdit);                        //--------------------------------------
 
     commandCategories.Add(*newCat);
     delete newCat;
@@ -217,73 +217,73 @@ void COptionsKeyboard::DefineCommandCategories()
     newCat = new CommandCategory("    Pattern Editor - General", kCtxViewPatterns);
     
     for (int c=kcStartPlainNavigate; c<=kcEndPlainNavigate; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndPlainNavigate);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndPlainNavigate);                        //--------------------------------------
     for (int c=kcStartJumpSnap; c<=kcEndJumpSnap; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndJumpSnap);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndJumpSnap);                        //--------------------------------------
     for (int c=kcStartHomeEnd; c<=kcEndHomeEnd; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndHomeEnd);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndHomeEnd);                        //--------------------------------------
     for (int c=kcPrevPattern; c<=kcNextPattern; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcNextPattern);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcNextPattern);                        //--------------------------------------
     for (int c=kcStartSelect; c<=kcEndSelect; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndSelect);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndSelect);                        //--------------------------------------
     newCat->commands.Add(kcCopyAndLoseSelection);
     for (int c=kcClearRow; c<=kcInsertAllRows; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcInsertAllRows);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcInsertAllRows);                        //--------------------------------------
     for (int c=kcChannelMute; c<=kcChannelReset; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcChannelReset);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcChannelReset);                        //--------------------------------------
     for (int c=kcTransposeUp; c<=kcTransposeOctDown; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcTransposeOctDown);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcTransposeOctDown);                        //--------------------------------------
     for (int c=kcPatternAmplify; c<=kcPatternShrinkSelection; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcPatternShrinkSelection);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcPatternShrinkSelection);                        //--------------------------------------
     for (int c=kcStartPatternEditMisc; c<=kcEndPatternEditMisc; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndPatternEditMisc);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndPatternEditMisc);                        //--------------------------------------
 
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("        Pattern Editor - Note col", kCtxViewPatternsNote);
     for (int c=kcVPStartNotes; c<=kcVPEndNotes; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcVPEndNotes);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcVPEndNotes);                        //--------------------------------------
     for (int c=kcSetOctave0; c<=kcSetOctave9; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcVPEndNotes);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcVPEndNotes);                        //--------------------------------------
     for (int c=kcStartNoteMisc; c<=kcEndNoteMisc; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("        Pattern Editor - Volume col", kCtxViewPatternsVol);
     for (int c=kcSetVolumeStart; c<=kcSetVolumeEnd; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("        Pattern Editor - Instrument col", kCtxViewPatternsIns);
     for (int c=kcSetIns0; c<=kcSetIns9; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("        Pattern Editor - FX col", kCtxViewPatternsFX);
     for (int c=kcSetFXStart; c<=kcSetFXEnd; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("        Pattern Editor - FX param col", kCtxViewPatternsFXparam);
     for (int c=kcSetFXParam0; c<=kcSetFXParamF; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
@@ -293,22 +293,22 @@ void COptionsKeyboard::DefineCommandCategories()
 
     newCat = new CommandCategory("    Sample Editor", kCtxViewSamples);
     for (int c=kcStartSampleEditing; c<=kcEndSampleEditing; c++)
-    	newCat->commands.Add(c);
-    newCat->separators.Add(kcEndSampleEditing);			//--------------------------------------
+            newCat->commands.Add(c);
+    newCat->separators.Add(kcEndSampleEditing);                        //--------------------------------------
     for (int c=kcStartSampleMisc; c<=kcEndSampleMisc; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("  Instrument Editor", kCtxCtrlInstruments);
     for (int c=kcStartInstrumentCtrlMisc; c<=kcEndInstrumentCtrlMisc; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
     newCat = new CommandCategory("    Envelope Editor", kCtxViewInstruments);
     for (int c=kcStartInstrumentMisc; c<=kcEndInstrumentMisc; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
@@ -322,7 +322,7 @@ void COptionsKeyboard::DefineCommandCategories()
 
     newCat = new CommandCategory("  Plugin Editor", kCtxVSTGUI);
     for (int c=kcStartVSTGUICommands; c<=kcEndVSTGUICommands; c++)
-    	newCat->commands.Add(c);
+            newCat->commands.Add(c);
     commandCategories.Add(*newCat);
     delete newCat;
 
@@ -337,8 +337,8 @@ void COptionsKeyboard::DefineCommandCategories()
 void COptionsKeyboard::UpdateDialog()
 //-----------------------------------
 {
-    OnCategorySelChanged();		// Fills command list and automatically selects first command.
-    OnCommandKeySelChanged();	// Fills command key choice list for that command and automatically selects first choice.
+    OnCategorySelChanged();                // Fills command list and automatically selects first command.
+    OnCommandKeySelChanged();        // Fills command key choice list for that command and automatically selects first choice.
 }
 
 
@@ -358,25 +358,25 @@ void COptionsKeyboard::OnCategorySelChanged()
     int nCat = m_cmbCategory.GetItemData( m_cmbCategory.GetCurSel() );
 
     //Fill Command list
-    if ((nCat >= 0) && (nCat != m_nCurCategory))	//have we changed category?
+    if ((nCat >= 0) && (nCat != m_nCurCategory))        //have we changed category?
     {
-    	CommandID com;
-    	m_nCurCategory = nCat;
-    	m_lbnCommandKeys.ResetContent();		
-    	for (int c=0; c<commandCategories[nCat].commands.GetSize(); c++)
-    	{
-    		com = (CommandID)commandCategories[nCat].commands[c];
-    		if (plocalCmdSet->GetCommandText(com))
-    		{
-    			if (!plocalCmdSet->isHidden(com))
-    				m_lbnCommandKeys.SetItemData(m_lbnCommandKeys.AddString(plocalCmdSet->GetCommandText(com)), com);
-    			
-    			if (commandCategories[nCat].separatorAt(com))
-    				m_lbnCommandKeys.SetItemData(m_lbnCommandKeys.AddString("------------------------------------------------------"), DWORD_PTR(-1));
-    		}
-    	}
-    	m_lbnCommandKeys.SetCurSel(0);
-    	OnCommandKeySelChanged();
+            CommandID com;
+            m_nCurCategory = nCat;
+            m_lbnCommandKeys.ResetContent();                
+            for (int c=0; c<commandCategories[nCat].commands.GetSize(); c++)
+            {
+                    com = (CommandID)commandCategories[nCat].commands[c];
+                    if (plocalCmdSet->GetCommandText(com))
+                    {
+                            if (!plocalCmdSet->isHidden(com))
+                                    m_lbnCommandKeys.SetItemData(m_lbnCommandKeys.AddString(plocalCmdSet->GetCommandText(com)), com);
+                            
+                            if (commandCategories[nCat].separatorAt(com))
+                                    m_lbnCommandKeys.SetItemData(m_lbnCommandKeys.AddString("------------------------------------------------------"), DWORD_PTR(-1));
+                    }
+            }
+            m_lbnCommandKeys.SetCurSel(0);
+            OnCommandKeySelChanged();
     }
 }
 
@@ -390,47 +390,47 @@ void COptionsKeyboard::OnCommandKeySelChanged()
     //Separator
     if (nCmd == kcNull)
     {
-    	m_cmbKeyChoice.SetWindowText("");
-    	m_cmbKeyChoice.EnableWindow(FALSE);
-    	m_eCustHotKey.SetWindowText("");
-    	m_eCustHotKey.EnableWindow(FALSE);
-    	m_bKeyDown.SetCheck(0);
-    	m_bKeyDown.EnableWindow(FALSE);
-    	m_bKeyHold.SetCheck(0);
-    	m_bKeyHold.EnableWindow(FALSE);
-    	m_bKeyUp.SetCheck(0);
-    	m_bKeyUp.EnableWindow(FALSE);
-    	m_nCurHotKey=-1;
+            m_cmbKeyChoice.SetWindowText("");
+            m_cmbKeyChoice.EnableWindow(FALSE);
+            m_eCustHotKey.SetWindowText("");
+            m_eCustHotKey.EnableWindow(FALSE);
+            m_bKeyDown.SetCheck(0);
+            m_bKeyDown.EnableWindow(FALSE);
+            m_bKeyHold.SetCheck(0);
+            m_bKeyHold.EnableWindow(FALSE);
+            m_bKeyUp.SetCheck(0);
+            m_bKeyUp.EnableWindow(FALSE);
+            m_nCurHotKey=-1;
     }
 
     //Fill "choice" list
-    else if ((nCmd >= 0) && (nCmd != m_nCurHotKey) || m_bForceUpdate)	//have we changed command?
+    else if ((nCmd >= 0) && (nCmd != m_nCurHotKey) || m_bForceUpdate)        //have we changed command?
     {
-    	m_bForceUpdate = false;
-    	
-    	m_cmbKeyChoice.EnableWindow(TRUE);
-    	m_eCustHotKey.EnableWindow(TRUE);
-    	m_bKeyDown.EnableWindow(TRUE);
-    	m_bKeyHold.EnableWindow(TRUE);
-    	m_bKeyUp.EnableWindow(TRUE);
-    	
-    	m_nCurHotKey = nCmd;
-    	char s[20];
-    		
-    	m_cmbKeyChoice.ResetContent();
-    	int numChoices=plocalCmdSet->GetKeyListSize(nCmd);
-    	if ((nCmd<kcNumCommands) && (numChoices>0))
+            m_bForceUpdate = false;
+            
+            m_cmbKeyChoice.EnableWindow(TRUE);
+            m_eCustHotKey.EnableWindow(TRUE);
+            m_bKeyDown.EnableWindow(TRUE);
+            m_bKeyHold.EnableWindow(TRUE);
+            m_bKeyUp.EnableWindow(TRUE);
+            
+            m_nCurHotKey = nCmd;
+            char s[20];
+                    
+            m_cmbKeyChoice.ResetContent();
+            int numChoices=plocalCmdSet->GetKeyListSize(nCmd);
+            if ((nCmd<kcNumCommands) && (numChoices>0))
         {
-    		for (int i=0; i<numChoices; i++)
-    		{
-    			wsprintf(s, "Choice %d (of %d)", i+1, numChoices);
-    			m_cmbKeyChoice.SetItemData(m_cmbKeyChoice.AddString(s), i);
-    		}
-    	}
-    	m_cmbKeyChoice.SetItemData(m_cmbKeyChoice.AddString("<new>"), numChoices);
-    	m_cmbKeyChoice.SetCurSel(0);
-    	m_nCurKeyChoice = -1;
-    	OnKeyChoiceSelect();
+                    for (int i=0; i<numChoices; i++)
+                    {
+                            wsprintf(s, "Choice %d (of %d)", i+1, numChoices);
+                            m_cmbKeyChoice.SetItemData(m_cmbKeyChoice.AddString(s), i);
+                    }
+            }
+            m_cmbKeyChoice.SetItemData(m_cmbKeyChoice.AddString("<new>"), numChoices);
+            m_cmbKeyChoice.SetCurSel(0);
+            m_nCurKeyChoice = -1;
+            OnKeyChoiceSelect();
     }
 }
 
@@ -445,29 +445,29 @@ void COptionsKeyboard::OnKeyChoiceSelect()
     //If nothing there, clear 
     if (choice>=plocalCmdSet->GetKeyListSize(cmd) || choice<0)
     {
-    	m_nCurKeyChoice = choice;
-    	m_bForceUpdate=true;
-    	m_eCustHotKey.SetKey(0, 0);
-    	m_bKeyDown.SetCheck(0);
-    	m_bKeyHold.SetCheck(0);
-    	m_bKeyUp.SetCheck(0);
-    	return;
+            m_nCurKeyChoice = choice;
+            m_bForceUpdate=true;
+            m_eCustHotKey.SetKey(0, 0);
+            m_bKeyDown.SetCheck(0);
+            m_bKeyHold.SetCheck(0);
+            m_bKeyUp.SetCheck(0);
+            return;
     }
     
     //else, if changed, Fill
     if (choice != m_nCurKeyChoice || m_bForceUpdate)
-    {	
-    	m_nCurKeyChoice = choice;
-    	m_bForceUpdate = false;
-    	KeyCombination kc = plocalCmdSet->GetKey(cmd, choice);
-    	m_eCustHotKey.SetKey(kc.mod, kc.code);
+    {        
+            m_nCurKeyChoice = choice;
+            m_bForceUpdate = false;
+            KeyCombination kc = plocalCmdSet->GetKey(cmd, choice);
+            m_eCustHotKey.SetKey(kc.mod, kc.code);
     
-    	if (kc.event & kKeyEventDown) m_bKeyDown.SetCheck(1);
-    	else m_bKeyDown.SetCheck(0);
-    	if (kc.event & kKeyEventRepeat) m_bKeyHold.SetCheck(1);
-    	else m_bKeyHold.SetCheck(0);
-    	if (kc.event & kKeyEventUp) m_bKeyUp.SetCheck(1);
-    	else m_bKeyUp.SetCheck(0);
+            if (kc.event & kKeyEventDown) m_bKeyDown.SetCheck(1);
+            else m_bKeyDown.SetCheck(0);
+            if (kc.event & kKeyEventRepeat) m_bKeyHold.SetCheck(1);
+            else m_bKeyHold.SetCheck(0);
+            if (kc.event & kKeyEventUp) m_bKeyUp.SetCheck(1);
+            else m_bKeyUp.SetCheck(0);
     }
 }
 
@@ -480,8 +480,8 @@ void COptionsKeyboard::OnChordWaitTimeChanged()
     val = atoi(s);
     if (val>5000) 
     {
-    	val = 5000;
-    	m_eChordWaitTime.SetWindowText("5000");
+            val = 5000;
+            m_eChordWaitTime.SetWindowText("5000");
     }
 }
 //end rewbs.autochord
@@ -496,25 +496,25 @@ void COptionsKeyboard::OnHotKeyChanged()
 {
 /*    if ((m_nCurKeyboard == KEYBOARD_CUSTOM) && (m_nCurHotKey >= 0) && (m_nCurHotKey < MAX_MPTHOTKEYS))
     {
-    	BOOL bChanged = FALSE;
-    	uint16_t wVk=0, wMod=0;
-    	
-    	m_HotKey.GetHotKey(wVk, wMod);
-    	uint32_t dwHk = ((uint32_t)wVk) | (((uint32_t)wMod) << 16);
-    	for (UINT i = 0; i<MAX_MPTHOTKEYS; i++) if (i != (UINT)m_nCurHotKey)
-    	{
-    		if (CustomKeys[i] == dwHk)
-    		{
-    			CustomKeys[i] = 0;
-    			bChanged = TRUE;
-    		}
-    	}
-    	if (dwHk != CustomKeys[m_nCurHotKey])
-    	{
-    		CustomKeys[m_nCurHotKey] = dwHk;
-    		bChanged = TRUE;
-    	}
-    	if (bChanged) OnSettingsChanged();
+            BOOL bChanged = FALSE;
+            uint16_t wVk=0, wMod=0;
+            
+            m_HotKey.GetHotKey(wVk, wMod);
+            uint32_t dwHk = ((uint32_t)wVk) | (((uint32_t)wMod) << 16);
+            for (UINT i = 0; i<MAX_MPTHOTKEYS; i++) if (i != (UINT)m_nCurHotKey)
+            {
+                    if (CustomKeys[i] == dwHk)
+                    {
+                            CustomKeys[i] = 0;
+                            bChanged = TRUE;
+                    }
+            }
+            if (dwHk != CustomKeys[m_nCurHotKey])
+            {
+                    CustomKeys[m_nCurHotKey] = dwHk;
+                    bChanged = TRUE;
+            }
+            if (bChanged) OnSettingsChanged();
     }
     */
 }
@@ -530,9 +530,9 @@ void COptionsKeyboard::OnRestoreKeyChoice()
     //Do nothing if there's nothing to restore
     if (cmd<0 || m_nCurKeyChoice<0 || m_nCurKeyChoice>=ih->GetKeyListSize(cmd))
     {
-    	CString error = "Nothing to restore for this slot.";
-    	::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
-    	return;
+            CString error = "Nothing to restore for this slot.";
+            ::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
+            return;
     }
     
     //Restore current key combination choice for currently selected command.
@@ -551,9 +551,9 @@ void COptionsKeyboard::OnDeleteKeyChoice()
     //Do nothing if there's no key defined for this slot.
     if (m_nCurHotKey<0 || m_nCurKeyChoice<0 || m_nCurKeyChoice>=plocalCmdSet->GetKeyListSize(cmd))
     {
-    	CString error = "No key currently set for this slot.";
-    	::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
-    	return;
+            CString error = "No key currently set for this slot.";
+            ::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
+            return;
     }
 
     //Delete current key combination choice for currently selected command.
@@ -572,9 +572,9 @@ void COptionsKeyboard::OnSetKeyChoice()
     CommandID cmd = (CommandID)m_nCurHotKey;
     if (cmd<0)
     {
-    	CString error = "Invalid slot.";
-    	::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
-    	return;
+            CString error = "Invalid slot.";
+            ::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
+            return;
     }
 
     kc.mod  = m_eCustHotKey.mod;
@@ -585,20 +585,20 @@ void COptionsKeyboard::OnSetKeyChoice()
     temp |= m_bKeyUp.GetCheck()?kKeyEventUp:0;
     kc.event =(KeyEventType)temp;
     //kc.event =(KeyEventType)((UINT)kKeyEventDown|(UINT)kKeyEventRepeat);
-    //detect invalid input	
+    //detect invalid input        
     if (!kc.code)
     {
-    	CString error = "You need to say to which key you'd like to map this command.";
-    	::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
-    	return;
+            CString error = "You need to say to which key you'd like to map this command.";
+            ::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
+            return;
     }
     if (!kc.event)
     {
-/*    	CString error = "You need to select at least one key event type (up, down or hold).";
-    	::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
-    	return;
+/*            CString error = "You need to select at least one key event type (up, down or hold).";
+            ::MessageBox(NULL, error, "Invalid key data", MB_ICONEXCLAMATION|MB_OK);
+            return;
 */
-    	kc.event = kKeyEventDown;
+            kc.event = kKeyEventDown;
     }
 
     //process valid input
@@ -638,9 +638,9 @@ void COptionsKeyboard::OnLoad()
 { 
     std::string filename = m_sFullPathName;
     FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(true, "mkb", filename,
-    	"OpenMPT Key Bindings (*.mkb)|*.mkb||",
-    	CMainFrame::m_szKbdFile);
-    if(files.abort)	return;
+            "OpenMPT Key Bindings (*.mkb)|*.mkb||",
+            CMainFrame::m_szKbdFile);
+    if(files.abort)        return;
 
     m_sFullPathName = files.first_file.c_str();
     plocalCmdSet->LoadFile(m_sFullPathName);
@@ -652,9 +652,9 @@ void COptionsKeyboard::OnSave()
 {    
     std::string filename = m_sFullPathName;
     FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(false, "mkb", filename,
-    	"OpenMPT Key Bindings (*.mkb)|*.mkb||",
-    	CMainFrame::m_szKbdFile);
-    if(files.abort)	return;
+            "OpenMPT Key Bindings (*.mkb)|*.mkb||",
+            CMainFrame::m_szKbdFile);
+    if(files.abort)        return;
 
     m_sFullPathName = files.first_file.c_str();
     plocalCmdSet->SaveFile(m_sFullPathName, m_bDebugSave.GetCheck() != BST_UNCHECKED);
@@ -665,13 +665,13 @@ bool COptionsKeyboard::TentativeSetToDefaultFile(CString m_sFullPathName)
 {
     if (m_sFullPathName.Compare(CMainFrame::m_szKbdFile))
     {
-    	if (AfxMessageBox("Load this keyboard config file when MPT starts up?", MB_YESNO) == IDYES)
-    	{
-    		strcpy(CMainFrame::m_szKbdFile,m_sFullPathName);
-    		OnSettingsChanged();			// Enable "apply" button
-    		UpdateDialog();					
-    		return true;
-    	}
+            if (AfxMessageBox("Load this keyboard config file when MPT starts up?", MB_YESNO) == IDYES)
+            {
+                    strcpy(CMainFrame::m_szKbdFile,m_sFullPathName);
+                    OnSettingsChanged();                        // Enable "apply" button
+                    UpdateDialog();                                        
+                    return true;
+            }
     }
 
     return false;
@@ -705,11 +705,11 @@ void COptionsKeyboard::ForceUpdateGUI()
 {
     //update gui
     m_bForceUpdate=true; // m_nCurKeyChoice and m_nCurHotKey haven't changed, yet we still want to update.
-    int ntmpChoice = m_nCurKeyChoice;	  		// next call will overwrite m_nCurKeyChoice
-    OnCommandKeySelChanged();					// update keychoice list
-    m_cmbKeyChoice.SetCurSel(ntmpChoice);		// select fresh keychoice (thus restoring m_nCurKeyChoice)
-    OnKeyChoiceSelect();						// update key data
-    OnSettingsChanged();						// Enable "apply" button
+    int ntmpChoice = m_nCurKeyChoice;                          // next call will overwrite m_nCurKeyChoice
+    OnCommandKeySelChanged();                                        // update keychoice list
+    m_cmbKeyChoice.SetCurSel(ntmpChoice);                // select fresh keychoice (thus restoring m_nCurKeyChoice)
+    OnKeyChoiceSelect();                                                // update key data
+    OnSettingsChanged();                                                // Enable "apply" button
 }
 
 void COptionsKeyboard::OnClearLog()

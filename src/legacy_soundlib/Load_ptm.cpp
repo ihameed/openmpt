@@ -5,7 +5,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 //////////////////////////////////////////////
@@ -20,22 +20,22 @@
 
 typedef struct PTMFILEHEADER
 {
-    CHAR songname[28];    	// name of song, asciiz string
-    CHAR eof;    			// 26
-    uint8_t version_lo;    	// 03 version of file, currently 0203h
-    uint8_t version_hi;    	// 02
-    uint8_t reserved1;    		// reserved, set to 0
-    uint16_t norders;    		// number of orders (0..256)
-    uint16_t nsamples;    		// number of instruments (1..255)
-    uint16_t npatterns;    		// number of patterns (1..128)
-    uint16_t nchannels;    		// number of channels (voices) used (1..32)
-    uint16_t fileflags;    		// set to 0
-    uint16_t reserved2;    		// reserved, set to 0
-    uint32_t ptmf_id;    		// song identification, 'PTMF' or 0x464d5450
-    uint8_t reserved3[16];    	// reserved, set to 0
-    uint8_t chnpan[32];    	// channel panning settings, 0..15, 0 = left, 7 = middle, 15 = right
-    uint8_t orders[256];    	// order list, valid entries 0..nOrders-1
-    uint16_t patseg[128];    	// pattern offsets (*16)
+    CHAR songname[28];            // name of song, asciiz string
+    CHAR eof;                            // 26
+    uint8_t version_lo;            // 03 version of file, currently 0203h
+    uint8_t version_hi;            // 02
+    uint8_t reserved1;                    // reserved, set to 0
+    uint16_t norders;                    // number of orders (0..256)
+    uint16_t nsamples;                    // number of instruments (1..255)
+    uint16_t npatterns;                    // number of patterns (1..128)
+    uint16_t nchannels;                    // number of channels (voices) used (1..32)
+    uint16_t fileflags;                    // set to 0
+    uint16_t reserved2;                    // reserved, set to 0
+    uint32_t ptmf_id;                    // song identification, 'PTMF' or 0x464d5450
+    uint8_t reserved3[16];            // reserved, set to 0
+    uint8_t chnpan[32];            // channel panning settings, 0..15, 0 = left, 7 = middle, 15 = right
+    uint8_t orders[256];            // order list, valid entries 0..nOrders-1
+    uint16_t patseg[128];            // pattern offsets (*16)
 } PTMFILEHEADER, *LPPTMFILEHEADER;
 
 #define SIZEOF_PTMFILEHEADER    608
@@ -43,18 +43,18 @@ typedef struct PTMFILEHEADER
 
 typedef struct PTMSAMPLE
 {
-    uint8_t sampletype;    	// sample type (bit array)
-    CHAR filename[12];    	// name of external sample file
-    uint8_t volume;    		// default volume
-    uint16_t nC4Spd;    		// C4 speed
-    uint16_t sampleseg;    		// sample segment (used internally)
-    uint16_t fileofs[2];    	// offset of sample data
-    uint16_t length[2];    		// sample size (in bytes)
-    uint16_t loopbeg[2];    	// start of loop
-    uint16_t loopend[2];    	// end of loop
+    uint8_t sampletype;            // sample type (bit array)
+    CHAR filename[12];            // name of external sample file
+    uint8_t volume;                    // default volume
+    uint16_t nC4Spd;                    // C4 speed
+    uint16_t sampleseg;                    // sample segment (used internally)
+    uint16_t fileofs[2];            // offset of sample data
+    uint16_t length[2];                    // sample size (in bytes)
+    uint16_t loopbeg[2];            // start of loop
+    uint16_t loopend[2];            // end of loop
     uint16_t gusdata[8];
     char  samplename[28];    // name of sample, asciiz
-    uint32_t ptms_id;    		// sample identification, 'PTMS' or 0x534d5450
+    uint32_t ptms_id;                    // sample identification, 'PTMS' or 0x534d5450
 } PTMSAMPLE;
 
 #define SIZEOF_PTMSAMPLE    80

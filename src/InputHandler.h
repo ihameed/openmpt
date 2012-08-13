@@ -17,7 +17,7 @@
 
 //not sure why I shoved message IDs here anymore. Might want to move em. -rewbs
 enum {
-    WM_MOD_UPDATEPOSITION	=	(WM_USER+1973),
+    WM_MOD_UPDATEPOSITION        =        (WM_USER+1973),
     WM_MOD_DESTROYMODDOC,
     WM_MOD_DESTROYPATEDIT,
     WM_MOD_UPDATESOUNDBUFFER,
@@ -62,7 +62,7 @@ protected:
     CWnd *m_pMainFrm;
     int AsciiToScancode(char ch);
     KeyMap keyMap;
-    void LogModifiers(UINT mask);	
+    void LogModifiers(UINT mask);        
     UINT modifierMask;
     bool m_bBypass;
     bool m_bNoAltMenu;

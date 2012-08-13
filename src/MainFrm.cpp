@@ -35,12 +35,12 @@ using namespace modplug::pervasives;
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define MAINFRAME_REGKEY_BASE    	"Software\\Olivier Lapicque\\"
+#define MAINFRAME_REGKEY_BASE            "Software\\Olivier Lapicque\\"
 #define MAINFRAME_REGKEY_DEFAULT    "ModPlug Tracker"
-#define MAINFRAME_REGEXT_WINDOW    	"\\Window"
+#define MAINFRAME_REGEXT_WINDOW            "\\Window"
 #define MAINFRAME_REGEXT_SETTINGS    "\\Settings"
 
-#define MPTTIMER_PERIOD    	200
+#define MPTTIMER_PERIOD            200
 
 extern UINT gnMidiImportSpeed;
 extern UINT gnMidiPatternLen;
@@ -56,35 +56,35 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_WM_CLOSE()
     ON_WM_CREATE()
     ON_WM_RBUTTONDOWN()
-    ON_COMMAND(ID_VIEW_OPTIONS,    			OnViewOptions)
+    ON_COMMAND(ID_VIEW_OPTIONS,                            OnViewOptions)
     ON_COMMAND(ID_VIEW_SOOPERSETUP,         display_config_editor)
 
 // -> CODE#0002
 // -> DESC="list box to choose VST plugin presets (programs)"
-    ON_COMMAND(ID_PLUGIN_SETUP,    			OnPluginManager)
+    ON_COMMAND(ID_PLUGIN_SETUP,                            OnPluginManager)
 // -! NEW_FEATURE#0002
 
 // -> CODE#0015
 // -> DESC="channels management dlg"
-    ON_COMMAND(ID_CHANNEL_MANAGER,    		OnChannelManager)
+    ON_COMMAND(ID_CHANNEL_MANAGER,                    OnChannelManager)
 // -! NEW_FEATURE#0015
-    ON_COMMAND(ID_VIEW_MIDIMAPPING,    		OnViewMIDIMapping)
-    //ON_COMMAND(ID_HELP,    				CMDIFrameWnd::OnHelp)
-    ON_COMMAND(ID_VIEW_SONGPROPERTIES,    	OnSongProperties)
-    ON_COMMAND(ID_HELP_FINDER,    			CMDIFrameWnd::OnHelpFinder)
-    ON_COMMAND(ID_REPORT_BUG,    			OnReportBug)	//rewbs.reportBug
-    ON_COMMAND(ID_CONTEXT_HELP,    			CMDIFrameWnd::OnContextHelp)
-    ON_COMMAND(ID_DEFAULT_HELP,    			CMDIFrameWnd::OnHelpFinder)
-    ON_COMMAND(ID_NEXTOCTAVE,    			OnNextOctave)
-    ON_COMMAND(ID_PREVOCTAVE,    			OnPrevOctave)
-    ON_COMMAND(ID_ADD_SOUNDBANK,    		OnAddDlsBank)
-    ON_COMMAND(ID_IMPORT_MIDILIB,    		OnImportMidiLib)
-    ON_COMMAND(ID_MIDI_RECORD,    			OnMidiRecord)
-    ON_COMMAND(ID_PANIC,    				OnPanic)
-    ON_COMMAND(ID_PLAYER_PAUSE,    			OnPlayerPause)
-    ON_COMMAND_EX(IDD_TREEVIEW,    			OnBarCheck)
-    ON_COMMAND_EX(ID_NETLINK_MODPLUG,    	OnInternetLink)
-    ON_COMMAND_EX(ID_NETLINK_TOP_PICKS,    	OnInternetLink)
+    ON_COMMAND(ID_VIEW_MIDIMAPPING,                    OnViewMIDIMapping)
+    //ON_COMMAND(ID_HELP,                                    CMDIFrameWnd::OnHelp)
+    ON_COMMAND(ID_VIEW_SONGPROPERTIES,            OnSongProperties)
+    ON_COMMAND(ID_HELP_FINDER,                            CMDIFrameWnd::OnHelpFinder)
+    ON_COMMAND(ID_REPORT_BUG,                            OnReportBug)        //rewbs.reportBug
+    ON_COMMAND(ID_CONTEXT_HELP,                            CMDIFrameWnd::OnContextHelp)
+    ON_COMMAND(ID_DEFAULT_HELP,                            CMDIFrameWnd::OnHelpFinder)
+    ON_COMMAND(ID_NEXTOCTAVE,                            OnNextOctave)
+    ON_COMMAND(ID_PREVOCTAVE,                            OnPrevOctave)
+    ON_COMMAND(ID_ADD_SOUNDBANK,                    OnAddDlsBank)
+    ON_COMMAND(ID_IMPORT_MIDILIB,                    OnImportMidiLib)
+    ON_COMMAND(ID_MIDI_RECORD,                            OnMidiRecord)
+    ON_COMMAND(ID_PANIC,                                    OnPanic)
+    ON_COMMAND(ID_PLAYER_PAUSE,                            OnPlayerPause)
+    ON_COMMAND_EX(IDD_TREEVIEW,                            OnBarCheck)
+    ON_COMMAND_EX(ID_NETLINK_MODPLUG,            OnInternetLink)
+    ON_COMMAND_EX(ID_NETLINK_TOP_PICKS,            OnInternetLink)
     ON_CBN_SELCHANGE(IDC_COMBO_BASEOCTAVE,    OnOctaveChanged)
     ON_UPDATE_COMMAND_UI(ID_MIDI_RECORD,    OnUpdateMidiRecord)
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_TIME,    OnUpdateTime)
@@ -92,10 +92,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_INFO,    OnUpdateInfo)
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_XINFO,OnUpdateXInfo) //rewbs.xinfo
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_CPU,  OnUpdateCPU)
-    ON_UPDATE_COMMAND_UI(IDD_TREEVIEW,    	OnUpdateControlBarMenu)
-    ON_MESSAGE(WM_MOD_UPDATEPOSITION,    	OnUpdatePosition)
+    ON_UPDATE_COMMAND_UI(IDD_TREEVIEW,            OnUpdateControlBarMenu)
+    ON_MESSAGE(WM_MOD_UPDATEPOSITION,            OnUpdatePosition)
     ON_MESSAGE(WM_MOD_INVALIDATEPATTERNS,    OnInvalidatePatterns)
-    ON_MESSAGE(WM_MOD_SPECIALKEY,    		OnSpecialKey)
+    ON_MESSAGE(WM_MOD_SPECIALKEY,                    OnSpecialKey)
     ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg) //rewbs.customKeys
     //}}AFX_MSG_MAP
     ON_WM_INITMENU()
@@ -239,7 +239,7 @@ COLORREF CMainFrame::rgbCustomColors[MAX_MODCOLORS] =
 // Directory Arrays (Default + Last)
 TCHAR CMainFrame::m_szDefaultDirectory[NUM_DIRS][_MAX_PATH] = {0};
 TCHAR CMainFrame::m_szWorkingDirectory[NUM_DIRS][_MAX_PATH] = {0};
-TCHAR CMainFrame::m_szKbdFile[_MAX_PATH] = "";    		//rewbs.customKeys
+TCHAR CMainFrame::m_szKbdFile[_MAX_PATH] = "";                    //rewbs.customKeys
 // Directory to INI setting translation
 const TCHAR CMainFrame::m_szDirectoryToSettingsName[NUM_DIRS][32] =
 {
@@ -253,7 +253,7 @@ CPerformanceCounter *CMainFrame::m_pPerfCounter = nullptr;
 static UINT indicators[] =
 {
     ID_SEPARATOR,           // status line indicator
-    ID_INDICATOR_XINFO,    	//rewbs.xinfo
+    ID_INDICATOR_XINFO,            //rewbs.xinfo
     ID_INDICATOR_INFO,
     ID_INDICATOR_USER,
     ID_INDICATOR_TIME,
@@ -437,7 +437,7 @@ void CMainFrame::LoadIniSettings()
     if(vIniVersion < MAKE_VERSION_NUMERIC(1,17,03,01))
         m_dwPatternSetup |= PATTERN_RESETCHANNELS;
     if(vIniVersion < MAKE_VERSION_NUMERIC(1,19,00,07))
-        m_dwPatternSetup &= ~0x800;    				// this was previously deprecated and is now used for something else
+        m_dwPatternSetup &= ~0x800;                                    // this was previously deprecated and is now used for something else
     if(vIniVersion < MptVersion::num)
         m_dwPatternSetup &= ~(0x200000|0x400000|0x10000000);    // various deprecated old options
 
@@ -2259,11 +2259,11 @@ BOOL CMainFrame::OnInternetLink(UINT nID)
     case ID_NETLINK_TOP_PICKS:    pszURL = "http://openmpt.org/top_picks"; break;
     /*
     case ID_NETLINK_OPENMPTWIKI:pszURL = "http://wiki.openmpt.org/"; break;
-//    case ID_NETLINK_UT:			pszURL = "http://www.united-trackers.org"; break;
-//    case ID_NETLINK_OSMUSIC:	pszURL = "http://www.osmusic.net/"; break;
-//    case ID_NETLINK_HANDBOOK:	pszURL = "http://www.modplug.com/mods/handbook/handbook.htm"; break;
-    case ID_NETLINK_MPTFR:    	pszURL = "http://mpt.new.fr/"; break;
-    case ID_NETLINK_FORUMS:    	pszURL = "http://forum.openmpt.org/"; break;
+//    case ID_NETLINK_UT:                        pszURL = "http://www.united-trackers.org"; break;
+//    case ID_NETLINK_OSMUSIC:        pszURL = "http://www.osmusic.net/"; break;
+//    case ID_NETLINK_HANDBOOK:        pszURL = "http://www.modplug.com/mods/handbook/handbook.htm"; break;
+    case ID_NETLINK_MPTFR:            pszURL = "http://mpt.new.fr/"; break;
+    case ID_NETLINK_FORUMS:            pszURL = "http://forum.openmpt.org/"; break;
     case ID_NETLINK_PLUGINS:    pszURL = "http://www.kvraudio.com/"; break;
     case ID_NETLINK_MODARCHIVE: pszURL = "http://modarchive.org/"; break;
     case ID_NETLINK_OPENMPTWIKI_GERMAN: pszURL = "http://wikide.openmpt.org/Hauptseite"; break;
@@ -2324,10 +2324,10 @@ LRESULT CMainFrame::OnCustomKeyMsg(WPARAM wParam, LPARAM lParam)
         case kcPauseSong:    OnPlayerPause(); break;
         case kcPrevOctave:    OnPrevOctave(); break;
         case kcNextOctave:    OnNextOctave(); break;
-        case kcFileNew:    	theApp.OnFileNew(); break;
+        case kcFileNew:            theApp.OnFileNew(); break;
         case kcFileOpen:    theApp.OnFileOpen(); break;
         case kcMidiRecord:    OnMidiRecord(); break;
-        case kcHelp:     	CMDIFrameWnd::OnHelp(); break;
+        case kcHelp:             CMDIFrameWnd::OnHelp(); break;
         case kcViewAddPlugin: OnPluginManager(); break;
         case kcViewChannelManager: OnChannelManager(); break;
         case kcViewMIDImapping: OnViewMIDIMapping(); break;
@@ -2692,7 +2692,7 @@ void CMainFrame::RelativePathToAbsolute(TCHAR (&szPath)[nLength])
         _tcsncpy(szTempPath, szExePath, nStrLength);    // "C:\OpenMPT\"
         if(_tcslen(szTempPath) < nStrLength)
         {
-            _tcsncat(szTempPath, &szPath[2], nStrLength - _tcslen(szTempPath));    //	"Somepath"
+            _tcsncat(szTempPath, &szPath[2], nStrLength - _tcslen(szTempPath));    //        "Somepath"
         }
         _tcscpy(szPath, szTempPath);
     }

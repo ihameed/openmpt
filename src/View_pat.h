@@ -9,31 +9,31 @@ class CPatternRandomizer;
 class COpenGLEditor;
 
 // Drag & Drop info
-#define DRAGITEM_VALUEMASK    	0x00FFFF
-#define DRAGITEM_MASK    		0xFF0000
-#define DRAGITEM_CHNHEADER    	0x010000
+#define DRAGITEM_VALUEMASK            0x00FFFF
+#define DRAGITEM_MASK                    0xFF0000
+#define DRAGITEM_CHNHEADER            0x010000
 #define DRAGITEM_PATTERNHEADER    0x020000
-#define DRAGITEM_PLUGNAME    	0x040000	//rewbs.patPlugName
+#define DRAGITEM_PLUGNAME            0x040000        //rewbs.patPlugName
 
-#define PATSTATUS_MOUSEDRAGSEL    		0x01	// Creating a selection using the mouse
-#define PATSTATUS_KEYDRAGSEL    		0x02	// Creating a selection using shortcuts
-#define PATSTATUS_FOCUS    				0x04	// Is the pattern editor focussed
-#define PATSTATUS_FOLLOWSONG    		0x08	// Does the cursor follow playback
-#define PATSTATUS_RECORD    			0x10	// Recording enabled
-#define PATSTATUS_DRAGHSCROLL    		0x20	// Some weird dragging stuff (?)
-#define PATSTATUS_DRAGVSCROLL    		0x40	// Some weird dragging stuff (?)
-#define PATSTATUS_VUMETERS    			0x80	// Display channel VU meters?
-#define PATSTATUS_CHORDPLAYING    		0x100	// Is a chord playing? (pretty much unused)
-#define PATSTATUS_DRAGNDROPEDIT    		0x200	// Drag & Drop editing (?)
-#define PATSTATUS_DRAGNDROPPING    		0x400	// Dragging a selection around
-#define PATSTATUS_MIDISPACINGPENDING    0x800	// Unused (?)
-#define PATSTATUS_CTRLDRAGSEL    		0x1000	// Creating a selection using Ctrl
-#define PATSTATUS_PLUGNAMESINHEADERS    0x2000	// Show plugin names in channel headers //rewbs.patPlugName
-#define PATSTATUS_SELECTROW    			0x4000	// Selecting a whole pattern row by clicking the row numbers
+#define PATSTATUS_MOUSEDRAGSEL                    0x01        // Creating a selection using the mouse
+#define PATSTATUS_KEYDRAGSEL                    0x02        // Creating a selection using shortcuts
+#define PATSTATUS_FOCUS                                    0x04        // Is the pattern editor focussed
+#define PATSTATUS_FOLLOWSONG                    0x08        // Does the cursor follow playback
+#define PATSTATUS_RECORD                            0x10        // Recording enabled
+#define PATSTATUS_DRAGHSCROLL                    0x20        // Some weird dragging stuff (?)
+#define PATSTATUS_DRAGVSCROLL                    0x40        // Some weird dragging stuff (?)
+#define PATSTATUS_VUMETERS                            0x80        // Display channel VU meters?
+#define PATSTATUS_CHORDPLAYING                    0x100        // Is a chord playing? (pretty much unused)
+#define PATSTATUS_DRAGNDROPEDIT                    0x200        // Drag & Drop editing (?)
+#define PATSTATUS_DRAGNDROPPING                    0x400        // Dragging a selection around
+#define PATSTATUS_MIDISPACINGPENDING    0x800        // Unused (?)
+#define PATSTATUS_CTRLDRAGSEL                    0x1000        // Creating a selection using Ctrl
+#define PATSTATUS_PLUGNAMESINHEADERS    0x2000        // Show plugin names in channel headers //rewbs.patPlugName
+#define PATSTATUS_SELECTROW                            0x4000        // Selecting a whole pattern row by clicking the row numbers
 
 
 // Row Spacing
-#define MAX_SPACING    	64 // MAX_PATTERN_ROWS
+#define MAX_SPACING            64 // MAX_PATTERN_ROWS
 
 
 // Selection - bit masks
@@ -79,11 +79,11 @@ struct ModCommandPos
 // Find/Replace data
 struct FindReplaceStruct
 {
-    modplug::tracker::modevent_t cmdFind, cmdReplace;    		// Find/replace notes/instruments/effects
-    uint32_t dwFindFlags, dwReplaceFlags;    	// PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
+    modplug::tracker::modevent_t cmdFind, cmdReplace;                    // Find/replace notes/instruments/effects
+    uint32_t dwFindFlags, dwReplaceFlags;            // PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
     CHANNELINDEX nFindMinChn, nFindMaxChn;    // Find in these channels (if PATSEARCH_CHANNEL is set)
-    signed char cInstrRelChange;    		// relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
-    uint32_t dwBeginSel, dwEndSel;    			// Find in this selection (if PATSEARCH_PATSELECTION is set)
+    signed char cInstrRelChange;                    // relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
+    uint32_t dwBeginSel, dwEndSel;                            // Find in this selection (if PATSEARCH_PATSELECTION is set)
 };
 
 
@@ -112,7 +112,7 @@ protected:
 
     bool m_bContinueSearch, m_bWholePatternFitsOnScreen;
     uint32_t m_dwStatus, m_dwCursor;
-    uint32_t m_dwBeginSel, m_dwEndSel;    	// Upper-left / Lower-right corners of selection
+    uint32_t m_dwBeginSel, m_dwEndSel;            // Upper-left / Lower-right corners of selection
     uint32_t m_dwStartSel, m_dwDragPos;    // Point where selection was started
     uint16_t ChnVUMeters[MAX_BASECHANNELS];
     uint16_t OldVUMeters[MAX_BASECHANNELS];
@@ -123,7 +123,7 @@ protected:
     UINT m_nLastPlayedChannel; //rewbs.customkeys
     bool m_bLastNoteEntryBlocked;
 
-    static modplug::tracker::modevent_t m_cmdOld;    			// Quick cursor copy/paste data
+    static modplug::tracker::modevent_t m_cmdOld;                            // Quick cursor copy/paste data
     static FindReplaceStruct m_findReplace;    // Find/replace data
 
 // -> CODE#0012
@@ -306,7 +306,7 @@ protected:
     afx_msg void OnInterpolateVolume();
     afx_msg void OnInterpolateEffect();
     afx_msg void OnInterpolateNote();
-    afx_msg void OnVisualizeEffect();    	//rewbs.fxvis
+    afx_msg void OnVisualizeEffect();            //rewbs.fxvis
     afx_msg void OnTransposeUp();
     afx_msg void OnTransposeDown();
     afx_msg void OnTransposeOctUp();

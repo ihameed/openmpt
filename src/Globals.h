@@ -11,14 +11,14 @@
 
 
 #ifndef WM_HELPHITTEST
-#define WM_HELPHITTEST    	0x366
+#define WM_HELPHITTEST            0x366
 #endif
 
 #ifndef HID_BASE_COMMAND
 #define HID_BASE_COMMAND    0x10000
 #endif
 
-#define ID_EDIT_MIXPASTE ID_EDIT_PASTE_SPECIAL    	//rewbs.mixPaste
+#define ID_EDIT_MIXPASTE ID_EDIT_PASTE_SPECIAL            //rewbs.mixPaste
 
 class CModControlView;
 class CModControlBar;
@@ -71,21 +71,21 @@ public:
     void LockControls() { m_nLockCount++; }
     void UnlockControls() { PostMessage(WM_MOD_UNLOCKCONTROLS); }
     BOOL IsLocked() const { return (m_nLockCount > 0); }
-    virtual LONG* GetSplitPosRef() = 0; 	//rewbs.varWindowSize
+    virtual LONG* GetSplitPosRef() = 0;         //rewbs.varWindowSize
 
 protected:
     //{{AFX_VIRTUAL(CModControlDlg)
     public:
 
-    afx_msg void OnEditCut() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_CUT, 0); }			//rewbs.customKeys
-    afx_msg void OnEditCopy() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_COPY, 0); }		//rewbs.customKeys
-    afx_msg void OnEditPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_PASTE, 0); }		//rewbs.customKeys
-    afx_msg void OnEditMixPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_MIXPASTE, 0); }		//rewbs.mixPaste
+    afx_msg void OnEditCut() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_CUT, 0); }                        //rewbs.customKeys
+    afx_msg void OnEditCopy() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_COPY, 0); }                //rewbs.customKeys
+    afx_msg void OnEditPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_PASTE, 0); }                //rewbs.customKeys
+    afx_msg void OnEditMixPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_MIXPASTE, 0); }                //rewbs.mixPaste
     afx_msg void OnEditMixPasteITStyle() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_MIXPASTE_ITSTYLE, 0); }
     afx_msg void OnEditPasteFlood() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_PASTEFLOOD, 0); }
     afx_msg void OnEditPushForwardPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_PUSHFORWARDPASTE, 0); }
-    afx_msg void OnEditFind() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_FIND, 0); }		//rewbs.customKeys
-    afx_msg void OnEditFindNext() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_FINDNEXT, 0); }	  //rewbs.customKeys
+    afx_msg void OnEditFind() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_FIND, 0); }                //rewbs.customKeys
+    afx_msg void OnEditFindNext() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_FINDNEXT, 0); }          //rewbs.customKeys
     afx_msg void OnSwitchToView() { if (m_hWndView) ::PostMessage(m_hWndView, WM_MOD_VIEWMSG, VIEWMSG_SETFOCUS, 0); } //rewbs.customKeys
 
     virtual void OnOK() {}
@@ -128,7 +128,7 @@ class CModControlView: public CView
 //=================================
 {
 protected:
-    enum { MAX_PAGES=6 };		//rewbs.graph: 5 to 6
+    enum { MAX_PAGES=6 };                //rewbs.graph: 5 to 6
 
 protected:
     CModTabCtrl m_TabCtrl;
@@ -172,7 +172,7 @@ protected:
     afx_msg void OnEditCut() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_CUT, 0); }
     afx_msg void OnEditCopy() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_COPY, 0); }
     afx_msg void OnEditPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_PASTE, 0); }
-    afx_msg void OnEditMixPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_MIXPASTE, 0); }		//rewbs.mixPaste
+    afx_msg void OnEditMixPaste() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_MIXPASTE, 0); }                //rewbs.mixPaste
     afx_msg void OnEditMixPasteITStyle() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_MIXPASTE_ITSTYLE, 0); }
     afx_msg void OnEditFind() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_FIND, 0); }
     afx_msg void OnEditFindNext() { if (m_hWndView) ::SendMessage(m_hWndView, WM_COMMAND, ID_EDIT_FINDNEXT, 0); }
@@ -185,10 +185,10 @@ protected:
 };
 
 // Non-client button attributes
-#define NCBTNS_MOUSEOVER    	0x01
-#define NCBTNS_CHECKED    		0x02
-#define NCBTNS_DISABLED    		0x04
-#define NCBTNS_PUSHED    		0x08
+#define NCBTNS_MOUSEOVER            0x01
+#define NCBTNS_CHECKED                    0x02
+#define NCBTNS_DISABLED                    0x04
+#define NCBTNS_PUSHED                    0x08
 
 
 //======================================

@@ -17,47 +17,47 @@ BEGIN_MESSAGE_MAP(CCtrlPatterns, CModControlDlg)
     //{{AFX_MSG_MAP(CCtrlPatterns)
     ON_WM_KEYDOWN()
     ON_WM_VSCROLL()
-    ON_COMMAND(IDC_BUTTON1,					OnSequenceNext)
-    ON_COMMAND(IDC_BUTTON2,					OnSequencePrev)
-    ON_COMMAND(ID_PLAYER_PAUSE,				OnPlayerPause)
-    ON_COMMAND(IDC_PATTERN_NEW,				OnPatternNew)
-    ON_COMMAND(IDC_PATTERN_STOP,			OnPatternStop)
-    ON_COMMAND(IDC_PATTERN_PLAY,			OnPatternPlay)
-    ON_COMMAND(IDC_PATTERN_PLAYFROMSTART,	OnPatternPlayFromStart)
-    ON_COMMAND(IDC_PATTERN_RECORD,			OnPatternRecord)
-    ON_COMMAND(IDC_PATTERN_LOOP,			OnChangeLoopStatus)
-    ON_COMMAND(ID_PATTERN_PLAYROW,			OnPatternPlayRow)
+    ON_COMMAND(IDC_BUTTON1,                                        OnSequenceNext)
+    ON_COMMAND(IDC_BUTTON2,                                        OnSequencePrev)
+    ON_COMMAND(ID_PLAYER_PAUSE,                                OnPlayerPause)
+    ON_COMMAND(IDC_PATTERN_NEW,                                OnPatternNew)
+    ON_COMMAND(IDC_PATTERN_STOP,                        OnPatternStop)
+    ON_COMMAND(IDC_PATTERN_PLAY,                        OnPatternPlay)
+    ON_COMMAND(IDC_PATTERN_PLAYFROMSTART,        OnPatternPlayFromStart)
+    ON_COMMAND(IDC_PATTERN_RECORD,                        OnPatternRecord)
+    ON_COMMAND(IDC_PATTERN_LOOP,                        OnChangeLoopStatus)
+    ON_COMMAND(ID_PATTERN_PLAYROW,                        OnPatternPlayRow)
 // -> CODE#0015
 // -> DESC="channels management dlg"
-    ON_COMMAND(ID_PATTERN_CHANNELMANAGER,	OnChannelManager)
+    ON_COMMAND(ID_PATTERN_CHANNELMANAGER,        OnChannelManager)
 // -! NEW_FEATURE#0015
-    ON_COMMAND(ID_PATTERN_VUMETERS,			OnPatternVUMeters)
-    ON_COMMAND(ID_VIEWPLUGNAMES,			OnPatternViewPlugNames)	//rewbs.patPlugNames
-    ON_COMMAND(ID_NEXTINSTRUMENT,			OnNextInstrument)
-    ON_COMMAND(ID_PREVINSTRUMENT,			OnPrevInstrument)
-    ON_COMMAND(ID_CONTROLTAB,				OnSwitchToView)
-    ON_COMMAND(IDC_PATTERN_FOLLOWSONG,		OnFollowSong)
-    ON_COMMAND(ID_PATTERN_MIDIMACRO,		OnSetupZxxMacros)
-    ON_COMMAND(ID_PATTERN_CHORDEDIT,		OnChordEditor)
-    ON_COMMAND(ID_PATTERN_PROPERTIES,		OnPatternProperties)
-    ON_COMMAND(ID_PATTERN_EXPAND,			OnPatternExpand)
-    ON_COMMAND(ID_PATTERN_SHRINK,			OnPatternShrink)
-    ON_COMMAND(ID_PATTERN_AMPLIFY,			OnPatternAmplify)
-    ON_COMMAND(ID_ORDERLIST_NEW,			OnPatternNew)
-    ON_COMMAND(ID_ORDERLIST_COPY,			OnPatternDuplicate)
-    ON_COMMAND(ID_PATTERNCOPY,				OnPatternCopy)
-    ON_COMMAND(ID_PATTERNPASTE,				OnPatternPaste)
-    ON_COMMAND(ID_EDIT_UNDO,				OnEditUndo)
-    ON_COMMAND(ID_PATTERNDETAIL_LO,			OnDetailLo)
-    ON_COMMAND(ID_PATTERNDETAIL_MED,		OnDetailMed)
-    ON_COMMAND(ID_PATTERNDETAIL_HI,			OnDetailHi)
-    ON_COMMAND(ID_OVERFLOWPASTE,			OnToggleOverflowPaste)
-    ON_CBN_SELCHANGE(IDC_COMBO_INSTRUMENT,	OnInstrumentChanged)
-    ON_COMMAND(IDC_PATINSTROPLUGGUI,		TogglePluginEditor) //rewbs.instroVST
-    ON_EN_CHANGE(IDC_EDIT_SPACING,			OnSpacingChanged)
-    ON_EN_CHANGE(IDC_EDIT_PATTERNNAME,		OnPatternNameChanged)
-    ON_EN_CHANGE(IDC_EDIT_SEQUENCE_NAME,	OnSequenceNameChanged)
-    ON_EN_CHANGE(IDC_EDIT_SEQNUM,			OnSequenceNumChanged)
+    ON_COMMAND(ID_PATTERN_VUMETERS,                        OnPatternVUMeters)
+    ON_COMMAND(ID_VIEWPLUGNAMES,                        OnPatternViewPlugNames)        //rewbs.patPlugNames
+    ON_COMMAND(ID_NEXTINSTRUMENT,                        OnNextInstrument)
+    ON_COMMAND(ID_PREVINSTRUMENT,                        OnPrevInstrument)
+    ON_COMMAND(ID_CONTROLTAB,                                OnSwitchToView)
+    ON_COMMAND(IDC_PATTERN_FOLLOWSONG,                OnFollowSong)
+    ON_COMMAND(ID_PATTERN_MIDIMACRO,                OnSetupZxxMacros)
+    ON_COMMAND(ID_PATTERN_CHORDEDIT,                OnChordEditor)
+    ON_COMMAND(ID_PATTERN_PROPERTIES,                OnPatternProperties)
+    ON_COMMAND(ID_PATTERN_EXPAND,                        OnPatternExpand)
+    ON_COMMAND(ID_PATTERN_SHRINK,                        OnPatternShrink)
+    ON_COMMAND(ID_PATTERN_AMPLIFY,                        OnPatternAmplify)
+    ON_COMMAND(ID_ORDERLIST_NEW,                        OnPatternNew)
+    ON_COMMAND(ID_ORDERLIST_COPY,                        OnPatternDuplicate)
+    ON_COMMAND(ID_PATTERNCOPY,                                OnPatternCopy)
+    ON_COMMAND(ID_PATTERNPASTE,                                OnPatternPaste)
+    ON_COMMAND(ID_EDIT_UNDO,                                OnEditUndo)
+    ON_COMMAND(ID_PATTERNDETAIL_LO,                        OnDetailLo)
+    ON_COMMAND(ID_PATTERNDETAIL_MED,                OnDetailMed)
+    ON_COMMAND(ID_PATTERNDETAIL_HI,                        OnDetailHi)
+    ON_COMMAND(ID_OVERFLOWPASTE,                        OnToggleOverflowPaste)
+    ON_CBN_SELCHANGE(IDC_COMBO_INSTRUMENT,        OnInstrumentChanged)
+    ON_COMMAND(IDC_PATINSTROPLUGGUI,                TogglePluginEditor) //rewbs.instroVST
+    ON_EN_CHANGE(IDC_EDIT_SPACING,                        OnSpacingChanged)
+    ON_EN_CHANGE(IDC_EDIT_PATTERNNAME,                OnPatternNameChanged)
+    ON_EN_CHANGE(IDC_EDIT_SEQUENCE_NAME,        OnSequenceNameChanged)
+    ON_EN_CHANGE(IDC_EDIT_SEQNUM,                        OnSequenceNumChanged)
     ON_EN_KILLFOCUS(IDC_EDIT_ORDERLIST_MARGINS, OnOrderListMarginsChanged)
     ON_UPDATE_COMMAND_UI(IDC_PATTERN_RECORD,OnUpdateRecord)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipText)
@@ -70,18 +70,18 @@ void CCtrlPatterns::DoDataExchange(CDataExchange* pDX)
 {
     CModControlDlg::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CCtrlPatterns)
-    DDX_Control(pDX, IDC_BUTTON1,				m_BtnNext);
-    DDX_Control(pDX, IDC_BUTTON2,				m_BtnPrev);
-    DDX_Control(pDX, IDC_COMBO_INSTRUMENT,		m_CbnInstrument);
-    DDX_Control(pDX, IDC_EDIT_SPACING,			m_EditSpacing);
+    DDX_Control(pDX, IDC_BUTTON1,                                m_BtnNext);
+    DDX_Control(pDX, IDC_BUTTON2,                                m_BtnPrev);
+    DDX_Control(pDX, IDC_COMBO_INSTRUMENT,                m_CbnInstrument);
+    DDX_Control(pDX, IDC_EDIT_SPACING,                        m_EditSpacing);
     DDX_Control(pDX, IDC_EDIT_ORDERLIST_MARGINS,m_EditOrderListMargins);
-    DDX_Control(pDX, IDC_EDIT_PATTERNNAME,		m_EditPatName);
-    DDX_Control(pDX, IDC_EDIT_SEQNUM,			m_EditSequence);
-    DDX_Control(pDX, IDC_SPIN_SPACING,			m_SpinSpacing);
+    DDX_Control(pDX, IDC_EDIT_PATTERNNAME,                m_EditPatName);
+    DDX_Control(pDX, IDC_EDIT_SEQNUM,                        m_EditSequence);
+    DDX_Control(pDX, IDC_SPIN_SPACING,                        m_SpinSpacing);
     DDX_Control(pDX, IDC_SPIN_ORDERLIST_MARGINS,m_SpinOrderListMargins);
-    DDX_Control(pDX, IDC_SPIN_INSTRUMENT,		m_SpinInstrument);
-    DDX_Control(pDX, IDC_SPIN_SEQNUM,			m_SpinSequence);
-    DDX_Control(pDX, IDC_TOOLBAR1,				m_ToolBar);
+    DDX_Control(pDX, IDC_SPIN_INSTRUMENT,                m_SpinInstrument);
+    DDX_Control(pDX, IDC_SPIN_SEQNUM,                        m_SpinSequence);
+    DDX_Control(pDX, IDC_TOOLBAR1,                                m_ToolBar);
     //}}AFX_DATA_MAP
 }
 
@@ -92,7 +92,7 @@ CCtrlPatterns::CCtrlPatterns()
     m_nInstrument = 0;
 
     m_bVUMeters = CMainFrame::gbPatternVUMeters;
-    m_bPluginNames = CMainFrame::gbPatternPluginNames;	 	//rewbs.patPlugNames
+    m_bPluginNames = CMainFrame::gbPatternPluginNames;                 //rewbs.patPlugNames
     m_bRecord = CMainFrame::gbPatternRecord;
     m_nDetailLevel = 4;
 }
@@ -137,7 +137,7 @@ BOOL CCtrlPatterns::OnInitDialog()
     m_ToolBar.AddButton(ID_PATTERN_PROPERTIES, TIMAGE_PATTERN_PROPERTIES);
     m_ToolBar.AddButton(ID_PATTERN_EXPAND, TIMAGE_PATTERN_EXPAND);
     m_ToolBar.AddButton(ID_PATTERN_SHRINK, TIMAGE_PATTERN_SHRINK);
-    //	m_ToolBar.AddButton(ID_PATTERN_AMPLIFY, TIMAGE_SAMPLE_AMPLIFY);
+    //        m_ToolBar.AddButton(ID_PATTERN_AMPLIFY, TIMAGE_SAMPLE_AMPLIFY);
     m_ToolBar.AddButton(ID_SEPARATOR, 0, TBSTYLE_SEP);
     m_ToolBar.AddButton(ID_PATTERNDETAIL_LO, TIMAGE_PATTERN_DETAIL_LO, TBSTYLE_CHECK, TBSTATE_ENABLED);
     m_ToolBar.AddButton(ID_PATTERNDETAIL_MED, TIMAGE_PATTERN_DETAIL_MED, TBSTYLE_CHECK, TBSTATE_ENABLED);
@@ -161,20 +161,20 @@ BOOL CCtrlPatterns::OnInitDialog()
 
     if(CMainFrame::gbShowHackControls == true)
     {
-    	m_SpinOrderListMargins.ShowWindow(SW_SHOW);
-    	m_EditOrderListMargins.ShowWindow(SW_SHOW);
-    	m_SpinOrderListMargins.SetRange(0, m_OrderList.GetMarginsMax());
-    	m_SpinOrderListMargins.SetPos(m_OrderList.GetMargins());
+            m_SpinOrderListMargins.ShowWindow(SW_SHOW);
+            m_EditOrderListMargins.ShowWindow(SW_SHOW);
+            m_SpinOrderListMargins.SetRange(0, m_OrderList.GetMarginsMax());
+            m_SpinOrderListMargins.SetPos(m_OrderList.GetMargins());
     }
     else
     {
-    	m_SpinOrderListMargins.ShowWindow(SW_HIDE);
-    	m_EditOrderListMargins.ShowWindow(SW_HIDE);
+            m_SpinOrderListMargins.ShowWindow(SW_HIDE);
+            m_EditOrderListMargins.ShowWindow(SW_HIDE);
     }
 
     SetDlgItemInt(IDC_EDIT_SPACING, CMainFrame::gnPatternSpacing);
     SetDlgItemInt(IDC_EDIT_ORDERLIST_MARGINS, m_OrderList.GetMargins());
-    CheckDlgButton(IDC_PATTERN_FOLLOWSONG, !(CMainFrame::m_dwPatternSetup & PATTERN_FOLLOWSONGOFF));		//rewbs.noFollow - set to unchecked
+    CheckDlgButton(IDC_PATTERN_FOLLOWSONG, !(CMainFrame::m_dwPatternSetup & PATTERN_FOLLOWSONGOFF));                //rewbs.noFollow - set to unchecked
 
     m_SpinSequence.SetRange(0, m_pSndFile->Order.GetNumSequences() - 1);
     m_SpinSequence.SetPos(m_pSndFile->Order.GetCurrentSequenceIndex());
@@ -198,25 +198,25 @@ void CCtrlPatterns::RecalcLayout()
     // Update Order List Position
     if (m_OrderList.m_hWnd)
     {
-    	CRect rect;
-    	int cx, cy, cellcx;
+            CRect rect;
+            int cx, cy, cellcx;
 
-    	m_BtnNext.GetWindowRect(&rect);
-    	ScreenToClient(&rect);
-    	cx = - (rect.right + 4);
-    	cy = rect.bottom - rect.top + GetSystemMetrics(SM_CYHSCROLL);
-    	GetClientRect(&rect);
-    	cx += rect.right - 8;
-    	cellcx = m_OrderList.GetFontWidth();
-    	if (cellcx > 0) cx -= (cx % cellcx);
-    	cx += 2;
-    	if ((cx > 0) && (cy > 0))
-    	{
-    		m_OrderList.SetWindowPos(NULL, 0,0, cx, cy, SWP_NOMOVE|SWP_NOZORDER|SWP_DRAWFRAME);
-    	}
-    	SetDlgItemInt(IDC_EDIT_ORDERLIST_MARGINS, m_OrderList.GetMargins());
-    	m_SpinOrderListMargins.SetRange(0, m_OrderList.GetMarginsMax());
-    	m_SpinOrderListMargins.SetPos(m_OrderList.GetMargins());
+            m_BtnNext.GetWindowRect(&rect);
+            ScreenToClient(&rect);
+            cx = - (rect.right + 4);
+            cy = rect.bottom - rect.top + GetSystemMetrics(SM_CYHSCROLL);
+            GetClientRect(&rect);
+            cx += rect.right - 8;
+            cellcx = m_OrderList.GetFontWidth();
+            if (cellcx > 0) cx -= (cx % cellcx);
+            cx += 2;
+            if ((cx > 0) && (cy > 0))
+            {
+                    m_OrderList.SetWindowPos(NULL, 0,0, cx, cy, SWP_NOMOVE|SWP_NOZORDER|SWP_DRAWFRAME);
+            }
+            SetDlgItemInt(IDC_EDIT_ORDERLIST_MARGINS, m_OrderList.GetMargins());
+            m_SpinOrderListMargins.SetRange(0, m_OrderList.GetMarginsMax());
+            m_SpinOrderListMargins.SetPos(m_OrderList.GetMargins());
     }
 }
 
@@ -230,117 +230,117 @@ void CCtrlPatterns::UpdateView(uint32_t dwHintMask, CObject *pObj)
 
     if (dwHintMask & HINT_MODSEQUENCE)
     {
-    	SetDlgItemText(IDC_EDIT_SEQUENCE_NAME, m_pSndFile->Order.m_sName);
+            SetDlgItemText(IDC_EDIT_SEQUENCE_NAME, m_pSndFile->Order.m_sName);
     }
     if (dwHintMask & (HINT_MODSEQUENCE|HINT_MODTYPE))
     {
-    	m_SpinSequence.SetRange(0, m_pSndFile->Order.GetNumSequences() - 1);
-    	m_SpinSequence.SetPos(m_pSndFile->Order.GetCurrentSequenceIndex());
+            m_SpinSequence.SetRange(0, m_pSndFile->Order.GetNumSequences() - 1);
+            m_SpinSequence.SetPos(m_pSndFile->Order.GetCurrentSequenceIndex());
     }
 
     //rewbs.instroVST
     if (dwHintMask & (HINT_MIXPLUGINS|HINT_MODTYPE))
     {
-    	if (HasValidPlug(m_nInstrument))
+            if (HasValidPlug(m_nInstrument))
             ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), true);
-    	else
-    		::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), false);
+            else
+                    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), false);
 
-    	// Enable/disable multisequence controls according the current modtype.
-    	BOOL isMultiSeqAvail = (m_pSndFile->GetType() == MOD_TYPE_MPT) ? TRUE : FALSE;
-    	GetDlgItem(IDC_STATIC_SEQUENCE_NAME)->EnableWindow(isMultiSeqAvail);
-    	GetDlgItem(IDC_EDIT_SEQUENCE_NAME)->EnableWindow(isMultiSeqAvail);
-    	GetDlgItem(IDC_EDIT_SEQNUM)->EnableWindow(isMultiSeqAvail);
-    	GetDlgItem(IDC_SPIN_SEQNUM)->EnableWindow(isMultiSeqAvail);
+            // Enable/disable multisequence controls according the current modtype.
+            BOOL isMultiSeqAvail = (m_pSndFile->GetType() == MOD_TYPE_MPT) ? TRUE : FALSE;
+            GetDlgItem(IDC_STATIC_SEQUENCE_NAME)->EnableWindow(isMultiSeqAvail);
+            GetDlgItem(IDC_EDIT_SEQUENCE_NAME)->EnableWindow(isMultiSeqAvail);
+            GetDlgItem(IDC_EDIT_SEQNUM)->EnableWindow(isMultiSeqAvail);
+            GetDlgItem(IDC_SPIN_SEQNUM)->EnableWindow(isMultiSeqAvail);
 
-    	// Enable/disable pattern names
-    	BOOL isPatNameAvail = (m_pSndFile->GetType() & (MOD_TYPE_MPT|MOD_TYPE_IT|MOD_TYPE_XM)) ? TRUE : FALSE;
-    	GetDlgItem(IDC_STATIC_PATTERNNAME)->EnableWindow(isPatNameAvail);
-    	GetDlgItem(IDC_EDIT_PATTERNNAME)->EnableWindow(isPatNameAvail);
+            // Enable/disable pattern names
+            BOOL isPatNameAvail = (m_pSndFile->GetType() & (MOD_TYPE_MPT|MOD_TYPE_IT|MOD_TYPE_XM)) ? TRUE : FALSE;
+            GetDlgItem(IDC_STATIC_PATTERNNAME)->EnableWindow(isPatNameAvail);
+            GetDlgItem(IDC_EDIT_PATTERNNAME)->EnableWindow(isPatNameAvail);
     }
     //end rewbs.instroVST
     if (dwHintMask & HINT_MPTOPTIONS)
     {
-    	m_ToolBar.UpdateStyle();
+            m_ToolBar.UpdateStyle();
 // -> CODE#0007
 // -> DESC="uncheck follow song checkbox by default"
-    	//CheckDlgButton(IDC_PATTERN_FOLLOWSONG, (CMainFrame::m_dwPatternSetup & PATTERN_FOLLOWSONGOFF) ? MF_UNCHECKED : MF_CHECKED);
-    	m_ToolBar.SetState(ID_OVERFLOWPASTE, ((CMainFrame::m_dwPatternSetup & PATTERN_OVERFLOWPASTE) ? TBSTATE_CHECKED : 0) | TBSTATE_ENABLED);
+            //CheckDlgButton(IDC_PATTERN_FOLLOWSONG, (CMainFrame::m_dwPatternSetup & PATTERN_FOLLOWSONGOFF) ? MF_UNCHECKED : MF_CHECKED);
+            m_ToolBar.SetState(ID_OVERFLOWPASTE, ((CMainFrame::m_dwPatternSetup & PATTERN_OVERFLOWPASTE) ? TBSTATE_CHECKED : 0) | TBSTATE_ENABLED);
 // -! BEHAVIOUR_CHANGE#0007
     }
     if (dwHintMask & (HINT_MODTYPE|HINT_INSNAMES|HINT_SMPNAMES|HINT_PATNAMES))
     {
-    	LockControls();
-    	if (dwHintMask & (HINT_MODTYPE|HINT_INSNAMES|HINT_SMPNAMES))
-    	{
-    		static const TCHAR szSplitFormat[] = TEXT("%02u %s %02u: %s/%s");
-    		UINT nPos = 0;
-    		m_CbnInstrument.SetRedraw(FALSE);
-    		m_CbnInstrument.ResetContent();
-    		m_CbnInstrument.SetItemData(m_CbnInstrument.AddString(" No Instrument"), 0);
-    		const INSTRUMENTINDEX nSplitIns = m_pModDoc->GetSplitKeyboardSettings()->splitInstrument;
-    		const modplug::tracker::modevent_t::note_t noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
-    		const CString sSplitInsName = m_pModDoc->GetPatternViewInstrumentName(nSplitIns, true, false);
-    		if (m_pSndFile->m_nInstruments)
-    		{
-    			for (UINT i=1; i<=m_pSndFile->m_nInstruments; i++)
-    			{
-    				if (m_pSndFile->Instruments[i] == nullptr)
-    					continue;
+            LockControls();
+            if (dwHintMask & (HINT_MODTYPE|HINT_INSNAMES|HINT_SMPNAMES))
+            {
+                    static const TCHAR szSplitFormat[] = TEXT("%02u %s %02u: %s/%s");
+                    UINT nPos = 0;
+                    m_CbnInstrument.SetRedraw(FALSE);
+                    m_CbnInstrument.ResetContent();
+                    m_CbnInstrument.SetItemData(m_CbnInstrument.AddString(" No Instrument"), 0);
+                    const INSTRUMENTINDEX nSplitIns = m_pModDoc->GetSplitKeyboardSettings()->splitInstrument;
+                    const modplug::tracker::modevent_t::note_t noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
+                    const CString sSplitInsName = m_pModDoc->GetPatternViewInstrumentName(nSplitIns, true, false);
+                    if (m_pSndFile->m_nInstruments)
+                    {
+                            for (UINT i=1; i<=m_pSndFile->m_nInstruments; i++)
+                            {
+                                    if (m_pSndFile->Instruments[i] == nullptr)
+                                            continue;
 
-    				CString sDisplayName;
-    				if (m_pModDoc->GetSplitKeyboardSettings()->IsSplitActive())
-    				{
-    					wsprintf(s, szSplitFormat, nSplitIns, GetNoteStr(noteSplit), i,
-    							 (LPCTSTR)sSplitInsName, (LPCTSTR)m_pModDoc->GetPatternViewInstrumentName(i, true, false));
-    					sDisplayName = s;
-    				}
-    				else
-    					sDisplayName = m_pModDoc->GetPatternViewInstrumentName(i);
+                                    CString sDisplayName;
+                                    if (m_pModDoc->GetSplitKeyboardSettings()->IsSplitActive())
+                                    {
+                                            wsprintf(s, szSplitFormat, nSplitIns, GetNoteStr(noteSplit), i,
+                                                             (LPCTSTR)sSplitInsName, (LPCTSTR)m_pModDoc->GetPatternViewInstrumentName(i, true, false));
+                                            sDisplayName = s;
+                                    }
+                                    else
+                                            sDisplayName = m_pModDoc->GetPatternViewInstrumentName(i);
 
-    				UINT n = m_CbnInstrument.AddString(sDisplayName);
-    				if (n == m_nInstrument) nPos = n;
-    				m_CbnInstrument.SetItemData(n, i);
-    			}
-    		} else
-    		{
-    			UINT nmax = m_pSndFile->m_nSamples;
-    			while ((nmax > 1) && (m_pSndFile->Samples[nmax].sample_data == NULL) && (!m_pSndFile->m_szNames[nmax][0])) nmax--;
-    			for (UINT i=1; i<=nmax; i++) if ((m_pSndFile->m_szNames[i][0]) || (m_pSndFile->Samples[i].sample_data))
-    			{
-    				if (m_pModDoc->GetSplitKeyboardSettings()->IsSplitActive() && nSplitIns < ARRAYELEMCOUNT(m_pSndFile->m_szNames))
-    					wsprintf(s, szSplitFormat, nSplitIns, GetNoteStr(noteSplit), i, m_pSndFile->m_szNames[nSplitIns], m_pSndFile->m_szNames[i]);
-    				else
-    					wsprintf(s, "%02u: %s", i, m_pSndFile->m_szNames[i]);
+                                    UINT n = m_CbnInstrument.AddString(sDisplayName);
+                                    if (n == m_nInstrument) nPos = n;
+                                    m_CbnInstrument.SetItemData(n, i);
+                            }
+                    } else
+                    {
+                            UINT nmax = m_pSndFile->m_nSamples;
+                            while ((nmax > 1) && (m_pSndFile->Samples[nmax].sample_data == NULL) && (!m_pSndFile->m_szNames[nmax][0])) nmax--;
+                            for (UINT i=1; i<=nmax; i++) if ((m_pSndFile->m_szNames[i][0]) || (m_pSndFile->Samples[i].sample_data))
+                            {
+                                    if (m_pModDoc->GetSplitKeyboardSettings()->IsSplitActive() && nSplitIns < ARRAYELEMCOUNT(m_pSndFile->m_szNames))
+                                            wsprintf(s, szSplitFormat, nSplitIns, GetNoteStr(noteSplit), i, m_pSndFile->m_szNames[nSplitIns], m_pSndFile->m_szNames[i]);
+                                    else
+                                            wsprintf(s, "%02u: %s", i, m_pSndFile->m_szNames[i]);
 
-    				UINT n = m_CbnInstrument.AddString(s);
-    				if (n == m_nInstrument) nPos = n;
-    				m_CbnInstrument.SetItemData(n, i);
-    			}
-    		}
-    		m_CbnInstrument.SetCurSel(nPos);
-    		m_CbnInstrument.SetRedraw(TRUE);
-    	}
-    	if (dwHintMask & (HINT_MODTYPE|HINT_PATNAMES))
-    	{
-    		PATTERNINDEX nPat;
-    		if (dwHintMask & HINT_PATNAMES)
-    			nPat = (PATTERNINDEX)(dwHintMask >> HINT_SHIFT_PAT);
-    		else
-    			nPat = (PATTERNINDEX)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
-    		m_pSndFile->Patterns[nPat].GetName(s, CountOf(s));
-    		m_EditPatName.SetWindowText(s);
-    		BOOL bXMIT = (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) ? TRUE : FALSE;
-    		m_ToolBar.EnableButton(ID_PATTERN_MIDIMACRO, bXMIT);
-    		m_ToolBar.EnableButton(ID_PATTERN_PROPERTIES, bXMIT);
-    		m_ToolBar.EnableButton(ID_PATTERN_EXPAND, bXMIT);
-    		m_ToolBar.EnableButton(ID_PATTERN_SHRINK, bXMIT);
-    	}
-    	UnlockControls();
+                                    UINT n = m_CbnInstrument.AddString(s);
+                                    if (n == m_nInstrument) nPos = n;
+                                    m_CbnInstrument.SetItemData(n, i);
+                            }
+                    }
+                    m_CbnInstrument.SetCurSel(nPos);
+                    m_CbnInstrument.SetRedraw(TRUE);
+            }
+            if (dwHintMask & (HINT_MODTYPE|HINT_PATNAMES))
+            {
+                    PATTERNINDEX nPat;
+                    if (dwHintMask & HINT_PATNAMES)
+                            nPat = (PATTERNINDEX)(dwHintMask >> HINT_SHIFT_PAT);
+                    else
+                            nPat = (PATTERNINDEX)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
+                    m_pSndFile->Patterns[nPat].GetName(s, CountOf(s));
+                    m_EditPatName.SetWindowText(s);
+                    BOOL bXMIT = (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) ? TRUE : FALSE;
+                    m_ToolBar.EnableButton(ID_PATTERN_MIDIMACRO, bXMIT);
+                    m_ToolBar.EnableButton(ID_PATTERN_PROPERTIES, bXMIT);
+                    m_ToolBar.EnableButton(ID_PATTERN_EXPAND, bXMIT);
+                    m_ToolBar.EnableButton(ID_PATTERN_SHRINK, bXMIT);
+            }
+            UnlockControls();
     }
     if (dwHintMask & (HINT_MODTYPE|HINT_UNDO))
     {
-    	m_ToolBar.EnableButton(ID_EDIT_UNDO, m_pModDoc->GetPatternUndo()->CanUndo());
+            m_ToolBar.EnableButton(ID_EDIT_UNDO, m_pModDoc->GetPatternUndo()->CanUndo());
     }
 }
 
@@ -358,149 +358,149 @@ LRESULT CCtrlPatterns::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
     switch(wParam)
     {
     case CTRLMSG_GETCURRENTINSTRUMENT:
-    	return m_nInstrument;
+            return m_nInstrument;
 
     case CTRLMSG_GETCURRENTPATTERN:
-    	return m_OrderList.GetCurrentPattern();
+            return m_OrderList.GetCurrentPattern();
 
     case CTRLMSG_PATTERNCHANGED:
-    	UpdateView((lParam << HINT_SHIFT_PAT) | HINT_PATNAMES, NULL);
-    	break;
+            UpdateView((lParam << HINT_SHIFT_PAT) | HINT_PATNAMES, NULL);
+            break;
 
     case CTRLMSG_PAT_PREVINSTRUMENT:
-    	OnPrevInstrument();
-    	break;
+            OnPrevInstrument();
+            break;
 
     case CTRLMSG_PAT_NEXTINSTRUMENT:
-    	OnNextInstrument();
-    	break;
+            OnNextInstrument();
+            break;
 
     case CTRLMSG_SETCURRENTPATTERN:
-    	SetCurrentPattern((PATTERNINDEX)lParam);
-    	break;
+            SetCurrentPattern((PATTERNINDEX)lParam);
+            break;
 
     case CTRLMSG_SETCURRENTORDER:
-    	//Set orderlist selection and refresh GUI if change successful
-    	m_OrderList.SetCurSel((ORDERINDEX)lParam, FALSE);
-    	break;
+            //Set orderlist selection and refresh GUI if change successful
+            m_OrderList.SetCurSel((ORDERINDEX)lParam, FALSE);
+            break;
 
     case CTRLMSG_FORCEREFRESH:
-    	//refresh GUI
-    	m_OrderList.InvalidateRect(NULL, FALSE);
-    	break;
+            //refresh GUI
+            m_OrderList.InvalidateRect(NULL, FALSE);
+            break;
 
     case CTRLMSG_GETCURRENTORDER:
-    	return m_OrderList.GetCurSel(true).nOrdLo;
+            return m_OrderList.GetCurSel(true).nOrdLo;
 
     case CTRLMSG_SETCURRENTINSTRUMENT:
     case CTRLMSG_PAT_SETINSTRUMENT:
-    	return SetCurrentInstrument(lParam);
+            return SetCurrentInstrument(lParam);
 
     case CTRLMSG_PLAYPATTERN:
-    	switch(lParam)
-    	{
-    		case -2: OnPatternPlayNoLoop();	break;		//rewbs.playSongFromCursor
-    		case -1: OnPatternPlayFromStart();	break;
-    		default: OnPatternPlay();
-    	}
+            switch(lParam)
+            {
+                    case -2: OnPatternPlayNoLoop();        break;                //rewbs.playSongFromCursor
+                    case -1: OnPatternPlayFromStart();        break;
+                    default: OnPatternPlay();
+            }
 
     case CTRLMSG_SETVIEWWND:
-    	{
-    		SendViewMessage(VIEWMSG_FOLLOWSONG, IsDlgButtonChecked(IDC_PATTERN_FOLLOWSONG));
-    		if (m_pSndFile) {
-    			SendViewMessage(VIEWMSG_PATTERNLOOP, (SONG_PATTERNLOOP & m_pSndFile->m_dwSongFlags));
-    		}
-    		OnSpacingChanged();
-    		SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
-    		SendViewMessage(VIEWMSG_SETRECORD, m_bRecord);
-    		SendViewMessage(VIEWMSG_SETVUMETERS, m_bVUMeters);
-    		SendViewMessage(VIEWMSG_SETPLUGINNAMES, m_bPluginNames);
-    	}
-    	break;
+            {
+                    SendViewMessage(VIEWMSG_FOLLOWSONG, IsDlgButtonChecked(IDC_PATTERN_FOLLOWSONG));
+                    if (m_pSndFile) {
+                            SendViewMessage(VIEWMSG_PATTERNLOOP, (SONG_PATTERNLOOP & m_pSndFile->m_dwSongFlags));
+                    }
+                    OnSpacingChanged();
+                    SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
+                    SendViewMessage(VIEWMSG_SETRECORD, m_bRecord);
+                    SendViewMessage(VIEWMSG_SETVUMETERS, m_bVUMeters);
+                    SendViewMessage(VIEWMSG_SETPLUGINNAMES, m_bPluginNames);
+            }
+            break;
 
     case CTRLMSG_GETSPACING:
-    	return GetDlgItemInt(IDC_EDIT_SPACING);
+            return GetDlgItemInt(IDC_EDIT_SPACING);
 
     case CTRLMSG_SETSPACING:
-    	SetDlgItemInt(IDC_EDIT_SPACING, lParam);
-    	break;
+            SetDlgItemInt(IDC_EDIT_SPACING, lParam);
+            break;
 
     case CTRLMSG_ISRECORDING:
-    	return m_bRecord;
+            return m_bRecord;
 
     case CTRLMSG_SETFOCUS:
-    	if (m_pParent) GetParentFrame()->SetActiveView(m_pParent);
-    	m_OrderList.SetFocus();
-    	break;
+            if (m_pParent) GetParentFrame()->SetActiveView(m_pParent);
+            m_OrderList.SetFocus();
+            break;
 
     case CTRLMSG_SETRECORD:
-    	if (lParam >= 0) m_bRecord = (BOOL)(lParam); else m_bRecord = !m_bRecord;
-    	m_ToolBar.SetState(IDC_PATTERN_RECORD, ((m_bRecord) ? TBSTATE_CHECKED : 0)|TBSTATE_ENABLED);
-    	CMainFrame::gbPatternRecord = m_bRecord;
-    	SendViewMessage(VIEWMSG_SETRECORD, m_bRecord);
-    	break;
+            if (lParam >= 0) m_bRecord = (BOOL)(lParam); else m_bRecord = !m_bRecord;
+            m_ToolBar.SetState(IDC_PATTERN_RECORD, ((m_bRecord) ? TBSTATE_CHECKED : 0)|TBSTATE_ENABLED);
+            CMainFrame::gbPatternRecord = m_bRecord;
+            SendViewMessage(VIEWMSG_SETRECORD, m_bRecord);
+            break;
 
     case CTRLMSG_PREVORDER:
-    	m_OrderList.SetCurSel(m_OrderList.GetCurSel(true).nOrdLo - 1, TRUE);
-    	break;
+            m_OrderList.SetCurSel(m_OrderList.GetCurSel(true).nOrdLo - 1, TRUE);
+            break;
 
     case CTRLMSG_NEXTORDER:
-    	m_OrderList.SetCurSel(m_OrderList.GetCurSel(true).nOrdLo + 1, TRUE);
-    	break;
+            m_OrderList.SetCurSel(m_OrderList.GetCurSel(true).nOrdLo + 1, TRUE);
+            break;
 
     //rewbs.customKeys
     case CTRLMSG_PAT_FOLLOWSONG:
-    	// parameters: 0 = turn off, 1 = toggle
-    	{
-    		UINT state = FALSE;
-    		if(lParam == 1)	// toggle
-    		{
-    			state = !IsDlgButtonChecked(IDC_PATTERN_FOLLOWSONG);
-    		}
-    		CheckDlgButton(IDC_PATTERN_FOLLOWSONG, state);
-    		OnFollowSong();
-    	}
-    	break;
+            // parameters: 0 = turn off, 1 = toggle
+            {
+                    UINT state = FALSE;
+                    if(lParam == 1)        // toggle
+                    {
+                            state = !IsDlgButtonChecked(IDC_PATTERN_FOLLOWSONG);
+                    }
+                    CheckDlgButton(IDC_PATTERN_FOLLOWSONG, state);
+                    OnFollowSong();
+            }
+            break;
 
     case CTRLMSG_PAT_LOOP:
-    	{
-    		if (!m_pSndFile) {
-    			break;
-    		}
+            {
+                    if (!m_pSndFile) {
+                            break;
+                    }
 
-    	    bool setLoop = false;
-    		if (lParam == -1) {
-    			//Toggle loop state
-    			setLoop = !(m_pSndFile->m_dwSongFlags&SONG_PATTERNLOOP);
-    		} else {
-    			setLoop = (lParam != 0);
-    		}
+                bool setLoop = false;
+                    if (lParam == -1) {
+                            //Toggle loop state
+                            setLoop = !(m_pSndFile->m_dwSongFlags&SONG_PATTERNLOOP);
+                    } else {
+                            setLoop = (lParam != 0);
+                    }
 
-    		if (setLoop) {
-    			m_pSndFile->m_dwSongFlags |= SONG_PATTERNLOOP;
-    			CheckDlgButton(IDC_PATTERN_LOOP, BST_CHECKED);
-    		} else {
-    			m_pSndFile->m_dwSongFlags &= ~SONG_PATTERNLOOP;
-    			CheckDlgButton(IDC_PATTERN_LOOP, BST_UNCHECKED);
-    		}
+                    if (setLoop) {
+                            m_pSndFile->m_dwSongFlags |= SONG_PATTERNLOOP;
+                            CheckDlgButton(IDC_PATTERN_LOOP, BST_CHECKED);
+                    } else {
+                            m_pSndFile->m_dwSongFlags &= ~SONG_PATTERNLOOP;
+                            CheckDlgButton(IDC_PATTERN_LOOP, BST_UNCHECKED);
+                    }
 
-    		break;
-    	}
+                    break;
+            }
     case CTRLMSG_PAT_NEWPATTERN:
-    	OnPatternNew();
-    	break;
+            OnPatternNew();
+            break;
 
     case CTRLMSG_PAT_DUPPATTERN:
-    	OnPatternDuplicate();
-    	break;
+            OnPatternDuplicate();
+            break;
 
     case CTRLMSG_SETUPMACROS:
-    	OnSetupZxxMacros();
-    	break;
+            OnSetupZxxMacros();
+            break;
 
     //end rewbs.customKeys
     default:
-    	return CModControlDlg::OnModCtrlMsg(wParam, lParam);
+            return CModControlDlg::OnModCtrlMsg(wParam, lParam);
     }
     return 0;
 }
@@ -519,23 +519,23 @@ BOOL CCtrlPatterns::SetCurrentInstrument(UINT nIns)
     if (nIns == m_nInstrument) return TRUE;
     if (m_pSndFile)
     {
-    	int n = m_CbnInstrument.GetCount();
-    	if (nIns > (UINT)n) return FALSE;
-    	for (int i=0; i<n; i++)
-    	{
-    		if (m_CbnInstrument.GetItemData(i) == nIns)
-    		{
-    			m_CbnInstrument.SetCurSel(i);
-    			m_nInstrument = static_cast<INSTRUMENTINDEX>(nIns);
-    			//rewbs.instroVST
-    			if (HasValidPlug(m_nInstrument))
-    				::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), true);
-    			else
-    				::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), false);
-    			//end rewbs.instroVST
-    			return TRUE;
-    		}
-    	}
+            int n = m_CbnInstrument.GetCount();
+            if (nIns > (UINT)n) return FALSE;
+            for (int i=0; i<n; i++)
+            {
+                    if (m_CbnInstrument.GetItemData(i) == nIns)
+                    {
+                            m_CbnInstrument.SetCurSel(i);
+                            m_nInstrument = static_cast<INSTRUMENTINDEX>(nIns);
+                            //rewbs.instroVST
+                            if (HasValidPlug(m_nInstrument))
+                                    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), true);
+                            else
+                                    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), false);
+                            //end rewbs.instroVST
+                            return TRUE;
+                    }
+            }
     }
     return FALSE;
 }
@@ -549,61 +549,61 @@ void CCtrlPatterns::OnActivatePage(LPARAM lParam)
 {
     if ((m_pModDoc) && (m_pParent))
     {
-    	int nIns = m_pParent->GetInstrumentChange();
-    	if (nIns > 0)
-    	{
-    		SetCurrentInstrument(nIns);
-    	}
-    	m_pParent->InstrumentChanged(-1);
+            int nIns = m_pParent->GetInstrumentChange();
+            if (nIns > 0)
+            {
+                    SetCurrentInstrument(nIns);
+            }
+            m_pParent->InstrumentChanged(-1);
     }
     if (!(lParam & 0x8000) && m_pSndFile)
     {
-    	// Pattern item
-    	PATTERNINDEX nPat = (PATTERNINDEX)(lParam & 0x7FFF);
-    	if(m_pSndFile->Patterns.IsValidIndex(nPat))
-    	{
-    		for (SEQUENCEINDEX nSeq = 0; nSeq < m_pSndFile->Order.GetNumSequences(); nSeq++)
-    		{
-    			for (ORDERINDEX nOrd = 0; nOrd < m_pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd++)
-    			{
-    				if (m_pSndFile->Order.GetSequence(nSeq)[nOrd] == nPat)
-    				{
-    					m_OrderList.SelectSequence(nSeq);
-    					m_OrderList.SetCurSel(nOrd, true);
-    					break;
-    				}
-    			}
-    		}
-    	}
-    	SetCurrentPattern(nPat);
+            // Pattern item
+            PATTERNINDEX nPat = (PATTERNINDEX)(lParam & 0x7FFF);
+            if(m_pSndFile->Patterns.IsValidIndex(nPat))
+            {
+                    for (SEQUENCEINDEX nSeq = 0; nSeq < m_pSndFile->Order.GetNumSequences(); nSeq++)
+                    {
+                            for (ORDERINDEX nOrd = 0; nOrd < m_pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd++)
+                            {
+                                    if (m_pSndFile->Order.GetSequence(nSeq)[nOrd] == nPat)
+                                    {
+                                            m_OrderList.SelectSequence(nSeq);
+                                            m_OrderList.SetCurSel(nOrd, true);
+                                            break;
+                                    }
+                            }
+                    }
+            }
+            SetCurrentPattern(nPat);
     }
     else if ((lParam & 0x8000) && m_pSndFile)
     {
-    	// Order item
-    	ORDERINDEX nOrd = (ORDERINDEX)(lParam & 0x7FFF);
-    	SEQUENCEINDEX nSeq = (SEQUENCEINDEX)(lParam >> 16);
-    	if(nSeq < m_pSndFile->Order.GetNumSequences())
-    	{
-    		m_OrderList.SelectSequence(nSeq);
-    		if((nOrd < m_pSndFile->Order.GetSequence(nSeq).size()))
-    		{
-    			m_OrderList.SetCurSel(nOrd);
-    			SetCurrentPattern(m_pSndFile->Order[nOrd]);
-    		}
-    	}
+            // Order item
+            ORDERINDEX nOrd = (ORDERINDEX)(lParam & 0x7FFF);
+            SEQUENCEINDEX nSeq = (SEQUENCEINDEX)(lParam >> 16);
+            if(nSeq < m_pSndFile->Order.GetNumSequences())
+            {
+                    m_OrderList.SelectSequence(nSeq);
+                    if((nOrd < m_pSndFile->Order.GetSequence(nSeq).size()))
+                    {
+                            m_OrderList.SetCurSel(nOrd);
+                            SetCurrentPattern(m_pSndFile->Order[nOrd]);
+                    }
+            }
     }
     if (m_hWndView)
     {
-    	OnSpacingChanged();
-    	if (m_bRecord) SendViewMessage(VIEWMSG_SETRECORD, m_bRecord);
-    	CChildFrame *pFrame = (CChildFrame *)GetParentFrame();
+            OnSpacingChanged();
+            if (m_bRecord) SendViewMessage(VIEWMSG_SETRECORD, m_bRecord);
+            CChildFrame *pFrame = (CChildFrame *)GetParentFrame();
 
-    	//Restore all save pattern state, except pattern number which we might have just set.
-    	PATTERNVIEWSTATE* patternViewState = pFrame->GetPatternViewState();
-    	patternViewState->nPattern = static_cast<PATTERNINDEX>(SendViewMessage(VIEWMSG_GETCURRENTPATTERN));
-    	if (pFrame) SendViewMessage(VIEWMSG_LOADSTATE, (LPARAM)patternViewState);
+            //Restore all save pattern state, except pattern number which we might have just set.
+            PATTERNVIEWSTATE* patternViewState = pFrame->GetPatternViewState();
+            patternViewState->nPattern = static_cast<PATTERNINDEX>(SendViewMessage(VIEWMSG_GETCURRENTPATTERN));
+            if (pFrame) SendViewMessage(VIEWMSG_LOADSTATE, (LPARAM)patternViewState);
 
-    	SwitchToView();
+            SwitchToView();
     }
 }
 
@@ -623,17 +623,17 @@ void CCtrlPatterns::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
     short int pos = (short int)m_SpinInstrument.GetPos();
     if (pos)
     {
-    	m_SpinInstrument.SetPos(0);
-    	int nmax = m_CbnInstrument.GetCount();
-    	int nins = m_CbnInstrument.GetCurSel() - pos;
-    	if (nins < 0) nins = nmax-1;
-    	if (nins >= nmax) nins = 0;
-    	m_CbnInstrument.SetCurSel(nins);
-    	OnInstrumentChanged();
+            m_SpinInstrument.SetPos(0);
+            int nmax = m_CbnInstrument.GetCount();
+            int nins = m_CbnInstrument.GetCurSel() - pos;
+            if (nins < 0) nins = nmax-1;
+            if (nins >= nmax) nins = 0;
+            m_CbnInstrument.SetCurSel(nins);
+            OnInstrumentChanged();
     }
     if ((nSBCode == SB_ENDSCROLL) && (m_hWndView))
     {
-    	SwitchToView();
+            SwitchToView();
     }
 }
 
@@ -659,12 +659,12 @@ void CCtrlPatterns::OnChannelManager()
 //------------------------------------
 {
     if(CChannelManagerDlg::sharedInstance()){
-    	if(CChannelManagerDlg::sharedInstance()->IsDisplayed())
-    		CChannelManagerDlg::sharedInstance()->Hide();
-    	else{
-    		CChannelManagerDlg::sharedInstance()->SetDocument(NULL);
-    		CChannelManagerDlg::sharedInstance()->Show();
-    	}
+            if(CChannelManagerDlg::sharedInstance()->IsDisplayed())
+                    CChannelManagerDlg::sharedInstance()->Hide();
+            else{
+                    CChannelManagerDlg::sharedInstance()->SetDocument(NULL);
+                    CChannelManagerDlg::sharedInstance()->Show();
+            }
     }
 }
 // -! NEW_FEATURE#0015
@@ -683,11 +683,11 @@ void CCtrlPatterns::OnOrderListMarginsChanged()
     uint8_t i;
     if((m_EditOrderListMargins.m_hWnd) && (m_EditOrderListMargins.IsWindowVisible()) && (m_EditOrderListMargins.GetWindowTextLength() > 0))
     {
-    	i = m_OrderList.SetMargins(GetDlgItemInt(IDC_EDIT_ORDERLIST_MARGINS));
+            i = m_OrderList.SetMargins(GetDlgItemInt(IDC_EDIT_ORDERLIST_MARGINS));
     }
     else
     {
-    	i = m_OrderList.GetMargins();
+            i = m_OrderList.GetMargins();
     }
 
     m_SpinOrderListMargins.SetRange(0, m_OrderList.GetMarginsMax());
@@ -701,13 +701,13 @@ void CCtrlPatterns::OnSpacingChanged()
 {
     if ((m_EditSpacing.m_hWnd) && (m_EditSpacing.GetWindowTextLength() > 0))
     {
-    	CMainFrame::gnPatternSpacing = GetDlgItemInt(IDC_EDIT_SPACING);
-    	if (CMainFrame::gnPatternSpacing > MAX_SPACING)
-    	{
-    		CMainFrame::gnPatternSpacing = MAX_SPACING;
-    		SetDlgItemInt(IDC_EDIT_SPACING, CMainFrame::gnPatternSpacing, FALSE);
-    	}
-    	SendViewMessage(VIEWMSG_SETSPACING, CMainFrame::gnPatternSpacing);
+            CMainFrame::gnPatternSpacing = GetDlgItemInt(IDC_EDIT_SPACING);
+            if (CMainFrame::gnPatternSpacing > MAX_SPACING)
+            {
+                    CMainFrame::gnPatternSpacing = MAX_SPACING;
+                    SetDlgItemInt(IDC_EDIT_SPACING, CMainFrame::gnPatternSpacing, FALSE);
+            }
+            SendViewMessage(VIEWMSG_SETSPACING, CMainFrame::gnPatternSpacing);
     }
 }
 
@@ -718,20 +718,20 @@ void CCtrlPatterns::OnInstrumentChanged()
     int n = m_CbnInstrument.GetCurSel();
     if ((m_pSndFile) && (n >= 0))
     {
-    	n = m_CbnInstrument.GetItemData(n);
-    	int nmax = (m_pSndFile->m_nInstruments) ? m_pSndFile->m_nInstruments : m_pSndFile->m_nSamples;
-    	if ((n >= 0) && (n <= nmax) && (n != (int)m_nInstrument))
-    	{
-    		m_nInstrument = static_cast<INSTRUMENTINDEX>(n);
-    		if (m_pParent) m_pParent->InstrumentChanged(m_nInstrument);
-    	}
-    	SwitchToView();
-    	//rewbs.instroVST
-    	if (HasValidPlug(m_nInstrument))
+            n = m_CbnInstrument.GetItemData(n);
+            int nmax = (m_pSndFile->m_nInstruments) ? m_pSndFile->m_nInstruments : m_pSndFile->m_nSamples;
+            if ((n >= 0) && (n <= nmax) && (n != (int)m_nInstrument))
+            {
+                    m_nInstrument = static_cast<INSTRUMENTINDEX>(n);
+                    if (m_pParent) m_pParent->InstrumentChanged(m_nInstrument);
+            }
+            SwitchToView();
+            //rewbs.instroVST
+            if (HasValidPlug(m_nInstrument))
             ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), true);
-    	else
-    		::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), false);
-    	//rewbs.instroVST
+            else
+                    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), false);
+            //rewbs.instroVST
     }
 }
 
@@ -742,10 +742,10 @@ void CCtrlPatterns::OnPrevInstrument()
     int n = m_CbnInstrument.GetCount();
     if (n > 0)
     {
-    	int pos = m_CbnInstrument.GetCurSel();
-    	if (pos > 0) pos--; else pos = n-1;
-    	m_CbnInstrument.SetCurSel(pos);
-    	OnInstrumentChanged();
+            int pos = m_CbnInstrument.GetCurSel();
+            if (pos > 0) pos--; else pos = n-1;
+            m_CbnInstrument.SetCurSel(pos);
+            OnInstrumentChanged();
     }
 }
 
@@ -756,10 +756,10 @@ void CCtrlPatterns::OnNextInstrument()
     int n = m_CbnInstrument.GetCount();
     if (n > 0)
     {
-    	int pos = m_CbnInstrument.GetCurSel() + 1;
-    	if (pos >= n) pos = 0;
-    	m_CbnInstrument.SetCurSel(pos);
-    	OnInstrumentChanged();
+            int pos = m_CbnInstrument.GetCurSel() + 1;
+            if (pos >= n) pos = 0;
+            m_CbnInstrument.SetCurSel(pos);
+            OnInstrumentChanged();
     }
 }
 
@@ -777,31 +777,31 @@ void CCtrlPatterns::OnPatternNew()
 {
     if (m_pModDoc)
     {
-    	module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-    	ORDERINDEX nCurOrd = m_OrderList.GetCurSel(true).nOrdLo;
-    	PATTERNINDEX nCurPat = pSndFile->Order[nCurOrd];
-    	ROWINDEX rows = 64;
-    	if(pSndFile->Patterns.IsValidPat(nCurPat))
-    	{
-    		nCurOrd++;	// only if the current oder is already occupied, create a new pattern at the next position.
-    		rows = pSndFile->Patterns[nCurPat].GetNumRows();
-    		rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
-    	}
-    	PATTERNINDEX nNewPat = m_pModDoc->InsertPattern(nCurOrd, rows);
-    	if ((nNewPat != PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()))
-    	{
-    		// update time signature
-    		if(pSndFile->Patterns.IsValidIndex(nCurPat) && pSndFile->Patterns[nCurPat].GetOverrideSignature())
-    		{
-    			pSndFile->Patterns[nNewPat].SetSignature(pSndFile->Patterns[nCurPat].GetRowsPerBeat(), pSndFile->Patterns[nCurPat].GetRowsPerMeasure());
-    		}
-    		// move to new pattern
-    		m_OrderList.SetCurSel(nCurOrd);
-    		m_OrderList.InvalidateRect(NULL, FALSE);
-    		SetCurrentPattern(nNewPat);
-    		m_pModDoc->SetModified();
-    		m_pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE|HINT_PATNAMES, this);
-    	}
+            module_renderer *pSndFile = m_pModDoc->GetSoundFile();
+            ORDERINDEX nCurOrd = m_OrderList.GetCurSel(true).nOrdLo;
+            PATTERNINDEX nCurPat = pSndFile->Order[nCurOrd];
+            ROWINDEX rows = 64;
+            if(pSndFile->Patterns.IsValidPat(nCurPat))
+            {
+                    nCurOrd++;        // only if the current oder is already occupied, create a new pattern at the next position.
+                    rows = pSndFile->Patterns[nCurPat].GetNumRows();
+                    rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
+            }
+            PATTERNINDEX nNewPat = m_pModDoc->InsertPattern(nCurOrd, rows);
+            if ((nNewPat != PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()))
+            {
+                    // update time signature
+                    if(pSndFile->Patterns.IsValidIndex(nCurPat) && pSndFile->Patterns[nCurPat].GetOverrideSignature())
+                    {
+                            pSndFile->Patterns[nNewPat].SetSignature(pSndFile->Patterns[nCurPat].GetRowsPerBeat(), pSndFile->Patterns[nCurPat].GetRowsPerMeasure());
+                    }
+                    // move to new pattern
+                    m_OrderList.SetCurSel(nCurOrd);
+                    m_OrderList.InvalidateRect(NULL, FALSE);
+                    SetCurrentPattern(nNewPat);
+                    m_pModDoc->SetModified();
+                    m_pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE|HINT_PATNAMES, this);
+            }
     }
     SwitchToView();
 }
@@ -813,72 +813,72 @@ void CCtrlPatterns::OnPatternDuplicate()
     // duplicates one or more patterns.
     if (m_pModDoc)
     {
-    	module_renderer *pSndFile = m_pModDoc->GetSoundFile();
+            module_renderer *pSndFile = m_pModDoc->GetSoundFile();
 
-    	ORD_SELECTION selection = m_OrderList.GetCurSel(false);
-    	ORDERINDEX nInsertCount = selection.nOrdHi - selection.nOrdLo;
-    	ORDERINDEX nInsertWhere = selection.nOrdLo + nInsertCount + 1;
-    	if (nInsertWhere >= pSndFile->GetModSpecifications().ordersMax)
-    		return;
-    	bool bSuccess = false;
-    	// has this pattern been duplicated already? (for multiselect)
-    	vector<PATTERNINDEX> pReplaceIndex;
-    	pReplaceIndex.resize(pSndFile->Patterns.Size(), PATTERNINDEX_INVALID);
+            ORD_SELECTION selection = m_OrderList.GetCurSel(false);
+            ORDERINDEX nInsertCount = selection.nOrdHi - selection.nOrdLo;
+            ORDERINDEX nInsertWhere = selection.nOrdLo + nInsertCount + 1;
+            if (nInsertWhere >= pSndFile->GetModSpecifications().ordersMax)
+                    return;
+            bool bSuccess = false;
+            // has this pattern been duplicated already? (for multiselect)
+            vector<PATTERNINDEX> pReplaceIndex;
+            pReplaceIndex.resize(pSndFile->Patterns.Size(), PATTERNINDEX_INVALID);
 
-    	for(ORDERINDEX i = 0; i <= nInsertCount; i++)
-    	{
-    		PATTERNINDEX nCurPat = pSndFile->Order[selection.nOrdLo + i];
-    		ROWINDEX rows = 64;
-    		if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == PATTERNINDEX_INVALID)
-    		{
-    			rows = pSndFile->Patterns[nCurPat].GetNumRows();
-    			rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
+            for(ORDERINDEX i = 0; i <= nInsertCount; i++)
+            {
+                    PATTERNINDEX nCurPat = pSndFile->Order[selection.nOrdLo + i];
+                    ROWINDEX rows = 64;
+                    if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == PATTERNINDEX_INVALID)
+                    {
+                            rows = pSndFile->Patterns[nCurPat].GetNumRows();
+                            rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
 
-    			PATTERNINDEX nNewPat = m_pModDoc->InsertPattern(nInsertWhere + i, rows);
-    			if ((nNewPat != PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nCurPat] != nullptr))
-    			{
-    				// update time signature
-    				if(pSndFile->Patterns[nCurPat].GetOverrideSignature())
-    				{
-    					pSndFile->Patterns[nNewPat].SetSignature(pSndFile->Patterns[nCurPat].GetRowsPerBeat(), pSndFile->Patterns[nCurPat].GetRowsPerMeasure());
-    				}
-    				// copy pattern data
-    				modplug::tracker::modevent_t *pSrc = pSndFile->Patterns[nCurPat];
-    				modplug::tracker::modevent_t *pDest = pSndFile->Patterns[nNewPat];
-    				UINT n = pSndFile->Patterns[nCurPat].GetNumRows();
-    				if (pSndFile->Patterns[nNewPat].GetNumRows() < n) n = pSndFile->Patterns[nNewPat].GetNumRows();
-    				n *= pSndFile->m_nChannels;
-    				if (n) memcpy(pDest, pSrc, n * sizeof(modplug::tracker::modevent_t));
-    				bSuccess = true;
-    				pReplaceIndex[nCurPat] = nNewPat; // mark as duplicated
-    			}
-    			else
-    			{
-    				break;
-    			}
-    		}
-    		else
-    		{
-    			// invalid pattern, or it has been duplicated before (multiselect)
-    			for (int j = pSndFile->Order.size() - 1; j > selection.nOrdLo + i + nInsertCount + 1; j--) pSndFile->Order[j] = pSndFile->Order[j - 1];
-    			PATTERNINDEX nNewPat;
-    			if(nCurPat < pSndFile->Patterns.Size() && pReplaceIndex[nCurPat] != PATTERNINDEX_INVALID)
-    				nNewPat = pReplaceIndex[nCurPat]; // take care of patterns that have been duplicated before
-    			else
-    				nNewPat= pSndFile->Order[selection.nOrdLo + i];
-    			if (selection.nOrdLo + i + nInsertCount + 1 < pSndFile->Order.GetLength())
-    				pSndFile->Order[selection.nOrdLo + i + nInsertCount + 1] = nNewPat;
-    		}
-    	}
-    	if(bSuccess)
-    	{
-    		m_OrderList.InvalidateRect(NULL, FALSE);
-    		m_OrderList.SetCurSel(nInsertWhere);
-    		SetCurrentPattern(pSndFile->Order[min(nInsertWhere, pSndFile->Order.GetLastIndex())]);
-    		m_pModDoc->SetModified();
-    		m_pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE|HINT_PATNAMES, this);
-    		if(selection.nOrdHi != selection.nOrdLo) m_OrderList.m_nScrollPos2nd = nInsertWhere + nInsertCount;
-    	}
+                            PATTERNINDEX nNewPat = m_pModDoc->InsertPattern(nInsertWhere + i, rows);
+                            if ((nNewPat != PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nCurPat] != nullptr))
+                            {
+                                    // update time signature
+                                    if(pSndFile->Patterns[nCurPat].GetOverrideSignature())
+                                    {
+                                            pSndFile->Patterns[nNewPat].SetSignature(pSndFile->Patterns[nCurPat].GetRowsPerBeat(), pSndFile->Patterns[nCurPat].GetRowsPerMeasure());
+                                    }
+                                    // copy pattern data
+                                    modplug::tracker::modevent_t *pSrc = pSndFile->Patterns[nCurPat];
+                                    modplug::tracker::modevent_t *pDest = pSndFile->Patterns[nNewPat];
+                                    UINT n = pSndFile->Patterns[nCurPat].GetNumRows();
+                                    if (pSndFile->Patterns[nNewPat].GetNumRows() < n) n = pSndFile->Patterns[nNewPat].GetNumRows();
+                                    n *= pSndFile->m_nChannels;
+                                    if (n) memcpy(pDest, pSrc, n * sizeof(modplug::tracker::modevent_t));
+                                    bSuccess = true;
+                                    pReplaceIndex[nCurPat] = nNewPat; // mark as duplicated
+                            }
+                            else
+                            {
+                                    break;
+                            }
+                    }
+                    else
+                    {
+                            // invalid pattern, or it has been duplicated before (multiselect)
+                            for (int j = pSndFile->Order.size() - 1; j > selection.nOrdLo + i + nInsertCount + 1; j--) pSndFile->Order[j] = pSndFile->Order[j - 1];
+                            PATTERNINDEX nNewPat;
+                            if(nCurPat < pSndFile->Patterns.Size() && pReplaceIndex[nCurPat] != PATTERNINDEX_INVALID)
+                                    nNewPat = pReplaceIndex[nCurPat]; // take care of patterns that have been duplicated before
+                            else
+                                    nNewPat= pSndFile->Order[selection.nOrdLo + i];
+                            if (selection.nOrdLo + i + nInsertCount + 1 < pSndFile->Order.GetLength())
+                                    pSndFile->Order[selection.nOrdLo + i + nInsertCount + 1] = nNewPat;
+                    }
+            }
+            if(bSuccess)
+            {
+                    m_OrderList.InvalidateRect(NULL, FALSE);
+                    m_OrderList.SetCurSel(nInsertWhere);
+                    SetCurrentPattern(pSndFile->Order[min(nInsertWhere, pSndFile->Order.GetLastIndex())]);
+                    m_pModDoc->SetModified();
+                    m_pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE|HINT_PATNAMES, this);
+                    if(selection.nOrdHi != selection.nOrdLo) m_OrderList.m_nScrollPos2nd = nInsertWhere + nInsertCount;
+            }
     }
     SwitchToView();
 }
@@ -889,11 +889,11 @@ void CCtrlPatterns::OnPatternStop()
 {
     if (m_pModDoc)
     {
-    	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    	if (pMainFrm) pMainFrm->PauseMod(m_pModDoc);
-    	module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-    	if(pSndFile)
-    		pSndFile->ResetChannels();
+            CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
+            if (pMainFrm) pMainFrm->PauseMod(m_pModDoc);
+            module_renderer *pSndFile = m_pModDoc->GetSoundFile();
+            if(pSndFile)
+                    pSndFile->ResetChannels();
     }
     SwitchToView();
 }
@@ -905,7 +905,7 @@ void CCtrlPatterns::OnPatternPlay()
     CModDoc *pModDoc = GetDocument();
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if ((pMainFrm) && (pModDoc)) {
-    	pModDoc->OnPatternPlay();
+            pModDoc->OnPatternPlay();
     }
     SwitchToView();
 }
@@ -917,7 +917,7 @@ void CCtrlPatterns::OnPatternPlayNoLoop()
     CModDoc *pModDoc = GetDocument();
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if ((pMainFrm) && (pModDoc)) {
-    	pModDoc->OnPatternPlayNoLoop();
+            pModDoc->OnPatternPlayNoLoop();
     }
     SwitchToView();
 }
@@ -929,7 +929,7 @@ void CCtrlPatterns::OnPatternPlayFromStart()
     CModDoc *pModDoc = GetDocument();
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if ((pMainFrm) && (pModDoc)) {
-    	pModDoc->OnPatternRestart();
+            pModDoc->OnPatternRestart();
     }
     SwitchToView();
 }
@@ -1067,20 +1067,20 @@ void CCtrlPatterns::OnPatternNameChanged()
 {
     if ((m_pSndFile) && (m_pModDoc) && (!IsLocked()))
     {
-    	const PATTERNINDEX nPat = (PATTERNINDEX)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
+            const PATTERNINDEX nPat = (PATTERNINDEX)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
 
-    	CHAR s[MAX_PATTERNNAME];
-    	m_EditPatName.GetWindowText(s, CountOf(s));
-    	SetNullTerminator(s);
+            CHAR s[MAX_PATTERNNAME];
+            m_EditPatName.GetWindowText(s, CountOf(s));
+            SetNullTerminator(s);
 
-    	if (m_pSndFile->Patterns[nPat].GetName().Compare(s))
-    	{
-    		 if(m_pSndFile->Patterns[nPat].SetName(s))
-    		 {
-    			 if (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) m_pModDoc->SetModified();
-    			 m_pModDoc->UpdateAllViews(NULL, (nPat << HINT_SHIFT_PAT) | HINT_PATNAMES, this);
-    		 }
-    	}
+            if (m_pSndFile->Patterns[nPat].GetName().Compare(s))
+            {
+                     if(m_pSndFile->Patterns[nPat].SetName(s))
+                     {
+                             if (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) m_pModDoc->SetModified();
+                             m_pModDoc->UpdateAllViews(NULL, (nPat << HINT_SHIFT_PAT) | HINT_PATNAMES, this);
+                     }
+            }
     }
 }
 
@@ -1090,14 +1090,14 @@ void CCtrlPatterns::OnSequenceNameChanged()
 {
     if (m_pSndFile)
     {
-    	CString str;
-    	GetDlgItemText(IDC_EDIT_SEQUENCE_NAME, str);
-    	if (str != m_pSndFile->Order.m_sName)
-    	{
-    		m_pSndFile->Order.m_sName = str;
-    		m_pModDoc->SetModified();
-    		m_pModDoc->UpdateAllViews(NULL, (m_pSndFile->Order.GetCurrentSequenceIndex() << HINT_SHIFT_SEQUENCE) | HINT_SEQNAMES, this);
-    	}
+            CString str;
+            GetDlgItemText(IDC_EDIT_SEQUENCE_NAME, str);
+            if (str != m_pSndFile->Order.m_sName)
+            {
+                    m_pSndFile->Order.m_sName = str;
+                    m_pModDoc->SetModified();
+                    m_pModDoc->UpdateAllViews(NULL, (m_pSndFile->Order.GetCurrentSequenceIndex() << HINT_SHIFT_SEQUENCE) | HINT_SEQNAMES, this);
+            }
     }
 }
 
@@ -1107,30 +1107,30 @@ void CCtrlPatterns::OnSetupZxxMacros()
 {
     if ((m_pSndFile) && (m_pModDoc))
     {
-    	CMidiMacroSetup dlg(&m_pSndFile->m_MidiCfg, (m_pSndFile->m_dwSongFlags & SONG_EMBEDMIDICFG), this);
-    	if (dlg.DoModal() == IDOK)
-    	{
-    		m_pSndFile->m_MidiCfg = dlg.m_MidiCfg;
-    		if (dlg.m_bEmbed)
-    		{
-    			m_pSndFile->m_dwSongFlags |= SONG_EMBEDMIDICFG;
-    			m_pModDoc->SetModified();
-    		} else
-    		{
-    			if (m_pSndFile->m_dwSongFlags & SONG_EMBEDMIDICFG) m_pModDoc->SetModified();
-    			m_pSndFile->m_dwSongFlags &= ~SONG_EMBEDMIDICFG;
+            CMidiMacroSetup dlg(&m_pSndFile->m_MidiCfg, (m_pSndFile->m_dwSongFlags & SONG_EMBEDMIDICFG), this);
+            if (dlg.DoModal() == IDOK)
+            {
+                    m_pSndFile->m_MidiCfg = dlg.m_MidiCfg;
+                    if (dlg.m_bEmbed)
+                    {
+                            m_pSndFile->m_dwSongFlags |= SONG_EMBEDMIDICFG;
+                            m_pModDoc->SetModified();
+                    } else
+                    {
+                            if (m_pSndFile->m_dwSongFlags & SONG_EMBEDMIDICFG) m_pModDoc->SetModified();
+                            m_pSndFile->m_dwSongFlags &= ~SONG_EMBEDMIDICFG;
 
-    			// If this macro is not the default IT macro, display a warning.
-    			if(!m_pModDoc->IsMacroDefaultSetupUsed())
-    			{
-    				if(AfxMessageBox(_T("You have chosen not to embed MIDI macros. However, the current macro configuration differs from the default macro configuration that is assumed when loading a file that has no macros embedded. This can result in data loss and broken playback.\nWould you like to embed MIDI macros now?"), MB_YESNO) == IDYES)
-    				{
-    					m_pSndFile->m_dwSongFlags |= SONG_EMBEDMIDICFG;
-    					m_pModDoc->SetModified();
-    				}
-    			}
-    		}
-    	}
+                            // If this macro is not the default IT macro, display a warning.
+                            if(!m_pModDoc->IsMacroDefaultSetupUsed())
+                            {
+                                    if(AfxMessageBox(_T("You have chosen not to embed MIDI macros. However, the current macro configuration differs from the default macro configuration that is assumed when loading a file that has no macros embedded. This can result in data loss and broken playback.\nWould you like to embed MIDI macros now?"), MB_YESNO) == IDYES)
+                                    {
+                                            m_pSndFile->m_dwSongFlags |= SONG_EMBEDMIDICFG;
+                                            m_pModDoc->SetModified();
+                                    }
+                            }
+                    }
+            }
     }
 }
 
@@ -1150,10 +1150,10 @@ void CCtrlPatterns::OnDetailLo()
     m_ToolBar.SetState(ID_PATTERNDETAIL_LO, TBSTATE_CHECKED|TBSTATE_ENABLED);
     if (m_nDetailLevel != 1)
     {
-    	m_nDetailLevel = 1;
-    	m_ToolBar.SetState(ID_PATTERNDETAIL_MED, TBSTATE_ENABLED);
-    	m_ToolBar.SetState(ID_PATTERNDETAIL_HI, TBSTATE_ENABLED);
-    	SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
+            m_nDetailLevel = 1;
+            m_ToolBar.SetState(ID_PATTERNDETAIL_MED, TBSTATE_ENABLED);
+            m_ToolBar.SetState(ID_PATTERNDETAIL_HI, TBSTATE_ENABLED);
+            SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
     }
     SwitchToView();
 }
@@ -1165,10 +1165,10 @@ void CCtrlPatterns::OnDetailMed()
     m_ToolBar.SetState(ID_PATTERNDETAIL_MED, TBSTATE_CHECKED|TBSTATE_ENABLED);
     if (m_nDetailLevel != 2)
     {
-    	m_nDetailLevel = 2;
-    	m_ToolBar.SetState(ID_PATTERNDETAIL_LO, TBSTATE_ENABLED);
-    	m_ToolBar.SetState(ID_PATTERNDETAIL_HI, TBSTATE_ENABLED);
-    	SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
+            m_nDetailLevel = 2;
+            m_ToolBar.SetState(ID_PATTERNDETAIL_LO, TBSTATE_ENABLED);
+            m_ToolBar.SetState(ID_PATTERNDETAIL_HI, TBSTATE_ENABLED);
+            SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
     }
     SwitchToView();
 }
@@ -1180,10 +1180,10 @@ void CCtrlPatterns::OnDetailHi()
     m_ToolBar.SetState(ID_PATTERNDETAIL_HI, TBSTATE_CHECKED|TBSTATE_ENABLED);
     if (m_nDetailLevel != 4)
     {
-    	m_nDetailLevel = 4;
-    	m_ToolBar.SetState(ID_PATTERNDETAIL_LO, TBSTATE_ENABLED);
-    	m_ToolBar.SetState(ID_PATTERNDETAIL_MED, TBSTATE_ENABLED);
-    	SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
+            m_nDetailLevel = 4;
+            m_ToolBar.SetState(ID_PATTERNDETAIL_LO, TBSTATE_ENABLED);
+            m_ToolBar.SetState(ID_PATTERNDETAIL_MED, TBSTATE_ENABLED);
+            SendViewMessage(VIEWMSG_SETDETAIL, m_nDetailLevel);
     }
     SwitchToView();
 }
@@ -1202,15 +1202,15 @@ void CCtrlPatterns::TogglePluginEditor()
 {
     if(m_nInstrument && m_pModDoc && m_pSndFile && m_pSndFile->Instruments[m_nInstrument])
     {
-    	UINT nPlug = m_pSndFile->Instruments[m_nInstrument]->nMixPlug;
-    	if (nPlug) //if not no plugin
-    	{
-    		PSNDMIXPLUGIN pPlug = &(m_pSndFile->m_MixPlugins[nPlug-1]);
-    		if (pPlug && pPlug->pMixPlugin) //if has valid plugin
-    		{
-    			m_pModDoc->TogglePluginEditor(nPlug-1);
-    		}
-    	}
+            UINT nPlug = m_pSndFile->Instruments[m_nInstrument]->nMixPlug;
+            if (nPlug) //if not no plugin
+            {
+                    PSNDMIXPLUGIN pPlug = &(m_pSndFile->m_MixPlugins[nPlug-1]);
+                    if (pPlug && pPlug->pMixPlugin) //if has valid plugin
+                    {
+                            m_pModDoc->TogglePluginEditor(nPlug-1);
+                    }
+            }
     }
 }
 
@@ -1220,15 +1220,15 @@ bool CCtrlPatterns::HasValidPlug(UINT instr)
 {
     if ((instr) && (instr<MAX_INSTRUMENTS) && (m_pSndFile) && m_pSndFile->Instruments[instr])
     {
-    	UINT nPlug = m_pSndFile->Instruments[instr]->nMixPlug;
-    	if (nPlug) //if not no plugin
-    	{
-    		PSNDMIXPLUGIN pPlug = &(m_pSndFile->m_MixPlugins[nPlug-1]);
-    		if (pPlug && pPlug->pMixPlugin) //if has valid plugin
-    		{
-    			return true ;
-    		}
-    	}
+            UINT nPlug = m_pSndFile->Instruments[instr]->nMixPlug;
+            if (nPlug) //if not no plugin
+            {
+                    PSNDMIXPLUGIN pPlug = &(m_pSndFile->m_MixPlugins[nPlug-1]);
+                    if (pPlug && pPlug->pMixPlugin) //if has valid plugin
+                    {
+                            return true ;
+                    }
+            }
     }
     return false;
 }
@@ -1243,7 +1243,7 @@ BOOL CCtrlPatterns::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
     // TODO: Add your message handler code here and/or call default
 
     if (nFlags==0) {
-    	PostViewMessage(VIEWMSG_DOSCROLL, zDelta);
+            PostViewMessage(VIEWMSG_DOSCROLL, zDelta);
     }
     return CModControlDlg::OnMouseWheel(nFlags, zDelta, pt);
 }
@@ -1273,17 +1273,17 @@ void CCtrlPatterns::OnSequenceNumChanged()
 {
     if ((m_EditSequence.m_hWnd) && (m_EditSequence.GetWindowTextLength() > 0))
     {
-    	SEQUENCEINDEX newSeq = (SEQUENCEINDEX)GetDlgItemInt(IDC_EDIT_SEQNUM);
+            SEQUENCEINDEX newSeq = (SEQUENCEINDEX)GetDlgItemInt(IDC_EDIT_SEQNUM);
 
-    	// avoid reloading the order list and thus setting the document modified
-    	if(newSeq == m_pSndFile->Order.GetCurrentSequenceIndex())
-    		return;
+            // avoid reloading the order list and thus setting the document modified
+            if(newSeq == m_pSndFile->Order.GetCurrentSequenceIndex())
+                    return;
 
-    	if (newSeq >= MAX_SEQUENCES)
-    	{
-    		newSeq = MAX_SEQUENCES - 1;
-    		SetDlgItemInt(IDC_EDIT_SEQNUM, MAX_SEQUENCES - 1, FALSE);
-    	}
-    	m_OrderList.SelectSequence(newSeq);
+            if (newSeq >= MAX_SEQUENCES)
+            {
+                    newSeq = MAX_SEQUENCES - 1;
+                    SetDlgItemInt(IDC_EDIT_SEQNUM, MAX_SEQUENCES - 1, FALSE);
+            }
+            m_OrderList.SelectSequence(newSeq);
     }
 }

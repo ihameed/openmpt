@@ -6,19 +6,19 @@ bool CModSpecifications::HasNote(modplug::tracker::modevent_t::note_t note) cons
 //------------------------------------------------------------
 {
     if(note >= noteMin && note <= noteMax)
-    	return true;
+            return true;
     else if(note >= NOTE_MIN_SPECIAL && note <= NOTE_MAX_SPECIAL)
     {
-    	if(note == NOTE_NOTECUT)
-    		return hasNoteCut;
-    	else if(note == NOTE_KEYOFF)
-    		return hasNoteOff;
-    	else if(note == NOTE_FADE)
-    		return hasNoteFade;
-    	else
-    		return (memcmp(fileExtension, ModSpecs::mptm.fileExtension, 4) == 0);
+            if(note == NOTE_NOTECUT)
+                    return hasNoteCut;
+            else if(note == NOTE_KEYOFF)
+                    return hasNoteOff;
+            else if(note == NOTE_FADE)
+                    return hasNoteFade;
+            else
+                    return (memcmp(fileExtension, ModSpecs::mptm.fileExtension, 4) == 0);
     } else if(note == NOTE_NONE)
-    	return true;
+            return true;
     return false;
 }
 

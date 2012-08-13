@@ -344,10 +344,10 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
             // Global Volume
             case CMD_GLOBALVOLUME:
                 // ST3 applies global volume on tick 1 and does other weird things, but we won't emulate this for now.
-//     			if((GetType() & MOD_TYPE_S3M) && nMusicSpeed <= 1)
-//     			{
-//     				break;
-//     			}
+//                             if((GetType() & MOD_TYPE_S3M) && nMusicSpeed <= 1)
+//                             {
+//                                     break;
+//                             }
 
                 if (!(GetType() & (MOD_TYPE_IT | MOD_TYPE_MPT))) param <<= 1;
                 if(IsCompatibleMode(TRK_IMPULSETRACKER | TRK_FASTTRACKER2 | TRK_SCREAMTRACKER))
@@ -592,7 +592,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
     // Instrument adjust
     pChn->nNewIns = 0;
 
-    if (pIns && (pIns->nMixPlug || pSmp))    	//rewbs.VSTiNNA
+    if (pIns && (pIns->nMixPlug || pSmp))            //rewbs.VSTiNNA
         pChn->nNNA = pIns->new_note_action;
 
     if (pSmp)
@@ -1214,7 +1214,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
         UINT nPlugin = GetBestPlugin(nChn, PRIORITISE_INSTRUMENT, RESPECT_MUTES);
         /*
         UINT nPlugin = 0;
-        nPlugin = pChn->instrument->nMixPlug;      	   // first try intrument VST
+        nPlugin = pChn->instrument->nMixPlug;                 // first try intrument VST
         if ((!nPlugin) || (nPlugin > MAX_MIXPLUGINS))  // Then try Channel VST
             nPlugin = ChnSettings[nChn].nMixPlugin;
         */
@@ -1357,7 +1357,7 @@ BOOL module_renderer::ProcessEffects()
                 if(m_nTickCount + 1 == m_nMusicSpeed)
                 {    // On last tick, set parameter exactly to target value.
                     // Note: m_nPlugInitialParamValue is used to store the target value,
-                    //    	 not the initial value as the name suggests.
+                    //             not the initial value as the name suggests.
                     m_MixPlugins[nPlug-1].pMixPlugin->SetParameter(plugparam, pChn->m_nPlugInitialParamValue);
                 }
                 else
@@ -1549,7 +1549,7 @@ BOOL module_renderer::ProcessEffects()
 
         //rewbs.VSTnoteDelay
         #ifdef MODPLUG_TRACKER
-//    		if (m_nInstruments) ProcessMidiOut(nChn, pChn);
+//                    if (m_nInstruments) ProcessMidiOut(nChn, pChn);
         #endif // MODPLUG_TRACKER
         //end rewbs.VSTnoteDelay
 
@@ -1737,7 +1737,7 @@ BOOL module_renderer::ProcessEffects()
                         PortamentoDown(pChn, vol << 2, false);
                     break;
 
-                case VOLCMD_OFFSET:    				//rewbs.volOff
+                case VOLCMD_OFFSET:                                    //rewbs.volOff
                     if (m_nTickCount == nStartTick)
                         SampleOffset(nChn, vol<<3, bPorta);
                     break;
@@ -1905,11 +1905,11 @@ BOOL module_renderer::ProcessEffects()
         // Set Global Volume
         case CMD_GLOBALVOLUME:
             // ST3 applies global volume on tick 1 and does other weird things, but we won't emulate this for now.
-//     		if(((GetType() & MOD_TYPE_S3M) && m_nTickCount != 1)
-//     			|| (!(GetType() & MOD_TYPE_S3M) && !(m_dwSongFlags & SONG_FIRSTTICK)))
-//     		{
-//     			break;
-//     		}
+//                     if(((GetType() & MOD_TYPE_S3M) && m_nTickCount != 1)
+//                             || (!(GetType() & MOD_TYPE_S3M) && !(m_dwSongFlags & SONG_FIRSTTICK)))
+//                     {
+//                             break;
+//                     }
 
             if (!(GetType() & (MOD_TYPE_IT|MOD_TYPE_MPT))) param <<= 1;
             //IT compatibility 16. FT2, ST3 and IT ignore out-of-range values
@@ -2125,7 +2125,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Midi Controller
-        case CMD_MIDI:    		// Midi Controller (on first tick only)
+        case CMD_MIDI:                    // Midi Controller (on first tick only)
         case CMD_SMOOTHMIDI:    // Midi Controller (smooth, i.e. on every tick)
 
             if((cmd == CMD_MIDI) && !(m_dwSongFlags & SONG_FIRSTTICK)) break;
@@ -2904,13 +2904,13 @@ void module_renderer::ExtendedS3MCommands(UINT nChn, UINT param)
                         }
                     }
                     break;
-                case 3:    	pChn->nNNA = NNA_NOTECUT; break;
-                case 4:    	pChn->nNNA = NNA_CONTINUE; break;
-                case 5:    	pChn->nNNA = NNA_NOTEOFF; break;
-                case 6:    	pChn->nNNA = NNA_NOTEFADE; break;
-                case 7:    	pChn->flags &= ~CHN_VOLENV; break;
-                case 8:    	pChn->flags |= CHN_VOLENV; break;
-                case 9:    	pChn->flags &= ~CHN_PANENV; break;
+                case 3:            pChn->nNNA = NNA_NOTECUT; break;
+                case 4:            pChn->nNNA = NNA_CONTINUE; break;
+                case 5:            pChn->nNNA = NNA_NOTEOFF; break;
+                case 6:            pChn->nNNA = NNA_NOTEFADE; break;
+                case 7:            pChn->flags &= ~CHN_VOLENV; break;
+                case 8:            pChn->flags |= CHN_VOLENV; break;
+                case 9:            pChn->flags &= ~CHN_PANENV; break;
                 case 10:    pChn->flags |= CHN_PANENV; break;
                 case 11:    pChn->flags &= ~CHN_PITCHENV; break;
                 case 12:    pChn->flags |= CHN_PITCHENV; break;
@@ -2977,7 +2977,7 @@ void module_renderer::ExtendedChannelEffect(modplug::tracker::modchannel_t *pChn
     switch(param & 0x0F)
     {
     // S90: Surround Off
-    case 0x00:    pChn->flags &= ~CHN_SURROUND;	break;
+    case 0x00:    pChn->flags &= ~CHN_SURROUND;        break;
     // S91: Surround On
     case 0x01:    pChn->flags |= CHN_SURROUND; pChn->nPan = 128; break;
     ////////////////////////////////////////////////////////////
@@ -3486,7 +3486,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
         // IT compatibility: see previous IT compatibility comment =)
         if(IsCompatibleMode(TRK_IMPULSETRACKER)) pChn->sample_position = pChn->fractional_sample_position = 0;
 
-        if (offset)    								//rewbs.volOffset: apply offset on retrig
+        if (offset)                                                                    //rewbs.volOffset: apply offset on retrig
         {
             if (pChn->sample)
                 pChn->length = pChn->sample->length;
@@ -3945,7 +3945,7 @@ UINT module_renderer::GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodF
 UINT  module_renderer::GetBestPlugin(UINT nChn, UINT priority, bool respectMutes)
 //-------------------------------------------------------------------------
 {
-    if (nChn > MAX_VIRTUAL_CHANNELS)    	//Check valid channel number
+    if (nChn > MAX_VIRTUAL_CHANNELS)            //Check valid channel number
     {
         return 0;
     }

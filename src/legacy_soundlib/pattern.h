@@ -26,12 +26,12 @@ public:
     CPattern& operator=(modplug::tracker::modevent_t* const p) { m_ModCommands = p; return *this; }
     CPattern& operator=(const CPattern& pat)
     {
-    	m_ModCommands = pat.m_ModCommands;
-    	m_Rows = pat.m_Rows;
-    	m_RowsPerBeat = pat.m_RowsPerBeat;
-    	m_RowsPerMeasure = pat.m_RowsPerMeasure;
-    	m_PatternName = pat.m_PatternName;
-    	return *this;
+            m_ModCommands = pat.m_ModCommands;
+            m_Rows = pat.m_Rows;
+            m_RowsPerBeat = pat.m_RowsPerBeat;
+            m_RowsPerMeasure = pat.m_RowsPerMeasure;
+            m_PatternName = pat.m_PatternName;
+            return *this;
     }
 //END: OPERATORS
 
@@ -41,9 +41,9 @@ public:
     const modplug::tracker::modevent_t* GetpModCommand(const ROWINDEX r, const CHANNELINDEX c) const { return &m_ModCommands[r * GetNumChannels() + c]; }
 
     ROWINDEX GetNumRows() const { return m_Rows; }
-    ROWINDEX GetRowsPerBeat() const { return m_RowsPerBeat; }			// pattern-specific rows per beat
-    ROWINDEX GetRowsPerMeasure() const { return m_RowsPerMeasure; }		// pattern-specific rows per measure
-    bool GetOverrideSignature() const { return (m_RowsPerBeat + m_RowsPerMeasure > 0); }	// override song time signature?
+    ROWINDEX GetRowsPerBeat() const { return m_RowsPerBeat; }                        // pattern-specific rows per beat
+    ROWINDEX GetRowsPerMeasure() const { return m_RowsPerMeasure; }                // pattern-specific rows per measure
+    bool GetOverrideSignature() const { return (m_RowsPerBeat + m_RowsPerMeasure > 0); }        // override song time signature?
 
     // Return true if modcommand can be accessed from given row, false otherwise.
     bool IsValidRow(const ROWINDEX iRow) const { return (iRow < GetNumRows()); }
@@ -123,8 +123,8 @@ public:
 protected:
     modplug::tracker::modevent_t* m_ModCommands;
     ROWINDEX m_Rows;
-    ROWINDEX m_RowsPerBeat;		// patterns-specific time signature. if != 0, this is implicitely set.
-    ROWINDEX m_RowsPerMeasure;	// dito
+    ROWINDEX m_RowsPerBeat;                // patterns-specific time signature. if != 0, this is implicitely set.
+    ROWINDEX m_RowsPerMeasure;        // dito
     CString m_PatternName;
     CPatternContainer& m_rPatternContainer;
 //END: DATA

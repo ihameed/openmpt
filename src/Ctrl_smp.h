@@ -6,7 +6,7 @@ struct SELECTIONPOINTS
 {
     UINT nStart;
     UINT nEnd;
-    bool bSelected;	// does sample selection exist or not?
+    bool bSelected;        // does sample selection exist or not?
 };
 
 //=======================================
@@ -56,12 +56,12 @@ public:
     bool SetCurrentSample(SAMPLEINDEX nSmp, LONG lZoom = -1, bool bUpdNum = true);
     bool OpenSample(LPCSTR lpszFileName);
     bool OpenSample(module_renderer *pSndFile, SAMPLEINDEX nSample);
-    LONG* GetSplitPosRef() {return &CMainFrame::glSampleWindowHeight;} 	//rewbs.varWindowSize
+    LONG* GetSplitPosRef() {return &CMainFrame::glSampleWindowHeight;}         //rewbs.varWindowSize
 
 public:
     //{{AFX_VIRTUAL(CCtrlSamples)
     virtual BOOL OnInitDialog();
-    virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);        // DDX/DDV support
     virtual CRuntimeClass *GetAssociatedViewClass();
     virtual void RecalcLayout();
     virtual void OnActivatePage(LPARAM);

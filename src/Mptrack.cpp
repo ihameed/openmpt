@@ -203,24 +203,24 @@ const LPCTSTR szDefaultNoteNames[NOTE_MAX] = {
 
 const uint8_t gEffectColors[MAX_EFFECTS] =
 {
-    0,    				0,					MODCOLOR_PITCH,		MODCOLOR_PITCH,
-    MODCOLOR_PITCH,    	MODCOLOR_PITCH,		MODCOLOR_VOLUME,	MODCOLOR_VOLUME,
-    MODCOLOR_VOLUME,    MODCOLOR_PANNING,	0,					MODCOLOR_VOLUME,
-    MODCOLOR_GLOBALS,    MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,	0,
-    MODCOLOR_GLOBALS,    MODCOLOR_GLOBALS,	0,					0,
-    0,    				MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_GLOBALS,
-    MODCOLOR_GLOBALS,    0,					MODCOLOR_PITCH,		MODCOLOR_PANNING,
-    MODCOLOR_PITCH,    	MODCOLOR_PANNING,	0,					0,
-    0,    				0,					0,					MODCOLOR_PITCH,
+    0,                                    0,                                        MODCOLOR_PITCH,                MODCOLOR_PITCH,
+    MODCOLOR_PITCH,            MODCOLOR_PITCH,                MODCOLOR_VOLUME,        MODCOLOR_VOLUME,
+    MODCOLOR_VOLUME,    MODCOLOR_PANNING,        0,                                        MODCOLOR_VOLUME,
+    MODCOLOR_GLOBALS,    MODCOLOR_VOLUME,        MODCOLOR_GLOBALS,        0,
+    MODCOLOR_GLOBALS,    MODCOLOR_GLOBALS,        0,                                        0,
+    0,                                    MODCOLOR_VOLUME,        MODCOLOR_VOLUME,        MODCOLOR_GLOBALS,
+    MODCOLOR_GLOBALS,    0,                                        MODCOLOR_PITCH,                MODCOLOR_PANNING,
+    MODCOLOR_PITCH,            MODCOLOR_PANNING,        0,                                        0,
+    0,                                    0,                                        0,                                        MODCOLOR_PITCH,
     MODCOLOR_PITCH,
 };
 
 const uint8_t gVolEffectColors[MAX_VOLCMDS] =
 {
-    0,    				MODCOLOR_VOLUME,	MODCOLOR_PANNING,	MODCOLOR_VOLUME,
-    MODCOLOR_VOLUME,    MODCOLOR_VOLUME,	MODCOLOR_VOLUME,	MODCOLOR_PITCH,
-    MODCOLOR_PITCH,    	MODCOLOR_PANNING,	MODCOLOR_PANNING,	MODCOLOR_PITCH,
-    MODCOLOR_PITCH,    	MODCOLOR_PITCH,		0,					0,
+    0,                                    MODCOLOR_VOLUME,        MODCOLOR_PANNING,        MODCOLOR_VOLUME,
+    MODCOLOR_VOLUME,    MODCOLOR_VOLUME,        MODCOLOR_VOLUME,        MODCOLOR_PITCH,
+    MODCOLOR_PITCH,            MODCOLOR_PANNING,        MODCOLOR_PANNING,        MODCOLOR_PITCH,
+    MODCOLOR_PITCH,            MODCOLOR_PITCH,                0,                                        0,
 };
 
 static void ShowChangesDialog()
@@ -360,7 +360,7 @@ BOOL CTrackApp::ExportMidiConfig(LPCSTR lpszConfigFile)
 /////////////////////////////////////////////////////////////////////////////
 // DLS Banks support
 
-#define MPTRACK_REG_DLS    	"Software\\Olivier Lapicque\\ModPlug Tracker\\DLS Banks"
+#define MPTRACK_REG_DLS            "Software\\Olivier Lapicque\\ModPlug Tracker\\DLS Banks"
 CDLSBank *CTrackApp::gpDLSBanks[MAX_DLS_BANKS];
 
 
@@ -516,7 +516,7 @@ BOOL CTrackApp::m_nProject = FALSE;
 
 BEGIN_MESSAGE_MAP(CTrackApp, CWinApp)
     //{{AFX_MSG_MAP(CTrackApp)
-    ON_COMMAND(ID_FILE_NEW,    	OnFileNew)
+    ON_COMMAND(ID_FILE_NEW,            OnFileNew)
     ON_COMMAND(ID_FILE_NEWMOD,    OnFileNewMOD)
     ON_COMMAND(ID_FILE_NEWS3M,    OnFileNewS3M)
     ON_COMMAND(ID_FILE_NEWXM,    OnFileNewXM)
@@ -525,7 +525,7 @@ BEGIN_MESSAGE_MAP(CTrackApp, CWinApp)
 // -> DESC="IT project files (.itp)"
     ON_COMMAND(ID_NEW_ITPROJECT,OnFileNewITProject)
 // -! NEW_FEATURE#0023
-    ON_COMMAND(ID_NEW_MPT,    	OnFileNewMPT)
+    ON_COMMAND(ID_NEW_MPT,            OnFileNewMPT)
     ON_COMMAND(ID_FILE_OPEN,    OnFileOpen)
     ON_COMMAND(ID_APP_ABOUT,    OnAppAbout)
     ON_COMMAND(ID_HELP_INDEX,    CWinApp::OnHelpIndex)
@@ -1572,7 +1572,7 @@ void ErrorBox(UINT nStringID, CWnd*p)
 void CFastBitmap::Init(LPMODPLUGDIB lpTextDib)
 //--------------------------------------------
 {
-    m_nBlendOffset = 0;    		// rewbs.buildfix for pattern display bug in debug builds
+    m_nBlendOffset = 0;                    // rewbs.buildfix for pattern display bug in debug builds
                                 // & release builds when ran directly from vs.net
 
     m_pTextDib = lpTextDib;

@@ -32,14 +32,14 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // Sample import dialog
 
-#define ER_8BIT    		0x01
-#define ER_16BIT    	0x02
+#define ER_8BIT                    0x01
+#define ER_16BIT            0x02
 
-#define ER_SIGNED    	0x10
-#define ER_UNSIGNED    	0x20
+#define ER_SIGNED            0x10
+#define ER_UNSIGNED            0x20
 
-#define ER_MONO    		0x0100
-#define ER_STEREO    	0x0200
+#define ER_MONO                    0x0100
+#define ER_STEREO            0x0200
 
 //=================================
 class CRawSampleDlg: public CDialog
@@ -58,7 +58,7 @@ public:
 public:
     CRawSampleDlg(CWnd *parent = NULL):CDialog(IDD_LOADRAWSAMPLE, parent)
     { 
-    	m_bRememberFormat = false;
+            m_bRememberFormat = false;
     }
 
 protected:
@@ -73,9 +73,9 @@ protected:
 
 enum enmAddSilenceOptions
 {
-    addsilence_at_beginning = 1,	// Add at beginning of sample
-    addsilence_at_end,				// Add at end of sample
-    addsilence_resize,				// Resize sample
+    addsilence_at_beginning = 1,        // Add at beginning of sample
+    addsilence_at_end,                                // Add at end of sample
+    addsilence_resize,                                // Resize sample
 };
 
 //==================================
@@ -88,23 +88,23 @@ protected:
     DECLARE_MESSAGE_MAP()
 
 public:
-    UINT m_nSamples;	// Add x samples (also containes the return value in all cases)
-    UINT m_nLength;		// Set size to x samples (init value: current sample size)
-    enmAddSilenceOptions m_nEditOption;	// See above
+    UINT m_nSamples;        // Add x samples (also containes the return value in all cases)
+    UINT m_nLength;                // Set size to x samples (init value: current sample size)
+    enmAddSilenceOptions m_nEditOption;        // See above
 
 public:
     CAddSilenceDlg(CWnd *parent, UINT nSamples = 32, UINT nOrigLength = 64) : CDialog(IDD_ADDSILENCE, parent)
     {
-    	m_nSamples = nSamples;
-    	if(nOrigLength > 0)
-    	{
-    		m_nLength = nOrigLength;
-    		m_nEditOption = addsilence_at_end;
-    	} else
-    	{
-    		m_nLength = 64;
-    		m_nEditOption = addsilence_resize;
-    	}
+            m_nSamples = nSamples;
+            if(nOrigLength > 0)
+            {
+                    m_nLength = nOrigLength;
+                    m_nEditOption = addsilence_at_end;
+            } else
+            {
+                    m_nLength = 64;
+                    m_nEditOption = addsilence_resize;
+            }
     }
 
     virtual BOOL OnInitDialog();

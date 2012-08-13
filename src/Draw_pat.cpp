@@ -5,7 +5,7 @@
 #include "dlg_misc.h"
 #include "globals.h"
 #include "view_pat.h"
-#include "EffectVis.h"    	//rewbs.fxvis
+#include "EffectVis.h"            //rewbs.fxvis
 #include "ChannelManagerDlg.h"
 #include "legacy_soundlib/tuningbase.h"
 #include <string>
@@ -17,15 +17,15 @@ using std::string;
 using namespace modplug::tracker;
 
 // Headers
-#define ROWHDR_WIDTH    	32	// Row header
-#define COLHDR_HEIGHT    	16	// Column header
-#define COLUMN_HEIGHT    	13
-#define    VUMETERS_HEIGHT		13	// Height of vu-meters
-#define    PLUGNAME_HEIGHT		16	// Height of vu-meters
-#define VUMETERS_BMPWIDTH    	32
-#define VUMETERS_BMPHEIGHT    	10
-#define VUMETERS_MEDWIDTH    	24
-#define VUMETERS_LOWIDTH    	16
+#define ROWHDR_WIDTH            32        // Row header
+#define COLHDR_HEIGHT            16        // Column header
+#define COLUMN_HEIGHT            13
+#define    VUMETERS_HEIGHT                13        // Height of vu-meters
+#define    PLUGNAME_HEIGHT                16        // Height of vu-meters
+#define VUMETERS_BMPWIDTH            32
+#define VUMETERS_BMPHEIGHT            10
+#define VUMETERS_MEDWIDTH            24
+#define VUMETERS_LOWIDTH            16
 
 
 
@@ -134,7 +134,7 @@ void CViewPattern::UpdateView(uint32_t dwHintMask, CObject *)
     {
 // -> CODE#0008
 // -> DESC"#define to set pattern max size (number of rows) limit (now set to 1024 instead of 256)"
-//    	InvalidateRow(dwHintMask >> 24);
+//            InvalidateRow(dwHintMask >> 24);
         InvalidateRow(dwHintMask >> HINT_SHIFT_ROW);
 // -! BEHAVIOUR_CHANGE#0008
     }
@@ -419,7 +419,7 @@ void CViewPattern::OnDraw(CDC *pDC)
 // -> CODE#0012
 // -> DESC="midi keyboard split"
                 const char *pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]? "[Channel %d]" : "Channel %d";
-//    			const char *pszfmt = pModDoc->IsChannelRecord(ncolhdr) ? "Channel %d " : "Channel %d";
+//                            const char *pszfmt = pModDoc->IsChannelRecord(ncolhdr) ? "Channel %d " : "Channel %d";
 // -! NEW_FEATURE#0012
                 if ((pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) && ((uint8_t)pSndFile->ChnSettings[ncolhdr].szName[0] >= ' '))
                     pszfmt = pSndFile->m_bChannelMuteTogglePending[ncolhdr]?"%d: [%s]":"%d: %s";
@@ -428,10 +428,10 @@ void CViewPattern::OnDraw(CDC *pDC)
                 wsprintf(s, pszfmt, ncolhdr+1, pSndFile->ChnSettings[ncolhdr].szName);
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-//    			DrawButtonRect(hdc, &rect, s,
-//    				(pSndFile->ChnSettings[ncolhdr].dwFlags & CHN_MUTE) ? TRUE : FALSE,
-//    				((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_CHNHEADER) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE, DT_CENTER);
-//    			rect.bottom = rect.top + COLHDR_HEIGHT;
+//                            DrawButtonRect(hdc, &rect, s,
+//                                    (pSndFile->ChnSettings[ncolhdr].dwFlags & CHN_MUTE) ? TRUE : FALSE,
+//                                    ((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_CHNHEADER) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE, DT_CENTER);
+//                            rect.bottom = rect.top + COLHDR_HEIGHT;
                 DrawButtonRect(hdc, &rect, s,
                     (pSndFile->ChnSettings[ncolhdr].dwFlags & CHN_MUTE) ? TRUE : FALSE,
                     ((m_bInItemRect) && ((m_nDragItem & DRAGITEM_MASK) == DRAGITEM_CHNHEADER) && ((m_nDragItem & DRAGITEM_VALUEMASK) == ncolhdr)) ? TRUE : FALSE,
@@ -456,12 +456,12 @@ void CViewPattern::OnDraw(CDC *pDC)
 
                 CRect insRect;
                 insRect.SetRect(xpaint, ypaint, xpaint+nColumnWidth / 8 + 3, ypaint + 16);
-//    			if (MultiRecordMask[ncolhdr>>3] & (1 << (ncolhdr&7)))
+//                            if (MultiRecordMask[ncolhdr>>3] & (1 << (ncolhdr&7)))
                 if (pModDoc->IsChannelRecord1(ncolhdr))
                 {
-//    				rect.DeflateRect(1, 1);
-//    				InvertRect(hdc, &rect);
-//    				rect.InflateRect(1, 1);
+//                                    rect.DeflateRect(1, 1);
+//                                    InvertRect(hdc, &rect);
+//                                    rect.InflateRect(1, 1);
                     FrameRect(hdc,&rect,CMainFrame::brushGray);
                     InvertRect(hdc, &rect);
                     s[0] = '1';
@@ -1491,7 +1491,7 @@ void CViewPattern::UpdateIndicator()
                 }
             }
             pMainFrm->SetInfoText(s);
-            UpdateXInfoText();    	//rewbs.xinfo
+            UpdateXInfoText();            //rewbs.xinfo
         }
     }
 

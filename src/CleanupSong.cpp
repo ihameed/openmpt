@@ -18,28 +18,28 @@
 // Default checkbox state
 bool CModCleanupDlg::m_bCheckBoxes[CU_MAX_CLEANUP_OPTIONS] =
 {
-    true,	false,	true,			// patterns
-    false,	false,					// orders
-    true,	false,	false,	true,	// samples
-    true,	false,					// instruments
-    true,	false,					// plugins
-    false,							// misc
+    true,        false,        true,                        // patterns
+    false,        false,                                        // orders
+    true,        false,        false,        true,        // samples
+    true,        false,                                        // instruments
+    true,        false,                                        // plugins
+    false,                                                        // misc
 };
 
 // Checkbox -> Control ID LUT
 uint16_t const CModCleanupDlg::m_nCleanupIDtoDlgID[CU_MAX_CLEANUP_OPTIONS] =
 {
     // patterns
-    IDC_CHK_CLEANUP_PATTERNS,		IDC_CHK_REMOVE_PATTERNS,	IDC_CHK_REARRANGE_PATTERNS,
+    IDC_CHK_CLEANUP_PATTERNS,                IDC_CHK_REMOVE_PATTERNS,        IDC_CHK_REARRANGE_PATTERNS,
     // orders
-    IDC_CHK_MERGE_SEQUENCES,		IDC_CHK_REMOVE_ORDERS,
+    IDC_CHK_MERGE_SEQUENCES,                IDC_CHK_REMOVE_ORDERS,
     // samples
-    IDC_CHK_CLEANUP_SAMPLES,		IDC_CHK_REMOVE_SAMPLES,		IDC_CHK_REARRANGE_SAMPLES,
+    IDC_CHK_CLEANUP_SAMPLES,                IDC_CHK_REMOVE_SAMPLES,                IDC_CHK_REARRANGE_SAMPLES,
     IDC_CHK_OPTIMIZE_SAMPLES,
     // instruments
-    IDC_CHK_CLEANUP_INSTRUMENTS,	IDC_CHK_REMOVE_INSTRUMENTS,
+    IDC_CHK_CLEANUP_INSTRUMENTS,        IDC_CHK_REMOVE_INSTRUMENTS,
     // plugins
-    IDC_CHK_CLEANUP_PLUGINS,		IDC_CHK_REMOVE_PLUGINS,
+    IDC_CHK_CLEANUP_PLUGINS,                IDC_CHK_REMOVE_PLUGINS,
     // misc
     IDC_CHK_RESET_VARIABLES,
 };
@@ -48,16 +48,16 @@ uint16_t const CModCleanupDlg::m_nCleanupIDtoDlgID[CU_MAX_CLEANUP_OPTIONS] =
 ENUM_CLEANUP_OPTIONS const CModCleanupDlg::m_nMutuallyExclusive[CU_MAX_CLEANUP_OPTIONS] =
 {
     // patterns
-    CU_REMOVE_PATTERNS,		CU_CLEANUP_PATTERNS,	CU_REMOVE_PATTERNS,
+    CU_REMOVE_PATTERNS,                CU_CLEANUP_PATTERNS,        CU_REMOVE_PATTERNS,
     // orders
-    CU_REMOVE_ORDERS,		CU_MERGE_SEQUENCES,
+    CU_REMOVE_ORDERS,                CU_MERGE_SEQUENCES,
     // samples
-    CU_REMOVE_SAMPLES,		CU_CLEANUP_SAMPLES,		CU_REMOVE_SAMPLES,
+    CU_REMOVE_SAMPLES,                CU_CLEANUP_SAMPLES,                CU_REMOVE_SAMPLES,
     CU_REMOVE_SAMPLES,
     // instruments
-    CU_REMOVE_INSTRUMENTS,	CU_CLEANUP_INSTRUMENTS,
+    CU_REMOVE_INSTRUMENTS,        CU_CLEANUP_INSTRUMENTS,
     // plugins
-    CU_REMOVE_PLUGINS,		CU_CLEANUP_PLUGINS,
+    CU_REMOVE_PLUGINS,                CU_CLEANUP_PLUGINS,
     // misc
     CU_NONE,
 
@@ -68,23 +68,23 @@ ENUM_CLEANUP_OPTIONS const CModCleanupDlg::m_nMutuallyExclusive[CU_MAX_CLEANUP_O
 
 BEGIN_MESSAGE_MAP(CModCleanupDlg, CDialog)
     //{{AFX_MSG_MAP(CModTypeDlg)
-    ON_COMMAND(IDC_BTN_CLEANUP_SONG,			OnPresetCleanupSong)
-    ON_COMMAND(IDC_BTN_COMPO_CLEANUP,			OnPresetCompoCleanup)
+    ON_COMMAND(IDC_BTN_CLEANUP_SONG,                        OnPresetCleanupSong)
+    ON_COMMAND(IDC_BTN_COMPO_CLEANUP,                        OnPresetCompoCleanup)
 
-    ON_COMMAND(IDC_CHK_CLEANUP_PATTERNS,		OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REMOVE_PATTERNS,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REARRANGE_PATTERNS,		OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_MERGE_SEQUENCES,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REMOVE_ORDERS,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_CLEANUP_SAMPLES,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REMOVE_SAMPLES,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REARRANGE_SAMPLES,		OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_OPTIMIZE_SAMPLES,		OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_CLEANUP_INSTRUMENTS,		OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REMOVE_INSTRUMENTS,		OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_CLEANUP_PLUGINS,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_REMOVE_PLUGINS,			OnVerifyMutualExclusive)
-    ON_COMMAND(IDC_CHK_RESET_VARIABLES,			OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_CLEANUP_PATTERNS,                OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REMOVE_PATTERNS,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REARRANGE_PATTERNS,                OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_MERGE_SEQUENCES,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REMOVE_ORDERS,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_CLEANUP_SAMPLES,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REMOVE_SAMPLES,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REARRANGE_SAMPLES,                OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_OPTIMIZE_SAMPLES,                OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_CLEANUP_INSTRUMENTS,                OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REMOVE_INSTRUMENTS,                OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_CLEANUP_PLUGINS,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_REMOVE_PLUGINS,                        OnVerifyMutualExclusive)
+    ON_COMMAND(IDC_CHK_RESET_VARIABLES,                        OnVerifyMutualExclusive)
 
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, &CModCleanupDlg::OnToolTipNotify)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, &CModCleanupDlg::OnToolTipNotify)
@@ -97,7 +97,7 @@ BOOL CModCleanupDlg::OnInitDialog()
     CDialog::OnInitDialog();
     for(int i = 0; i < CU_MAX_CLEANUP_OPTIONS; i++)
     {
-    	CheckDlgButton(m_nCleanupIDtoDlgID[i], (m_bCheckBoxes[i]) ? MF_CHECKED : MF_UNCHECKED);
+            CheckDlgButton(m_nCleanupIDtoDlgID[i], (m_bCheckBoxes[i]) ? MF_CHECKED : MF_UNCHECKED);
     }
 
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
@@ -121,7 +121,7 @@ void CModCleanupDlg::OnOK()
 {
     for(int i = 0; i < CU_MAX_CLEANUP_OPTIONS; i++)
     {
-    	m_bCheckBoxes[i] = IsDlgButtonChecked(m_nCleanupIDtoDlgID[i]) ? true : false;
+            m_bCheckBoxes[i] = IsDlgButtonChecked(m_nCleanupIDtoDlgID[i]) ? true : false;
     }
 
     bool bModified = false;
@@ -139,8 +139,8 @@ void CModCleanupDlg::OnOK()
     // Instruments
     if(m_pModDoc->GetSoundFile()->m_nInstruments > 0)
     {
-    	if(m_bCheckBoxes[CU_REMOVE_INSTRUMENTS]) bModified |= RemoveAllInstruments();
-    	if(m_bCheckBoxes[CU_CLEANUP_INSTRUMENTS]) bModified |= RemoveUnusedInstruments();
+            if(m_bCheckBoxes[CU_REMOVE_INSTRUMENTS]) bModified |= RemoveAllInstruments();
+            if(m_bCheckBoxes[CU_CLEANUP_INSTRUMENTS]) bModified |= RemoveUnusedInstruments();
     }
 
     // Samples
@@ -149,7 +149,7 @@ void CModCleanupDlg::OnOK()
     if(m_bCheckBoxes[CU_OPTIMIZE_SAMPLES]) bModified |= OptimizeSamples();
     if(m_pModDoc->GetSoundFile()->m_nSamples > 1)
     {
-    	if(m_bCheckBoxes[CU_REARRANGE_SAMPLES]) bModified |= RearrangeSamples();
+            if(m_bCheckBoxes[CU_REARRANGE_SAMPLES]) bModified |= RearrangeSamples();
     }
 
     // Plugins
@@ -179,24 +179,24 @@ void CModCleanupDlg::OnVerifyMutualExclusive()
     HWND hFocus = GetFocus()->m_hWnd;
     for(int i = 0; i < CU_MAX_CLEANUP_OPTIONS; i++)
     {
-    	// if this item is focussed, we have just (un)checked it.
-    	if(hFocus == GetDlgItem(m_nCleanupIDtoDlgID[i])->m_hWnd)
-    	{
-    		// if we just unchecked it, there's nothing to verify.
-    		if(IsDlgButtonChecked(m_nCleanupIDtoDlgID[i]) == FALSE)
-    			return;
+            // if this item is focussed, we have just (un)checked it.
+            if(hFocus == GetDlgItem(m_nCleanupIDtoDlgID[i])->m_hWnd)
+            {
+                    // if we just unchecked it, there's nothing to verify.
+                    if(IsDlgButtonChecked(m_nCleanupIDtoDlgID[i]) == FALSE)
+                            return;
 
-    		// now we can disable all elements that are mutually exclusive.
-    		if(m_nMutuallyExclusive[i] != CU_NONE)
-    			CheckDlgButton(m_nCleanupIDtoDlgID[m_nMutuallyExclusive[i]], MF_UNCHECKED);
-    		// find other elements which are mutually exclusive with the selected element.
-    		for(int j = 0; j < CU_MAX_CLEANUP_OPTIONS; j++)
-    		{
-    			if(m_nMutuallyExclusive[j] == i)
-    				CheckDlgButton(m_nCleanupIDtoDlgID[j], MF_UNCHECKED);
-    		}
-    		return;
-    	}
+                    // now we can disable all elements that are mutually exclusive.
+                    if(m_nMutuallyExclusive[i] != CU_NONE)
+                            CheckDlgButton(m_nCleanupIDtoDlgID[m_nMutuallyExclusive[i]], MF_UNCHECKED);
+                    // find other elements which are mutually exclusive with the selected element.
+                    for(int j = 0; j < CU_MAX_CLEANUP_OPTIONS; j++)
+                    {
+                            if(m_nMutuallyExclusive[j] == i)
+                                    CheckDlgButton(m_nCleanupIDtoDlgID[j], MF_UNCHECKED);
+                    }
+                    return;
+            }
     }
 }
 
@@ -263,74 +263,74 @@ BOOL CModCleanupDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
     CStringA strTipText = "";
     UINT_PTR nID = pNMHDR->idFrom;
     if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
-    	pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
+            pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
     {
-    	// idFrom is actually the HWND of the tool
-    	nID = ::GetDlgCtrlID((HWND)nID);
+            // idFrom is actually the HWND of the tool
+            nID = ::GetDlgCtrlID((HWND)nID);
     }
 
     switch(nID)
     {
     // patterns
     case IDC_CHK_CLEANUP_PATTERNS:
-    	strTipText = "Remove all unused patterns and rearrange them.";
-    	break;
+            strTipText = "Remove all unused patterns and rearrange them.";
+            break;
     case IDC_CHK_REMOVE_PATTERNS:
-    	strTipText = "Remove all patterns.";
-    	break;
+            strTipText = "Remove all patterns.";
+            break;
     case IDC_CHK_REARRANGE_PATTERNS:
-    	strTipText = "Number the patterns given by their order in the sequence.";
-    	break;
+            strTipText = "Number the patterns given by their order in the sequence.";
+            break;
     // orders
     case IDC_CHK_REMOVE_ORDERS:
-    	strTipText = "Reset the order list.";
-    	break;
+            strTipText = "Reset the order list.";
+            break;
     case IDC_CHK_MERGE_SEQUENCES:
-    	strTipText = "Merge multiple sequences into one.";
-    	break;
+            strTipText = "Merge multiple sequences into one.";
+            break;
     // samples
     case IDC_CHK_CLEANUP_SAMPLES:
-    	strTipText = "Remove all unused samples.";
-    	break;
+            strTipText = "Remove all unused samples.";
+            break;
     case IDC_CHK_REMOVE_SAMPLES:
-    	strTipText = "Remove all samples.";
-    	break;
+            strTipText = "Remove all samples.";
+            break;
     case IDC_CHK_REARRANGE_SAMPLES:
-    	strTipText = "Reorder sample list by removing empty samples.";
-    	break;
+            strTipText = "Reorder sample list by removing empty samples.";
+            break;
     case IDC_CHK_OPTIMIZE_SAMPLES:
-    	strTipText = "Remove unused data after the sample loop end.";
-    	break;
+            strTipText = "Remove unused data after the sample loop end.";
+            break;
     // instruments
     case IDC_CHK_CLEANUP_INSTRUMENTS:
-    	strTipText = "Remove all unused instruments.";
-    	break;
+            strTipText = "Remove all unused instruments.";
+            break;
     case IDC_CHK_REMOVE_INSTRUMENTS:
-    	strTipText = "Remove all instruments and convert them to samples.";
-    	break;
+            strTipText = "Remove all instruments and convert them to samples.";
+            break;
     // plugins
     case IDC_CHK_CLEANUP_PLUGINS:
-    	strTipText = "Remove all unused plugins.";
-    	break;
+            strTipText = "Remove all unused plugins.";
+            break;
     case IDC_CHK_REMOVE_PLUGINS:
-    	strTipText = "Remove all plugins.";
-    	break;
+            strTipText = "Remove all plugins.";
+            break;
     // misc
     case IDC_CHK_SAMPLEPACK:
-    	strTipText = "Convert the module to .IT and reset song / sample / instrument variables";
-    	break;
+            strTipText = "Convert the module to .IT and reset song / sample / instrument variables";
+            break;
     }
 
     if (pNMHDR->code == TTN_NEEDTEXTA)
     {
-    	//strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText,
-    	//	strTipText.GetLength() + 1);
-    	strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, ARRAYELEMCOUNT(pTTTA->szText) - 1));
+            //strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText,
+            //        strTipText.GetLength() + 1);
+            strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, ARRAYELEMCOUNT(pTTTA->szText) - 1));
     }
     else
     {
-    	::MultiByteToWideChar(CP_ACP , 0, strTipText, strTipText.GetLength() + 1,
-    		pTTTW->szText, ARRAYELEMCOUNT(pTTTW->szText));
+            ::MultiByteToWideChar(CP_ACP , 0, strTipText, strTipText.GetLength() + 1,
+                    pTTTW->szText, ARRAYELEMCOUNT(pTTTW->szText));
     }
 
     return TRUE;
@@ -342,14 +342,14 @@ BOOL CModCleanupDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 
 struct OrigPatSettings
 {
-    bool isPatUsed;				// Is pattern used in sequence?
-    PATTERNINDEX newIndex;		// map old pattern index <-> new pattern index
+    bool isPatUsed;                                // Is pattern used in sequence?
+    PATTERNINDEX newIndex;                // map old pattern index <-> new pattern index
     // This stuff is needed for copying the old pattern properties to the new pattern number
-    modplug::tracker::modevent_t *data;			// original pattern data
-    ROWINDEX numRows;			// original pattern sizes
-    ROWINDEX rowsPerBeat;		// original pattern highlight
-    ROWINDEX rowsPerMeasure;	// original pattern highlight
-    CString name;				// original pattern name
+    modplug::tracker::modevent_t *data;                        // original pattern data
+    ROWINDEX numRows;                        // original pattern sizes
+    ROWINDEX rowsPerBeat;                // original pattern highlight
+    ROWINDEX rowsPerMeasure;        // original pattern highlight
+    CString name;                                // original pattern name
 };
 
 const OrigPatSettings defaultSettings = {false, 0, nullptr, 0, 0, 0, ""};
@@ -376,38 +376,38 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     PATTERNINDEX maxpat = 0;
     for(SEQUENCEINDEX nSeq = 0; nSeq < maxSeqIndex; nSeq++)
     {
-    	for (ORDERINDEX nOrd = 0; nOrd < pSndFile->Order.GetSequence(nSeq).GetLength(); nOrd++)
-    	{
-    		PATTERNINDEX n = pSndFile->Order.GetSequence(nSeq)[nOrd];
-    		if (n < maxPatIndex)
-    		{
-    			if (n >= maxpat) maxpat = n + 1;
-    			patternSettings[n].isPatUsed = true;
-    		}
-    	}
+            for (ORDERINDEX nOrd = 0; nOrd < pSndFile->Order.GetSequence(nSeq).GetLength(); nOrd++)
+            {
+                    PATTERNINDEX n = pSndFile->Order.GetSequence(nSeq)[nOrd];
+                    if (n < maxPatIndex)
+                    {
+                            if (n >= maxpat) maxpat = n + 1;
+                            patternSettings[n].isPatUsed = true;
+                    }
+            }
     }
 
     // Find first index to be removed
     if (!bRemove)
     {
-    	PATTERNINDEX imax = maxPatIndex;
-    	while (imax > 0)
-    	{
-    		imax--;
-    		if ((pSndFile->Patterns[imax]) && (patternSettings[imax].isPatUsed)) break;
-    	}
-    	nMinToRemove = imax + 1;
+            PATTERNINDEX imax = maxPatIndex;
+            while (imax > 0)
+            {
+                    imax--;
+                    if ((pSndFile->Patterns[imax]) && (patternSettings[imax].isPatUsed)) break;
+            }
+            nMinToRemove = imax + 1;
     }
 
     // Remove all completely empty patterns above last used pattern (those are safe to remove)
     BEGIN_CRITICAL();
     for (PATTERNINDEX nPat = maxpat; nPat < maxPatIndex; nPat++) if ((pSndFile->Patterns[nPat]) && (nPat >= nMinToRemove))
     {
-    	if(pSndFile->Patterns.IsPatternEmpty(nPat))
-    	{
-    		pSndFile->Patterns.Remove(nPat);
-    		nPatRemoved++;
-    	}
+            if(pSndFile->Patterns.IsPatternEmpty(nPat))
+            {
+                    pSndFile->Patterns.Remove(nPat);
+                    nPatRemoved++;
+            }
     }
     END_CRITICAL();
 
@@ -415,52 +415,52 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     size_t nWaste = 0;
     for (UINT ichk=0; ichk < maxPatIndex; ichk++)
     {
-    	if ((pSndFile->Patterns[ichk]) && (!patternSettings[ichk].isPatUsed)) nWaste++;
+            if ((pSndFile->Patterns[ichk]) && (!patternSettings[ichk].isPatUsed)) nWaste++;
     }
 
     if ((bRemove) && (nWaste))
     {
-    	EndWaitCursor();
-    	wsprintf(s, "%d pattern%s present in file, but not used in the song\nDo you want to reorder the sequence list and remove these patterns?", nWaste, (nWaste == 1) ? "" : "s");
-    	if (m_wParent->MessageBox(s, "Pattern Cleanup", MB_YESNO) != IDYES) return false;
-    	BeginWaitCursor();
+            EndWaitCursor();
+            wsprintf(s, "%d pattern%s present in file, but not used in the song\nDo you want to reorder the sequence list and remove these patterns?", nWaste, (nWaste == 1) ? "" : "s");
+            if (m_wParent->MessageBox(s, "Pattern Cleanup", MB_YESNO) != IDYES) return false;
+            BeginWaitCursor();
     }
 
     for(PATTERNINDEX i = 0; i < maxPatIndex; i++)
-    	patternSettings[i].newIndex = PATTERNINDEX_INVALID;
+            patternSettings[i].newIndex = PATTERNINDEX_INVALID;
 
-    SEQUENCEINDEX oldSequence = pSndFile->Order.GetCurrentSequenceIndex();	// workaround, as GetSequence doesn't allow writing to sequences ATM
+    SEQUENCEINDEX oldSequence = pSndFile->Order.GetCurrentSequenceIndex();        // workaround, as GetSequence doesn't allow writing to sequences ATM
 
     // Re-order pattern numbers based on sequence
-    PATTERNINDEX nPats = 0;	// last used index
+    PATTERNINDEX nPats = 0;        // last used index
     for(SEQUENCEINDEX nSeq = 0; nSeq < maxSeqIndex; nSeq++)
     {
-    	pSndFile->Order.SetSequence(nSeq);
-    	ORDERINDEX imap = 0;
-    	for (imap = 0; imap < pSndFile->Order.GetSequence(nSeq).GetLength(); imap++)
-    	{
-    		PATTERNINDEX n = pSndFile->Order.GetSequence(nSeq)[imap];
-    		if (n < maxPatIndex)
-    		{
-    			if (patternSettings[n].newIndex == PATTERNINDEX_INVALID) patternSettings[n].newIndex = nPats++;
-    			pSndFile->Order[imap] = patternSettings[n].newIndex;
-    		}
-    	}
-    	// Add unused patterns at the end
-    	if ((!bRemove) || (!nWaste))
-    	{
-    		for(PATTERNINDEX iadd = 0; iadd < maxPatIndex; iadd++)
-    		{
-    			if((pSndFile->Patterns[iadd]) && (patternSettings[iadd].newIndex >= maxPatIndex))
-    			{
-    				patternSettings[iadd].newIndex = nPats++;
-    			}
-    		}
-    	}
-    	while (imap < pSndFile->Order.GetSequence(nSeq).GetLength())
-    	{
-    		pSndFile->Order[imap++] = pSndFile->Order.GetInvalidPatIndex();
-    	}
+            pSndFile->Order.SetSequence(nSeq);
+            ORDERINDEX imap = 0;
+            for (imap = 0; imap < pSndFile->Order.GetSequence(nSeq).GetLength(); imap++)
+            {
+                    PATTERNINDEX n = pSndFile->Order.GetSequence(nSeq)[imap];
+                    if (n < maxPatIndex)
+                    {
+                            if (patternSettings[n].newIndex == PATTERNINDEX_INVALID) patternSettings[n].newIndex = nPats++;
+                            pSndFile->Order[imap] = patternSettings[n].newIndex;
+                    }
+            }
+            // Add unused patterns at the end
+            if ((!bRemove) || (!nWaste))
+            {
+                    for(PATTERNINDEX iadd = 0; iadd < maxPatIndex; iadd++)
+                    {
+                            if((pSndFile->Patterns[iadd]) && (patternSettings[iadd].newIndex >= maxPatIndex))
+                            {
+                                    patternSettings[iadd].newIndex = nPats++;
+                            }
+                    }
+            }
+            while (imap < pSndFile->Order.GetSequence(nSeq).GetLength())
+            {
+                    pSndFile->Order[imap++] = pSndFile->Order.GetInvalidPatIndex();
+            }
     }
 
     pSndFile->Order.SetSequence(oldSequence);
@@ -468,45 +468,45 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     // Reorder patterns & Delete unused patterns
     BEGIN_CRITICAL();
     {
-    	for (PATTERNINDEX i = 0; i < maxPatIndex; i++)
-    	{
-    		PATTERNINDEX k = patternSettings[i].newIndex;
-    		if (k < maxPatIndex)
-    		{
-    			if (i != k) bReordered = true;
-    			patternSettings[k].numRows = pSndFile->Patterns[i].GetNumRows();
-    			patternSettings[k].data = pSndFile->Patterns[i];
-    			if(pSndFile->Patterns[i].GetOverrideSignature())
-    			{
-    				patternSettings[k].rowsPerBeat = pSndFile->Patterns[i].GetRowsPerBeat();
-    				patternSettings[k].rowsPerMeasure = pSndFile->Patterns[i].GetRowsPerMeasure();
-    			}
-    			patternSettings[k].name = pSndFile->Patterns[i].GetName();
-    		} else
-    			if (pSndFile->Patterns[i])
-    			{
-    				pSndFile->Patterns.Remove(i);
-    				nPatRemoved++;
-    			}
-    	}
-    	for (PATTERNINDEX nPat = 0; nPat < maxPatIndex; nPat++)
-    	{
-    		pSndFile->Patterns[nPat].SetData(patternSettings[nPat].data, patternSettings[nPat].numRows);
-    		pSndFile->Patterns[nPat].SetSignature(patternSettings[nPat].rowsPerBeat, patternSettings[nPat].rowsPerMeasure);
-    		pSndFile->Patterns[nPat].SetName(patternSettings[nPat].name);
-    	}
+            for (PATTERNINDEX i = 0; i < maxPatIndex; i++)
+            {
+                    PATTERNINDEX k = patternSettings[i].newIndex;
+                    if (k < maxPatIndex)
+                    {
+                            if (i != k) bReordered = true;
+                            patternSettings[k].numRows = pSndFile->Patterns[i].GetNumRows();
+                            patternSettings[k].data = pSndFile->Patterns[i];
+                            if(pSndFile->Patterns[i].GetOverrideSignature())
+                            {
+                                    patternSettings[k].rowsPerBeat = pSndFile->Patterns[i].GetRowsPerBeat();
+                                    patternSettings[k].rowsPerMeasure = pSndFile->Patterns[i].GetRowsPerMeasure();
+                            }
+                            patternSettings[k].name = pSndFile->Patterns[i].GetName();
+                    } else
+                            if (pSndFile->Patterns[i])
+                            {
+                                    pSndFile->Patterns.Remove(i);
+                                    nPatRemoved++;
+                            }
+            }
+            for (PATTERNINDEX nPat = 0; nPat < maxPatIndex; nPat++)
+            {
+                    pSndFile->Patterns[nPat].SetData(patternSettings[nPat].data, patternSettings[nPat].numRows);
+                    pSndFile->Patterns[nPat].SetSignature(patternSettings[nPat].rowsPerBeat, patternSettings[nPat].rowsPerMeasure);
+                    pSndFile->Patterns[nPat].SetName(patternSettings[nPat].name);
+            }
     }
     END_CRITICAL();
     EndWaitCursor();
     if ((nPatRemoved) || (bReordered))
     {
-    	m_pModDoc->GetPatternUndo()->ClearUndo();
-    	if (nPatRemoved)
-    	{
-    		wsprintf(s, "%d pattern%s removed.\n", nPatRemoved, (nPatRemoved == 1) ? "" : "s");
-    		m_pModDoc->AddToLog(s);
-    	}
-    	return true;
+            m_pModDoc->GetPatternUndo()->ClearUndo();
+            if (nPatRemoved)
+            {
+                    wsprintf(s, "%d pattern%s removed.\n", nPatRemoved, (nPatRemoved == 1) ? "" : "s");
+                    m_pModDoc->AddToLog(s);
+            }
+            return true;
     }
     return false;
 }
@@ -525,11 +525,11 @@ bool CModCleanupDlg::RemoveUnusedSamples()
     BeginWaitCursor();
     for (SAMPLEINDEX nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].sample_data)
     {
-    	if (!pSndFile->IsSampleUsed(nSmp))
-    	{
-    		samplesUsed[nSmp] = false;
-    		m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete);
-    	}
+            if (!pSndFile->IsSampleUsed(nSmp))
+            {
+                    samplesUsed[nSmp] = false;
+                    m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete);
+            }
     }
     BEGIN_CRITICAL();
     SAMPLEINDEX nRemoved = pSndFile->RemoveSelectedSamples(samplesUsed);
@@ -540,28 +540,28 @@ bool CModCleanupDlg::RemoveUnusedSamples()
     EndWaitCursor();
 
     if (nExt && !((pSndFile->GetType() == MOD_TYPE_IT) && (pSndFile->m_dwSongFlags & SONG_ITPROJECT)))
-    {	//We don't remove an instrument's unused samples in an ITP.
-    	wsprintf(s, "OpenMPT detected %d sample%s referenced by an instrument,\n"
-    		"but not used in the song. Do you want to remove them?", nExt, (nExt == 1) ? "" : "s");
-    	if (::MessageBox(NULL, s, "Sample Cleanup", MB_YESNO | MB_ICONQUESTION) == IDYES)
-    	{
-    		for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
-    		{
-    			if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].sample_data))
-    			{
-    				m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete);
-    				BEGIN_CRITICAL();
-    				pSndFile->DestroySample(nSmp);
-    				if ((nSmp == pSndFile->m_nSamples) && (nSmp > 1)) pSndFile->m_nSamples--;
-    				END_CRITICAL();
-    				nRemoved++;
-    				m_pModDoc->GetSampleUndo()->ClearUndo(nSmp);
-    			}
-    		}
-    		wsprintf(s, "%d unused sample%s removed\n" , nRemoved, (nRemoved == 1) ? "" : "s");
-    		m_pModDoc->AddToLog(s);
-    		return true;
-    	}
+    {        //We don't remove an instrument's unused samples in an ITP.
+            wsprintf(s, "OpenMPT detected %d sample%s referenced by an instrument,\n"
+                    "but not used in the song. Do you want to remove them?", nExt, (nExt == 1) ? "" : "s");
+            if (::MessageBox(NULL, s, "Sample Cleanup", MB_YESNO | MB_ICONQUESTION) == IDYES)
+            {
+                    for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
+                    {
+                            if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].sample_data))
+                            {
+                                    m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete);
+                                    BEGIN_CRITICAL();
+                                    pSndFile->DestroySample(nSmp);
+                                    if ((nSmp == pSndFile->m_nSamples) && (nSmp > 1)) pSndFile->m_nSamples--;
+                                    END_CRITICAL();
+                                    nRemoved++;
+                                    m_pModDoc->GetSampleUndo()->ClearUndo(nSmp);
+                            }
+                    }
+                    wsprintf(s, "%d unused sample%s removed\n" , nRemoved, (nRemoved == 1) ? "" : "s");
+                    m_pModDoc->AddToLog(s);
+                    return true;
+            }
     }
     return (nRemoved > 0);
 }
@@ -578,32 +578,32 @@ bool CModCleanupDlg::OptimizeSamples()
 
     for (SAMPLEINDEX nSmp=1; nSmp <= pSndFile->m_nSamples; nSmp++)
     {
-    	if(pSndFile->Samples[nSmp].sample_data && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
-    		&& (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2)) nLoopOpt++;
+            if(pSndFile->Samples[nSmp].sample_data && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
+                    && (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2)) nLoopOpt++;
     }
     if (nLoopOpt == 0) return false;
 
     CHAR s[512];
     wsprintf(s, "%d sample%s unused data after the loop end point,\n"
-    	"Do you want to optimize %s and remove this unused data?", nLoopOpt, (nLoopOpt == 1) ? " has" : "s have", (nLoopOpt == 1) ? "it" : "them");
+            "Do you want to optimize %s and remove this unused data?", nLoopOpt, (nLoopOpt == 1) ? " has" : "s have", (nLoopOpt == 1) ? "it" : "them");
     if (::MessageBox(NULL, s, "Sample Optimization", MB_YESNO | MB_ICONQUESTION) == IDYES)
     {
-    	for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
-    	{
-    		if ((pSndFile->Samples[nSmp].flags & CHN_LOOP)
-    			&& (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2))
-    		{
-    			UINT lmax = pSndFile->Samples[nSmp].loop_end + 2;
-    			if ((lmax < pSndFile->Samples[nSmp].length) && (lmax >= 2))
-    			{
-    				m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, lmax, pSndFile->Samples[nSmp].length);
-    				ctrlSmp::ResizeSample(pSndFile->Samples[nSmp], lmax, pSndFile);
-    			}
-    		}
-    	}
-    	wsprintf(s, "%d sample loop%s optimized\n" ,nLoopOpt, (nLoopOpt == 1) ? "" : "s");
-    	m_pModDoc->AddToLog(s);
-    	return true;
+            for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
+            {
+                    if ((pSndFile->Samples[nSmp].flags & CHN_LOOP)
+                            && (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2))
+                    {
+                            UINT lmax = pSndFile->Samples[nSmp].loop_end + 2;
+                            if ((lmax < pSndFile->Samples[nSmp].length) && (lmax >= 2))
+                            {
+                                    m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, lmax, pSndFile->Samples[nSmp].length);
+                                    ctrlSmp::ResizeSample(pSndFile->Samples[nSmp], lmax, pSndFile);
+                            }
+                    }
+            }
+            wsprintf(s, "%d sample loop%s optimized\n" ,nLoopOpt, (nLoopOpt == 1) ? "" : "s");
+            m_pModDoc->AddToLog(s);
+            return true;
     }
 
     return false;
@@ -617,68 +617,68 @@ bool CModCleanupDlg::RearrangeSamples()
     if(pSndFile == nullptr) return false;
 
     if(pSndFile->m_nSamples < 2)
-    	return false;
+            return false;
 
     SAMPLEINDEX nRemap = 0; // remap count
     std::vector<SAMPLEINDEX> nSampleMap(pSndFile->GetNumSamples() + 1);
     for(SAMPLEINDEX i = 0; i <= pSndFile->GetNumSamples(); i++)
     {
-    	nSampleMap[i] = i;
+            nSampleMap[i] = i;
     }
 
     // First, find out which sample slots are unused and create the new sample map
     for(SAMPLEINDEX i = 1; i <= pSndFile->GetNumSamples(); i++)
     {
-    	if(!pSndFile->Samples[i].sample_data)
-    	{
-    		// Move all following samples
-    		nRemap++;
-    		nSampleMap[i] = 0;
-    		for(UINT j = i + 1; j <= pSndFile->GetNumSamples(); j++)
-    			nSampleMap[j]--;
-    	}
+            if(!pSndFile->Samples[i].sample_data)
+            {
+                    // Move all following samples
+                    nRemap++;
+                    nSampleMap[i] = 0;
+                    for(UINT j = i + 1; j <= pSndFile->GetNumSamples(); j++)
+                            nSampleMap[j]--;
+            }
     }
 
     if(!nRemap)
-    	return false;
+            return false;
 
     // Now, move everything around
     for(SAMPLEINDEX i = 1; i <= pSndFile->GetNumSamples(); i++)
     {
-    	if(nSampleMap[i] != i)
-    	{
-    		// This gotta be moved
-    		BEGIN_CRITICAL();
-    		pSndFile->MoveSample(i, nSampleMap[i]);
-    		pSndFile->Samples[i].sample_data = nullptr;
-    		END_CRITICAL();
-    		if(nSampleMap[i] > 0) strcpy(pSndFile->m_szNames[nSampleMap[i]], pSndFile->m_szNames[i]);
-    		memset(pSndFile->m_szNames[i], 0, sizeof(pSndFile->m_szNames[i]));
+            if(nSampleMap[i] != i)
+            {
+                    // This gotta be moved
+                    BEGIN_CRITICAL();
+                    pSndFile->MoveSample(i, nSampleMap[i]);
+                    pSndFile->Samples[i].sample_data = nullptr;
+                    END_CRITICAL();
+                    if(nSampleMap[i] > 0) strcpy(pSndFile->m_szNames[nSampleMap[i]], pSndFile->m_szNames[i]);
+                    memset(pSndFile->m_szNames[i], 0, sizeof(pSndFile->m_szNames[i]));
 
-    		// Also update instrument mapping (if module is in instrument mode)
-    		for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->GetNumInstruments(); nIns++)
-    		{
-    			modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[nIns];
-    			if(pIns)
-    			{
-    				for(size_t iNote = 0; iNote < 128; iNote++)
-    					if(pIns->Keyboard[iNote] == i) pIns->Keyboard[iNote] = nSampleMap[i];
-    			}
-    		}
-    	}
+                    // Also update instrument mapping (if module is in instrument mode)
+                    for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->GetNumInstruments(); nIns++)
+                    {
+                            modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[nIns];
+                            if(pIns)
+                            {
+                                    for(size_t iNote = 0; iNote < 128; iNote++)
+                                            if(pIns->Keyboard[iNote] == i) pIns->Keyboard[iNote] = nSampleMap[i];
+                            }
+                    }
+            }
     }
 
     // Go through the patterns and remap samples (if module is in sample mode)
     if(!pSndFile->GetNumInstruments())
     {
-    	for (PATTERNINDEX nPat = 0; nPat < pSndFile->Patterns.Size(); nPat++) if (pSndFile->Patterns[nPat])
-    	{
-    		modplug::tracker::modevent_t *m = pSndFile->Patterns[nPat];
-    		for(UINT len = pSndFile->Patterns[nPat].GetNumRows() * pSndFile->GetNumChannels(); len; m++, len--)
-    		{
-    			if(!m->IsPcNote() &&  m->instr <= pSndFile->GetNumSamples()) m->instr = (uint8_t)nSampleMap[m->instr];
-    		}
-    	}
+            for (PATTERNINDEX nPat = 0; nPat < pSndFile->Patterns.Size(); nPat++) if (pSndFile->Patterns[nPat])
+            {
+                    modplug::tracker::modevent_t *m = pSndFile->Patterns[nPat];
+                    for(UINT len = pSndFile->Patterns[nPat].GetNumRows() * pSndFile->GetNumChannels(); len; m++, len--)
+                    {
+                            if(!m->IsPcNote() &&  m->instr <= pSndFile->GetNumSamples()) m->instr = (uint8_t)nSampleMap[m->instr];
+                    }
+            }
     }
 
     // Too lazy to fix sample undo...
@@ -711,13 +711,13 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
     char removeSamples = -1;
     if ( !((pSndFile->GetType() == MOD_TYPE_IT) && (pSndFile->m_dwSongFlags & SONG_ITPROJECT))) //never remove an instrument's samples in ITP.
     {
-    	if(::MessageBox(NULL, "Remove samples associated with an instrument if they are unused?", "Removing unused instruments", MB_YESNO | MB_ICONQUESTION) == IDYES)
-    	{
-    		removeSamples = 1;
-    	}
+            if(::MessageBox(NULL, "Remove samples associated with an instrument if they are unused?", "Removing unused instruments", MB_YESNO | MB_ICONQUESTION) == IDYES)
+            {
+                    removeSamples = 1;
+            }
     } else
     {
-    	::MessageBox(NULL, "This is an IT project file, so no samples associated with a used instrument will be removed.", "Removing unused instruments", MB_OK | MB_ICONINFORMATION);
+            ::MessageBox(NULL, "This is an IT project file, so no samples associated with a used instrument will be removed.", "Removing unused instruments", MB_OK | MB_ICONINFORMATION);
     }
 
     BeginWaitCursor();
@@ -725,83 +725,83 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
 
     for(INSTRUMENTINDEX i = pSndFile->GetNumInstruments(); i >= 1; i--)
     {
-    	if (!pSndFile->IsInstrumentUsed(i))
-    	{
-    		BEGIN_CRITICAL();
-    		// -> CODE#0003
-    		// -> DESC="remove instrument's samples"
-    		//			pSndFile->DestroyInstrument(i);
-    		pSndFile->DestroyInstrument(i, removeSamples);
-    		// -! BEHAVIOUR_CHANGE#0003
-    		if ((i == pSndFile->GetNumInstruments()) && (i>1))
-    			pSndFile->m_nInstruments--;
-    		else
-    			bReorg = true;
-    		END_CRITICAL();
-    		nRemoved++;
-    	} else
-    	{
-    		usedmap[i] = true;
-    	}
+            if (!pSndFile->IsInstrumentUsed(i))
+            {
+                    BEGIN_CRITICAL();
+                    // -> CODE#0003
+                    // -> DESC="remove instrument's samples"
+                    //                        pSndFile->DestroyInstrument(i);
+                    pSndFile->DestroyInstrument(i, removeSamples);
+                    // -! BEHAVIOUR_CHANGE#0003
+                    if ((i == pSndFile->GetNumInstruments()) && (i>1))
+                            pSndFile->m_nInstruments--;
+                    else
+                            bReorg = true;
+                    END_CRITICAL();
+                    nRemoved++;
+            } else
+            {
+                    usedmap[i] = true;
+            }
     }
     EndWaitCursor();
     if ((bReorg) && (pSndFile->m_nInstruments > 1)
-    	&& (::MessageBox(NULL, "Do you want to reorganize the remaining instruments?", "Removing unused instruments", MB_YESNO | MB_ICONQUESTION) == IDYES))
+            && (::MessageBox(NULL, "Do you want to reorganize the remaining instruments?", "Removing unused instruments", MB_YESNO | MB_ICONQUESTION) == IDYES))
     {
-    	BeginWaitCursor();
-    	BEGIN_CRITICAL();
-    	nSwap = 0;
-    	nIndex = 1;
-    	for (INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
-    	{
-    		if (usedmap[nIns])
-    		{
-    			while (nIndex<nIns)
-    			{
-    				if ((!usedmap[nIndex]) && (!pSndFile->Instruments[nIndex]))
-    				{
-    					swapmap[nSwap] = nIns;
-    					swapdest[nSwap] = nIndex;
-    					pSndFile->Instruments[nIndex] = pSndFile->Instruments[nIns];
-    					pSndFile->Instruments[nIns] = nullptr;
-    					usedmap[nIndex] = true;
-    					usedmap[nIns] = false;
-    					nSwap++;
-    					nIndex++;
-    					break;
-    				}
-    				nIndex++;
-    			}
-    		}
-    	}
-    	while ((pSndFile->m_nInstruments > 1) && (!pSndFile->Instruments[pSndFile->m_nInstruments])) pSndFile->m_nInstruments--;
-    	END_CRITICAL();
-    	if (nSwap > 0)
-    	{
-    		for (PATTERNINDEX iPat = 0; iPat < pSndFile->Patterns.Size(); iPat++) if (pSndFile->Patterns[iPat])
-    		{
-    			modplug::tracker::modevent_t *p = pSndFile->Patterns[iPat];
-    			UINT nLen = pSndFile->m_nChannels * pSndFile->Patterns[iPat].GetNumRows();
-    			while (nLen--)
-    			{
-    				if (p->instr && !p->IsPcNote())
-    				{
-    					for (UINT k=0; k<nSwap; k++)
-    					{
-    						if (p->instr == swapmap[k]) p->instr = (modplug::tracker::modevent_t::instr_t)swapdest[k];
-    					}
-    				}
-    				p++;
-    			}
-    		}
-    	}
-    	EndWaitCursor();
+            BeginWaitCursor();
+            BEGIN_CRITICAL();
+            nSwap = 0;
+            nIndex = 1;
+            for (INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
+            {
+                    if (usedmap[nIns])
+                    {
+                            while (nIndex<nIns)
+                            {
+                                    if ((!usedmap[nIndex]) && (!pSndFile->Instruments[nIndex]))
+                                    {
+                                            swapmap[nSwap] = nIns;
+                                            swapdest[nSwap] = nIndex;
+                                            pSndFile->Instruments[nIndex] = pSndFile->Instruments[nIns];
+                                            pSndFile->Instruments[nIns] = nullptr;
+                                            usedmap[nIndex] = true;
+                                            usedmap[nIns] = false;
+                                            nSwap++;
+                                            nIndex++;
+                                            break;
+                                    }
+                                    nIndex++;
+                            }
+                    }
+            }
+            while ((pSndFile->m_nInstruments > 1) && (!pSndFile->Instruments[pSndFile->m_nInstruments])) pSndFile->m_nInstruments--;
+            END_CRITICAL();
+            if (nSwap > 0)
+            {
+                    for (PATTERNINDEX iPat = 0; iPat < pSndFile->Patterns.Size(); iPat++) if (pSndFile->Patterns[iPat])
+                    {
+                            modplug::tracker::modevent_t *p = pSndFile->Patterns[iPat];
+                            UINT nLen = pSndFile->m_nChannels * pSndFile->Patterns[iPat].GetNumRows();
+                            while (nLen--)
+                            {
+                                    if (p->instr && !p->IsPcNote())
+                                    {
+                                            for (UINT k=0; k<nSwap; k++)
+                                            {
+                                                    if (p->instr == swapmap[k]) p->instr = (modplug::tracker::modevent_t::instr_t)swapdest[k];
+                                            }
+                                    }
+                                    p++;
+                            }
+                    }
+            }
+            EndWaitCursor();
     }
     if (nRemoved)
     {
-    	wsprintf(s, "%d unused instrument%s removed\n", nRemoved, (nRemoved == 1) ? "" : "s");
-    	m_pModDoc->AddToLog(s);
-    	return true;
+            wsprintf(s, "%d unused instrument%s removed\n", nRemoved, (nRemoved == 1) ? "" : "s");
+            m_pModDoc->AddToLog(s);
+            return true;
     }
     return false;
 }
@@ -819,39 +819,39 @@ bool CModCleanupDlg::RemoveUnusedPlugins()
 
     for (PLUGINDEX nPlug = 0; nPlug < MAX_MIXPLUGINS; nPlug++) {
 
-    	//Is the plugin assigned to a channel?
-    	for (CHANNELINDEX nChn = 0; nChn < pSndFile->GetNumChannels(); nChn++)
-    	{
-    		if (pSndFile->ChnSettings[nChn].nMixPlugin == nPlug + 1)
-    		{
-    			usedmap[nPlug] = true;
-    			break;
-    		}
-    	}
+            //Is the plugin assigned to a channel?
+            for (CHANNELINDEX nChn = 0; nChn < pSndFile->GetNumChannels(); nChn++)
+            {
+                    if (pSndFile->ChnSettings[nChn].nMixPlugin == nPlug + 1)
+                    {
+                            usedmap[nPlug] = true;
+                            break;
+                    }
+            }
 
-    	//Is the plugin used by an instrument?
-    	for (INSTRUMENTINDEX nIns=1; nIns<=pSndFile->GetNumInstruments(); nIns++)
-    	{
-    		if (pSndFile->Instruments[nIns] && (pSndFile->Instruments[nIns]->nMixPlug == nPlug + 1))
-    		{
-    			usedmap[nPlug] = true;
-    			break;
-    		}
-    	}
+            //Is the plugin used by an instrument?
+            for (INSTRUMENTINDEX nIns=1; nIns<=pSndFile->GetNumInstruments(); nIns++)
+            {
+                    if (pSndFile->Instruments[nIns] && (pSndFile->Instruments[nIns]->nMixPlug == nPlug + 1))
+                    {
+                            usedmap[nPlug] = true;
+                            break;
+                    }
+            }
 
-    	//Is the plugin assigned to master?
-    	if (pSndFile->m_MixPlugins[nPlug].Info.dwInputRouting & MIXPLUG_INPUTF_MASTEREFFECT)
-    		usedmap[nPlug] = true;
+            //Is the plugin assigned to master?
+            if (pSndFile->m_MixPlugins[nPlug].Info.dwInputRouting & MIXPLUG_INPUTF_MASTEREFFECT)
+                    usedmap[nPlug] = true;
 
-    	//all outputs of used plugins count as used
-    	if (usedmap[nPlug] != false)
-    	{
-    		if (pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting & 0x80)
-    		{
-    			int output = pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting & 0x7f;
-    			usedmap[output] = true;
-    		}
-    	}
+            //all outputs of used plugins count as used
+            if (usedmap[nPlug] != false)
+            {
+                    if (pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting & 0x80)
+                    {
+                            int output = pSndFile->m_MixPlugins[nPlug].Info.dwOutputRouting & 0x7f;
+                            usedmap[output] = true;
+                    }
+            }
 
     }
 
@@ -870,7 +870,7 @@ bool CModCleanupDlg::ResetVariables()
 
     //jojo.compocleanup
     if(::MessageBox(NULL, TEXT("WARNING: OpenMPT will convert the module to IT format and reset all song, sample and instrument attributes to default values. Continue?"), TEXT("Resetting variables"), MB_YESNO | MB_ICONWARNING) == IDNO)
-    	return false;
+            return false;
 
     // Stop play.
     CMainFrame::GetMainFrame()->StopMod(m_pModDoc);
@@ -895,16 +895,16 @@ bool CModCleanupDlg::ResetVariables()
     // reset instruments (if there are any)
     for(INSTRUMENTINDEX i = 1; i <= pSndFile->GetNumInstruments(); i++) if(pSndFile->Instruments[i])
     {
-    	pSndFile->Instruments[i]->fadeout = 256;
-    	pSndFile->Instruments[i]->global_volume = 64;
-    	pSndFile->Instruments[i]->default_pan = 128;
-    	pSndFile->Instruments[i]->flags &= ~INS_SETPANNING;
-    	pSndFile->Instruments[i]->nMixPlug = 0;
+            pSndFile->Instruments[i]->fadeout = 256;
+            pSndFile->Instruments[i]->global_volume = 64;
+            pSndFile->Instruments[i]->default_pan = 128;
+            pSndFile->Instruments[i]->flags &= ~INS_SETPANNING;
+            pSndFile->Instruments[i]->nMixPlug = 0;
 
-    	pSndFile->Instruments[i]->random_volume_weight = 0;
-    	pSndFile->Instruments[i]->random_pan_weight = 0;
-    	pSndFile->Instruments[i]->random_cutoff_weight = 0;
-    	pSndFile->Instruments[i]->random_resonance_weight = 0;
+            pSndFile->Instruments[i]->random_volume_weight = 0;
+            pSndFile->Instruments[i]->random_pan_weight = 0;
+            pSndFile->Instruments[i]->random_cutoff_weight = 0;
+            pSndFile->Instruments[i]->random_resonance_weight = 0;
     }
 
     // reset samples
@@ -945,7 +945,7 @@ bool CModCleanupDlg::RemoveAllOrders()
     pSndFile->Order.SetSequence(0);
     while(pSndFile->Order.GetNumSequences() > 1)
     {
-    	pSndFile->Order.RemoveSequence(1);
+            pSndFile->Order.RemoveSequence(1);
     }
     pSndFile->Order.Init();
     pSndFile->Order[0] = 0;
@@ -965,7 +965,7 @@ bool CModCleanupDlg::RemoveAllSamples()
 
     for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
     {
-    	m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, 0, pSndFile->Samples[nSmp].length);
+            m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, 0, pSndFile->Samples[nSmp].length);
     }
     ctrlSmp::ResetSamples(*pSndFile, ctrlSmp::SmpResetInit);
     BEGIN_CRITICAL();
@@ -985,16 +985,16 @@ bool CModCleanupDlg::RemoveAllInstruments(bool bConfirm)
 
     if(bConfirm)
     {
-    	if (CMainFrame::GetMainFrame()->MessageBox("Do you want to convert all instruments to samples?",
-    		"Removing all instruments", MB_YESNO | MB_ICONQUESTION) == IDYES)
-    	{
-    		m_pModDoc->ConvertInstrumentsToSamples();
-    	}
+            if (CMainFrame::GetMainFrame()->MessageBox("Do you want to convert all instruments to samples?",
+                    "Removing all instruments", MB_YESNO | MB_ICONQUESTION) == IDYES)
+            {
+                    m_pModDoc->ConvertInstrumentsToSamples();
+            }
     }
 
     for (INSTRUMENTINDEX i = 1; i <= pSndFile->GetNumInstruments(); i++)
     {
-    	pSndFile->DestroyInstrument(i, -1);
+            pSndFile->DestroyInstrument(i, -1);
     }
 
     pSndFile->m_nInstruments = 0;

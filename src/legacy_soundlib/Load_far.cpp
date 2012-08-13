@@ -4,7 +4,7 @@
  * Copied to OpenMPT from libmodplug.
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 ////////////////////////////////////////
@@ -15,17 +15,17 @@
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
-#define FARFILEMAGIC    0xFE524146	// "FAR"
+#define FARFILEMAGIC    0xFE524146        // "FAR"
 
 #pragma pack(1)
 
 typedef struct FARHEADER1
 {
-    uint32_t id;    			// file magic FAR=
-    CHAR songname[40];    	// songname
-    CHAR magic2[3];    		// 13,10,26
-    uint16_t headerlen;    		// remaining length of header in bytes
-    uint8_t version;    		// 0xD1
+    uint32_t id;                            // file magic FAR=
+    CHAR songname[40];            // songname
+    CHAR magic2[3];                    // 13,10,26
+    uint16_t headerlen;                    // remaining length of header in bytes
+    uint8_t version;                    // 0xD1
     uint8_t onoff[16];
     uint8_t edit1[9];
     uint8_t speed;

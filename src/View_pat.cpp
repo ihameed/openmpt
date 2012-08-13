@@ -10,7 +10,7 @@
 #include "ctrl_pat.h"
 #include "vstplug.h"    // for writing plug params to pattern
 
-#include "EffectVis.h"    	//rewbs.fxvis
+#include "EffectVis.h"            //rewbs.fxvis
 #include "PatternGotoDialog.h"
 #include "view_pat.h"
 #include "View_gen.h"
@@ -20,7 +20,7 @@
 
 using namespace modplug::tracker;
 
-#define    PLUGNAME_HEIGHT	16	//rewbs.patPlugName
+#define    PLUGNAME_HEIGHT        16        //rewbs.patPlugName
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
@@ -52,12 +52,12 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_WM_KILLFOCUS()
     ON_WM_SYSKEYDOWN()
     ON_WM_DESTROY()
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg)		//rewbs.customKeys
-    ON_MESSAGE(WM_MOD_MIDIMSG,    	OnMidiMsg)
+    ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg)                //rewbs.customKeys
+    ON_MESSAGE(WM_MOD_MIDIMSG,            OnMidiMsg)
     ON_MESSAGE(WM_MOD_RECORDPARAM,  OnRecordPlugParamChange)
-    ON_COMMAND(ID_EDIT_CUT,    		OnEditCut)
-    ON_COMMAND(ID_EDIT_COPY,    	OnEditCopy)
-    ON_COMMAND(ID_EDIT_PASTE,    	OnEditPaste)
+    ON_COMMAND(ID_EDIT_CUT,                    OnEditCut)
+    ON_COMMAND(ID_EDIT_COPY,            OnEditCopy)
+    ON_COMMAND(ID_EDIT_PASTE,            OnEditPaste)
     ON_COMMAND(ID_EDIT_MIXPASTE,    OnEditMixPaste)
     ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,OnEditMixPasteITStyle)
     ON_COMMAND(ID_EDIT_PASTEFLOOD,    OnEditPasteFlood)
@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_COMMAND(ID_EDIT_SELECT_ALL,    OnEditSelectAll)
     ON_COMMAND(ID_EDIT_SELECTCOLUMN,OnEditSelectColumn)
     ON_COMMAND(ID_EDIT_SELECTCOLUMN2,OnSelectCurrentColumn)
-    ON_COMMAND(ID_EDIT_FIND,    	OnEditFind)
+    ON_COMMAND(ID_EDIT_FIND,            OnEditFind)
     ON_COMMAND(ID_EDIT_GOTO_MENU,    OnEditGoto)
     ON_COMMAND(ID_EDIT_FINDNEXT,    OnEditFindNext)
     ON_COMMAND(ID_EDIT_RECSELECT,    OnRecordSelect)
@@ -74,10 +74,10 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_COMMAND(ID_EDIT_SPLITRECSELECT,    OnSplitRecordSelect)
     ON_COMMAND(ID_EDIT_SPLITKEYBOARDSETTINGS,    SetSplitKeyboardSettings)
 // -! NEW_FEATURE#0012
-    ON_COMMAND(ID_EDIT_UNDO,    	OnEditUndo)
+    ON_COMMAND(ID_EDIT_UNDO,            OnEditUndo)
     ON_COMMAND(ID_PATTERN_CHNRESET,    OnChannelReset)
-    ON_COMMAND(ID_PATTERN_MUTE,    	OnMuteFromClick) //rewbs.customKeys
-    ON_COMMAND(ID_PATTERN_SOLO,    	OnSoloFromClick) //rewbs.customKeys
+    ON_COMMAND(ID_PATTERN_MUTE,            OnMuteFromClick) //rewbs.customKeys
+    ON_COMMAND(ID_PATTERN_SOLO,            OnSoloFromClick) //rewbs.customKeys
     ON_COMMAND(ID_PATTERN_TRANSITIONMUTE, OnTogglePendingMuteFromClick)
     ON_COMMAND(ID_PATTERN_TRANSITIONSOLO, OnPendingSoloChnFromClick)
     ON_COMMAND(ID_PATTERN_TRANSITION_UNMUTEALL, OnPendingUnmuteAllChnFromClick)
@@ -88,39 +88,39 @@ BEGIN_MESSAGE_MAP(CViewPattern, CModScrollView)
     ON_COMMAND(ID_NEXTINSTRUMENT,    OnNextInstrument)
     ON_COMMAND(ID_PREVINSTRUMENT,    OnPrevInstrument)
     ON_COMMAND(ID_PATTERN_PLAYROW,    OnPatternStep)
-    ON_COMMAND(ID_CONTROLENTER,    	OnPatternStep)
-    ON_COMMAND(ID_CONTROLTAB,    	OnSwitchToOrderList)
-    ON_COMMAND(ID_PREVORDER,    	OnPrevOrder)
-    ON_COMMAND(ID_NEXTORDER,    	OnNextOrder)
+    ON_COMMAND(ID_CONTROLENTER,            OnPatternStep)
+    ON_COMMAND(ID_CONTROLTAB,            OnSwitchToOrderList)
+    ON_COMMAND(ID_PREVORDER,            OnPrevOrder)
+    ON_COMMAND(ID_NEXTORDER,            OnNextOrder)
     ON_COMMAND(IDC_PATTERN_RECORD,    OnPatternRecord)
-    ON_COMMAND(ID_RUN_SCRIPT,    				OnRunScript)
-    ON_COMMAND(ID_TRANSPOSE_UP,    				OnTransposeUp)
-    ON_COMMAND(ID_TRANSPOSE_DOWN,    			OnTransposeDown)
-    ON_COMMAND(ID_TRANSPOSE_OCTUP,    			OnTransposeOctUp)
-    ON_COMMAND(ID_TRANSPOSE_OCTDOWN,    		OnTransposeOctDown)
-    ON_COMMAND(ID_PATTERN_PROPERTIES,    		OnPatternProperties)
+    ON_COMMAND(ID_RUN_SCRIPT,                                    OnRunScript)
+    ON_COMMAND(ID_TRANSPOSE_UP,                                    OnTransposeUp)
+    ON_COMMAND(ID_TRANSPOSE_DOWN,                            OnTransposeDown)
+    ON_COMMAND(ID_TRANSPOSE_OCTUP,                            OnTransposeOctUp)
+    ON_COMMAND(ID_TRANSPOSE_OCTDOWN,                    OnTransposeOctDown)
+    ON_COMMAND(ID_PATTERN_PROPERTIES,                    OnPatternProperties)
     ON_COMMAND(ID_PATTERN_INTERPOLATE_VOLUME,    OnInterpolateVolume)
     ON_COMMAND(ID_PATTERN_INTERPOLATE_EFFECT,    OnInterpolateEffect)
-    ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,    	OnInterpolateNote)
-    ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,    	OnVisualizeEffect)		//rewbs.fxvis
-    ON_COMMAND(ID_GROW_SELECTION,    			OnGrowSelection)
-    ON_COMMAND(ID_SHRINK_SELECTION,    			OnShrinkSelection)
-    ON_COMMAND(ID_PATTERN_SETINSTRUMENT,    	OnSetSelInstrument)
-    ON_COMMAND(ID_PATTERN_ADDCHANNEL_FRONT,    	OnAddChannelFront)
-    ON_COMMAND(ID_PATTERN_ADDCHANNEL_AFTER,    	OnAddChannelAfter)
-    ON_COMMAND(ID_PATTERN_DUPLICATECHANNEL,    	OnDuplicateChannel)
-    ON_COMMAND(ID_PATTERN_REMOVECHANNEL,    	OnRemoveChannel)
+    ON_COMMAND(ID_PATTERN_INTERPOLATE_NOTE,            OnInterpolateNote)
+    ON_COMMAND(ID_PATTERN_VISUALIZE_EFFECT,            OnVisualizeEffect)                //rewbs.fxvis
+    ON_COMMAND(ID_GROW_SELECTION,                            OnGrowSelection)
+    ON_COMMAND(ID_SHRINK_SELECTION,                            OnShrinkSelection)
+    ON_COMMAND(ID_PATTERN_SETINSTRUMENT,            OnSetSelInstrument)
+    ON_COMMAND(ID_PATTERN_ADDCHANNEL_FRONT,            OnAddChannelFront)
+    ON_COMMAND(ID_PATTERN_ADDCHANNEL_AFTER,            OnAddChannelAfter)
+    ON_COMMAND(ID_PATTERN_DUPLICATECHANNEL,            OnDuplicateChannel)
+    ON_COMMAND(ID_PATTERN_REMOVECHANNEL,            OnRemoveChannel)
     ON_COMMAND(ID_PATTERN_REMOVECHANNELDIALOG,    OnRemoveChannelDialog)
-    ON_COMMAND(ID_CURSORCOPY,    				OnCursorCopy)
-    ON_COMMAND(ID_CURSORPASTE,    				OnCursorPaste)
-    ON_COMMAND(ID_PATTERN_AMPLIFY,    			OnPatternAmplify)
-    ON_COMMAND(ID_CLEAR_SELECTION,    			OnClearSelectionFromMenu)
-    ON_COMMAND(ID_SHOWTIMEATROW,    			OnShowTimeAtRow)
-    ON_COMMAND(ID_CHANNEL_RENAME,    			OnRenameChannel)
+    ON_COMMAND(ID_CURSORCOPY,                                    OnCursorCopy)
+    ON_COMMAND(ID_CURSORPASTE,                                    OnCursorPaste)
+    ON_COMMAND(ID_PATTERN_AMPLIFY,                            OnPatternAmplify)
+    ON_COMMAND(ID_CLEAR_SELECTION,                            OnClearSelectionFromMenu)
+    ON_COMMAND(ID_SHOWTIMEATROW,                            OnShowTimeAtRow)
+    ON_COMMAND(ID_CHANNEL_RENAME,                            OnRenameChannel)
     ON_COMMAND(ID_PATTERN_EDIT_PCNOTE_PLUGIN,    OnTogglePCNotePluginEditor)
     ON_COMMAND_RANGE(ID_CHANGE_INSTRUMENT, ID_CHANGE_INSTRUMENT+MAX_INSTRUMENTS, OnSelectInstrument)
     ON_COMMAND_RANGE(ID_CHANGE_PCNOTE_PARAM, ID_CHANGE_PCNOTE_PARAM + modplug::tracker::modevent_t::maxColumnValue, OnSelectPCNoteParam)
-    ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,    		OnUpdateUndo)
+    ON_UPDATE_COMMAND_UI(ID_EDIT_UNDO,                    OnUpdateUndo)
     ON_COMMAND_RANGE(ID_PLUGSELECT, ID_PLUGSELECT+MAX_MIXPLUGINS, OnSelectPlugin) //rewbs.patPlugName
 
 
@@ -221,7 +221,7 @@ BOOL CViewPattern::SetCurrentPattern(UINT npat, int nrow)
     UpdateScrollSize();
     UpdateIndicator();
 
-    if (m_bWholePatternFitsOnScreen)     	//rewbs.scrollFix
+    if (m_bWholePatternFitsOnScreen)             //rewbs.scrollFix
         SetScrollPos(SB_VERT, 0);
     else if (bUpdateScroll) //rewbs.fix3147
         SetScrollPos(SB_VERT, m_nRow * GetColumnHeight());
@@ -771,12 +771,12 @@ void CViewPattern::OnGrowSelection()
             //Log("dst: %d; src: %d; blk: %d\n", row, (row-offset/2), (row-1));
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:    dest->note    = src->note;    blank->note = NOTE_NONE;		break;
-                case INST_COLUMN:    dest->instr   = src->instr;   blank->instr = 0;				break;
+                case NOTE_COLUMN:    dest->note    = src->note;    blank->note = NOTE_NONE;                break;
+                case INST_COLUMN:    dest->instr   = src->instr;   blank->instr = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = src->vol;     blank->vol = 0;
                                     dest->volcmd  = src->volcmd;  blank->volcmd = VOLCMD_NONE;    break;
-                case EFFECT_COLUMN:    dest->command = src->command; blank->command = 0;			break;
-                case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CMD_NONE;		break;
+                case EFFECT_COLUMN:    dest->command = src->command; blank->command = 0;                        break;
+                case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CMD_NONE;                break;
             }
         }
     }
@@ -859,12 +859,12 @@ void CViewPattern::OnShrinkSelection()
             modplug::tracker::modevent_t *dest = pSndFile->Patterns[m_nPattern].GetpModCommand(row, chn);
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:    dest->note    = NOTE_NONE;		break;
-                case INST_COLUMN:    dest->instr   = 0;				break;
+                case NOTE_COLUMN:    dest->note    = NOTE_NONE;                break;
+                case INST_COLUMN:    dest->instr   = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = 0;
                                     dest->volcmd  = VOLCMD_NONE;    break;
-                case EFFECT_COLUMN:    dest->command = CMD_NONE;		break;
-                case PARAM_COLUMN:    dest->param   = 0;				break;
+                case EFFECT_COLUMN:    dest->command = CMD_NONE;                break;
+                case PARAM_COLUMN:    dest->param   = 0;                                break;
             }
         }
     }
@@ -1215,7 +1215,7 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
     case DRAGITEM_PATTERNHEADER:
         OnPatternProperties();
         break;
-    case DRAGITEM_PLUGNAME:    		//rewbs.patPlugNames
+    case DRAGITEM_PLUGNAME:                    //rewbs.patPlugNames
         if (nItemNo < MAX_BASECHANNELS)
             TogglePluginEditor(nItemNo);
         break;
@@ -1596,7 +1596,7 @@ void CViewPattern::OnRecordSelect()
         UINT nChn = GetChanFromCursor(m_nMenuParam);
         if (nChn < nNumChn)
         {
-//    		MultiRecordMask[nChn>>3] ^= (1 << (nChn & 7));
+//                    MultiRecordMask[nChn>>3] ^= (1 << (nChn & 7));
 // -> CODE#0012
 // -> DESC="midi keyboard split"
             pModDoc->Record1Channel(nChn);
@@ -2326,7 +2326,7 @@ void CViewPattern::Interpolate(PatternColumns type)
         ListChansWhereColSelected(EFFECT_COLUMN, validChans);
         ListChansWhereColSelected(PARAM_COLUMN, moreValidChans);
         //CArrayUtils<UINT>::Merge(validChans, moreValidChans); //Causes unresolved external, not sure why yet. //XXXih: ugh
-        validChans.Append(moreValidChans);    					//for now we'll just interpolate the same data several times. :)
+        validChans.Append(moreValidChans);                                            //for now we'll just interpolate the same data several times. :)
     } else
     {
         ListChansWhereColSelected(type, validChans);
@@ -3240,8 +3240,8 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
     const uint8_t nByte1 = GetFromMIDIMsg_DataByte1(dwMidiData);
     const uint8_t nByte2 = GetFromMIDIMsg_DataByte2(dwMidiData);
 
-    const uint8_t nNote = nByte1 + 1;    			// +1 is for MPT, where middle C is 61
-    int nVol = nByte2;    						// At this stage nVol is a non linear value in [0;127]
+    const uint8_t nNote = nByte1 + 1;                            // +1 is for MPT, where middle C is 61
+    int nVol = nByte2;                                                    // At this stage nVol is a non linear value in [0;127]
                                                 // Need to convert to linear in [0;64] - see below
     uint8_t event = GetFromMIDIMsg_Event(dwMidiData);
 
@@ -3440,7 +3440,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 // -> DESC="midi keyboard split"
             //CModDoc *pModDoc = GetDocument();
             //CSoundFile * pSndFile = pModDoc->GetSoundFile();
-//    		if (timeGetTime() - lParam >= 10)
+//                    if (timeGetTime() - lParam >= 10)
             int temp = timeGetTime();
             if (temp - lParam >= 60)
 // -! NEW_FEATURE#0012
@@ -3458,7 +3458,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
             {
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-//    			Sleep(1);
+//                            Sleep(1);
                 Sleep(0);
                 PostMessage(WM_MOD_VIEWMSG, VIEWMSG_DOMIDISPACING, lParam);
             }
@@ -3562,7 +3562,7 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
 //rewbs.customKeys
 void CViewPattern::CursorJump(uint32_t distance, bool direction, bool snap)
 //-----------------------------------------------------------------------
-{    										  //up is true
+{                                                                                      //up is true
     switch(snap)
     {
         case false: //no snap
@@ -3591,64 +3591,64 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
 
     switch(wParam)
     {
-        case kcPrevInstrument:    			OnPrevInstrument(); return wParam;
-        case kcNextInstrument:    			OnNextInstrument(); return wParam;
-        case kcPrevOrder:    				OnPrevOrder(); return wParam;
-        case kcNextOrder:    				OnNextOrder(); return wParam;
-        case kcPatternPlayRow:    			OnPatternStep(); return wParam;
-        case kcPatternRecord:    			OnPatternRecord(); return wParam;
-        case kcCursorCopy:    				OnCursorCopy(); return wParam;
-        case kcCursorPaste:    				OnCursorPaste(); return wParam;
-        case kcChannelMute:    				OnMuteChannel(true); return wParam;
-        case kcChannelSolo:    				OnSoloChannel(true); return wParam;
-        case kcChannelUnmuteAll:    		OnUnmuteAll(); return wParam;
+        case kcPrevInstrument:                            OnPrevInstrument(); return wParam;
+        case kcNextInstrument:                            OnNextInstrument(); return wParam;
+        case kcPrevOrder:                                    OnPrevOrder(); return wParam;
+        case kcNextOrder:                                    OnNextOrder(); return wParam;
+        case kcPatternPlayRow:                            OnPatternStep(); return wParam;
+        case kcPatternRecord:                            OnPatternRecord(); return wParam;
+        case kcCursorCopy:                                    OnCursorCopy(); return wParam;
+        case kcCursorPaste:                                    OnCursorPaste(); return wParam;
+        case kcChannelMute:                                    OnMuteChannel(true); return wParam;
+        case kcChannelSolo:                                    OnSoloChannel(true); return wParam;
+        case kcChannelUnmuteAll:                    OnUnmuteAll(); return wParam;
         case kcToggleChanMuteOnPatTransition: TogglePendingMute(GetChanFromCursor(m_dwCursor)); return wParam;
         case kcUnmuteAllChnOnPatTransition:    OnPendingUnmuteAllChnFromClick(); return wParam;
-        case kcChannelReset:    			OnChannelReset(); return wParam;
-        case kcTimeAtRow:    				OnShowTimeAtRow(); return wParam;
-        case kcSoloChnOnPatTransition:    	PendingSoloChn(GetCurrentChannel()); return wParam;
-        case kcTransposeUp:    				OnTransposeUp(); return wParam;
-        case kcTransposeDown:    			OnTransposeDown(); return wParam;
-        case kcTransposeOctUp:    			OnTransposeOctUp(); return wParam;
-        case kcTransposeOctDown:    		OnTransposeOctDown(); return wParam;
-        case kcSelectColumn:    			OnSelectCurrentColumn(); return wParam;
-        case kcPatternAmplify:    			OnPatternAmplify(); return wParam;
-        case kcPatternSetInstrument:    	OnSetSelInstrument(); return wParam;
-        case kcPatternInterpolateNote:    	OnInterpolateNote(); return wParam;
-        case kcPatternInterpolateVol:    	OnInterpolateVolume(); return wParam;
+        case kcChannelReset:                            OnChannelReset(); return wParam;
+        case kcTimeAtRow:                                    OnShowTimeAtRow(); return wParam;
+        case kcSoloChnOnPatTransition:            PendingSoloChn(GetCurrentChannel()); return wParam;
+        case kcTransposeUp:                                    OnTransposeUp(); return wParam;
+        case kcTransposeDown:                            OnTransposeDown(); return wParam;
+        case kcTransposeOctUp:                            OnTransposeOctUp(); return wParam;
+        case kcTransposeOctDown:                    OnTransposeOctDown(); return wParam;
+        case kcSelectColumn:                            OnSelectCurrentColumn(); return wParam;
+        case kcPatternAmplify:                            OnPatternAmplify(); return wParam;
+        case kcPatternSetInstrument:            OnSetSelInstrument(); return wParam;
+        case kcPatternInterpolateNote:            OnInterpolateNote(); return wParam;
+        case kcPatternInterpolateVol:            OnInterpolateVolume(); return wParam;
         case kcPatternInterpolateEffect:    OnInterpolateEffect(); return wParam;
-        case kcPatternVisualizeEffect:    	OnVisualizeEffect(); return wParam;
-        case kcPatternGrowSelection:    	OnGrowSelection(); return wParam;
-        case kcPatternShrinkSelection:    	OnShrinkSelection(); return wParam;
+        case kcPatternVisualizeEffect:            OnVisualizeEffect(); return wParam;
+        case kcPatternGrowSelection:            OnGrowSelection(); return wParam;
+        case kcPatternShrinkSelection:            OnShrinkSelection(); return wParam;
 
         // Pattern navigation:
         case kcPatternJumpUph1Select:
-        case kcPatternJumpUph1:    		CursorJump(GetRowsPerMeasure(), true, false); return wParam;
+        case kcPatternJumpUph1:                    CursorJump(GetRowsPerMeasure(), true, false); return wParam;
         case kcPatternJumpDownh1Select:
-        case kcPatternJumpDownh1:    	CursorJump(GetRowsPerMeasure(), false, false);  return wParam;
+        case kcPatternJumpDownh1:            CursorJump(GetRowsPerMeasure(), false, false);  return wParam;
         case kcPatternJumpUph2Select:
-        case kcPatternJumpUph2:    		CursorJump(GetRowsPerBeat(), true, false);  return wParam;
+        case kcPatternJumpUph2:                    CursorJump(GetRowsPerBeat(), true, false);  return wParam;
         case kcPatternJumpDownh2Select:
-        case kcPatternJumpDownh2:    	CursorJump(GetRowsPerBeat(), false, false);  return wParam;
+        case kcPatternJumpDownh2:            CursorJump(GetRowsPerBeat(), false, false);  return wParam;
 
         case kcPatternSnapUph1Select:
-        case kcPatternSnapUph1:    		CursorJump(GetRowsPerMeasure(), true, true); return wParam;
+        case kcPatternSnapUph1:                    CursorJump(GetRowsPerMeasure(), true, true); return wParam;
         case kcPatternSnapDownh1Select:
-        case kcPatternSnapDownh1:    	CursorJump(GetRowsPerMeasure(), false, true);  return wParam;
+        case kcPatternSnapDownh1:            CursorJump(GetRowsPerMeasure(), false, true);  return wParam;
         case kcPatternSnapUph2Select:
-        case kcPatternSnapUph2:    		CursorJump(GetRowsPerBeat(), true, true);  return wParam;
+        case kcPatternSnapUph2:                    CursorJump(GetRowsPerBeat(), true, true);  return wParam;
         case kcPatternSnapDownh2Select:
-        case kcPatternSnapDownh2:    	CursorJump(GetRowsPerBeat(), false, true);  return wParam;
+        case kcPatternSnapDownh2:            CursorJump(GetRowsPerBeat(), false, true);  return wParam;
 
         case kcNavigateDownSelect:
         case kcNavigateDown:    SetCurrentRow(m_nRow+1, TRUE); return wParam;
         case kcNavigateUpSelect:
-        case kcNavigateUp:    	SetCurrentRow(m_nRow-1, TRUE); return wParam;
+        case kcNavigateUp:            SetCurrentRow(m_nRow-1, TRUE); return wParam;
 
         case kcNavigateDownBySpacingSelect:
         case kcNavigateDownBySpacing:    SetCurrentRow(m_nRow+m_nSpacing, TRUE); return wParam;
         case kcNavigateUpBySpacingSelect:
-        case kcNavigateUpBySpacing:    	SetCurrentRow(m_nRow-m_nSpacing, TRUE); return wParam;
+        case kcNavigateUpBySpacing:            SetCurrentRow(m_nRow-m_nSpacing, TRUE); return wParam;
 
         case kcNavigateLeftSelect:
         case kcNavigateLeft:    if ((CMainFrame::m_dwPatternSetup & PATTERN_WRAP) && (!m_dwCursor))
@@ -3688,13 +3688,13 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 else if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1);
                                 return wParam;
         case kcEndVerticalSelect:
-        case kcEndVertical:    	if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1);
+        case kcEndVertical:            if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1);
                                 else if (m_dwCursor!=(((pSndFile->GetNumChannels() - 1) << 3) | 4)) SetCurrentColumn(((pSndFile->m_nChannels-1) << 3) | 4);
                                 return wParam;
         case kcEndAbsoluteSelect:
-        case kcEndAbsolute:    	SetCurrentColumn(((pSndFile->GetNumChannels() - 1) << 3) | 4); if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1); return wParam;
+        case kcEndAbsolute:            SetCurrentColumn(((pSndFile->GetNumChannels() - 1) << 3) | 4); if (m_nRow < pModDoc->GetPatternSize(m_nPattern) - 1) SetCurrentRow(pModDoc->GetPatternSize(m_nPattern) - 1); return wParam;
 
-        case kcNextPattern:    {	UINT n = m_nPattern + 1;
+        case kcNextPattern:    {        UINT n = m_nPattern + 1;
                                 while ((n < pSndFile->Patterns.Size()) && (!pSndFile->Patterns[n])) n++;
                                 SetCurrentPattern((n < pSndFile->Patterns.Size()) ? n : 0);
                                 ORDERINDEX currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
@@ -3710,14 +3710,14 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 return wParam; }
         case kcSelectWithCopySelect:
         case kcSelectWithNav:
-        case kcSelect:    		if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
+        case kcSelect:                    if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
                                     m_dwStatus |= PATSTATUS_KEYDRAGSEL;    return wParam;
         case kcSelectOffWithCopySelect:
         case kcSelectOffWithNav:
-        case kcSelectOff:    	m_dwStatus &= ~PATSTATUS_KEYDRAGSEL; return wParam;
+        case kcSelectOff:            m_dwStatus &= ~PATSTATUS_KEYDRAGSEL; return wParam;
         case kcCopySelectWithSelect:
         case kcCopySelectWithNav:
-        case kcCopySelect:    	if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
+        case kcCopySelect:            if (!(m_dwStatus & (PATSTATUS_DRAGNDROPEDIT|PATSTATUS_SELECTROW))) m_dwStartSel = CreateCursor(m_nRow) | m_dwCursor;
                                     m_dwStatus |= PATSTATUS_CTRLDRAGSEL; return wParam;
         case kcCopySelectOffWithSelect:
         case kcCopySelectOffWithNav:
@@ -3727,40 +3727,40 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcSelectMeasure:
             SelectBeatOrMeasure(wParam == kcSelectBeat); return wParam;
 
-        case kcClearRow:    	OnClearField(-1, false);	return wParam;
-        case kcClearField:    	OnClearField(GetColTypeFromCursor(m_dwCursor), false);	return wParam;
+        case kcClearRow:            OnClearField(-1, false);        return wParam;
+        case kcClearField:            OnClearField(GetColTypeFromCursor(m_dwCursor), false);        return wParam;
         case kcClearFieldITStyle: OnClearField(GetColTypeFromCursor(m_dwCursor), false, true);    return wParam;
-        case kcClearRowStep:    OnClearField(-1, true);	return wParam;
-        case kcClearFieldStep:    OnClearField(GetColTypeFromCursor(m_dwCursor), true);	return wParam;
-        case kcClearFieldStepITStyle:    OnClearField(GetColTypeFromCursor(m_dwCursor), true, true);	return wParam;
-        case kcDeleteRows:    	OnDeleteRows(); return wParam;
+        case kcClearRowStep:    OnClearField(-1, true);        return wParam;
+        case kcClearFieldStep:    OnClearField(GetColTypeFromCursor(m_dwCursor), true);        return wParam;
+        case kcClearFieldStepITStyle:    OnClearField(GetColTypeFromCursor(m_dwCursor), true, true);        return wParam;
+        case kcDeleteRows:            OnDeleteRows(); return wParam;
         case kcDeleteAllRows:    DeleteRows(0, pSndFile->GetNumChannels() - 1, 1); return wParam;
-        case kcInsertRow:    	OnInsertRows(); return wParam;
+        case kcInsertRow:            OnInsertRows(); return wParam;
         case kcInsertAllRows:    InsertRows(0, pSndFile->GetNumChannels() - 1); return wParam;
 
         case kcShowNoteProperties: ShowEditWindow(); return wParam;
         case kcShowPatternProperties: OnPatternProperties(); return wParam;
         case kcShowMacroConfig:    SendCtrlMessage(CTRLMSG_SETUPMACROS); return wParam;
         case kcShowSplitKeyboardSettings:    SetSplitKeyboardSettings(); return wParam;
-        case kcShowEditMenu:    {CPoint pt =	GetPointFromPosition(CreateCursor(m_nRow) | m_dwCursor);
+        case kcShowEditMenu:    {CPoint pt =        GetPointFromPosition(CreateCursor(m_nRow) | m_dwCursor);
                                 OnRButtonDown(0, pt); }
                                 return wParam;
-        case kcPatternGoto:    	OnEditGoto(); return wParam;
+        case kcPatternGoto:            OnEditGoto(); return wParam;
 
-        case kcNoteCut:    		TempEnterNote(NOTE_NOTECUT, false); return wParam;
-        case kcNoteCutOld:    	TempEnterNote(NOTE_NOTECUT, true);  return wParam;
-        case kcNoteOff:    		TempEnterNote(NOTE_KEYOFF, false); return wParam;
-        case kcNoteOffOld:    	TempEnterNote(NOTE_KEYOFF, true);  return wParam;
-        case kcNoteFade:    	TempEnterNote(NOTE_FADE, false); return wParam;
-        case kcNoteFadeOld:    	TempEnterNote(NOTE_FADE, true);  return wParam;
-        case kcNotePC:    		TempEnterNote(NOTE_PC); return wParam;
-        case kcNotePCS:    		TempEnterNote(NOTE_PCS); return wParam;
+        case kcNoteCut:                    TempEnterNote(NOTE_NOTECUT, false); return wParam;
+        case kcNoteCutOld:            TempEnterNote(NOTE_NOTECUT, true);  return wParam;
+        case kcNoteOff:                    TempEnterNote(NOTE_KEYOFF, false); return wParam;
+        case kcNoteOffOld:            TempEnterNote(NOTE_KEYOFF, true);  return wParam;
+        case kcNoteFade:            TempEnterNote(NOTE_FADE, false); return wParam;
+        case kcNoteFadeOld:            TempEnterNote(NOTE_FADE, true);  return wParam;
+        case kcNotePC:                    TempEnterNote(NOTE_PC); return wParam;
+        case kcNotePCS:                    TempEnterNote(NOTE_PCS); return wParam;
 
-        case kcEditUndo:    	OnEditUndo(); return wParam;
-        case kcEditFind:    	OnEditFind(); return wParam;
+        case kcEditUndo:            OnEditUndo(); return wParam;
+        case kcEditFind:            OnEditFind(); return wParam;
         case kcEditFindNext:    OnEditFindNext(); return wParam;
-        case kcEditCut:    		OnEditCut(); return wParam;
-        case kcEditCopy:    	OnEditCopy(); return wParam;
+        case kcEditCut:                    OnEditCut(); return wParam;
+        case kcEditCopy:            OnEditCopy(); return wParam;
         case kcCopyAndLoseSelection:
                                 {
                                 OnEditCopy();
@@ -3768,7 +3768,7 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 SetCurSel(sel, sel);
                                 return wParam;
                                 }
-        case kcEditPaste:    	OnEditPaste(); return wParam;
+        case kcEditPaste:            OnEditPaste(); return wParam;
         case kcEditMixPaste:    OnEditMixPaste(); return wParam;
         case kcEditMixPasteITStyle:    OnEditMixPasteITStyle(); return wParam;
         case kcEditPasteFlood:    OnEditPasteFlood(); return wParam;
@@ -3777,7 +3777,7 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcTogglePluginEditor: TogglePluginEditor(GetChanFromCursor(m_dwCursor)); return wParam;
         case kcToggleFollowSong: SendCtrlMessage(CTRLMSG_PAT_FOLLOWSONG, 1); return wParam;
         case kcChangeLoopStatus: SendCtrlMessage(CTRLMSG_PAT_LOOP, -1); return wParam;
-        case kcNewPattern:    	 SendCtrlMessage(CTRLMSG_PAT_NEWPATTERN); return wParam;
+        case kcNewPattern:             SendCtrlMessage(CTRLMSG_PAT_NEWPATTERN); return wParam;
         case kcDuplicatePattern: SendCtrlMessage(CTRLMSG_PAT_DUPPATTERN); return wParam;
         case kcSwitchToOrderList: OnSwitchToOrderList();
         case kcSwitchOverflowPaste:    CMainFrame::m_dwPatternSetup ^= PATTERN_OVERFLOWPASTE; return wParam;
@@ -3895,20 +3895,20 @@ void CViewPattern::TempEnterVol(int v)
             else
                 switch(v+kcSetVolumeStart)
                 {
-                case kcSetVolumeVol:    		volcmd = VOLCMD_VOLUME; break;
-                case kcSetVolumePan:    		volcmd = VOLCMD_PANNING; break;
-                case kcSetVolumeVolSlideUp:    	volcmd = VOLCMD_VOLSLIDEUP; break;
+                case kcSetVolumeVol:                    volcmd = VOLCMD_VOLUME; break;
+                case kcSetVolumePan:                    volcmd = VOLCMD_PANNING; break;
+                case kcSetVolumeVolSlideUp:            volcmd = VOLCMD_VOLSLIDEUP; break;
                 case kcSetVolumeVolSlideDown:    volcmd = VOLCMD_VOLSLIDEDOWN; break;
-                case kcSetVolumeFineVolUp:    	volcmd = VOLCMD_FINEVOLUP; break;
+                case kcSetVolumeFineVolUp:            volcmd = VOLCMD_FINEVOLUP; break;
                 case kcSetVolumeFineVolDown:    volcmd = VOLCMD_FINEVOLDOWN; break;
-                case kcSetVolumeVibratoSpd:    	if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_VIBRATOSPEED; break;
-                case kcSetVolumeVibrato:    	volcmd = VOLCMD_VIBRATODEPTH; break;
-                case kcSetVolumeXMPanLeft:    	if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDELEFT; break;
-                case kcSetVolumeXMPanRight:    	if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDERIGHT; break;
-                case kcSetVolumePortamento:    	volcmd = VOLCMD_TONEPORTAMENTO; break;
-                case kcSetVolumeITPortaUp:    	if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTAUP; break;
+                case kcSetVolumeVibratoSpd:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_VIBRATOSPEED; break;
+                case kcSetVolumeVibrato:            volcmd = VOLCMD_VIBRATODEPTH; break;
+                case kcSetVolumeXMPanLeft:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDELEFT; break;
+                case kcSetVolumeXMPanRight:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDERIGHT; break;
+                case kcSetVolumePortamento:            volcmd = VOLCMD_TONEPORTAMENTO; break;
+                case kcSetVolumeITPortaUp:            if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTAUP; break;
                 case kcSetVolumeITPortaDown:    if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTADOWN; break;
-                case kcSetVolumeITOffset:    	if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_OFFSET; break;		//rewbs.volOff
+                case kcSetVolumeITOffset:            if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_OFFSET; break;                //rewbs.volOff
                 }
             //if ((pSndFile->m_nType & MOD_TYPE_MOD) && (volcmd > VOLCMD_PANNING)) volcmd = vol = 0;
 
@@ -4182,7 +4182,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     p->instr = (bChordMode) ? 0 : ins; //p->instr = 0;
     //Writing the instrument as well - probably someone finds this annoying :)
     p->volcmd    = 0;
-    p->vol    	= 0;
+    p->vol            = 0;
 
     pModDoc->SetModified();
 
@@ -4238,7 +4238,7 @@ void CViewPattern::TempEnterIns(int val)
         PrepareUndo(m_dwBeginSel, m_dwEndSel);
 
         modplug::tracker::modevent_t *p = pSndFile->Patterns[m_nPattern].GetpModCommand(m_nRow, nChn);
-        modplug::tracker::modevent_t oldcmd = *p;    	// This is the command we are about to overwrite
+        modplug::tracker::modevent_t oldcmd = *p;            // This is the command we are about to overwrite
 
         UINT instr = p->instr, nTotalMax, nTempMax;
         if(p->IsPcNote())    // this is a plugin index
@@ -4257,7 +4257,7 @@ void CViewPattern::TempEnterIns(int val)
 
         instr = ((instr * 10) + val) % 1000;
         if (instr >= nTotalMax) instr = instr % 100;
-        if (nTempMax < 100)    		// if we're using samples & have less than 100 samples
+        if (nTempMax < 100)                    // if we're using samples & have less than 100 samples
             instr = instr % 100;    // or if we're using instruments and have less than 100 instruments
                                     // --> ensure the entered instrument value is less than 100.
         p->instr = instr;
@@ -4502,7 +4502,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                     } else
                     {
                         m_bLastNoteEntryBlocked = true;  // if the cursor is block by the end of the pattern here,
-                    }    							     // we must remember to not step back should the next note form a chord.
+                    }                                                                 // we must remember to not step back should the next note form a chord.
 
                 }
                 uint32_t sel = CreateCursor(m_nRow) | m_dwCursor;
@@ -4702,7 +4702,7 @@ void CViewPattern::TempEnterChord(int note)
                 {
                     if (chordplaylist[kplchrd])
                     {
-                        pModDoc->PlayNote(chordplaylist[kplchrd], nPlayIns, 0, FALSE, -1, 0, 0, nChn);    //rewbs.vstiLive - 	- added extra args
+                        pModDoc->PlayNote(chordplaylist[kplchrd], nPlayIns, 0, FALSE, -1, 0, 0, nChn);    //rewbs.vstiLive -         - added extra args
                         m_dwStatus |= PATSTATUS_CHORDPLAYING;
                     }
                 }
@@ -4746,12 +4746,12 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
 
         switch(field)
         {
-            case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NOTE_NONE; if (ITStyle) p->instr = 0;}  break;		//Note
-            case INST_COLUMN:    p->instr = 0; break;				//instr
-            case VOL_COLUMN:    p->vol = 0; p->volcmd = 0; break;	//Vol
-            case EFFECT_COLUMN:    p->command = 0;	break;				//Effect
-            case PARAM_COLUMN:    p->param = 0; break;				//Param
-            default:    		p->Clear();							//If not specified, delete them all! :)
+            case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NOTE_NONE; if (ITStyle) p->instr = 0;}  break;                //Note
+            case INST_COLUMN:    p->instr = 0; break;                                //instr
+            case VOL_COLUMN:    p->vol = 0; p->volcmd = 0; break;        //Vol
+            case EFFECT_COLUMN:    p->command = 0;        break;                                //Effect
+            case PARAM_COLUMN:    p->param = 0; break;                                //Param
+            default:                    p->Clear();                                                        //If not specified, delete them all! :)
         }
         if((field == 3 || field == 4) && (p->IsPcNote()))
             p->SetValueEffectCol(0);
@@ -5401,7 +5401,7 @@ UINT CViewPattern::ListChansWhereColSelected(PatternColumns colType, CArray<UINT
         chans.Add(chan); //All chans between first & last must include this col type
     }
     if ((startChan != endChan) && colType <= GetColTypeFromCursor(m_dwEndSel)) {
-        chans.Add(endChan);    	//last selected chan includes this col type
+        chans.Add(endChan);            //last selected chan includes this col type
     }
 
     return chans.GetCount();

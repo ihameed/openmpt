@@ -3,7 +3,7 @@
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
  *          Adam Goode       <adam@evdebs.org> (endian and char fixes for PPC)
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 #include "stdafx.h"
@@ -17,22 +17,22 @@
 #pragma warning(disable:4244) //conversion from 'type1' to 'type2', possible loss of data
 
 #define str_tooMuchPatternData    (GetStrI18N((_TEXT("Warning: File format limit was reached. Some pattern data may not get written to file."))))
-#define str_pattern    			(GetStrI18N((_TEXT("pattern"))))
+#define str_pattern                            (GetStrI18N((_TEXT("pattern"))))
 
 
 #pragma pack(1)
 typedef struct tagXMFILEHEADER
 {
-    uint16_t xmversion;    	// current: 0x0104
-    uint32_t size;    		// header size
-    uint16_t orders;    	// number of orders
+    uint16_t xmversion;            // current: 0x0104
+    uint32_t size;                    // header size
+    uint16_t orders;            // number of orders
     uint16_t restartpos;    // restart position
-    uint16_t channels;    	// number of channels
-    uint16_t patterns;    	// number of patterns
+    uint16_t channels;            // number of channels
+    uint16_t patterns;            // number of patterns
     uint16_t instruments;    // number of instruments
-    uint16_t flags;    		// song flags
-    uint16_t speed;    		// default speed
-    uint16_t tempo;    		// default tempo
+    uint16_t flags;                    // song flags
+    uint16_t speed;                    // default speed
+    uint16_t tempo;                    // default tempo
 } XMFILEHEADER;
 
 
@@ -57,11 +57,11 @@ typedef struct tagXMSAMPLEHEADER
     uint8_t vibtype, vibsweep, vibdepth, vibrate;
     uint16_t volfade;
     // midi extensions (not read by MPT)
-    uint8_t midienabled;    	// 0/1
-    uint8_t midichannel;    	// 0...15
-    uint16_t midiprogram;    	// 0...127
+    uint8_t midienabled;            // 0/1
+    uint8_t midichannel;            // 0...15
+    uint16_t midiprogram;            // 0...127
     uint16_t pitchwheelrange;    // 0...36 (halftones)
-    uint8_t mutecomputer;    	// 0/1
+    uint8_t mutecomputer;            // 0/1
     uint8_t reserved1[15];
 } XMSAMPLEHEADER;
 
@@ -845,14 +845,14 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
             {
                 switch(p->volcmd)
                 {
-                case VOLCMD_VOLUME:    		vol = 0x10 + p->vol; break;
+                case VOLCMD_VOLUME:                    vol = 0x10 + p->vol; break;
                 case VOLCMD_VOLSLIDEDOWN:    vol = 0x60 + (p->vol & 0x0F); break;
-                case VOLCMD_VOLSLIDEUP:    	vol = 0x70 + (p->vol & 0x0F); break;
+                case VOLCMD_VOLSLIDEUP:            vol = 0x70 + (p->vol & 0x0F); break;
                 case VOLCMD_FINEVOLDOWN:    vol = 0x80 + (p->vol & 0x0F); break;
-                case VOLCMD_FINEVOLUP:    	vol = 0x90 + (p->vol & 0x0F); break;
+                case VOLCMD_FINEVOLUP:            vol = 0x90 + (p->vol & 0x0F); break;
                 case VOLCMD_VIBRATOSPEED:    vol = 0xA0 + (p->vol & 0x0F); break;
                 case VOLCMD_VIBRATODEPTH:    vol = 0xB0 + (p->vol & 0x0F); break;
-                case VOLCMD_PANNING:    	vol = 0xC0 + (p->vol >> 2); if (vol > 0xCF) vol = 0xCF; break;
+                case VOLCMD_PANNING:            vol = 0xC0 + (p->vol >> 2); if (vol > 0xCF) vol = 0xCF; break;
                 case VOLCMD_PANSLIDELEFT:    vol = 0xD0 + (p->vol & 0x0F); break;
                 case VOLCMD_PANSLIDERIGHT:    vol = 0xE0 + (p->vol & 0x0F); break;
                 case VOLCMD_TONEPORTAMENTO:    vol = 0xF0 + (p->vol & 0x0F); break;

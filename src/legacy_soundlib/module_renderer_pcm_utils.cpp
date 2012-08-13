@@ -278,11 +278,11 @@ void __cdecl X86_Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax
 {
     _asm {
     mov esi, pbuffer    // esi = edi = pbuffer
-    mov edx, dwSize    	// edx = dwSize
-    mov ebx, lmax24    	// ebx = max
+    mov edx, dwSize            // edx = dwSize
+    mov ebx, lmax24            // ebx = max
     mov edi, poutput    // edi = output 32-bit buffer
     push ebp
-    mov ebp, edx    	// ebp = dwSize
+    mov ebp, edx            // ebp = dwSize
     cmp ebx, 256
     jg normloop
     mov ebx, 256
@@ -293,12 +293,12 @@ normloop:
     or eax, edx
     movzx edx, byte ptr [esi]
     shl eax, 8
-    or eax, edx    	// eax = 24-bit sample
+    or eax, edx            // eax = 24-bit sample
     mov edx, 1 << (31-modplug::mixer::MIXING_ATTENUATION)
     add esi, 3
     imul edx
     add edi, 4
-    idiv ebx    	// eax = 28-bit normalized sample
+    idiv ebx            // eax = 28-bit normalized sample
     dec ebp
     mov dword ptr [edi-4], eax
     jnz normloop
@@ -327,8 +327,8 @@ UINT module_renderer::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t
         X86_Dither(tempbuf, nbuf, 8 * dwByteInc);
         switch(dwByteInc)
         {
-        case 2:    	X86_Convert32To16(pbuffer, tempbuf, nbuf); break;
-        case 3:    	X86_Convert32To24(pbuffer, tempbuf, nbuf); break;
+        case 2:            X86_Convert32To16(pbuffer, tempbuf, nbuf); break;
+        case 3:            X86_Convert32To24(pbuffer, tempbuf, nbuf); break;
         default:    X86_Convert32To8(pbuffer, tempbuf, nbuf);
         }
         n -= nbuf;

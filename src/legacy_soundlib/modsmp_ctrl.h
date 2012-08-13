@@ -46,12 +46,12 @@ void ResetSamples(module_renderer& rSndFile, ResetFlag resetflag);
 // Remove DC offset and normalize.
 // Return: If DC offset was removed, returns original offset value, zero otherwise.
 float RemoveDCOffset(modplug::tracker::modsample_t& smp,
-    				 SmpLength iStart,		// Start position (for partial DC offset removal).
-    				 SmpLength iEnd,		// End position (for partial DC offset removal).
-    				 const MODTYPE modtype,	// Used to determine whether to adjust global or default volume
-    										// to keep volume level the same given the normalization.
-    										// Volume adjustment is not done if this param is MOD_TYPE_NONE.
-    				 module_renderer* const pSndFile); // Passed to AdjustEndOfSample.
+                                     SmpLength iStart,                // Start position (for partial DC offset removal).
+                                     SmpLength iEnd,                // End position (for partial DC offset removal).
+                                     const MODTYPE modtype,        // Used to determine whether to adjust global or default volume
+                                                                                    // to keep volume level the same given the normalization.
+                                                                                    // Volume adjustment is not done if this param is MOD_TYPE_NONE.
+                                     module_renderer* const pSndFile); // Passed to AdjustEndOfSample.
 
 // Reverse sample data
 bool ReverseSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, module_renderer *pSndFile);
@@ -75,11 +75,11 @@ namespace ctrlChn
 
 // Replaces sample from sound channels by given sample.
 void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_VIRTUAL_CHANNELS],
-    				LPCSTR pOldSample,
-    				LPSTR pNewSample,
-    				const ctrlSmp::SmpLength nNewLength,
-    				uint32_t orFlags = 0,
-    				uint32_t andFlags = MAXDWORD);
+                                    LPCSTR pOldSample,
+                                    LPSTR pNewSample,
+                                    const ctrlSmp::SmpLength nNewLength,
+                                    uint32_t orFlags = 0,
+                                    uint32_t andFlags = MAXDWORD);
 
 } // namespace ctrlChn
 

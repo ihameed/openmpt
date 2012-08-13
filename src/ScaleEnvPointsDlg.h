@@ -17,8 +17,8 @@ public:
 
     CScaleEnvPointsDlg(CWnd* pParent, modplug::tracker::modenvelope_t *pEnv, int nCenter) : CDialog(IDD_SCALE_ENV_POINTS, pParent)
     {
-    	m_pEnv = pEnv;
-    	m_nCenter = nCenter;
+            m_pEnv = pEnv;
+            m_nCenter = nCenter;
     }
 
 private:

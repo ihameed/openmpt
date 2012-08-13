@@ -20,19 +20,19 @@ int ApplyVolumeRelatedMidiSettings(const uint32_t& dwParam1, const uint8_t midiv
     int nVol = GetFromMIDIMsg_DataByte2(dwParam1);
     if (CMainFrame::m_dwMidiSetup & MIDISETUP_RECORDVELOCITY)
     {
-    	nVol = (CDLSBank::DLSMidiVolumeToLinear(nVol)+255) >> 8;
-    	if (CMainFrame::m_dwMidiSetup & MIDISETUP_AMPLIFYVELOCITY) nVol *= 2;
-    	if (nVol < 1) nVol = 1;
-    	if (nVol > 256) nVol = 256;
-    	if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIVOL_TO_NOTEVOL)
-    		nVol = static_cast<int>((midivolume / 127.0) * nVol);
+            nVol = (CDLSBank::DLSMidiVolumeToLinear(nVol)+255) >> 8;
+            if (CMainFrame::m_dwMidiSetup & MIDISETUP_AMPLIFYVELOCITY) nVol *= 2;
+            if (nVol < 1) nVol = 1;
+            if (nVol > 256) nVol = 256;
+            if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIVOL_TO_NOTEVOL)
+                    nVol = static_cast<int>((midivolume / 127.0) * nVol);
     }
     else //Case: No velocity record.
-    {	
-    	if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIVOL_TO_NOTEVOL)
-    		nVol = 4*((midivolume+1)/2);
-    	else //Use default volume
-    		nVol = -1;
+    {        
+            if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIVOL_TO_NOTEVOL)
+                    nVol = 4*((midivolume+1)/2);
+            else //Use default volume
+                    nVol = -1;
     }
 
     return nVol;
@@ -42,27 +42,27 @@ void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, uint32_t& dwParam1)
 //------------------------------------------------------------------------
 {
     if ( (CMainFrame::m_dwMidiSetup & MIDISETUP_TRANSPOSEKEYBOARD)
-    	&& (GetFromMIDIMsg_Channel(dwParam1) != 9) )
+            && (GetFromMIDIMsg_Channel(dwParam1) != 9) )
     {
-    	int nTranspose = rMainFrm.GetBaseOctave() - 4;
-    	if (nTranspose)
-    	{
-    		int note = GetFromMIDIMsg_DataByte1(dwParam1);
-    		if (note < 0x80)
-    		{
-    			note += nTranspose*12;
-    			if (note < 0) note = NOTE_NONE;
-    			if (note > NOTE_MAX - 1) note = NOTE_MAX - 1;
+            int nTranspose = rMainFrm.GetBaseOctave() - 4;
+            if (nTranspose)
+            {
+                    int note = GetFromMIDIMsg_DataByte1(dwParam1);
+                    if (note < 0x80)
+                    {
+                            note += nTranspose*12;
+                            if (note < 0) note = NOTE_NONE;
+                            if (note > NOTE_MAX - 1) note = NOTE_MAX - 1;
 
-    			// -> CODE#0011
-    			// -> DESC="bug fix about transpose midi keyboard option"
-    			//dwParam1 &= 0xffffff00;
-    			dwParam1 &= 0xffff00ff;
-    			// -! BUG_FIX#0011
+                            // -> CODE#0011
+                            // -> DESC="bug fix about transpose midi keyboard option"
+                            //dwParam1 &= 0xffffff00;
+                            dwParam1 &= 0xffff00ff;
+                            // -! BUG_FIX#0011
 
-    			dwParam1 |= (note<<8);
-    		}
-    	}
+                            dwParam1 |= (note<<8);
+                    }
+            }
     }
 }
 
@@ -90,27 +90,27 @@ void CALLBACK MidiInCallBack(HMIDIIN, UINT wMsg, uint32_t, uint32_t dwParam1, ui
     hWndMidi = pMainFrm->GetMidiRecordWnd();
     if ((hWndMidi) && ((wMsg == MIM_DATA) || (wMsg == MIM_MOREDATA)))
     {
-    	switch (dwParam1 & 0xF0)
-    	{
-    		case 0xF0:	// Midi Clock
-    			if (wMsg == MIM_DATA)
-    			{
-    				uint32_t dwTime = timeGetTime();
-    				const uint32_t timediff = dwTime - gdwLastMidiEvtTime;
-    				if (timediff < 20*3) break;
-    				
-    				gdwLastMidiEvtTime = dwTime; // continue
-    			}
-    			else break;
+            switch (dwParam1 & 0xF0)
+            {
+                    case 0xF0:        // Midi Clock
+                            if (wMsg == MIM_DATA)
+                            {
+                                    uint32_t dwTime = timeGetTime();
+                                    const uint32_t timediff = dwTime - gdwLastMidiEvtTime;
+                                    if (timediff < 20*3) break;
+                                    
+                                    gdwLastMidiEvtTime = dwTime; // continue
+                            }
+                            else break;
 
-    		case 0x80:	// Note Off
-    		case 0x90:	// Note On
-    			ApplyTransposeKeyboardSetting(*pMainFrm, dwParam1);
+                    case 0x80:        // Note Off
+                    case 0x90:        // Note On
+                            ApplyTransposeKeyboardSetting(*pMainFrm, dwParam1);
 
-    		default:
-    			::PostMessage(hWndMidi, WM_MOD_MIDIMSG, dwParam1, dwParam2);
-    		break;
-    	}
+                    default:
+                            ::PostMessage(hWndMidi, WM_MOD_MIDIMSG, dwParam1, dwParam2);
+                    break;
+            }
     }
 }
 
@@ -120,17 +120,17 @@ BOOL CMainFrame::midiOpenDevice()
 {
     if (shMidiIn) return TRUE;
     try {
-    	if (midiInOpen(&shMidiIn, m_nMidiDevice, (uint32_t)MidiInCallBack, 0, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
-    	{
-    		shMidiIn = NULL;
+            if (midiInOpen(&shMidiIn, m_nMidiDevice, (uint32_t)MidiInCallBack, 0, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+            {
+                    shMidiIn = NULL;
 
-    		// Show MIDI configuration on fail.
-    		CMainFrame::m_nLastOptionsPage = OPTIONS_PAGE_MIDI;
-    		CMainFrame::GetMainFrame()->OnViewOptions();
+                    // Show MIDI configuration on fail.
+                    CMainFrame::m_nLastOptionsPage = OPTIONS_PAGE_MIDI;
+                    CMainFrame::GetMainFrame()->OnViewOptions();
 
-    		return FALSE;
-    	}
-    	midiInStart(shMidiIn);
+                    return FALSE;
+            }
+            midiInStart(shMidiIn);
     } catch (...) {}
     return TRUE;
 }
@@ -141,8 +141,8 @@ void CMainFrame::midiCloseDevice()
 {
     if (shMidiIn)
     {
-    	midiInClose(shMidiIn);
-    	shMidiIn = NULL;
+            midiInClose(shMidiIn);
+            shMidiIn = NULL;
     }
 }
 
@@ -152,10 +152,10 @@ void CMainFrame::OnMidiRecord()
 {
     if (shMidiIn)
     {
-    	midiCloseDevice();
+            midiCloseDevice();
     } else
     {
-    	midiOpenDevice();
+            midiOpenDevice();
     }
 }
 
@@ -191,9 +191,9 @@ size_t CMIDIMapper::GetSerializationSize() const
     size_t s = 0;
     for(const_iterator citer = Begin(); citer != End(); citer++)
     {
-    	if(citer->GetParamIndex() <= UINT8_MAX) {s += 5; continue;}
-    	if(citer->GetParamIndex() <= UINT16_MAX) {s += 6; continue;}
-    	s += 8;
+            if(citer->GetParamIndex() <= UINT8_MAX) {s += 5; continue;}
+            if(citer->GetParamIndex() <= UINT16_MAX) {s += 6; continue;}
+            s += 8;
     }
     return s;
 }
@@ -205,30 +205,30 @@ void CMIDIMapper::Serialize(FILE* f) const
     //Bytes: 1 Flags, 2 key, 1 plugindex, 1,2,4,8 plug/etc.
     for(const_iterator citer = Begin(); citer != End(); citer++)
     {
-    	uint16_t temp16 = (citer->GetChnEvent() << 1) + (citer->GetController() << 9);
-    	if(citer->GetAnyChannel()) temp16 |= 1;
-    	uint32_t temp32 = citer->GetParamIndex();
+            uint16_t temp16 = (citer->GetChnEvent() << 1) + (citer->GetController() << 9);
+            if(citer->GetAnyChannel()) temp16 |= 1;
+            uint32_t temp32 = citer->GetParamIndex();
 
-    	uint8_t temp8 = citer->IsActive(); //bit 0
-    	if(citer->GetCaptureMIDI()) temp8 |= (1 << 1); //bit 1
-    	//bits 2-4: Mapping type: 0 for plug param control.
+            uint8_t temp8 = citer->IsActive(); //bit 0
+            if(citer->GetCaptureMIDI()) temp8 |= (1 << 1); //bit 1
+            //bits 2-4: Mapping type: 0 for plug param control.
         //bit 5: 
-    	if(citer->GetAllowPatternEdit()) temp8 |= (1 << 5);
-    	//bits 6-7: Size: 5, 6, 8, 12
+            if(citer->GetAllowPatternEdit()) temp8 |= (1 << 5);
+            //bits 6-7: Size: 5, 6, 8, 12
 
-    	uint8_t parambytes = 4;
-    	if(temp32 <= UINT16_MAX)
-    	{
-    		if(temp32 <= UINT8_MAX) parambytes = 1;
-    		else {parambytes = 2; temp8 |= (1 << 6);}
-    	}
-    	else temp8 |= (2 << 6);
-    	
-    	fwrite(&temp8, 1, sizeof(temp8), f);	
-    	fwrite(&temp16, 1, sizeof(temp16), f);
-    	temp8 = citer->GetPlugIndex();
-    	fwrite(&temp8, 1, sizeof(temp8), f);
-    	fwrite(&temp32, 1, parambytes, f);
+            uint8_t parambytes = 4;
+            if(temp32 <= UINT16_MAX)
+            {
+                    if(temp32 <= UINT8_MAX) parambytes = 1;
+                    else {parambytes = 2; temp8 |= (1 << 6);}
+            }
+            else temp8 |= (2 << 6);
+            
+            fwrite(&temp8, 1, sizeof(temp8), f);        
+            fwrite(&temp16, 1, sizeof(temp16), f);
+            temp8 = citer->GetPlugIndex();
+            fwrite(&temp8, 1, sizeof(temp8), f);
+            fwrite(&temp32, 1, parambytes, f);
     }
 }
 
@@ -240,37 +240,37 @@ bool CMIDIMapper::Deserialize(const uint8_t* ptr, const size_t size)
     const uint8_t* endptr = ptr + size;
     while(ptr + 5 <= endptr)
     {
-    	uint8_t i8 = 0;
-    	uint16_t i16 = 0;
-    	uint32_t i32 = 0;
-    	memcpy(&i8, ptr, 1); ptr++;
-    	uint8_t psize = 0;
-    	switch(i8 >> 6)
-    	{
-    		case 0: psize = 5; break;
-    		case 1: psize = 6; break;
-    		case 2: psize = 8; break;
-    		case 3: default: psize = 12; break;
-    	}
+            uint8_t i8 = 0;
+            uint16_t i16 = 0;
+            uint32_t i32 = 0;
+            memcpy(&i8, ptr, 1); ptr++;
+            uint8_t psize = 0;
+            switch(i8 >> 6)
+            {
+                    case 0: psize = 5; break;
+                    case 1: psize = 6; break;
+                    case 2: psize = 8; break;
+                    case 3: default: psize = 12; break;
+            }
 
-    	if(ptr + psize - 1 > endptr) return true;
-    	if(((i8 >> 2) & 7) != 0) {ptr += psize - 1; continue;} //Skipping unrecognised mapping types.
+            if(ptr + psize - 1 > endptr) return true;
+            if(((i8 >> 2) & 7) != 0) {ptr += psize - 1; continue;} //Skipping unrecognised mapping types.
 
-    	CMIDIMappingDirective s;
-    	s.SetActive((i8 & 1) != 0);
-    	s.SetCaptureMIDI((i8 & (1 << 1)) != 0);
-    	s.SetAllowPatternEdit((i8 & (1 << 5)) != 0);
-    	memcpy(&i16, ptr, 2); ptr += 2; //Channel, event, MIDIbyte1.
-    	memcpy(&i8, ptr, 1); ptr++;		//Plugindex
-    	const uint8_t remainingbytes = psize - 4;
-    	memcpy(&i32, ptr, min(4, remainingbytes)); ptr += remainingbytes;
-    	   
-    	s.SetChannel(((i16 & 1) != 0) ? 0 : 1 + ((i16 >> 1) & 0xF));
-    	s.SetEvent(static_cast<uint8_t>((i16 >> 5) & 0xF));
-    	s.SetController(i16 >> 9);
-    	s.SetPlugIndex(i8);
-    	s.SetParamIndex(i32);
-    	AddDirective(s);
+            CMIDIMappingDirective s;
+            s.SetActive((i8 & 1) != 0);
+            s.SetCaptureMIDI((i8 & (1 << 1)) != 0);
+            s.SetAllowPatternEdit((i8 & (1 << 5)) != 0);
+            memcpy(&i16, ptr, 2); ptr += 2; //Channel, event, MIDIbyte1.
+            memcpy(&i8, ptr, 1); ptr++;                //Plugindex
+            const uint8_t remainingbytes = psize - 4;
+            memcpy(&i32, ptr, min(4, remainingbytes)); ptr += remainingbytes;
+               
+            s.SetChannel(((i16 & 1) != 0) ? 0 : 1 + ((i16 >> 1) & 0xF));
+            s.SetEvent(static_cast<uint8_t>((i16 >> 5) & 0xF));
+            s.SetController(i16 >> 9);
+            s.SetPlugIndex(i8);
+            s.SetParamIndex(i32);
+            AddDirective(s);
     }
 
     return false;
@@ -295,29 +295,29 @@ bool CMIDIMapper::OnMIDImsg(const uint32_t midimsg, uint8_t& mappedIndex, uint32
 
     for(; citer != End() && citer->GetController() == controller && !captured; citer++)
     {
-    	if(!citer->IsActive()) continue;
-    	uint8_t plugindex = 0;
-    	uint32_t param = 0;
-    	if( citer->GetAnyChannel() || channel+1 == citer->GetChannel())
-    	{
-    		plugindex = citer->GetPlugIndex();
-    		param = citer->GetParamIndex();
-    		if(citer->GetAllowPatternEdit())
-    		{
-    			mappedIndex = plugindex;
-    			paramindex = param;
-    			paramval = GetFromMIDIMsg_DataByte2(midimsg);
-    		}
-    		if(citer->GetCaptureMIDI()) captured = true;
+            if(!citer->IsActive()) continue;
+            uint8_t plugindex = 0;
+            uint32_t param = 0;
+            if( citer->GetAnyChannel() || channel+1 == citer->GetChannel())
+            {
+                    plugindex = citer->GetPlugIndex();
+                    param = citer->GetParamIndex();
+                    if(citer->GetAllowPatternEdit())
+                    {
+                            mappedIndex = plugindex;
+                            paramindex = param;
+                            paramval = GetFromMIDIMsg_DataByte2(midimsg);
+                    }
+                    if(citer->GetCaptureMIDI()) captured = true;
 
-    		if(plugindex > 0 && plugindex <= MAX_MIXPLUGINS)
-    		{
-    			IMixPlugin* pPlug = m_rSndFile.m_MixPlugins[plugindex-1].pMixPlugin;
-    			if(!pPlug) continue;
-    			pPlug->SetZxxParameter(param, (midimsg >> 16) & 0x7F);
-    			CMainFrame::GetMainFrame()->ThreadSafeSetModified(m_rSndFile.GetpModDoc());
-    		}
-    	}
+                    if(plugindex > 0 && plugindex <= MAX_MIXPLUGINS)
+                    {
+                            IMixPlugin* pPlug = m_rSndFile.m_MixPlugins[plugindex-1].pMixPlugin;
+                            if(!pPlug) continue;
+                            pPlug->SetZxxParameter(param, (midimsg >> 16) & 0x7F);
+                            CMainFrame::GetMainFrame()->ThreadSafeSetModified(m_rSndFile.GetpModDoc());
+                    }
+            }
     }
 
     return captured;
@@ -329,11 +329,11 @@ bool CMIDIMapper::Swap(const size_t a, const size_t b)
 {
     if(a < m_Directives.size() && b < m_Directives.size())
     {
-    	CMIDIMappingDirective temp = m_Directives[a];
-    	m_Directives[a] = m_Directives[b];
-    	m_Directives[b] = temp;
-    	Sort();
-    	return false;
+            CMIDIMappingDirective temp = m_Directives[a];
+            m_Directives[a] = m_Directives[b];
+            m_Directives[b] = temp;
+            Sort();
+            return false;
     }
     else return true;
 }

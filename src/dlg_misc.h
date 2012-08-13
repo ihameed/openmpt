@@ -86,17 +86,17 @@ public:
     module_renderer *m_pSndFile;
     vector<bool> m_bKeepMask;
     CHANNELINDEX m_nChannels, m_nRemove;
-    CListBox m_RemChansList;		//rewbs.removeChansDlgCleanup
+    CListBox m_RemChansList;                //rewbs.removeChansDlgCleanup
     bool m_ShowCancel;
 
 public:
     CRemoveChannelsDlg(module_renderer *pSndFile, CHANNELINDEX nChns, bool showCancel = true, CWnd *parent=NULL):CDialog(IDD_REMOVECHANNELS, parent)
-    	{ m_pSndFile = pSndFile;
-    	  m_nChannels = m_pSndFile->GetNumChannels();
-    	  m_nRemove = nChns;
-    	  m_bKeepMask.assign(m_nChannels, true);
-    	  m_ShowCancel = showCancel;
-    	}
+            { m_pSndFile = pSndFile;
+              m_nChannels = m_pSndFile->GetNumChannels();
+              m_nRemove = nChns;
+              m_bKeepMask.assign(m_nChannels, true);
+              m_ShowCancel = showCancel;
+            }
 
 protected:
     //{{AFX_VIRTUAL(CRemoveChannelsDlg)
@@ -192,8 +192,8 @@ class CKeyboardControl: public CWnd
 public:
     enum
     {
-    	KEYFLAG_NORMAL=0,
-    	KEYFLAG_REDDOT,
+            KEYFLAG_NORMAL=0,
+            KEYFLAG_REDDOT,
     };
 protected:
     HWND m_hParent;
@@ -235,7 +235,7 @@ protected:
 
 public:
     CSampleMapDlg(module_renderer *pSndFile, UINT nInstr, CWnd *parent=NULL):CDialog(IDD_EDITSAMPLEMAP, parent)
-    	{ m_pSndFile = pSndFile; m_nInstrument = nInstr; }
+            { m_pSndFile = pSndFile; m_nInstrument = nInstr; }
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);
@@ -279,10 +279,10 @@ protected:
 // Enums for message entries. See dlg_misc.cpp for the array of entries.
 enum enMsgBoxHidableMessage
 {
-    ModCompatibilityExportTip		= 0,
-    ItCompatibilityExportTip		= 1,
-    ConfirmSignUnsignWhenPlaying	= 2,
-    XMCompatibilityExportTip		= 3,
+    ModCompatibilityExportTip                = 0,
+    ItCompatibilityExportTip                = 1,
+    ConfirmSignUnsignWhenPlaying        = 2,
+    XMCompatibilityExportTip                = 3,
     enMsgBoxHidableMessage_count
 };
 

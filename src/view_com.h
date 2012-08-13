@@ -2,7 +2,7 @@
 #define _VIEW_COMMENTS_H_
 
 enum { 
-    LINE_LENGTH = 128,	//was 81. must be larger than visible comment area.
+    LINE_LENGTH = 128,        //was 81. must be larger than visible comment area.
 };
 
 //===============================

@@ -26,15 +26,15 @@ private:
 public:
     CNoteMapWnd()
     {
-    	m_nPlayingNote = -1;
-    	m_nNote = NOTE_MIDDLEC - 1;
-    	m_pModDoc = nullptr;
-    	m_nInstrument = 0;
-    	m_bIns = false;
-    	m_cxFont = m_cyFont = 0;
-    	m_hFont = NULL;
-    	m_nOldNote = m_nOldIns = 0;
-    	m_pParent = NULL;
+            m_nPlayingNote = -1;
+            m_nNote = NOTE_MIDDLEC - 1;
+            m_pModDoc = nullptr;
+            m_nInstrument = 0;
+            m_bIns = false;
+            m_cxFont = m_cyFont = 0;
+            m_hFont = NULL;
+            m_nOldNote = m_nOldIns = 0;
+            m_pParent = NULL;
     }
     BOOL SetCurrentInstrument(CModDoc *pModDoc, UINT nIns);
     BOOL SetCurrentNote(UINT nNote);
@@ -86,7 +86,7 @@ protected:
     CEdit m_EditName, m_EditFileName, m_EditGlobalVol, m_EditPanning, m_EditPPS, m_EditFadeOut;
     CButton m_CheckPanning, m_CheckCutOff, m_CheckResonance;
     CSliderCtrl m_SliderVolSwing, m_SliderPanSwing, m_SliderCutSwing, m_SliderResSwing,
-    	        m_SliderCutOff, m_SliderResonance;
+                    m_SliderCutOff, m_SliderResonance;
     CNoteMapWnd m_NoteMap;
     INSTRUMENTINDEX m_nInstrument;
 
@@ -119,7 +119,7 @@ public:
     BOOL OpenInstrument(module_renderer *pSndFile, UINT nInstr);
     BOOL EditSample(UINT nSample);
     VOID UpdateFilterText();
-    LONG* GetSplitPosRef() {return &CMainFrame::glInstrumentWindowHeight;} 	//rewbs.varWindowSize
+    LONG* GetSplitPosRef() {return &CMainFrame::glInstrumentWindowHeight;}         //rewbs.varWindowSize
 
 private:
     void CCtrlInstruments::UpdateRampingInPlace(int, int, USHORT *);
@@ -127,7 +127,7 @@ private:
 public:
     //{{AFX_VIRTUAL(CCtrlInstruments)
     virtual BOOL OnInitDialog();
-    virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);        // DDX/DDV support
     virtual CRuntimeClass *GetAssociatedViewClass();
     virtual void RecalcLayout();
     virtual void OnActivatePage(LPARAM);
@@ -159,7 +159,7 @@ protected:
     afx_msg void OnDCTChanged();
     afx_msg void OnDCAChanged();
     afx_msg void OnMPRChanged();
-    afx_msg void OnMBKChanged();	//rewbs.MidiBank
+    afx_msg void OnMBKChanged();        //rewbs.MidiBank
     afx_msg void OnMCHChanged();
     afx_msg void OnResamplingChanged();
     afx_msg void OnMixPlugChanged();  //rewbs.instroVSTi

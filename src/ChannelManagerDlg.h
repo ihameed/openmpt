@@ -1,8 +1,8 @@
 #pragma once
 
-#define CM_BT_LEFT    	1
-#define CM_BT_RIGHT    	2
-#define CM_NB_COLS    	8
+#define CM_BT_LEFT            1
+#define CM_BT_RIGHT            2
+#define CM_NB_COLS            8
 #define CM_BT_HEIGHT    22
 
 //======================================

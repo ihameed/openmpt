@@ -33,7 +33,7 @@ typedef struct PATTERNVIEWSTATE
     uint32_t dwBeginSel;
     uint32_t dwEndSel;
     UINT nDetailLevel;
-    ORDERINDEX nOrder;		//rewbs.playSongFromCursor
+    ORDERINDEX nOrder;                //rewbs.playSongFromCursor
 } PATTERNVIEWSTATE;
 
 typedef struct SAMPLEVIEWSTATE
@@ -105,7 +105,7 @@ public:
     BOOL ChangeViewClass(CRuntimeClass* pNewViewClass, CCreateContext* pContext=NULL);
     void ForceRefresh();
     void SavePosition(BOOL bExit=FALSE);
-    CHAR* GetCurrentViewClassName();	//rewbs.varWindowSize
+    CHAR* GetCurrentViewClassName();        //rewbs.varWindowSize
     LRESULT SendViewMessage(UINT uMsg, LPARAM lParam=0) const;
     LRESULT ActivateView(UINT nId, LPARAM lParam) { return ::SendMessage(m_hWndCtrl, WM_MOD_ACTIVATEVIEW, nId, lParam); }
     HWND GetHwndCtrl() const { return m_hWndCtrl; }
@@ -116,8 +116,8 @@ public:
     INSTRUMENTVIEWSTATE *GetInstrumentViewState() { return &m_ViewInstruments; }
     COMMENTVIEWSTATE *GetCommentViewState() { return &m_ViewComments; }
 
-    void SetSplitterHeight(int x);		//rewbs.varWindowSize
-    int GetSplitterHeight();	 	    //rewbs.varWindowSize
+    void SetSplitterHeight(int x);                //rewbs.varWindowSize
+    int GetSplitterHeight();                     //rewbs.varWindowSize
 
 // Overrides
     // ClassWizard generated virtual function overrides

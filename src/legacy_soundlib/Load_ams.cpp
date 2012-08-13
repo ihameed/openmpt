@@ -4,7 +4,7 @@
  * Copied to OpenMPT from libmodplug.
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
  * Notes  : Extreme was renamed to Velvet Development at some point,
  *          and thus they also renamed their tracker from
  *          "Extreme's Tracker" to "Velvet Studio".
@@ -42,7 +42,7 @@ typedef struct AMSSAMPLEHEADER
     uint32_t loopend;
     uint8_t finetune_and_pan;
     uint16_t samplerate;    // C-2 = 8363
-    uint8_t volume;    	// 0-127
+    uint8_t volume;            // 0-127
     uint8_t infobyte;
 } AMSSAMPLEHEADER;
 
@@ -149,7 +149,7 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
     {
         if (dwMemPos + 1 >= dwMemLength) return true;
         tmp = lpStream[dwMemPos++];
-        tmp2 = min(tmp, MAX_PATTERNNAME - 1);    	// not counting null char
+        tmp2 = min(tmp, MAX_PATTERNNAME - 1);            // not counting null char
         if (dwMemPos + tmp >= dwMemLength) return true;
         Patterns.Insert(pNam, 64);    // Create pattern now, so that the name won't be overwritten later.
         if(tmp2)
@@ -295,10 +295,10 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
 
 typedef struct AMS2FILEHEADER
 {
-    uint32_t dwHdr1;    	// AMShdr
+    uint32_t dwHdr1;            // AMShdr
     uint16_t wHdr2;
-    uint8_t b1A;    		// 0x1A
-    uint8_t titlelen;    	// 30-bytes max
+    uint8_t b1A;                    // 0x1A
+    uint8_t titlelen;            // 30-bytes max
     CHAR szTitle[30];    // [titlelen]
 } AMS2FILEHEADER;
 

@@ -96,9 +96,9 @@ Func CPatternContainer::ForEachModCommand(PATTERNINDEX nStartPat, PATTERNINDEX n
 //-------------------------------------------------------------------------------------------------
 {
     if (nStartPat > nLastPat || nLastPat >= Size())
-    	return func;
+            return func;
     for (PATTERNINDEX nPat = nStartPat; nPat <= nLastPat; nPat++) if (m_Patterns[nPat])
-    	std::for_each(m_Patterns[nPat].Begin(), m_Patterns[nPat].End(), func);
+            std::for_each(m_Patterns[nPat].Begin(), m_Patterns[nPat].End(), func);
     return func;
 }
 

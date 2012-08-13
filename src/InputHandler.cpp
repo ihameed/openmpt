@@ -17,13 +17,13 @@
 CInputHandler::CInputHandler(CWnd *mainframe)
 {
     m_pMainFrm = mainframe;
-    	
+            
     //Init CommandSet and Load defaults
     activeCommandSet = new CCommandSet();
     
     CString sDefaultPath = CString(theApp.GetConfigPath()) + TEXT("Keybindings.mkb");
     if (sDefaultPath.GetLength() > MAX_PATH - 1)
-    	sDefaultPath = "";
+            sDefaultPath = "";
 
     const bool bNoExistingKbdFileSetting = (CMainFrame::m_szKbdFile[0] == 0);
 
@@ -35,29 +35,29 @@ CInputHandler::CInputHandler(CWnd *mainframe)
 
     if (bNoExistingKbdFileSetting || !(activeCommandSet->LoadFile(CMainFrame::m_szKbdFile)))
     {
-    	if (bNoExistingKbdFileSetting)
-    		_tcscpy(CMainFrame::m_szKbdFile, sDefaultPath);
-    	bool bSuccess = false;
-    	if (PathFileExists(sDefaultPath) == TRUE)
-    		bSuccess = activeCommandSet->LoadFile(sDefaultPath);
-    	if (bSuccess == false)
-    	{
-    		// Load keybindings from resources.
-    		Log("Loading keybindings from resources\n");
-    		const char* pData = nullptr;
-    		HGLOBAL hglob = nullptr;
-    		size_t nSize = 0;
-    		if (LoadResource(MAKEINTRESOURCE(IDR_DEFAULT_KEYBINDINGS), TEXT("KEYBINDINGS"), pData, nSize, hglob) != nullptr)
-    		{
-    			std::istrstream iStrm(pData, nSize);
-    			bSuccess = activeCommandSet->LoadFile(iStrm, TEXT("\"executable resource\""));
-    			FreeResource(hglob);
-    			if (bSuccess && bNoExistingKbdFileSetting)
-    				activeCommandSet->SaveFile(CMainFrame::m_szKbdFile, false);
-    		}
-    	}
-    	if (bSuccess == false)
-    		AfxMessageBox(IDS_UNABLE_TO_LOAD_KEYBINDINGS, MB_ICONERROR);
+            if (bNoExistingKbdFileSetting)
+                    _tcscpy(CMainFrame::m_szKbdFile, sDefaultPath);
+            bool bSuccess = false;
+            if (PathFileExists(sDefaultPath) == TRUE)
+                    bSuccess = activeCommandSet->LoadFile(sDefaultPath);
+            if (bSuccess == false)
+            {
+                    // Load keybindings from resources.
+                    Log("Loading keybindings from resources\n");
+                    const char* pData = nullptr;
+                    HGLOBAL hglob = nullptr;
+                    size_t nSize = 0;
+                    if (LoadResource(MAKEINTRESOURCE(IDR_DEFAULT_KEYBINDINGS), TEXT("KEYBINDINGS"), pData, nSize, hglob) != nullptr)
+                    {
+                            std::istrstream iStrm(pData, nSize);
+                            bSuccess = activeCommandSet->LoadFile(iStrm, TEXT("\"executable resource\""));
+                            FreeResource(hglob);
+                            if (bSuccess && bNoExistingKbdFileSetting)
+                                    activeCommandSet->SaveFile(CMainFrame::m_szKbdFile, false);
+                    }
+            }
+            if (bSuccess == false)
+                    AfxMessageBox(IDS_UNABLE_TO_LOAD_KEYBINDINGS, MB_ICONERROR);
     }
     // We will only overwrite the default Keybindings.mkb file from now on.
     _tcscpy(CMainFrame::m_szKbdFile, sDefaultPath);
@@ -85,36 +85,36 @@ CInputHandler::~CInputHandler(void)
 //--------------------------------------------------------------
 CommandID CInputHandler::GeneralKeyEvent(InputTargetContext context, int code, WPARAM wParam , LPARAM lParam)
 {
-    CommandID executeCommand = kcNull;	
+    CommandID executeCommand = kcNull;        
     KeyEventType keyEventType;
 
-    if (code == HC_ACTION)	{
-    	//Get the KeyEventType (key up, key down, key repeat)
-    	uint32_t scancode = lParam >> 16;
-    	if	((scancode & 0xC000) == 0xC000) {
-    		keyEventType = kKeyEventUp;
-    	} else if ((scancode & 0xC000) == 0x0000) {
-    		keyEventType = kKeyEventDown;
-    	} else {
-    		keyEventType = kKeyEventRepeat;
-    	}
+    if (code == HC_ACTION)        {
+            //Get the KeyEventType (key up, key down, key repeat)
+            uint32_t scancode = lParam >> 16;
+            if        ((scancode & 0xC000) == 0xC000) {
+                    keyEventType = kKeyEventUp;
+            } else if ((scancode & 0xC000) == 0x0000) {
+                    keyEventType = kKeyEventDown;
+            } else {
+                    keyEventType = kKeyEventRepeat;
+            }
 
-    	// Catch modifier change (ctrl, alt, shift) - Only check on keyDown or keyUp.
-    	// NB: we want to catch modifiers even when the input handler is locked
-    	if (keyEventType == kKeyEventUp || keyEventType == kKeyEventDown) {
-    		scancode =(lParam >> 16) & 0x1FF;
-    		CatchModifierChange(wParam, keyEventType, scancode);
-    	}
+            // Catch modifier change (ctrl, alt, shift) - Only check on keyDown or keyUp.
+            // NB: we want to catch modifiers even when the input handler is locked
+            if (keyEventType == kKeyEventUp || keyEventType == kKeyEventDown) {
+                    scancode =(lParam >> 16) & 0x1FF;
+                    CatchModifierChange(wParam, keyEventType, scancode);
+            }
 
-    	if (!InterceptSpecialKeys( wParam, lParam ) && !Bypass()) {
-    		// only execute command when the input handler is not locked
-    		// and the input is not a consequence of special key interception.
-    		executeCommand = keyMap[context][modifierMask][wParam][keyEventType];
-    	}
+            if (!InterceptSpecialKeys( wParam, lParam ) && !Bypass()) {
+                    // only execute command when the input handler is not locked
+                    // and the input is not a consequence of special key interception.
+                    executeCommand = keyMap[context][modifierMask][wParam][keyEventType];
+            }
     }
 
-    if (m_pMainFrm && executeCommand != kcNull)	{
-    	m_pMainFrm->PostMessage(WM_MOD_KEYCOMMAND, executeCommand, wParam);
+    if (m_pMainFrm && executeCommand != kcNull)        {
+            m_pMainFrm->PostMessage(WM_MOD_KEYCOMMAND, executeCommand, wParam);
     }
 
     return executeCommand;
@@ -126,15 +126,15 @@ CommandID CInputHandler::KeyEvent(InputTargetContext context, UINT &nChar, UINT 
 {
     CommandID executeCommand = keyMap[context][modifierMask][nChar][keyEventType];
 
-/*    	if (keyEventType == kKeyEventUp)
-    		keyEventType=kKeyEventUp;
+/*            if (keyEventType == kKeyEventUp)
+                    keyEventType=kKeyEventUp;
 */
     if (pSourceWnd == NULL) {
-    	pSourceWnd = m_pMainFrm;	//by default, send command message to main frame.
+            pSourceWnd = m_pMainFrm;        //by default, send command message to main frame.
     }
     if (pSourceWnd && (executeCommand != kcNull)) 
     {
-    	pSourceWnd->PostMessage(WM_MOD_KEYCOMMAND, executeCommand, nChar);
+            pSourceWnd->PostMessage(WM_MOD_KEYCOMMAND, executeCommand, nChar);
     }
 
     return executeCommand;
@@ -147,39 +147,39 @@ bool CInputHandler::InterceptSpecialKeys( UINT nChar , UINT nFlags )
     enum { VK_NonExistentKey = VK_F24+1 };
     
     if( nChar == VK_NonExistentKey ) {
-    	return true;
+            return true;
     } else if( m_bInterceptWindowsKeys && ( nChar == VK_LWIN || nChar == VK_RWIN ) ) {
-    	if( keyEventType == kKeyEventDown ) {
-    		INPUT inp[2];
-    		inp[0].type = inp[1].type = INPUT_KEYBOARD;
-    		inp[0].ki.time = inp[1].ki.time = 0;
-    		inp[0].ki.dwExtraInfo = inp[0].ki.dwExtraInfo = 0;
-    		inp[0].ki.wVk = inp[1].ki.wVk = VK_NonExistentKey;
-    		inp[0].ki.wScan = inp[1].ki.wScan = 0;
-    		inp[0].ki.dwFlags = 0;
-    		inp[1].ki.dwFlags = KEYEVENTF_KEYUP;
-    		SendInput( 2, inp, sizeof(INPUT) );
-    	}
+            if( keyEventType == kKeyEventDown ) {
+                    INPUT inp[2];
+                    inp[0].type = inp[1].type = INPUT_KEYBOARD;
+                    inp[0].ki.time = inp[1].ki.time = 0;
+                    inp[0].ki.dwExtraInfo = inp[0].ki.dwExtraInfo = 0;
+                    inp[0].ki.wVk = inp[1].ki.wVk = VK_NonExistentKey;
+                    inp[0].ki.wScan = inp[1].ki.wScan = 0;
+                    inp[0].ki.dwFlags = 0;
+                    inp[1].ki.dwFlags = KEYEVENTF_KEYUP;
+                    SendInput( 2, inp, sizeof(INPUT) );
+            }
     }
     
     if( ( nChar == VK_NUMLOCK && m_bInterceptNumLock ) || 
-    		( nChar == VK_CAPITAL && m_bInterceptCapsLock ) || 
-    		( nChar == VK_SCROLL && m_bInterceptScrollLock ) ) {
-    	if( m_nSkipGeneratedKeypresses > 0 ) {
-    		m_nSkipGeneratedKeypresses -- ;
-    		return true;
-    	} else if( keyEventType == kKeyEventDown )	{
-    		m_nSkipGeneratedKeypresses = 2;
-    		INPUT inp[2];
-    		inp[0].type = inp[1].type = INPUT_KEYBOARD;
-    		inp[0].ki.time = inp[1].ki.time = 0;
-    		inp[0].ki.dwExtraInfo = inp[0].ki.dwExtraInfo = 0;
-    		inp[0].ki.wVk = inp[1].ki.wVk = static_cast<uint16_t>(nChar);
-    		inp[0].ki.wScan = inp[1].ki.wScan = 0;
-    		inp[0].ki.dwFlags = KEYEVENTF_KEYUP;
-    		inp[1].ki.dwFlags = 0;
-    		SendInput( 2, inp, sizeof(INPUT) );
-    	}
+                    ( nChar == VK_CAPITAL && m_bInterceptCapsLock ) || 
+                    ( nChar == VK_SCROLL && m_bInterceptScrollLock ) ) {
+            if( m_nSkipGeneratedKeypresses > 0 ) {
+                    m_nSkipGeneratedKeypresses -- ;
+                    return true;
+            } else if( keyEventType == kKeyEventDown )        {
+                    m_nSkipGeneratedKeypresses = 2;
+                    INPUT inp[2];
+                    inp[0].type = inp[1].type = INPUT_KEYBOARD;
+                    inp[0].ki.time = inp[1].ki.time = 0;
+                    inp[0].ki.dwExtraInfo = inp[0].ki.dwExtraInfo = 0;
+                    inp[0].ki.wVk = inp[1].ki.wVk = static_cast<uint16_t>(nChar);
+                    inp[0].ki.wScan = inp[1].ki.wScan = 0;
+                    inp[0].ki.dwFlags = KEYEVENTF_KEYUP;
+                    inp[1].ki.dwFlags = 0;
+                    SendInput( 2, inp, sizeof(INPUT) );
+            }
     }
     return false;
 };
@@ -191,11 +191,11 @@ void CInputHandler::SetupSpecialKeyInterception()
     for( int mod=0; mod < ARRAYELEMCOUNT(keyMap[0]); mod++ )
     for( int key=0; key < ARRAYELEMCOUNT(keyMap[0][0]); key++ )
     for( int kevent=0; kevent < ARRAYELEMCOUNT(keyMap[0][0][0]); kevent++ ) {
-    	if( keyMap[context][mod][key][kevent] == kcNull ) continue;
-    	if( mod == HOTKEYF_EXT ) m_bInterceptWindowsKeys = true;
-    	if( key == VK_NUMLOCK ) m_bInterceptNumLock = true;
-    	if( key == VK_CAPITAL ) m_bInterceptCapsLock = true;
-    	if( key == VK_SCROLL ) m_bInterceptScrollLock = true;
+            if( keyMap[context][mod][key][kevent] == kcNull ) continue;
+            if( mod == HOTKEYF_EXT ) m_bInterceptWindowsKeys = true;
+            if( key == VK_NUMLOCK ) m_bInterceptNumLock = true;
+            if( key == VK_CAPITAL ) m_bInterceptCapsLock = true;
+            if( key == VK_SCROLL ) m_bInterceptScrollLock = true;
     };
 };
 
@@ -206,60 +206,60 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
 {
     UINT tempModifierMask = 0;
     switch(wParam)
-    {	
-    	case VK_CONTROL: 
-/*    		if (m_bDistinguishControls)
-    		{
-    			if		(scancode == SC_LCONTROL)	tempModifierMask |= LControl;
-    			else if (scancode == SC_RCONTROL)	tempModifierMask |= RControl;
-    			break;
-    		}
-    		else
-    		{
-*/    			tempModifierMask |= HOTKEYF_CONTROL; 
-    			break;	
-//    		}
+    {        
+            case VK_CONTROL: 
+/*                    if (m_bDistinguishControls)
+                    {
+                            if                (scancode == SC_LCONTROL)        tempModifierMask |= LControl;
+                            else if (scancode == SC_RCONTROL)        tempModifierMask |= RControl;
+                            break;
+                    }
+                    else
+                    {
+*/                            tempModifierMask |= HOTKEYF_CONTROL; 
+                            break;        
+//                    }
 
-    	case VK_SHIFT:
-/*    		if (m_bDistinguishShifts)
-    		{
-    			if		(scancode == SC_LSHIFT)		tempModifierMask |= LShift;
-    			else if (scancode == SC_RSHIFT)		tempModifierMask |= RShift;
-    			break;
-    		}
-    		else
-    		{
-*/    			tempModifierMask |= HOTKEYF_SHIFT; 
-    			break;
-//    		}
-    		
-    	case VK_MENU:  
-/*    		if (m_bDistinguishAlts)
-    		{
-    			if		(scancode == SC_LALT)		{tempModifierMask |= LAlt;	break;}
-    			else if	(scancode == SC_RALT)		{tempModifierMask |= RAlt;	break;}
-    		}
-    		else
-    		{
-*/    			tempModifierMask |= HOTKEYF_ALT; 
-    			break;
-//    		}
-    	case VK_LWIN: case VK_RWIN: // Feature: use Windows keys as modifier keys
-    			tempModifierMask |= HOTKEYF_EXT; 
-    			break;
+            case VK_SHIFT:
+/*                    if (m_bDistinguishShifts)
+                    {
+                            if                (scancode == SC_LSHIFT)                tempModifierMask |= LShift;
+                            else if (scancode == SC_RSHIFT)                tempModifierMask |= RShift;
+                            break;
+                    }
+                    else
+                    {
+*/                            tempModifierMask |= HOTKEYF_SHIFT; 
+                            break;
+//                    }
+                    
+            case VK_MENU:  
+/*                    if (m_bDistinguishAlts)
+                    {
+                            if                (scancode == SC_LALT)                {tempModifierMask |= LAlt;        break;}
+                            else if        (scancode == SC_RALT)                {tempModifierMask |= RAlt;        break;}
+                    }
+                    else
+                    {
+*/                            tempModifierMask |= HOTKEYF_ALT; 
+                            break;
+//                    }
+            case VK_LWIN: case VK_RWIN: // Feature: use Windows keys as modifier keys
+                            tempModifierMask |= HOTKEYF_EXT; 
+                            break;
     }
 
-    if (tempModifierMask)	//This keypress just changed the modifier mask
+    if (tempModifierMask)        //This keypress just changed the modifier mask
     {
-    	if (keyEventType == kKeyEventDown)
-    	{
-    		modifierMask |= tempModifierMask;
-    		LogModifiers(modifierMask);
-    	}
-    	if (keyEventType == kKeyEventUp)
-    		modifierMask &= ~tempModifierMask;
+            if (keyEventType == kKeyEventDown)
+            {
+                    modifierMask |= tempModifierMask;
+                    LogModifiers(modifierMask);
+            }
+            if (keyEventType == kKeyEventUp)
+                    modifierMask &= ~tempModifierMask;
 
-    	return true;
+            return true;
     }
     
     return false;
@@ -293,7 +293,7 @@ int CInputHandler::SetCommand(InputTargetContext context, CommandID cmd, UINT mo
 
 KeyCombination CInputHandler::GetKey(CommandID cmd, UINT key)
 {
-    return activeCommandSet->GetKey(cmd, key);	
+    return activeCommandSet->GetKey(cmd, key);        
 }
 
 
@@ -332,13 +332,13 @@ void CInputHandler::LogModifiers(UINT mask)
 
 KeyEventType CInputHandler::GetKeyEventType(UINT nFlags)
 {    
-    if (nFlags & TRANSITIONBIT)		//Key released
-    	return kKeyEventUp;
-    else						
-    	if (nFlags & REPEATBIT)		//key repeated
-    		return kKeyEventRepeat;
-    	else						//new key down
-    		return kKeyEventDown;		
+    if (nFlags & TRANSITIONBIT)                //Key released
+            return kKeyEventUp;
+    else                                                
+            if (nFlags & REPEATBIT)                //key repeated
+                    return kKeyEventRepeat;
+            else                                                //new key down
+                    return kKeyEventDown;                
 }
 
 bool CInputHandler::SelectionPressed(void)
@@ -348,11 +348,11 @@ bool CInputHandler::SelectionPressed(void)
     KeyCombination key;
 
     for (int k=0; k<nSelectionKeys; k++) { 
-    	key = activeCommandSet->GetKey(kcSelect, k);
-    	if (modifierMask & key.mod) {
-    		result=true;
-    		break;
-    	}
+            key = activeCommandSet->GetKey(kcSelect, k);
+            if (modifierMask & key.mod) {
+                    result=true;
+                    break;
+            }
     }
     return result;
 }
@@ -413,65 +413,65 @@ CString CInputHandler::GetMenuText(UINT id)
 
     switch(id)
     {
-    	case FILENEW:				s="&New\t"; c=kcFileNew; break;
-    	case ID_FILE_OPEN:			s="&Open...\t"; c=kcFileOpen;  break;
-    	case ID_FILE_CLOSE:			s="&Close\t"; c=kcFileClose; break;
-    	case ID_FILE_SAVE:			s="&Save\t"; c=kcFileSave; break;
-    	case ID_FILE_SAVE_AS:		s="Save &As...\t"; c=kcFileSaveAs; break;
-    	case ID_FILE_SAVEASWAVE:	s="Export as &Wave...\t"; c=kcFileSaveAsWave; break;
-    	case ID_FILE_SAVEASMP3:		s="Export as M&P3...\t"; c=kcFileSaveAsMP3; break;
-    	case ID_FILE_SAVEMIDI:		s="Export as M&IDI...\t"; c=kcFileSaveMidi; break;
-    	case ID_FILE_SAVECOMPAT:	s="Compatibility &Export...\t"; c=kcFileExportCompat; break;
-    	case ID_IMPORT_MIDILIB:		s="Import &MIDI Library...\t"; c=kcFileImportMidiLib; break;
-    	case ID_ADD_SOUNDBANK:		s="Add Sound &Bank...\t"; c=kcFileAddSoundBank; break;
+            case FILENEW:                                s="&New\t"; c=kcFileNew; break;
+            case ID_FILE_OPEN:                        s="&Open...\t"; c=kcFileOpen;  break;
+            case ID_FILE_CLOSE:                        s="&Close\t"; c=kcFileClose; break;
+            case ID_FILE_SAVE:                        s="&Save\t"; c=kcFileSave; break;
+            case ID_FILE_SAVE_AS:                s="Save &As...\t"; c=kcFileSaveAs; break;
+            case ID_FILE_SAVEASWAVE:        s="Export as &Wave...\t"; c=kcFileSaveAsWave; break;
+            case ID_FILE_SAVEASMP3:                s="Export as M&P3...\t"; c=kcFileSaveAsMP3; break;
+            case ID_FILE_SAVEMIDI:                s="Export as M&IDI...\t"; c=kcFileSaveMidi; break;
+            case ID_FILE_SAVECOMPAT:        s="Compatibility &Export...\t"; c=kcFileExportCompat; break;
+            case ID_IMPORT_MIDILIB:                s="Import &MIDI Library...\t"; c=kcFileImportMidiLib; break;
+            case ID_ADD_SOUNDBANK:                s="Add Sound &Bank...\t"; c=kcFileAddSoundBank; break;
 
-    	case ID_PLAYER_PLAY:		s="Pause/&Resume\t"; c= kcPlayPauseSong; break;
-    	case ID_PLAYER_PLAYFROMSTART:	s="&Play from start\t"; c=kcPlaySongFromStart; break;
-    	case ID_PLAYER_STOP:		s="&Stop\t"; c=kcStopSong; break;
-    	case ID_PLAYER_PAUSE:		s="P&ause\t"; c=kcPauseSong; break;
-    	case ID_MIDI_RECORD:		s="&MIDI Record\t"; c=kcMidiRecord; break;
-    	case ID_ESTIMATESONGLENGTH:	s="&Estimate Song Length\t"; c=kcEstimateSongLength; break;
-    	case ID_APPROX_BPM:			s="Approx. real &BPM\t"; c=kcApproxRealBPM; break;
+            case ID_PLAYER_PLAY:                s="Pause/&Resume\t"; c= kcPlayPauseSong; break;
+            case ID_PLAYER_PLAYFROMSTART:        s="&Play from start\t"; c=kcPlaySongFromStart; break;
+            case ID_PLAYER_STOP:                s="&Stop\t"; c=kcStopSong; break;
+            case ID_PLAYER_PAUSE:                s="P&ause\t"; c=kcPauseSong; break;
+            case ID_MIDI_RECORD:                s="&MIDI Record\t"; c=kcMidiRecord; break;
+            case ID_ESTIMATESONGLENGTH:        s="&Estimate Song Length\t"; c=kcEstimateSongLength; break;
+            case ID_APPROX_BPM:                        s="Approx. real &BPM\t"; c=kcApproxRealBPM; break;
 
-    	case ID_EDIT_UNDO:			s="&Undo\t"; c=kcEditUndo; break;
-    	case ID_EDIT_CUT:			s="Cu&t\t"; c=kcEditCut; break;
-    	case ID_EDIT_COPY:			s="&Copy\t"; c=kcEditCopy; break;
-    	case ID_EDIT_PASTE:			s="&Paste\t"; c=kcEditPaste; break;
-    	case ID_EDIT_SELECT_ALL:	s="Select &All\t"; c=kcEditSelectAll; break;
-    	case ID_EDIT_CLEANUP:		s="C&leanup"; break;
-    	case ID_EDIT_FIND:			s="&Find\t"; c=kcEditFind; break;
-    	case ID_EDIT_FINDNEXT:		s="Find &Next\t"; c=kcEditFindNext; break;
-    	case ID_EDIT_GOTO_MENU:		s="&Goto\t"; c=kcPatternGoto; break;
-    	case ID_EDIT_SPLITKEYBOARDSETTINGS:	s="Split &Keyboard Settings\t"; c=kcShowSplitKeyboardSettings; break;
-    		// "Paste Special" sub menu
-    	case ID_EDIT_PASTE_SPECIAL:	s="&Mix Paste\t"; c=kcEditMixPaste; break;
-    	case ID_EDIT_MIXPASTE_ITSTYLE:	s="&Mix Paste (IT Style)\t"; c=kcEditMixPasteITStyle; break;
-    	case ID_EDIT_PASTEFLOOD:	s="Paste Fl&ood\t"; c=kcEditPasteFlood; break;
-    	case ID_EDIT_PUSHFORWARDPASTE:	s="&Push Forward Paste (Insert)\t"; c=kcEditPushForwardPaste; break;
+            case ID_EDIT_UNDO:                        s="&Undo\t"; c=kcEditUndo; break;
+            case ID_EDIT_CUT:                        s="Cu&t\t"; c=kcEditCut; break;
+            case ID_EDIT_COPY:                        s="&Copy\t"; c=kcEditCopy; break;
+            case ID_EDIT_PASTE:                        s="&Paste\t"; c=kcEditPaste; break;
+            case ID_EDIT_SELECT_ALL:        s="Select &All\t"; c=kcEditSelectAll; break;
+            case ID_EDIT_CLEANUP:                s="C&leanup"; break;
+            case ID_EDIT_FIND:                        s="&Find\t"; c=kcEditFind; break;
+            case ID_EDIT_FINDNEXT:                s="Find &Next\t"; c=kcEditFindNext; break;
+            case ID_EDIT_GOTO_MENU:                s="&Goto\t"; c=kcPatternGoto; break;
+            case ID_EDIT_SPLITKEYBOARDSETTINGS:        s="Split &Keyboard Settings\t"; c=kcShowSplitKeyboardSettings; break;
+                    // "Paste Special" sub menu
+            case ID_EDIT_PASTE_SPECIAL:        s="&Mix Paste\t"; c=kcEditMixPaste; break;
+            case ID_EDIT_MIXPASTE_ITSTYLE:        s="&Mix Paste (IT Style)\t"; c=kcEditMixPasteITStyle; break;
+            case ID_EDIT_PASTEFLOOD:        s="Paste Fl&ood\t"; c=kcEditPasteFlood; break;
+            case ID_EDIT_PUSHFORWARDPASTE:        s="&Push Forward Paste (Insert)\t"; c=kcEditPushForwardPaste; break;
 
-    	case ID_VIEW_GLOBALS:		s="&General\t"; c=kcViewGeneral; break;
-    	case ID_VIEW_SAMPLES:		s="&Samples\t"; c=kcViewSamples; break;
-    	case ID_VIEW_PATTERNS:		s="&Patterns\t"; c=kcViewPattern; break;
-    	case ID_VIEW_INSTRUMENTS:	s="&Instruments\t"; c=kcViewInstruments; break;
-    	case ID_VIEW_COMMENTS:		s="&Comments\t"; c=kcViewComments; break;
-    	case ID_VIEW_GRAPH:			s="G&raph\t"; c=kcViewGraph; break; //rewbs.graph
-    	case MAINVIEW:				s="&Main\t"; c=kcViewMain; break;
-    	case IDD_TREEVIEW:			s="&Tree\t"; c=kcViewTree; break;
-    	case ID_VIEW_OPTIONS:		s="S&etup...\t"; c=kcViewOptions; break;
-    	case ID_HELP:				s="C&ontents (todo)"; c=kcHelp; break;
-    	case ID_PLUGIN_SETUP:		s="Pl&ugin Manager...\t"; c=kcViewAddPlugin; break;
-    	case ID_CHANNEL_MANAGER:	s="Ch&annel Manager...\t"; c=kcViewChannelManager; break;
-    	case ID_VIEW_SONGPROPERTIES:s="Song P&roperties...\t"; c=kcViewSongProperties; break; //rewbs.graph
-    	case ID_VIEW_MIDIMAPPING:	s="&MIDI Mapping...\t"; c = kcViewMIDImapping; break;
-    	case ID_VIEW_EDITHISTORY:	s="Edit &History...\t"; c = kcViewEditHistory; break;
+            case ID_VIEW_GLOBALS:                s="&General\t"; c=kcViewGeneral; break;
+            case ID_VIEW_SAMPLES:                s="&Samples\t"; c=kcViewSamples; break;
+            case ID_VIEW_PATTERNS:                s="&Patterns\t"; c=kcViewPattern; break;
+            case ID_VIEW_INSTRUMENTS:        s="&Instruments\t"; c=kcViewInstruments; break;
+            case ID_VIEW_COMMENTS:                s="&Comments\t"; c=kcViewComments; break;
+            case ID_VIEW_GRAPH:                        s="G&raph\t"; c=kcViewGraph; break; //rewbs.graph
+            case MAINVIEW:                                s="&Main\t"; c=kcViewMain; break;
+            case IDD_TREEVIEW:                        s="&Tree\t"; c=kcViewTree; break;
+            case ID_VIEW_OPTIONS:                s="S&etup...\t"; c=kcViewOptions; break;
+            case ID_HELP:                                s="C&ontents (todo)"; c=kcHelp; break;
+            case ID_PLUGIN_SETUP:                s="Pl&ugin Manager...\t"; c=kcViewAddPlugin; break;
+            case ID_CHANNEL_MANAGER:        s="Ch&annel Manager...\t"; c=kcViewChannelManager; break;
+            case ID_VIEW_SONGPROPERTIES:s="Song P&roperties...\t"; c=kcViewSongProperties; break; //rewbs.graph
+            case ID_VIEW_MIDIMAPPING:        s="&MIDI Mapping...\t"; c = kcViewMIDImapping; break;
+            case ID_VIEW_EDITHISTORY:        s="Edit &History...\t"; c = kcViewEditHistory; break;
 
-    	/*	
-    	case ID_WINDOW_NEW:			s="&New Window\t"; c=kcWindowNew; break;
-    	case ID_WINDOW_CASCADE:		s="&Cascade\t"; c=kcWindowCascade; break;
-    	case ID_WINDOW_TILE_HORZ:	s="Tile &Horizontal\t"; c=kcWindowTileHorz; break;
-    	case ID_WINDOW_TILE_VERT:	s="Tile &Vertical\t"; c=kcWindowTileVert; break;
-    	*/
-    	default: return "Unknown Item.";
+            /*        
+            case ID_WINDOW_NEW:                        s="&New Window\t"; c=kcWindowNew; break;
+            case ID_WINDOW_CASCADE:                s="&Cascade\t"; c=kcWindowCascade; break;
+            case ID_WINDOW_TILE_HORZ:        s="Tile &Horizontal\t"; c=kcWindowTileHorz; break;
+            case ID_WINDOW_TILE_VERT:        s="Tile &Vertical\t"; c=kcWindowTileVert; break;
+            */
+            default: return "Unknown Item.";
     }
 
     s+=activeCommandSet->GetKeyTextFromCommand(c,0);
@@ -582,19 +582,19 @@ bool CInputHandler::isKeyPressHandledByTextBox(uint32_t key)
     //Alpha-numerics (only shift or no modifier):
     if (!CtrlPressed() &&  !AltPressed() && 
         ((key>='A'&&key<='Z') || (key>='0'&&key<='9') || 
-    	 key==VK_DIVIDE  || key==VK_MULTIPLY || key==VK_SPACE || key==VK_RETURN ||
-    	 key==VK_CAPITAL || (key>=VK_OEM_1 && key<=VK_OEM_3) || (key>=VK_OEM_4 && key<=VK_OEM_8)))
-    	return true;
+             key==VK_DIVIDE  || key==VK_MULTIPLY || key==VK_SPACE || key==VK_RETURN ||
+             key==VK_CAPITAL || (key>=VK_OEM_1 && key<=VK_OEM_3) || (key>=VK_OEM_4 && key<=VK_OEM_8)))
+            return true;
     
     //navigation (any modifier):
     if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN || 
-    	key == VK_HOME || key == VK_END || key == VK_DELETE || key == VK_INSERT || key == VK_BACK)
-    	return true;
+            key == VK_HOME || key == VK_END || key == VK_DELETE || key == VK_INSERT || key == VK_BACK)
+            return true;
     
     //Copy paste etc..
     if (CMainFrame::GetInputHandler()->GetModifierMask()==HOTKEYF_CONTROL && 
-    	(key == 'Y' || key == 'Z' || key == 'X' ||  key == 'C' || key == 'V' || key == 'A'))
-    	return true;
+            (key == 'Y' || key == 'Z' || key == 'X' ||  key == 'C' || key == 'V' || key == 'A'))
+            return true;
 
     return false;
 }

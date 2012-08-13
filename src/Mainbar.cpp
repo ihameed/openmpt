@@ -31,47 +31,47 @@ CSize CToolBarEx::CalcDynamicLayout(int nLength, uint32_t dwMode)
     // if we're committing set the buttons appropriately
     if (dwMode & LM_COMMIT)
     {
-    	if (dwMode & LM_VERTDOCK)
-    	{
-    		if (!m_bVertical)
-    			SetVertical();
-    	} else
-    	{
-    		if (m_bVertical)
-    			SetHorizontal();
-    	}
-    	sizeResult = CToolBar::CalcDynamicLayout(nLength, dwMode);
+            if (dwMode & LM_VERTDOCK)
+            {
+                    if (!m_bVertical)
+                            SetVertical();
+            } else
+            {
+                    if (m_bVertical)
+                            SetHorizontal();
+            }
+            sizeResult = CToolBar::CalcDynamicLayout(nLength, dwMode);
     } else
     {
-    	BOOL bOld = m_bVertical;
-    	BOOL bSwitch = (dwMode & LM_HORZ) ? bOld : !bOld;
+            BOOL bOld = m_bVertical;
+            BOOL bSwitch = (dwMode & LM_HORZ) ? bOld : !bOld;
 
-    	if (bSwitch)
-    	{
-    		if (bOld)
-    			SetHorizontal();
-    		else
-    			SetVertical();
-    	}
+            if (bSwitch)
+            {
+                    if (bOld)
+                            SetHorizontal();
+                    else
+                            SetVertical();
+            }
 
-    	sizeResult = CToolBar::CalcDynamicLayout(nLength, dwMode);
+            sizeResult = CToolBar::CalcDynamicLayout(nLength, dwMode);
 
-    	if (bSwitch)
-    	{
-    		if (bOld)
-    			SetHorizontal();
-    		else
-    			SetVertical();
-    	}
+            if (bSwitch)
+            {
+                    if (bOld)
+                            SetHorizontal();
+                    else
+                            SetVertical();
+            }
     }
 #if 0
     // Hack - fixed in VC++ 6.0
     if ((sizeResult.cy > 30) && (m_bFlatButtons))
     {
-    	if (dwMode & LM_HORZ)
-    		sizeResult.cy += ((sizeResult.cy-30)/28) * 4;
-    	else
-    		sizeResult.cy += 8;
+            if (dwMode & LM_HORZ)
+                    sizeResult.cy += ((sizeResult.cy-30)/28) * 4;
+            else
+                    sizeResult.cy += 8;
     }
 #endif
     return sizeResult;
@@ -83,15 +83,15 @@ BOOL CToolBarEx::EnableControl(CWnd &wnd, UINT nIndex, UINT nHeight)
 {
     if (wnd.m_hWnd != NULL)
     {
-    	CRect rect;
-    	GetItemRect(nIndex, rect);
-    	if (nHeight)
-    	{
-    		int n = (rect.bottom + rect.top - nHeight) / 2;
-    		if (n > rect.top) rect.top = n;
-    	}
-    	wnd.SetWindowPos(NULL, rect.left, rect.top, 0, 0, SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOCOPYBITS);
-    	wnd.ShowWindow(SW_SHOW);
+            CRect rect;
+            GetItemRect(nIndex, rect);
+            if (nHeight)
+            {
+                    int n = (rect.bottom + rect.top - nHeight) / 2;
+                    if (n > rect.top) rect.top = n;
+            }
+            wnd.SetWindowPos(NULL, rect.left, rect.top, 0, 0, SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOCOPYBITS);
+            wnd.ShowWindow(SW_SHOW);
     }
     return TRUE;
 }
@@ -102,14 +102,14 @@ void CToolBarEx::ChangeCtrlStyle(long lStyle, BOOL bSetStyle)
 {
     if (m_hWnd)
     {
-    	LONG lStyleOld = GetWindowLong(m_hWnd, GWL_STYLE);
-    	if (bSetStyle)
-    		lStyleOld |= lStyle;
-    	else
-    		lStyleOld &= ~lStyle;
-    	SetWindowLong(m_hWnd, GWL_STYLE, lStyleOld);
-    	SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE);
-    	Invalidate();
+            LONG lStyleOld = GetWindowLong(m_hWnd, GWL_STYLE);
+            if (bSetStyle)
+                    lStyleOld |= lStyle;
+            else
+                    lStyleOld &= ~lStyle;
+            SetWindowLong(m_hWnd, GWL_STYLE, lStyleOld);
+            SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE);
+            Invalidate();
     }
 }
 
@@ -126,7 +126,7 @@ void CToolBarEx::EnableFlatButtons(BOOL bFlat)
 // CMainToolBar
 
 // Play Command
-#define PLAYCMD_INDEX    	10
+#define PLAYCMD_INDEX            10
 #define TOOLBAR_IMAGE_PAUSE    8
 #define TOOLBAR_IMAGE_PLAY    16
 // Base octave
@@ -137,41 +137,41 @@ void CToolBarEx::EnableFlatButtons(BOOL bFlat)
 #define SPINOCTAVE_WIDTH    16
 #define SPINOCTAVE_HEIGHT    (EDITOCTAVE_HEIGHT)
 // Static "Tempo:"
-#define TEMPOTEXT_INDEX    	16
-#define TEMPOTEXT_WIDTH    	45
+#define TEMPOTEXT_INDEX            16
+#define TEMPOTEXT_WIDTH            45
 #define TEMPOTEXT_HEIGHT    20
 // Edit Tempo
-#define EDITTEMPO_INDEX    	(TEMPOTEXT_INDEX+1)
-#define EDITTEMPO_WIDTH    	32
+#define EDITTEMPO_INDEX            (TEMPOTEXT_INDEX+1)
+#define EDITTEMPO_WIDTH            32
 #define EDITTEMPO_HEIGHT    20
 // Spin Tempo
-#define SPINTEMPO_INDEX    	(EDITTEMPO_INDEX+1)
-#define SPINTEMPO_WIDTH    	16
+#define SPINTEMPO_INDEX            (EDITTEMPO_INDEX+1)
+#define SPINTEMPO_WIDTH            16
 #define SPINTEMPO_HEIGHT    (EDITTEMPO_HEIGHT)
 // Static "Speed:"
-#define SPEEDTEXT_INDEX    	20
-#define SPEEDTEXT_WIDTH    	57
+#define SPEEDTEXT_INDEX            20
+#define SPEEDTEXT_WIDTH            57
 #define SPEEDTEXT_HEIGHT    (TEMPOTEXT_HEIGHT)
 // Edit Speed
-#define EDITSPEED_INDEX    	(SPEEDTEXT_INDEX+1)
-#define EDITSPEED_WIDTH    	28
+#define EDITSPEED_INDEX            (SPEEDTEXT_INDEX+1)
+#define EDITSPEED_WIDTH            28
 #define EDITSPEED_HEIGHT    (EDITTEMPO_HEIGHT)
 // Spin Speed
-#define SPINSPEED_INDEX    	(EDITSPEED_INDEX+1)
-#define SPINSPEED_WIDTH    	16
+#define SPINSPEED_INDEX            (EDITSPEED_INDEX+1)
+#define SPINSPEED_WIDTH            16
 #define SPINSPEED_HEIGHT    (EDITSPEED_HEIGHT)
 // Static "Rows/Beat:"
-#define RPBTEXT_INDEX    	24
-#define RPBTEXT_WIDTH    	63
-#define RPBTEXT_HEIGHT    	(TEMPOTEXT_HEIGHT)
+#define RPBTEXT_INDEX            24
+#define RPBTEXT_WIDTH            63
+#define RPBTEXT_HEIGHT            (TEMPOTEXT_HEIGHT)
 // Edit Speed
-#define EDITRPB_INDEX    	(RPBTEXT_INDEX+1)
-#define EDITRPB_WIDTH    	28
-#define EDITRPB_HEIGHT    	(EDITTEMPO_HEIGHT)
+#define EDITRPB_INDEX            (RPBTEXT_INDEX+1)
+#define EDITRPB_WIDTH            28
+#define EDITRPB_HEIGHT            (EDITTEMPO_HEIGHT)
 // Spin Speed
-#define SPINRPB_INDEX    	(EDITRPB_INDEX+1)
-#define SPINRPB_WIDTH    	16
-#define SPINRPB_HEIGHT    	(EDITRPB_HEIGHT)
+#define SPINRPB_INDEX            (EDITRPB_INDEX+1)
+#define SPINRPB_WIDTH            16
+#define SPINRPB_HEIGHT            (EDITRPB_HEIGHT)
 
 static UINT BASED_CODE MainButtons[] =
 {
@@ -179,38 +179,38 @@ static UINT BASED_CODE MainButtons[] =
     ID_FILE_NEW,
     ID_FILE_OPEN,
     ID_FILE_SAVE,
-    	ID_SEPARATOR,
+            ID_SEPARATOR,
     ID_EDIT_CUT,
     ID_EDIT_COPY,
     ID_EDIT_PASTE,
-    	ID_SEPARATOR,
+            ID_SEPARATOR,
     ID_MIDI_RECORD,
     ID_PLAYER_STOP,
     ID_PLAYER_PAUSE,
     ID_PLAYER_PLAYFROMSTART,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
 
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
-    	ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
+            ID_SEPARATOR,
     ID_VIEW_OPTIONS,
     ID_APP_ABOUT,
 //    ID_CONTEXT_HELP,
-    	ID_SEPARATOR,	//rewbs.reportBug
-    ID_REPORT_BUG,		//rewbs.reportBug
-    	ID_SEPARATOR,
+            ID_SEPARATOR,        //rewbs.reportBug
+    ID_REPORT_BUG,                //rewbs.reportBug
+            ID_SEPARATOR,
     ID_PANIC,
 };
 
@@ -399,10 +399,10 @@ BOOL CMainToolBar::SetBaseOctave(UINT nOctave)
     if ((nOctave < MIN_BASEOCTAVE) || (nOctave > MAX_BASEOCTAVE)) return FALSE;
     if (nOctave != (UINT)nCurrentOctave)
     {
-    	nCurrentOctave = nOctave;
-    	wsprintf(s, " Octave %d", nOctave);
-    	m_EditOctave.SetWindowText(s);
-    	m_SpinOctave.SetPos(nOctave);
+            nCurrentOctave = nOctave;
+            wsprintf(s, " Octave %d", nOctave);
+            m_EditOctave.SetWindowText(s);
+            m_SpinOctave.SetPos(nOctave);
     }
     return TRUE;
 }
@@ -414,62 +414,62 @@ BOOL CMainToolBar::SetCurrentSong(module_renderer *pSndFile)
     // Update Info
     if (pSndFile)
     {
-    	CHAR s[256];
-    	// Update play/pause button
-    	if (nCurrentTempo == -1) SetButtonInfo(PLAYCMD_INDEX, ID_PLAYER_PAUSE, TBBS_BUTTON, TOOLBAR_IMAGE_PAUSE);
-    	// Update Speed
-    	int nSpeed = pSndFile->m_nMusicSpeed;
-    	if (nSpeed != nCurrentSpeed)
-    	{
-    		//rewbs.envRowGrid
-    		CModDoc *pModDoc = CMainFrame::GetMainFrame()->GetActiveDoc();
-    		if (pModDoc) {
-    			pModDoc->UpdateAllViews(NULL, HINT_SPEEDCHANGE);
-    		}
-    		//end rewbs.envRowGrid
+            CHAR s[256];
+            // Update play/pause button
+            if (nCurrentTempo == -1) SetButtonInfo(PLAYCMD_INDEX, ID_PLAYER_PAUSE, TBBS_BUTTON, TOOLBAR_IMAGE_PAUSE);
+            // Update Speed
+            int nSpeed = pSndFile->m_nMusicSpeed;
+            if (nSpeed != nCurrentSpeed)
+            {
+                    //rewbs.envRowGrid
+                    CModDoc *pModDoc = CMainFrame::GetMainFrame()->GetActiveDoc();
+                    if (pModDoc) {
+                            pModDoc->UpdateAllViews(NULL, HINT_SPEEDCHANGE);
+                    }
+                    //end rewbs.envRowGrid
 
-    		if (nCurrentSpeed < 0) m_SpinSpeed.EnableWindow(TRUE);
-    		nCurrentSpeed = nSpeed;
-    		wsprintf(s, "%d", nCurrentSpeed);
-    		m_EditSpeed.SetWindowText(s);
-    	}
-    	int nTempo = pSndFile->m_nMusicTempo;
-    	if (nTempo != nCurrentTempo)
-    	{
-    		if (nCurrentTempo < 0) m_SpinTempo.EnableWindow(TRUE);
-    		nCurrentTempo = nTempo;
-    		wsprintf(s, "%d", nCurrentTempo);
-    		m_EditTempo.SetWindowText(s);
-    	}
-    	int nRowsPerBeat = pSndFile->m_nCurrentRowsPerBeat;
-    	if (nRowsPerBeat != nCurrentRowsPerBeat)
-    	{
-    		if (nCurrentRowsPerBeat < 0) m_SpinRowsPerBeat.EnableWindow(TRUE);
-    		nCurrentRowsPerBeat = nRowsPerBeat;
-    		wsprintf(s, "%d", nCurrentRowsPerBeat);
-    		m_EditRowsPerBeat.SetWindowText(s);
-    	}
+                    if (nCurrentSpeed < 0) m_SpinSpeed.EnableWindow(TRUE);
+                    nCurrentSpeed = nSpeed;
+                    wsprintf(s, "%d", nCurrentSpeed);
+                    m_EditSpeed.SetWindowText(s);
+            }
+            int nTempo = pSndFile->m_nMusicTempo;
+            if (nTempo != nCurrentTempo)
+            {
+                    if (nCurrentTempo < 0) m_SpinTempo.EnableWindow(TRUE);
+                    nCurrentTempo = nTempo;
+                    wsprintf(s, "%d", nCurrentTempo);
+                    m_EditTempo.SetWindowText(s);
+            }
+            int nRowsPerBeat = pSndFile->m_nCurrentRowsPerBeat;
+            if (nRowsPerBeat != nCurrentRowsPerBeat)
+            {
+                    if (nCurrentRowsPerBeat < 0) m_SpinRowsPerBeat.EnableWindow(TRUE);
+                    nCurrentRowsPerBeat = nRowsPerBeat;
+                    wsprintf(s, "%d", nCurrentRowsPerBeat);
+                    m_EditRowsPerBeat.SetWindowText(s);
+            }
     } else
     {
-    	if (nCurrentTempo != -1)
-    	{
-    		nCurrentTempo = -1;
-    		m_EditTempo.SetWindowText("---");
-    		m_SpinTempo.EnableWindow(FALSE);
-    		SetButtonInfo(PLAYCMD_INDEX, ID_PLAYER_PLAY, TBBS_BUTTON, TOOLBAR_IMAGE_PLAY);
-    	}
-    	if (nCurrentSpeed != -1)
-    	{
-    		nCurrentSpeed = -1;
-    		m_EditSpeed.SetWindowText("---");
-    		m_SpinSpeed.EnableWindow(FALSE);
-    	}
-    	if (nCurrentRowsPerBeat != -1)
-    	{
-    		nCurrentRowsPerBeat = -1;
-    		m_EditRowsPerBeat.SetWindowText("---");
-    		m_SpinRowsPerBeat.EnableWindow(FALSE);
-    	}
+            if (nCurrentTempo != -1)
+            {
+                    nCurrentTempo = -1;
+                    m_EditTempo.SetWindowText("---");
+                    m_SpinTempo.EnableWindow(FALSE);
+                    SetButtonInfo(PLAYCMD_INDEX, ID_PLAYER_PLAY, TBBS_BUTTON, TOOLBAR_IMAGE_PLAY);
+            }
+            if (nCurrentSpeed != -1)
+            {
+                    nCurrentSpeed = -1;
+                    m_EditSpeed.SetWindowText("---");
+                    m_SpinSpeed.EnableWindow(FALSE);
+            }
+            if (nCurrentRowsPerBeat != -1)
+            {
+                    nCurrentRowsPerBeat = -1;
+                    m_EditRowsPerBeat.SetWindowText("---");
+                    m_SpinRowsPerBeat.EnableWindow(FALSE);
+            }
     }
     return TRUE;
 }
@@ -484,63 +484,63 @@ void CMainToolBar::OnVScroll(UINT nCode, UINT nPos, CScrollBar *pScrollBar)
     short int oct = (short int)m_SpinOctave.GetPos();
     if ((oct >= MIN_BASEOCTAVE) && ((int)oct != nCurrentOctave))
     {
-    	SetBaseOctave(oct);
+            SetBaseOctave(oct);
     }
     if ((nCurrentSpeed < 0) || (nCurrentTempo < 0)) return;
     if ((pMainFrm = CMainFrame::GetMainFrame()) != NULL)
     {
-    	module_renderer *pSndFile = pMainFrm->GetSoundFilePlaying();
-    	if (pSndFile)
-    	{
-    		short int n;
-    		if ((n = (short int)m_SpinTempo.GetPos()) != 0)
-    		{
-    			if (n < 0)
-    				pSndFile->SetTempo(max(nCurrentTempo - 1, pSndFile->GetModSpecifications().tempoMin), true);
-    			else
-    				pSndFile->SetTempo(min(nCurrentTempo + 1, pSndFile->GetModSpecifications().tempoMax), true);
+            module_renderer *pSndFile = pMainFrm->GetSoundFilePlaying();
+            if (pSndFile)
+            {
+                    short int n;
+                    if ((n = (short int)m_SpinTempo.GetPos()) != 0)
+                    {
+                            if (n < 0)
+                                    pSndFile->SetTempo(max(nCurrentTempo - 1, pSndFile->GetModSpecifications().tempoMin), true);
+                            else
+                                    pSndFile->SetTempo(min(nCurrentTempo + 1, pSndFile->GetModSpecifications().tempoMax), true);
 
-    			m_SpinTempo.SetPos(0);
-    		}
-    		if ((n = (short int)m_SpinSpeed.GetPos()) != 0)
-    		{
-    			if (n < 0)
-    			{
-    				pSndFile->m_nMusicSpeed = max(nCurrentSpeed - 1, pSndFile->GetModSpecifications().speedMin);
-    			} else
-    			{
-    				pSndFile->m_nMusicSpeed = min(nCurrentSpeed + 1, pSndFile->GetModSpecifications().speedMax);
-    			}
-    			m_SpinSpeed.SetPos(0);
-    		}
-    		if ((n = (short int)m_SpinRowsPerBeat.GetPos()) != 0)
-    		{
-    			if (n < 0)
-    			{
-    				if (nCurrentRowsPerBeat > 1)
-    				{
-    					SetRowsPerBeat(nCurrentRowsPerBeat - 1);
-    				}
-    			} else
-    			{
-    				if (nCurrentRowsPerBeat < pSndFile->m_nCurrentRowsPerMeasure)
-    				{
-    					SetRowsPerBeat(nCurrentRowsPerBeat + 1);
-    				}
-    			}
-    			m_SpinRowsPerBeat.SetPos(0);
+                            m_SpinTempo.SetPos(0);
+                    }
+                    if ((n = (short int)m_SpinSpeed.GetPos()) != 0)
+                    {
+                            if (n < 0)
+                            {
+                                    pSndFile->m_nMusicSpeed = max(nCurrentSpeed - 1, pSndFile->GetModSpecifications().speedMin);
+                            } else
+                            {
+                                    pSndFile->m_nMusicSpeed = min(nCurrentSpeed + 1, pSndFile->GetModSpecifications().speedMax);
+                            }
+                            m_SpinSpeed.SetPos(0);
+                    }
+                    if ((n = (short int)m_SpinRowsPerBeat.GetPos()) != 0)
+                    {
+                            if (n < 0)
+                            {
+                                    if (nCurrentRowsPerBeat > 1)
+                                    {
+                                            SetRowsPerBeat(nCurrentRowsPerBeat - 1);
+                                    }
+                            } else
+                            {
+                                    if (nCurrentRowsPerBeat < pSndFile->m_nCurrentRowsPerMeasure)
+                                    {
+                                            SetRowsPerBeat(nCurrentRowsPerBeat + 1);
+                                    }
+                            }
+                            m_SpinRowsPerBeat.SetPos(0);
 
-    			//update pattern editor
+                            //update pattern editor
 
-    			CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    			if (pMainFrm)
-    			{
-    				pMainFrm->PostMessage(WM_MOD_INVALIDATEPATTERNS, HINT_MPTOPTIONS);
-    			}
-    		}
+                            CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
+                            if (pMainFrm)
+                            {
+                                    pMainFrm->PostMessage(WM_MOD_INVALIDATEPATTERNS, HINT_MPTOPTIONS);
+                            }
+                    }
 
-    		SetCurrentSong(pSndFile);
-    	}
+                    SetCurrentSong(pSndFile);
+            }
     }
 }
 
@@ -550,28 +550,28 @@ void CMainToolBar::SetRowsPerBeat(ROWINDEX nNewRPB)
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if(pMainFrm == nullptr)
-    	return;
+            return;
     CModDoc *pModDoc = pMainFrm->GetModPlaying();
     module_renderer *pSndFile = pMainFrm->GetSoundFilePlaying();
     if(pModDoc == nullptr || pSndFile == nullptr)
-    	return;
+            return;
 
     pSndFile->m_nCurrentRowsPerBeat = nNewRPB;
     PATTERNINDEX nPat = pSndFile->GetCurrentPattern();
     if(pSndFile->Patterns[nPat].GetOverrideSignature())
     {
-    	if(nNewRPB <= pSndFile->Patterns[nPat].GetRowsPerMeasure())
-    	{
-    		pSndFile->Patterns[nPat].SetSignature(nNewRPB, pSndFile->Patterns[nPat].GetRowsPerMeasure());
-    		pModDoc->SetModified();
-    	}
+            if(nNewRPB <= pSndFile->Patterns[nPat].GetRowsPerMeasure())
+            {
+                    pSndFile->Patterns[nPat].SetSignature(nNewRPB, pSndFile->Patterns[nPat].GetRowsPerMeasure());
+                    pModDoc->SetModified();
+            }
     } else
     {
-    	if(nNewRPB <= pSndFile->m_nDefaultRowsPerMeasure)
-    	{
-    		pSndFile->m_nDefaultRowsPerBeat = nNewRPB;
-    		pModDoc->SetModified();
-    	}
+            if(nNewRPB <= pSndFile->m_nDefaultRowsPerMeasure)
+            {
+                    pSndFile->m_nDefaultRowsPerBeat = nNewRPB;
+                    pModDoc->SetModified();
+            }
     }
 }
 
@@ -591,7 +591,7 @@ BEGIN_MESSAGE_MAP(CModTreeBar, CDialogBar)
     ON_WM_NCLBUTTONDOWN()
     ON_WM_LBUTTONUP()
     ON_WM_NCLBUTTONUP()
-    ON_MESSAGE(WM_INITDIALOG,	OnInitDialog)
+    ON_MESSAGE(WM_INITDIALOG,        OnInitDialog)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -609,9 +609,9 @@ LRESULT CModTreeBar::OnInitDialog(WPARAM wParam, LPARAM lParam)
 {
     LRESULT l = CDialogBar::HandleInitDialog(wParam, lParam);
     m_pModTreeData = new CModTree();
-    if (m_pModTreeData)	m_pModTreeData->SubclassDlgItem(IDC_TREEDATA, this);
+    if (m_pModTreeData)        m_pModTreeData->SubclassDlgItem(IDC_TREEDATA, this);
     m_pModTree = new CModTree(m_pModTreeData);
-    if (m_pModTree)	m_pModTree->SubclassDlgItem(IDC_TREEVIEW, this);
+    if (m_pModTree)        m_pModTree->SubclassDlgItem(IDC_TREEVIEW, this);
     m_dwStatus = 0;
     m_sizeDefault.cx = CMainFrame::glTreeWindowWidth + 3;
     m_sizeDefault.cy = 32767;
@@ -624,13 +624,13 @@ CModTreeBar::~CModTreeBar()
 {
     if (m_pModTree)
     {
-    	delete m_pModTree;
-    	m_pModTree = NULL;
+            delete m_pModTree;
+            m_pModTree = NULL;
     }
     if (m_pModTreeData)
     {
-    	delete m_pModTreeData;
-    	m_pModTreeData = NULL;
+            delete m_pModTreeData;
+            m_pModTreeData = NULL;
     }
 }
 
@@ -641,8 +641,8 @@ void CModTreeBar::Init()
     m_nTreeSplitRatio = CMainFrame::glTreeSplitRatio;
     if (m_pModTree)
     {
-    	m_pModTreeData->Init();
-    	m_pModTree->Init();
+            m_pModTreeData->Init();
+            m_pModTree->Init();
     }
 }
 
@@ -675,15 +675,15 @@ VOID CModTreeBar::RecalcLayout()
 
     if ((m_pModTree) && (m_pModTreeData))
     {
-    	int cytree, cydata, cyavail;
+            int cytree, cydata, cyavail;
 
-    	GetClientRect(&rect);
-    	cyavail = rect.Height() - 3;
-    	if (cyavail < 0) cyavail = 0;
-    	cytree = (cyavail * m_nTreeSplitRatio) >> 8;
-    	cydata = cyavail - cytree;
-    	m_pModTree->SetWindowPos(NULL, 0,0, rect.Width(), cytree, SWP_NOZORDER|SWP_NOACTIVATE);
-    	m_pModTreeData->SetWindowPos(NULL, 0,cytree+3, rect.Width(), cydata, SWP_NOZORDER|SWP_NOACTIVATE);
+            GetClientRect(&rect);
+            cyavail = rect.Height() - 3;
+            if (cyavail < 0) cyavail = 0;
+            cytree = (cyavail * m_nTreeSplitRatio) >> 8;
+            cydata = cyavail - cytree;
+            m_pModTree->SetWindowPos(NULL, 0,0, rect.Width(), cytree, SWP_NOZORDER|SWP_NOACTIVATE);
+            m_pModTreeData->SetWindowPos(NULL, 0,cytree+3, rect.Width(), cydata, SWP_NOZORDER|SWP_NOACTIVATE);
     }
 }
 
@@ -708,88 +708,88 @@ VOID CModTreeBar::DoMouseMove(CPoint pt)
 
     if ((m_dwStatus & (MTB_CAPTURE|MTB_DRAGGING)) && (::GetCapture() != m_hWnd))
     {
-    	CancelTracking();
+            CancelTracking();
     }
     if (m_dwStatus & MTB_DRAGGING)
     {
-    	if (m_dwStatus & MTB_VERTICAL)
-    	{
-    		if (m_pModTree)
-    		{
-    			m_pModTree->GetWindowRect(&rect);
-    			pt.y += rect.Height();
-    		}
-    		GetClientRect(&rect);
-    		pt.y -= ptDragging.y;
-    		if (pt.y < 0) pt.y = 0;
-    		if (pt.y > rect.Height()) pt.y = rect.Height();
-    		if ((!(m_dwStatus & MTB_TRACKER)) || (pt.y != (int)m_nTrackPos))
-    		{
-    			if (m_dwStatus & MTB_TRACKER) OnInvertTracker(m_nTrackPos);
-    			m_nTrackPos = pt.y;
-    			OnInvertTracker(m_nTrackPos);
-    			m_dwStatus |= MTB_TRACKER;
-    		}
-    	} else
-    	{
-    		pt.x -= ptDragging.x - m_cxOriginal + 3;
-    		if (pt.x < 0) pt.x = 0;
-    		if ((!(m_dwStatus & MTB_TRACKER)) || (pt.x != (int)m_nTrackPos))
-    		{
-    			if (m_dwStatus & MTB_TRACKER) OnInvertTracker(m_nTrackPos);
-    			m_nTrackPos = pt.x;
-    			OnInvertTracker(m_nTrackPos);
-    			m_dwStatus |= MTB_TRACKER;
-    		}
-    	}
+            if (m_dwStatus & MTB_VERTICAL)
+            {
+                    if (m_pModTree)
+                    {
+                            m_pModTree->GetWindowRect(&rect);
+                            pt.y += rect.Height();
+                    }
+                    GetClientRect(&rect);
+                    pt.y -= ptDragging.y;
+                    if (pt.y < 0) pt.y = 0;
+                    if (pt.y > rect.Height()) pt.y = rect.Height();
+                    if ((!(m_dwStatus & MTB_TRACKER)) || (pt.y != (int)m_nTrackPos))
+                    {
+                            if (m_dwStatus & MTB_TRACKER) OnInvertTracker(m_nTrackPos);
+                            m_nTrackPos = pt.y;
+                            OnInvertTracker(m_nTrackPos);
+                            m_dwStatus |= MTB_TRACKER;
+                    }
+            } else
+            {
+                    pt.x -= ptDragging.x - m_cxOriginal + 3;
+                    if (pt.x < 0) pt.x = 0;
+                    if ((!(m_dwStatus & MTB_TRACKER)) || (pt.x != (int)m_nTrackPos))
+                    {
+                            if (m_dwStatus & MTB_TRACKER) OnInvertTracker(m_nTrackPos);
+                            m_nTrackPos = pt.x;
+                            OnInvertTracker(m_nTrackPos);
+                            m_dwStatus |= MTB_TRACKER;
+                    }
+            }
     } else
     {
-    	UINT nCursor = 0;
+            UINT nCursor = 0;
 
-    	GetClientRect(&rect);
-    	rect.left = rect.right - 2;
-    	rect.right = rect.left + 5;
-    	if (rect.PtInRect(pt))
-    	{
-    		nCursor = AFX_IDC_HSPLITBAR;
-    	} else
-    	if (m_pModTree)
-    	{
-    		m_pModTree->GetWindowRect(&rect);
-    		rect.right = rect.Width();
-    		rect.left = 0;
-    		rect.top = rect.Height()-1;
-    		rect.bottom = rect.top + 5;
-    		if (rect.PtInRect(pt))
-    		{
-    			nCursor = AFX_IDC_VSPLITBAR;
-    		}
-    	}
-    	if (nCursor)
-    	{
-    		UINT nDir = (nCursor == AFX_IDC_VSPLITBAR) ? MTB_VERTICAL : 0;
-    		BOOL bLoad = FALSE;
-    		if (!(m_dwStatus & MTB_CAPTURE))
-    		{
-    			m_dwStatus |= MTB_CAPTURE;
-    			SetCapture();
-    			bLoad = TRUE;
-    		} else
-    		{
-    			if (nDir != (m_dwStatus & MTB_VERTICAL)) bLoad = TRUE;
-    		}
-    		m_dwStatus &= ~MTB_VERTICAL;
-    		m_dwStatus |= nDir;
-    		if (bLoad) SetCursor(theApp.LoadCursor(nCursor));
-    	} else
-    	{
-    		if (m_dwStatus & MTB_CAPTURE)
-    		{
-    			m_dwStatus &= ~MTB_CAPTURE;
-    			ReleaseCapture();
-    			SetCursor(LoadCursor(NULL, IDC_ARROW));
-    		}
-    	}
+            GetClientRect(&rect);
+            rect.left = rect.right - 2;
+            rect.right = rect.left + 5;
+            if (rect.PtInRect(pt))
+            {
+                    nCursor = AFX_IDC_HSPLITBAR;
+            } else
+            if (m_pModTree)
+            {
+                    m_pModTree->GetWindowRect(&rect);
+                    rect.right = rect.Width();
+                    rect.left = 0;
+                    rect.top = rect.Height()-1;
+                    rect.bottom = rect.top + 5;
+                    if (rect.PtInRect(pt))
+                    {
+                            nCursor = AFX_IDC_VSPLITBAR;
+                    }
+            }
+            if (nCursor)
+            {
+                    UINT nDir = (nCursor == AFX_IDC_VSPLITBAR) ? MTB_VERTICAL : 0;
+                    BOOL bLoad = FALSE;
+                    if (!(m_dwStatus & MTB_CAPTURE))
+                    {
+                            m_dwStatus |= MTB_CAPTURE;
+                            SetCapture();
+                            bLoad = TRUE;
+                    } else
+                    {
+                            if (nDir != (m_dwStatus & MTB_VERTICAL)) bLoad = TRUE;
+                    }
+                    m_dwStatus &= ~MTB_VERTICAL;
+                    m_dwStatus |= nDir;
+                    if (bLoad) SetCursor(theApp.LoadCursor(nCursor));
+            } else
+            {
+                    if (m_dwStatus & MTB_CAPTURE)
+                    {
+                            m_dwStatus &= ~MTB_CAPTURE;
+                            ReleaseCapture();
+                            SetCursor(LoadCursor(NULL, IDC_ARROW));
+                    }
+            }
     }
 }
 
@@ -799,13 +799,13 @@ VOID CModTreeBar::DoLButtonDown(CPoint pt)
 {
     if ((m_dwStatus & MTB_CAPTURE) && (!(m_dwStatus & MTB_DRAGGING)))
     {
-    	CRect rect;
-    	GetWindowRect(&rect);
-    	m_cxOriginal = rect.Width();
-    	m_cyOriginal = rect.Height();
-    	ptDragging = pt;
-    	m_dwStatus |= MTB_DRAGGING;
-    	DoMouseMove(pt);
+            CRect rect;
+            GetWindowRect(&rect);
+            m_cxOriginal = rect.Width();
+            m_cyOriginal = rect.Height();
+            ptDragging = pt;
+            m_dwStatus |= MTB_DRAGGING;
+            DoMouseMove(pt);
     }
 }
 
@@ -815,39 +815,39 @@ VOID CModTreeBar::DoLButtonUp()
 {
     if (m_dwStatus & MTB_DRAGGING)
     {
-    	CRect rect;
+            CRect rect;
 
-    	m_dwStatus &= ~MTB_DRAGGING;
-    	if (m_dwStatus & MTB_TRACKER)
-    	{
-    		OnInvertTracker(m_nTrackPos);
-    		m_dwStatus &= ~MTB_TRACKER;
-    	}
-    	if (m_dwStatus & MTB_VERTICAL)
-    	{
-    		GetClientRect(&rect);
-    		int cyavail = rect.Height() - 3;
-    		if (cyavail < 4) cyavail = 4;
-    		int ratio = (m_nTrackPos << 8) / cyavail;
-    		if (ratio < 0) ratio = 0;
-    		if (ratio > 256) ratio = 256;
-    		m_nTreeSplitRatio = ratio;
-    		CMainFrame::glTreeSplitRatio = ratio;
-    		RecalcLayout();
-    	} else
-    	{
-    		GetWindowRect(&rect);
-    		m_nTrackPos += 3;
-    		if (m_nTrackPos < 4) m_nTrackPos = 4;
-    		CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    		if ((m_nTrackPos != (UINT)rect.Width()) && (pMainFrm))
-    		{
-    			CMainFrame::glTreeWindowWidth = m_nTrackPos - 3;
-    			m_sizeDefault.cx = m_nTrackPos;
-    			m_sizeDefault.cy = 32767;
-    			pMainFrm->RecalcLayout();
-    		}
-    	}
+            m_dwStatus &= ~MTB_DRAGGING;
+            if (m_dwStatus & MTB_TRACKER)
+            {
+                    OnInvertTracker(m_nTrackPos);
+                    m_dwStatus &= ~MTB_TRACKER;
+            }
+            if (m_dwStatus & MTB_VERTICAL)
+            {
+                    GetClientRect(&rect);
+                    int cyavail = rect.Height() - 3;
+                    if (cyavail < 4) cyavail = 4;
+                    int ratio = (m_nTrackPos << 8) / cyavail;
+                    if (ratio < 0) ratio = 0;
+                    if (ratio > 256) ratio = 256;
+                    m_nTreeSplitRatio = ratio;
+                    CMainFrame::glTreeSplitRatio = ratio;
+                    RecalcLayout();
+            } else
+            {
+                    GetWindowRect(&rect);
+                    m_nTrackPos += 3;
+                    if (m_nTrackPos < 4) m_nTrackPos = 4;
+                    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
+                    if ((m_nTrackPos != (UINT)rect.Width()) && (pMainFrm))
+                    {
+                            CMainFrame::glTreeWindowWidth = m_nTrackPos - 3;
+                            m_sizeDefault.cx = m_nTrackPos;
+                            m_sizeDefault.cy = 32767;
+                            pMainFrm->RecalcLayout();
+                    }
+            }
     }
 }
 
@@ -857,14 +857,14 @@ VOID CModTreeBar::CancelTracking()
 {
     if (m_dwStatus & MTB_TRACKER)
     {
-    	OnInvertTracker(m_nTrackPos);
-    	m_dwStatus &= ~MTB_TRACKER;
+            OnInvertTracker(m_nTrackPos);
+            m_dwStatus &= ~MTB_TRACKER;
     }
     m_dwStatus &= ~MTB_DRAGGING;
     if (m_dwStatus & MTB_CAPTURE)
     {
-    	m_dwStatus &= ~MTB_CAPTURE;
-    	ReleaseCapture();
+            m_dwStatus &= ~MTB_CAPTURE;
+            ReleaseCapture();
     }
 }
 
@@ -876,32 +876,32 @@ void CModTreeBar::OnInvertTracker(UINT x)
 
     if (pMainFrm)
     {
-    	CRect rect;
+            CRect rect;
 
-    	GetClientRect(&rect);
-    	if (m_dwStatus & MTB_VERTICAL)
-    	{
-    		rect.top = x;
-    		rect.bottom = rect.top + 4;
-    	} else
-    	{
-    		rect.left = x;
-    		rect.right = rect.left + 4;
-    	}
-    	ClientToScreen(&rect);
-    	pMainFrm->ScreenToClient(&rect);
+            GetClientRect(&rect);
+            if (m_dwStatus & MTB_VERTICAL)
+            {
+                    rect.top = x;
+                    rect.bottom = rect.top + 4;
+            } else
+            {
+                    rect.left = x;
+                    rect.right = rect.left + 4;
+            }
+            ClientToScreen(&rect);
+            pMainFrm->ScreenToClient(&rect);
 
-    	// pat-blt without clip children on
-    	CDC* pDC = pMainFrm->GetDC();
-    	// invert the brush pattern (looks just like frame window sizing)
-    	CBrush* pBrush = CDC::GetHalftoneBrush();
-    	HBRUSH hOldBrush = NULL;
-    	if (pBrush != NULL)
-    		hOldBrush = (HBRUSH)SelectObject(pDC->m_hDC, pBrush->m_hObject);
-    	pDC->PatBlt(rect.left, rect.top, rect.Width(), rect.Height(), PATINVERT);
-    	if (hOldBrush != NULL)
-    		SelectObject(pDC->m_hDC, hOldBrush);
-    	ReleaseDC(pDC);
+            // pat-blt without clip children on
+            CDC* pDC = pMainFrm->GetDC();
+            // invert the brush pattern (looks just like frame window sizing)
+            CBrush* pBrush = CDC::GetHalftoneBrush();
+            HBRUSH hOldBrush = NULL;
+            if (pBrush != NULL)
+                    hOldBrush = (HBRUSH)SelectObject(pDC->m_hDC, pBrush->m_hObject);
+            pDC->PatBlt(rect.left, rect.top, rect.Width(), rect.Height(), PATINVERT);
+            if (hOldBrush != NULL)
+                    SelectObject(pDC->m_hDC, hOldBrush);
+            ReleaseDC(pDC);
     }
 }
 
@@ -943,8 +943,8 @@ void CModTreeBar::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp)
     CDialogBar::OnNcCalcSize(bCalcValidRects, lpncsp);
     if (lpncsp)
     {
-    	lpncsp->rgrc[0].right -= 3;
-    	if (lpncsp->rgrc[0].right < lpncsp->rgrc[0].left) lpncsp->rgrc[0].right = lpncsp->rgrc[0].left;
+            lpncsp->rgrc[0].right -= 3;
+            if (lpncsp->rgrc[0].right < lpncsp->rgrc[0].left) lpncsp->rgrc[0].right = lpncsp->rgrc[0].left;
     }
 }
 
@@ -980,10 +980,10 @@ void CModTreeBar::OnNcPaint()
     rect.left = rect.right - 3;
     if ((rect.left < rect.right) && (rect.top < rect.bottom))
     {
-    	CDC *pDC = GetWindowDC();
-    	HDC hdc = pDC->m_hDC;
-    	if (rect.left < rect.right) FillRect(hdc, &rect, CMainFrame::brushGray);
-    	ReleaseDC(pDC);
+            CDC *pDC = GetWindowDC();
+            HDC hdc = pDC->m_hDC;
+            if (rect.left < rect.right) FillRect(hdc, &rect, CMainFrame::brushGray);
+            ReleaseDC(pDC);
     }
 }
 
@@ -1058,9 +1058,9 @@ HWND CModTreeBar::GetModTreeHWND()
 BOOL CModTreeBar::PostMessageToModTree(UINT cmdID, WPARAM wParam, LPARAM lParam)
 {
     if (::GetFocus() == m_pModTree->m_hWnd)
-    	return m_pModTree->PostMessage(cmdID, wParam, lParam);
+            return m_pModTree->PostMessage(cmdID, wParam, lParam);
     if (::GetFocus() == m_pModTreeData->m_hWnd)
-    	return m_pModTreeData->PostMessage(cmdID, wParam, lParam);
+            return m_pModTreeData->PostMessage(cmdID, wParam, lParam);
 
     return 0;
 }

@@ -8,54 +8,54 @@ protected:
 
     inline static unsigned __int64 _RDTSC()
     {
-    	_asm _emit 0x0F
-    	_asm _emit 0x31
+            _asm _emit 0x0F
+            _asm _emit 0x31
     }
 
 
 public:
     CPerformanceCounter() {
-    	QueryPerformanceFrequency(&lFreq);
+            QueryPerformanceFrequency(&lFreq);
 /*
-    	lFreqRDTSC=0;
-    	while (lFreqRDTSC<=0) {
-    		long start = _RDTSC();
-    		Sleep(1000);
-    		long end = _RDTSC();
-    		lFreqRDTSC = end-start;
-    	}
+            lFreqRDTSC=0;
+            while (lFreqRDTSC<=0) {
+                    long start = _RDTSC();
+                    Sleep(1000);
+                    long end = _RDTSC();
+                    lFreqRDTSC = end-start;
+            }
 */
     }
     ~CPerformanceCounter(void) {};
 
     inline void Start() {
-    	QueryPerformanceCounter(&lStart);
+            QueryPerformanceCounter(&lStart);
     }
 
     inline double Stop() {
-    	LARGE_INTEGER lEnd;
-    	QueryPerformanceCounter(&lEnd);
-    	return (double(lEnd.QuadPart - lStart.QuadPart) / lFreq.QuadPart);
+            LARGE_INTEGER lEnd;
+            QueryPerformanceCounter(&lEnd);
+            return (double(lEnd.QuadPart - lStart.QuadPart) / lFreq.QuadPart);
     }
 
 
     inline double StartStop() {
-    	LARGE_INTEGER lEnd;
-    	QueryPerformanceCounter(&lEnd);
-    	
-    	double result = (double(lEnd.QuadPart - lStart.QuadPart) / lFreq.QuadPart);
-    	lStart.QuadPart = lEnd.QuadPart;
+            LARGE_INTEGER lEnd;
+            QueryPerformanceCounter(&lEnd);
+            
+            double result = (double(lEnd.QuadPart - lStart.QuadPart) / lFreq.QuadPart);
+            lStart.QuadPart = lEnd.QuadPart;
 
-    	return result;
+            return result;
     }
 
     inline void StartRDTSC() {
-    	lStartRDTSC = _RDTSC();
+            lStartRDTSC = _RDTSC();
     }
 
     inline double StopRDTSC() {
-    	unsigned __int64 lEndRDTSC = _RDTSC();
-    	return (double(lEndRDTSC-lStartRDTSC)/lFreqRDTSC);
+            unsigned __int64 lEndRDTSC = _RDTSC();
+            return (double(lEndRDTSC-lStartRDTSC)/lFreqRDTSC);
     }
 
 };

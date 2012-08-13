@@ -1,11 +1,11 @@
 #ifndef _VIEW_SAMPLES_H_
 #define _VIEW_SAMPLES_H_
 
-#define SMPSTATUS_MOUSEDRAG    	0x01
-#define SMPSTATUS_KEYDOWN    	0x02
+#define SMPSTATUS_MOUSEDRAG            0x01
+#define SMPSTATUS_KEYDOWN            0x02
 #define SMPSTATUS_NCLBTNDOWN    0x04
 
-#define SMP_LEFTBAR_BUTTONS    	8
+#define SMP_LEFTBAR_BUTTONS            8
 
 //======================================
 class CViewSample: public CModScrollView
@@ -23,8 +23,8 @@ protected:
     uint32_t m_dwNotifyPos[MAX_VIRTUAL_CHANNELS];
     int m_nGridSegments;
 
-    bool m_bDrawingEnabled;	// sample drawing mode enabled?
-    CPoint m_lastDrawPoint;	// for drawing horizontal lines
+    bool m_bDrawingEnabled;        // sample drawing mode enabled?
+    CPoint m_lastDrawPoint;        // for drawing horizontal lines
 
 public:
     CViewSample();

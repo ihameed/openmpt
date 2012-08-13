@@ -10,12 +10,12 @@ public:
     Cfxp(long ID, long version, long nPrograms, long inChunkSize, void *inChunk);
     ~Cfxp(void);
     
-    long ChunkMagic;	// "CcnK"
-    long byteSize;		// size of this chunk, excluding ChunkMagic and byteSize
-    long fxMagic;		// "FxCk"
-    long version;		// VST version - ignore
-    long fxID;			// Plugin unique ID 
-    long fxVersion;		// plugin version - ignore?
+    long ChunkMagic;        // "CcnK"
+    long byteSize;                // size of this chunk, excluding ChunkMagic and byteSize
+    long fxMagic;                // "FxCk"
+    long version;                // VST version - ignore
+    long fxID;                        // Plugin unique ID 
+    long fxVersion;                // plugin version - ignore?
     
     long numParams;
     char prgName[30];

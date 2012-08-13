@@ -14,7 +14,7 @@ protected:
 
 public:
     CMidiSetupDlg(uint32_t d, LONG n):CPropertyPage(IDD_OPTIONS_MIDI)
-    	{ m_dwMidiSetup = d; m_nMidiDevice = n; }
+            { m_dwMidiSetup = d; m_nMidiDevice = n; }
 
 protected:
     virtual BOOL OnInitDialog();

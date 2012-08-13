@@ -15,12 +15,12 @@ enum {
 };
 
 enum {
-    mixLevels_original    	= 0,
-    mixLevels_117RC1    	= 1,
-    mixLevels_117RC2    	= 2,
-    mixLevels_117RC3    	= 3,
+    mixLevels_original            = 0,
+    mixLevels_117RC1            = 1,
+    mixLevels_117RC2            = 2,
+    mixLevels_117RC3            = 3,
     mixLevels_compatible    = 4,
-    mixLevels_Test    		= 5,
+    mixLevels_Test                    = 5,
 };
 
 enum forcePanningMode
@@ -85,7 +85,7 @@ private:
     float m_IntToFloat;
     float m_FloatToInt;
     float m_VSTiAttenuation;    
-    float m_VSTiVolume;    		
+    float m_VSTiVolume;                    
 
     float m_normalSamplePreAmp;
     float m_normalVSTiVol;

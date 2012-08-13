@@ -20,20 +20,20 @@
 CCommandSet::CCommandSet(void)
 {
     // Which keybinding rules to enforce?
-    enforceRule[krPreventDuplicate]				= true;
-    enforceRule[krDeleteOldOnConflict]			= true;
-    enforceRule[krAllowNavigationWithSelection]	= true;
+    enforceRule[krPreventDuplicate]                                = true;
+    enforceRule[krDeleteOldOnConflict]                        = true;
+    enforceRule[krAllowNavigationWithSelection]        = true;
     enforceRule[krAllowSelectionWithNavigation] = true;
-    enforceRule[krAllowSelectCopySelectCombos]	= true;
-    enforceRule[krLockNotesToChords]			= true;
-    enforceRule[krNoteOffOnKeyRelease]			= true;
-    enforceRule[krPropagateNotes]				= true;
-    enforceRule[krReassignDigitsToOctaves]		= false;
-    enforceRule[krAutoSelectOff]				= true;
-    enforceRule[krAutoSpacing]					= true;
-    enforceRule[krCheckModifiers]				= true;
+    enforceRule[krAllowSelectCopySelectCombos]        = true;
+    enforceRule[krLockNotesToChords]                        = true;
+    enforceRule[krNoteOffOnKeyRelease]                        = true;
+    enforceRule[krPropagateNotes]                                = true;
+    enforceRule[krReassignDigitsToOctaves]                = false;
+    enforceRule[krAutoSelectOff]                                = true;
+    enforceRule[krAutoSpacing]                                        = true;
+    enforceRule[krCheckModifiers]                                = true;
     enforceRule[krPropagateSampleManipulation]  = true;
-//    enforceRule[krCheckContextHierarchy]		= true;
+//    enforceRule[krCheckContextHierarchy]                = true;
     
     commands.SetSize(kcNumCommands);
     SetupCommands();
@@ -464,7 +464,7 @@ void CCommandSet::SetupCommands()
     //time saving HACK:
     for(size_t j = kcSampStartNotes; j <= kcInsNoteMapEndNoteStops; j++)
     {
-    	DefineKeyCommand((CommandID)j, 1388 + j - kcSampStartNotes, kcHidden, kcNoDummy, _T("Auto Note in some context"));
+            DefineKeyCommand((CommandID)j, 1388 + j - kcSampStartNotes, kcHidden, kcNoDummy, _T("Auto Note in some context"));
     }
     //end hack
     DefineKeyCommand(kcPatternGrowSelection, 1660, kcVisible, kcNoDummy, _T("Grow selection"));
@@ -504,7 +504,7 @@ void CCommandSet::SetupCommands()
     //time saving HACK:
     for(size_t j = kcVSTGUIStartNotes; j <= kcVSTGUIEndNoteStops; j++)
     {
-    	DefineKeyCommand((CommandID)j, 1695 + j - kcVSTGUIStartNotes, kcHidden, kcNoDummy, _T("Auto Note in some context"));
+            DefineKeyCommand((CommandID)j, 1695 + j - kcVSTGUIStartNotes, kcHidden, kcNoDummy, _T("Auto Note in some context"));
     }
     //end hack
     DefineKeyCommand(kcVSTGUIPrevPreset, 1763, kcVisible, kcNoDummy, _T("Previous plugin preset"));
@@ -610,17 +610,17 @@ void CCommandSet::SetupCommands()
 #ifdef _DEBUG
     for(size_t i = 0; i < kcNumCommands; i++)
     {
-    	if(commands[i].UID != 0)	// ignore unset UIDs
-    	{
-    		for(size_t j = i + 1; j < kcNumCommands; j++)
-    		{
-    			if(commands[i].UID == commands[j].UID)
-    			{
-    				Log("Duplicate command UID: %d\n", commands[i].UID);
-    				ASSERT(false);
-    			}
-    		}
-    	}
+            if(commands[i].UID != 0)        // ignore unset UIDs
+            {
+                    for(size_t j = i + 1; j < kcNumCommands; j++)
+                    {
+                            if(commands[i].UID == commands[j].UID)
+                            {
+                                    Log("Duplicate command UID: %d\n", commands[i].UID);
+                                    ASSERT(false);
+                            }
+                    }
+            }
     }
 #endif //_DEBUG
 
@@ -643,52 +643,52 @@ CString CCommandSet::Add(KeyCombination kc, CommandID cmd, bool overwrite, int p
     //Avoid duplicate
     for (int k=0; k<commands[cmd].kcList.GetSize(); k++) 
     {
-    	curKc=commands[cmd].kcList[k];
-    	if (curKc==kc)
-    	{
-    		//cm'ed out for perf
-    		//Log("Not adding key:%d; ctx:%d; mod:%d event %d - Duplicate!\n", kc.code, kc.ctx, kc.mod, kc.event); 
-    		return "";
-    	}
+            curKc=commands[cmd].kcList[k];
+            if (curKc==kc)
+            {
+                    //cm'ed out for perf
+                    //Log("Not adding key:%d; ctx:%d; mod:%d event %d - Duplicate!\n", kc.code, kc.ctx, kc.mod, kc.event); 
+                    return "";
+            }
     }
     //Check that this keycombination isn't already assigned (in this context), except for dummy keys
-    for (int curCmd=0; curCmd<kcNumCommands; curCmd++)	
+    for (int curCmd=0; curCmd<kcNumCommands; curCmd++)        
     { //search all commands
-    	if (IsDummyCommand(cmd))    // no need to search if we are adding a dummy key
-    		break;								 
-    	if (IsDummyCommand((CommandID)curCmd)) //no need to check against a dummy key
-    		continue;
-    	for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    	{ //search all keys for curCommand
-    		curKc=commands[curCmd].kcList[k];
-    		bool crossContext=false;
-    		if (KeyCombinationConflict(curKc, kc, crossContext))
-    		{
-    			if (!overwrite)
-    			{
-    				//cm'ed out for perf
-    				//Log("Not adding key: already exists and overwrite disabled\n");
-    				return "";
-    			}
-    			else
-    			{
-    				if (crossContext) { 
-    					report += "Warning! the following commands may conflict:\r\n   >" + GetCommandText((CommandID)curCmd) + " in " + GetContextText(curKc.ctx) + "\r\n   >" + GetCommandText((CommandID)cmd) + " in " + GetContextText(kc.ctx) + "\r\n\r\n";
-    					Log("%s",report);
-    				} else {
-    					Remove(curKc, (CommandID)curCmd);
-    					report += "Removed due to conflict in same context:\r\n   >" + GetCommandText((CommandID)curCmd) + " in " + GetContextText(curKc.ctx) + "\r\n\r\n";
-    					Log("%s",report);
-    				}
-    			}
-    		}
-    	}
+            if (IsDummyCommand(cmd))    // no need to search if we are adding a dummy key
+                    break;                                                                 
+            if (IsDummyCommand((CommandID)curCmd)) //no need to check against a dummy key
+                    continue;
+            for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+            { //search all keys for curCommand
+                    curKc=commands[curCmd].kcList[k];
+                    bool crossContext=false;
+                    if (KeyCombinationConflict(curKc, kc, crossContext))
+                    {
+                            if (!overwrite)
+                            {
+                                    //cm'ed out for perf
+                                    //Log("Not adding key: already exists and overwrite disabled\n");
+                                    return "";
+                            }
+                            else
+                            {
+                                    if (crossContext) { 
+                                            report += "Warning! the following commands may conflict:\r\n   >" + GetCommandText((CommandID)curCmd) + " in " + GetContextText(curKc.ctx) + "\r\n   >" + GetCommandText((CommandID)cmd) + " in " + GetContextText(kc.ctx) + "\r\n\r\n";
+                                            Log("%s",report);
+                                    } else {
+                                            Remove(curKc, (CommandID)curCmd);
+                                            report += "Removed due to conflict in same context:\r\n   >" + GetCommandText((CommandID)curCmd) + " in " + GetContextText(curKc.ctx) + "\r\n\r\n";
+                                            Log("%s",report);
+                                    }
+                            }
+                    }
+            }
     }
     
     if (pos>=0)
-    	commands[cmd].kcList.InsertAt(pos, kc);
+            commands[cmd].kcList.InsertAt(pos, kc);
     else
-    	commands[cmd].kcList.Add(kc);
+            commands[cmd].kcList.Add(kc);
 
     //enfore rules on CommandSet
     report+=EnforceAll(kc, cmd, true);
@@ -706,7 +706,7 @@ CString CCommandSet::Remove(int pos, CommandID cmd)
 {
     if (pos>=0 && pos<commands[cmd].kcList.GetSize())
     {
-    	return Remove(commands[cmd].kcList[pos], cmd);
+            return Remove(commands[cmd].kcList[pos], cmd);
     }
 
     Log("Failed to remove a key: keychoice out of range.\n"); 
@@ -719,19 +719,19 @@ CString CCommandSet::Remove(KeyCombination kc, CommandID cmd)
     int index=-1;
     for (index=0; index<commands[cmd].kcList.GetSize(); index++)
     {
-    	if (kc==commands[cmd].kcList[index])
-    		break;
+            if (kc==commands[cmd].kcList[index])
+                    break;
     }
     if (index>=0 && index<commands[cmd].kcList.GetSize())
     {
-    	commands[cmd].kcList.RemoveAt(index);
-    	Log("Removed a key\n");
-    	return  EnforceAll(kc, cmd, false);
+            commands[cmd].kcList.RemoveAt(index);
+            Log("Removed a key\n");
+            return  EnforceAll(kc, cmd, false);
     }
     else
     {
-    	Log("Failed to remove a key as it was not found\n"); 
-    	return "";
+            Log("Failed to remove a key as it was not found\n"); 
+            return "";
     }
 
 }
@@ -742,208 +742,208 @@ CString CCommandSet::EnforceAll(KeyCombination inKc, CommandID inCmd, bool addin
     //World's biggest, most confusing method. :)
     //Needs refactoring. Maybe make lots of Rule subclasses, each with their own Enforce() method?
     //bool removing = !adding; //for attempt to salvage readability.. 
-    KeyCombination curKc;	// for looping through key combinations
-    KeyCombination newKc;	// for adding new key combinations
+    KeyCombination curKc;        // for looping through key combinations
+    KeyCombination newKc;        // for adding new key combinations
     CString report="";
 
     if (enforceRule[krAllowNavigationWithSelection])
     {//------------------------------------------------------------
-    	// When we get a new navigation command key, we need to 
-    	// make sure this navigation will work when any selection key is pressed
-    	if (inCmd>=kcStartPatNavigation && inCmd<=kcEndPatNavigation)
-    	{//Check that it is a nav cmd
-    		CommandID cmdNavSelection = (CommandID)(kcStartPatNavigationSelect + (inCmd-kcStartPatNavigation));
-    		for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
-    		{//for all selection modifiers
-    			curKc=commands[kcSelect].kcList[kSel];
-    			newKc=inKc;
-    			newKc.mod|=curKc.mod;	//Add selection modifier's modifiers to this command
-    			if (adding)
-    			{
-    				Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection);
-    				Add(newKc, cmdNavSelection, false);
-    			}
-    			else
-    			{					
-    				Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection); 
-    				Remove(newKc, cmdNavSelection);
-    			}
-    		}
-    	}
-    	// Same applies for orderlist navigation
-    	else if (inCmd>=kcStartOrderlistNavigation && inCmd<=kcEndOrderlistNavigation)
-    	{//Check that it is a nav cmd
-    		CommandID cmdNavSelection = (CommandID)(kcStartOrderlistNavigationSelect+ (inCmd-kcStartOrderlistNavigation));
-    		for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
-    		{//for all selection modifiers
-    			curKc=commands[kcSelect].kcList[kSel];
-    			newKc=inKc;
-    			newKc.mod|=curKc.mod;	//Add selection modifier's modifiers to this command
-    			if (adding)
-    			{
-    				Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection);
-    				Add(newKc, cmdNavSelection, false);
-    			}
-    			else
-    			{					
-    				Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection); 
-    				Remove(newKc, cmdNavSelection);
-    			}
-    		}
-    	}
-    	// When we get a new selection key, we need to make sure that 
-    	// all navigation commands will work with this selection key pressed
-    	else if (inCmd==kcSelect)
-    	{// check that is is a selection
-    		for (int curCmd=kcStartPatNavigation; curCmd<=kcEndPatNavigation; curCmd++)
-    		{// for all nav commands
-    			for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    			{// for all keys for this command
-    				CommandID cmdNavSelection = (CommandID)(kcStartPatNavigationSelect + (curCmd-kcStartPatNavigation));
-    				newKc=commands[curCmd].kcList[k]; // get all properties from the current nav cmd key
-    				newKc.mod|=inKc.mod;			  // and the new selection modifier
-    				if (adding)
-    				{
-    					Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);
-    					Add(newKc, cmdNavSelection, false);
-    				}
-    				else
-    				{	
-    					Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);				
-    					Remove(newKc, cmdNavSelection);
-    				}
-    			}
-    		} // end all nav commands
-    		for (int curCmd=kcStartOrderlistNavigation; curCmd<=kcEndOrderlistNavigation; curCmd++)
-    		{// for all nav commands
-    			for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    			{// for all keys for this command
-    				CommandID cmdNavSelection = (CommandID)(kcStartOrderlistNavigationSelect+ (curCmd-kcStartOrderlistNavigation));
-    				newKc=commands[curCmd].kcList[k]; // get all properties from the current nav cmd key
-    				newKc.mod|=inKc.mod;			  // and the new selection modifier
-    				if (adding)
-    				{
-    					Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);
-    					Add(newKc, cmdNavSelection, false);
-    				}
-    				else
-    				{	
-    					Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);				
-    					Remove(newKc, cmdNavSelection);
-    				}
-    			}
-    		} // end all nav commands
-    	}
+            // When we get a new navigation command key, we need to 
+            // make sure this navigation will work when any selection key is pressed
+            if (inCmd>=kcStartPatNavigation && inCmd<=kcEndPatNavigation)
+            {//Check that it is a nav cmd
+                    CommandID cmdNavSelection = (CommandID)(kcStartPatNavigationSelect + (inCmd-kcStartPatNavigation));
+                    for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
+                    {//for all selection modifiers
+                            curKc=commands[kcSelect].kcList[kSel];
+                            newKc=inKc;
+                            newKc.mod|=curKc.mod;        //Add selection modifier's modifiers to this command
+                            if (adding)
+                            {
+                                    Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection);
+                                    Add(newKc, cmdNavSelection, false);
+                            }
+                            else
+                            {                                        
+                                    Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection); 
+                                    Remove(newKc, cmdNavSelection);
+                            }
+                    }
+            }
+            // Same applies for orderlist navigation
+            else if (inCmd>=kcStartOrderlistNavigation && inCmd<=kcEndOrderlistNavigation)
+            {//Check that it is a nav cmd
+                    CommandID cmdNavSelection = (CommandID)(kcStartOrderlistNavigationSelect+ (inCmd-kcStartOrderlistNavigation));
+                    for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
+                    {//for all selection modifiers
+                            curKc=commands[kcSelect].kcList[kSel];
+                            newKc=inKc;
+                            newKc.mod|=curKc.mod;        //Add selection modifier's modifiers to this command
+                            if (adding)
+                            {
+                                    Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection);
+                                    Add(newKc, cmdNavSelection, false);
+                            }
+                            else
+                            {                                        
+                                    Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", kSel, newKc.mod, cmdNavSelection); 
+                                    Remove(newKc, cmdNavSelection);
+                            }
+                    }
+            }
+            // When we get a new selection key, we need to make sure that 
+            // all navigation commands will work with this selection key pressed
+            else if (inCmd==kcSelect)
+            {// check that is is a selection
+                    for (int curCmd=kcStartPatNavigation; curCmd<=kcEndPatNavigation; curCmd++)
+                    {// for all nav commands
+                            for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+                            {// for all keys for this command
+                                    CommandID cmdNavSelection = (CommandID)(kcStartPatNavigationSelect + (curCmd-kcStartPatNavigation));
+                                    newKc=commands[curCmd].kcList[k]; // get all properties from the current nav cmd key
+                                    newKc.mod|=inKc.mod;                          // and the new selection modifier
+                                    if (adding)
+                                    {
+                                            Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);
+                                            Add(newKc, cmdNavSelection, false);
+                                    }
+                                    else
+                                    {        
+                                            Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);                                
+                                            Remove(newKc, cmdNavSelection);
+                                    }
+                            }
+                    } // end all nav commands
+                    for (int curCmd=kcStartOrderlistNavigation; curCmd<=kcEndOrderlistNavigation; curCmd++)
+                    {// for all nav commands
+                            for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+                            {// for all keys for this command
+                                    CommandID cmdNavSelection = (CommandID)(kcStartOrderlistNavigationSelect+ (curCmd-kcStartOrderlistNavigation));
+                                    newKc=commands[curCmd].kcList[k]; // get all properties from the current nav cmd key
+                                    newKc.mod|=inKc.mod;                          // and the new selection modifier
+                                    if (adding)
+                                    {
+                                            Log("Enforcing rule krAllowNavigationWithSelection - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);
+                                            Add(newKc, cmdNavSelection, false);
+                                    }
+                                    else
+                                    {        
+                                            Log("Enforcing rule krAllowNavigationWithSelection - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, cmdNavSelection);                                
+                                            Remove(newKc, cmdNavSelection);
+                                    }
+                            }
+                    } // end all nav commands
+            }
     } // end krAllowNavigationWithSelection
 
     if (enforceRule[krAllowSelectionWithNavigation])
     {//-----------------------------------------------------------
-    	KeyCombination newKcSel;
-    	
-    	// When we get a new navigation command key, we need to ensure
-    	// all selection keys will work even when this new selection key is pressed
-    	if (inCmd>=kcStartPatNavigation && inCmd<=kcEndPatNavigation)
-    	{//if this is a navigation command
-    		for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
-    		{//for all deselection modifiers
-    			newKcSel=commands[kcSelect].kcList[kSel];	// get all properties from the selection key
-    			newKcSel.mod|=inKc.mod;						// add modifiers from the new nav command
-    			if (adding)	{
-    				Log("Enforcing rule krAllowSelectionWithNavigation: adding  removing kcSelectWithNav and kcSelectOffWithNav\n"); 
-    				Add(newKcSel, kcSelectWithNav, false);
-    			}
-    			else {	
-    				Log("Enforcing rule krAllowSelectionWithNavigation: removing kcSelectWithNav and kcSelectOffWithNav\n"); 				
-    				Remove(newKcSel, kcSelectWithNav);
-    			}
-    		}
-    	}
-    	// Same for orderlist navigation
-    	if (inCmd>=kcStartOrderlistNavigation&& inCmd<=kcEndOrderlistNavigation)
-    	{//if this is a navigation command
-    		for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
-    		{//for all deselection modifiers
-    			newKcSel=commands[kcSelect].kcList[kSel];	// get all properties from the selection key
-    			newKcSel.mod|=inKc.mod;						// add modifiers from the new nav command
-    			if (adding)	{
-    				Log("Enforcing rule krAllowSelectionWithNavigation: adding  removing kcSelectWithNav and kcSelectOffWithNav\n"); 
-    				Add(newKcSel, kcSelectWithNav, false);
-    			}
-    			else {	
-    				Log("Enforcing rule krAllowSelectionWithNavigation: removing kcSelectWithNav and kcSelectOffWithNav\n"); 				
-    				Remove(newKcSel, kcSelectWithNav);
-    			}
-    		}
-    	}
-    	// When we get a new selection key, we need to ensure it will work even when
-    	// any navigation key is pressed
-    	else if (inCmd==kcSelect)
-    	{
-    		for (int curCmd=kcStartPatNavigation; curCmd<=kcEndPatNavigation; curCmd++)
-    		{//for all nav commands
-    			for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    			{// for all keys for this command
-    				newKcSel=inKc; // get all properties from the selection key
-    				newKcSel.mod|=commands[curCmd].kcList[k].mod; //add the nav keys' modifiers
-    				if (adding)	{
-    					Log("Enforcing rule krAllowSelectionWithNavigation - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);
-    					Add(newKcSel, kcSelectWithNav, false);
-    				}
-    				else {	
-    					Log("Enforcing rule krAllowSelectionWithNavigation - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);				
-    					Remove(newKcSel, kcSelectWithNav);
-    				}
-    			}
-    		} // end all nav commands
-    		for (int curCmd=kcStartOrderlistNavigation; curCmd<=kcEndOrderlistNavigation; curCmd++)
-    		{//for all nav commands
-    			for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    			{// for all keys for this command
-    				newKcSel=inKc; // get all properties from the selection key
-    				newKcSel.mod|=commands[curCmd].kcList[k].mod; //add the nav keys' modifiers
-    				if (adding)	{
-    					Log("Enforcing rule krAllowSelectionWithNavigation - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);
-    					Add(newKcSel, kcSelectWithNav, false);
-    				}
-    				else {	
-    					Log("Enforcing rule krAllowSelectionWithNavigation - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);				
-    					Remove(newKcSel, kcSelectWithNav);
-    				}
-    			}
-    		} // end all nav commands
-    	}		
+            KeyCombination newKcSel;
+            
+            // When we get a new navigation command key, we need to ensure
+            // all selection keys will work even when this new selection key is pressed
+            if (inCmd>=kcStartPatNavigation && inCmd<=kcEndPatNavigation)
+            {//if this is a navigation command
+                    for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
+                    {//for all deselection modifiers
+                            newKcSel=commands[kcSelect].kcList[kSel];        // get all properties from the selection key
+                            newKcSel.mod|=inKc.mod;                                                // add modifiers from the new nav command
+                            if (adding)        {
+                                    Log("Enforcing rule krAllowSelectionWithNavigation: adding  removing kcSelectWithNav and kcSelectOffWithNav\n"); 
+                                    Add(newKcSel, kcSelectWithNav, false);
+                            }
+                            else {        
+                                    Log("Enforcing rule krAllowSelectionWithNavigation: removing kcSelectWithNav and kcSelectOffWithNav\n");                                 
+                                    Remove(newKcSel, kcSelectWithNav);
+                            }
+                    }
+            }
+            // Same for orderlist navigation
+            if (inCmd>=kcStartOrderlistNavigation&& inCmd<=kcEndOrderlistNavigation)
+            {//if this is a navigation command
+                    for (int kSel=0; kSel<commands[kcSelect].kcList.GetSize(); kSel++)
+                    {//for all deselection modifiers
+                            newKcSel=commands[kcSelect].kcList[kSel];        // get all properties from the selection key
+                            newKcSel.mod|=inKc.mod;                                                // add modifiers from the new nav command
+                            if (adding)        {
+                                    Log("Enforcing rule krAllowSelectionWithNavigation: adding  removing kcSelectWithNav and kcSelectOffWithNav\n"); 
+                                    Add(newKcSel, kcSelectWithNav, false);
+                            }
+                            else {        
+                                    Log("Enforcing rule krAllowSelectionWithNavigation: removing kcSelectWithNav and kcSelectOffWithNav\n");                                 
+                                    Remove(newKcSel, kcSelectWithNav);
+                            }
+                    }
+            }
+            // When we get a new selection key, we need to ensure it will work even when
+            // any navigation key is pressed
+            else if (inCmd==kcSelect)
+            {
+                    for (int curCmd=kcStartPatNavigation; curCmd<=kcEndPatNavigation; curCmd++)
+                    {//for all nav commands
+                            for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+                            {// for all keys for this command
+                                    newKcSel=inKc; // get all properties from the selection key
+                                    newKcSel.mod|=commands[curCmd].kcList[k].mod; //add the nav keys' modifiers
+                                    if (adding)        {
+                                            Log("Enforcing rule krAllowSelectionWithNavigation - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);
+                                            Add(newKcSel, kcSelectWithNav, false);
+                                    }
+                                    else {        
+                                            Log("Enforcing rule krAllowSelectionWithNavigation - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);                                
+                                            Remove(newKcSel, kcSelectWithNav);
+                                    }
+                            }
+                    } // end all nav commands
+                    for (int curCmd=kcStartOrderlistNavigation; curCmd<=kcEndOrderlistNavigation; curCmd++)
+                    {//for all nav commands
+                            for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+                            {// for all keys for this command
+                                    newKcSel=inKc; // get all properties from the selection key
+                                    newKcSel.mod|=commands[curCmd].kcList[k].mod; //add the nav keys' modifiers
+                                    if (adding)        {
+                                            Log("Enforcing rule krAllowSelectionWithNavigation - adding key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);
+                                            Add(newKcSel, kcSelectWithNav, false);
+                                    }
+                                    else {        
+                                            Log("Enforcing rule krAllowSelectionWithNavigation - removing key:%d with modifier:%d to command: %d\n", curCmd, inKc.mod, kcSelectWithNav);                                
+                                            Remove(newKcSel, kcSelectWithNav);
+                                    }
+                            }
+                    } // end all nav commands
+            }                
 
     }
     
     //if we add a selector or a copy selector, we need it to switch off when we release the key.
     if (enforceRule[krAutoSelectOff])
     {
-    	KeyCombination newKcDeSel;
-    	bool ruleApplies=true;
-    	CommandID cmdOff = kcNull;
+            KeyCombination newKcDeSel;
+            bool ruleApplies=true;
+            CommandID cmdOff = kcNull;
 
-    	switch (inCmd)
-    	{
-    		case kcSelect:				 cmdOff=kcSelectOff;	break;
-    		case kcSelectWithNav:		 cmdOff=kcSelectOffWithNav;	break;	
-    		case kcCopySelect:			 cmdOff=kcCopySelectOff;	break;	
-    		case kcCopySelectWithNav:	 cmdOff=kcCopySelectOffWithNav;	break;	
-    		case kcSelectWithCopySelect: cmdOff=kcSelectOffWithCopySelect; break;
-    		case kcCopySelectWithSelect: cmdOff=kcCopySelectOffWithSelect; break;
-    		default: ruleApplies=false;
-    	}
+            switch (inCmd)
+            {
+                    case kcSelect:                                 cmdOff=kcSelectOff;        break;
+                    case kcSelectWithNav:                 cmdOff=kcSelectOffWithNav;        break;        
+                    case kcCopySelect:                         cmdOff=kcCopySelectOff;        break;        
+                    case kcCopySelectWithNav:         cmdOff=kcCopySelectOffWithNav;        break;        
+                    case kcSelectWithCopySelect: cmdOff=kcSelectOffWithCopySelect; break;
+                    case kcCopySelectWithSelect: cmdOff=kcCopySelectOffWithSelect; break;
+                    default: ruleApplies=false;
+            }
     
-    	if (ruleApplies)
-    	{
-    		newKcDeSel=inKc;
-    		newKcDeSel.mod&=~CodeToModifier(inKc.code);		//<-- Need to get rid of right modifier!!
-    		newKcDeSel.event=kKeyEventUp;
+            if (ruleApplies)
+            {
+                    newKcDeSel=inKc;
+                    newKcDeSel.mod&=~CodeToModifier(inKc.code);                //<-- Need to get rid of right modifier!!
+                    newKcDeSel.event=kKeyEventUp;
 
-    		if (adding)
-    			Add(newKcDeSel, cmdOff, false);
-    		else
-    			Remove(newKcDeSel, cmdOff);
-    	}
+                    if (adding)
+                            Add(newKcDeSel, cmdOff, false);
+                    else
+                            Remove(newKcDeSel, cmdOff);
+            }
     
     }
 
@@ -951,336 +951,336 @@ CString CCommandSet::EnforceAll(KeyCombination inKc, CommandID inCmd, bool addin
     // Allow combinations of copyselect and select
     if (enforceRule[krAllowSelectCopySelectCombos])
     {
-    	KeyCombination newKcSel, newKcCopySel;
-    	if (inCmd==kcSelect)
-    	{  //On getting a new selection key, make this selection key work with all copy selects' modifiers
-       	   //On getting a new selection key, make all copyselects work with this key's modifiers
-    		for (int k=0; k<commands[kcCopySelect].kcList.GetSize(); k++)
-    		{
-    			newKcSel=inKc;
-    			newKcSel.mod|=commands[kcCopySelect].kcList[k].mod;
-    			newKcCopySel=commands[kcCopySelect].kcList[k];
-    			newKcCopySel.mod|=inKc.mod;
-    			Log("Enforcing rule krAllowSelectCopySelectCombos\n"); 
+            KeyCombination newKcSel, newKcCopySel;
+            if (inCmd==kcSelect)
+            {  //On getting a new selection key, make this selection key work with all copy selects' modifiers
+                  //On getting a new selection key, make all copyselects work with this key's modifiers
+                    for (int k=0; k<commands[kcCopySelect].kcList.GetSize(); k++)
+                    {
+                            newKcSel=inKc;
+                            newKcSel.mod|=commands[kcCopySelect].kcList[k].mod;
+                            newKcCopySel=commands[kcCopySelect].kcList[k];
+                            newKcCopySel.mod|=inKc.mod;
+                            Log("Enforcing rule krAllowSelectCopySelectCombos\n"); 
                 if (adding)
-    			{
-    				Add(newKcSel, kcSelectWithCopySelect, false);
-    				Add(newKcCopySel, kcCopySelectWithSelect, false);
-    			}
-    			else
-    			{
-    				Remove(newKcSel, kcSelectWithCopySelect);
-    				Remove(newKcCopySel, kcCopySelectWithSelect);
-    			}
-    		}
-    	}
-    	if (inCmd==kcCopySelect)
-    	{  //On getting a new copyselection key, make this copyselection key work with all selects' modifiers
-       	   //On getting a new copyselection key, make all selects work with this key's modifiers
-    		for (int k=0; k<commands[kcSelect].kcList.GetSize(); k++)
-    		{
-    			newKcSel=commands[kcSelect].kcList[k];
-    			newKcSel.mod|=inKc.mod;
-    			newKcCopySel=inKc;
-    			newKcCopySel.mod|=commands[kcSelect].kcList[k].mod;
-    			Log("Enforcing rule krAllowSelectCopySelectCombos\n"); 
+                            {
+                                    Add(newKcSel, kcSelectWithCopySelect, false);
+                                    Add(newKcCopySel, kcCopySelectWithSelect, false);
+                            }
+                            else
+                            {
+                                    Remove(newKcSel, kcSelectWithCopySelect);
+                                    Remove(newKcCopySel, kcCopySelectWithSelect);
+                            }
+                    }
+            }
+            if (inCmd==kcCopySelect)
+            {  //On getting a new copyselection key, make this copyselection key work with all selects' modifiers
+                  //On getting a new copyselection key, make all selects work with this key's modifiers
+                    for (int k=0; k<commands[kcSelect].kcList.GetSize(); k++)
+                    {
+                            newKcSel=commands[kcSelect].kcList[k];
+                            newKcSel.mod|=inKc.mod;
+                            newKcCopySel=inKc;
+                            newKcCopySel.mod|=commands[kcSelect].kcList[k].mod;
+                            Log("Enforcing rule krAllowSelectCopySelectCombos\n"); 
                 if (adding)
-    			{
-    				Add(newKcSel, kcSelectWithCopySelect, false);
-    				Add(newKcCopySel, kcCopySelectWithSelect, false);
-    			}
-    			else
-    			{
-    				Remove(newKcSel, kcSelectWithCopySelect);
-    				Remove(newKcCopySel, kcCopySelectWithSelect);
-    			}
-    		}
-    	}
+                            {
+                                    Add(newKcSel, kcSelectWithCopySelect, false);
+                                    Add(newKcCopySel, kcCopySelectWithSelect, false);
+                            }
+                            else
+                            {
+                                    Remove(newKcSel, kcSelectWithCopySelect);
+                                    Remove(newKcCopySel, kcCopySelectWithSelect);
+                            }
+                    }
+            }
     }
 
     
     //# Lock Notes to Chords
     if (enforceRule[krLockNotesToChords])
-    {	
-    	if (inCmd>=kcVPStartNotes && inCmd<=kcVPEndNotes)
-    	{
-    		int noteOffset = inCmd - kcVPStartNotes;
-    		for (int k=0; k<commands[kcChordModifier].kcList.GetSize(); k++)
-    		{//for all chord modifier keys
-    			newKc=inKc;
-    			newKc.mod|=commands[kcChordModifier].kcList[k].mod;
-    			if (adding)
-    			{
-    				Log("Enforcing rule krLockNotesToChords: auto adding in a chord command\n"); 
-    				Add(newKc, (CommandID)(kcVPStartChords+noteOffset), false);
-    			}
-    			else
-    			{
-    				Log("Enforcing rule krLockNotesToChords: auto removing a chord command\n"); 
-    				Remove(newKc, (CommandID)(kcVPStartChords+noteOffset));
-    			}
-    		}
-    	}
-    	if (inCmd==kcChordModifier)
-    	{
-    		int noteOffset;
-    		for (int curCmd=kcVPStartNotes; curCmd<=kcVPEndNotes; curCmd++)
-    		{//for all notes
-    			for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    			{//for all keys for this note
-    				noteOffset = curCmd - kcVPStartNotes;
-    				newKc=commands[curCmd].kcList[k];
-    				newKc.mod|=inKc.mod;
-    				if (adding)
-    				{
-    					Log("Enforcing rule krLockNotesToChords: auto adding in a chord command\n"); 
-    					Add(newKc, (CommandID)(kcVPStartChords+noteOffset), false);
-    				}
-    				else
-    				{
-    					Log("Enforcing rule krLockNotesToChords: auto removing a chord command\n"); 
-    					Remove(newKc, (CommandID)(kcVPStartChords+noteOffset));
-    				}
-    			}
-    		}
-    	}
+    {        
+            if (inCmd>=kcVPStartNotes && inCmd<=kcVPEndNotes)
+            {
+                    int noteOffset = inCmd - kcVPStartNotes;
+                    for (int k=0; k<commands[kcChordModifier].kcList.GetSize(); k++)
+                    {//for all chord modifier keys
+                            newKc=inKc;
+                            newKc.mod|=commands[kcChordModifier].kcList[k].mod;
+                            if (adding)
+                            {
+                                    Log("Enforcing rule krLockNotesToChords: auto adding in a chord command\n"); 
+                                    Add(newKc, (CommandID)(kcVPStartChords+noteOffset), false);
+                            }
+                            else
+                            {
+                                    Log("Enforcing rule krLockNotesToChords: auto removing a chord command\n"); 
+                                    Remove(newKc, (CommandID)(kcVPStartChords+noteOffset));
+                            }
+                    }
+            }
+            if (inCmd==kcChordModifier)
+            {
+                    int noteOffset;
+                    for (int curCmd=kcVPStartNotes; curCmd<=kcVPEndNotes; curCmd++)
+                    {//for all notes
+                            for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+                            {//for all keys for this note
+                                    noteOffset = curCmd - kcVPStartNotes;
+                                    newKc=commands[curCmd].kcList[k];
+                                    newKc.mod|=inKc.mod;
+                                    if (adding)
+                                    {
+                                            Log("Enforcing rule krLockNotesToChords: auto adding in a chord command\n"); 
+                                            Add(newKc, (CommandID)(kcVPStartChords+noteOffset), false);
+                                    }
+                                    else
+                                    {
+                                            Log("Enforcing rule krLockNotesToChords: auto removing a chord command\n"); 
+                                            Remove(newKc, (CommandID)(kcVPStartChords+noteOffset));
+                                    }
+                            }
+                    }
+            }
     }
 
     
     //# Auto set note off on release
     if (enforceRule[krNoteOffOnKeyRelease])
     {
-    	if (inCmd>=kcVPStartNotes && inCmd<=kcVPEndNotes)
-    	{
-    		int noteOffset = inCmd - kcVPStartNotes;
-    		newKc=inKc;
-    		newKc.event=kKeyEventUp;
-    		if (adding)
-    		{
-    			Log("Enforcing rule krNoteOffOnKeyRelease: adding note off command\n"); 
-    			Add(newKc, (CommandID)(kcVPStartNoteStops+noteOffset), false);
-    		}
-    		else
-    		{
-    			Log("Enforcing rule krNoteOffOnKeyRelease: removing note off command\n"); 
-    			Remove(newKc, (CommandID)(kcVPStartNoteStops+noteOffset));
-    		}
-    	}
-    	if (inCmd>=kcVPStartChords && inCmd<=kcVPEndChords)
-    	{
-    		int noteOffset = inCmd - kcVPStartChords;
-    		newKc=inKc;
-    		newKc.event=kKeyEventUp;
-    		if (adding)
-    		{
-    			Log("Enforcing rule krNoteOffOnKeyRelease: adding Chord off command\n"); 
-    			Add(newKc, (CommandID)(kcVPStartChordStops+noteOffset), false);
-    		}
-    		else
-    		{
-    			Log("Enforcing rule krNoteOffOnKeyRelease: removing Chord off command\n"); 
-    			Remove(newKc, (CommandID)(kcVPStartChordStops+noteOffset));
-    		}
-    	}
+            if (inCmd>=kcVPStartNotes && inCmd<=kcVPEndNotes)
+            {
+                    int noteOffset = inCmd - kcVPStartNotes;
+                    newKc=inKc;
+                    newKc.event=kKeyEventUp;
+                    if (adding)
+                    {
+                            Log("Enforcing rule krNoteOffOnKeyRelease: adding note off command\n"); 
+                            Add(newKc, (CommandID)(kcVPStartNoteStops+noteOffset), false);
+                    }
+                    else
+                    {
+                            Log("Enforcing rule krNoteOffOnKeyRelease: removing note off command\n"); 
+                            Remove(newKc, (CommandID)(kcVPStartNoteStops+noteOffset));
+                    }
+            }
+            if (inCmd>=kcVPStartChords && inCmd<=kcVPEndChords)
+            {
+                    int noteOffset = inCmd - kcVPStartChords;
+                    newKc=inKc;
+                    newKc.event=kKeyEventUp;
+                    if (adding)
+                    {
+                            Log("Enforcing rule krNoteOffOnKeyRelease: adding Chord off command\n"); 
+                            Add(newKc, (CommandID)(kcVPStartChordStops+noteOffset), false);
+                    }
+                    else
+                    {
+                            Log("Enforcing rule krNoteOffOnKeyRelease: removing Chord off command\n"); 
+                            Remove(newKc, (CommandID)(kcVPStartChordStops+noteOffset));
+                    }
+            }
     }
     
     //# Reassign freed number keys to octaves
     if (enforceRule[krReassignDigitsToOctaves] && !adding)
     {  
-    	  if ( (inKc.mod == 0) &&	//no modifier
-    		 ( (inKc.ctx == kCtxViewPatternsNote) || (inKc.ctx == kCtxViewPatterns) ) && //note scope or pattern scope
-    		 ( ('0'<=inKc.code && inKc.code<='9') || (VK_NUMPAD0<=inKc.code && inKc.code<=VK_NUMPAD9) ) ) {  //is number key 
-    			newKc.ctx=kCtxViewPatternsNote;
-    			newKc.mod=0;
-    			newKc.event= (KeyEventType)1;
-    			newKc.code=inKc.code;
-    			int offset = ('0'<=inKc.code && inKc.code<='9') ? newKc.code-'0' : newKc.code-VK_NUMPAD0;
-    			Add(newKc, (CommandID)(kcSetOctave0 + (newKc.code-offset)), false);		
-    		 }
+              if ( (inKc.mod == 0) &&        //no modifier
+                     ( (inKc.ctx == kCtxViewPatternsNote) || (inKc.ctx == kCtxViewPatterns) ) && //note scope or pattern scope
+                     ( ('0'<=inKc.code && inKc.code<='9') || (VK_NUMPAD0<=inKc.code && inKc.code<=VK_NUMPAD9) ) ) {  //is number key 
+                            newKc.ctx=kCtxViewPatternsNote;
+                            newKc.mod=0;
+                            newKc.event= (KeyEventType)1;
+                            newKc.code=inKc.code;
+                            int offset = ('0'<=inKc.code && inKc.code<='9') ? newKc.code-'0' : newKc.code-VK_NUMPAD0;
+                            Add(newKc, (CommandID)(kcSetOctave0 + (newKc.code-offset)), false);                
+                     }
     }
     // Add spacing
     if (enforceRule[krAutoSpacing])
     {
-    	if (inCmd==kcSetSpacing && adding)
-    	{
-    		newKc.ctx=kCtxViewPatterns;
-    		newKc.mod=inKc.mod;
-    		newKc.event= kKeyEventDown;
-    		for (newKc.code='0'; newKc.code<='9'; newKc.code++)
-    		{
-    			Add(newKc, (CommandID)(kcSetSpacing0 + (newKc.code-'0')), false);		
-    		}
-    		for (newKc.code=VK_NUMPAD0; newKc.code<=VK_NUMPAD9; newKc.code++)
-    		{
-    			Add(newKc, (CommandID)(kcSetSpacing0 + (newKc.code-VK_NUMPAD0)), false);		
-    		}			
-    	}
-    	else if (!adding && (inCmd<kcSetSpacing && kcSetSpacing9<inCmd))
-    	{
-    		KeyCombination spacing;
-    		for (int k=0; k<commands[kcSetSpacing].kcList.GetSize(); k++)
-    		{
-    			spacing = commands[kcSetSpacing].kcList[k];
-    			if ((('0'<=inKc.code && inKc.code<='9')||(VK_NUMPAD0<=inKc.code && inKc.code<=VK_NUMPAD9)) && !adding)
-    			{
-    				newKc.ctx= kCtxViewPatterns;
-    				newKc.mod= spacing.mod;
-    				newKc.event= spacing.event;
-    				newKc.code=inKc.code;
-    				if ('0'<=inKc.code && inKc.code<='9')
-    					Add(newKc, (CommandID)(kcSetSpacing0 + inKc.code - '0'), false);
-    				else if (VK_NUMPAD0<=inKc.code && inKc.code<=VK_NUMPAD9)
-    					Add(newKc, (CommandID)(kcSetSpacing0 + inKc.code - VK_NUMPAD0), false);
-    			}
-    		}
-    		
-    	}
+            if (inCmd==kcSetSpacing && adding)
+            {
+                    newKc.ctx=kCtxViewPatterns;
+                    newKc.mod=inKc.mod;
+                    newKc.event= kKeyEventDown;
+                    for (newKc.code='0'; newKc.code<='9'; newKc.code++)
+                    {
+                            Add(newKc, (CommandID)(kcSetSpacing0 + (newKc.code-'0')), false);                
+                    }
+                    for (newKc.code=VK_NUMPAD0; newKc.code<=VK_NUMPAD9; newKc.code++)
+                    {
+                            Add(newKc, (CommandID)(kcSetSpacing0 + (newKc.code-VK_NUMPAD0)), false);                
+                    }                        
+            }
+            else if (!adding && (inCmd<kcSetSpacing && kcSetSpacing9<inCmd))
+            {
+                    KeyCombination spacing;
+                    for (int k=0; k<commands[kcSetSpacing].kcList.GetSize(); k++)
+                    {
+                            spacing = commands[kcSetSpacing].kcList[k];
+                            if ((('0'<=inKc.code && inKc.code<='9')||(VK_NUMPAD0<=inKc.code && inKc.code<=VK_NUMPAD9)) && !adding)
+                            {
+                                    newKc.ctx= kCtxViewPatterns;
+                                    newKc.mod= spacing.mod;
+                                    newKc.event= spacing.event;
+                                    newKc.code=inKc.code;
+                                    if ('0'<=inKc.code && inKc.code<='9')
+                                            Add(newKc, (CommandID)(kcSetSpacing0 + inKc.code - '0'), false);
+                                    else if (VK_NUMPAD0<=inKc.code && inKc.code<=VK_NUMPAD9)
+                                            Add(newKc, (CommandID)(kcSetSpacing0 + inKc.code - VK_NUMPAD0), false);
+                            }
+                    }
+                    
+            }
     }
     if (enforceRule[krPropagateNotes])
     {
-    	int noteOffset = 0;
-    	//newKc=inKc;
+            int noteOffset = 0;
+            //newKc=inKc;
 
-    	if (inCmd>=kcVPStartNotes && inCmd<=kcVPEndNotes)
-    	{
-    		KeyCombination newKcSamp = inKc;
-    		KeyCombination newKcIns  = inKc;
-    		KeyCombination newKcTree = inKc;
-    		KeyCombination newKcInsNoteMap = inKc;
-    		KeyCombination newKcVSTGUI = inKc;
+            if (inCmd>=kcVPStartNotes && inCmd<=kcVPEndNotes)
+            {
+                    KeyCombination newKcSamp = inKc;
+                    KeyCombination newKcIns  = inKc;
+                    KeyCombination newKcTree = inKc;
+                    KeyCombination newKcInsNoteMap = inKc;
+                    KeyCombination newKcVSTGUI = inKc;
 
-    		newKcSamp.ctx=kCtxViewSamples;
-    		newKcIns.ctx=kCtxViewInstruments;
-    		newKcTree.ctx=kCtxViewTree;
-    		newKcInsNoteMap.ctx=kCtxInsNoteMap;
-    		newKcVSTGUI.ctx=kCtxVSTGUI;
+                    newKcSamp.ctx=kCtxViewSamples;
+                    newKcIns.ctx=kCtxViewInstruments;
+                    newKcTree.ctx=kCtxViewTree;
+                    newKcInsNoteMap.ctx=kCtxInsNoteMap;
+                    newKcVSTGUI.ctx=kCtxVSTGUI;
 
-    		noteOffset = inCmd - kcVPStartNotes;
-    		if (adding)
-    		{
-    			Log("Enforcing rule krPropagateNotesToSampAndIns: adding Note on in samp ctx\n"); 
-    			Add(newKcSamp, (CommandID)(kcSampStartNotes+noteOffset), false);
-    			Add(newKcIns, (CommandID)(kcInstrumentStartNotes+noteOffset), false);
-    			Add(newKcTree, (CommandID)(kcTreeViewStartNotes+noteOffset), false);
-    			Add(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNotes+noteOffset), false);
-    			Add(newKcVSTGUI, (CommandID)(kcVSTGUIStartNotes+noteOffset), false);
-    		}
-    		else
-    		{
-    			Log("Enforcing rule krPropagateNotesToSampAndIns: removing Note on in samp ctx\n"); 
-    			Remove(newKcSamp, (CommandID)(kcSampStartNotes+noteOffset));
-    			Remove(newKcIns, (CommandID)(kcInstrumentStartNotes+noteOffset));
-    			Remove(newKcTree, (CommandID)(kcTreeViewStartNotes+noteOffset));
-    			Remove(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNotes+noteOffset));
-    			Remove(newKcVSTGUI, (CommandID)(kcVSTGUIStartNotes+noteOffset));
-    		}
-    	}
-    	if (inCmd>=kcVPStartNoteStops && inCmd<=kcVPEndNoteStops)
-    	{
-    		KeyCombination newKcSamp = inKc;
-    		KeyCombination newKcIns  = inKc;
-    		KeyCombination newKcTree = inKc;
-    		KeyCombination newKcInsNoteMap = inKc;
-    		KeyCombination newKcVSTGUI = inKc;
+                    noteOffset = inCmd - kcVPStartNotes;
+                    if (adding)
+                    {
+                            Log("Enforcing rule krPropagateNotesToSampAndIns: adding Note on in samp ctx\n"); 
+                            Add(newKcSamp, (CommandID)(kcSampStartNotes+noteOffset), false);
+                            Add(newKcIns, (CommandID)(kcInstrumentStartNotes+noteOffset), false);
+                            Add(newKcTree, (CommandID)(kcTreeViewStartNotes+noteOffset), false);
+                            Add(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNotes+noteOffset), false);
+                            Add(newKcVSTGUI, (CommandID)(kcVSTGUIStartNotes+noteOffset), false);
+                    }
+                    else
+                    {
+                            Log("Enforcing rule krPropagateNotesToSampAndIns: removing Note on in samp ctx\n"); 
+                            Remove(newKcSamp, (CommandID)(kcSampStartNotes+noteOffset));
+                            Remove(newKcIns, (CommandID)(kcInstrumentStartNotes+noteOffset));
+                            Remove(newKcTree, (CommandID)(kcTreeViewStartNotes+noteOffset));
+                            Remove(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNotes+noteOffset));
+                            Remove(newKcVSTGUI, (CommandID)(kcVSTGUIStartNotes+noteOffset));
+                    }
+            }
+            if (inCmd>=kcVPStartNoteStops && inCmd<=kcVPEndNoteStops)
+            {
+                    KeyCombination newKcSamp = inKc;
+                    KeyCombination newKcIns  = inKc;
+                    KeyCombination newKcTree = inKc;
+                    KeyCombination newKcInsNoteMap = inKc;
+                    KeyCombination newKcVSTGUI = inKc;
 
-    		newKcSamp.ctx=kCtxViewSamples;
-    		newKcIns.ctx=kCtxViewInstruments;
-    		newKcTree.ctx=kCtxViewTree;
-    		newKcInsNoteMap.ctx=kCtxInsNoteMap;
-    		newKcVSTGUI.ctx=kCtxVSTGUI;
+                    newKcSamp.ctx=kCtxViewSamples;
+                    newKcIns.ctx=kCtxViewInstruments;
+                    newKcTree.ctx=kCtxViewTree;
+                    newKcInsNoteMap.ctx=kCtxInsNoteMap;
+                    newKcVSTGUI.ctx=kCtxVSTGUI;
 
-    		noteOffset = inCmd - kcVPStartNoteStops;
-    		if (adding)
-    		{
-    			Log("Enforcing rule krPropagateNotesToSampAndIns: adding Note stop on in samp ctx\n"); 
-    			Add(newKcSamp, (CommandID)(kcSampStartNoteStops+noteOffset), false);
-    			Add(newKcIns, (CommandID)(kcInstrumentStartNoteStops+noteOffset), false);
-    			Add(newKcTree, (CommandID)(kcTreeViewStartNoteStops+noteOffset), false);
-    			Add(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNoteStops+noteOffset), false);
-    			Add(newKcVSTGUI, (CommandID)(kcVSTGUIStartNoteStops+noteOffset), false);
-    		}
-    		else
-    		{
-    			Log("Enforcing rule krPropagateNotesToSampAndIns: removing Note stop on in samp ctx\n"); 
-    			Remove(newKcSamp, (CommandID)(kcSampStartNoteStops+noteOffset));
-    			Remove(newKcIns, (CommandID)(kcInstrumentStartNoteStops+noteOffset));
-    			Remove(newKcTree, (CommandID)(kcTreeViewStartNoteStops+noteOffset));
-    			Remove(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNoteStops+noteOffset));
-    			Remove(newKcVSTGUI, (CommandID)(kcVSTGUIStartNoteStops+noteOffset));
-    		}
+                    noteOffset = inCmd - kcVPStartNoteStops;
+                    if (adding)
+                    {
+                            Log("Enforcing rule krPropagateNotesToSampAndIns: adding Note stop on in samp ctx\n"); 
+                            Add(newKcSamp, (CommandID)(kcSampStartNoteStops+noteOffset), false);
+                            Add(newKcIns, (CommandID)(kcInstrumentStartNoteStops+noteOffset), false);
+                            Add(newKcTree, (CommandID)(kcTreeViewStartNoteStops+noteOffset), false);
+                            Add(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNoteStops+noteOffset), false);
+                            Add(newKcVSTGUI, (CommandID)(kcVSTGUIStartNoteStops+noteOffset), false);
+                    }
+                    else
+                    {
+                            Log("Enforcing rule krPropagateNotesToSampAndIns: removing Note stop on in samp ctx\n"); 
+                            Remove(newKcSamp, (CommandID)(kcSampStartNoteStops+noteOffset));
+                            Remove(newKcIns, (CommandID)(kcInstrumentStartNoteStops+noteOffset));
+                            Remove(newKcTree, (CommandID)(kcTreeViewStartNoteStops+noteOffset));
+                            Remove(newKcInsNoteMap, (CommandID)(kcInsNoteMapStartNoteStops+noteOffset));
+                            Remove(newKcVSTGUI, (CommandID)(kcVSTGUIStartNoteStops+noteOffset));
+                    }
 
-    	}
+            }
     }
     if (enforceRule[krCheckModifiers])
     {
-    	const int nForcedModifiers = 4;
-    	CommandID forcedModifiers[nForcedModifiers] = {kcSelect, kcCopySelect, kcChordModifier, kcSetSpacing};
-    	CommandID curCmd;
+            const int nForcedModifiers = 4;
+            CommandID forcedModifiers[nForcedModifiers] = {kcSelect, kcCopySelect, kcChordModifier, kcSetSpacing};
+            CommandID curCmd;
 
-    	// for all commands that must be modifiers
-    	for (int i=0; i<nForcedModifiers; i++)
-    	{
-    		curCmd=forcedModifiers[i];
-    		
-    		//for all of this command's key combinations
-    		for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
-    		{
-    			curKc = commands[curCmd].kcList[k];
-    			if ((!curKc.mod) || (curKc.code!=VK_SHIFT && curKc.code!=VK_CONTROL && curKc.code!=VK_MENU && curKc.code!=0 &&
-    				curKc.code!=VK_LWIN && curKc.code!=VK_RWIN )) // Feature: use Windows keys as modifier keys
-    			{
-    				report+="Error! " + GetCommandText((CommandID)curCmd) + " must be a modifier (shift/ctrl/alt), but is currently " + GetKeyText(inKc.mod, inKc.code) + "\r\n";
-    				//replace with dummy
-    				commands[curCmd].kcList[k].mod=1;
-    				commands[curCmd].kcList[k].code=0;
-    				commands[curCmd].kcList[k].event=(KeyEventType)0;
-    				//commands[curCmd].kcList[k].ctx;
-    			}
-    		}
-    	
-    	}
+            // for all commands that must be modifiers
+            for (int i=0; i<nForcedModifiers; i++)
+            {
+                    curCmd=forcedModifiers[i];
+                    
+                    //for all of this command's key combinations
+                    for (int k=0; k<commands[curCmd].kcList.GetSize(); k++)
+                    {
+                            curKc = commands[curCmd].kcList[k];
+                            if ((!curKc.mod) || (curKc.code!=VK_SHIFT && curKc.code!=VK_CONTROL && curKc.code!=VK_MENU && curKc.code!=0 &&
+                                    curKc.code!=VK_LWIN && curKc.code!=VK_RWIN )) // Feature: use Windows keys as modifier keys
+                            {
+                                    report+="Error! " + GetCommandText((CommandID)curCmd) + " must be a modifier (shift/ctrl/alt), but is currently " + GetKeyText(inKc.mod, inKc.code) + "\r\n";
+                                    //replace with dummy
+                                    commands[curCmd].kcList[k].mod=1;
+                                    commands[curCmd].kcList[k].code=0;
+                                    commands[curCmd].kcList[k].event=(KeyEventType)0;
+                                    //commands[curCmd].kcList[k].ctx;
+                            }
+                    }
+            
+            }
     }
     if (enforceRule[krPropagateSampleManipulation])
     {
-    	if (inCmd>=kcStartSampleMisc && inCmd<=kcEndSampleMisc)
-    	{
-    		int newCmd;
-    		int offset = inCmd-kcStartSampleMisc;
+            if (inCmd>=kcStartSampleMisc && inCmd<=kcEndSampleMisc)
+            {
+                    int newCmd;
+                    int offset = inCmd-kcStartSampleMisc;
 
-    		//propagate to InstrumentView
-    		newCmd = kcStartInstrumentMisc+offset;
-    		commands[newCmd].kcList.SetSize(commands[inCmd].kcList.GetSize());
-    		for (int k=0; k<commands[inCmd].kcList.GetSize(); k++)
-    		{
-    			commands[newCmd].kcList[k].mod = commands[inCmd].kcList[k].mod;
-    			commands[newCmd].kcList[k].code = commands[inCmd].kcList[k].code;
-    			commands[newCmd].kcList[k].event = commands[inCmd].kcList[k].event;
-    			commands[newCmd].kcList[k].ctx = kCtxViewInstruments;
-    		}
+                    //propagate to InstrumentView
+                    newCmd = kcStartInstrumentMisc+offset;
+                    commands[newCmd].kcList.SetSize(commands[inCmd].kcList.GetSize());
+                    for (int k=0; k<commands[inCmd].kcList.GetSize(); k++)
+                    {
+                            commands[newCmd].kcList[k].mod = commands[inCmd].kcList[k].mod;
+                            commands[newCmd].kcList[k].code = commands[inCmd].kcList[k].code;
+                            commands[newCmd].kcList[k].event = commands[inCmd].kcList[k].event;
+                            commands[newCmd].kcList[k].ctx = kCtxViewInstruments;
+                    }
 
-    	}
+            }
 
     }
 /*    if (enforceRule[krFoldEffectColumnAnd])
     {
-    	if (inKc.ctx == kCtxViewPatternsFX) {
-    		KeyCombination newKc = inKc;
-    		newKc.ctx = kCtxViewPatternsFXparam;
-    		if (adding)	{            
-    			Add(newKc, inCmd, false);
-    		} else {
-    			Remove(newKc, inCmd);
-    		}
-    	}
-    	if (inKc.ctx == kCtxViewPatternsFXparam) {
-    		KeyCombination newKc = inKc;
-    		newKc.ctx = kCtxViewPatternsFX;
-    		if (adding)	{            
-    			Add(newKc, inCmd, false);
-    		} else {
-    			Remove(newKc, inCmd);
-    		}
-    	} 
+            if (inKc.ctx == kCtxViewPatternsFX) {
+                    KeyCombination newKc = inKc;
+                    newKc.ctx = kCtxViewPatternsFXparam;
+                    if (adding)        {            
+                            Add(newKc, inCmd, false);
+                    } else {
+                            Remove(newKc, inCmd);
+                    }
+            }
+            if (inKc.ctx == kCtxViewPatternsFXparam) {
+                    KeyCombination newKc = inKc;
+                    newKc.ctx = kCtxViewPatternsFX;
+                    if (adding)        {            
+                            Add(newKc, inCmd, false);
+                    } else {
+                            Remove(newKc, inCmd);
+                    }
+            } 
     }
 */
     return report;
@@ -1290,11 +1290,11 @@ UINT CCommandSet::CodeToModifier(UINT code)
 {
     switch(code)
     {
-    	case VK_SHIFT:	 return HOTKEYF_SHIFT;
-    	case VK_MENU:	 return HOTKEYF_ALT;
-    	case VK_CONTROL: return HOTKEYF_CONTROL;
-    	case VK_LWIN: case VK_RWIN: return HOTKEYF_EXT; // Feature: use Windows keys as modifier keys
-    	default:		 /*DEBUG: ASSERT(false);*/ return 0;		//can only get modifier for modifier key
+            case VK_SHIFT:         return HOTKEYF_SHIFT;
+            case VK_MENU:         return HOTKEYF_ALT;
+            case VK_CONTROL: return HOTKEYF_CONTROL;
+            case VK_LWIN: case VK_RWIN: return HOTKEYF_EXT; // Feature: use Windows keys as modifier keys
+            default:                 /*DEBUG: ASSERT(false);*/ return 0;                //can only get modifier for modifier key
     }
     
 }
@@ -1314,50 +1314,50 @@ void CCommandSet::GenKeyMap(KeyMap &km)
 
     //Copy commandlist content into map:
     for (UINT cmd=0; cmd<kcNumCommands; cmd++)
-    {	
-    	if (IsDummyCommand((CommandID)cmd))
-    		continue;
+    {        
+            if (IsDummyCommand((CommandID)cmd))
+                    continue;
 
-    	for (INT_PTR k=0; k<commands[cmd].kcList.GetSize(); k++)
-    	{
-    		contexts.RemoveAll();
-    		eventTypes.RemoveAll();
-    		curKc = commands[cmd].kcList[k];
-    		
-    		//Handle keyEventType mask.
-    		if (curKc.event & kKeyEventDown)
-    			eventTypes.Add(kKeyEventDown);
-    		if (curKc.event & kKeyEventUp)
-    			eventTypes.Add(kKeyEventUp);
-    		if (curKc.event & kKeyEventRepeat)
-    			eventTypes.Add(kKeyEventRepeat);
-    		//ASSERT(eventTypes.GetSize()>0);
+            for (INT_PTR k=0; k<commands[cmd].kcList.GetSize(); k++)
+            {
+                    contexts.RemoveAll();
+                    eventTypes.RemoveAll();
+                    curKc = commands[cmd].kcList[k];
+                    
+                    //Handle keyEventType mask.
+                    if (curKc.event & kKeyEventDown)
+                            eventTypes.Add(kKeyEventDown);
+                    if (curKc.event & kKeyEventUp)
+                            eventTypes.Add(kKeyEventUp);
+                    if (curKc.event & kKeyEventRepeat)
+                            eventTypes.Add(kKeyEventRepeat);
+                    //ASSERT(eventTypes.GetSize()>0);
 
-    		//Handle super-contexts (contexts that represent a set of sub contexts)
-    		if (curKc.ctx == kCtxViewPatterns)
-    		{
-    			contexts.Add(kCtxViewPatternsNote);
-    			contexts.Add(kCtxViewPatternsIns);
-    			contexts.Add(kCtxViewPatternsVol);
-    			contexts.Add(kCtxViewPatternsFX);
-    			contexts.Add(kCtxViewPatternsFXparam);
-    		}
-    		else if(curKc.ctx == kCtxCtrlPatterns)
-    		{
-    			contexts.Add(kCtxCtrlOrderlist);
-    		}
-    		else
-    		{
-    			contexts.Add(curKc.ctx);
-    		}
+                    //Handle super-contexts (contexts that represent a set of sub contexts)
+                    if (curKc.ctx == kCtxViewPatterns)
+                    {
+                            contexts.Add(kCtxViewPatternsNote);
+                            contexts.Add(kCtxViewPatternsIns);
+                            contexts.Add(kCtxViewPatternsVol);
+                            contexts.Add(kCtxViewPatternsFX);
+                            contexts.Add(kCtxViewPatternsFXparam);
+                    }
+                    else if(curKc.ctx == kCtxCtrlPatterns)
+                    {
+                            contexts.Add(kCtxCtrlOrderlist);
+                    }
+                    else
+                    {
+                            contexts.Add(curKc.ctx);
+                    }
 
-    		//long label = 0;
-    		for (int cx=0; cx<contexts.GetSize(); cx++)	{
-    			for (int ke=0; ke<eventTypes.GetSize(); ke++) {
-    				km[contexts[cx]][curKc.mod][curKc.code][eventTypes[ke]] = (CommandID)cmd;
-    			}
-    		}
-    	}
+                    //long label = 0;
+                    for (int cx=0; cx<contexts.GetSize(); cx++)        {
+                            for (int ke=0; ke<eventTypes.GetSize(); ke++) {
+                                    km[contexts[cx]][curKc.mod][curKc.code][eventTypes[ke]] = (CommandID)cmd;
+                            }
+                    }
+            }
 
     }
 }
@@ -1385,7 +1385,7 @@ void CCommandSet::Copy(CCommandSet *source)
 {
     // copy constructors should take care of complexity (I hope)
     for (int cmd=0; cmd<commands.GetSize(); cmd++)
-    	commands[cmd] = source->commands[cmd];
+            commands[cmd] = source->commands[cmd];
 }
 
 KeyCombination CCommandSet::GetKey(CommandID cmd, UINT key)
@@ -1422,37 +1422,37 @@ ctx:UID:Description:Modifier:Key:EventMask
 
     if( (outStream  = fopen( fileName, "w" )) == NULL )
     {
-    	AfxMessageBox(IDS_CANT_OPEN_FILE_FOR_WRITING, MB_ICONEXCLAMATION|MB_OK);
-    	return false;
+            AfxMessageBox(IDS_CANT_OPEN_FILE_FOR_WRITING, MB_ICONEXCLAMATION|MB_OK);
+            return false;
     }
     fprintf(outStream, "//-------- OpenMPT key binding definition file  -------\n"); 
-    fprintf(outStream, "//-Format is:                                                          -\n"); 	
+    fprintf(outStream, "//-Format is:                                                          -\n");         
     fprintf(outStream, "//- Context:Command ID:Modifiers:Key:KeypressEventType     //Comments  -\n"); 
     fprintf(outStream, "//----------------------------------------------------------------------\n"); 
     fprintf(outStream, "version:%u\n", KEYMAP_VERSION);
 
     for (int ctx=0; ctx<kCtxMaxInputContexts; ctx++)
     {
-    	fprintf(outStream, "\n//----( %s (%d) )------------\n", GetContextText((InputTargetContext)ctx), ctx); 
+            fprintf(outStream, "\n//----( %s (%d) )------------\n", GetContextText((InputTargetContext)ctx), ctx); 
 
-    	for (int cmd=0; cmd<kcNumCommands; cmd++)
-    	{
-    		for (int k=0; k<GetKeyListSize((CommandID)cmd); k++)
-    		{
-    			kc = GetKey((CommandID)cmd, k);
-    			
-    			if (kc.ctx != ctx)
-    				continue;		//sort by context
-    			
-    			if (debug || !commands[cmd].isHidden)
-    			{
-    				fprintf(outStream, "%d:%d:%d:%d:%d\t\t//%s: %s (%s)\n", 
-    						ctx, commands[cmd].UID,	kc.mod, kc.code, kc.event, 
-    						GetCommandText((CommandID)cmd), GetKeyText(kc.mod,kc.code), GetKeyEventText(kc.event)); 
-    			}
+            for (int cmd=0; cmd<kcNumCommands; cmd++)
+            {
+                    for (int k=0; k<GetKeyListSize((CommandID)cmd); k++)
+                    {
+                            kc = GetKey((CommandID)cmd, k);
+                            
+                            if (kc.ctx != ctx)
+                                    continue;                //sort by context
+                            
+                            if (debug || !commands[cmd].isHidden)
+                            {
+                                    fprintf(outStream, "%d:%d:%d:%d:%d\t\t//%s: %s (%s)\n", 
+                                                    ctx, commands[cmd].UID,        kc.mod, kc.code, kc.event, 
+                                                    GetCommandText((CommandID)cmd), GetKeyText(kc.mod,kc.code), GetKeyEventText(kc.event)); 
+                            }
 
-    		}
-    	}
+                    }
+            }
     }
 
     fclose(outStream);
@@ -1479,111 +1479,111 @@ bool CCommandSet::LoadFile(std::istream& iStrm, LPCTSTR szFilename)
 
     while(iStrm.getline(s, sizeof(s)))
     {
-    	//::MessageBox(NULL, s, "", MB_ICONEXCLAMATION|MB_OK);
-    	curLine = s;
-    	
-    	
-    	//Cut everything after a //
-    	commentStart = curLine.Find("//");
-    	if (commentStart>=0)
-    		curLine = curLine.Left(commentStart);
-    	curLine.Trim();	//remove whitespace
-    	
-    	if (!curLine.IsEmpty() && curLine.Compare("\n") !=0)
-    	{
-    		bool ignoreLine = false;
-    		
-    		//ctx:UID:Description:Modifier:Key:EventMask
-    		int spos = 0;
+            //::MessageBox(NULL, s, "", MB_ICONEXCLAMATION|MB_OK);
+            curLine = s;
+            
+            
+            //Cut everything after a //
+            commentStart = curLine.Find("//");
+            if (commentStart>=0)
+                    curLine = curLine.Left(commentStart);
+            curLine.Trim();        //remove whitespace
+            
+            if (!curLine.IsEmpty() && curLine.Compare("\n") !=0)
+            {
+                    bool ignoreLine = false;
+                    
+                    //ctx:UID:Description:Modifier:Key:EventMask
+                    int spos = 0;
 
-    		//context
-    		token=curLine.Tokenize(":",spos);
-    		kc.ctx = (InputTargetContext) atoi(token);
+                    //context
+                    token=curLine.Tokenize(":",spos);
+                    kc.ctx = (InputTargetContext) atoi(token);
 
-    		// this line indicates the version of this keymap file instead. (e.g. "version:1")
-    		if((token.Trim().CompareNoCase("version") == 0) && (spos != -1))
-    		{
-    			fileVersion = atoi(curLine.Mid(spos));
-    			if(fileVersion > KEYMAP_VERSION)
-    			{
-    				CString err;
-    				err.Format("File version is %d, but your version of OpenMPT only supports loading files up to version %d.", fileVersion, KEYMAP_VERSION);
-    				errText += err + "\n";
-    				Log(err);
-    			}
-    			spos = -1;
-    			ignoreLine = true;
-    		}
+                    // this line indicates the version of this keymap file instead. (e.g. "version:1")
+                    if((token.Trim().CompareNoCase("version") == 0) && (spos != -1))
+                    {
+                            fileVersion = atoi(curLine.Mid(spos));
+                            if(fileVersion > KEYMAP_VERSION)
+                            {
+                                    CString err;
+                                    err.Format("File version is %d, but your version of OpenMPT only supports loading files up to version %d.", fileVersion, KEYMAP_VERSION);
+                                    errText += err + "\n";
+                                    Log(err);
+                            }
+                            spos = -1;
+                            ignoreLine = true;
+                    }
 
-    		//UID
-    		if (spos != -1)
-    		{
-    			token=curLine.Tokenize(":",spos);
-    			cmd= (CommandID) FindCmd(atoi(token));
-    		}
+                    //UID
+                    if (spos != -1)
+                    {
+                            token=curLine.Tokenize(":",spos);
+                            cmd= (CommandID) FindCmd(atoi(token));
+                    }
 
-    		//modifier
-    		if (spos != -1)
-    		{
-    			token=curLine.Tokenize(":",spos);
-    			kc.mod = atoi(token);
-    		}
+                    //modifier
+                    if (spos != -1)
+                    {
+                            token=curLine.Tokenize(":",spos);
+                            kc.mod = atoi(token);
+                    }
 
-    		//scancode
-    		if (spos != -1)
-    		{
-    			token=curLine.Tokenize(":",spos);
-    			kc.code = atoi(token);
-    		}
+                    //scancode
+                    if (spos != -1)
+                    {
+                            token=curLine.Tokenize(":",spos);
+                            kc.code = atoi(token);
+                    }
 
-    		//event
-    		if (spos != -1)
-    		{
-    			token=curLine.Tokenize(":",spos);
-    			kc.event = (KeyEventType) atoi(token);
-    		}
+                    //event
+                    if (spos != -1)
+                    {
+                            token=curLine.Tokenize(":",spos);
+                            kc.event = (KeyEventType) atoi(token);
+                    }
 
-    		if(!ignoreLine)
-    		{
-    			//Error checking (TODO):
-    			if (cmd < 0 || cmd >= kcNumCommands || spos == -1)
-    			{
-    				errorCount++;
-    				CString err;
-    				if (errorCount < 10)
-    				{
-    					if(spos == -1)
-    					{
-    						err.Format("Line %d was not understood.", l);
-    					} else
-    					{
-    						err.Format("Line %d contained an unknown command.", l);
-    					}
-    					errText += err + "\n";
-    					Log(err);
-    				} else if (errorCount == 10)
-    				{
-    					err = "Too many errors detected, not reporting any more.";
-    					errText += err + "\n";
-    					Log(err);
-    				}
-    			}
-    			else
-    			{
-    				pTempCS->Add(kc, cmd, true);
-    			}
-    		}
+                    if(!ignoreLine)
+                    {
+                            //Error checking (TODO):
+                            if (cmd < 0 || cmd >= kcNumCommands || spos == -1)
+                            {
+                                    errorCount++;
+                                    CString err;
+                                    if (errorCount < 10)
+                                    {
+                                            if(spos == -1)
+                                            {
+                                                    err.Format("Line %d was not understood.", l);
+                                            } else
+                                            {
+                                                    err.Format("Line %d contained an unknown command.", l);
+                                            }
+                                            errText += err + "\n";
+                                            Log(err);
+                                    } else if (errorCount == 10)
+                                    {
+                                            err = "Too many errors detected, not reporting any more.";
+                                            errText += err + "\n";
+                                            Log(err);
+                                    }
+                            }
+                            else
+                            {
+                                    pTempCS->Add(kc, cmd, true);
+                            }
+                    }
 
-    	}
+            }
 
-    	l++;
+            l++;
     }
     if(!errText.IsEmpty())
     {
-    	CString err;
-    	err.Format("The following problems have been encountered while trying to load the key binding file %s:\n", szFilename);
-    	err += errText;
-    	::MessageBox(NULL, err, "", MB_ICONEXCLAMATION|MB_OK);
+            CString err;
+            err.Format("The following problems have been encountered while trying to load the key binding file %s:\n", szFilename);
+            err += errText;
+            ::MessageBox(NULL, err, "", MB_ICONEXCLAMATION|MB_OK);
     }
 
     if(fileVersion < KEYMAP_VERSION) UpgradeKeymap(pTempCS, fileVersion);
@@ -1599,13 +1599,13 @@ bool CCommandSet::LoadFile(CString fileName)
     std::ifstream fin(fileName);
     if (fin.fail())
     {
-    	CString strMsg;
-    	AfxFormatString1(strMsg, IDS_CANT_OPEN_KEYBINDING_FILE, fileName);
-    	AfxMessageBox(strMsg, MB_ICONEXCLAMATION|MB_OK);
-    	return false;
+            CString strMsg;
+            AfxFormatString1(strMsg, IDS_CANT_OPEN_KEYBINDING_FILE, fileName);
+            AfxMessageBox(strMsg, MB_ICONEXCLAMATION|MB_OK);
+            return false;
     }
     else
-    	return LoadFile(fin, fileName);
+            return LoadFile(fin, fileName);
 }
 
 
@@ -1618,97 +1618,97 @@ void CCommandSet::UpgradeKeymap(CCommandSet *pCommands, int oldVersion)
     // no orderlist context
     if(oldVersion == 0)
     {
-    	kc.ctx = kCtxCtrlOrderlist;
-    	kc.event = (KeyEventType) (kKeyEventDown | kKeyEventRepeat);
-    	kc.mod = 0;
+            kc.ctx = kCtxCtrlOrderlist;
+            kc.event = (KeyEventType) (kKeyEventDown | kKeyEventRepeat);
+            kc.mod = 0;
 
-    	kc.code = VK_DELETE;
-    	pCommands->Add(kc, kcOrderlistEditDelete, false);
+            kc.code = VK_DELETE;
+            pCommands->Add(kc, kcOrderlistEditDelete, false);
 
-    	kc.code = VK_INSERT;
-    	pCommands->Add(kc, kcOrderlistEditInsert, false);
+            kc.code = VK_INSERT;
+            pCommands->Add(kc, kcOrderlistEditInsert, false);
 
-    	kc.code = VK_RETURN;
-    	pCommands->Add(kc, kcOrderlistEditPattern, false);
+            kc.code = VK_RETURN;
+            pCommands->Add(kc, kcOrderlistEditPattern, false);
 
-    	kc.code = VK_TAB;
-    	pCommands->Add(kc, kcOrderlistSwitchToPatternView, false);
+            kc.code = VK_TAB;
+            pCommands->Add(kc, kcOrderlistSwitchToPatternView, false);
 
-    	kc.code = VK_LEFT;
-    	pCommands->Add(kc, kcOrderlistNavigateLeft, false);
-    	kc.code = VK_UP;
-    	pCommands->Add(kc, kcOrderlistNavigateLeft, false);
+            kc.code = VK_LEFT;
+            pCommands->Add(kc, kcOrderlistNavigateLeft, false);
+            kc.code = VK_UP;
+            pCommands->Add(kc, kcOrderlistNavigateLeft, false);
 
-    	kc.code = VK_RIGHT;
-    	pCommands->Add(kc, kcOrderlistNavigateRight, false);
-    	kc.code = VK_DOWN;
-    	pCommands->Add(kc, kcOrderlistNavigateRight, false);
+            kc.code = VK_RIGHT;
+            pCommands->Add(kc, kcOrderlistNavigateRight, false);
+            kc.code = VK_DOWN;
+            pCommands->Add(kc, kcOrderlistNavigateRight, false);
 
-    	kc.code = VK_HOME;
-    	pCommands->Add(kc, kcOrderlistNavigateFirst, false);
+            kc.code = VK_HOME;
+            pCommands->Add(kc, kcOrderlistNavigateFirst, false);
 
-    	kc.code = VK_END;
-    	pCommands->Add(kc, kcOrderlistNavigateLast, false);
+            kc.code = VK_END;
+            pCommands->Add(kc, kcOrderlistNavigateLast, false);
 
-    	kc.code = VK_ADD;
-    	pCommands->Add(kc, kcOrderlistPatPlus, false);
-    	kc.code = VK_OEM_PLUS;
-    	pCommands->Add(kc, kcOrderlistPatPlus, false);
+            kc.code = VK_ADD;
+            pCommands->Add(kc, kcOrderlistPatPlus, false);
+            kc.code = VK_OEM_PLUS;
+            pCommands->Add(kc, kcOrderlistPatPlus, false);
 
-    	kc.code = VK_SUBTRACT;
-    	pCommands->Add(kc, kcOrderlistPatMinus, false);
-    	kc.code = VK_OEM_MINUS;
-    	pCommands->Add(kc, kcOrderlistPatMinus, false);
+            kc.code = VK_SUBTRACT;
+            pCommands->Add(kc, kcOrderlistPatMinus, false);
+            kc.code = VK_OEM_MINUS;
+            pCommands->Add(kc, kcOrderlistPatMinus, false);
 
-    	kc.code = '0';
-    	pCommands->Add(kc, kcOrderlistPat0, false);
-    	kc.code = VK_NUMPAD0;
-    	pCommands->Add(kc, kcOrderlistPat0, false);
+            kc.code = '0';
+            pCommands->Add(kc, kcOrderlistPat0, false);
+            kc.code = VK_NUMPAD0;
+            pCommands->Add(kc, kcOrderlistPat0, false);
 
-    	kc.code = '1';
-    	pCommands->Add(kc, kcOrderlistPat1, false);
-    	kc.code = VK_NUMPAD1;
-    	pCommands->Add(kc, kcOrderlistPat1, false);
+            kc.code = '1';
+            pCommands->Add(kc, kcOrderlistPat1, false);
+            kc.code = VK_NUMPAD1;
+            pCommands->Add(kc, kcOrderlistPat1, false);
 
-    	kc.code = '2';
-    	pCommands->Add(kc, kcOrderlistPat2, false);
-    	kc.code = VK_NUMPAD2;
-    	pCommands->Add(kc, kcOrderlistPat2, false);
+            kc.code = '2';
+            pCommands->Add(kc, kcOrderlistPat2, false);
+            kc.code = VK_NUMPAD2;
+            pCommands->Add(kc, kcOrderlistPat2, false);
 
-    	kc.code = '3';
-    	pCommands->Add(kc, kcOrderlistPat3, false);
-    	kc.code = VK_NUMPAD3;
-    	pCommands->Add(kc, kcOrderlistPat3, false);
+            kc.code = '3';
+            pCommands->Add(kc, kcOrderlistPat3, false);
+            kc.code = VK_NUMPAD3;
+            pCommands->Add(kc, kcOrderlistPat3, false);
 
-    	kc.code = '4';
-    	pCommands->Add(kc, kcOrderlistPat4, false);
-    	kc.code = VK_NUMPAD4;
-    	pCommands->Add(kc, kcOrderlistPat4, false);
+            kc.code = '4';
+            pCommands->Add(kc, kcOrderlistPat4, false);
+            kc.code = VK_NUMPAD4;
+            pCommands->Add(kc, kcOrderlistPat4, false);
 
-    	kc.code = '5';
-    	pCommands->Add(kc, kcOrderlistPat5, false);
-    	kc.code = VK_NUMPAD5;
-    	pCommands->Add(kc, kcOrderlistPat5, false);
+            kc.code = '5';
+            pCommands->Add(kc, kcOrderlistPat5, false);
+            kc.code = VK_NUMPAD5;
+            pCommands->Add(kc, kcOrderlistPat5, false);
 
-    	kc.code = '6';
-    	pCommands->Add(kc, kcOrderlistPat6, false);
-    	kc.code = VK_NUMPAD6;
-    	pCommands->Add(kc, kcOrderlistPat6, false);
+            kc.code = '6';
+            pCommands->Add(kc, kcOrderlistPat6, false);
+            kc.code = VK_NUMPAD6;
+            pCommands->Add(kc, kcOrderlistPat6, false);
 
-    	kc.code = '7';
-    	pCommands->Add(kc, kcOrderlistPat7, false);
-    	kc.code = VK_NUMPAD7;
-    	pCommands->Add(kc, kcOrderlistPat7, false);
+            kc.code = '7';
+            pCommands->Add(kc, kcOrderlistPat7, false);
+            kc.code = VK_NUMPAD7;
+            pCommands->Add(kc, kcOrderlistPat7, false);
 
-    	kc.code = '8';
-    	pCommands->Add(kc, kcOrderlistPat8, false);
-    	kc.code = VK_NUMPAD8;
-    	pCommands->Add(kc, kcOrderlistPat8, false);
+            kc.code = '8';
+            pCommands->Add(kc, kcOrderlistPat8, false);
+            kc.code = VK_NUMPAD8;
+            pCommands->Add(kc, kcOrderlistPat8, false);
 
-    	kc.code = '9';
-    	pCommands->Add(kc, kcOrderlistPat9, false);
-    	kc.code = VK_NUMPAD9;
-    	pCommands->Add(kc, kcOrderlistPat9, false);
+            kc.code = '9';
+            pCommands->Add(kc, kcOrderlistPat9, false);
+            kc.code = VK_NUMPAD9;
+            pCommands->Add(kc, kcOrderlistPat9, false);
 
     }
 }
@@ -1719,8 +1719,8 @@ int CCommandSet::FindCmd(int uid)
 {
     for (int i=0; i<kcNumCommands; i++)
     {
-    	if (commands[i].UID == static_cast<UINT>(uid))
-    		return i;
+            if (commands[i].UID == static_cast<UINT>(uid))
+                    return i;
     }
 
     return -1;
@@ -1731,26 +1731,26 @@ CString CCommandSet::GetContextText(InputTargetContext ctx)
     switch(ctx)
     {
     
-    	case kCtxAllContexts:			return "Global Context";
-    	case kCtxViewGeneral:			return "General Context [bottom]";
-    	case kCtxViewPatterns:			return "Pattern Context [bottom]";
-    	case kCtxViewPatternsNote:		return "Pattern Context [bottom] - Note Col";
-    	case kCtxViewPatternsIns:		return "Pattern Context [bottom] - Ins Col";
-    	case kCtxViewPatternsVol:		return "Pattern Context [bottom] - Vol Col";
-    	case kCtxViewPatternsFX:		return "Pattern Context [bottom] - FX Col";
-    	case kCtxViewPatternsFXparam:	return "Pattern Context [bottom] - Param Col";
-    	case kCtxViewSamples:			return "Sample Context [bottom]";
-    	case kCtxViewInstruments:		return "Instrument Context [bottom]";
-    	case kCtxViewComments:			return "Comments Context [bottom]";
-    	case kCtxCtrlGeneral:			return "General Context [top]";
-    	case kCtxCtrlPatterns:			return "Pattern Context [top]";
-    	case kCtxCtrlSamples:			return "Sample Context [top]";
-    	case kCtxCtrlInstruments:		return "Instrument Context [top]";
-    	case kCtxCtrlComments:			return "Comments Context [top]";
-    	case kCtxCtrlOrderlist:			return "Orderlist";
-    	case kCtxVSTGUI:				return "Plugin GUI Context";
+            case kCtxAllContexts:                        return "Global Context";
+            case kCtxViewGeneral:                        return "General Context [bottom]";
+            case kCtxViewPatterns:                        return "Pattern Context [bottom]";
+            case kCtxViewPatternsNote:                return "Pattern Context [bottom] - Note Col";
+            case kCtxViewPatternsIns:                return "Pattern Context [bottom] - Ins Col";
+            case kCtxViewPatternsVol:                return "Pattern Context [bottom] - Vol Col";
+            case kCtxViewPatternsFX:                return "Pattern Context [bottom] - FX Col";
+            case kCtxViewPatternsFXparam:        return "Pattern Context [bottom] - Param Col";
+            case kCtxViewSamples:                        return "Sample Context [bottom]";
+            case kCtxViewInstruments:                return "Instrument Context [bottom]";
+            case kCtxViewComments:                        return "Comments Context [bottom]";
+            case kCtxCtrlGeneral:                        return "General Context [top]";
+            case kCtxCtrlPatterns:                        return "Pattern Context [top]";
+            case kCtxCtrlSamples:                        return "Sample Context [top]";
+            case kCtxCtrlInstruments:                return "Instrument Context [top]";
+            case kCtxCtrlComments:                        return "Comments Context [top]";
+            case kCtxCtrlOrderlist:                        return "Orderlist";
+            case kCtxVSTGUI:                                return "Plugin GUI Context";
         case kCtxUnknownContext:
-    	default:						return "Unknown Context";
+            default:                                                return "Unknown Context";
     }
 };
 CString CCommandSet::GetKeyEventText(KeyEventType ke)
@@ -1760,19 +1760,19 @@ CString CCommandSet::GetKeyEventText(KeyEventType ke)
     bool first = true;
     if (ke & kKeyEventDown)
     {
-    	first=false;
-    	text.Append("KeyDown");
+            first=false;
+            text.Append("KeyDown");
     }
     if (ke & kKeyEventRepeat)
     {
-    	if (!first) text.Append("|");
-    	text.Append("KeyHold");
-    	first=false;
+            if (!first) text.Append("|");
+            text.Append("KeyHold");
+            first=false;
     }
     if (ke & kKeyEventUp)
     {
-    	if (!first) text.Append("|");
-    	text.Append("KeyUp");
+            if (!first) text.Append("|");
+            text.Append("KeyUp");
     }
 
     return text;
@@ -1794,9 +1794,9 @@ CString CCommandSet::GetKeyText(UINT mod, UINT code)
     keyText=GetModifierText(mod);
     keyText.Append(CHotKeyCtrl::GetKeyName(code, IsExtended(code)));
     //HACK:
-    if (keyText == "Ctrl+CTRL")		keyText="Ctrl";
-    if (keyText == "Alt+ALT")		keyText="Alt";
-    if (keyText == "Shift+SHIFT")	keyText="Shift";
+    if (keyText == "Ctrl+CTRL")                keyText="Ctrl";
+    if (keyText == "Alt+ALT")                keyText="Alt";
+    if (keyText == "Shift+SHIFT")        keyText="Shift";
 
     return keyText;
 }
@@ -1804,9 +1804,9 @@ CString CCommandSet::GetKeyText(UINT mod, UINT code)
 CString CCommandSet::GetKeyTextFromCommand(CommandID c, UINT key)
 {
     if ( static_cast<INT_PTR>(key) < commands[c].kcList.GetSize())
-    	return GetKeyText(commands[c].kcList[0].mod, commands[c].kcList[0].code);
+            return GetKeyText(commands[c].kcList[0].mod, commands[c].kcList[0].code);
     else 
-    	return "";
+            return "";
 }
 
 bool CCommandSet::isHidden(UINT c)
@@ -1827,16 +1827,16 @@ bool CCommandSet::QuickChange_NotesRepeat()
 {
     KeyCombination kc;
     int choices;
-    for (CommandID cmd=kcVPStartNotes; cmd<=kcVPEndNotes; cmd=(CommandID)(cmd+1))		//for all notes
+    for (CommandID cmd=kcVPStartNotes; cmd<=kcVPEndNotes; cmd=(CommandID)(cmd+1))                //for all notes
     {
-    	choices = GetKeyListSize(cmd);
-    	for (int p=0; p<choices; p++)							//for all choices
-    	{
-    		kc = GetKey(cmd, p);
-    		kc.event = (KeyEventType)((UINT)kc.event | (UINT)kKeyEventRepeat);
-    		//Remove(p, cmd);		//out with the old
-    		Add(kc, cmd, true, p);		//in with the new
-    	}
+            choices = GetKeyListSize(cmd);
+            for (int p=0; p<choices; p++)                                                        //for all choices
+            {
+                    kc = GetKey(cmd, p);
+                    kc.event = (KeyEventType)((UINT)kc.event | (UINT)kKeyEventRepeat);
+                    //Remove(p, cmd);                //out with the old
+                    Add(kc, cmd, true, p);                //in with the new
+            }
     }
     return true;
 }
@@ -1846,16 +1846,16 @@ bool CCommandSet::QuickChange_NoNotesRepeat()
 {
     KeyCombination kc;
     int choices;
-    for (CommandID cmd=kcVPStartNotes; cmd<=kcVPEndNotes; cmd=(CommandID)(cmd+1))		//for all notes
+    for (CommandID cmd=kcVPStartNotes; cmd<=kcVPEndNotes; cmd=(CommandID)(cmd+1))                //for all notes
     {
-    	choices = GetKeyListSize(cmd);
-    	for (int p=0; p<choices; p++)							//for all choices
-    	{
-    		kc = GetKey(cmd, p);
-    		kc.event = (KeyEventType)((UINT)kc.event & ~(UINT)kKeyEventRepeat);
-    		//Remove(p, cmd);		//out with the old
-    		Add(kc, cmd, true, p);		//in with the new
-    	}
+            choices = GetKeyListSize(cmd);
+            for (int p=0; p<choices; p++)                                                        //for all choices
+            {
+                    kc = GetKey(cmd, p);
+                    kc.event = (KeyEventType)((UINT)kc.event & ~(UINT)kKeyEventRepeat);
+                    //Remove(p, cmd);                //out with the old
+                    Add(kc, cmd, true, p);                //in with the new
+            }
     }
     return true;
 }
@@ -1883,23 +1883,23 @@ bool CCommandSet::QuickChange_SetEffects(char comList[kcSetFXEnd-kcSetFXStart])
     
     for (CommandID cmd=kcFixedFXStart; cmd<=kcFixedFXend; cmd=(CommandID)(cmd+1))
     {
-    	choices = GetKeyListSize(cmd);				//Remove all old choices
-    	for (int p=choices; p>=0; --p)
-    		Remove(p, cmd);
-    	
-    	if (comList[cmd-kcSetFXStart] != '?')	//? is used an non existant command.
-    	{
-    		SHORT codeNmod = VkKeyScanEx(comList[cmd-kcFixedFXStart], GetKeyboardLayout(0));
-    		kc.code = LOBYTE(codeNmod);			
-    		kc.mod = HIBYTE(codeNmod) & 0x07;	//We're only interest in the bottom 3 bits.
-    		Add(kc, cmd, true);
-    		
-    		if (kc.code >= '0' && kc.code <= '9')		//for numbers, ensure numpad works too
-    		{
-    			kc.code = VK_NUMPAD0 + (kc.code-'0');
-    			Add(kc, cmd, true);
-    		}
-    	}
+            choices = GetKeyListSize(cmd);                                //Remove all old choices
+            for (int p=choices; p>=0; --p)
+                    Remove(p, cmd);
+            
+            if (comList[cmd-kcSetFXStart] != '?')        //? is used an non existant command.
+            {
+                    SHORT codeNmod = VkKeyScanEx(comList[cmd-kcFixedFXStart], GetKeyboardLayout(0));
+                    kc.code = LOBYTE(codeNmod);                        
+                    kc.mod = HIBYTE(codeNmod) & 0x07;        //We're only interest in the bottom 3 bits.
+                    Add(kc, cmd, true);
+                    
+                    if (kc.code >= '0' && kc.code <= '9')                //for numbers, ensure numpad works too
+                    {
+                            kc.code = VK_NUMPAD0 + (kc.code-'0');
+                            Add(kc, cmd, true);
+                    }
+            }
     }
     return true;
 }
@@ -1908,20 +1908,20 @@ bool CCommandSet::QuickChange_SetEffects(char comList[kcSetFXEnd-kcSetFXStart])
 // We also need to figure out the correct "extended" bit. 
 bool CCommandSet::IsExtended(UINT code)
 {
-    if (code==VK_SNAPSHOT)	//print screen
-    	return true;
+    if (code==VK_SNAPSHOT)        //print screen
+            return true;
     if (code>=VK_PRIOR && code<=VK_DOWN) //pgup, pg down, home, end,  cursor keys,
-    	return true;
+            return true;
     if (code>=VK_INSERT && code<=VK_DELETE) // ins, del
-    	return true;				
+            return true;                                
     if (code>=VK_LWIN && code<=VK_APPS) //winkeys & application key
-    	return true;
-    if (code==VK_DIVIDE)	//Numpad '/'
-    	return true;
-    if (code==VK_NUMLOCK)	//print screen
-    	return true;
+            return true;
+    if (code==VK_DIVIDE)        //Numpad '/'
+            return true;
+    if (code==VK_NUMLOCK)        //print screen
+            return true;
     if (code>=0xA0 && code<=0xA5) //attempt for RL mods
-    	return true;
+            return true;
 
     return false;
 }
@@ -1933,9 +1933,9 @@ void CCommandSet::GetParentContexts(InputTargetContext child, CArray<InputTarget
     //parentList.RemoveAll();
 
     //for (InputTargetContext parent; parent<kCtxMaxInputContexts; parent++) {
-    //	if (m_isParentContext[child][parent]) {
-    //		parentList.Add(parent);
-    //	}
+    //        if (m_isParentContext[child][parent]) {
+    //                parentList.Add(parent);
+    //        }
     //}
 }
 
@@ -1945,9 +1945,9 @@ void CCommandSet::GetChildContexts(InputTargetContext parent, CArray<InputTarget
     //childList.RemoveAll();
 
     //for (InputTargetContext child; child<kCtxMaxInputContexts; child++) {
-    //	if (m_isParentContext[child][parent]) {
-    //		childList.Add(child);
-    //	}
+    //        if (m_isParentContext[child][parent]) {
+    //                childList.Add(child);
+    //        }
     //}
 }
 
@@ -1957,10 +1957,10 @@ void CCommandSet::SetupContextHierarchy()
 //    m_isParentContext.SetSize(kCtxMaxInputContexts);
     
     for (UINT nCtx=0; nCtx<kCtxMaxInputContexts; nCtx++) {
-//    	m_isParentContext[nCtx].SetSize(kCtxMaxInputContexts);
-    	for (UINT nCtx2=0; nCtx2<kCtxMaxInputContexts; nCtx2++) {
-    		m_isParentContext[nCtx][nCtx2] = false;
-    	}//InputTargetContext
+//            m_isParentContext[nCtx].SetSize(kCtxMaxInputContexts);
+            for (UINT nCtx2=0; nCtx2<kCtxMaxInputContexts; nCtx2++) {
+                    m_isParentContext[nCtx][nCtx2] = false;
+            }//InputTargetContext
     }
     
     //For now much be fully expanded (i.e. don't rely on grandparent relationships).
@@ -2001,10 +2001,10 @@ bool CCommandSet::KeyCombinationConflict(KeyCombination kc1, KeyCombination kc2,
     bool eventConflict   = ((kc1.event&kc2.event)!=0);
     bool ctxConflict     = (kc1.ctx == kc2.ctx);
     crossCxtConflict     = m_isParentContext[kc1.ctx][kc2.ctx] || m_isParentContext[kc2.ctx][kc1.ctx];
-    	
+            
 
     bool conflict = modConflict && codeConflict && eventConflict && 
-    	(ctxConflict || crossCxtConflict);
+            (ctxConflict || crossCxtConflict);
 
     return conflict;
 }

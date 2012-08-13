@@ -20,9 +20,9 @@ public:
 
 // -> CODE#0024
 // -> DESC="wav export update"
-    bool m_bChannelMode;		// Render by channel
+    bool m_bChannelMode;                // Render by channel
 // -! NEW_FEATURE#0024
-     bool m_bInstrumentMode;	// Render by instrument
+     bool m_bInstrumentMode;        // Render by instrument
 
 public:
     CWaveConvert(CWnd *parent, ORDERINDEX nMinOrder = ORDERINDEX_INVALID, ORDERINDEX nMaxOrder = ORDERINDEX_INVALID);
@@ -56,13 +56,13 @@ public:
 
 public:
     CDoWaveConvert(module_renderer *sndfile, LPCSTR fname, PWAVEFORMATEX pwfx, bool bNorm, CWnd *parent = NULL):CDialog(IDD_PROGRESS, parent)
-    	{ m_pSndFile = sndfile;
-    	  m_lpszFileName = fname;
-    	  m_pWaveFormat = pwfx;
-    	  m_bAbort = false;
-    	  m_bNormalize = bNorm;
-    	  m_dwFileLimit = m_dwSongLimit = 0;
-    	  m_nMaxPatterns = 0; }
+            { m_pSndFile = sndfile;
+              m_lpszFileName = fname;
+              m_pWaveFormat = pwfx;
+              m_bAbort = false;
+              m_bNormalize = bNorm;
+              m_dwFileLimit = m_dwSongLimit = 0;
+              m_nMaxPatterns = 0; }
     BOOL OnInitDialog();
     void OnCancel() { m_bAbort = true; }
     afx_msg void OnButton1();

@@ -26,7 +26,7 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CModControlDlg, CDialog)
     //{{AFX_MSG_MAP(CModControlDlg)
     ON_WM_SIZE()
-    ON_MESSAGE(WM_MOD_UNLOCKCONTROLS,    	OnUnlockControls)
+    ON_MESSAGE(WM_MOD_UNLOCKCONTROLS,            OnUnlockControls)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnToolTipText)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipText)
     //}}AFX_MSG_MAP
@@ -180,17 +180,17 @@ BEGIN_MESSAGE_MAP(CModControlView, CView)
     ON_WM_DESTROY()
     ON_WM_ERASEBKGND()
     ON_NOTIFY(TCN_SELCHANGE, IDC_TABCTRL1,    OnTabSelchange)
-    ON_MESSAGE(WM_MOD_ACTIVATEVIEW,    		OnActivateModView)
-    ON_MESSAGE(WM_MOD_CTRLMSG,    			OnModCtrlMsg)
-    ON_MESSAGE(WM_MOD_GETTOOLTIPTEXT,    	OnGetToolTipText)
-    ON_COMMAND(ID_EDIT_CUT,    				OnEditCut)
-    ON_COMMAND(ID_EDIT_COPY,    			OnEditCopy)
-    ON_COMMAND(ID_EDIT_PASTE,    			OnEditPaste)
-    ON_COMMAND(ID_EDIT_MIXPASTE,    		OnEditMixPaste)
+    ON_MESSAGE(WM_MOD_ACTIVATEVIEW,                    OnActivateModView)
+    ON_MESSAGE(WM_MOD_CTRLMSG,                            OnModCtrlMsg)
+    ON_MESSAGE(WM_MOD_GETTOOLTIPTEXT,            OnGetToolTipText)
+    ON_COMMAND(ID_EDIT_CUT,                                    OnEditCut)
+    ON_COMMAND(ID_EDIT_COPY,                            OnEditCopy)
+    ON_COMMAND(ID_EDIT_PASTE,                            OnEditPaste)
+    ON_COMMAND(ID_EDIT_MIXPASTE,                    OnEditMixPaste)
     ON_COMMAND(ID_EDIT_MIXPASTE_ITSTYLE,    OnEditMixPasteITStyle)
-    ON_COMMAND(ID_EDIT_FIND,    			OnEditFind)
-    ON_COMMAND(ID_EDIT_FINDNEXT,    		OnEditFindNext)
-    ON_COMMAND(ID_CONTROLTAB,    			OnSwitchToView)
+    ON_COMMAND(ID_EDIT_FIND,                            OnEditFind)
+    ON_COMMAND(ID_EDIT_FINDNEXT,                    OnEditFindNext)
+    ON_COMMAND(ID_CONTROLTAB,                            OnSwitchToView)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -349,7 +349,7 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
         {
         //rewbs.graph
             //XXXih: bluh?
-/*    	case IDD_CONTROL_GRAPH:
+/*            case IDD_CONTROL_GRAPH:
             pDlg = new CCtrlGraph();
             break;
             */
@@ -544,7 +544,7 @@ BEGIN_MESSAGE_MAP(CModScrollView, CScrollView)
     //{{AFX_MSG_MAP(CModScrollView)
     ON_WM_DESTROY()
     ON_WM_MOUSEWHEEL()
-    ON_MESSAGE(WM_MOD_VIEWMSG,    		OnReceiveModViewMsg)
+    ON_MESSAGE(WM_MOD_VIEWMSG,                    OnReceiveModViewMsg)
     ON_MESSAGE(WM_MOD_DRAGONDROPPING,    OnDragonDropping)
     ON_MESSAGE(WM_MOD_UPDATEPOSITION,    OnUpdatePosition)
     //}}AFX_MSG_MAP

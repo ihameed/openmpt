@@ -25,7 +25,7 @@
 #endif
 
 // Volume ramp length, in 1/10 ms
-#define VOLUMERAMPLEN    0	// 1.46ms = 64 samples at 44.1kHz		//rewbs.soundQ exp - was 146
+#define VOLUMERAMPLEN    0        // 1.46ms = 64 samples at 44.1kHz                //rewbs.soundQ exp - was 146
 
 // VU-Meter
 
@@ -42,8 +42,8 @@ uint32_t module_renderer::deprecated_global_sound_setup_bitmask = 0;
 uint32_t module_renderer::deprecated_global_mixing_freq = 44100;
 uint32_t module_renderer::deprecated_global_bits_per_sample = 16;
 // Mixing data initialized in
-UINT module_renderer::gnVolumeRampInSamples = 0;    	//default value
-UINT module_renderer::gnVolumeRampOutSamples = 42;    	//default value
+UINT module_renderer::gnVolumeRampInSamples = 0;            //default value
+UINT module_renderer::gnVolumeRampOutSamples = 42;            //default value
 UINT module_renderer::gnCPUUsage = 0;
 LPSNDMIXHOOKPROC module_renderer::sound_mix_callback = NULL;
 PMIXPLUGINCREATEPROC module_renderer::gpMixPluginCreateProc = NULL;
@@ -93,10 +93,10 @@ typedef CTuning::RATIOTYPE RATIOTYPE;
 
 static const RATIOTYPE TwoToPowerXOver12Table[16] =
 {
-    1.0F    	   , 1.059463094359F, 1.122462048309F, 1.1892071150027F,
+    1.0F               , 1.059463094359F, 1.122462048309F, 1.1892071150027F,
     1.259921049895F, 1.334839854170F, 1.414213562373F, 1.4983070768767F,
     1.587401051968F, 1.681792830507F, 1.781797436281F, 1.8877486253634F,
-    2.0F    	   , 2.118926188719F, 2.244924096619F, 2.3784142300054F
+    2.0F               , 2.118926188719F, 2.244924096619F, 2.3784142300054F
 };
 
 inline RATIOTYPE TwoToPowerXOver12(const uint8_t i)
@@ -319,7 +319,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
                 #endif
                     {
                         m_dwSongFlags |= SONG_ENDREACHED;
-                        if (uncomputed_samples == max_samples || m_bIsRendering)    	//rewbs: don't complete buffer when rendering
+                        if (uncomputed_samples == max_samples || m_bIsRendering)            //rewbs: don't complete buffer when rendering
                             goto MixDone;
                         m_nBufferCount = uncomputed_samples;
                     }
@@ -383,7 +383,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         // Buffer ready
         uncomputed_samples -= computed_samples;
         m_nBufferCount -= computed_samples;
-        m_lTotalSampleCount += computed_samples;    	// increase sample count for VSTTimeInfo.
+        m_lTotalSampleCount += computed_samples;            // increase sample count for VSTTimeInfo.
         // Turn on ramping after first read (fix http://forum.openmpt.org/index.php?topic=523.0 )
         gnVolumeRampInSamples = CMainFrame::glVolumeRampInSamples;
         gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
@@ -1789,9 +1789,9 @@ BOOL module_renderer::ReadNote()
 #ifndef FASTSOUNDLIB
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup "
-//    			if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
-//    			 || ((gdwSysInfo & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU))
-//    			  && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50)))
+//                            if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
+//                             || ((gdwSysInfo & (SYSMIX_ENABLEMMX|SYSMIX_FASTCPU))
+//                              && (gdwSoundSetup & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50)))
                 if ((deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK) || ((deprecated_global_system_info & (SYSMIX_ENABLEMMX | SYSMIX_FASTCPU)) && (deprecated_global_sound_setup_bitmask & SNDMIX_HQRESAMPLER) && (gnCPUUsage <= 50) && !(enableCustomRamp && instrRampLength))) {
 // -! NEW_FEATURE#0027
                     if ((current_vchan->right_volume | current_vchan->left_volume) && (current_vchan->nNewRightVol | current_vchan->nNewLeftVol) && (!(current_vchan->flags & CHN_FASTVOLRAMP)))    {
@@ -2050,7 +2050,7 @@ VOID module_renderer::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCoun
 
             //XXXih: divide by zero >:l
             UINT maxStep = max(50, (10000 / (ramp_length + 1))); //define max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
-            while (abs(step) > maxStep) {    				 //if step is too big (might cause click), extend ramp length.
+            while (abs(step) > maxStep) {                                     //if step is too big (might cause click), extend ramp length.
                 m_nSamplesToGlobalVolRampDest += ramp_length;
                 step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
             }

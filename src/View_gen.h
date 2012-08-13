@@ -39,7 +39,7 @@ protected:
 // -> CODE#0028
 // -> DESC="effect plugin mixing mode combo"
     CComboBox m_CbnSpecialMixProcessing;
-    CSpinButtonCtrl m_SpinMixGain;			// update#02
+    CSpinButtonCtrl m_SpinMixGain;                        // update#02
 // -! NEW_FEATURE#0028
 
     enum {AdjustPattern = true, NoPatternAdjust = false};

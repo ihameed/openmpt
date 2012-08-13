@@ -4,7 +4,7 @@
  * Copied to OpenMPT from libmodplug.
  *
  * Authors: Olivier Lapicque <olivierl@jps.net>,
- *    		OpenMPT dev(s)	(miscellaneous modifications)
+ *                    OpenMPT dev(s)        (miscellaneous modifications)
 */
 
 #include "stdafx.h"
@@ -22,52 +22,52 @@ extern void Log(LPCSTR s, ...);
 // OctaMed MED file support (import only)
 
 // flags
-#define    MMD_FLAG_FILTERON	0x1
-#define    MMD_FLAG_JUMPINGON	0x2
-#define    MMD_FLAG_JUMP8TH	0x4
-#define    MMD_FLAG_INSTRSATT	0x8 // instruments are attached (this is a module)
-#define    MMD_FLAG_VOLHEX		0x10
+#define    MMD_FLAG_FILTERON        0x1
+#define    MMD_FLAG_JUMPINGON        0x2
+#define    MMD_FLAG_JUMP8TH        0x4
+#define    MMD_FLAG_INSTRSATT        0x8 // instruments are attached (this is a module)
+#define    MMD_FLAG_VOLHEX                0x10
 #define MMD_FLAG_STSLIDE    0x20 // SoundTracker mode for slides
 #define MMD_FLAG_8CHANNEL    0x40 // OctaMED 8 channel song
-#define    MMD_FLAG_SLOWHQ		0x80 // HQ slows playing speed (V2-V4 compatibility)
+#define    MMD_FLAG_SLOWHQ                0x80 // HQ slows playing speed (V2-V4 compatibility)
 // flags2
-#define MMD_FLAG2_BMASK    	0x1F
-#define MMD_FLAG2_BPM    	0x20
-#define    MMD_FLAG2_MIX		0x80 // uses Mixing (V7+)
+#define MMD_FLAG2_BMASK            0x1F
+#define MMD_FLAG2_BPM            0x20
+#define    MMD_FLAG2_MIX                0x80 // uses Mixing (V7+)
 // flags3:
-#define    MMD_FLAG3_STEREO	0x1	// mixing in Stereo mode
-#define    MMD_FLAG3_FREEPAN	0x2	// free panning
-#define MMD_FLAG3_GM    	0x4 // module designed for GM/XG compatibility
+#define    MMD_FLAG3_STEREO        0x1        // mixing in Stereo mode
+#define    MMD_FLAG3_FREEPAN        0x2        // free panning
+#define MMD_FLAG3_GM            0x4 // module designed for GM/XG compatibility
 
 
 // generic MMD tags
-#define    MMDTAG_END		0
-#define    MMDTAG_PTR		0x80000000	// data needs relocation
-#define    MMDTAG_MUSTKNOW	0x40000000	// loader must fail if this isn't recognized
-#define    MMDTAG_MUSTWARN	0x20000000	// loader must warn if this isn't recognized
+#define    MMDTAG_END                0
+#define    MMDTAG_PTR                0x80000000        // data needs relocation
+#define    MMDTAG_MUSTKNOW        0x40000000        // loader must fail if this isn't recognized
+#define    MMDTAG_MUSTWARN        0x20000000        // loader must warn if this isn't recognized
 
 // ExpData tags
 // # of effect groups, including the global group (will
 // override settings in MMDSong struct), default = 1
-#define    MMDTAG_EXP_NUMFXGROUPS	1
-#define    MMDTAG_TRK_NAME		(MMDTAG_PTR|1)	// trackinfo tags
-#define    MMDTAG_TRK_NAMELEN	2				// namelen includes zero term.
-#define    MMDTAG_TRK_FXGROUP	3
+#define    MMDTAG_EXP_NUMFXGROUPS        1
+#define    MMDTAG_TRK_NAME                (MMDTAG_PTR|1)        // trackinfo tags
+#define    MMDTAG_TRK_NAMELEN        2                                // namelen includes zero term.
+#define    MMDTAG_TRK_FXGROUP        3
 // effectinfo tags
-#define    MMDTAG_FX_ECHOTYPE	1
+#define    MMDTAG_FX_ECHOTYPE        1
 #define MMDTAG_FX_ECHOLEN    2
-#define    MMDTAG_FX_ECHODEPTH	3
-#define    MMDTAG_FX_STEREOSEP	4
-#define    MMDTAG_FX_GROUPNAME	(MMDTAG_PTR|5)	// the Global Effects group shouldn't have name saved!
-#define    MMDTAG_FX_GRPNAMELEN 6	// namelen includes zero term.
+#define    MMDTAG_FX_ECHODEPTH        3
+#define    MMDTAG_FX_STEREOSEP        4
+#define    MMDTAG_FX_GROUPNAME        (MMDTAG_PTR|5)        // the Global Effects group shouldn't have name saved!
+#define    MMDTAG_FX_GRPNAMELEN 6        // namelen includes zero term.
 
 #pragma pack(1)
 
 typedef struct tagMEDMODULEHEADER
 {
-    uint32_t id;    	// MMD1-MMD3
+    uint32_t id;            // MMD1-MMD3
     uint32_t modlen;    // Size of file
-    uint32_t song;    	// Position in file for this song
+    uint32_t song;            // Position in file for this song
     uint16_t psecnum;
     uint16_t pseq;
     uint32_t blockarr;    // Position in file for blocks
@@ -128,16 +128,16 @@ typedef struct tagMMDSAMPLEHEADER
 typedef struct tagMMD0SONGHEADER
 {
     MMD0SAMPLE sample[63];
-    uint16_t numblocks;    	// # of blocks
-    uint16_t songlen;    	// # of entries used in playseq
+    uint16_t numblocks;            // # of blocks
+    uint16_t songlen;            // # of entries used in playseq
     uint8_t playseq[256];    // Play sequence
-    uint16_t deftempo;    	// BPM tempo
+    uint16_t deftempo;            // BPM tempo
     signed char playtransp;    // Play transpose
-    uint8_t flags;    		// 0x10: Hex Volumes | 0x20: ST/NT/PT Slides | 0x40: 8 Channels song
-    uint8_t flags2;    	// [b4-b0]+1: Tempo LPB, 0x20: tempo mode, 0x80: mix_conv=on
-    uint8_t tempo2;    	// tempo TPL
+    uint8_t flags;                    // 0x10: Hex Volumes | 0x20: ST/NT/PT Slides | 0x40: 8 Channels song
+    uint8_t flags2;            // [b4-b0]+1: Tempo LPB, 0x20: tempo mode, 0x80: mix_conv=on
+    uint8_t tempo2;            // tempo TPL
     uint8_t trkvol[16];    // track volumes
-    uint8_t mastervol;    	// master volume
+    uint8_t mastervol;            // master volume
     uint8_t numsamples;    // # of samples (max=63)
 } MMD0SONGHEADER;
 
@@ -146,29 +146,29 @@ typedef struct tagMMD0SONGHEADER
 typedef struct tagMMD2SONGHEADER
 {
     MMD0SAMPLE sample[63];
-    uint16_t numblocks;    	// # of blocks
+    uint16_t numblocks;            // # of blocks
     uint16_t numsections;    // # of sections
     uint32_t playseqtable;    // filepos of play sequence
     uint32_t sectiontable;    // filepos of sections table (uint16_t array)
     uint32_t trackvols;    // filepos of tracks volume (uint8_t array)
-    uint16_t numtracks;    	// # of tracks (max 64)
-    uint16_t numpseqs;    	// # of play sequences
+    uint16_t numtracks;            // # of tracks (max 64)
+    uint16_t numpseqs;            // # of play sequences
     uint32_t trackpans;    // filepos of tracks pan values (uint8_t array)
-    LONG flags3;    	// 0x1:stereo_mix, 0x2:free_panning, 0x4:GM/XG compatibility
-    uint16_t voladj;    	// vol_adjust (set to 100 if 0)
-    uint16_t channels;    	// # of channels (4 if =0)
+    LONG flags3;            // 0x1:stereo_mix, 0x2:free_panning, 0x4:GM/XG compatibility
+    uint16_t voladj;            // vol_adjust (set to 100 if 0)
+    uint16_t channels;            // # of channels (4 if =0)
     uint8_t mix_echotype;    // 1:normal,2:xecho
     uint8_t mix_echodepth;    // 1..6
     uint16_t mix_echolen;    // > 0
     signed char mix_stereosep;    // -4..4
     uint8_t pad0[223];
-    uint16_t deftempo;    	// BPM tempo
+    uint16_t deftempo;            // BPM tempo
     signed char playtransp;    // play transpose
-    uint8_t flags;    		// 0x1:filteron, 0x2:jumpingon, 0x4:jump8th, 0x8:instr_attached, 0x10:hex_vol, 0x20:PT_slides, 0x40:8ch_conv,0x80:hq slows playing speed
-    uint8_t flags2;    	// 0x80:mix_conv=on, [b4-b0]+1:tempo LPB, 0x20:tempo_mode
-    uint8_t tempo2;    	// tempo TPL
+    uint8_t flags;                    // 0x1:filteron, 0x2:jumpingon, 0x4:jump8th, 0x8:instr_attached, 0x10:hex_vol, 0x20:PT_slides, 0x40:8ch_conv,0x80:hq slows playing speed
+    uint8_t flags2;            // 0x80:mix_conv=on, [b4-b0]+1:tempo LPB, 0x20:tempo_mode
+    uint8_t tempo2;            // tempo TPL
     uint8_t pad1[16];
-    uint8_t mastervol;    	// master volume
+    uint8_t mastervol;            // master volume
     uint8_t numsamples;    // # of samples (max 63)
 } MMD2SONGHEADER;
 
@@ -182,8 +182,8 @@ typedef struct tagMMD2SONGHEADER
 typedef struct tagMMD0BLOCK
 {
     uint8_t numtracks;
-    uint8_t lines;    	// File value is 1 less than actual, so 0 -> 1 line
-} MMD0BLOCK;    	// uint8_t data[lines+1][tracks][3];
+    uint8_t lines;            // File value is 1 less than actual, so 0 -> 1 line
+} MMD0BLOCK;            // uint8_t data[lines+1][tracks][3];
 
 
 // For MMD1,MMD2,MMD3 the note information is carried in 4 bytes, byte0, byte1,
@@ -196,14 +196,14 @@ typedef struct tagMMD0BLOCK
 typedef struct tagMMD1BLOCK
 {
     uint16_t numtracks;    // Number of tracks, may be > 64, but then that data is skipped.
-    uint16_t lines;    	// Stored value is 1 less than actual, so 0 -> 1 line
-    uint32_t info;    	// Offset of BlockInfo (if 0, no block_info is present)
+    uint16_t lines;            // Stored value is 1 less than actual, so 0 -> 1 line
+    uint32_t info;            // Offset of BlockInfo (if 0, no block_info is present)
 } MMD1BLOCK;
 
 
 typedef struct tagMMD1BLOCKINFO
 {
-    uint32_t hlmask;    	// Unimplemented - ignore
+    uint32_t hlmask;            // Unimplemented - ignore
     uint32_t blockname;    // file offset of block name
     uint32_t blocknamelen;    // length of block name (including term. 0)
     uint32_t pagetable;    // file offset of command page table
@@ -229,8 +229,8 @@ typedef struct tagMMD2PLAYSEQ
 // POSJUMP is presumed to have extra bytes containing a uint16_t for the position
 typedef struct tagMMDCOMMAND
 {
-    uint16_t offset;    	// Offset within current sequence entry
-    uint8_t cmdnumber;    	// STOP (537) or POSJUMP (538) (others skipped)
+    uint16_t offset;            // Offset within current sequence entry
+    uint8_t cmdnumber;            // STOP (537) or POSJUMP (538) (others skipped)
     uint8_t extra_count;
     uint8_t extra_bytes[4];// [extra_count];
 } MMDCOMMAND;  // Last entry has offset == 0xFFFF, cmd_number == 0 and 0 extrabytes
@@ -238,20 +238,20 @@ typedef struct tagMMDCOMMAND
 
 typedef struct tagMMD0EXP
 {
-    uint32_t nextmod;    		// File offset of next Hdr
-    uint32_t exp_smp;    		// Pointer to extra instrument data
-    uint16_t s_ext_entries;    	// Number of extra instrument entries
-    uint16_t s_ext_entrsz;    	// Size of extra instrument data
+    uint32_t nextmod;                    // File offset of next Hdr
+    uint32_t exp_smp;                    // Pointer to extra instrument data
+    uint16_t s_ext_entries;            // Number of extra instrument entries
+    uint16_t s_ext_entrsz;            // Size of extra instrument data
     uint32_t annotxt;
     uint32_t annolen;
-    uint32_t iinfo;    		// Instrument names
+    uint32_t iinfo;                    // Instrument names
     uint16_t i_ext_entries;
     uint16_t i_ext_entrsz;
     uint32_t jumpmask;
     uint32_t rgbtable;
     uint8_t channelsplit[4];    // Only used if 8ch_conv (extra channel for every nonzero entry)
     uint32_t n_info;
-    uint32_t songname;    		// Song name
+    uint32_t songname;                    // Song name
     uint32_t songnamelen;
     uint32_t dumps;
     uint32_t mmdinfo;
@@ -305,7 +305,7 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
     case 0x0D:    if (param & 0xF0) param &= 0xF0; command = CMD_VOLUMESLIDE; if (!param) command = 0; break;
     case 0x0F:    // Set Tempo / Special
         // F.00 = Pattern Break
-        if (!param)    command = CMD_PATTERNBREAK;	else
+        if (!param)    command = CMD_PATTERNBREAK;        else
         // F.01 - F.F0: Set tempo/speed
         if (param <= 0xF0)
         {
@@ -752,7 +752,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
                         switch(ntag)
                         {
                         case MMDTAG_TRK_NAMELEN:    trknamelen = tagdata; break;
-                        case MMDTAG_TRK_NAME:    	trknameofs = tagdata; break;
+                        case MMDTAG_TRK_NAME:            trknameofs = tagdata; break;
                         }
                         trktagofs += 8;
                     }

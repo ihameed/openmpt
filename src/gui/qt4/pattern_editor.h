@@ -69,7 +69,7 @@ static const pattern_font_metrics_t medium_pattern_font = {
     8,                   // Width of first character in volume parameter
 
     -1,
-    8,    	             // 8+7 = 15
+    8,                         // 8+7 = 15
 
     -3,                  // instr_offset
     -1,                  // instr_10_offset

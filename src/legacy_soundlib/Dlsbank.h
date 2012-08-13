@@ -5,16 +5,16 @@ class module_renderer;
 
 #pragma pack(1)
 
-#define DLSMAXREGIONS    	128
-#define DLSMAXENVELOPES    	2048
+#define DLSMAXREGIONS            128
+#define DLSMAXENVELOPES            2048
 
 // Region Flags
-#define DLSREGION_KEYGROUPMASK    	0x0F
-#define DLSREGION_OVERRIDEWSMP    	0x10
-#define DLSREGION_PINGPONGLOOP    	0x20
-#define DLSREGION_SAMPLELOOP    	0x40
+#define DLSREGION_KEYGROUPMASK            0x0F
+#define DLSREGION_OVERRIDEWSMP            0x10
+#define DLSREGION_PINGPONGLOOP            0x20
+#define DLSREGION_SAMPLELOOP            0x40
 #define DLSREGION_SELFNONEXCLUSIVE    0x80
-#define DLSREGION_SUSTAINLOOP    	0x100
+#define DLSREGION_SUSTAINLOOP            0x100
 
 
 typedef struct DLSREGION
@@ -23,9 +23,9 @@ typedef struct DLSREGION
     uint32_t ulLoopEnd;
     uint16_t nWaveLink;
     uint16_t uPercEnv;
-    uint16_t usVolume;		// 0..256
-    uint16_t fuOptions;	// flags + key group
-    SHORT sFineTune;	// 1..100
+    uint16_t usVolume;                // 0..256
+    uint16_t fuOptions;        // flags + key group
+    SHORT sFineTune;        // 1..100
     uint8_t uKeyMin;
     uint8_t uKeyMax;
     uint8_t uUnityNote;
@@ -34,16 +34,16 @@ typedef struct DLSREGION
 typedef struct DLSENVELOPE
 {
     // Volume Envelope
-    uint16_t wVolAttack;		// Attack Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
-    uint16_t wVolDecay;			// Decay Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
-    uint16_t wVolRelease;		// Release Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
-    uint8_t nVolSustainLevel;	// Sustain Level: 0-128, 128=100%
+    uint16_t wVolAttack;                // Attack Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
+    uint16_t wVolDecay;                        // Decay Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
+    uint16_t wVolRelease;                // Release Time: 0-1000, 1 = 20ms (1/50s) -> [0-20s]
+    uint8_t nVolSustainLevel;        // Sustain Level: 0-128, 128=100%
     // Default Pan
     uint8_t nDefPan;
 } DLSENVELOPE;
 
 // Special Bank bits
-#define F_INSTRUMENT_DRUMS    	0x80000000
+#define F_INSTRUMENT_DRUMS            0x80000000
 
 typedef struct DLSINSTRUMENT
 {
@@ -69,8 +69,8 @@ typedef struct DLSSAMPLEEX
 #pragma pack()
 
 #define SOUNDBANK_TYPE_INVALID    0
-#define SOUNDBANK_TYPE_DLS    	0x01
-#define SOUNDBANK_TYPE_SF2    	0x02
+#define SOUNDBANK_TYPE_DLS            0x01
+#define SOUNDBANK_TYPE_SF2            0x02
 
 typedef struct SOUNDBANKINFO
 {
@@ -78,8 +78,8 @@ typedef struct SOUNDBANKINFO
     CHAR szCopyRight[256];
     CHAR szComments[512];
     CHAR szEngineer[256];
-    CHAR szSoftware[256];		// ISFT: Software
-    CHAR szDescription[256];	// ISBJ: Subject
+    CHAR szSoftware[256];                // ISFT: Software
+    CHAR szDescription[256];        // ISBJ: Subject
 } SOUNDBANKINFO;
 
 
@@ -133,9 +133,9 @@ protected:
 public:
     // DLS Unit conversion
     static LONG __cdecl DLS32BitTimeCentsToMilliseconds(LONG lTimeCents);
-    static LONG __cdecl DLS32BitRelativeGainToLinear(LONG lCentibels);	// 0dB = 0x10000
-    static LONG __cdecl DLS32BitRelativeLinearToGain(LONG lGain);		// 0dB = 0x10000
-    static LONG __cdecl DLSMidiVolumeToLinear(UINT nMidiVolume);		// [0-127] -> [0-0x10000]
+    static LONG __cdecl DLS32BitRelativeGainToLinear(LONG lCentibels);        // 0dB = 0x10000
+    static LONG __cdecl DLS32BitRelativeLinearToGain(LONG lGain);                // 0dB = 0x10000
+    static LONG __cdecl DLSMidiVolumeToLinear(UINT nMidiVolume);                // [0-127] -> [0-0x10000]
 };
 
 

@@ -35,12 +35,12 @@ enum {
     MODITEM_SEQUENCE,
 };
 
-#define TREESTATUS_RDRAG    		0x01
-#define TREESTATUS_LDRAG    		0x02
-#define TREESTATUS_SINGLEEXPAND    	0x04
-#define TREESTATUS_DRAGGING    		(TREESTATUS_RDRAG|TREESTATUS_LDRAG)
+#define TREESTATUS_RDRAG                    0x01
+#define TREESTATUS_LDRAG                    0x02
+#define TREESTATUS_SINGLEEXPAND            0x04
+#define TREESTATUS_DRAGGING                    (TREESTATUS_RDRAG|TREESTATUS_LDRAG)
 
-#define MODTREE_MAX_DOCUMENTS    	32
+#define MODTREE_MAX_DOCUMENTS            32
 
 struct MODTREEDOCINFO
 {
@@ -61,25 +61,25 @@ struct MODTREEDOCINFO
 
     MODTREEDOCINFO(const module_renderer* const pSndFile)
     {
-    	pModDoc = NULL;
-    	nSeqSel = SEQUENCEINDEX_INVALID;
-    	nOrdSel = ORDERINDEX_INVALID;
-    	hSong = hPatterns = hSamples = hInstruments = hComments = hOrders = hEffects = NULL;
-    	if(pSndFile != NULL)
-    	{
-    		tiPatterns.resize(pSndFile->Patterns.Size(), NULL);
-    		tiOrders.resize(pSndFile->Order.GetNumSequences());
-    		for(SEQUENCEINDEX i = 0; i < tiOrders.size(); i++)
-    		{
-    			//tiOrders[i].resize(pSndFile->Order.GetSequence(i)->GetLength(), NULL);
-    		}
-    		tiSequences.resize(pSndFile->Order.GetNumSequences(), NULL);
-    	}
-    	memset(tiSamples, 0, sizeof(tiSamples));
-    	memset(tiInstruments, 0, sizeof(tiInstruments));
-    	memset(tiEffects, 0, sizeof(tiEffects));
-    	memset(bIsSamplePlaying, false, MAX_SAMPLES * sizeof(bool));
-    	memset(bIsInstrPlaying, false, MAX_INSTRUMENTS * sizeof(bool));
+            pModDoc = NULL;
+            nSeqSel = SEQUENCEINDEX_INVALID;
+            nOrdSel = ORDERINDEX_INVALID;
+            hSong = hPatterns = hSamples = hInstruments = hComments = hOrders = hEffects = NULL;
+            if(pSndFile != NULL)
+            {
+                    tiPatterns.resize(pSndFile->Patterns.Size(), NULL);
+                    tiOrders.resize(pSndFile->Order.GetNumSequences());
+                    for(SEQUENCEINDEX i = 0; i < tiOrders.size(); i++)
+                    {
+                            //tiOrders[i].resize(pSndFile->Order.GetSequence(i)->GetLength(), NULL);
+                    }
+                    tiSequences.resize(pSndFile->Order.GetNumSequences(), NULL);
+            }
+            memset(tiSamples, 0, sizeof(tiSamples));
+            memset(tiInstruments, 0, sizeof(tiInstruments));
+            memset(tiEffects, 0, sizeof(tiEffects));
+            memset(bIsSamplePlaying, false, MAX_SAMPLES * sizeof(bool));
+            memset(bIsInstrPlaying, false, MAX_INSTRUMENTS * sizeof(bool));
     }
 };
 
@@ -142,8 +142,8 @@ public:
     VOID EmptyInstrumentLibrary();
     VOID FillInstrumentLibrary();
     uint64_t GetModItem(HTREEITEM hItem);
-    inline uint32_t GetModItemType(const uint64_t modItem) {return static_cast<uint32_t>(modItem & 0xFFFF);};	// return "item type" part of mod item variable ( & 0xFFFF )
-    inline uint32_t GetModItemID(const uint64_t modItem) {return static_cast<uint32_t>(modItem >> 16);};		// return "item ID" part of mod item variable ( >> 16 )
+    inline uint32_t GetModItemType(const uint64_t modItem) {return static_cast<uint32_t>(modItem & 0xFFFF);};        // return "item type" part of mod item variable ( & 0xFFFF )
+    inline uint32_t GetModItemID(const uint64_t modItem) {return static_cast<uint32_t>(modItem >> 16);};                // return "item ID" part of mod item variable ( >> 16 )
     BOOL SetMidiInstrument(UINT nIns, LPCTSTR lpszFileName);
     BOOL SetMidiPercussion(UINT nPerc, LPCTSTR lpszFileName);
     BOOL ExecuteItem(HTREEITEM hItem);
@@ -208,7 +208,7 @@ protected:
     afx_msg void OnUnmuteAllTreeItem();
     afx_msg void OnDuplicateTreeItem();
     afx_msg void OnInsertTreeItem();
-    afx_msg void OnSwitchToTreeItem();	// hack for sequence items to avoid double-click action
+    afx_msg void OnSwitchToTreeItem();        // hack for sequence items to avoid double-click action
     afx_msg void OnCloseItem();
 
 // -> CODE#0023
@@ -224,12 +224,12 @@ protected:
     afx_msg void OnRefreshInstrLib();
     afx_msg void OnShowAllFiles();
     afx_msg void OnShowSoundFiles();
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM);	//rewbs.customKeys
+    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM);        //rewbs.customKeys
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 public:
-    afx_msg void OnKillFocus(CWnd* pNewWnd);	//rewbs.customKeys
-    afx_msg void OnSetFocus(CWnd* pOldWnd);		//rewbs.customKeys
+    afx_msg void OnKillFocus(CWnd* pNewWnd);        //rewbs.customKeys
+    afx_msg void OnSetFocus(CWnd* pOldWnd);                //rewbs.customKeys
 };
 
 

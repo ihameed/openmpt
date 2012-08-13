@@ -26,7 +26,7 @@ bool module_renderer::ReadMO3(const uint8_t * lpStream, const uint32_t dwMemLeng
 {
     // no valid MO3 file (magic bytes: "MO3")
     if(dwMemLength < 4 || lpStream[0] != 'M' || lpStream[1] != 'O' || lpStream[2] != '3')
-    	return false;
+            return false;
 
 #ifdef NO_MO3_SUPPORT
     /* As of August 2010, the format revision is 5; Versions > 31 are unlikely to exist in the next few years,
@@ -57,37 +57,37 @@ bool module_renderer::ReadMO3(const uint8_t * lpStream, const uint32_t dwMemLeng
     if(unmo3 == NULL) // Didn't succeed.
     {
 #ifdef MODPLUG_TRACKER
-    	if(m_pModDoc != nullptr) m_pModDoc->AddToLog(GetStrI18N(_TEXT("Loading MO3 file failed because unmo3.dll could not be loaded.")));
+            if(m_pModDoc != nullptr) m_pModDoc->AddToLog(GetStrI18N(_TEXT("Loading MO3 file failed because unmo3.dll could not be loaded.")));
 #endif // MODPLUG_TRACKER
     }
     else //case: dll loaded succesfully.
     {
-    	UNMO3_DECODE UNMO3_Decode = (UNMO3_DECODE)GetProcAddress(unmo3, "UNMO3_Decode");
-    	UNMO3_FREE UNMO3_Free = (UNMO3_FREE)GetProcAddress(unmo3, "UNMO3_Free");
+            UNMO3_DECODE UNMO3_Decode = (UNMO3_DECODE)GetProcAddress(unmo3, "UNMO3_Decode");
+            UNMO3_FREE UNMO3_Free = (UNMO3_FREE)GetProcAddress(unmo3, "UNMO3_Free");
 
-    	if(UNMO3_Decode != NULL && UNMO3_Free != NULL)
-    	{
-    		if(UNMO3_Decode(mo3Stream, &iLen) == 0)
-    		{
-    			/* if decoding was successful, mo3Stream and iLen will keep the new
-    			   pointers now. */
+            if(UNMO3_Decode != NULL && UNMO3_Free != NULL)
+            {
+                    if(UNMO3_Decode(mo3Stream, &iLen) == 0)
+                    {
+                            /* if decoding was successful, mo3Stream and iLen will keep the new
+                               pointers now. */
 
-    			if(iLen > 0)
-    			{
-    				bResult = true;
-    				if ((!ReadXM((const uint8_t *)*mo3Stream, (uint32_t)iLen))
-    				&& (!ReadIT((const uint8_t *)*mo3Stream, (uint32_t)iLen))
-    				&& (!ReadS3M((const uint8_t *)*mo3Stream, (uint32_t)iLen))
-    				#ifndef FASTSOUNDLIB
-    				&& (!ReadMTM((const uint8_t *)*mo3Stream, (uint32_t)iLen))
-    				#endif // FASTSOUNDLIB
-    				&& (!ReadMod((const uint8_t *)*mo3Stream, (uint32_t)iLen))) bResult = false;
-    			}
+                            if(iLen > 0)
+                            {
+                                    bResult = true;
+                                    if ((!ReadXM((const uint8_t *)*mo3Stream, (uint32_t)iLen))
+                                    && (!ReadIT((const uint8_t *)*mo3Stream, (uint32_t)iLen))
+                                    && (!ReadS3M((const uint8_t *)*mo3Stream, (uint32_t)iLen))
+                                    #ifndef FASTSOUNDLIB
+                                    && (!ReadMTM((const uint8_t *)*mo3Stream, (uint32_t)iLen))
+                                    #endif // FASTSOUNDLIB
+                                    && (!ReadMod((const uint8_t *)*mo3Stream, (uint32_t)iLen))) bResult = false;
+                            }
 
-    			UNMO3_Free(*mo3Stream);
-    		}
-    	}
-    	FreeLibrary(unmo3);
+                            UNMO3_Free(*mo3Stream);
+                    }
+            }
+            FreeLibrary(unmo3);
     }
     return bResult;
 #endif // NO_MO3_SUPPORT

@@ -23,14 +23,14 @@ bool module_renderer::AllocateMessage(size_t length)
 //---------------------------------------------
 {
     FreeMessage();
-    m_lpszSongComments = new char[length + 1];	// + 1 for trailing null
+    m_lpszSongComments = new char[length + 1];        // + 1 for trailing null
     if(m_lpszSongComments == nullptr)
     {
-    	return false;
+            return false;
     } else
     {
-    	memset(m_lpszSongComments, 0, length + 1);
-    	return true;
+            memset(m_lpszSongComments, 0, length + 1);
+            return true;
     }
 }
 
@@ -41,8 +41,8 @@ void module_renderer::FreeMessage()
 {
     if(m_lpszSongComments)
     {
-    	delete[] m_lpszSongComments;
-    	m_lpszSongComments = nullptr;
+            delete[] m_lpszSongComments;
+            m_lpszSongComments = nullptr;
     }
 }
 
@@ -61,76 +61,76 @@ bool module_renderer::ReadMessage(const uint8_t *data, const size_t length, enmL
     // Simple line-ending detection algorithm. VERY simple.
     if(lineEnding == leAutodetect)
     {
-    	char cprev = 0;
-    	size_t nCR = 0, nLF = 0, nCRLF = 0;
-    	// find CRs, LFs and CRLFs
-    	for(size_t i = 0; i < length; i++)
-    	{
-    		c = data[i];
-    		if(pTextConverter != nullptr)
-    			pTextConverter(c);
+            char cprev = 0;
+            size_t nCR = 0, nLF = 0, nCRLF = 0;
+            // find CRs, LFs and CRLFs
+            for(size_t i = 0; i < length; i++)
+            {
+                    c = data[i];
+                    if(pTextConverter != nullptr)
+                            pTextConverter(c);
 
-    		if(c == '\r') nCR++;
-    		else if(c == '\n') nLF++;
+                    if(c == '\r') nCR++;
+                    else if(c == '\n') nLF++;
 
-    		if(i && cprev == '\r' && c == '\n') nCRLF++;
-    		cprev = c;
-    	}
-    	// evaluate findings
-    	if(nCR == nLF && nCR == nCRLF)
-    		lineEnding = leCRLF;
-    	else if(nCR && !nLF)
-    		lineEnding = leCR;
-    	else if(!nCR && nLF)
-    		lineEnding = leLF;
-    	else
-    		lineEnding = leMixed;
+                    if(i && cprev == '\r' && c == '\n') nCRLF++;
+                    cprev = c;
+            }
+            // evaluate findings
+            if(nCR == nLF && nCR == nCRLF)
+                    lineEnding = leCRLF;
+            else if(nCR && !nLF)
+                    lineEnding = leCR;
+            else if(!nCR && nLF)
+                    lineEnding = leLF;
+            else
+                    lineEnding = leMixed;
     }
 
     size_t final_length = 0;
     // calculate the final amount of characters to be allocated.
     for(size_t i = 0; i < length; i++)
     {
-    	c = data[i];
-    	if(pTextConverter != nullptr)
-    		pTextConverter(c);
+            c = data[i];
+            if(pTextConverter != nullptr)
+                    pTextConverter(c);
 
-    	if(c != '\n' || lineEnding != leCRLF)
-    		final_length++;
+            if(c != '\n' || lineEnding != leCRLF)
+                    final_length++;
     }
 
     if(!AllocateMessage(final_length))
-    	return false;
+            return false;
 
     size_t cpos = 0;
     for(size_t i = 0; i < length; i++, cpos++)
     {
-    	c = data[i];
-    	if(pTextConverter != nullptr)
-    		pTextConverter(c);
+            c = data[i];
+            if(pTextConverter != nullptr)
+                    pTextConverter(c);
 
-    	switch(c)
-    	{
-    	case '\r':
-    		if(lineEnding != leLF)
-    			m_lpszSongComments[cpos] = '\r';
-    		else
-    			m_lpszSongComments[cpos] = ' ';
-    		if(lineEnding == leCRLF) i++;	// skip the LF
-    		break;
-    	case '\n':
-    		if(lineEnding != leCR && lineEnding != leCRLF)
-    			m_lpszSongComments[cpos] = '\r';
-    		else
-    			m_lpszSongComments[cpos] = ' ';
-    		break;
-    	case '\0':
-    		m_lpszSongComments[cpos] = ' ';
-    		break;
-    	default:
-    		m_lpszSongComments[cpos] = c;
-    		break;
-    	}
+            switch(c)
+            {
+            case '\r':
+                    if(lineEnding != leLF)
+                            m_lpszSongComments[cpos] = '\r';
+                    else
+                            m_lpszSongComments[cpos] = ' ';
+                    if(lineEnding == leCRLF) i++;        // skip the LF
+                    break;
+            case '\n':
+                    if(lineEnding != leCR && lineEnding != leCRLF)
+                            m_lpszSongComments[cpos] = '\r';
+                    else
+                            m_lpszSongComments[cpos] = ' ';
+                    break;
+            case '\0':
+                    m_lpszSongComments[cpos] = ' ';
+                    break;
+            default:
+                    m_lpszSongComments[cpos] = c;
+                    break;
+            }
     }
 
     return true;
@@ -148,34 +148,34 @@ bool module_renderer::ReadFixedLineLengthMessage(const uint8_t *data, const size
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(lineLength == 0)
-    	return false;
+            return false;
 
     const size_t num_lines = (length / (lineLength + lineEndingLength));
     const size_t final_length = num_lines * (lineLength + 1);
     if(!AllocateMessage(final_length))
-    	return false;
+            return false;
 
     for(size_t line = 0, fpos = 0, cpos = 0; line < num_lines; line++, fpos += (lineLength + lineEndingLength), cpos += (lineLength + 1))
     {
-    	memcpy(m_lpszSongComments + cpos, data + fpos, min(lineLength, length - fpos));
-    	m_lpszSongComments[cpos + lineLength] = '\r';
+            memcpy(m_lpszSongComments + cpos, data + fpos, min(lineLength, length - fpos));
+            m_lpszSongComments[cpos + lineLength] = '\r';
 
-    	// fix weird chars
-    	for(size_t lpos = 0; lpos < lineLength; lpos++)
-    	{
-    		// Pre-process text
-    		if(pTextConverter != nullptr) pTextConverter(m_lpszSongComments[cpos + lpos]);
+            // fix weird chars
+            for(size_t lpos = 0; lpos < lineLength; lpos++)
+            {
+                    // Pre-process text
+                    if(pTextConverter != nullptr) pTextConverter(m_lpszSongComments[cpos + lpos]);
 
-    		switch(m_lpszSongComments[cpos + lpos])
-    		{
-    		case '\0':
-    		case '\n':
-    		case '\r':
-    			m_lpszSongComments[cpos + lpos] = ' ';
-    			break;
-    		}
+                    switch(m_lpszSongComments[cpos + lpos])
+                    {
+                    case '\0':
+                    case '\n':
+                    case '\r':
+                            m_lpszSongComments[cpos + lpos] = ' ';
+                            break;
+                    }
 
-    	}
+            }
     }
     return true;
 }
@@ -190,13 +190,13 @@ UINT module_renderer::GetSongMessage(LPSTR s, UINT len, UINT linesize)
     UINT i = 2, ln=0;
     if ((len) && (s)) s[0] = '\r';
     if ((len > 1) && (s)) s[1] = '\n';
-    while ((*p)	&& (i+2 < len))
+    while ((*p)        && (i+2 < len))
     {
-    	uint8_t c = (uint8_t)*p++;
-    	if ((c == 0x0D) || ((c == ' ') && (ln >= linesize)))
-    	{ if (s) { s[i++] = '\r'; s[i++] = '\n'; } else i+= 2; ln=0; }
-    	else
-    		if (c >= 0x20) { if (s) s[i++] = c; else i++; ln++; }
+            uint8_t c = (uint8_t)*p++;
+            if ((c == 0x0D) || ((c == ' ') && (ln >= linesize)))
+            { if (s) { s[i++] = '\r'; s[i++] = '\n'; } else i+= 2; ln=0; }
+            else
+                    if (c >= 0x20) { if (s) s[i++] = c; else i++; ln++; }
     }
     if (s) s[i] = 0;
     return i;
@@ -210,43 +210,43 @@ UINT module_renderer::GetRawSongMessage(LPSTR s, UINT len, UINT linesize)
     LPCSTR p = m_lpszSongComments;
     if (!p) return 0;
     UINT i = 0, ln=0;
-    while ((*p)	&& (i < len-1))
+    while ((*p)        && (i < len-1))
     {
-    	uint8_t c = (uint8_t)*p++;
-    	if ((c == 0x0D)	|| (c == 0x0A))
-    	{
-    		if (ln)
-    		{
-    			while (ln < linesize) { if (s) s[i] = ' '; i++; ln++; }
-    			ln = 0;
-    		}
-    	} else
-    		if ((c == ' ') && (!ln))
-    		{
-    			UINT k=0;
-    			while ((p[k]) && (p[k] >= ' '))	k++;
-    			if (k <= linesize)
-    			{
-    				if (s) s[i] = ' ';
-    				i++;
-    				ln++;
-    			}
-    		} else
-    		{
-    			if (s) s[i] = c;
-    			i++;
-    			ln++;
-    			if (ln == linesize) ln = 0;
-    		}
+            uint8_t c = (uint8_t)*p++;
+            if ((c == 0x0D)        || (c == 0x0A))
+            {
+                    if (ln)
+                    {
+                            while (ln < linesize) { if (s) s[i] = ' '; i++; ln++; }
+                            ln = 0;
+                    }
+            } else
+                    if ((c == ' ') && (!ln))
+                    {
+                            UINT k=0;
+                            while ((p[k]) && (p[k] >= ' '))        k++;
+                            if (k <= linesize)
+                            {
+                                    if (s) s[i] = ' ';
+                                    i++;
+                                    ln++;
+                            }
+                    } else
+                    {
+                            if (s) s[i] = c;
+                            i++;
+                            ln++;
+                            if (ln == linesize) ln = 0;
+                    }
     }
     if (ln)
     {
-    	while ((ln < linesize) && (i < len))
-    	{
-    		if (s) s[i] = ' ';
-    		i++;
-    		ln++;
-    	}
+            while ((ln < linesize) && (i < len))
+            {
+                    if (s) s[i] = ' ';
+                    i++;
+                    ln++;
+            }
     }
     if (s) s[i] = 0;
     return i;

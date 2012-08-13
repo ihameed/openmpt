@@ -36,8 +36,8 @@ protected:
     virtual void DoDataExchange(CDataExchange* pDX);
     afx_msg void OnOptionSelChanged();
     afx_msg void OnSettingsChanged() { SetModified(TRUE); }
-    afx_msg void OnBrowseSongs()	{ BrowseForFolder(IDC_OPTIONS_DIR_MODS); }
-    afx_msg void OnBrowseSamples()	{ BrowseForFolder(IDC_OPTIONS_DIR_SAMPS); }
+    afx_msg void OnBrowseSongs()        { BrowseForFolder(IDC_OPTIONS_DIR_MODS); }
+    afx_msg void OnBrowseSamples()        { BrowseForFolder(IDC_OPTIONS_DIR_SAMPS); }
     afx_msg void OnBrowseInstruments() { BrowseForFolder(IDC_OPTIONS_DIR_INSTS); }
     afx_msg void OnBrowsePlugins() { BrowseForFolder(IDC_OPTIONS_DIR_VSTS); }
     afx_msg void OnBrowsePresets() { BrowseForFolder(IDC_OPTIONS_DIR_VSTPRESETS); }

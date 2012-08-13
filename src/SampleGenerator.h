@@ -81,8 +81,8 @@ public:
 
 struct samplegen_expression
 {
-    std::string description;	// e.g. "Pulse"
-    mu::string_type expression;	// e.g. "pwm(x,y,z)" - empty if this is a sub menu
+    std::string description;        // e.g. "Pulse"
+    mu::string_type expression;        // e.g. "pwm(x,y,z)" - empty if this is a sub menu
 };
 #define MAX_SAMPLEGEN_PRESETS 100
 
@@ -144,11 +144,11 @@ public:
 
     CSmpGenDialog(int freq, int len, smpgen_clip_methods clipping, mu::string_type expr):CDialog(IDD_SAMPLE_GENERATOR, CMainFrame::GetMainFrame())
     {
-    	sample_frequency = freq;
-    	sample_length = len;
-    	sample_clipping = clipping;
-    	expression = expr;
-    	apply = false;
+            sample_frequency = freq;
+            sample_length = len;
+            sample_clipping = clipping;
+            expression = expr;
+            apply = false;
     }
 
 protected:
@@ -180,15 +180,15 @@ class CSmpGenPresetDlg: public CDialog
 {
 protected:
     CSmpGenPresets *presets;
-    size_t currentItem;	// first item is actually 1!
+    size_t currentItem;        // first item is actually 1!
 
     void RefreshList();
 
 public:
     CSmpGenPresetDlg(CSmpGenPresets *pPresets):CDialog(IDD_SAMPLE_GENERATOR_PRESETS, CMainFrame::GetMainFrame())
     {
-    	presets = pPresets;
-    	currentItem = 0;
+            presets = pPresets;
+            currentItem = 0;
     }
 
 protected:

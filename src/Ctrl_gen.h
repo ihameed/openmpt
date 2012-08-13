@@ -33,7 +33,7 @@ class CCtrlGeneral: public CModControlDlg
 {
 public:
     CCtrlGeneral();
-    LONG* GetSplitPosRef() {return &CMainFrame::glGeneralWindowHeight;} 	//rewbs.varWindowSize
+    LONG* GetSplitPosRef() {return &CMainFrame::glGeneralWindowHeight;}         //rewbs.varWindowSize
 
 private:
     void setAsDecibels(LPSTR stringToSet, double value, double valueAtZeroDB);
@@ -44,9 +44,9 @@ public:
     CEdit m_EditTitle;
     CStatic m_EditModType;
     CEdit m_EditTempo, m_EditSpeed, m_EditGlobalVol, m_EditRestartPos,
-    	  m_EditSamplePA, m_EditVSTiVol;
+              m_EditSamplePA, m_EditVSTiVol;
     CSpinButtonCtrl m_SpinTempo, m_SpinSpeed, m_SpinGlobalVol, m_SpinRestartPos, 
-    			    m_SpinSamplePA, m_SpinVSTiVol;
+                                m_SpinSamplePA, m_SpinVSTiVol;
 
     CSliderCtrl m_SliderTempo, m_SliderSamplePreAmp, m_SliderGlobalVol, m_SliderVSTiVol;
     CComboBox m_ComboResampling;
@@ -54,7 +54,7 @@ public:
     //}}AFX_DATA
     //{{AFX_VIRTUAL(CCtrlGeneral)
     virtual BOOL OnInitDialog();
-    virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);        // DDX/DDV support
     virtual void RecalcLayout();
     virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual CRuntimeClass *GetAssociatedViewClass();

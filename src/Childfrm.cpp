@@ -37,7 +37,7 @@ CWnd* CViewExSplitWnd::GetActivePane(int*, int*)    // pRow, pCol
 
     // failing that, use the current focus
     if (pView == NULL)
-    	pView = GetFocus();
+            pView = GetFocus();
 
     return pView;
 }
@@ -53,8 +53,8 @@ BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
     //{{AFX_MSG_MAP(CChildFrame)
     ON_WM_CLOSE()
     ON_WM_NCACTIVATE()
-    ON_MESSAGE(WM_MOD_CHANGEVIEWCLASS,	OnChangeViewClass)
-    ON_MESSAGE(WM_MOD_INSTRSELECTED,	OnInstrumentSelected)
+    ON_MESSAGE(WM_MOD_CHANGEVIEWCLASS,        OnChangeViewClass)
+    ON_MESSAGE(WM_MOD_INSTRSELECTED,        OnInstrumentSelected)
     // toolbar "tooltip" notification
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnToolTipText)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipText)
@@ -88,7 +88,7 @@ CChildFrame::~CChildFrame()
 {
     if ((--glMdiOpenCount) == 0)
     {
-    	CMainFrame::gbMdiMaximize = m_bMaxWhenClosed;
+            CMainFrame::gbMdiMaximize = m_bMaxWhenClosed;
     }
 }
 
@@ -115,7 +115,7 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 
     // add the first splitter pane - the default view in row 0
     //int cy = CMainFrame::glCtrlWindowHeight;
-    int cy = CMainFrame::glGeneralWindowHeight;	//rewbs.varWindowSize - default to general tab.
+    int cy = CMainFrame::glGeneralWindowHeight;        //rewbs.varWindowSize - default to general tab.
     if (cy <= 1) cy = (lpcs->cy*2) / 3;
     if (!m_wndSplitter.CreateView(0, 0, pContext->m_pNewViewClass, CSize(0, cy), pContext)) return FALSE;
 
@@ -123,8 +123,8 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
     CModControlView *pModView;
     if ((pModView = (CModControlView *)m_wndSplitter.GetPane(0, 0)) != NULL)
     {
-    	m_hWndCtrl = pModView->m_hWnd;
-    	pModView->SetMDIParentFrame(m_hWnd);
+            m_hWndCtrl = pModView->m_hWnd;
+            pModView->SetMDIParentFrame(m_hWnd);
 
         auto testwid = new test_dialog(pModView->GetDocument()->GetSoundFile(), qwinwidget.get());
         testwid->resize(400, 400);
@@ -140,7 +140,7 @@ BOOL CChildFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 //rewbs.varWindowSize
 void CChildFrame::SetSplitterHeight(int cy)
 {
-    if (cy <= 1) cy = 188;	//default to 188? why not..
+    if (cy <= 1) cy = 188;        //default to 188? why not..
     m_wndSplitter.SetRowInfo(0,cy,15);
 }
 //end rewbs.varWindowSize
@@ -157,7 +157,7 @@ void CChildFrame::ActivateFrame(int nCmdShow)
 {
     if ((glMdiOpenCount == 1) && (CMainFrame::gbMdiMaximize) && (nCmdShow == -1))
     {
-    	nCmdShow = SW_SHOWMAXIMIZED;
+            nCmdShow = SW_SHOWMAXIMIZED;
     }
     CMDIChildWnd::ActivateFrame(nCmdShow);
 
@@ -169,13 +169,13 @@ void CChildFrame::ActivateFrame(int nCmdShow)
     if (pView) pModDoc = (CModDoc *)pView->GetDocument();
     if ((m_hWndCtrl) && (pModDoc))
     {
-    	if (m_bInitialActivation && m_ViewPatterns.nPattern==0)
-    	{
-    		m_ViewPatterns.nPattern=pModDoc->GetSoundFile()->Order[0];
-    		m_ViewPatterns.nOrder=0; //just in case (should already be 0)
-    		m_ViewPatterns.nRow=0;   //just in case
-    		m_bInitialActivation=false;
-    	}
+            if (m_bInitialActivation && m_ViewPatterns.nPattern==0)
+            {
+                    m_ViewPatterns.nPattern=pModDoc->GetSoundFile()->Order[0];
+                    m_ViewPatterns.nOrder=0; //just in case (should already be 0)
+                    m_ViewPatterns.nRow=0;   //just in case
+                    m_bInitialActivation=false;
+            }
     }
     //end rewbs.fix3185
 }
@@ -187,22 +187,22 @@ void CChildFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
     // update our parent window first
     GetMDIFrame()->OnUpdateFrameTitle(bAddToTitle);
 
-    if ((GetStyle() & FWS_ADDTOTITLE) == 0)	return;     // leave child window alone!
+    if ((GetStyle() & FWS_ADDTOTITLE) == 0)        return;     // leave child window alone!
 
     CDocument* pDocument = GetActiveDocument();
     if (bAddToTitle)
     {
-    	TCHAR szText[256+_MAX_PATH];
-    	if (pDocument == NULL)
-    		lstrcpy(szText, m_strTitle);
-    	else
-    		lstrcpy(szText, pDocument->GetTitle());
-    	if (pDocument->IsModified()) lstrcat(szText, "*");
-    	if (m_nWindow > 0)
-    		wsprintf(szText + lstrlen(szText), _T(":%d"), m_nWindow);
+            TCHAR szText[256+_MAX_PATH];
+            if (pDocument == NULL)
+                    lstrcpy(szText, m_strTitle);
+            else
+                    lstrcpy(szText, pDocument->GetTitle());
+            if (pDocument->IsModified()) lstrcat(szText, "*");
+            if (m_nWindow > 0)
+                    wsprintf(szText + lstrlen(szText), _T(":%d"), m_nWindow);
 
-    	// set title if changed, but don't remove completely
-    	AfxSetWindowText(m_hWnd, szText);
+            // set title if changed, but don't remove completely
+            AfxSetWindowText(m_hWnd, szText);
     }
 }
 
@@ -219,15 +219,15 @@ BOOL CChildFrame::ChangeViewClass(CRuntimeClass* pViewClass, CCreateContext* pCo
     if (!strcmp(legacy_class_name, m_szCurrentViewClassName)) return TRUE;
     if (m_szCurrentViewClassName[0])
     {
-    	m_szCurrentViewClassName[0] = 0;
-    	m_wndSplitter.DeleteView(1, 0);
+            m_szCurrentViewClassName[0] = 0;
+            m_wndSplitter.DeleteView(1, 0);
     }
     if ((m_hWndView) && (pMainFrm))
     {
-    	if (pMainFrm->GetMidiRecordWnd() == m_hWndView)
-    	{
-    		pMainFrm->SetMidiRecordWnd(NULL);
-    	}
+            if (pMainFrm->GetMidiRecordWnd() == m_hWndView)
+            {
+                    pMainFrm->SetMidiRecordWnd(NULL);
+            }
     }
     m_hWndView = NULL;
     if (!m_wndSplitter.CreateView(1, 0, pViewClass, CSize(0, 0), pContext)) return FALSE;
@@ -237,9 +237,9 @@ BOOL CChildFrame::ChangeViewClass(CRuntimeClass* pViewClass, CCreateContext* pCo
     m_wndSplitter.RecalcLayout();
     if ((m_hWndView) && (m_hWndCtrl))
     {
-    	::PostMessage(m_hWndView, WM_MOD_VIEWMSG, VIEWMSG_SETCTRLWND, (LPARAM)m_hWndCtrl);
-    	::PostMessage(m_hWndCtrl, WM_MOD_CTRLMSG, CTRLMSG_SETVIEWWND, (LPARAM)m_hWndView);
-    	pMainFrm->SetMidiRecordWnd(m_hWndView);
+            ::PostMessage(m_hWndView, WM_MOD_VIEWMSG, VIEWMSG_SETCTRLWND, (LPARAM)m_hWndCtrl);
+            ::PostMessage(m_hWndCtrl, WM_MOD_CTRLMSG, CTRLMSG_SETVIEWWND, (LPARAM)m_hWndView);
+            pMainFrm->SetMidiRecordWnd(m_hWndView);
     }
     return TRUE;
 }
@@ -250,7 +250,7 @@ void CChildFrame::ForceRefresh()
     CModControlView *pModView;
     if ((pModView = (CModControlView *)m_wndSplitter.GetPane(0, 0)) != NULL)
     {
-    	pModView->ForceRefresh();
+            pModView->ForceRefresh();
     }
 
     return;
@@ -261,35 +261,35 @@ void CChildFrame::SavePosition(BOOL bForce)
 {
     if (m_hWnd)
     {
-    	CRect rect;
+            CRect rect;
 
-    	m_bMaxWhenClosed = IsZoomed();
-    	if (bForce) CMainFrame::gbMdiMaximize = m_bMaxWhenClosed;
-    	if (!IsIconic())
-    	{
-    		CWnd *pWnd = m_wndSplitter.GetPane(0, 0);
-    		if (pWnd)
-    		{
-    			pWnd->GetWindowRect(&rect);
-    			LONG l = rect.Height();
-    			//rewbs.varWindowSize - not the nicest piece of code, but we need to distinguish btw the views:
-    			if (strcmp("CViewGlobals",m_szCurrentViewClassName) == 0)
-    				CMainFrame::glGeneralWindowHeight = l;
-    			else if (strcmp("CViewPattern", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glPatternWindowHeight = l;
-    			else if (strcmp("CViewSample", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glSampleWindowHeight = l;
-    			else if (strcmp("CViewInstrument", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glInstrumentWindowHeight = l;
-    			else if (strcmp("CViewComments", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glCommentsWindowHeight = l;
-    			//rewbs.graph
-    			else if (strcmp("CViewGraph", m_szCurrentViewClassName) == 0)
-    				CMainFrame::glGraphWindowHeight = l;
-    			//end rewbs.graph
+            m_bMaxWhenClosed = IsZoomed();
+            if (bForce) CMainFrame::gbMdiMaximize = m_bMaxWhenClosed;
+            if (!IsIconic())
+            {
+                    CWnd *pWnd = m_wndSplitter.GetPane(0, 0);
+                    if (pWnd)
+                    {
+                            pWnd->GetWindowRect(&rect);
+                            LONG l = rect.Height();
+                            //rewbs.varWindowSize - not the nicest piece of code, but we need to distinguish btw the views:
+                            if (strcmp("CViewGlobals",m_szCurrentViewClassName) == 0)
+                                    CMainFrame::glGeneralWindowHeight = l;
+                            else if (strcmp("CViewPattern", m_szCurrentViewClassName) == 0)
+                                    CMainFrame::glPatternWindowHeight = l;
+                            else if (strcmp("CViewSample", m_szCurrentViewClassName) == 0)
+                                    CMainFrame::glSampleWindowHeight = l;
+                            else if (strcmp("CViewInstrument", m_szCurrentViewClassName) == 0)
+                                    CMainFrame::glInstrumentWindowHeight = l;
+                            else if (strcmp("CViewComments", m_szCurrentViewClassName) == 0)
+                                    CMainFrame::glCommentsWindowHeight = l;
+                            //rewbs.graph
+                            else if (strcmp("CViewGraph", m_szCurrentViewClassName) == 0)
+                                    CMainFrame::glGraphWindowHeight = l;
+                            //end rewbs.graph
 
-    		}
-    	}
+                    }
+            }
     }
 }
 
@@ -297,22 +297,22 @@ void CChildFrame::SavePosition(BOOL bForce)
 int CChildFrame::GetSplitterHeight() {
     if (m_hWnd)
     {
-    	CRect rect;
+            CRect rect;
 
-    	CWnd *pWnd = m_wndSplitter.GetPane(0, 0);
-    	if (pWnd)
-    	{
-    		pWnd->GetWindowRect(&rect);
-    		return rect.Height();
-    	}
+            CWnd *pWnd = m_wndSplitter.GetPane(0, 0);
+            if (pWnd)
+            {
+                    pWnd->GetWindowRect(&rect);
+                    return rect.Height();
+            }
     }
-    return 15;	// tidy default
+    return 15;        // tidy default
 };
 
 LRESULT CChildFrame::SendViewMessage(UINT uMsg, LPARAM lParam) const
 //------------------------------------------------------------------
 {
-    if (m_hWndView)	return ::SendMessage(m_hWndView, WM_MOD_VIEWMSG, uMsg, lParam);
+    if (m_hWndView)        return ::SendMessage(m_hWndView, WM_MOD_VIEWMSG, uMsg, lParam);
     return 0;
 }
 
@@ -325,14 +325,14 @@ LRESULT CChildFrame::OnInstrumentSelected(WPARAM wParam, LPARAM lParam)
     if (pView) pModDoc = (CModDoc *)pView->GetDocument();
     if ((m_hWndCtrl) && (pModDoc))
     {
-    	module_renderer *pSndFile = pModDoc->GetSoundFile();
-    	UINT nIns = lParam;
+            module_renderer *pSndFile = pModDoc->GetSoundFile();
+            UINT nIns = lParam;
 
-    	if ((!wParam) && (pSndFile->m_nInstruments > 0))
-    	{
-    		nIns = pModDoc->FindSampleParent(nIns);
-    	}
-    	::SendMessage(m_hWndCtrl, WM_MOD_CTRLMSG, CTRLMSG_PAT_SETINSTRUMENT, nIns);
+            if ((!wParam) && (pSndFile->m_nInstruments > 0))
+            {
+                    nIns = pModDoc->FindSampleParent(nIns);
+            }
+            ::SendMessage(m_hWndCtrl, WM_MOD_CTRLMSG, CTRLMSG_PAT_SETINSTRUMENT, nIns);
     }
     return 0;
 }
@@ -378,35 +378,35 @@ BOOL CChildFrame::OnToolTipText(UINT, NMHDR* pNMHDR, LRESULT* pResult)
     szFullText[0] = 0;
     UINT nID = pNMHDR->idFrom;
     if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
-    	pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
+            pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
     {
-    	// idFrom is actually the HWND of the tool
-    	nID = (UINT)::GetDlgCtrlID((HWND)nID);
+            // idFrom is actually the HWND of the tool
+            nID = (UINT)::GetDlgCtrlID((HWND)nID);
     }
 
     if ((nID >= 1000) && (nID < 10000) && (m_hWndCtrl) && (::SendMessage(m_hWndCtrl, WM_MOD_GETTOOLTIPTEXT, nID, (LPARAM)szFullText)))
     {
-    	strTipText = szFullText;
+            strTipText = szFullText;
     } else
     {
-    	// allow top level routing frame to handle the message
-    	if (GetRoutingFrame() != NULL) return FALSE;
-    	if (nID != 0) // will be zero on a separator
-    	{
-    		AfxLoadString(nID, szFullText);
-    		// this is the command id, not the button index
-    		AfxExtractSubString(strTipText, szFullText, 1, '\n');
-    	}
+            // allow top level routing frame to handle the message
+            if (GetRoutingFrame() != NULL) return FALSE;
+            if (nID != 0) // will be zero on a separator
+            {
+                    AfxLoadString(nID, szFullText);
+                    // this is the command id, not the button index
+                    AfxExtractSubString(strTipText, szFullText, 1, '\n');
+            }
     }
     if (pNMHDR->code == TTN_NEEDTEXTA)
-    	lstrcpyn(pTTTA->szText, strTipText, sizeof(pTTTA->szText));
+            lstrcpyn(pTTTA->szText, strTipText, sizeof(pTTTA->szText));
     else
-    	_mbstowcsz(pTTTW->szText, strTipText, sizeof(pTTTW->szText));
+            _mbstowcsz(pTTTW->szText, strTipText, sizeof(pTTTW->szText));
     *pResult = 0;
 
     // bring the tooltip window above other popup windows
     ::SetWindowPos(pNMHDR->hwndFrom, HWND_TOP, 0, 0, 0, 0,
-    	SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOMOVE|SWP_NOOWNERZORDER);
+            SWP_NOACTIVATE|SWP_NOSIZE|SWP_NOMOVE|SWP_NOOWNERZORDER);
 
     return TRUE;    // message was handled
 }
@@ -418,9 +418,9 @@ LRESULT CChildFrame::OnChangeViewClass(WPARAM wParam, LPARAM lParam)
     CModControlDlg *pDlg = (CModControlDlg *)lParam;
     if (pDlg)
     {
-    	CRuntimeClass *pNewViewClass = pDlg->GetAssociatedViewClass();
-    	if (pNewViewClass) ChangeViewClass(pNewViewClass);
-    	::PostMessage(m_hWndCtrl, WM_MOD_CTRLMSG, CTRLMSG_ACTIVATEPAGE, (LPARAM)wParam);
+            CRuntimeClass *pNewViewClass = pDlg->GetAssociatedViewClass();
+            if (pNewViewClass) ChangeViewClass(pNewViewClass);
+            ::PostMessage(m_hWndCtrl, WM_MOD_CTRLMSG, CTRLMSG_ACTIVATEPAGE, (LPARAM)wParam);
     }
     return 0;
 }
@@ -431,11 +431,11 @@ BOOL CChildFrame::OnNcActivate(BOOL bActivate)
 {
     if (m_hWndView)
     {
-    	CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    	if (pMainFrm)
-    	{
-    		if (bActivate) pMainFrm->SetMidiRecordWnd(m_hWndView);
-    	}
+            CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
+            if (pMainFrm)
+            {
+                    if (bActivate) pMainFrm->SetMidiRecordWnd(m_hWndView);
+            }
     }
     return CMDIChildWnd::OnNcActivate(bActivate);
 }
@@ -456,7 +456,7 @@ void CChildFrame::OnSetFocus(CWnd* pOldWnd)
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     if (pMainFrm)
     {
-    	pMainFrm->UpdateEffectKeys();
+            pMainFrm->UpdateEffectKeys();
     }
 }
 //end rewbs.customKeysAutoEffects

@@ -22,16 +22,16 @@ extern UINT gnMidiImportSpeed;
 extern UINT gnMidiPatternLen;
 
 BEGIN_MESSAGE_MAP(CMidiSetupDlg, CPropertyPage)
-    ON_CBN_SELCHANGE(IDC_COMBO1,	OnSettingsChanged)
-    ON_COMMAND(IDC_CHECK1,			OnSettingsChanged)
-    ON_COMMAND(IDC_CHECK2,			OnSettingsChanged)
-    ON_COMMAND(IDC_CHECK3,			OnSettingsChanged)
-    ON_COMMAND(IDC_CHECK4,			OnSettingsChanged)
-    ON_COMMAND(IDC_MIDI_TO_PLUGIN,	OnSettingsChanged)
-    ON_COMMAND(IDC_MIDI_MACRO_CONTROL,	OnSettingsChanged)
-    ON_COMMAND(IDC_MIDIVOL_TO_NOTEVOL,	OnSettingsChanged)
-    ON_COMMAND(IDC_MIDIPLAYCONTROL,	OnSettingsChanged)
-    ON_COMMAND(IDC_MIDIPLAYPATTERNONMIDIIN,	OnSettingsChanged)
+    ON_CBN_SELCHANGE(IDC_COMBO1,        OnSettingsChanged)
+    ON_COMMAND(IDC_CHECK1,                        OnSettingsChanged)
+    ON_COMMAND(IDC_CHECK2,                        OnSettingsChanged)
+    ON_COMMAND(IDC_CHECK3,                        OnSettingsChanged)
+    ON_COMMAND(IDC_CHECK4,                        OnSettingsChanged)
+    ON_COMMAND(IDC_MIDI_TO_PLUGIN,        OnSettingsChanged)
+    ON_COMMAND(IDC_MIDI_MACRO_CONTROL,        OnSettingsChanged)
+    ON_COMMAND(IDC_MIDIVOL_TO_NOTEVOL,        OnSettingsChanged)
+    ON_COMMAND(IDC_MIDIPLAYCONTROL,        OnSettingsChanged)
+    ON_COMMAND(IDC_MIDIPLAYPATTERNONMIDIIN,        OnSettingsChanged)
 END_MESSAGE_MAP()
 
 
@@ -40,8 +40,8 @@ void CMidiSetupDlg::DoDataExchange(CDataExchange* pDX)
 {
     CPropertyPage::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(COptionsSoundcard)
-    DDX_Control(pDX, IDC_SPIN1,		m_SpinSpd);
-    DDX_Control(pDX, IDC_SPIN2,		m_SpinPat);
+    DDX_Control(pDX, IDC_SPIN1,                m_SpinSpd);
+    DDX_Control(pDX, IDC_SPIN2,                m_SpinPat);
     //}}AFX_DATA_MAP
 }
 

@@ -31,8 +31,8 @@ BOOL CAmpDlg::OnInitDialog()
     CSpinButtonCtrl *spin = (CSpinButtonCtrl *)GetDlgItem(IDC_SPIN1);
     if (spin)
     {
-    	spin->SetRange32(m_nFactorMin, m_nFactorMax);
-    	spin->SetPos32(m_nFactor);
+            spin->SetRange32(m_nFactorMin, m_nFactorMax);
+            spin->SetPos32(m_nFactor);
     }
     SetDlgItemInt(IDC_EDIT1, m_nFactor);
     return TRUE;
@@ -45,9 +45,9 @@ void CAmpDlg::OnOK()
     const int nVal = static_cast<int>(GetDlgItemInt(IDC_EDIT1));
     if(nVal < m_nFactorMin || nVal > m_nFactorMax)
     {
-    	CString str; str.Format(GetStrI18N(__TEXT("Value should be within [%d, %d]")), m_nFactorMin, m_nFactorMax);
-    	AfxMessageBox(str, MB_ICONINFORMATION);
-    	return;
+            CString str; str.Format(GetStrI18N(__TEXT("Value should be within [%d, %d]")), m_nFactorMin, m_nFactorMax);
+            AfxMessageBox(str, MB_ICONINFORMATION);
+            return;
     }
     m_nFactor = static_cast<int16_t>(nVal);
     m_bFadeIn = (IsDlgButtonChecked(IDC_CHECK1) != 0);
@@ -99,9 +99,9 @@ void CRawSampleDlg::UpdateDialog()
 // Add silence dialog - add silence to a sample
 
 BEGIN_MESSAGE_MAP(CAddSilenceDlg, CDialog)
-    ON_COMMAND(IDC_RADIO_ADDSILENCE_BEGIN,		OnEditModeChanged)
-    ON_COMMAND(IDC_RADIO_ADDSILENCE_END,		OnEditModeChanged)
-    ON_COMMAND(IDC_RADIO_RESIZETO,				OnEditModeChanged)
+    ON_COMMAND(IDC_RADIO_ADDSILENCE_BEGIN,                OnEditModeChanged)
+    ON_COMMAND(IDC_RADIO_ADDSILENCE_END,                OnEditModeChanged)
+    ON_COMMAND(IDC_RADIO_RESIZETO,                                OnEditModeChanged)
 END_MESSAGE_MAP()
 
 
@@ -113,22 +113,22 @@ BOOL CAddSilenceDlg::OnInitDialog()
     CSpinButtonCtrl *spin = (CSpinButtonCtrl *)GetDlgItem(IDC_SPIN_ADDSILENCE);
     if (spin)
     {
-    	spin->SetRange(0, INT16_MAX);
-    	spin->SetPos(m_nSamples);
+            spin->SetRange(0, INT16_MAX);
+            spin->SetPos(m_nSamples);
     }
 
     int iRadioButton = IDC_RADIO_ADDSILENCE_END;
     switch(m_nEditOption)
     {
     case addsilence_at_beginning:
-    	iRadioButton = IDC_RADIO_ADDSILENCE_BEGIN;
-    	break;
+            iRadioButton = IDC_RADIO_ADDSILENCE_BEGIN;
+            break;
     case addsilence_at_end:
-    	iRadioButton = IDC_RADIO_ADDSILENCE_END;
-    	break;
+            iRadioButton = IDC_RADIO_ADDSILENCE_END;
+            break;
     case addsilence_resize:
-    	iRadioButton = IDC_RADIO_RESIZETO;
-    	break;
+            iRadioButton = IDC_RADIO_RESIZETO;
+            break;
     }
     CButton *radioEnd = (CButton *)GetDlgItem(iRadioButton);
     radioEnd->SetCheck(true);
@@ -154,14 +154,14 @@ void CAddSilenceDlg::OnEditModeChanged()
     enmAddSilenceOptions cNewEditOption = GetEditMode();
     if(cNewEditOption != addsilence_resize && m_nEditOption == addsilence_resize)
     {
-    	// switch to "add silenece"
-    	m_nLength = GetDlgItemInt(IDC_EDIT_ADDSILENCE);
-    	SetDlgItemInt(IDC_EDIT_ADDSILENCE, m_nSamples);
+            // switch to "add silenece"
+            m_nLength = GetDlgItemInt(IDC_EDIT_ADDSILENCE);
+            SetDlgItemInt(IDC_EDIT_ADDSILENCE, m_nSamples);
     } else if(cNewEditOption == addsilence_resize && m_nEditOption != addsilence_resize)
     {
-    	// switch to "resize"
-    	m_nSamples = GetDlgItemInt(IDC_EDIT_ADDSILENCE);
-    	SetDlgItemInt(IDC_EDIT_ADDSILENCE, m_nLength);
+            // switch to "resize"
+            m_nSamples = GetDlgItemInt(IDC_EDIT_ADDSILENCE);
+            SetDlgItemInt(IDC_EDIT_ADDSILENCE, m_nLength);
     }
     m_nEditOption = cNewEditOption;
 }
@@ -184,8 +184,8 @@ void CSampleGridDlg::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CSampleGridDlg)
-    DDX_Control(pDX, IDC_EDIT1,			m_EditSegments);
-    DDX_Control(pDX, IDC_SPIN1,			m_SpinSegments);
+    DDX_Control(pDX, IDC_EDIT1,                        m_EditSegments);
+    DDX_Control(pDX, IDC_SPIN1,                        m_SpinSegments);
     //}}AFX_DATA_MAP
 }
 
@@ -218,8 +218,8 @@ void CSampleXFadeDlg::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CSampleGridDlg)
-    DDX_Control(pDX, IDC_EDIT1,			m_EditSamples);
-    DDX_Control(pDX, IDC_SPIN1,			m_SpinSamples);
+    DDX_Control(pDX, IDC_EDIT1,                        m_EditSamples);
+    DDX_Control(pDX, IDC_SPIN1,                        m_SpinSamples);
     //}}AFX_DATA_MAP
 }
 

@@ -18,18 +18,18 @@ double MaxFinderSignedInt(const char* const buffer, const size_t bs)
     uint32_t max = 0;
     for(size_t i = 0; i <= bs-INBYTES; i += INBYTES)
     {
-    	int32_t temp = 0;
-    	memcpy((char*)(&temp)+(4-INBYTES), buffer + i, INBYTES);
-    	if(temp < 0) temp = -temp;
-    	if(temp < 0)
-    	{
-    		max = static_cast<uint32_t>(INT32_MIN);
-    		max >>= 8*(4-INBYTES);
-    		break; //This is the max possible value so no need to look for bigger one.
-    	}
-    	temp >>= 8*(4-INBYTES);
-    	if(static_cast<uint32_t>(temp) > max)
-    		max = static_cast<uint32_t>(temp);
+            int32_t temp = 0;
+            memcpy((char*)(&temp)+(4-INBYTES), buffer + i, INBYTES);
+            if(temp < 0) temp = -temp;
+            if(temp < 0)
+            {
+                    max = static_cast<uint32_t>(INT32_MIN);
+                    max >>= 8*(4-INBYTES);
+                    break; //This is the max possible value so no need to look for bigger one.
+            }
+            temp >>= 8*(4-INBYTES);
+            if(static_cast<uint32_t>(temp) > max)
+                    max = static_cast<uint32_t>(temp);
     }
     return static_cast<double>(max);
 }
@@ -43,10 +43,10 @@ inline double MaxFinderFloat32(const char* const buffer, const size_t bs)
     float max = 0;
     for(size_t i = 0; i<=bs-4; i+=4)
     {
-    	float temp = *reinterpret_cast<const float*>(buffer+i);
-    	temp = fabs(temp);
-    	if(temp > max)
-    		max = temp;
+            float temp = *reinterpret_cast<const float*>(buffer+i);
+            temp = fabs(temp);
+            if(temp > max)
+                    max = temp;
     }
     return max;
 }
@@ -114,9 +114,9 @@ bool CopyWavBuffer(const char* const readBuffer, const size_t rbSize, char* writ
     //Copying buffer.
     while(rbCounter <= rbSize-inBytes && wbCounter <= wbSize-outBytes)
     {
-    	CopyAndConvert(readBuffer+rbCounter, writeBuffer+wbCounter, max);
-    	rbCounter += inBytes;
-    	wbCounter += outBytes;
+            CopyAndConvert(readBuffer+rbCounter, writeBuffer+wbCounter, max);
+            rbCounter += inBytes;
+            wbCounter += outBytes;
     }
     return false;
 }

@@ -49,10 +49,10 @@ public:
     RATIOTYPE GetGroupRatio() const {return m_GroupRatio;}
 
     virtual STEPINDEXTYPE GetStepDistance(const NOTEINDEXTYPE& from, const NOTEINDEXTYPE& to) const
-    	{return (to - from)*(static_cast<NOTEINDEXTYPE>(GetFineStepCount())+1);}
+            {return (to - from)*(static_cast<NOTEINDEXTYPE>(GetFineStepCount())+1);}
     
     virtual STEPINDEXTYPE GetStepDistance(const NOTEINDEXTYPE& noteFrom, const STEPINDEXTYPE& stepDistFrom, const NOTEINDEXTYPE& noteTo, const STEPINDEXTYPE& stepDistTo) const
-    	{return GetStepDistance(noteFrom, noteTo) + stepDistTo - stepDistFrom;}
+            {return GetStepDistance(noteFrom, noteTo) + stepDistTo - stepDistFrom;}
     
     static CTuningBase* Deserialize(istream& inStrm);
 
@@ -67,13 +67,13 @@ public:
 public:
     //PUBLIC CONSTRUCTORS/DESTRUCTORS:
     CTuningRTI(const vector<RATIOTYPE>& ratios,
-    			const NOTEINDEXTYPE& stepMin = s_StepMinDefault,
-    			const string& name = "")
-    			: CTuning(name)
+                            const NOTEINDEXTYPE& stepMin = s_StepMinDefault,
+                            const string& name = "")
+                            : CTuning(name)
     {
-    	SetDummyValues();
-    	m_StepMin = stepMin;
-    	m_RatioTable = ratios;
+            SetDummyValues();
+            m_StepMin = stepMin;
+            m_RatioTable = ratios;
     }
 
     //Copy tuning.
@@ -85,8 +85,8 @@ public:
     
     CTuningRTI(const NOTEINDEXTYPE& stepMin, const string& name) : CTuning(name)
     {
-    	SetDummyValues();
-    	m_StepMin = stepMin;
+            SetDummyValues();
+            m_StepMin = stepMin;
     }
 
     virtual ~CTuningRTI() {}
@@ -137,10 +137,10 @@ private:
     
     bool IsNoteInTable(const NOTEINDEXTYPE& s) const
     {
-    	if(s < m_StepMin || s >= m_StepMin + static_cast<NOTEINDEXTYPE>(m_RatioTable.size()))
-    		return false;
-    	else
-    		return true;
+            if(s < m_StepMin || s >= m_StepMin + static_cast<NOTEINDEXTYPE>(m_RatioTable.size()))
+                    return false;
+            else
+                    return true;
     }
 
 private:
