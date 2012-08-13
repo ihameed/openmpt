@@ -10,6 +10,8 @@
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "misc_util.h"
 
+using namespace modplug::tracker;
+
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
 
@@ -836,7 +838,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t d
     					{
     						if ((m->volcmd) && (m->volcmd <= MAX_VOLCMDS))
     						{
-    							p[6] = gszVolCommands[m->volcmd];
+    							p[6] = vol_command_glyphs[m->volcmd];
     							p[7] = '0' + (m->vol / 10);
     							p[8] = '0' + (m->vol % 10);
     						} else p[6] = p[7] = p[8] = '.';
@@ -862,14 +864,14 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t d
     						if (m->command)
     						{
     							if (m_SndFile.m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
-    								p[9] = gszS3mCommands[m->command];
+    								p[9] = s3m_command_glyphs[m->command];
     							else
-    								p[9] = gszModCommands[m->command];
+    								p[9] = mod_command_glyphs[m->command];
     						} else p[9] = '.';
     						if (m->param)
     						{
-    							p[10] = szHexChar[m->param >> 4];
-    							p[11] = szHexChar[m->param & 0x0F];
+    							p[10] = hex_chars[m->param >> 4];
+    							p[11] = hex_chars[m->param & 0x0F];
     						} else p[10] = p[11] = '.';
     					}
     				} else
@@ -1057,7 +1059,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     								m[col].volcmd = 0;
     								for (UINT i=1; i<MAX_VOLCMDS; i++)
     								{
-    									if (s[5] == gszVolCommands[i])
+    									if (s[5] == vol_command_glyphs[i])
     									{
     										m[col].volcmd = i;
     										break;
@@ -1086,7 +1088,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     							m[col].command = 0;
     							if (s[8] != '.')
     							{
-    								LPCSTR psc = (bS3MCommands) ? gszS3mCommands : gszModCommands;
+    								LPCSTR psc = (bS3MCommands) ? s3m_command_glyphs : mod_command_glyphs;
     								for (UINT i=1; i<MAX_EFFECTS; i++)
     								{
     									if ((s[8] == psc[i]) && (psc[i] != '?')) m[col].command = i;
@@ -1102,8 +1104,8 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
     							{
     								for (UINT i=0; i<16; i++)
     								{
-    									if (s[9] == szHexChar[i]) m[col].param |= (i<<4);
-    									if (s[10] == szHexChar[i]) m[col].param |= i;
+    									if (s[9] == hex_chars[i]) m[col].param |= (i<<4);
+    									if (s[10] == hex_chars[i]) m[col].param |= i;
     								}
     							}
     						}

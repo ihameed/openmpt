@@ -18,6 +18,8 @@
 #include "legacy_soundlib/midi.h"
 #include <cmath>
 
+using namespace modplug::tracker;
+
 #define    PLUGNAME_HEIGHT	16	//rewbs.patPlugName
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
@@ -2103,7 +2105,7 @@ EndSearch:
         if (m_findReplace.dwFindFlags & PATSEARCH_VOLCMD)
         {
             if (m_findReplace.cmdFind.volcmd)
-                wsprintf(&szFind[strlen(szFind)], "%c", gszVolCommands[m_findReplace.cmdFind.volcmd]);
+                wsprintf(&szFind[strlen(szFind)], "%c", vol_command_glyphs[m_findReplace.cmdFind.volcmd]);
             else
                 strcat(szFind, ".");
         } else strcat(szFind, "?");
@@ -2117,9 +2119,9 @@ EndSearch:
             if (m_findReplace.cmdFind.command)
             {
                 if (pSndFile->m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
-                    wsprintf(&szFind[strlen(szFind)], "%c", gszS3mCommands[m_findReplace.cmdFind.command]);
+                    wsprintf(&szFind[strlen(szFind)], "%c", s3m_command_glyphs[m_findReplace.cmdFind.command]);
                 else
-                    wsprintf(&szFind[strlen(szFind)], "%c", gszModCommands[m_findReplace.cmdFind.command]);
+                    wsprintf(&szFind[strlen(szFind)], "%c", mod_command_glyphs[m_findReplace.cmdFind.command]);
             } else
                 strcat(szFind, ".");
         } else strcat(szFind, "?");

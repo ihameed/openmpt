@@ -24,6 +24,7 @@
 #include <qwinwidget.h>
 
 using namespace modplug::pervasives;
+using namespace modplug::tracker;
 
 extern uint16_t S3MFineTuneTable[16];
 
@@ -2228,10 +2229,10 @@ bool CModDoc::GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool
         if ((bXX) && (bSupported))
         {
             strcpy(pszDescription, " xx: ");
-            LPCSTR pszCmd = (m_SndFile.m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) ? gszModCommands : gszS3mCommands;
+            LPCSTR pszCmd = (m_SndFile.m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) ? mod_command_glyphs : s3m_command_glyphs;
             pszDescription[0] = pszCmd[command];
-            if ((gFXInfo[fxndx].dwParamMask & 0xF0) == 0xF0) pszDescription[1] = szHexChar[gFXInfo[fxndx].dwParamValue >> 4];
-            if ((gFXInfo[fxndx].dwParamMask & 0x0F) == 0x0F) pszDescription[2] = szHexChar[gFXInfo[fxndx].dwParamValue & 0x0F];
+            if ((gFXInfo[fxndx].dwParamMask & 0xF0) == 0xF0) pszDescription[1] = hex_chars[gFXInfo[fxndx].dwParamValue >> 4];
+            if ((gFXInfo[fxndx].dwParamMask & 0x0F) == 0x0F) pszDescription[2] = hex_chars[gFXInfo[fxndx].dwParamValue & 0x0F];
         }
         strcat(pszDescription, gFXInfo[fxndx].pszName);
         //rewbs.xinfo

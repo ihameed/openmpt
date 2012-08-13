@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 
-#include "../serializers/wao.h";
+#include "../serializers/wao.h"
 
 
 #include "../mptrack.h"

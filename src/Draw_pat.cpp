@@ -14,6 +14,8 @@
 
 using std::string;
 
+using namespace modplug::tracker;
+
 // Headers
 #define ROWHDR_WIDTH    	32	// Row header
 #define COLHDR_HEIGHT    	16	// Column header
@@ -38,7 +40,7 @@ using std::string;
 /////////////////////////////////////////////////////////////////////////////
 // CViewPattern Drawing Implementation
 
-inline const pattern_font_spec_t * GetCurrentPatternFont()
+inline const pattern_font_metrics_t * GetCurrentPatternFont()
 //------------------------------------------
 {
     return (CMainFrame::m_dwPatternSetup & PATTERN_SMALLFONT) ? &small_pattern_font : &medium_pattern_font;
@@ -78,7 +80,7 @@ void CViewPattern::UpdateColors()
 BOOL CViewPattern::UpdateSizes()
 //------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     int oldx = m_szCell.cx;
     m_szHeader.cx = ROWHDR_WIDTH;
     m_szHeader.cy = COLHDR_HEIGHT;
@@ -96,7 +98,7 @@ BOOL CViewPattern::UpdateSizes()
 UINT CViewPattern::GetColumnOffset(uint32_t dwPos) const
 //---------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     UINT n = 0;
     dwPos &= 7;
     if (dwPos > 4) dwPos = 4;
@@ -143,7 +145,7 @@ void CViewPattern::UpdateView(uint32_t dwHintMask, CObject *)
 POINT CViewPattern::GetPointFromPosition(uint32_t dwPos)
 //---------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     POINT pt;
     int xofs = GetXScrollPos();
     int yofs = GetYScrollPos();
@@ -167,7 +169,7 @@ POINT CViewPattern::GetPointFromPosition(uint32_t dwPos)
 uint32_t CViewPattern::GetPositionFromPoint(POINT pt)
 //------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     int xofs = GetXScrollPos();
     int yofs = GetYScrollPos();
     int x = xofs + (pt.x - m_szHeader.cx) / GetColumnWidth();
@@ -190,7 +192,7 @@ uint32_t CViewPattern::GetPositionFromPoint(POINT pt)
 void CViewPattern::DrawLetter(int x, int y, char letter, int sizex, int ofsx)
 //---------------------------------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     int srcx = pfnt->space_x, srcy = pfnt->space_y;
 
     if ((letter >= '0') && (letter <= '9'))
@@ -249,7 +251,7 @@ void CViewPattern::DrawLetter(int x, int y, char letter, int sizex, int ofsx)
 void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
 //---------------------------------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
 
     UINT xsrc = pfnt->note_x, ysrc = pfnt->note_y, dx = pfnt->element_widths[0];
     if (!note)
@@ -315,7 +317,7 @@ void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
 void CViewPattern::DrawInstrument(int x, int y, UINT instr)
 //---------------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     if (instr)
     {
         UINT dx = pfnt->instr_firstchar_width;
@@ -337,7 +339,7 @@ void CViewPattern::DrawInstrument(int x, int y, UINT instr)
 void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modcommand_t mc)
 //---------------------------------------------------------------------
 {
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
 
     if(mc.IsPcNote())
     {    //If note is parameter control note, drawing volume command differently.
@@ -635,7 +637,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
 //-----------------------------------------------------------------------------------------------------
 {
     uint8_t bColSel[MAX_BASECHANNELS];
-    const pattern_font_spec_t * pfnt = GetCurrentPatternFont();
+    const pattern_font_metrics_t * pfnt = GetCurrentPatternFont();
     modplug::tracker::modcommand_t m0, *pPattern = pSndFile->Patterns[nPattern];
     CHAR s[256];
     CRect rect;
@@ -909,7 +911,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
                         if (m->command)
                         {
                             UINT command = m->command & 0x3F;
-                            int n =    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) ? gszModCommands[command] : gszS3mCommands[command];
+                            int n =    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) ? mod_command_glyphs[command] : s3m_command_glyphs[command];
                             ASSERT(n > ' ');
                             //if (n <= ' ') n = '?';
                             DrawLetter(xbmp+x, 0, (char)n, pfnt->element_widths[3], pfnt->cmd_offset);

@@ -331,6 +331,9 @@
     <ClInclude Include="pervasives\debug.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="tracker\constants.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="mptrack.rc" />

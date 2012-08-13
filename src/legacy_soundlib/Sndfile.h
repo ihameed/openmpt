@@ -33,7 +33,7 @@ typedef intptr_t VstIntPtr;
 #endif
 
 
-
+static const TCHAR gszEmpty[] = TEXT("");
 
 //modplug::tracker::modinstrument_t;
 

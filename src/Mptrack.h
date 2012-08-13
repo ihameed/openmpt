@@ -15,6 +15,7 @@
 #include "resource.h"       // main symbols
 #include "legacy_soundlib/Sndfile.h"
 #include <windows.h>
+#include "tracker/constants.h"
 
 class CModDoc;
 class CVstPluginManager;
@@ -369,12 +370,6 @@ const LPCTSTR szSpecialNoteShortDesc[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = 
 // Make sure that special note arrays include string for every note.
 STATIC_ASSERT(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == ARRAYELEMCOUNT(szSpecialNoteNames));
 STATIC_ASSERT(ARRAYELEMCOUNT(szSpecialNoteShortDesc) == ARRAYELEMCOUNT(szSpecialNoteNames));
-
-const LPCSTR szHexChar = "0123456789ABCDEF";
-const LPCSTR gszModCommands = " 0123456789ABCDRFFTE???GHK?YXPLZ\\?#??"; //rewbs.smoothVST: added last \ (written as \\);
-const LPCSTR gszS3mCommands = " JFEGHLKRXODB?CQATI?SMNVW?UY?P?Z\\:#??"; //rewbs.smoothVST: added last \ (written as \\);
-const LPCSTR gszVolCommands = " vpcdabuhlrgfe:o";
-const TCHAR gszEmpty[] = TEXT("");
 
 // Defined in load_mid.cpp
 extern const LPCSTR szMidiProgramNames[128];

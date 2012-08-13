@@ -16,6 +16,8 @@
 #define new DEBUG_NEW
 
 
+using namespace modplug::tracker;
+
 
 // Non-client toolbar
 #define SMP_LEFTBAR_CY    		29
@@ -1291,7 +1293,7 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
 
     			const char cOffsetChar = pSndFile->GetModSpecifications().GetEffectLetter(CMD_OFFSET);
     			const bool bHasHighOffset = (pSndFile->TypeIsS3M_IT_MPT() || (pSndFile->GetType() == MOD_TYPE_XM));
-    			const char cHighOffsetChar = (pSndFile->TypeIsS3M_IT_MPT()) ? gszS3mCommands[CMD_S3MCMDEX] : gszModCommands[CMD_XFINEPORTAUPDOWN];
+    			const char cHighOffsetChar = (pSndFile->TypeIsS3M_IT_MPT()) ? s3m_command_glyphs[CMD_S3MCMDEX] : mod_command_glyphs[CMD_XFINEPORTAUPDOWN];
 
     			if(xHigh == 0)
     				wsprintf(s, "Offset: %c%02X", cOffsetChar, xLow);

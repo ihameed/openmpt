@@ -572,6 +572,7 @@
     <ClInclude Include="SoundFilePlayConfig.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="tagging.h" />
+    <ClInclude Include="tracker\constants.h" />
     <ClInclude Include="tracker\modcommand.h" />
     <ClInclude Include="tracker\tracker.h" />
     <ClInclude Include="typedefs.h" />

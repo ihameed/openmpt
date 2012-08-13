@@ -115,6 +115,7 @@ protected:
     //Returns modcommand from (floor[i/channelCount], i%channelCount)
 
     modplug::tracker::modcommand_t& GetModCommand(ROWINDEX r, CHANNELINDEX c) { return m_ModCommands[r*GetNumChannels()+c]; }
+public:
     const modplug::tracker::modcommand_t& GetModCommand(ROWINDEX r, CHANNELINDEX c) const { return m_ModCommands[r*GetNumChannels()+c]; }
 
 
