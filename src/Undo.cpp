@@ -13,20 +13,20 @@
 #include "MainFrm.h"
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "Undo.h"
+#include "tracker/types.h"
 
 #define new DEBUG_NEW
+
+using namespace modplug::tracker;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Pattern Undo Functions
 
 
 // Remove all undo steps.
-void CPatternUndo::ClearUndo()
-//----------------------------
-{
-    while(UndoBuffer.size() > 0)
-    {
-            DeleteUndoStep(0);
+void CPatternUndo::ClearUndo() {
+    while(UndoBuffer.size() > 0) {
+        DeleteUndoStep(0);
     }
 }
 
@@ -39,16 +39,17 @@ void CPatternUndo::ClearUndo()
 //   - numChns: width
 //   - numRows: height
 //   - linkToPrevious: Don't create a separate undo step, but link this to the previous undo event. Useful for commands that modify several patterns at once.
-bool CPatternUndo::PrepareUndo(modplug::tracker::patternindex_t pattern, modplug::tracker::chnindex_t firstChn, modplug::tracker::rowindex_t firstRow, modplug::tracker::chnindex_t numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious)
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
+bool CPatternUndo::PrepareUndo(patternindex_t pattern, chnindex_t firstChn,
+                               rowindex_t firstRow, chnindex_t numChns,
+                               rowindex_t numRows, bool linkToPrevious)
 {
     if(m_pModDoc == nullptr) return false;
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
     PATTERNUNDOBUFFER sUndo;
-    modplug::tracker::modevent_t *pUndoData, *pPattern;
-    modplug::tracker::rowindex_t nRows;
+    modevent_t *pUndoData, *pPattern;
+    rowindex_t nRows;
 
     if (!pSndFile->Patterns.IsValidPat(pattern)) return false;
     nRows = pSndFile->Patterns[pattern].GetNumRows();
@@ -57,7 +58,7 @@ bool CPatternUndo::PrepareUndo(modplug::tracker::patternindex_t pattern, modplug
     if (firstRow + numRows >= nRows) numRows = nRows - firstRow;
     if (firstChn + numChns >= pSndFile->GetNumChannels()) numChns = pSndFile->GetNumChannels() - firstChn;
 
-    pUndoData = new modplug::tracker::modevent_t[numChns * numRows];
+    pUndoData = new modevent_t[numChns * numRows];
     if (!pUndoData) return false;
 
     const bool bUpdate = !CanUndo(); // update undo status?
@@ -77,9 +78,9 @@ bool CPatternUndo::PrepareUndo(modplug::tracker::patternindex_t pattern, modplug
     sUndo.pbuffer = pUndoData;
     sUndo.linkToPrevious = linkToPrevious;
     pPattern += firstChn + firstRow * pSndFile->GetNumChannels();
-    for(modplug::tracker::rowindex_t iy = 0; iy < numRows; iy++)
+    for(rowindex_t iy = 0; iy < numRows; iy++)
     {
-            memcpy(pUndoData, pPattern, numChns * sizeof(modplug::tracker::modevent_t));
+            memcpy(pUndoData, pPattern, numChns * sizeof(modevent_t));
             pUndoData += numChns;
             pPattern += pSndFile->GetNumChannels();
     }
@@ -92,7 +93,7 @@ bool CPatternUndo::PrepareUndo(modplug::tracker::patternindex_t pattern, modplug
 
 
 // Restore an undo point. Returns which pattern has been modified.
-modplug::tracker::patternindex_t CPatternUndo::Undo()
+patternindex_t CPatternUndo::Undo()
 //-------------------------------
 {
     return Undo(false);
@@ -101,19 +102,19 @@ modplug::tracker::patternindex_t CPatternUndo::Undo()
 
 // Restore an undo point. Returns which pattern has been modified.
 // linkedFromPrevious is true if a connected undo event is going to be deleted (can only be called internally).
-modplug::tracker::patternindex_t CPatternUndo::Undo(bool linkedFromPrevious)
+patternindex_t CPatternUndo::Undo(bool linkedFromPrevious)
 //------------------------------------------------------
 {
-    if(m_pModDoc == nullptr) return modplug::tracker::PatternIndexInvalid;
+    if(m_pModDoc == nullptr) return PatternIndexInvalid;
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-    if(pSndFile == nullptr) return modplug::tracker::PatternIndexInvalid;
+    if(pSndFile == nullptr) return PatternIndexInvalid;
 
-    modplug::tracker::modevent_t *pUndoData, *pPattern;
-    modplug::tracker::patternindex_t nPattern;
-    modplug::tracker::rowindex_t nRows;
+    modevent_t *pUndoData, *pPattern;
+    patternindex_t nPattern;
+    rowindex_t nRows;
     bool linkToPrevious = false;
 
-    if (CanUndo() == false) return modplug::tracker::PatternIndexInvalid;
+    if (CanUndo() == false) return PatternIndexInvalid;
 
     // If the most recent undo step is invalid, trash it.
     while(UndoBuffer.back().pattern >= pSndFile->Patterns.Size())
@@ -121,7 +122,7 @@ modplug::tracker::patternindex_t CPatternUndo::Undo(bool linkedFromPrevious)
             RemoveLastUndoStep();
             // The command which was connect to this command is no more valid, so don't search for the next command.
             if(linkedFromPrevious)
-                    return modplug::tracker::PatternIndexInvalid;
+                    return PatternIndexInvalid;
     }
 
     // Select most recent undo slot
@@ -133,25 +134,25 @@ modplug::tracker::patternindex_t CPatternUndo::Undo(bool linkedFromPrevious)
     {
             if((!pSndFile->Patterns[nPattern]) || (pSndFile->Patterns[nPattern].GetNumRows() < nRows))
             {
-                    modplug::tracker::modevent_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
-                    modplug::tracker::modevent_t *oldPattern = pSndFile->Patterns[nPattern];
-                    if (!newPattern) return modplug::tracker::PatternIndexInvalid;
-                    const modplug::tracker::rowindex_t nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
+                    modevent_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
+                    modevent_t *oldPattern = pSndFile->Patterns[nPattern];
+                    if (!newPattern) return PatternIndexInvalid;
+                    const rowindex_t nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
                     pSndFile->Patterns[nPattern].SetData(newPattern, nRows);
                     if(oldPattern)
                     {
-                            memcpy(newPattern, oldPattern, pSndFile->GetNumChannels() * nOldRowCount * sizeof(modplug::tracker::modevent_t));
+                            memcpy(newPattern, oldPattern, pSndFile->GetNumChannels() * nOldRowCount * sizeof(modevent_t));
                             CPattern::FreePattern(oldPattern);
                     }
             }
             linkToPrevious = pUndo->linkToPrevious;
             pUndoData = pUndo->pbuffer;
             pPattern = pSndFile->Patterns[nPattern];
-            if (!pSndFile->Patterns[nPattern]) return modplug::tracker::PatternIndexInvalid;
+            if (!pSndFile->Patterns[nPattern]) return PatternIndexInvalid;
             pPattern += pUndo->firstChannel + (pUndo->firstRow * pSndFile->GetNumChannels());
-            for(modplug::tracker::rowindex_t iy = 0; iy < pUndo->numRows; iy++)
+            for(rowindex_t iy = 0; iy < pUndo->numRows; iy++)
             {
-                    memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modplug::tracker::modevent_t));
+                    memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modevent_t));
                     pPattern += pSndFile->GetNumChannels();
                     pUndoData += pUndo->numChannels;
             }
@@ -205,7 +206,7 @@ void CPatternUndo::RemoveLastUndoStep()
 void CSampleUndo::ClearUndo()
 //---------------------------
 {
-    for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= MAX_SAMPLES; nSmp++)
+    for(sampleindex_t nSmp = 1; nSmp <= MAX_SAMPLES; nSmp++)
     {
             ClearUndo(nSmp);
     }
@@ -214,7 +215,7 @@ void CSampleUndo::ClearUndo()
 
 
 // Remove all undo steps of a given sample.
-void CSampleUndo::ClearUndo(const modplug::tracker::sampleindex_t nSmp)
+void CSampleUndo::ClearUndo(const sampleindex_t nSmp)
 //-------------------------------------------------
 {
     if(!SampleBufferExists(nSmp, false)) return;
@@ -229,7 +230,7 @@ void CSampleUndo::ClearUndo(const modplug::tracker::sampleindex_t nSmp)
 // Create undo point for given sample.
 // The main program has to tell what kind of changes are going to be made to the sample.
 // That way, a lot of RAM can be saved, because some actions don't even require an undo sample buffer.
-bool CSampleUndo::PrepareUndo(const modplug::tracker::sampleindex_t nSmp, sampleUndoTypes nChangeType, UINT nChangeStart, UINT nChangeEnd)
+bool CSampleUndo::PrepareUndo(const sampleindex_t nSmp, sampleUndoTypes nChangeType, UINT nChangeStart, UINT nChangeEnd)
 //--------------------------------------------------------------------------------------------------------------------
 {
     if(m_pModDoc == nullptr || !SampleBufferExists(nSmp)) return false;
@@ -250,7 +251,7 @@ bool CSampleUndo::PrepareUndo(const modplug::tracker::sampleindex_t nSmp, sample
     SAMPLEUNDOBUFFER sUndo;
 
     // Save old sample header
-    memcpy(&sUndo.OldSample, &pSndFile->Samples[nSmp], sizeof(modplug::tracker::modsample_t));
+    memcpy(&sUndo.OldSample, &pSndFile->Samples[nSmp], sizeof(modsample_t));
     memcpy(sUndo.szOldName, pSndFile->m_szNames[nSmp], sizeof(sUndo.szOldName));
     sUndo.nChangeType = nChangeType;
 
@@ -313,7 +314,7 @@ bool CSampleUndo::PrepareUndo(const modplug::tracker::sampleindex_t nSmp, sample
 
 
 // Restore undo point for given sample
-bool CSampleUndo::Undo(const modplug::tracker::sampleindex_t nSmp)
+bool CSampleUndo::Undo(const sampleindex_t nSmp)
 //--------------------------------------------
 {
     if(m_pModDoc == nullptr || CanUndo(nSmp) == false) return false;
@@ -385,7 +386,7 @@ bool CSampleUndo::Undo(const modplug::tracker::sampleindex_t nSmp)
     }
 
     // Restore old sample header
-    memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(modplug::tracker::modsample_t));
+    memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(modsample_t));
     pSndFile->Samples[nSmp].sample_data = pCurrentSample; // select the "correct" old sample
     memcpy(pSndFile->m_szNames[nSmp], pUndo->szOldName, sizeof(pUndo->szOldName));
 
@@ -405,7 +406,7 @@ bool CSampleUndo::Undo(const modplug::tracker::sampleindex_t nSmp)
 
 
 // Check if given sample has a valid undo buffer
-bool CSampleUndo::CanUndo(const modplug::tracker::sampleindex_t nSmp)
+bool CSampleUndo::CanUndo(const sampleindex_t nSmp)
 //-----------------------------------------------
 {
     if(!SampleBufferExists(nSmp, false) || UndoBuffer[nSmp - 1].size() == 0) return false;
@@ -414,7 +415,7 @@ bool CSampleUndo::CanUndo(const modplug::tracker::sampleindex_t nSmp)
 
 
 // Delete a given undo step of a sample.
-void CSampleUndo::DeleteUndoStep(const modplug::tracker::sampleindex_t nSmp, const UINT nStep)
+void CSampleUndo::DeleteUndoStep(const sampleindex_t nSmp, const UINT nStep)
 //------------------------------------------------------------------------
 {
     if(!SampleBufferExists(nSmp, false) || nStep >= UndoBuffer[nSmp - 1].size()) return;
@@ -424,7 +425,7 @@ void CSampleUndo::DeleteUndoStep(const modplug::tracker::sampleindex_t nSmp, con
 
 
 // Public helper function to remove the most recent undo point.
-void CSampleUndo::RemoveLastUndoStep(const modplug::tracker::sampleindex_t nSmp)
+void CSampleUndo::RemoveLastUndoStep(const sampleindex_t nSmp)
 //----------------------------------------------------------
 {
     if(CanUndo(nSmp) == false) return;
@@ -440,7 +441,7 @@ void CSampleUndo::RestrictBufferSize()
     UINT nCapacity = GetUndoBufferCapacity();
     while(nCapacity > CMainFrame::m_nSampleUndoMaxBuffer)
     {
-            for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= UndoBuffer.size(); nSmp++)
+            for(sampleindex_t nSmp = 1; nSmp <= UndoBuffer.size(); nSmp++)
             {
                     if(UndoBuffer[nSmp - 1][0].SamplePtr != nullptr)
                     {
@@ -474,7 +475,7 @@ UINT CSampleUndo::GetUndoBufferCapacity()
 
 
 // Ensure that the undo buffer is big enough for a given sample number
-bool CSampleUndo::SampleBufferExists(const modplug::tracker::sampleindex_t nSmp, bool bForceCreation)
+bool CSampleUndo::SampleBufferExists(const sampleindex_t nSmp, bool bForceCreation)
 //-------------------------------------------------------------------------------
 {
     if(nSmp == 0 || nSmp > MAX_SAMPLES) return false;

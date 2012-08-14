@@ -8,6 +8,7 @@
 #include "util.h"
 
 using namespace modplug::pervasives;
+using namespace modplug::tracker;
 
 namespace modplug {
 namespace gui {
@@ -26,7 +27,7 @@ void pattern_editor::update_colors(const colors_t &colors) {
     repaint();
 }
 
-void pattern_editor::update_playback_row(modplug::tracker::rowindex_t playback_row) {
+void pattern_editor::update_playback_row(rowindex_t playback_row) {
     this->playback_row = playback_row;
     repaint();
 }
@@ -55,7 +56,7 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
 
     const QRect &clipping_rect = evt->rect();
 
-    modplug::tracker::chnindex_t channel_count = renderer.GetNumChannels();
+    chnindex_t channel_count = renderer.GetNumChannels();
     note_column notehomie;
 
     draw_state state = {
@@ -71,7 +72,7 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         colors
     };
 
-    for (modplug::tracker::chnindex_t idx = 0; idx < channel_count; ++idx) {
+    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
         notehomie.draw_header(state, idx);
         notehomie.draw_column(state, idx);
     }

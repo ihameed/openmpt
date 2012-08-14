@@ -99,8 +99,8 @@ struct note_column: pattern_column {
         }
 
         auto current_pattern = state.renderer.Patterns[state.pattern_number];
-        auto measure_length = state.renderer.m_nDefaultRowsPerMeasure;
-        auto beat_length = state.renderer.m_nDefaultRowsPerBeat;
+        auto measure_length  = state.renderer.m_nDefaultRowsPerMeasure;
+        auto beat_length     = state.renderer.m_nDefaultRowsPerBeat;
 
         if (current_pattern.GetOverrideSignature()) {
             measure_length = current_pattern.GetRowsPerMeasure();
