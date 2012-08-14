@@ -26,6 +26,11 @@ void pattern_editor::update_colors(const colors_t &colors) {
     repaint();
 }
 
+void pattern_editor::update_playback_row(ROWINDEX playback_row) {
+    this->playback_row = playback_row;
+    repaint();
+}
+
 void pattern_editor::paintEvent(QPaintEvent *evt) {
     if (!font_loaded) {
         auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
@@ -70,11 +75,6 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         notehomie.draw_header(state, idx);
         notehomie.draw_column(state, idx);
     }
-}
-
-void pattern_editor::update_playback_row(ROWINDEX playback_row) {
-    this->playback_row = playback_row;
-    repaint();
 }
 
 

@@ -16,7 +16,10 @@ class document_window : public QDialog {
     Q_OBJECT
 public:
     document_window(module_renderer *, app_config &, QWidget *);
-    void test_notification( MPTNOTIFICATION * pnotify );
+    void test_notification(MPTNOTIFICATION *pnotify);
+
+public slots:
+    void config_colors_changed();
 
 private:
     pattern_editor *editor;

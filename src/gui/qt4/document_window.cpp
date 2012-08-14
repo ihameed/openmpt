@@ -21,6 +21,11 @@ document_window::document_window(module_renderer *renderer,
     editor = new pattern_editor(*renderer, global_config.colors());
 
     layout->addWidget(editor);
+
+    QObject::connect(
+        &global_config, SIGNAL(colors_changed()),
+        this, SLOT(config_colors_changed())
+    );
 }
 
 void document_window::test_notification(MPTNOTIFICATION * pnotify) {
@@ -35,6 +40,11 @@ void document_window::test_notification(MPTNOTIFICATION * pnotify) {
     */
     editor->update_playback_row(pnotify->nRow);
 }
+
+void document_window::config_colors_changed() {
+    editor->update_colors(global_config.colors());
+}
+
 
 }
 }

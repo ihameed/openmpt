@@ -45,7 +45,6 @@ void app_config::import_json(Json::Value &root) {
     store->audio = paudio_settings_of_json(root["audio"], globals->pa_system);
 }
 
-
 const paudio_settings_t & app_config::audio_settings() const {
     return store->audio;
 }

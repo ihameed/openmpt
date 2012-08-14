@@ -15,7 +15,12 @@ namespace qt4 {
 
 using namespace modplug::pervasives;
 
-config_gui_main::config_gui_main(app_config &context) : context(context)
+config_gui_main::config_gui_main(app_config &context) :
+    context(context),
+    preset_it("Impulse Tracker"),
+    preset_xm("FastTracker 2"),
+    preset_mpt("Classic Modplug"),
+    preset_buzz("Buzz")
 {
     demo_dummy = std::unique_ptr<module_renderer>(new module_renderer());
     demo_dummy->m_nChannels = 3;
@@ -33,28 +38,45 @@ config_gui_main::config_gui_main(app_config &context) : context(context)
         box->addItem(color.value, QVariant(color.key));
     });
 
-    auto derf = new QPushButton(this);
-    QObject::connect(
-        derf, SIGNAL(clicked()),
-        this, SLOT(set_preset())
-    );
+    QObject::connect(&preset_it, SIGNAL(clicked()),
+                     this, SLOT(preset_clicked()));
+    QObject::connect(&preset_xm, SIGNAL(clicked()),
+                     this, SLOT(preset_clicked()));
+    QObject::connect(&preset_mpt, SIGNAL(clicked()),
+                     this, SLOT(preset_clicked()));
+    QObject::connect(&preset_buzz, SIGNAL(clicked()),
+                     this, SLOT(preset_clicked()));
 
     auto layout = new QVBoxLayout(this);
     layout->addWidget(box);
     layout->addWidget(demo);
-    layout->addWidget(derf);
+    layout->addWidget(&preset_it);
+    layout->addWidget(&preset_xm);
+    layout->addWidget(&preset_mpt);
+    layout->addWidget(&preset_buzz);
 
     refresh();
 };
 
-void config_gui_main::set_preset() {
-    demo->update_colors(preset_buzz());
+void config_gui_main::set_colors(const colors_t &newcolors) {
+    colors = newcolors;
+    demo->update_colors(newcolors);
+}
+
+void config_gui_main::preset_clicked() {
+    auto derp = sender();
+    if (derp == &preset_it)        set_colors(generate_preset(it_colors));
+    else if (derp == &preset_xm)   set_colors(generate_preset(ft2_colors));
+    else if (derp == &preset_mpt)  set_colors(generate_preset(old_mpt_colors));
+    else if (derp == &preset_buzz) set_colors(generate_preset(buzz_colors));
 }
 
 void config_gui_main::refresh() {
+    colors = context.colors();
 }
 
 void config_gui_main::apply_changes() {
+    context.change_colors(colors);
 }
 
 }

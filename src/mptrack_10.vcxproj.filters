@@ -197,15 +197,6 @@
     <ClCompile Include="gui\qt4\pattern_editor.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
     <ClCompile Include="gui\qt4\util.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -243,6 +234,15 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_document_window.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
   </ItemGroup>
