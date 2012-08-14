@@ -6,13 +6,23 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
+enum elem_t {
+    ElemNote  = 0,
+    ElemInstr = 1,
+    ElemVol   = 2,
+    ElemCmd   = 3,
+    ElemParam = 4,
+
+    ElemMax
+};
+
 struct pattern_font_metrics_t {
     int32_t  width,      height;     // Column Width & Height, including 4-pixels border
 
     int32_t  clear_x,    clear_y;    // Clear (empty note) location
     int32_t  space_x,    space_y;    // White location (must be big enough)
 
-    uint32_t element_widths[5];      // Elements Sizes
+    uint32_t element_widths[ElemMax];      // Elements Sizes
 
     int32_t  num_x,      num_y;      // Vertically-oriented numbers 0x00-0x0F
     int32_t  num_10_x,   num_10_y;   // Numbers 10-19
@@ -37,14 +47,6 @@ struct pattern_font_metrics_t {
 };
 
 static const int32_t grid_height = 13;
-
-typedef size_t elem_t;
-
-static const elem_t elem_note  = 0;
-static const elem_t elem_instr = 1;
-static const elem_t elem_vol   = 2;
-static const elem_t elem_cmd   = 3;
-static const elem_t elem_param = 4;
 
 static const pattern_font_metrics_t medium_pattern_font = {
     92, 13,              // Column Width & Height

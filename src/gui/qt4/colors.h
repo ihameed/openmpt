@@ -26,6 +26,7 @@ struct colors_t {
         Panning,
         Pitch,
         Globals,
+
         MAX_COLORS
     };
 
@@ -64,6 +65,10 @@ static const color_name_assoc_t color_names[] = {
     { colors_t::Pitch,              "pitch" },
     { colors_t::Globals,            "globals" },
 };
+
+static_assert(
+    sizeof(color_names) / sizeof(color_names[0]) == colors_t::MAX_COLORS,
+    "color_names and colortype_t are out of sync");
 
 static const color_spec_t it_colors[] = {
     { colors_t::Normal,             { QColor("#000000"), QColor("#00e000") } },

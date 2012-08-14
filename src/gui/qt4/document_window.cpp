@@ -38,7 +38,12 @@ void document_window::test_notification(MPTNOTIFICATION * pnotify) {
         pnotify->nRow
     );
     */
-    editor->update_playback_row(pnotify->nRow);
+    const editor_position_t position(
+        pnotify->nOrder,
+        pnotify->nPattern,
+        pnotify->nRow
+    );
+    editor->update_playback_position(position);
 }
 
 void document_window::config_colors_changed() {

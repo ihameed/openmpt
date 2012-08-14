@@ -17,35 +17,38 @@ namespace qt4 {
 pattern_editor::pattern_editor(module_renderer &renderer,
                                const colors_t &colors) :
     renderer(renderer),
-    colors(colors),
     font_metrics(small_pattern_font),
-    font_loaded(false)
-{ }
+    follow_playback(true)
+{
+    auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
+    auto instance = GetModuleHandle(nullptr);
+    auto hdc      = GetDC(nullptr);
 
-void pattern_editor::update_colors(const colors_t &colors) {
-    this->colors = colors;
-    repaint();
+    font = load_bmp_resource(resource, instance, hdc)
+          .convertToFormat(QImage::Format_MonoLSB);
+
+    ReleaseDC(nullptr, hdc);
+
+    update_colors(colors);
 }
 
-void pattern_editor::update_playback_row(rowindex_t playback_row) {
-    this->playback_row = playback_row;
-    repaint();
+void pattern_editor::update_colors(const colors_t &newcolors) {
+    colors = newcolors;
+
+    update();
+}
+
+void pattern_editor::update_playback_position(
+    const editor_position_t &position)
+{
+    playback_pos = position;
+    if (follow_playback) {
+        active_pos = playback_pos;
+    }
+    update();
 }
 
 void pattern_editor::paintEvent(QPaintEvent *evt) {
-    if (!font_loaded) {
-        auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
-        auto instance = GetModuleHandle(nullptr);
-        auto hdc      = GetDC(nullptr);
-
-        font = load_bmp_resource(resource, instance, hdc)
-              .convertToFormat(QImage::Format_MonoLSB);
-
-        ReleaseDC(nullptr, hdc);
-
-        font_loaded = true;
-    }
-
     QPainter painter(this);
     painter.setRenderHints( QPainter::Antialiasing
                           | QPainter::TextAntialiasing
@@ -61,14 +64,19 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
 
     draw_state state = {
         renderer,
+
         painter,
         clipping_rect,
+
         font_metrics.width,
         font_metrics.height,
+
         font,
         font_metrics,
-        0,
-        playback_row,
+
+        playback_pos,
+        active_pos,
+
         colors
     };
 

@@ -22,6 +22,20 @@ enum sub_column_t {
     EFFECT_PARAMETER
 };
 
+struct editor_position_t {
+    modplug::tracker::orderindex_t   order;
+    modplug::tracker::patternindex_t pattern;
+    modplug::tracker::rowindex_t     row;
+
+    editor_position_t() : order(0), pattern(0),
+                          row(modplug::tracker::RowIndexInvalid) { }
+
+    editor_position_t(modplug::tracker::orderindex_t order,
+                      modplug::tracker::patternindex_t pattern,
+                      modplug::tracker::rowindex_t row)
+                      : order(order), pattern(pattern), row(row) { }
+};
+
 struct pattern_selection_t {
     uint32_t row;
     uint32_t column;
@@ -30,12 +44,13 @@ struct pattern_selection_t {
 
 class pattern_editor : public QWidget {
     Q_OBJECT
-    typedef modplug::tracker::rowindex_t rowindex_t;
+
 public:
+
     pattern_editor(module_renderer &renderer, const colors_t &colors);
 
     void update_colors(const colors_t &colors);
-    void update_playback_row(rowindex_t playback_row);
+    void update_playback_position(const editor_position_t &);
 
 protected:
     virtual void paintEvent(QPaintEvent *) override;
@@ -44,11 +59,12 @@ private:
     pattern_selection_t selection_start;
     pattern_selection_t selection_end;
 
-    rowindex_t playback_row;
+    editor_position_t playback_pos;
+    editor_position_t active_pos;
+    bool follow_playback;
 
     module_renderer &renderer;
 
-    bool font_loaded;
     const pattern_font_metrics_t &font_metrics;
     QImage font;
     colors_t colors;
