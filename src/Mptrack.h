@@ -380,9 +380,12 @@ const LPCTSTR szSpecialNoteShortDesc[(size_t)(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIA
     TEXT("Note Off")
 };
 
-// Make sure that special note arrays include string for every note.
-STATIC_ASSERT(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == ARRAYELEMCOUNT(szSpecialNoteNames));
-STATIC_ASSERT(ARRAYELEMCOUNT(szSpecialNoteShortDesc) == ARRAYELEMCOUNT(szSpecialNoteNames));
+static_assert(
+    NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == CountOf(szSpecialNoteNames),
+    "special note arrays must include a descriptive string for every note");
+static_assert(
+    CountOf(szSpecialNoteShortDesc) == CountOf(szSpecialNoteNames),
+    "sizeof(szSpecialNoteShortDesc) must equal sizeof(szSpecialNoteNames)");
 
 // Defined in load_mid.cpp
 extern const LPCSTR szMidiProgramNames[128];

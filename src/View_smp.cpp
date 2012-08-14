@@ -1229,7 +1229,7 @@ template<class T, class uT>
 T CViewSample::GetSampleValueFromPoint(const CPoint& point)
 //------------------------------------------------------------
 {
-    STATIC_ASSERT(sizeof(T) == sizeof(uT) && sizeof(T) <= 2);
+    static_assert(sizeof(T) == sizeof(uT) && sizeof(T) <= 2, "figu");
     int value = (std::numeric_limits<T>::max)() - (std::numeric_limits<uT>::max)() * point.y / (m_rcClient.bottom - m_rcClient.top);
     Limit(value, (std::numeric_limits<T>::min)(), (std::numeric_limits<T>::max)());
     return static_cast<T>(value);

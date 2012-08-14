@@ -28,7 +28,7 @@ namespace srlztn {class Ssb;};
 
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-    #define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16_t, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float32, class TSTEPINDEXTYPE = int32_t, class TUSTEPINDEXTYPE = uint32_t> 
+    #define CLASSTEMPLATEDEC template<class TNOTEINDEXTYPE = int16_t, class TUNOTEINDEXTYPE = uint16_t, class TRATIOTYPE = float, class TSTEPINDEXTYPE = int32_t, class TUSTEPINDEXTYPE = uint32_t>
     #define TEMPLATEDEC template<class A, class B, class C, class D, class E>
     #define TYPENAME typename
     #define CTUNINGBASE CTuningBase<A, B, C, D, E>
@@ -36,7 +36,7 @@ namespace srlztn {class Ssb;};
     #define CLASSTEMPLATEDEC
     typedef int16_t TNOTEINDEXTYPE;
     typedef uint16_t TUNOTEINDEXTYPE;
-    typedef float32 TRATIOTYPE;
+    typedef float TRATIOTYPE;
     typedef int32_t TSTEPINDEXTYPE;
     typedef uint32_t TUSTEPINDEXTYPE;
     #define TYPENAME
@@ -59,7 +59,7 @@ class CTuningBase
     //RATIOTYPE: Some 'real figure' type able to present ratios.
     //STEPINDEXTYPE: Counter of steps between notes. If there is no 'finetune'(finestepcount == 0),
                     //then 'step difference' between notes is the
-                    //same as differences in NOTEINDEXTYPE. In a way similar to ticks and rows in pattern - 
+                    //same as differences in NOTEINDEXTYPE. In a way similar to ticks and rows in pattern -
                     //ticks <-> STEPINDEX, rows <-> NOTEINDEX
 
 public:
@@ -149,7 +149,7 @@ public:
     //Create GroupGeometric tuning of *this using virtual ProCreateGroupGeometric.
     bool CreateGroupGeometric(const vector<RATIOTYPE>&, const RATIOTYPE&, const VRPAIR vr, const NOTEINDEXTYPE ratiostartpos);
 
-    //Create GroupGeometric of *this using ratios from 'itself' and ratios starting from 
+    //Create GroupGeometric of *this using ratios from 'itself' and ratios starting from
     //position given as third argument.
     bool CreateGroupGeometric(const NOTEINDEXTYPE&, const RATIOTYPE&, const NOTEINDEXTYPE&);
 
@@ -162,7 +162,7 @@ public:
     NOTESTR GetNoteName(const NOTEINDEXTYPE& x) const;
 
     void SetName(const string& s);
-    
+
     string GetName() const {return m_TuningName;}
 
     bool SetNoteName(const NOTEINDEXTYPE&, const string&);
@@ -203,7 +203,7 @@ public:
     //Checking that step distances can be presented with
     //value range of STEPINDEXTYPE with given finestepcount ja validityrange.
     bool IsStepCountRangeSufficient(USTEPINDEXTYPE fs, VRPAIR vrp);
-    
+
     virtual const char* GetTuningTypeDescription() const;
 
     static const char* GetTuningTypeDescription(const TUNINGTYPE&);
@@ -231,7 +231,7 @@ protected:
     //The two methods below return false if action was done, true otherwise.
     virtual bool ProCreateGroupGeometric(const vector<RATIOTYPE>&, const RATIOTYPE&, const VRPAIR&, const NOTEINDEXTYPE ratiostartpos) {return true;}
     virtual bool ProCreateGeometric(const UNOTEINDEXTYPE&, const RATIOTYPE&, const VRPAIR&) {return true;}
-    
+
     virtual VRPAIR ProSetValidityRange(const VRPAIR&) {return GetValidityRange();}
 
     virtual void ProSetFineStepCount(const USTEPINDEXTYPE&) {}
@@ -356,4 +356,3 @@ inline bool CTUNINGBASE::SetEditMask(const EDITMASK& em)
 
 #endif
 #endif
-

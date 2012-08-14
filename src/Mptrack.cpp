@@ -459,7 +459,7 @@ BOOL CTrackApp::SaveDefaultDLSBanks()
         if (!gpDLSBanks[i] || !gpDLSBanks[i]->GetFileName() || !gpDLSBanks[i]->GetFileName()[0])
             continue;
 
-        _tcsncpy(szPath, gpDLSBanks[i]->GetFileName(), ARRAYELEMCOUNT(szPath) - 1);
+        _tcsncpy(szPath, gpDLSBanks[i]->GetFileName(), CountOf(szPath) - 1);
         if(IsPortableMode())
         {
             CMainFrame::AbsolutePathToRelative(szPath);
@@ -1839,9 +1839,9 @@ BOOL CTrackApp::deprecated_InitializeDXPlugins()
 
     #ifndef NO_VST
         char buffer[64];
-        GetPrivateProfileString("VST Plugins", "HostProductString", CVstPluginManager::s_szHostProductString, buffer, ARRAYELEMCOUNT(buffer), m_szConfigFileName);
+        GetPrivateProfileString("VST Plugins", "HostProductString", CVstPluginManager::s_szHostProductString, buffer, CountOf(buffer), m_szConfigFileName);
         strcpy(CVstPluginManager::s_szHostProductString, buffer);
-        GetPrivateProfileString("VST Plugins", "HostVendorString", CVstPluginManager::s_szHostVendorString, buffer, ARRAYELEMCOUNT(buffer), m_szConfigFileName);
+        GetPrivateProfileString("VST Plugins", "HostVendorString", CVstPluginManager::s_szHostVendorString, buffer, CountOf(buffer), m_szConfigFileName);
         strcpy(CVstPluginManager::s_szHostVendorString, buffer);
         CVstPluginManager::s_nHostVendorVersion = GetPrivateProfileInt("VST Plugins", "HostVendorVersion", CVstPluginManager::s_nHostVendorVersion, m_szConfigFileName);
     #endif

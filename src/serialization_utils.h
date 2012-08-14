@@ -38,7 +38,7 @@ const Offtype Offtype_max = (std::numeric_limits<Offtype>::max)();
 
 typedef std::basic_string<TCHAR> String;
 
-enum 
+enum
 {
     SNT_PROGRESS =                0x80000000, // = 1 << 31
     SNT_FAILURE =                0x40000000, // = 1 << 30
@@ -62,7 +62,7 @@ enum
     SNR_ZEROENTRYCOUNT =                                                                0x80        | SNT_NOTE, // 0x80 == 1 << 7
     SNR_NO_ENTRYIDS_WITH_CUSTOMID_DEFINED =                                0x100        | SNT_NOTE,
     SNR_LOADING_OBJECT_WITH_LARGER_VERSION =                        0x200        | SNT_NOTE,
-    
+
     // Write failures.
     SNW_INSUFFICIENT_FIXEDSIZE =                                                (0x10)        | SNT_FAILURE,
     SNW_CHANGING_IDSIZE_WITH_FIXED_IDSIZESETTING =                (0x11)        | SNT_FAILURE,
@@ -72,7 +72,7 @@ enum
     SNW_SUBENTRY_FAILURE =                                                                (0x15)        | SNT_FAILURE,
 };
 
-bool IsPrintableId(const void* pvId, const size_t nLength); // Return true if given id is printable, false otherwise. 
+bool IsPrintableId(const void* pvId, const size_t nLength); // Return true if given id is printable, false otherwise.
 void ReadAdaptive1248(InStream& iStrm, uint64_t& val);
 void WriteAdaptive1248(OutStream& oStrm, const uint64_t& val);
 
@@ -146,7 +146,7 @@ public:
     // Write header
     void BeginWrite(const void* pId, const size_t nIdSize, const uint64_t& nVersion);
     void BeginWrite(const LPCSTR pszId, const uint64_t& nVersion) {BeginWrite(pszId, strlen(pszId), nVersion);}
-    
+
     // Call this to begin reading: must be called before other read functions.
     void BeginRead(const void* pId, const size_t nLength, const uint64_t& nVersion);
     void BeginRead(const LPCSTR pszId, const uint64_t& nVersion) {return BeginRead(pszId, strlen(pszId), nVersion);}
@@ -154,8 +154,8 @@ public:
     // Reserves space for map to current position. Call after BeginWrite and before writing any entries.
     void ReserveMapSize(uint32_t nSize);
 
-    // Creates subentry for writing. Use SubEntry() to access the subentry and 
-    // when done, call ReleaseSubEntry. Don't call WriteItem() for 'this' while 
+    // Creates subentry for writing. Use SubEntry() to access the subentry and
+    // when done, call ReleaseSubEntry. Don't call WriteItem() for 'this' while
     // subentry is active.
     void CreateWriteSubEntry();
 
@@ -183,7 +183,7 @@ public:
     // Returns read iterator to the end(one past last) of entries.
     ReadIterator GetReadEnd();
 
-    // Compares given id with read entry id 
+    // Compares given id with read entry id
     IdMatchStatus CompareId(const ReadIterator& iter, LPCSTR pszId) {return CompareId(iter, pszId, strlen(pszId));}
     IdMatchStatus CompareId(const ReadIterator& iter, const void* pId, const size_t nIdSize);
 
@@ -251,7 +251,7 @@ private:
 
     // Called after writing an item.
     void OnWroteItem(const void* pId, const size_t nIdSize, const Postype& posBeforeWrite);
-    
+
     void AddNote(const SsbStatus s, const SsbStatus mask, const TCHAR* sz);
 
     void AddReadNote(const SsbStatus s);
@@ -267,7 +267,7 @@ private:
                                       const RposType rposStart);
 
     // Writes mapping item to mapstream.
-    void WriteMapItem(const void* pId, 
+    void WriteMapItem(const void* pId,
                               const size_t nIdSize,
                               const RposType& rposDataStart,
                               const DataSize& nDatasize,
@@ -281,9 +281,9 @@ private:
 private:
     SsbStatus m_Readlogmask;                        // Read: Controls which read messages will be written to log.
     SsbStatus m_Writelogmask;                        // Write: Controls which write messages will be written to log.
-    
+
     std::vector<char> m_Idarray;                // Read: Holds entry ids.
-    
+
     InStream* m_pIstrm;                                        // Read: Pointer to read stream.
     OutStream* m_pOstrm;                                // Write: Pointer to write stream.
 
@@ -304,8 +304,8 @@ private:
 
     Ssb* m_pSubEntry;                                        // Read/Write: Pointer to SubEntry.
     Postype m_posSubEntryStart;                        // Write: Holds data position where SubEntry started.
-    uint32_t m_nMapReserveSize;                        // Write: Number of bytes to reserve for map if writing it before data.                        
-    Postype m_posEntrycount;                        // Write: Pos of entrycount field. 
+    uint32_t m_nMapReserveSize;                        // Write: Number of bytes to reserve for map if writing it before data.
+    Postype m_posEntrycount;                        // Write: Pos of entrycount field.
     Postype m_posMapPosField;                        // Write: Pos of map position field.
     Postype m_posMapStart;                                // Write: Pos of map start.
     OstrStream m_MapStream;                                // Write: Map stream.
@@ -406,9 +406,7 @@ template <class T>
 inline void WriteItem(OutStream& oStrm, const T& data)
 //----------------------------------------------------
 {
-    #if _HAS_TR1
-            STATIC_ASSERT(std::tr1::has_trivial_assign<T>::value == true);
-    #endif
+    static_assert(std::tr1::has_trivial_assign<T>::value == true, "oh my god what is this file");
     Binarywrite(oStrm, data);
 }
 
@@ -432,9 +430,7 @@ template <class T>
 inline void Binaryread(InStream& iStrm, T& data, const Offtype bytecount)
 //-----------------------------------------------------------------------
 {
-    #if _HAS_TR1
-            static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
-    #endif
+    static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
     memset(&data, 0, sizeof(data));
     iStrm.read(reinterpret_cast<char*>(&data), (std::min)((size_t)bytecount, sizeof(data)));
 }
@@ -444,9 +440,7 @@ template <class T>
 inline void ReadItem(InStream& iStrm, T& data, const DataSize nSize)
 //------------------------------------------------------------------
 {
-    #if _HAS_TR1
-            static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
-    #endif
+    static_assert(std::tr1::has_trivial_assign<T>::value == true, "");
     if (nSize == sizeof(T) || nSize == invalidDatasize)
             Binaryread(iStrm, data);
     else
@@ -483,7 +477,7 @@ inline void ReadItem<double>(InStream& iStrm, double& d, const DataSize nSize)
             Binaryread(iStrm, d);
 }
 
-void ReadItemString(InStream& iStrm, std::string& str, const DataSize); 
+void ReadItemString(InStream& iStrm, std::string& str, const DataSize);
 
 template <>
 inline void ReadItem<std::string>(InStream& iStrm, std::string& str, const DataSize nSize)
@@ -498,7 +492,7 @@ struct ArrayWriter
 //================
 {
     ArrayWriter(size_t nCount) : m_nCount(nCount) {}
-    void operator()(srlztn::OutStream& oStrm, const T* pData) {oStrm.write(reinterpret_cast<const char*>(pData), m_nCount * sizeof(T));} 
+    void operator()(srlztn::OutStream& oStrm, const T* pData) {oStrm.write(reinterpret_cast<const char*>(pData), m_nCount * sizeof(T));}
     size_t m_nCount;
 };
 
@@ -507,7 +501,7 @@ struct ArrayReader
 //================
 {
     ArrayReader(size_t nCount) : m_nCount(nCount) {}
-    void operator()(srlztn::InStream& iStrm, T* pData, const size_t) {iStrm.read(reinterpret_cast<char*>(pData), m_nCount * sizeof(T));} 
+    void operator()(srlztn::InStream& iStrm, T* pData, const size_t) {iStrm.read(reinterpret_cast<char*>(pData), m_nCount * sizeof(T));}
     size_t m_nCount;
 };
 

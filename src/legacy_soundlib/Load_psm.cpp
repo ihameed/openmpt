@@ -382,7 +382,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                                 nChunkCount++;
                             }
                             // separate subsongs by "---" patterns
-                            orderOffsets.push_back(nullptr);
+                            orderOffsets.push_back(0);
                             Order.Append();
                         }
                         break;
@@ -518,7 +518,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
     PATTERNINDEX nPat = 0;
     for(ORDERINDEX nOrd = 0; nOrd < Order.size(); nOrd++)
     {
-        if(orderOffsets[nOrd] == nullptr) continue;
+        if(orderOffsets[nOrd] == 0) continue;
         uint32_t dwPatternOffset = orderOffsets[nOrd];
         if(dwPatternOffset + 2 > dwMemLength) return false;
         uint16_t patternSize = LittleEndianW(*(uint16_t *)(lpStream + dwPatternOffset));

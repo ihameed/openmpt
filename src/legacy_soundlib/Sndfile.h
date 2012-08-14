@@ -134,7 +134,8 @@ struct SNDMIXPLUGININFO
     CHAR szLibraryName[64];    // original DLL name
 }; // Size should be 128
 typedef SNDMIXPLUGININFO* PSNDMIXPLUGININFO;
-STATIC_ASSERT(sizeof(SNDMIXPLUGININFO) == 128);    // this is directly written to files, so the size must be correct!
+static_assert(sizeof(SNDMIXPLUGININFO) == 128,
+              "sizeof(SNDMIXPLUGININFO) *MUST* be 128!");
 
 struct SNDMIXPLUGIN
 {
@@ -214,7 +215,7 @@ struct MODMIDICFG
     CHAR szMidiSFXExt[16][MACRO_LENGTH];
     CHAR szMidiZXXExt[128][MACRO_LENGTH];
 };
-STATIC_ASSERT(sizeof(MODMIDICFG) == 4896); // this is directly written to files, so the size must be correct!
+static_assert(sizeof(MODMIDICFG) == 4896, "sizeof(MODMIDICFG) *MUST* be 4896!");
 
 typedef VOID (__cdecl * LPSNDMIXHOOKPROC)(int *, unsigned long, unsigned long); // buffer, samples, channels
 

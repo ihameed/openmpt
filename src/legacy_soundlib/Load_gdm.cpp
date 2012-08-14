@@ -93,7 +93,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
         return false;
 
     // 1-MOD, 2-MTM, 3-S3M, 4-669, 5-FAR, 6-ULT, 7-STM, 8-MED
-    m_nType = GDMHeader_Origin[pHeader->FormOrigin % ARRAYELEMCOUNT(GDMHeader_Origin)];
+    m_nType = GDMHeader_Origin[pHeader->FormOrigin % CountOf(GDMHeader_Origin)];
     if(m_nType == MOD_TYPE_NONE)
         return false;
 

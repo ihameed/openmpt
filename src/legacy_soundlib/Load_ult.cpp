@@ -30,7 +30,7 @@ struct ULT_SAMPLE
     uint16_t speed;                // only exists for 1.4+
     int16_t  finetune;
 };
-STATIC_ASSERT(sizeof(ULT_SAMPLE) >= 64);
+static_assert(sizeof(ULT_SAMPLE) >= 64, "sizeof(ULT_SAMPLE) >= 64 failed");
 #pragma pack()
 
 /* Unhandled effects:

@@ -493,7 +493,7 @@ void COrderList::EnterPatternNum(int enterNum)
             if (nCurNdx >= pSndFile->Patterns.Size()) nCurNdx = 0;
 
             nCurNdx = nCurNdx * 10 + static_cast<PATTERNINDEX>(enterNum);
-            STATIC_ASSERT(MAX_PATTERNS < 10000);
+            static_assert(MAX_PATTERNS < 10000, "HAUAUAUAUAU");
             if ((nCurNdx >= 1000) && (nCurNdx > nMaxNdx)) nCurNdx %= 1000;
             if ((nCurNdx >= 100) && (nCurNdx > nMaxNdx)) nCurNdx %= 100;
             if ((nCurNdx >= 10) && (nCurNdx > nMaxNdx)) nCurNdx %= 10;

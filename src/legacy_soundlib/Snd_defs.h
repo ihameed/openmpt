@@ -358,7 +358,8 @@ enum {
 // Release node defines
 #define ENV_RELEASE_NODE_UNSET    0xFF
 #define NOT_YET_RELEASED            (-1)
-STATIC_ASSERT(ENV_RELEASE_NODE_UNSET > MAX_ENVPOINTS);
+static_assert(ENV_RELEASE_NODE_UNSET > MAX_ENVPOINTS,
+"ENV_RELEASE_NODE_UNSET is a sentinel--it must be larger than MAX_ENVPOINTS");
 
 
 enum {

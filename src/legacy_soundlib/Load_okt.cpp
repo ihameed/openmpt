@@ -40,7 +40,7 @@ struct OKT_SAMPLE
     uint16_t type;                // 7-/8-bit sample
 };
 
-STATIC_ASSERT(sizeof(OKT_SAMPLE) == 32);
+static_assert(sizeof(OKT_SAMPLE) == 32, "sizeof(OKT_SAMPLE) == 32 failed");
 
 #pragma pack()
 

@@ -2634,7 +2634,7 @@ template <size_t nLength>
 void CMainFrame::AbsolutePathToRelative(TCHAR (&szPath)[nLength])
 //---------------------------------------------------------------
 {
-    STATIC_ASSERT(nLength >= 3);
+    static_assert(nLength >= 3, "can't apply AbsolutePathToRelative to a buffer of length < 3");
 
     if(_tcslen(szPath) == 0)
         return;
@@ -2669,7 +2669,7 @@ template <size_t nLength>
 void CMainFrame::RelativePathToAbsolute(TCHAR (&szPath)[nLength])
 //---------------------------------------------------------------
 {
-    STATIC_ASSERT(nLength >= 3);
+    static_assert(nLength >= 3, "can't apply dsf.sdfsdklfsdfds");
 
     if(_tcslen(szPath) == 0)
         return;

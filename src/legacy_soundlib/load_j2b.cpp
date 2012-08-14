@@ -256,7 +256,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
                 m->param = lpStream[dwMemPos];
                 dwMemPos += 2;
 
-                if(m->command < ARRAYELEMCOUNT(riffam_efftrans))
+                if(m->command < CountOf(riffam_efftrans))
                 {
                     // command translation
                     m->command = riffam_efftrans[m->command];
@@ -611,7 +611,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                     Samples[nSmp].loop_end = LittleEndian(smpchunk->loopend);
                     Samples[nSmp].c5_samplerate = LittleEndian(smpchunk->samplerate);
 
-                    if(instheader->autovib_type < ARRAYELEMCOUNT(riffam_autovibtrans))
+                    if(instheader->autovib_type < CountOf(riffam_autovibtrans))
                         Samples[nSmp].vibrato_type = riffam_autovibtrans[instheader->autovib_type];
                     Samples[nSmp].vibrato_sweep = (uint8_t)(LittleEndianW(instheader->autovib_sweep));
                     Samples[nSmp].vibrato_rate = (uint8_t)(LittleEndianW(instheader->autovib_rate) >> 4);
@@ -738,7 +738,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                     Samples[nSmp].loop_end = LittleEndian(smpchunk->loopend);
                     Samples[nSmp].c5_samplerate = LittleEndian(smpchunk->samplerate);
 
-                    if(instheader->autovib_type < ARRAYELEMCOUNT(riffam_autovibtrans))
+                    if(instheader->autovib_type < CountOf(riffam_autovibtrans))
                         Samples[nSmp].vibrato_type = riffam_autovibtrans[instheader->autovib_type];
                     Samples[nSmp].vibrato_sweep = (uint8_t)(LittleEndianW(instheader->autovib_sweep));
                     Samples[nSmp].vibrato_rate = (uint8_t)(LittleEndianW(instheader->autovib_rate) >> 4);

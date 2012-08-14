@@ -44,12 +44,11 @@
 #define HINT_MASK_ITEM            (~HINT_MASK_FLAGS) //To nullify update hintbits from hint parameter.
 #define HintFlagPart(x)            ((x) & HINT_MASK_FLAGS)
 
-//If fails, hint flagbits|itembits does not enable all bits;
-//might be worthwhile to check the reason.
-STATIC_ASSERT( (HINT_MASK_ITEM | HINT_MASK_FLAGS) == -1 );
+static_assert((HINT_MASK_ITEM | HINT_MASK_FLAGS) == -1,
+              "flagbits | itembits must enable all bits");
 
-//If fails, hint param flag and item parts overlap; might be a problem.
-STATIC_ASSERT( (HINT_MASK_ITEM & HINT_MASK_FLAGS) == 0 );
+static_assert((HINT_MASK_ITEM & HINT_MASK_FLAGS) == 0,
+              "hint param flag and item parts overlap");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // NOTE : be careful when adding new flags !!!
@@ -82,12 +81,18 @@ STATIC_ASSERT( (HINT_MASK_ITEM & HINT_MASK_FLAGS) == 0 );
 #define HINT_SHIFT_SEQUENCE    (32 - HINT_BITS_SEQUENCE)
 
 //Check that hint bit counts are not too large given the number of hint flags.
-STATIC_ASSERT( ((-1 << HINT_SHIFT_PAT) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_PAT) );
-STATIC_ASSERT( ((-1 << HINT_SHIFT_ROW) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_ROW) );
-STATIC_ASSERT( ((-1 << HINT_SHIFT_SMP) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SMP) );
-STATIC_ASSERT( ((-1 << HINT_SHIFT_INS) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_INS) );
-STATIC_ASSERT( ((-1 << HINT_SHIFT_CHNTAB) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_CHNTAB) );
-STATIC_ASSERT( ((-1 << HINT_SHIFT_SEQUENCE) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SEQUENCE) );
+static_assert(((-1 << HINT_SHIFT_PAT) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_PAT),
+              "hint bits per pattern are too large");
+static_assert(((-1 << HINT_SHIFT_ROW) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_ROW),
+              "hint bits per row are too large");
+static_assert(((-1 << HINT_SHIFT_SMP) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SMP),
+              "hint bits per sample are too large");
+static_assert(((-1 << HINT_SHIFT_INS) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_INS),
+              "hint bits per instrument are too large");
+static_assert(((-1 << HINT_SHIFT_CHNTAB) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_CHNTAB),
+              "hint bits per chntab are too large");
+static_assert(((-1 << HINT_SHIFT_SEQUENCE) & HINT_MASK_ITEM) == (-1 << HINT_SHIFT_SEQUENCE),
+              "hint bits per sequence are too large");
 
 
 // parametered macro presets:

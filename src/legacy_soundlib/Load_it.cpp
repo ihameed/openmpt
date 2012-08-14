@@ -3259,8 +3259,8 @@ void module_renderer::LoadExtendedSongProperties(const MODTYPE modtype,
                 if( (size <= 63*2) && (size % 2 == 0) )
                 {
                     const uint8_t* pData = ptr;
-                    STATIC_ASSERT(ARRAYELEMCOUNT(ChnSettings) >= 64);
-                    const __int16 nLoopLimit = min(size/2, ARRAYELEMCOUNT(ChnSettings) - 64);
+                    static_assert(CountOf(ChnSettings) >= 64, "ChnSettings must have more than 64 elements");
+                    const __int16 nLoopLimit = min(size/2, CountOf(ChnSettings) - 64);
                     for(__int16 i = 0; i<nLoopLimit; i++, pData += 2) if(pData[0] != 0xFF)
                     {
                         ChnSettings[i+64].nVolume = pData[1];

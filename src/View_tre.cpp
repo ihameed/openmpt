@@ -1628,7 +1628,7 @@ VOID CModTree::FillInstrumentLibrary()
             }
 
             // The path is too long - we can't continue. This can actually only happen with an invalid path
-            if(strlen(szPath) >= ARRAYELEMCOUNT(szPath) - 1)
+            if(strlen(szPath) >= CountOf(szPath) - 1)
                     return;
 
             // Enumerating Directories and samples/instruments

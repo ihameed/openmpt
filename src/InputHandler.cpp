@@ -17,10 +17,10 @@
 CInputHandler::CInputHandler(CWnd *mainframe)
 {
     m_pMainFrm = mainframe;
-            
+
     //Init CommandSet and Load defaults
     activeCommandSet = new CCommandSet();
-    
+
     CString sDefaultPath = CString(theApp.GetConfigPath()) + TEXT("Keybindings.mkb");
     if (sDefaultPath.GetLength() > MAX_PATH - 1)
             sDefaultPath = "";
@@ -62,12 +62,12 @@ CInputHandler::CInputHandler(CWnd *mainframe)
     // We will only overwrite the default Keybindings.mkb file from now on.
     _tcscpy(CMainFrame::m_szKbdFile, sDefaultPath);
 
-    //Get Keymap 
+    //Get Keymap
     activeCommandSet->GenKeyMap(keyMap);
     SetupSpecialKeyInterception(); // Feature: use Windows keys as modifier keys, intercept special keys
     m_nSkipGeneratedKeypresses = 0;
-    
-    m_bDistinguishControls = false; 
+
+    m_bDistinguishControls = false;
     m_bDistinguishShifts = false;
     m_bDistinguishAlts = false;
     m_bBypass = false;
@@ -85,7 +85,7 @@ CInputHandler::~CInputHandler(void)
 //--------------------------------------------------------------
 CommandID CInputHandler::GeneralKeyEvent(InputTargetContext context, int code, WPARAM wParam , LPARAM lParam)
 {
-    CommandID executeCommand = kcNull;        
+    CommandID executeCommand = kcNull;
     KeyEventType keyEventType;
 
     if (code == HC_ACTION)        {
@@ -132,7 +132,7 @@ CommandID CInputHandler::KeyEvent(InputTargetContext context, UINT &nChar, UINT 
     if (pSourceWnd == NULL) {
             pSourceWnd = m_pMainFrm;        //by default, send command message to main frame.
     }
-    if (pSourceWnd && (executeCommand != kcNull)) 
+    if (pSourceWnd && (executeCommand != kcNull))
     {
             pSourceWnd->PostMessage(WM_MOD_KEYCOMMAND, executeCommand, nChar);
     }
@@ -145,7 +145,7 @@ bool CInputHandler::InterceptSpecialKeys( UINT nChar , UINT nFlags )
 {
     KeyEventType keyEventType = GetKeyEventType( HIWORD(nFlags) );
     enum { VK_NonExistentKey = VK_F24+1 };
-    
+
     if( nChar == VK_NonExistentKey ) {
             return true;
     } else if( m_bInterceptWindowsKeys && ( nChar == VK_LWIN || nChar == VK_RWIN ) ) {
@@ -161,9 +161,9 @@ bool CInputHandler::InterceptSpecialKeys( UINT nChar , UINT nFlags )
                     SendInput( 2, inp, sizeof(INPUT) );
             }
     }
-    
-    if( ( nChar == VK_NUMLOCK && m_bInterceptNumLock ) || 
-                    ( nChar == VK_CAPITAL && m_bInterceptCapsLock ) || 
+
+    if( ( nChar == VK_NUMLOCK && m_bInterceptNumLock ) ||
+                    ( nChar == VK_CAPITAL && m_bInterceptCapsLock ) ||
                     ( nChar == VK_SCROLL && m_bInterceptScrollLock ) ) {
             if( m_nSkipGeneratedKeypresses > 0 ) {
                     m_nSkipGeneratedKeypresses -- ;
@@ -187,10 +187,10 @@ bool CInputHandler::InterceptSpecialKeys( UINT nChar , UINT nFlags )
 void CInputHandler::SetupSpecialKeyInterception()
 {
     m_bInterceptWindowsKeys = m_bInterceptNumLock = m_bInterceptCapsLock = m_bInterceptScrollLock = false;
-    for( int context=0; context < ARRAYELEMCOUNT(keyMap); context++ )
-    for( int mod=0; mod < ARRAYELEMCOUNT(keyMap[0]); mod++ )
-    for( int key=0; key < ARRAYELEMCOUNT(keyMap[0][0]); key++ )
-    for( int kevent=0; kevent < ARRAYELEMCOUNT(keyMap[0][0][0]); kevent++ ) {
+    for( int context=0; context < CountOf(keyMap); context++ )
+    for( int mod=0; mod < CountOf(keyMap[0]); mod++ )
+    for( int key=0; key < CountOf(keyMap[0][0]); key++ )
+    for( int kevent=0; kevent < CountOf(keyMap[0][0][0]); kevent++ ) {
             if( keyMap[context][mod][key][kevent] == kcNull ) continue;
             if( mod == HOTKEYF_EXT ) m_bInterceptWindowsKeys = true;
             if( key == VK_NUMLOCK ) m_bInterceptNumLock = true;
@@ -206,8 +206,8 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
 {
     UINT tempModifierMask = 0;
     switch(wParam)
-    {        
-            case VK_CONTROL: 
+    {
+            case VK_CONTROL:
 /*                    if (m_bDistinguishControls)
                     {
                             if                (scancode == SC_LCONTROL)        tempModifierMask |= LControl;
@@ -216,8 +216,8 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
                     }
                     else
                     {
-*/                            tempModifierMask |= HOTKEYF_CONTROL; 
-                            break;        
+*/                            tempModifierMask |= HOTKEYF_CONTROL;
+                            break;
 //                    }
 
             case VK_SHIFT:
@@ -229,11 +229,11 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
                     }
                     else
                     {
-*/                            tempModifierMask |= HOTKEYF_SHIFT; 
+*/                            tempModifierMask |= HOTKEYF_SHIFT;
                             break;
 //                    }
-                    
-            case VK_MENU:  
+
+            case VK_MENU:
 /*                    if (m_bDistinguishAlts)
                     {
                             if                (scancode == SC_LALT)                {tempModifierMask |= LAlt;        break;}
@@ -241,11 +241,11 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
                     }
                     else
                     {
-*/                            tempModifierMask |= HOTKEYF_ALT; 
+*/                            tempModifierMask |= HOTKEYF_ALT;
                             break;
 //                    }
             case VK_LWIN: case VK_RWIN: // Feature: use Windows keys as modifier keys
-                            tempModifierMask |= HOTKEYF_EXT; 
+                            tempModifierMask |= HOTKEYF_EXT;
                             break;
     }
 
@@ -261,7 +261,7 @@ bool CInputHandler::CatchModifierChange(WPARAM wParam, KeyEventType keyEventType
 
             return true;
     }
-    
+
     return false;
 }
 
@@ -279,7 +279,7 @@ uint32_t CInputHandler::GetKey(CommandID /*c*/)
 int CInputHandler::SetCommand(InputTargetContext context, CommandID cmd, UINT modifierMask, UINT actionKey, UINT keyEventType)
 {
     int deletedCommand = -1;
-    
+
     KeyCombination curKc;
     curKc.code=actionKey;
     curKc.ctx=context;
@@ -293,7 +293,7 @@ int CInputHandler::SetCommand(InputTargetContext context, CommandID cmd, UINT mo
 
 KeyCombination CInputHandler::GetKey(CommandID cmd, UINT key)
 {
-    return activeCommandSet->GetKey(cmd, key);        
+    return activeCommandSet->GetKey(cmd, key);
 }
 
 
@@ -331,14 +331,14 @@ void CInputHandler::LogModifiers(UINT mask)
 }
 
 KeyEventType CInputHandler::GetKeyEventType(UINT nFlags)
-{    
+{
     if (nFlags & TRANSITIONBIT)                //Key released
             return kKeyEventUp;
-    else                                                
+    else
             if (nFlags & REPEATBIT)                //key repeated
                     return kKeyEventRepeat;
             else                                                //new key down
-                    return kKeyEventDown;                
+                    return kKeyEventDown;
 }
 
 bool CInputHandler::SelectionPressed(void)
@@ -347,7 +347,7 @@ bool CInputHandler::SelectionPressed(void)
     int nSelectionKeys = activeCommandSet->GetKeyListSize(kcSelect);
     KeyCombination key;
 
-    for (int k=0; k<nSelectionKeys; k++) { 
+    for (int k=0; k<nSelectionKeys; k++) {
             key = activeCommandSet->GetKey(kcSelect, k);
             if (modifierMask & key.mod) {
                     result=true;
@@ -465,7 +465,7 @@ CString CInputHandler::GetMenuText(UINT id)
             case ID_VIEW_MIDIMAPPING:        s="&MIDI Mapping...\t"; c = kcViewMIDImapping; break;
             case ID_VIEW_EDITHISTORY:        s="Edit &History...\t"; c = kcViewEditHistory; break;
 
-            /*        
+            /*
             case ID_WINDOW_NEW:                        s="&New Window\t"; c=kcWindowNew; break;
             case ID_WINDOW_CASCADE:                s="&Cascade\t"; c=kcWindowCascade; break;
             case ID_WINDOW_TILE_HORZ:        s="Tile &Horizontal\t"; c=kcWindowTileHorz; break;
@@ -480,7 +480,7 @@ CString CInputHandler::GetMenuText(UINT id)
 }
 
 void CInputHandler::UpdateMainMenu()
-{    
+{
     CMenu *pMenu = (CMainFrame::GetMainFrame())->GetMenu();
     if (!pMenu) return;
 
@@ -518,7 +518,7 @@ void CInputHandler::UpdateMainMenu()
     pMenu->ModifyMenu(ID_EDIT_FINDNEXT, MF_BYCOMMAND | MF_STRING, ID_EDIT_FINDNEXT, GetMenuText(ID_EDIT_FINDNEXT));
     pMenu->ModifyMenu(ID_EDIT_GOTO_MENU, MF_BYCOMMAND | MF_STRING, ID_EDIT_GOTO_MENU, GetMenuText(ID_EDIT_GOTO_MENU));
     pMenu->ModifyMenu(ID_EDIT_SPLITKEYBOARDSETTINGS, MF_BYCOMMAND | MF_STRING, ID_EDIT_SPLITKEYBOARDSETTINGS, GetMenuText(ID_EDIT_SPLITKEYBOARDSETTINGS));
-    
+
     pMenu->ModifyMenu(ID_VIEW_GLOBALS, MF_BYCOMMAND | MF_STRING, ID_VIEW_GLOBALS, GetMenuText(ID_VIEW_GLOBALS));
     pMenu->ModifyMenu(ID_VIEW_SAMPLES, MF_BYCOMMAND | MF_STRING, ID_VIEW_SAMPLES, GetMenuText(ID_VIEW_SAMPLES));
     pMenu->ModifyMenu(ID_VIEW_PATTERNS, MF_BYCOMMAND | MF_STRING, ID_VIEW_PATTERNS, GetMenuText(ID_VIEW_PATTERNS));
@@ -532,14 +532,14 @@ void CInputHandler::UpdateMainMenu()
     pMenu->ModifyMenu(ID_VIEW_SONGPROPERTIES, MF_BYCOMMAND | MF_STRING, ID_VIEW_SONGPROPERTIES, GetMenuText(ID_VIEW_SONGPROPERTIES));
     pMenu->ModifyMenu(ID_VIEW_MIDIMAPPING, MF_BYCOMMAND | MF_STRING, ID_VIEW_MIDIMAPPING, GetMenuText(ID_VIEW_MIDIMAPPING));
     pMenu->ModifyMenu(ID_HELP, MF_BYCOMMAND | MF_STRING, ID_HELP, GetMenuText(ID_HELP));
-/*    
+/*
     pMenu->ModifyMenu(ID_WINDOW_NEW, MF_BYCOMMAND | MF_STRING, ID_WINDOW_NEW, GetMenuText(ID_WINDOW_NEW));
     pMenu->ModifyMenu(ID_WINDOW_CASCADE, MF_BYCOMMAND | MF_STRING, ID_WINDOW_CASCADE, GetMenuText(ID_WINDOW_CASCADE));
     pMenu->ModifyMenu(ID_WINDOW_TILE_HORZ, MF_BYCOMMAND | MF_STRING, ID_WINDOW_TILE_HORZ, GetMenuText(ID_WINDOW_TILE_HORZ));
     pMenu->ModifyMenu(ID_WINDOW_TILE_VERT, MF_BYCOMMAND | MF_STRING, ID_WINDOW_TILE_VERT, GetMenuText(ID_WINDOW_TILE_VERT));
 */
 
-    
+
 }
 
 
@@ -576,23 +576,23 @@ bool CInputHandler::SetXMEffects(void)
 }
 
 
-bool CInputHandler::isKeyPressHandledByTextBox(uint32_t key) 
+bool CInputHandler::isKeyPressHandledByTextBox(uint32_t key)
 {
 
     //Alpha-numerics (only shift or no modifier):
-    if (!CtrlPressed() &&  !AltPressed() && 
-        ((key>='A'&&key<='Z') || (key>='0'&&key<='9') || 
+    if (!CtrlPressed() &&  !AltPressed() &&
+        ((key>='A'&&key<='Z') || (key>='0'&&key<='9') ||
              key==VK_DIVIDE  || key==VK_MULTIPLY || key==VK_SPACE || key==VK_RETURN ||
              key==VK_CAPITAL || (key>=VK_OEM_1 && key<=VK_OEM_3) || (key>=VK_OEM_4 && key<=VK_OEM_8)))
             return true;
-    
+
     //navigation (any modifier):
-    if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN || 
+    if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN ||
             key == VK_HOME || key == VK_END || key == VK_DELETE || key == VK_INSERT || key == VK_BACK)
             return true;
-    
+
     //Copy paste etc..
-    if (CMainFrame::GetInputHandler()->GetModifierMask()==HOTKEYF_CONTROL && 
+    if (CMainFrame::GetInputHandler()->GetModifierMask()==HOTKEYF_CONTROL &&
             (key == 'Y' || key == 'Z' || key == 'X' ||  key == 'C' || key == 'V' || key == 'A'))
             return true;
 

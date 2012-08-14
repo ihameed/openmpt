@@ -106,12 +106,12 @@ void TestVersion()
             VERIFY_EQUAL( MptVersion::IsTestBuild(MAKE_VERSION_NUMERIC(1,18,01,13)), true);
             VERIFY_EQUAL( MptVersion::IsTestBuild(MAKE_VERSION_NUMERIC(1,19,01,00)), false);
             VERIFY_EQUAL( MptVersion::IsTestBuild(MAKE_VERSION_NUMERIC(1,17,02,54)), false);
-            STATIC_ASSERT( MAKE_VERSION_NUMERIC(1,17,2,28) == 18285096 );
-            STATIC_ASSERT( MAKE_VERSION_NUMERIC(1,17,02,48) == 18285128 );
-            STATIC_ASSERT( MAKE_VERSION_NUMERIC(01,17,02,52) == 18285138 );
+            static_assert( MAKE_VERSION_NUMERIC(1,17,2,28) == 18285096, "" );
+            static_assert( MAKE_VERSION_NUMERIC(1,17,02,48) == 18285128, "" );
+            static_assert( MAKE_VERSION_NUMERIC(01,17,02,52) == 18285138, "" );
             // Ensure that bit-shifting works (used in some mod loaders for example)
-            STATIC_ASSERT( MAKE_VERSION_NUMERIC(01,17,00,00) == 0x0117 << 16 );
-            STATIC_ASSERT( MAKE_VERSION_NUMERIC(01,17,03,00) >> 8 == 0x011703 );
+            static_assert( MAKE_VERSION_NUMERIC(01,17,00,00) == 0x0117 << 16, "" );
+            static_assert( MAKE_VERSION_NUMERIC(01,17,03,00) >> 8 == 0x011703, "" );
     }
 
     //Verify that the version obtained from the executable file is the same as

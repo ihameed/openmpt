@@ -325,12 +325,12 @@ BOOL CModCleanupDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
     {
             //strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText,
             //        strTipText.GetLength() + 1);
-            strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, ARRAYELEMCOUNT(pTTTA->szText) - 1));
+            strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, CountOf(pTTTA->szText) - 1));
     }
     else
     {
             ::MultiByteToWideChar(CP_ACP , 0, strTipText, strTipText.GetLength() + 1,
-                    pTTTW->szText, ARRAYELEMCOUNT(pTTTW->szText));
+                    pTTTW->szText, CountOf(pTTTW->szText));
     }
 
     return TRUE;

@@ -807,7 +807,7 @@ void CViewGlobals::OnEditName(const modplug::tracker::chnindex_t chnMod4, const 
             if ((pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) && (nChn < pSndFile->m_nChannels) && (strncmp(s, pSndFile->ChnSettings[nChn].szName, MAX_CHANNELNAME)))
             {
                     memcpy(pSndFile->ChnSettings[nChn].szName, s, MAX_CHANNELNAME);
-                    pSndFile->ChnSettings[nChn].szName[ARRAYELEMCOUNT(pSndFile->ChnSettings[nChn].szName)-1] = 0;
+                    pSndFile->ChnSettings[nChn].szName[CountOf(pSndFile->ChnSettings[nChn].szName)-1] = 0;
                     pModDoc->SetModified();
                     pModDoc->UpdateAllViews(this, HINT_MODCHANNELS | (m_nActiveTab << HINT_SHIFT_CHNTAB));
             }
@@ -1539,7 +1539,7 @@ void CViewGlobals::OnFillProgramCombo()
             } else
             {
                     size_t k = 0;
-                    while(k < ARRAYELEMCOUNT(sname) - 1 && sname[k] <= ' ') k++;
+                    while(k < CountOf(sname) - 1 && sname[k] <= ' ') k++;
                     wsprintf(s2, "%02X - %s",i,&sname[k]);
             }
 

@@ -4,7 +4,7 @@
 #include "tuningbase.h"
 
 #ifdef BUILD_TUNINGBASE_AS_TEMPLATE
-    typedef CTuningBase<int16_t, uint16_t, float32, int32_t, uint32_t> CTuning;
+    typedef CTuningBase<int16_t, uint16_t, float, int32_t, uint32_t> CTuning;
     //If changing RATIOTYPE, serialization methods may need modifications.
 #else
     typedef CTuningBase CTuning;
@@ -16,7 +16,7 @@
 class CTuningRTI : public CTuning //RTI <-> Ratio Table Implementation
 //================================
 {
-public: 
+public:
 //BEGIN TYPEDEFS:
     typedef RATIOTYPE (BARFUNC)(const NOTEINDEXTYPE&, const STEPINDEXTYPE&);
     //BARFUNC <-> Beyond Array Range FUNCtion.
@@ -50,10 +50,10 @@ public:
 
     virtual STEPINDEXTYPE GetStepDistance(const NOTEINDEXTYPE& from, const NOTEINDEXTYPE& to) const
             {return (to - from)*(static_cast<NOTEINDEXTYPE>(GetFineStepCount())+1);}
-    
+
     virtual STEPINDEXTYPE GetStepDistance(const NOTEINDEXTYPE& noteFrom, const STEPINDEXTYPE& stepDistFrom, const NOTEINDEXTYPE& noteTo, const STEPINDEXTYPE& stepDistTo) const
             {return GetStepDistance(noteFrom, noteTo) + stepDistTo - stepDistFrom;}
-    
+
     static CTuningBase* Deserialize(istream& inStrm);
 
     static uint32_t GetVersion() {return s_SerializationVersion;}
@@ -62,7 +62,7 @@ public:
     static CTuningRTI* DeserializeOLD(istream& iStrm);
 
     SERIALIZATION_RETURN_TYPE Serialize(ostream& out) const;
-    
+
 
 public:
     //PUBLIC CONSTRUCTORS/DESTRUCTORS:
@@ -78,11 +78,11 @@ public:
 
     //Copy tuning.
     CTuningRTI(const CTuning* const pTun);
-    
+
     CTuningRTI() {SetDummyValues();}
 
     CTuningRTI(const string& name) : CTuning(name) {SetDummyValues();}
-    
+
     CTuningRTI(const NOTEINDEXTYPE& stepMin, const string& name) : CTuning(name)
     {
             SetDummyValues();
@@ -110,7 +110,7 @@ protected:
     virtual uint32_t GetClassVersion() const {return GetVersion();}
 
     virtual bool ProProcessUnserializationdata();
-    
+
 
 //END PROTECTED VIRTUALS
 
@@ -122,7 +122,7 @@ protected:
     //Note: Stepdiff should be in range [1, finestepcount]
     virtual RATIOTYPE GetRatioFine(const NOTEINDEXTYPE& note, USTEPINDEXTYPE stepDiff) const;
 
-    //GroupPeriodic-specific. 
+    //GroupPeriodic-specific.
     //Get the corresponding note in [0, period-1].
     //For example GetRefNote(-1) is to return note :'groupsize-1'.
     NOTEINDEXTYPE GetRefNote(NOTEINDEXTYPE note) const;
@@ -134,7 +134,7 @@ private:
 
     //Sets dummy values for *this.
     void SetDummyValues();
-    
+
     bool IsNoteInTable(const NOTEINDEXTYPE& s) const
     {
             if(s < m_StepMin || s >= m_StepMin + static_cast<NOTEINDEXTYPE>(m_RatioTable.size()))
@@ -149,13 +149,13 @@ private:
 
     //Noteratios
     vector<RATIOTYPE> m_RatioTable;
-    
+
     //'Fineratios'
     vector<RATIOTYPE> m_RatioTableFine;
-    
+
     //The lowest index of note in the table
     NOTEINDEXTYPE m_StepMin;
-    
+
     //For groupgeometric tunings, tells the 'group size' and 'group ratio'
     //m_GroupSize should always be >= 0.
     NOTEINDEXTYPE m_GroupSize;
@@ -165,13 +165,13 @@ private:
     BARFUNC* BelowRatios;
     BARFUNC* AboveRatios;
     //Defines the ratio to return if the ratio table runs out.
-    
+
     //<----Actual data members
 
     mutable UNOTEINDEXTYPE m_SerHelperRatiotableSize;
 
     static const string s_DerivedclassID;
-    
+
 
 }; //End: CTuningRTI declaration.
 

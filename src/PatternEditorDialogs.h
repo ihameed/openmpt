@@ -62,8 +62,8 @@ public:
             replaceInstrumentMinusOne = MAX_INSTRUMENTS + 2,
     };
 
-    // Make sure there's unused notes between NOTE_MAX and NOTE_MIN_SPECIAL.
-    STATIC_ASSERT(NOTE_MIN_SPECIAL - 4 > NOTE_MAX);
+    static_assert(NOTE_MIN_SPECIAL - 4 > NOTE_MAX,
+        "there must be unused notes between NOTE_MAX and NOTE_MIN_SPECIAL");
 
 protected:
     void ChangeEffect();

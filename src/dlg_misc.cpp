@@ -484,12 +484,12 @@ BOOL CModTypeDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
             //strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText,
             //        strTipText.GetLength() + 1);
             // 80 chars max?!
-            strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, ARRAYELEMCOUNT(pTTTA->szText) - 1));
+            strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, CountOf(pTTTA->szText) - 1));
     }
     else
     {
             ::MultiByteToWideChar(CP_ACP , 0, strTipText, strTipText.GetLength() + 1,
-                    pTTTW->szText, ARRAYELEMCOUNT(pTTTW->szText));
+                    pTTTW->szText, CountOf(pTTTW->szText));
     }
 
     return TRUE;
@@ -1666,7 +1666,8 @@ const MsgBoxHidableMessage HidableMessages[] =
     {TEXT("Tip: To create XM-files without MPT-specific extensions included, try compatibility export from File-menu."), 1 << 1, true},
 };
 
-STATIC_ASSERT(ARRAYELEMCOUNT(HidableMessages) == enMsgBoxHidableMessage_count);
+static_assert(CountOf(HidableMessages) == enMsgBoxHidableMessage_count,
+              "the number of HidableMessages must be equal to enMsgBoxherpenderpen");
 
 // Messagebox with 'don't show this again'-checkbox. Uses parameter 'enMsg'
 // to get the needed information from message array, and updates the variable that
@@ -1747,7 +1748,7 @@ LPCTSTR GetNoteStr(const modplug::tracker::note_t nNote)
 void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::note_t noteStart, const modplug::tracker::note_t noteEnd)
 //------------------------------------------------------------------------------------------------------------------
 {
-    const modplug::tracker::note_t upperLimit = min(ARRAYELEMCOUNT(szDefaultNoteNames)-1, noteEnd);
+    const modplug::tracker::note_t upperLimit = min(CountOf(szDefaultNoteNames)-1, noteEnd);
     for(modplug::tracker::note_t note = noteStart; note <= upperLimit; ++note)
             combobox.SetItemData(combobox.AddString(szDefaultNoteNames[note]), note);
 }

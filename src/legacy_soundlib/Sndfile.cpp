@@ -1386,7 +1386,7 @@ CString module_renderer::GetInstrumentName(UINT nInstr) const
     if ((nInstr >= MAX_INSTRUMENTS) || (!Instruments[nInstr]))
         return TEXT("");
 
-    const size_t nSize = ARRAYELEMCOUNT(Instruments[nInstr]->name);
+    const size_t nSize = CountOf(Instruments[nInstr]->name);
     CString str;
     LPTSTR p = str.GetBuffer(nSize + 1);
     std::copy_n(Instruments[nInstr]->name, nSize, p);

@@ -749,7 +749,7 @@ uint32_t ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream
 
     ASSERT_CAN_READ_SAMPLE(1);
     const size_t lenName = lpStream[dwMemPos++];
-    STATIC_ASSERT(MAX_SAMPLENAME > 30);
+    static_assert(MAX_SAMPLENAME > 30, "MAX_SAMPLENAME > 30 failed");
     const size_t lenNameImport = min(30, lenName);
     ASSERT_CAN_READ_SAMPLE(lenName);
     memcpy(pSndFile->m_szNames[nSmp], lpStream + dwMemPos, lenNameImport);

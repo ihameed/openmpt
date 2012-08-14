@@ -1682,7 +1682,7 @@ void CVstPlugin::Initialize(module_renderer* pSndFile)
         MemsetZero(sa);
         sa.numChannels = 2;
         sa.type = kSpeakerArrStereo;
-        for(int i = 0; i < ARRAYELEMCOUNT(sa.speakers); i++)
+        for(int i = 0; i < CountOf(sa.speakers); i++)
         {
             sa.speakers[i].azimuth = 0.0f;
             sa.speakers[i].elevation = 0.0f;
