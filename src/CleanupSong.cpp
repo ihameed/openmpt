@@ -261,7 +261,7 @@ BOOL CModCleanupDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
     TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
     TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
     CStringA strTipText = "";
-    UINT_PTR nID = pNMHDR->idFrom;
+    uintptr_t nID = pNMHDR->idFrom;
     if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
             pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
     {
@@ -343,7 +343,7 @@ BOOL CModCleanupDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
 struct OrigPatSettings
 {
     bool isPatUsed;                                // Is pattern used in sequence?
-    PATTERNINDEX newIndex;                // map old pattern index <-> new pattern index
+    modplug::tracker::patternindex_t newIndex;                // map old pattern index <-> new pattern index
     // This stuff is needed for copying the old pattern properties to the new pattern number
     modplug::tracker::modevent_t *data;                        // original pattern data
     modplug::tracker::rowindex_t numRows;                        // original pattern sizes
@@ -363,22 +363,22 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     if(pSndFile == nullptr) return false;
 
     const SEQUENCEINDEX maxSeqIndex = pSndFile->Order.GetNumSequences();
-    const PATTERNINDEX maxPatIndex = pSndFile->Patterns.Size();
+    const modplug::tracker::patternindex_t maxPatIndex = pSndFile->Patterns.Size();
     vector<OrigPatSettings> patternSettings(maxPatIndex, defaultSettings);
 
     CHAR s[512];
     bool bReordered = false;
     size_t nPatRemoved = 0;
-    PATTERNINDEX nMinToRemove = 0;
+    modplug::tracker::patternindex_t nMinToRemove = 0;
 
     BeginWaitCursor();
     // First, find all used patterns in all sequences.
-    PATTERNINDEX maxpat = 0;
+    modplug::tracker::patternindex_t maxpat = 0;
     for(SEQUENCEINDEX nSeq = 0; nSeq < maxSeqIndex; nSeq++)
     {
-            for (ORDERINDEX nOrd = 0; nOrd < pSndFile->Order.GetSequence(nSeq).GetLength(); nOrd++)
+            for (modplug::tracker::orderindex_t nOrd = 0; nOrd < pSndFile->Order.GetSequence(nSeq).GetLength(); nOrd++)
             {
-                    PATTERNINDEX n = pSndFile->Order.GetSequence(nSeq)[nOrd];
+                    modplug::tracker::patternindex_t n = pSndFile->Order.GetSequence(nSeq)[nOrd];
                     if (n < maxPatIndex)
                     {
                             if (n >= maxpat) maxpat = n + 1;
@@ -390,7 +390,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     // Find first index to be removed
     if (!bRemove)
     {
-            PATTERNINDEX imax = maxPatIndex;
+            modplug::tracker::patternindex_t imax = maxPatIndex;
             while (imax > 0)
             {
                     imax--;
@@ -401,7 +401,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
 
     // Remove all completely empty patterns above last used pattern (those are safe to remove)
     BEGIN_CRITICAL();
-    for (PATTERNINDEX nPat = maxpat; nPat < maxPatIndex; nPat++) if ((pSndFile->Patterns[nPat]) && (nPat >= nMinToRemove))
+    for (modplug::tracker::patternindex_t nPat = maxpat; nPat < maxPatIndex; nPat++) if ((pSndFile->Patterns[nPat]) && (nPat >= nMinToRemove))
     {
             if(pSndFile->Patterns.IsPatternEmpty(nPat))
             {
@@ -426,30 +426,30 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
             BeginWaitCursor();
     }
 
-    for(PATTERNINDEX i = 0; i < maxPatIndex; i++)
-            patternSettings[i].newIndex = PATTERNINDEX_INVALID;
+    for(modplug::tracker::patternindex_t i = 0; i < maxPatIndex; i++)
+            patternSettings[i].newIndex = modplug::tracker::PATTERNINDEX_INVALID;
 
     SEQUENCEINDEX oldSequence = pSndFile->Order.GetCurrentSequenceIndex();        // workaround, as GetSequence doesn't allow writing to sequences ATM
 
     // Re-order pattern numbers based on sequence
-    PATTERNINDEX nPats = 0;        // last used index
+    modplug::tracker::patternindex_t nPats = 0;        // last used index
     for(SEQUENCEINDEX nSeq = 0; nSeq < maxSeqIndex; nSeq++)
     {
             pSndFile->Order.SetSequence(nSeq);
-            ORDERINDEX imap = 0;
+            modplug::tracker::orderindex_t imap = 0;
             for (imap = 0; imap < pSndFile->Order.GetSequence(nSeq).GetLength(); imap++)
             {
-                    PATTERNINDEX n = pSndFile->Order.GetSequence(nSeq)[imap];
+                    modplug::tracker::patternindex_t n = pSndFile->Order.GetSequence(nSeq)[imap];
                     if (n < maxPatIndex)
                     {
-                            if (patternSettings[n].newIndex == PATTERNINDEX_INVALID) patternSettings[n].newIndex = nPats++;
+                            if (patternSettings[n].newIndex == modplug::tracker::PATTERNINDEX_INVALID) patternSettings[n].newIndex = nPats++;
                             pSndFile->Order[imap] = patternSettings[n].newIndex;
                     }
             }
             // Add unused patterns at the end
             if ((!bRemove) || (!nWaste))
             {
-                    for(PATTERNINDEX iadd = 0; iadd < maxPatIndex; iadd++)
+                    for(modplug::tracker::patternindex_t iadd = 0; iadd < maxPatIndex; iadd++)
                     {
                             if((pSndFile->Patterns[iadd]) && (patternSettings[iadd].newIndex >= maxPatIndex))
                             {
@@ -468,9 +468,9 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     // Reorder patterns & Delete unused patterns
     BEGIN_CRITICAL();
     {
-            for (PATTERNINDEX i = 0; i < maxPatIndex; i++)
+            for (modplug::tracker::patternindex_t i = 0; i < maxPatIndex; i++)
             {
-                    PATTERNINDEX k = patternSettings[i].newIndex;
+                    modplug::tracker::patternindex_t k = patternSettings[i].newIndex;
                     if (k < maxPatIndex)
                     {
                             if (i != k) bReordered = true;
@@ -489,7 +489,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
                                     nPatRemoved++;
                             }
             }
-            for (PATTERNINDEX nPat = 0; nPat < maxPatIndex; nPat++)
+            for (modplug::tracker::patternindex_t nPat = 0; nPat < maxPatIndex; nPat++)
             {
                     pSndFile->Patterns[nPat].SetData(patternSettings[nPat].data, patternSettings[nPat].numRows);
                     pSndFile->Patterns[nPat].SetSignature(patternSettings[nPat].rowsPerBeat, patternSettings[nPat].rowsPerMeasure);
@@ -671,7 +671,7 @@ bool CModCleanupDlg::RearrangeSamples()
     // Go through the patterns and remap samples (if module is in sample mode)
     if(!pSndFile->GetNumInstruments())
     {
-            for (PATTERNINDEX nPat = 0; nPat < pSndFile->Patterns.Size(); nPat++) if (pSndFile->Patterns[nPat])
+            for (modplug::tracker::patternindex_t nPat = 0; nPat < pSndFile->Patterns.Size(); nPat++) if (pSndFile->Patterns[nPat])
             {
                     modplug::tracker::modevent_t *m = pSndFile->Patterns[nPat];
                     for(UINT len = pSndFile->Patterns[nPat].GetNumRows() * pSndFile->GetNumChannels(); len; m++, len--)
@@ -778,7 +778,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
             END_CRITICAL();
             if (nSwap > 0)
             {
-                    for (PATTERNINDEX iPat = 0; iPat < pSndFile->Patterns.Size(); iPat++) if (pSndFile->Patterns[iPat])
+                    for (modplug::tracker::patternindex_t iPat = 0; iPat < pSndFile->Patterns.Size(); iPat++) if (pSndFile->Patterns[iPat])
                     {
                             modplug::tracker::modevent_t *p = pSndFile->Patterns[iPat];
                             UINT nLen = pSndFile->m_nChannels * pSndFile->Patterns[iPat].GetNumRows();

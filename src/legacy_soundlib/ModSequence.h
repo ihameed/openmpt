@@ -11,73 +11,73 @@ class ModSequence
 {
 public:
     friend class ModSequenceSet;
-    typedef PATTERNINDEX* iterator;
-    typedef const PATTERNINDEX* const_iterator;
+    typedef modplug::tracker::patternindex_t* iterator;
+    typedef const modplug::tracker::patternindex_t* const_iterator;
 
     friend void WriteModSequence(std::ostream& oStrm, const ModSequence& seq);
     friend void ReadModSequence(std::istream& iStrm, ModSequence& seq, const size_t);
 
     virtual ~ModSequence() {if (m_bDeletableArray) delete[] m_pArray;}
     ModSequence(const ModSequence&);
-    ModSequence(module_renderer& rSf, ORDERINDEX nSize);
-    ModSequence(module_renderer& rSf, PATTERNINDEX* pArray, ORDERINDEX nSize, ORDERINDEX nCapacity, bool bDeletableArray);
+    ModSequence(module_renderer& rSf, modplug::tracker::orderindex_t nSize);
+    ModSequence(module_renderer& rSf, modplug::tracker::patternindex_t* pArray, modplug::tracker::orderindex_t nSize, modplug::tracker::orderindex_t nCapacity, bool bDeletableArray);
 
     // Initialize default sized sequence.
     void Init();
 
-    PATTERNINDEX& operator[](const size_t i) {ASSERT(i < m_nSize); return m_pArray[i];}
-    const PATTERNINDEX& operator[](const size_t i) const {ASSERT(i < m_nSize); return m_pArray[i];}
-    PATTERNINDEX& At(const size_t i) {return (*this)[i];}
-    const PATTERNINDEX& At(const size_t i) const {return (*this)[i];}
+    modplug::tracker::patternindex_t& operator[](const size_t i) {ASSERT(i < m_nSize); return m_pArray[i];}
+    const modplug::tracker::patternindex_t& operator[](const size_t i) const {ASSERT(i < m_nSize); return m_pArray[i];}
+    modplug::tracker::patternindex_t& At(const size_t i) {return (*this)[i];}
+    const modplug::tracker::patternindex_t& At(const size_t i) const {return (*this)[i];}
 
-    PATTERNINDEX& Last() {ASSERT(m_nSize > 0); return m_pArray[m_nSize-1];}
-    const PATTERNINDEX& Last() const {ASSERT(m_nSize > 0); return m_pArray[m_nSize-1];}
+    modplug::tracker::patternindex_t& Last() {ASSERT(m_nSize > 0); return m_pArray[m_nSize-1];}
+    const modplug::tracker::patternindex_t& Last() const {ASSERT(m_nSize > 0); return m_pArray[m_nSize-1];}
 
     // Returns last accessible index, i.e. GetLength() - 1. Behaviour is undefined if length is zero.
-    ORDERINDEX GetLastIndex() const {return m_nSize - 1;}
+    modplug::tracker::orderindex_t GetLastIndex() const {return m_nSize - 1;}
 
     void Append() {Append(GetInvalidPatIndex());}        // Appends InvalidPatIndex.
-    void Append(PATTERNINDEX nPat);                                        // Appends given patindex.
+    void Append(modplug::tracker::patternindex_t nPat);                                        // Appends given patindex.
 
     // Inserts nCount orders starting from nPos using nFill as the pattern index for all inserted orders.
     // Sequence will automatically grow if needed and if it can't grow enough, some tail
     // orders will be discarded.
     // Return: Number of orders inserted.
-    ORDERINDEX Insert(ORDERINDEX nPos, ORDERINDEX nCount) {return Insert(nPos, nCount, GetInvalidPatIndex());}
-    ORDERINDEX Insert(ORDERINDEX nPos, ORDERINDEX nCount, PATTERNINDEX nFill);
+    modplug::tracker::orderindex_t Insert(modplug::tracker::orderindex_t nPos, modplug::tracker::orderindex_t nCount) {return Insert(nPos, nCount, GetInvalidPatIndex());}
+    modplug::tracker::orderindex_t Insert(modplug::tracker::orderindex_t nPos, modplug::tracker::orderindex_t nCount, modplug::tracker::patternindex_t nFill);
 
     // Removes orders from range [nPosBegin, nPosEnd].
-    void Remove(ORDERINDEX nPosBegin, ORDERINDEX nPosEnd);
+    void Remove(modplug::tracker::orderindex_t nPosBegin, modplug::tracker::orderindex_t nPosEnd);
 
     void clear();
-    void resize(ORDERINDEX nNewSize) {resize(nNewSize, GetInvalidPatIndex());}
-    void resize(ORDERINDEX nNewSize, PATTERNINDEX nFill);
+    void resize(modplug::tracker::orderindex_t nNewSize) {resize(nNewSize, GetInvalidPatIndex());}
+    void resize(modplug::tracker::orderindex_t nNewSize, modplug::tracker::patternindex_t nFill);
 
     // Replaces all occurences of nOld with nNew.
-    void Replace(PATTERNINDEX nOld, PATTERNINDEX nNew) {if (nOld != nNew) std::replace(begin(), end(), nOld, nNew);}
+    void Replace(modplug::tracker::patternindex_t nOld, modplug::tracker::patternindex_t nNew) {if (nOld != nNew) std::replace(begin(), end(), nOld, nNew);}
 
     void AdjustToNewModType(const MODTYPE oldtype);
 
-    ORDERINDEX size() const {return GetLength();}
-    ORDERINDEX GetLength() const {return m_nSize;}
+    modplug::tracker::orderindex_t size() const {return GetLength();}
+    modplug::tracker::orderindex_t GetLength() const {return m_nSize;}
 
     // Returns length of sequence without counting trailing '---' items.
-    ORDERINDEX GetLengthTailTrimmed() const;
+    modplug::tracker::orderindex_t GetLengthTailTrimmed() const;
 
     // Returns length of sequence stopping counting on first '---' (or at the end of sequence).
-    ORDERINDEX GetLengthFirstEmpty() const;
+    modplug::tracker::orderindex_t GetLengthFirstEmpty() const;
 
-    PATTERNINDEX GetInvalidPatIndex() const {return m_nInvalidIndex;} //To correspond 0xFF
-    static PATTERNINDEX GetInvalidPatIndex(const MODTYPE type);
+    modplug::tracker::patternindex_t GetInvalidPatIndex() const {return m_nInvalidIndex;} //To correspond 0xFF
+    static modplug::tracker::patternindex_t GetInvalidPatIndex(const MODTYPE type);
 
-    PATTERNINDEX GetIgnoreIndex() const {return m_nIgnoreIndex;} //To correspond 0xFE
-    static PATTERNINDEX GetIgnoreIndex(const MODTYPE type);
+    modplug::tracker::patternindex_t GetIgnoreIndex() const {return m_nIgnoreIndex;} //To correspond 0xFE
+    static modplug::tracker::patternindex_t GetIgnoreIndex(const MODTYPE type);
 
     // Returns the previous/next order ignoring skip indeces(+++).
     // If no previous/next order exists, return first/last order, and zero
     // when orderlist is empty.
-    ORDERINDEX GetPreviousOrderIgnoringSkips(const ORDERINDEX start) const;
-    ORDERINDEX GetNextOrderIgnoringSkips(const ORDERINDEX start) const;
+    modplug::tracker::orderindex_t GetPreviousOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const;
+    modplug::tracker::orderindex_t GetNextOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const;
 
     ModSequence& operator=(const ModSequence& seq);
 
@@ -102,11 +102,11 @@ public:
     CString m_sName;                                // Sequence name.
 
 protected:
-    PATTERNINDEX* m_pArray;                        // Pointer to sequence array.
-    ORDERINDEX m_nSize;                                // Sequence length.
-    ORDERINDEX m_nCapacity;                        // Capacity in m_pArray.
-    PATTERNINDEX m_nInvalidIndex;        // Invalid pat index.
-    PATTERNINDEX m_nIgnoreIndex;        // Ignore pat index.
+    modplug::tracker::patternindex_t* m_pArray;                        // Pointer to sequence array.
+    modplug::tracker::orderindex_t m_nSize;                                // Sequence length.
+    modplug::tracker::orderindex_t m_nCapacity;                        // Capacity in m_pArray.
+    modplug::tracker::patternindex_t m_nInvalidIndex;        // Invalid pat index.
+    modplug::tracker::patternindex_t m_nIgnoreIndex;        // Ignore pat index.
     bool m_bDeletableArray;                        // True if m_pArray points the deletable(with delete[]) array.
     module_renderer* m_pSndFile;                        // Pointer to associated CSoundFile.
 
@@ -114,8 +114,8 @@ protected:
 };
 
 
-inline PATTERNINDEX ModSequence::GetInvalidPatIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ?  UINT16_MAX : 0xFF;}
-inline PATTERNINDEX ModSequence::GetIgnoreIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ? UINT16_MAX - 1 : 0xFE;}
+inline modplug::tracker::patternindex_t ModSequence::GetInvalidPatIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ?  UINT16_MAX : 0xFF;}
+inline modplug::tracker::patternindex_t ModSequence::GetIgnoreIndex(const MODTYPE type) {return type == MOD_TYPE_MPT ? UINT16_MAX - 1 : 0xFE;}
 
 
 //=======================================
@@ -155,13 +155,13 @@ public:
     // Returns true if sequences were modified, false otherwise.
     bool ConvertSubsongsToMultipleSequences();
 
-    static const ORDERINDEX s_nCacheSize = MAX_ORDERS;
+    static const modplug::tracker::orderindex_t s_nCacheSize = MAX_ORDERS;
 
 private:
     void CopyCacheToStorage();
     void CopyStorageToCache();
 
-    PATTERNINDEX m_Cache[s_nCacheSize];                // Local cache array.
+    modplug::tracker::patternindex_t m_Cache[s_nCacheSize];                // Local cache array.
     std::vector<ModSequence> m_Sequences;        // Array of sequences.
     SEQUENCEINDEX m_nCurrentSeq;                        // Index of current sequence.
 };

@@ -27,13 +27,13 @@ typedef struct _GENERALVIEWSTATE
 typedef struct PATTERNVIEWSTATE
 {
     uint32_t cbStruct;
-    PATTERNINDEX nPattern;
+    modplug::tracker::patternindex_t nPattern;
     modplug::tracker::rowindex_t nRow;
     UINT nCursor;
     uint32_t dwBeginSel;
     uint32_t dwEndSel;
     UINT nDetailLevel;
-    ORDERINDEX nOrder;                //rewbs.playSongFromCursor
+    modplug::tracker::orderindex_t nOrder;                //rewbs.playSongFromCursor
 } PATTERNVIEWSTATE;
 
 typedef struct SAMPLEVIEWSTATE

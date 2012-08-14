@@ -629,7 +629,7 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
         if ((dwMemPos + len <= dwMemLength) && (len <= MAX_PATTERNS * MAX_PATTERNNAME) && (len >= MAX_PATTERNNAME))
         {
             uint32_t pos = 0;
-            PATTERNINDEX nPat = 0;
+            modplug::tracker::patternindex_t nPat = 0;
             for(pos = 0; pos < len; pos += MAX_PATTERNNAME, nPat++)
             {
                 Patterns[nPat].SetName((char *)(lpStream + dwMemPos + pos), min(MAX_PATTERNNAME, len - pos));
@@ -774,9 +774,9 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
 
     // Find out number of orders and patterns used.
     // +++ and --- patterns are not taken into consideration as FastTracker does not support them.
-    ORDERINDEX nMaxOrds = 0;
-    PATTERNINDEX nPatterns = 0;
-    for(ORDERINDEX nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
+    modplug::tracker::orderindex_t nMaxOrds = 0;
+    modplug::tracker::patternindex_t nPatterns = 0;
+    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
     {
         if(Patterns.IsValidIndex(Order[nOrd]))
         {
@@ -807,7 +807,7 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
 
     fwrite(&xmheader, 1, sizeof(xmheader), f);
     // write order list (wihout +++ and ---, explained above)
-    for(ORDERINDEX nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
+    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
     {
         if(Patterns.IsValidIndex(Order[nOrd]) || !bCompatibilityExport)
         {
@@ -1101,7 +1101,7 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
             fwrite(&m_MidiCfg, 1, sizeof(MODMIDICFG), f);
         }
         // Writing Pattern Names
-        const PATTERNINDEX numNamedPats = Patterns.GetNumNamedPatterns();
+        const modplug::tracker::patternindex_t numNamedPats = Patterns.GetNumNamedPatterns();
         if (numNamedPats > 0)
         {
             uint32_t dwLen = numNamedPats * MAX_PATTERNNAME;
@@ -1109,7 +1109,7 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
             fwrite(&d, 1, 4, f);
             fwrite(&dwLen, 1, 4, f);
 
-            for(PATTERNINDEX nPat = 0; nPat < numNamedPats; nPat++)
+            for(modplug::tracker::patternindex_t nPat = 0; nPat < numNamedPats; nPat++)
             {
                 char name[MAX_PATTERNNAME];
                 MemsetZero(name);

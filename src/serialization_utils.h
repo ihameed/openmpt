@@ -8,6 +8,7 @@
 #include "misc_util.h"
 #include "typedefs.h"
 #include <limits>
+#include <cstdint>
 #if _HAS_TR1
     #include <type_traits>
 #endif
@@ -25,9 +26,9 @@ typedef OutStream::off_type Offtype;
 typedef Offtype Postype;
 typedef std::streamsize Streamsize;
 
-typedef UINT_PTR    DataSize;        // Data size type.
-typedef UINT_PTR    RposType;        // Relative position type.
-typedef UINT_PTR    NumType;        // Entry count type.
+typedef uintptr_t    DataSize;        // Data size type.
+typedef uintptr_t    RposType;        // Relative position type.
+typedef uintptr_t    NumType;        // Entry count type.
 const DataSize DataSize_max = MAXUINT_PTR;
 const RposType RposType_max = MAXUINT_PTR;
 const NumType NumType_max = MAXUINT_PTR;

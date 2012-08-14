@@ -1362,7 +1362,7 @@ bool CModDoc::IsInstrumentMuted(INSTRUMENTINDEX nInstr) const
 }
 
 
-UINT CModDoc::GetPatternSize(PATTERNINDEX nPat) const
+UINT CModDoc::GetPatternSize(modplug::tracker::patternindex_t nPat) const
 //---------------------------------------------------
 {
     if ((nPat < m_SndFile.Patterns.Size()) && (m_SndFile.Patterns[nPat])) return m_SndFile.Patterns[nPat].GetNumRows();
@@ -1488,10 +1488,10 @@ void CModDoc::UpdateAllViews(CView *pSender, LPARAM lHint, CObject *pHint)
 void CModDoc::OnFileWaveConvert()
 //-------------------------------
 {
-    OnFileWaveConvert(ORDERINDEX_INVALID, ORDERINDEX_INVALID);
+    OnFileWaveConvert(modplug::tracker::ORDERINDEX_INVALID, modplug::tracker::ORDERINDEX_INVALID);
 }
 
-void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
+void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplug::tracker::orderindex_t nMaxOrder)
 //-------------------------------------------------------------------------
 {
     TCHAR fname[_MAX_FNAME] = _T("");
@@ -1849,7 +1849,7 @@ void CModDoc::OnPlayerPause()
                     m_SndFile.m_nRow = nRow;
                 } else
                 {
-                    for (ORDERINDEX nOrd = 0; nOrd < m_SndFile.Order.size(); nOrd++)
+                    for (modplug::tracker::orderindex_t nOrd = 0; nOrd < m_SndFile.Order.size(); nOrd++)
                     {
                         if (m_SndFile.Order[nOrd] == m_SndFile.Order.GetInvalidPatIndex()) break;
                         if (m_SndFile.Order[nOrd] == nPat)
@@ -3085,7 +3085,7 @@ void* CModDoc::GetChildFrame()
     return NULL;
 }
 
-HWND CModDoc::GetEditPosition(modplug::tracker::rowindex_t &row, PATTERNINDEX &pat, ORDERINDEX &ord)
+HWND CModDoc::GetEditPosition(modplug::tracker::rowindex_t &row, modplug::tracker::patternindex_t &pat, modplug::tracker::orderindex_t &ord)
 //------------------------------------------------------------------------------
 {
     HWND followSonghWnd;
@@ -3128,8 +3128,8 @@ HWND CModDoc::GetEditPosition(modplug::tracker::rowindex_t &row, PATTERNINDEX &p
     //ensure order correlates with pattern.
     if (pSndFile->Order[ord]!=pat)
     {
-        ORDERINDEX tentativeOrder = pSndFile->FindOrder(pat);
-        if (tentativeOrder != ORDERINDEX_INVALID)    //ensure a valid order exists.
+        modplug::tracker::orderindex_t tentativeOrder = pSndFile->FindOrder(pat);
+        if (tentativeOrder != modplug::tracker::ORDERINDEX_INVALID)    //ensure a valid order exists.
         {
             ord = tentativeOrder;
         }
@@ -3335,8 +3335,8 @@ void CModDoc::OnPatternRestart()
         module_renderer *pSndFile = GetSoundFile();
 
         modplug::tracker::rowindex_t nRow;
-        PATTERNINDEX nPat;
-        ORDERINDEX nOrd;
+        modplug::tracker::patternindex_t nPat;
+        modplug::tracker::orderindex_t nOrd;
 
         HWND followSonghWnd;
 
@@ -3395,8 +3395,8 @@ void CModDoc::OnPatternPlay()
         module_renderer *pSndFile = GetSoundFile();
 
         modplug::tracker::rowindex_t nRow;
-        PATTERNINDEX nPat;
-        ORDERINDEX nOrd;
+        modplug::tracker::patternindex_t nPat;
+        modplug::tracker::orderindex_t nOrd;
 
         HWND followSonghWnd;
 
@@ -3451,8 +3451,8 @@ void CModDoc::OnPatternPlayNoLoop()
         module_renderer *pSndFile = GetSoundFile();
 
         modplug::tracker::rowindex_t nRow;
-        PATTERNINDEX nPat;
-        ORDERINDEX nOrd;
+        modplug::tracker::patternindex_t nPat;
+        modplug::tracker::orderindex_t nOrd;
 
         HWND followSonghWnd;
 
@@ -3735,7 +3735,7 @@ void CModDoc::SongProperties()
 
 // Sets playback timer to playback time at given position.
 // At the same time, the playback parameters (global volume, channel volume and stuff like that) are calculated for this position.
-void CModDoc::SetElapsedTime(ORDERINDEX nOrd, modplug::tracker::rowindex_t nRow)
+void CModDoc::SetElapsedTime(modplug::tracker::orderindex_t nOrd, modplug::tracker::rowindex_t nRow)
 //----------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();

@@ -160,7 +160,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 
     // Check for too big/small patterns
     foundHere = false;
-    for(PATTERNINDEX i = 0; i < m_SndFile.Patterns.Size(); i++)
+    for(modplug::tracker::patternindex_t i = 0; i < m_SndFile.Patterns.Size(); i++)
     {
             if(m_SndFile.Patterns.IsValidPat(i))
             {
@@ -211,7 +211,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
             foundHacks = true;
             if(autofix)
             {
-                    for(PATTERNINDEX i = 0; i < m_SndFile.GetNumPatterns(); i++)
+                    for(modplug::tracker::patternindex_t i = 0; i < m_SndFile.GetNumPatterns(); i++)
                     {
                             m_SndFile.Patterns[i].SetName("");
                     }
@@ -374,7 +374,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
     if(!originalSpecs->hasPatternSignatures)
     {
             foundHere = false;
-            for(PATTERNINDEX i = 0; i < m_SndFile.GetNumPatterns(); i++)
+            for(modplug::tracker::patternindex_t i = 0; i < m_SndFile.GetNumPatterns(); i++)
             {
                     if(m_SndFile.Patterns[i].GetOverrideSignature())
                     {

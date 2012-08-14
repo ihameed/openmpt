@@ -405,7 +405,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
 
     ASSERT_CAN_READ(2);
     m_nChannels = lpStream[dwMemPos++] + 1;
-    PATTERNINDEX nNumPats = lpStream[dwMemPos++] + 1;
+    modplug::tracker::patternindex_t nNumPats = lpStream[dwMemPos++] + 1;
 
     if(m_nChannels > MAX_BASECHANNELS || nNumPats > MAX_PATTERNS)
             return false;
@@ -426,7 +426,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
             }
     }
 
-    for(PATTERNINDEX nPat = 0; nPat < nNumPats; nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < nNumPats; nPat++)
     {
             if(Patterns.Insert(nPat, 64))
                     return false;
@@ -439,7 +439,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
             int repeat;
             evnote.Clear();
 
-            for(PATTERNINDEX nPat = 0; nPat < nNumPats; nPat++)
+            for(modplug::tracker::patternindex_t nPat = 0; nPat < nNumPats; nPat++)
             {
                     note = Patterns[nPat] + nChn;
                     modplug::tracker::rowindex_t nRow = 0;

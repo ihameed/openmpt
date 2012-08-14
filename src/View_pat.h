@@ -72,7 +72,7 @@ const RowMask DefaultRowMask = {
 };
 
 struct ModCommandPos {
-    PATTERNINDEX nPat;
+    modplug::tracker::patternindex_t nPat;
     modplug::tracker::rowindex_t nRow;
     modplug::tracker::chnindex_t nChn;
 };
@@ -395,8 +395,8 @@ private:
     // If given edit positions are valid, sets them to iRow and iPat.
     // If not valid, set edit cursor position.
     void SetEditPos(const module_renderer& rSndFile,
-                    modplug::tracker::rowindex_t& iRow, PATTERNINDEX& iPat,
-                    const modplug::tracker::rowindex_t iRowCandidate, const PATTERNINDEX iPatCandidate) const;
+                    modplug::tracker::rowindex_t& iRow, modplug::tracker::patternindex_t& iPat,
+                    const modplug::tracker::rowindex_t iRowCandidate, const modplug::tracker::patternindex_t iPatCandidate) const;
 
     // Returns edit position.
     ModCommandPos GetEditPos(module_renderer& rSf, const bool bLiveRecord) const;

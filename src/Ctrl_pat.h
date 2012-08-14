@@ -7,9 +7,9 @@ class CCtrlPatterns;
 
 struct ORD_SELECTION
 {
-    ORDERINDEX nOrdLo;
-    ORDERINDEX nOrdHi;
-    ORDERINDEX GetSelCount() const {return nOrdHi - nOrdLo + 1;}
+    modplug::tracker::orderindex_t nOrdLo;
+    modplug::tracker::orderindex_t nOrdHi;
+    modplug::tracker::orderindex_t GetSelCount() const {return nOrdHi - nOrdLo + 1;}
 };
 
 //===========================
@@ -25,9 +25,9 @@ protected:
     //m_nScrollPos: The same as order
     //m_nScrollPos2nd: 2nd selection point if multiple orders are selected
     //                       (not neccessarily the higher order - GetCurSel() is taking care of that.)
-    ORDERINDEX m_nXScroll, m_nScrollPos, m_nScrollPos2nd, m_nDropPos;
+    modplug::tracker::orderindex_t m_nXScroll, m_nScrollPos, m_nScrollPos2nd, m_nDropPos;
     bool m_bScrolling, m_bDragging;
-    ORDERINDEX m_nDragOrder;
+    modplug::tracker::orderindex_t m_nDragOrder;
     //To tell how many orders('orderboxes') to show at least
     //on both sides of current order(when updating orderslist position).
     uint8_t m_nOrderlistMargins;
@@ -46,16 +46,16 @@ public:
     UINT GetCurrentPattern() const;
     // make the current selection the secondary selection (used for keyboard orderlist navigation)
     inline void SetCurSelTo2ndSel(bool isSelectionKeyPressed)
-    {        if(isSelectionKeyPressed && m_nScrollPos2nd == ORDERINDEX_INVALID) m_nScrollPos2nd = m_nScrollPos;
-            else if(!isSelectionKeyPressed && m_nScrollPos2nd != ORDERINDEX_INVALID) m_nScrollPos2nd = ORDERINDEX_INVALID;
+    {        if(isSelectionKeyPressed && m_nScrollPos2nd == modplug::tracker::ORDERINDEX_INVALID) m_nScrollPos2nd = m_nScrollPos;
+            else if(!isSelectionKeyPressed && m_nScrollPos2nd != modplug::tracker::ORDERINDEX_INVALID) m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
     };
-    bool SetCurSel(ORDERINDEX sel, bool bEdit = true, bool bShiftClick = false, bool bIgnoreCurSel = false);
+    bool SetCurSel(modplug::tracker::orderindex_t sel, bool bEdit = true, bool bShiftClick = false, bool bIgnoreCurSel = false);
     BOOL UpdateScrollInfo();
     void UpdateInfoText();
     int GetFontWidth();
     void QueuePattern(CPoint pt);
 
-    ORDERINDEX GetOrderFromPoint(const CRect& rect, const CPoint& pt) const;
+    modplug::tracker::orderindex_t GetOrderFromPoint(const CRect& rect, const CPoint& pt) const;
 
     // Get the currently selected pattern(s).
     // Set bIgnoreSelection to true if only the first selected point is important.
@@ -87,7 +87,7 @@ public:
     bool IsOrderInMargins(int order, int startOrder);
 
     // Ensure that a given order index is visible in the orderlist view.
-    void EnsureVisible(ORDERINDEX order);
+    void EnsureVisible(modplug::tracker::orderindex_t order);
 
     // Set given sqeuence and update orderlist display.
     void SelectSequence(const SEQUENCEINDEX nSeq);
@@ -179,7 +179,7 @@ public:
     LONG* GetSplitPosRef() {return &CMainFrame::glPatternWindowHeight;}         //rewbs.varWindowSize
 
 public:
-    void SetCurrentPattern(PATTERNINDEX nPat);
+    void SetCurrentPattern(modplug::tracker::patternindex_t nPat);
     BOOL SetCurrentInstrument(UINT nIns);
     BOOL GetFollowSong() { return IsDlgButtonChecked(IDC_PATTERN_FOLLOWSONG); }
     BOOL GetLoopPattern() {return IsDlgButtonChecked(IDC_PATTERN_LOOP);}
@@ -250,5 +250,3 @@ public:
     afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
     afx_msg BOOL OnToolTip(UINT id, NMHDR *pTTTStruct, LRESULT *pResult);
 };
-
-

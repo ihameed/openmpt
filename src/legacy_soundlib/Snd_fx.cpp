@@ -79,7 +79,7 @@ void CSoundFile::GenerateSamplePosMap() {
 
 // Get mod length in various cases. Parameters:
 // [in]  adjustMode: See enmGetLengthResetMode for possible adjust modes.
-// [in]  endOrder: Order which should be reached (ORDERINDEX_INVALID means whole song)
+// [in]  endOrder: Order which should be reached (modplug::tracker::ORDERINDEX_INVALID means whole song)
 // [in]  endRow: Row in that order that should be reached
 // [out] duration: total time in seconds
 // [out] targetReached: true if the specified order/row combination has been reached while going through the module.
@@ -87,13 +87,13 @@ void CSoundFile::GenerateSamplePosMap() {
 // [out] lastRow: last parsed row (dito)
 // [out] endOrder: last order before module loops (UNDEFINED if a target is specified)
 // [out] endRow: last row before module loops (dito)
-GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX endOrder, modplug::tracker::rowindex_t endRow)
+GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modplug::tracker::orderindex_t endOrder, modplug::tracker::rowindex_t endRow)
 //---------------------------------------------------------------------------------------------------------
 {
     GetLengthType retval;
     retval.duration = 0.0;
     retval.targetReached = false;
-    retval.lastOrder = retval.endOrder = ORDERINDEX_INVALID;
+    retval.lastOrder = retval.endOrder = modplug::tracker::ORDERINDEX_INVALID;
     retval.lastRow = retval.endRow = RowIndexInvalid;
 
 // -> CODE#0022
@@ -101,9 +101,9 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
 //    UINT dwElapsedTime=0, nRow=0, nCurrentPattern=0, nNextPattern=0, nPattern=Order[0];
     modplug::tracker::rowindex_t nRow = 0;
     modplug::tracker::rowindex_t nNextPatStartRow = 0; // FT2 E60 bug
-    ORDERINDEX nCurrentPattern = 0;
-    ORDERINDEX nNextPattern = 0;
-    PATTERNINDEX nPattern = Order[0];
+    modplug::tracker::orderindex_t nCurrentPattern = 0;
+    modplug::tracker::orderindex_t nNextPattern = 0;
+    modplug::tracker::patternindex_t nPattern = Order[0];
     double dElapsedTime=0.0;
 // -! NEW_FEATURE#0022
     UINT nMusicSpeed = m_nDefaultSpeed, nMusicTempo = m_nDefaultTempo, nNextRow = 0;
@@ -216,7 +216,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
             // Position Jump
             case CMD_POSITIONJUMP:
                 positionJumpOnThisRow = true;
-                nNextPattern = (ORDERINDEX)param;
+                nNextPattern = (modplug::tracker::orderindex_t)param;
                 nNextPatStartRow = 0;  // FT2 E60 bug
                 // see http://forum.openmpt.org/index.php?topic=2769.0 - FastTracker resets Dxx if Bxx is called _after_ Dxx
                 if(!patternBreakOnThisRow || (GetType() == MOD_TYPE_XM))
@@ -440,7 +440,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
         }
     }
 
-    if(retval.targetReached || endOrder == ORDERINDEX_INVALID || endRow == RowIndexInvalid)
+    if(retval.targetReached || endOrder == modplug::tracker::ORDERINDEX_INVALID || endRow == RowIndexInvalid)
     {
         retval.lastOrder = nCurrentPattern;
         retval.lastRow = nRow;
@@ -450,7 +450,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
     // Store final variables
     if ((adjustMode & eAdjust))
     {
-        if (retval.targetReached || endOrder == ORDERINDEX_INVALID || endRow == RowIndexInvalid)
+        if (retval.targetReached || endOrder == modplug::tracker::ORDERINDEX_INVALID || endRow == RowIndexInvalid)
         {
             // Target found, or there is no target (i.e. play whole song)...
             m_nGlobalVolume = nGlbVol;
@@ -1302,7 +1302,7 @@ BOOL module_renderer::ProcessEffects()
 {
     modplug::tracker::modchannel_t *pChn = Chn;
     modplug::tracker::rowindex_t nBreakRow = RowIndexInvalid, nPatLoopRow = RowIndexInvalid;
-    ORDERINDEX nPosJump = ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t nPosJump = modplug::tracker::ORDERINDEX_INVALID;
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
@@ -2165,9 +2165,9 @@ BOOL module_renderer::ProcessEffects()
             }
         } else
         // Pattern Break / Position Jump only if no loop running
-        if ((nBreakRow != RowIndexInvalid) || (nPosJump != ORDERINDEX_INVALID))
+        if ((nBreakRow != RowIndexInvalid) || (nPosJump != modplug::tracker::ORDERINDEX_INVALID))
         {
-            if (nPosJump == ORDERINDEX_INVALID) nPosJump = m_nCurrentPattern + 1;
+            if (nPosJump == modplug::tracker::ORDERINDEX_INVALID) nPosJump = m_nCurrentPattern + 1;
             if (nBreakRow == RowIndexInvalid) nBreakRow = 0;
             m_dwSongFlags |= SONG_BREAKTOROW;
 
@@ -4142,7 +4142,7 @@ void module_renderer::InitializeVisitedRows(const bool bReset, VisitedRowsType *
     }
     pRowVector->resize(Order.GetLengthTailTrimmed());
 
-    for(ORDERINDEX nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
+    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
     {
         VisitedRowsBaseType *pRow = &(pRowVector->at(nOrd));
         // If we want to reset the vectors completely, we overwrite existing items with false.
@@ -4159,10 +4159,10 @@ void module_renderer::InitializeVisitedRows(const bool bReset, VisitedRowsType *
 // nOrd, nRow - which row should be (un)set
 // If bVisited is true, the row will be set as visited.
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-void module_renderer::SetRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bVisited, VisitedRowsType *pRowVector)
+void module_renderer::SetRowVisited(const modplug::tracker::orderindex_t nOrd, const modplug::tracker::rowindex_t nRow, const bool bVisited, VisitedRowsType *pRowVector)
 //--------------------------------------------------------------------------------------------------------------------------
 {
-    const ORDERINDEX nMaxOrd = Order.GetLengthTailTrimmed();
+    const modplug::tracker::orderindex_t nMaxOrd = Order.GetLengthTailTrimmed();
     if(nOrd >= nMaxOrd || nRow >= GetVisitedRowsVectorSize(Order[nOrd]))
     {
         return;
@@ -4187,10 +4187,10 @@ void module_renderer::SetRowVisited(const ORDERINDEX nOrd, const modplug::tracke
 // If bAutoSet is true, the queried row will automatically be marked as visited.
 // Use this parameter instead of consecutive IsRowVisited/SetRowVisited calls.
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-bool module_renderer::IsRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bAutoSet, VisitedRowsType *pRowVector)
+bool module_renderer::IsRowVisited(const modplug::tracker::orderindex_t nOrd, const modplug::tracker::rowindex_t nRow, const bool bAutoSet, VisitedRowsType *pRowVector)
 //-------------------------------------------------------------------------------------------------------------------------
 {
-    const ORDERINDEX nMaxOrd = Order.GetLengthTailTrimmed();
+    const modplug::tracker::orderindex_t nMaxOrd = Order.GetLengthTailTrimmed();
     if(nOrd >= nMaxOrd)
     {
         return false;
@@ -4227,7 +4227,7 @@ bool module_renderer::IsRowVisited(const ORDERINDEX nOrd, const modplug::tracker
 
 
 // Get the needed vector size for pattern nPat.
-size_t module_renderer::GetVisitedRowsVectorSize(const PATTERNINDEX nPat)
+size_t module_renderer::GetVisitedRowsVectorSize(const modplug::tracker::patternindex_t nPat)
 //------------------------------------------------------------------
 {
     if(Patterns.IsValidPat(nPat))

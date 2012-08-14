@@ -323,11 +323,11 @@ void CCtrlPatterns::UpdateView(uint32_t dwHintMask, CObject *pObj)
             }
             if (dwHintMask & (HINT_MODTYPE|HINT_PATNAMES))
             {
-                    PATTERNINDEX nPat;
+                    modplug::tracker::patternindex_t nPat;
                     if (dwHintMask & HINT_PATNAMES)
-                            nPat = (PATTERNINDEX)(dwHintMask >> HINT_SHIFT_PAT);
+                            nPat = (modplug::tracker::patternindex_t)(dwHintMask >> HINT_SHIFT_PAT);
                     else
-                            nPat = (PATTERNINDEX)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
+                            nPat = (modplug::tracker::patternindex_t)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
                     m_pSndFile->Patterns[nPat].GetName(s, CountOf(s));
                     m_EditPatName.SetWindowText(s);
                     BOOL bXMIT = (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT)) ? TRUE : FALSE;
@@ -376,12 +376,12 @@ LRESULT CCtrlPatterns::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
             break;
 
     case CTRLMSG_SETCURRENTPATTERN:
-            SetCurrentPattern((PATTERNINDEX)lParam);
+            SetCurrentPattern((modplug::tracker::patternindex_t)lParam);
             break;
 
     case CTRLMSG_SETCURRENTORDER:
             //Set orderlist selection and refresh GUI if change successful
-            m_OrderList.SetCurSel((ORDERINDEX)lParam, FALSE);
+            m_OrderList.SetCurSel((modplug::tracker::orderindex_t)lParam, FALSE);
             break;
 
     case CTRLMSG_FORCEREFRESH:
@@ -506,7 +506,7 @@ LRESULT CCtrlPatterns::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
 }
 
 
-void CCtrlPatterns::SetCurrentPattern(PATTERNINDEX nPat)
+void CCtrlPatterns::SetCurrentPattern(modplug::tracker::patternindex_t nPat)
 //------------------------------------------------------
 {
     SendViewMessage(VIEWMSG_SETCURRENTPATTERN, (LPARAM)nPat);
@@ -559,12 +559,12 @@ void CCtrlPatterns::OnActivatePage(LPARAM lParam)
     if (!(lParam & 0x8000) && m_pSndFile)
     {
             // Pattern item
-            PATTERNINDEX nPat = (PATTERNINDEX)(lParam & 0x7FFF);
+            modplug::tracker::patternindex_t nPat = (modplug::tracker::patternindex_t)(lParam & 0x7FFF);
             if(m_pSndFile->Patterns.IsValidIndex(nPat))
             {
                     for (SEQUENCEINDEX nSeq = 0; nSeq < m_pSndFile->Order.GetNumSequences(); nSeq++)
                     {
-                            for (ORDERINDEX nOrd = 0; nOrd < m_pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd++)
+                            for (modplug::tracker::orderindex_t nOrd = 0; nOrd < m_pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd++)
                             {
                                     if (m_pSndFile->Order.GetSequence(nSeq)[nOrd] == nPat)
                                     {
@@ -580,7 +580,7 @@ void CCtrlPatterns::OnActivatePage(LPARAM lParam)
     else if ((lParam & 0x8000) && m_pSndFile)
     {
             // Order item
-            ORDERINDEX nOrd = (ORDERINDEX)(lParam & 0x7FFF);
+            modplug::tracker::orderindex_t nOrd = (modplug::tracker::orderindex_t)(lParam & 0x7FFF);
             SEQUENCEINDEX nSeq = (SEQUENCEINDEX)(lParam >> 16);
             if(nSeq < m_pSndFile->Order.GetNumSequences())
             {
@@ -600,7 +600,7 @@ void CCtrlPatterns::OnActivatePage(LPARAM lParam)
 
             //Restore all save pattern state, except pattern number which we might have just set.
             PATTERNVIEWSTATE* patternViewState = pFrame->GetPatternViewState();
-            patternViewState->nPattern = static_cast<PATTERNINDEX>(SendViewMessage(VIEWMSG_GETCURRENTPATTERN));
+            patternViewState->nPattern = static_cast<modplug::tracker::patternindex_t>(SendViewMessage(VIEWMSG_GETCURRENTPATTERN));
             if (pFrame) SendViewMessage(VIEWMSG_LOADSTATE, (LPARAM)patternViewState);
 
             SwitchToView();
@@ -778,8 +778,8 @@ void CCtrlPatterns::OnPatternNew()
     if (m_pModDoc)
     {
             module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-            ORDERINDEX nCurOrd = m_OrderList.GetCurSel(true).nOrdLo;
-            PATTERNINDEX nCurPat = pSndFile->Order[nCurOrd];
+            modplug::tracker::orderindex_t nCurOrd = m_OrderList.GetCurSel(true).nOrdLo;
+            modplug::tracker::patternindex_t nCurPat = pSndFile->Order[nCurOrd];
             modplug::tracker::rowindex_t rows = 64;
             if(pSndFile->Patterns.IsValidPat(nCurPat))
             {
@@ -787,8 +787,8 @@ void CCtrlPatterns::OnPatternNew()
                     rows = pSndFile->Patterns[nCurPat].GetNumRows();
                     rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
             }
-            PATTERNINDEX nNewPat = m_pModDoc->InsertPattern(nCurOrd, rows);
-            if ((nNewPat != PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()))
+            modplug::tracker::patternindex_t nNewPat = m_pModDoc->InsertPattern(nCurOrd, rows);
+            if ((nNewPat != modplug::tracker::PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()))
             {
                     // update time signature
                     if(pSndFile->Patterns.IsValidIndex(nCurPat) && pSndFile->Patterns[nCurPat].GetOverrideSignature())
@@ -816,26 +816,26 @@ void CCtrlPatterns::OnPatternDuplicate()
             module_renderer *pSndFile = m_pModDoc->GetSoundFile();
 
             ORD_SELECTION selection = m_OrderList.GetCurSel(false);
-            ORDERINDEX nInsertCount = selection.nOrdHi - selection.nOrdLo;
-            ORDERINDEX nInsertWhere = selection.nOrdLo + nInsertCount + 1;
+            modplug::tracker::orderindex_t nInsertCount = selection.nOrdHi - selection.nOrdLo;
+            modplug::tracker::orderindex_t nInsertWhere = selection.nOrdLo + nInsertCount + 1;
             if (nInsertWhere >= pSndFile->GetModSpecifications().ordersMax)
                     return;
             bool bSuccess = false;
             // has this pattern been duplicated already? (for multiselect)
-            vector<PATTERNINDEX> pReplaceIndex;
-            pReplaceIndex.resize(pSndFile->Patterns.Size(), PATTERNINDEX_INVALID);
+            vector<modplug::tracker::patternindex_t> pReplaceIndex;
+            pReplaceIndex.resize(pSndFile->Patterns.Size(), modplug::tracker::PATTERNINDEX_INVALID);
 
-            for(ORDERINDEX i = 0; i <= nInsertCount; i++)
+            for(modplug::tracker::orderindex_t i = 0; i <= nInsertCount; i++)
             {
-                    PATTERNINDEX nCurPat = pSndFile->Order[selection.nOrdLo + i];
+                    modplug::tracker::patternindex_t nCurPat = pSndFile->Order[selection.nOrdLo + i];
                     modplug::tracker::rowindex_t rows = 64;
-                    if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == PATTERNINDEX_INVALID)
+                    if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == modplug::tracker::PATTERNINDEX_INVALID)
                     {
                             rows = pSndFile->Patterns[nCurPat].GetNumRows();
                             rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
 
-                            PATTERNINDEX nNewPat = m_pModDoc->InsertPattern(nInsertWhere + i, rows);
-                            if ((nNewPat != PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nCurPat] != nullptr))
+                            modplug::tracker::patternindex_t nNewPat = m_pModDoc->InsertPattern(nInsertWhere + i, rows);
+                            if ((nNewPat != modplug::tracker::PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nCurPat] != nullptr))
                             {
                                     // update time signature
                                     if(pSndFile->Patterns[nCurPat].GetOverrideSignature())
@@ -861,8 +861,8 @@ void CCtrlPatterns::OnPatternDuplicate()
                     {
                             // invalid pattern, or it has been duplicated before (multiselect)
                             for (int j = pSndFile->Order.size() - 1; j > selection.nOrdLo + i + nInsertCount + 1; j--) pSndFile->Order[j] = pSndFile->Order[j - 1];
-                            PATTERNINDEX nNewPat;
-                            if(nCurPat < pSndFile->Patterns.Size() && pReplaceIndex[nCurPat] != PATTERNINDEX_INVALID)
+                            modplug::tracker::patternindex_t nNewPat;
+                            if(nCurPat < pSndFile->Patterns.Size() && pReplaceIndex[nCurPat] != modplug::tracker::PATTERNINDEX_INVALID)
                                     nNewPat = pReplaceIndex[nCurPat]; // take care of patterns that have been duplicated before
                             else
                                     nNewPat= pSndFile->Order[selection.nOrdLo + i];
@@ -1067,7 +1067,7 @@ void CCtrlPatterns::OnPatternNameChanged()
 {
     if ((m_pSndFile) && (m_pModDoc) && (!IsLocked()))
     {
-            const PATTERNINDEX nPat = (PATTERNINDEX)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
+            const modplug::tracker::patternindex_t nPat = (modplug::tracker::patternindex_t)SendViewMessage(VIEWMSG_GETCURRENTPATTERN);
 
             CHAR s[MAX_PATTERNNAME];
             m_EditPatName.GetWindowText(s, CountOf(s));

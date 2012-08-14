@@ -491,7 +491,7 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
     if((UINT)(iZxxCountLeft + iZxxCountRight) >= m_nChannels && !bDoNotConvertZxx && (iZxxCountLeft - iZxxCountRight > -(int)m_nChannels))
     {
         // there are enough Zxx commands, so let's assume this was made to be played with PixPlay
-        for(PATTERNINDEX nPat = 0; nPat < Patterns.Size(); nPat++) if(Patterns[nPat])
+        for(modplug::tracker::patternindex_t nPat = 0; nPat < Patterns.Size(); nPat++) if(Patterns[nPat])
         {
             modplug::tracker::modevent_t *m = Patterns[nPat];
             for(UINT len = Patterns[nPat].GetNumRows() * m_nChannels; len; m++, len--)
@@ -581,7 +581,7 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
     header[0x23] = nbi >> 8;
     nbp = 0;
     for (i = 0; Patterns[i]; i++) { nbp = i+1; if (nbp >= MAX_PATTERNS) break; }
-    for (ORDERINDEX nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++) if ((Order[nOrd] < MAX_PATTERNS) && (Order[nOrd] >= nbp)) nbp = Order[nOrd] + 1;
+    for (modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLengthTailTrimmed(); nOrd++) if ((Order[nOrd] < MAX_PATTERNS) && (Order[nOrd] >= nbp)) nbp = Order[nOrd] + 1;
     header[0x24] = nbp & 0xFF;
     header[0x25] = nbp >> 8;
     if (m_dwSongFlags & SONG_FASTVOLSLIDES) header[0x26] |= 0x40;

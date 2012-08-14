@@ -166,7 +166,7 @@ modplug::tracker::chnindex_t CModDoc::ReArrangeChannels(const vector<modplug::tr
     }
 
     BEGIN_CRITICAL();
-    for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
     {
             if(m_SndFile.Patterns[nPat])
             {
@@ -397,11 +397,11 @@ BOOL CModDoc::AdjustEndOfSample(UINT nSample)
 }
 
 
-PATTERNINDEX CModDoc::InsertPattern(ORDERINDEX nOrd, modplug::tracker::rowindex_t nRows)
+modplug::tracker::patternindex_t CModDoc::InsertPattern(modplug::tracker::orderindex_t nOrd, modplug::tracker::rowindex_t nRows)
 //------------------------------------------------------------------
 {
-    const PATTERNINDEX i = m_SndFile.Patterns.Insert(nRows);
-    if(i == PATTERNINDEX_INVALID)
+    const modplug::tracker::patternindex_t i = m_SndFile.Patterns.Insert(nRows);
+    if(i == modplug::tracker::PATTERNINDEX_INVALID)
             return i;
 
     //Increasing orderlist size if given order is beyond current limit,
@@ -416,7 +416,7 @@ PATTERNINDEX CModDoc::InsertPattern(ORDERINDEX nOrd, modplug::tracker::rowindex_
     for (UINT j=0; j<m_SndFile.Order.size(); j++)
     {
             if (m_SndFile.Order[j] == i) break;
-            if (m_SndFile.Order[j] == m_SndFile.Order.GetInvalidPatIndex() && nOrd == ORDERINDEX_INVALID)
+            if (m_SndFile.Order[j] == m_SndFile.Order.GetInvalidPatIndex() && nOrd == modplug::tracker::ORDERINDEX_INVALID)
             {
                     m_SndFile.Order[j] = i;
                     break;
@@ -602,7 +602,7 @@ void CModDoc::InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT
 }
 
 
-bool CModDoc::RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd)
+bool CModDoc::RemoveOrder(SEQUENCEINDEX nSeq, modplug::tracker::orderindex_t nOrd)
 //------------------------------------------------------------
 {
     if (nSeq >= m_SndFile.Order.GetNumSequences() || nOrd >= m_SndFile.Order.GetSequence(nSeq).size())
@@ -611,7 +611,7 @@ bool CModDoc::RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd)
     BEGIN_CRITICAL();
     SEQUENCEINDEX nOldSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     m_SndFile.Order.SetSequence(nSeq);
-    for (ORDERINDEX i = nOrd; i < m_SndFile.Order.GetSequence(nSeq).size() - 1; i++)
+    for (modplug::tracker::orderindex_t i = nOrd; i < m_SndFile.Order.GetSequence(nSeq).size() - 1; i++)
     {
             m_SndFile.Order[i] = m_SndFile.Order[i + 1];
     }
@@ -624,7 +624,7 @@ bool CModDoc::RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd)
 
 
 
-bool CModDoc::RemovePattern(PATTERNINDEX nPat)
+bool CModDoc::RemovePattern(modplug::tracker::patternindex_t nPat)
 //--------------------------------------------
 {
     if ((nPat < m_SndFile.Patterns.Size()) && (m_SndFile.Patterns[nPat]))
@@ -677,7 +677,7 @@ bool CModDoc::RemoveInstrument(INSTRUMENTINDEX nIns)
 }
 
 
-bool CModDoc::MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate, bool bCopy, SEQUENCEINDEX nSourceSeq, SEQUENCEINDEX nDestSeq)
+bool CModDoc::MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate, bool bCopy, SEQUENCEINDEX nSourceSeq, SEQUENCEINDEX nDestSeq)
 //---------------------------------------------------------------------------------------------------------------------------------------------
 {
     if (max(nSourceNdx, nDestNdx) >= m_SndFile.Order.size()) return false;
@@ -686,7 +686,7 @@ bool CModDoc::MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate
     if(nSourceSeq == SEQUENCEINDEX_INVALID) nSourceSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     if(nDestSeq == SEQUENCEINDEX_INVALID) nDestSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     if (max(nSourceSeq, nDestSeq) >= m_SndFile.Order.GetNumSequences()) return false;
-    PATTERNINDEX nSourcePat = m_SndFile.Order.GetSequence(nSourceSeq)[nSourceNdx];
+    modplug::tracker::patternindex_t nSourcePat = m_SndFile.Order.GetSequence(nSourceSeq)[nSourceNdx];
 
     // save current working sequence
     SEQUENCEINDEX nWorkingSeq = m_SndFile.Order.GetCurrentSequenceIndex();
@@ -695,12 +695,12 @@ bool CModDoc::MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate
     if (!bCopy)
     {
             m_SndFile.Order.SetSequence(nSourceSeq);
-            for (ORDERINDEX i = nSourceNdx; i < m_SndFile.Order.size() - 1; i++) m_SndFile.Order[i] = m_SndFile.Order[i + 1];
+            for (modplug::tracker::orderindex_t i = nSourceNdx; i < m_SndFile.Order.size() - 1; i++) m_SndFile.Order[i] = m_SndFile.Order[i + 1];
             if (nSourceNdx < nDestNdx) nDestNdx--;
     }
     // Insert at dest
     m_SndFile.Order.SetSequence(nDestSeq);
-    for (ORDERINDEX nOrd = m_SndFile.Order.size() - 1; nOrd > nDestNdx; nOrd--) m_SndFile.Order[nOrd] = m_SndFile.Order[nOrd - 1];
+    for (modplug::tracker::orderindex_t nOrd = m_SndFile.Order.size() - 1; nOrd > nDestNdx; nOrd--) m_SndFile.Order[nOrd] = m_SndFile.Order[nOrd - 1];
     m_SndFile.Order[nDestNdx] = nSourcePat;
     if (bUpdate)
     {
@@ -712,7 +712,7 @@ bool CModDoc::MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate
 }
 
 
-BOOL CModDoc::ExpandPattern(PATTERNINDEX nPattern)
+BOOL CModDoc::ExpandPattern(modplug::tracker::patternindex_t nPattern)
 //------------------------------------------------
 {
 // -> CODE#0008
@@ -726,7 +726,7 @@ BOOL CModDoc::ExpandPattern(PATTERNINDEX nPattern)
 }
 
 
-BOOL CModDoc::ShrinkPattern(PATTERNINDEX nPattern)
+BOOL CModDoc::ShrinkPattern(modplug::tracker::patternindex_t nPattern)
 //------------------------------------------------
 {
     if ((nPattern >= m_SndFile.Patterns.Size()) || (!m_SndFile.Patterns[nPattern])) return FALSE;
@@ -746,7 +746,7 @@ BOOL CModDoc::ShrinkPattern(PATTERNINDEX nPattern)
 
 static LPCSTR lpszClipboardPatternHdr = "ModPlug Tracker %3s\r\n";
 
-bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t dwEndSel)
+bool CModDoc::CopyPattern(modplug::tracker::patternindex_t nPattern, uint32_t dwBeginSel, uint32_t dwEndSel)
 //--------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -893,7 +893,7 @@ bool CModDoc::CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t d
 }
 
 
-bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatternPasteModes pasteMode)
+bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t dwBeginSel, enmPatternPasteModes pasteMode)
 //-------------------------------------------------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
@@ -922,9 +922,9 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
                     const bool doITStyleMix = (pasteMode == pm_mixpaste_it);
                     const bool doMixPaste = ((pasteMode == pm_mixpaste) || doITStyleMix);
 
-                    ORDERINDEX oCurrentOrder; //jojo.echopaste
+                    modplug::tracker::orderindex_t oCurrentOrder; //jojo.echopaste
                     modplug::tracker::rowindex_t rTemp;
-                    PATTERNINDEX pTemp;
+                    modplug::tracker::patternindex_t pTemp;
                     GetEditPosition(rTemp, pTemp, oCurrentOrder);
 
                     if ((nrow >= m_SndFile.Patterns[nPattern].GetNumRows()) || (ncol >= m_SndFile.GetNumChannels())) goto PasteDone;
@@ -1158,7 +1158,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
                                     while(nrow >= m_SndFile.Patterns[nPattern].GetNumRows())
                                     {
                                             nrow = 0;
-                                            ORDERINDEX oNextOrder = m_SndFile.Order.GetNextOrderIgnoringSkips(oCurrentOrder);
+                                            modplug::tracker::orderindex_t oNextOrder = m_SndFile.Order.GetNextOrderIgnoringSkips(oCurrentOrder);
                                             if((oNextOrder == 0) || (oNextOrder >= m_SndFile.Order.size())) goto PasteDone;
                                             nPattern = m_SndFile.Order[oNextOrder];
                                             if(m_SndFile.Patterns.IsValidPat(nPattern) == false) goto PasteDone;
@@ -1369,7 +1369,7 @@ bool CModDoc::IsChannelUnused(modplug::tracker::chnindex_t nChn) const
     {
             return true;
     }
-    for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
     {
             if(m_SndFile.Patterns.IsValidPat(nPat))
             {
@@ -1393,7 +1393,7 @@ bool CModDoc::RestartPosToPattern()
 {
     bool result = false;
     GetLengthType length = m_SndFile.GetLength(eNoAdjust);
-    if(length.endOrder != ORDERINDEX_INVALID && length.endRow != RowIndexInvalid)
+    if(length.endOrder != modplug::tracker::ORDERINDEX_INVALID && length.endRow != RowIndexInvalid)
     {
             result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, ChannelIndexInvalid, false, weTryNextRow);
     }

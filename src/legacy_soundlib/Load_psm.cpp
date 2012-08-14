@@ -108,7 +108,7 @@ struct PSMSUBSONG // For internal use (pattern conversion)
     bool  channelSurround[MAX_BASECHANNELS];
     uint8_t defaultTempo, defaultSpeed;
     char  songName[10];
-    ORDERINDEX startOrder, endOrder, restartPos;
+    modplug::tracker::orderindex_t startOrder, endOrder, restartPos;
 
     PSMSUBSONG()
     {
@@ -118,7 +118,7 @@ struct PSMSUBSONG // For internal use (pattern conversion)
         memset(songName, 0, sizeof(songName));
         defaultTempo = 125;
         defaultSpeed = 6;
-        startOrder = endOrder = restartPos = ORDERINDEX_INVALID;
+        startOrder = endOrder = restartPos = modplug::tracker::ORDERINDEX_INVALID;
     }
 };
 
@@ -160,7 +160,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
     m_nVSTiVolume = m_nSamplePreAmp = 48; // not supported in this format, so use a good default value
 
     // pattern offset and identifier
-    PATTERNINDEX numPatterns = 0;    // used for setting up the orderlist - final pattern count
+    modplug::tracker::patternindex_t numPatterns = 0;    // used for setting up the orderlist - final pattern count
     vector<uint32_t> patternOffsets;    // pattern offsets (sorted as they occour in the file)
     vector<uint32_t> patternIDs;            // pattern IDs (sorted as they occour in the file)
     vector<uint32_t> orderOffsets;    // combine the upper two vectors to get the offsets for each order item
@@ -217,7 +217,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 m_nChannels = CLAMP(pSong->numChannels, m_nChannels, MAX_BASECHANNELS); // subsongs *might* have different channel count
 
                 PSMSUBSONG subsong;
-                subsong.restartPos = (ORDERINDEX)Order.size(); // restart order "offset": current orderlist length
+                subsong.restartPos = (modplug::tracker::orderindex_t)Order.size(); // restart order "offset": current orderlist length
                 memcpy(subsong.songName, &pSong->songType, 9); // subsong name
                 SpaceToNullStringFixed<9>(subsong.songName);
 
@@ -281,9 +281,9 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                                             if(patternIDs[i] == nPattern)
                                             {
                                                 // found the right pattern, copy offset + start / end positions.
-                                                if(subsong.startOrder == ORDERINDEX_INVALID)
-                                                    subsong.startOrder = (ORDERINDEX)orderOffsets.size();
-                                                subsong.endOrder = (ORDERINDEX)orderOffsets.size();
+                                                if(subsong.startOrder == modplug::tracker::ORDERINDEX_INVALID)
+                                                    subsong.startOrder = (modplug::tracker::orderindex_t)orderOffsets.size();
+                                                subsong.endOrder = (modplug::tracker::orderindex_t)orderOffsets.size();
 
                                                 // every pattern in the order will be unique, so store the pointer + pattern ID
                                                 orderOffsets.push_back(patternOffsets[i]);
@@ -301,8 +301,8 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                                 case 0x04: // Restart position
                                     {
                                         uint16_t nRestartChunk = LittleEndian(*(uint16_t *)(lpStream + dwSettingsOffset + 1));
-                                        ORDERINDEX nRestartPosition = 0;
-                                        if(nRestartChunk >= nFirstOrderChunk) nRestartPosition = (ORDERINDEX)(nRestartChunk - nFirstOrderChunk);
+                                        modplug::tracker::orderindex_t nRestartPosition = 0;
+                                        if(nRestartChunk >= nFirstOrderChunk) nRestartPosition = (modplug::tracker::orderindex_t)(nRestartChunk - nFirstOrderChunk);
                                         subsong.restartPos += nRestartPosition;
                                     }
                                     dwSettingsOffset += 3;
@@ -515,8 +515,8 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
 
     // Now that we know the number of channels, we can go through all the patterns.
     // This is a bit stupid since we will even read duplicate patterns twice, but hey, we do this just once... so who cares?
-    PATTERNINDEX nPat = 0;
-    for(ORDERINDEX nOrd = 0; nOrd < Order.size(); nOrd++)
+    modplug::tracker::patternindex_t nPat = 0;
+    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.size(); nOrd++)
     {
         if(orderOffsets[nOrd] == 0) continue;
         uint32_t dwPatternOffset = orderOffsets[nOrd];
@@ -759,11 +759,11 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
         // write subsong "configuration" to patterns (only if there are multiple subsongs)
         for(uint32_t i = 0; i < subsongs.size(); i++)
         {
-            PATTERNINDEX startPattern = Order[subsongs[i].startOrder], endPattern = Order[subsongs[i].endOrder];
-            if(startPattern == PATTERNINDEX_INVALID || endPattern == PATTERNINDEX_INVALID) continue; // what, invalid subtune?
+            modplug::tracker::patternindex_t startPattern = Order[subsongs[i].startOrder], endPattern = Order[subsongs[i].endOrder];
+            if(startPattern == modplug::tracker::PATTERNINDEX_INVALID || endPattern == modplug::tracker::PATTERNINDEX_INVALID) continue; // what, invalid subtune?
 
             // set the subsong name to all pattern names
-            for(PATTERNINDEX nPat = startPattern; nPat <= endPattern; nPat++)
+            for(modplug::tracker::patternindex_t nPat = startPattern; nPat <= endPattern; nPat++)
             {
                 Patterns[nPat].SetName(subsongs[i].songName);
             }
@@ -786,7 +786,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
             // don't write channel volume for now, as it's always set to 100% anyway
 
             // there's a restart pos, so let's try to insert a Bxx command in the last pattern
-            if(subsongs[i].restartPos != ORDERINDEX_INVALID)
+            if(subsongs[i].restartPos != modplug::tracker::ORDERINDEX_INVALID)
             {
                 modplug::tracker::rowindex_t lastRow = Patterns[endPattern].GetNumRows() - 1;
                 modplug::tracker::modevent_t *row_data;
@@ -989,7 +989,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
     {
         uint32_t dwPatEndPos = LittleEndian(shdr->patOffset) + LittleEndian(shdr->patSize);
 
-        for(PATTERNINDEX nPat = 0; nPat < LittleEndianW(shdr->numPatterns); nPat++)
+        for(modplug::tracker::patternindex_t nPat = 0; nPat < LittleEndianW(shdr->numPatterns); nPat++)
         {
             ASSERT_CAN_READ(sizeof(PSM16PATHEADER));
             PSM16PATHEADER *phdr = (PSM16PATHEADER *)(lpStream + dwMemPos);

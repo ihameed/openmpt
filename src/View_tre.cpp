@@ -299,7 +299,7 @@ VOID CModTree::AddDocument(CModDoc *pModDoc)
             {
                     pInfo->pModDoc = pModDoc;
                     pInfo->nSeqSel = SEQUENCEINDEX_INVALID;
-                    pInfo->nOrdSel = ORDERINDEX_INVALID;
+                    pInfo->nOrdSel = modplug::tracker::ORDERINDEX_INVALID;
                     DocInfo[nNewNdx] = pInfo;
                     UpdateView(nNewNdx, HINT_MODTYPE);
                     if (pInfo->hSong)
@@ -796,7 +796,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
                     const bool patNamesOnly = (hintFlagPart == HINT_PATNAMES);
 
                     //if (hintFlagPart == HINT_PATNAMES) && (dwHintParam < pSndFile->Order.size())) imin = imax = dwHintParam;
-                    for (ORDERINDEX iOrd = 0; iOrd < pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); iOrd++)
+                    for (modplug::tracker::orderindex_t iOrd = 0; iOrd < pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); iOrd++)
                     {
                             if(patNamesOnly && pSndFile->Order.GetSequence(nSeq)[iOrd] != nPat)
                                     continue;
@@ -848,14 +848,14 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
     // Add Patterns
     if ((pInfo->hPatterns) && (hintFlagPart != HINT_INSNAMES) && (hintFlagPart != HINT_SMPNAMES))
     {
-            const PATTERNINDEX nPat = (PATTERNINDEX)(lHint >> HINT_SHIFT_PAT);
+            const modplug::tracker::patternindex_t nPat = (modplug::tracker::patternindex_t)(lHint >> HINT_SHIFT_PAT);
             pInfo->tiPatterns.resize(pSndFile->Patterns.Size(), NULL);
-            PATTERNINDEX imin = 0, imax = pSndFile->Patterns.Size()-1;
+            modplug::tracker::patternindex_t imin = 0, imax = pSndFile->Patterns.Size()-1;
             if ((hintFlagPart == HINT_PATNAMES) && (nPat < pSndFile->Patterns.Size())) imin = imax = nPat;
             BOOL bDelPat = FALSE;
 
             ASSERT(pInfo->tiPatterns.size() == pSndFile->Patterns.Size());
-            for(PATTERNINDEX iPat = imin; iPat <= imax; iPat++)
+            for(modplug::tracker::patternindex_t iPat = imin; iPat <= imax; iPat++)
             {
                     if ((bDelPat) && (pInfo->tiPatterns[iPat]))
                     {
@@ -1090,7 +1090,7 @@ uint64_t CModTree::GetModItem(HTREEITEM hItem)
                             for(SEQUENCEINDEX nSeq = 0; nSeq < pSong->tiOrders.size(); nSeq++)
                             {
                                     if(hItem == pSong->tiSequences[nSeq]) return (MODITEM_SEQUENCE | (nSeq << 16));
-                                    for(ORDERINDEX nOrd = 0; nOrd < pSong->tiOrders[nSeq].size(); nOrd++)
+                                    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < pSong->tiOrders[nSeq].size(); nOrd++)
                                     {
                                             if (hItem == pSong->tiOrders[nSeq][nOrd]) return (MODITEM_ORDER | (nOrd << 16) | (((uint64_t)nSeq) << 32));
                                     }
@@ -1411,7 +1411,7 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
 
     case MODITEM_ORDER:
             // might be slightly annoying to ask for confirmation here, and it's rather easy to restore the orderlist anyway.
-            if ((pModDoc) && (pModDoc->RemoveOrder((SEQUENCEINDEX)(modItemID >> 16), (ORDERINDEX)(modItemID & 0xFFFF))))
+            if ((pModDoc) && (pModDoc->RemoveOrder((SEQUENCEINDEX)(modItemID >> 16), (modplug::tracker::orderindex_t)(modItemID & 0xFFFF))))
             {
                     pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE, NULL);
             }
@@ -1420,7 +1420,7 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
     case MODITEM_PATTERN:
             wsprintf(s, _T("Remove pattern %d?"), modItemID);
             if (pModDoc == nullptr || MessageBox(s, _T("Confirmation"), MB_YESNO | MB_DEFBUTTON2) == IDNO) break;
-            if (pModDoc->RemovePattern((PATTERNINDEX)modItemID))
+            if (pModDoc->RemovePattern((modplug::tracker::patternindex_t)modItemID))
             {
                     pModDoc->UpdateAllViews(NULL, (UINT(modItemID) << HINT_SHIFT_PAT) | HINT_PATTERNDATA|HINT_PATNAMES);
             }
@@ -2041,7 +2041,7 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
                     if (bDoDrop)
                     {
                             SEQUENCEINDEX nSeqFrom = (SEQUENCEINDEX)(modItemDragID >> 16), nSeqTo = (SEQUENCEINDEX)(modItemDropID >> 16);
-                            ORDERINDEX nOrdFrom = (ORDERINDEX)(modItemDragID & 0xFFFF), nOrdTo = (ORDERINDEX)(modItemDropID & 0xFFFF);
+                            modplug::tracker::orderindex_t nOrdFrom = (modplug::tracker::orderindex_t)(modItemDragID & 0xFFFF), nOrdTo = (modplug::tracker::orderindex_t)(modItemDropID & 0xFFFF);
                             if(modItemDropType == MODITEM_SEQUENCE)
                             {
                                     // drop on sequence -> attach
@@ -2086,9 +2086,9 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
                                             return false;
                             }
                             pSndFile->Order.resize(min(pSndFile->GetModSpecifications().ordersMax, pOrigSeq->GetLength()), pSndFile->Order.GetInvalidPatIndex());
-                            for(ORDERINDEX nOrd = 0; nOrd < min(pSndFile->GetModSpecifications().ordersMax,pOrigSeq->GetLengthTailTrimmed()); nOrd++)
+                            for(modplug::tracker::orderindex_t nOrd = 0; nOrd < min(pSndFile->GetModSpecifications().ordersMax,pOrigSeq->GetLengthTailTrimmed()); nOrd++)
                             {
-                                    PATTERNINDEX nOrigPat = pDragSndFile->Order.GetSequence(nOrigSeq)[nOrd];
+                                    modplug::tracker::patternindex_t nOrigPat = pDragSndFile->Order.GetSequence(nOrigSeq)[nOrd];
                                     // translate pattern index
                                     if(nOrigPat == pDragSndFile->Order.GetInvalidPatIndex())
                                             pSndFile->Order[nOrd] = pSndFile->Order.GetInvalidPatIndex();
@@ -2138,7 +2138,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
     UINT nDocNdx = GetDocumentIDFromModDoc(pModDoc);
     if(nDocNdx >= MODTREE_MAX_DOCUMENTS) return;
 
-    ORDERINDEX nNewOrd = (pNotify) ? pNotify->nOrder : ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t nNewOrd = (pNotify) ? pNotify->nOrder : modplug::tracker::ORDERINDEX_INVALID;
     SEQUENCEINDEX nNewSeq = (pModDoc->GetSoundFile() != nullptr) ? pModDoc->GetSoundFile()->Order.GetCurrentSequenceIndex() : SEQUENCEINDEX_INVALID;
     if (nNewOrd != DocInfo[nDocNdx]->nOrdSel || nNewSeq != DocInfo[nDocNdx]->nSeqSel)
     {

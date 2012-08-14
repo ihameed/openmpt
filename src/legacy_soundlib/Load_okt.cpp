@@ -96,7 +96,7 @@ void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vecto
 
 
 // Parse a pattern block
-void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const PATTERNINDEX nPat, module_renderer *pSndFile)
+void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const modplug::tracker::patternindex_t nPat, module_renderer *pSndFile)
 //-----------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_OKTPAT(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return);
@@ -281,8 +281,8 @@ bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLengt
     vector<uint32_t> patternOffsets;
     vector<bool> sample7bit;        // 7-/8-bit sample
     vector<OKT_SAMPLEINFO> samplePos;
-    PATTERNINDEX nPatterns = 0;
-    ORDERINDEX nOrders = 0;
+    modplug::tracker::patternindex_t nPatterns = 0;
+    modplug::tracker::orderindex_t nOrders = 0;
 
     MemsetZero(m_szNames);
     m_nChannels = 0;
@@ -388,13 +388,13 @@ bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLengt
     m_nMaxPeriod = 0x358 << 2;
 
     // Fix orderlist
-    for(ORDERINDEX nOrd = nOrders; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
+    for(modplug::tracker::orderindex_t nOrd = nOrders; nOrd < Order.GetLengthTailTrimmed(); nOrd++)
     {
             Order[nOrd] = Order.GetInvalidPatIndex();
     }
 
     // Read patterns
-    for(PATTERNINDEX nPat = 0; nPat < nPatterns; nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < nPatterns; nPat++)
     {
             if(patternOffsets[nPat] > 0)
                     Read_OKT_Pattern(lpStream + patternOffsets[nPat], dwMemLength - patternOffsets[nPat], nPat, this);

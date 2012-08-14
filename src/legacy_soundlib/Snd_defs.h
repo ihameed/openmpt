@@ -12,12 +12,6 @@
 
 #include <cstdint>
 #include "../typedefs.h"
-typedef uint16_t ORDERINDEX;
-    const ORDERINDEX ORDERINDEX_MAX    = UINT16_MAX;
-    const ORDERINDEX ORDERINDEX_INVALID    = ORDERINDEX_MAX;
-typedef uint16_t PATTERNINDEX;
-    const PATTERNINDEX PATTERNINDEX_MAX    = UINT16_MAX;
-    const PATTERNINDEX PATTERNINDEX_INVALID    = PATTERNINDEX_MAX;
 typedef uint8_t  PLUGINDEX;
 typedef uint16_t TEMPO;
 typedef uint16_t SAMPLEINDEX;

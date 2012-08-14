@@ -18,7 +18,7 @@
 
 struct PATTERNUNDOBUFFER
 {
-    PATTERNINDEX pattern;
+    modplug::tracker::patternindex_t pattern;
     modplug::tracker::rowindex_t patternsize;
     modplug::tracker::chnindex_t firstChannel, numChannels;
     modplug::tracker::rowindex_t firstRow, numRows;
@@ -38,14 +38,14 @@ private:
 
     // Pattern undo helper functions
     void DeleteUndoStep(const UINT nStep);
-    PATTERNINDEX Undo(bool linkedFromPrevious);
+    modplug::tracker::patternindex_t Undo(bool linkedFromPrevious);
 
 public:
 
     // Pattern undo functions
     void ClearUndo();
-    bool PrepareUndo(PATTERNINDEX pattern, modplug::tracker::chnindex_t firstChn, modplug::tracker::rowindex_t firstRow, modplug::tracker::chnindex_t numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious = false);
-    PATTERNINDEX Undo();
+    bool PrepareUndo(modplug::tracker::patternindex_t pattern, modplug::tracker::chnindex_t firstChn, modplug::tracker::rowindex_t firstRow, modplug::tracker::chnindex_t numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious = false);
+    modplug::tracker::patternindex_t Undo();
     bool CanUndo();
     void RemoveLastUndoStep();
 

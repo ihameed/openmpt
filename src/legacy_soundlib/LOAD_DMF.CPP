@@ -195,7 +195,7 @@ uint8_t DMFvibrato2MPT(uint8_t val, const uint8_t internalTicks)
 }
 
 
-PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dwMemLength, DMF_PATTERNSETTINGS &settings, module_renderer *pSndFile)
+modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dwMemLength, DMF_PATTERNSETTINGS &settings, module_renderer *pSndFile)
 //----------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_PATTERN(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return nPat);
@@ -207,8 +207,8 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
     dwMemPos += sizeof(DMFCHUNK_PATTERNHEADER);
 
     const modplug::tracker::rowindex_t numRows = CLAMP(LittleEndianW(patHead->numRows), 1, MAX_PATTERN_ROWS);
-    const PATTERNINDEX nPat = pSndFile->Patterns.Insert(numRows);
-    if(nPat == PATTERNINDEX_INVALID)
+    const modplug::tracker::patternindex_t nPat = pSndFile->Patterns.Insert(numRows);
+    if(nPat == modplug::tracker::PATTERNINDEX_INVALID)
     {
         return nPat;
     }
@@ -848,7 +848,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
     vector<uint32_t> patternOffset;
     vector<uint32_t> patternLength;
 
-    ORDERINDEX loopStart = 0, loopEnd = ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t loopStart = 0, loopEnd = modplug::tracker::ORDERINDEX_INVALID;
 
     // go through all chunks now
     while(dwMemPos < dwMemLength)
@@ -886,13 +886,13 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
 
                 loopStart = LittleEndianW(seqHead->loopStart);
                 loopEnd = LittleEndianW(seqHead->loopEnd);
-                const ORDERINDEX numOrders = (ORDERINDEX)min(MAX_ORDERS, (chunkheader.chunksize - sizeof(DMFCHUNK_SEQUENCE)) / 2);
+                const modplug::tracker::orderindex_t numOrders = (modplug::tracker::orderindex_t)min(MAX_ORDERS, (chunkheader.chunksize - sizeof(DMFCHUNK_SEQUENCE)) / 2);
                 Order.resize(numOrders, Order.GetInvalidPatIndex());
 
-                for(ORDERINDEX i = 0; i < numOrders; i++, dwMemPos += 2)
+                for(modplug::tracker::orderindex_t i = 0; i < numOrders; i++, dwMemPos += 2)
                 {
                     uint16_t orderItem = *(uint16_t *)(lpStream + dwMemPos);
-                    Order[i] = (PATTERNINDEX)LittleEndianW(orderItem);
+                    Order[i] = (modplug::tracker::patternindex_t)LittleEndianW(orderItem);
                 }
             }
             break;
@@ -905,11 +905,11 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
                 dwMemPos += sizeof(DMFCHUNK_PATTERNS);
                 m_nChannels = CLAMP(patInfo->numTracks, 1, 32) + 1;	// + 1 for global track (used for tempo stuff)
 
-                const PATTERNINDEX numPats = min(MAX_PATTERNS, LittleEndianW(patInfo->numPatterns));
+                const modplug::tracker::patternindex_t numPats = min(MAX_PATTERNS, LittleEndianW(patInfo->numPatterns));
                 patternOffset.assign(numPats, 0);
                 patternLength.assign(numPats, 0);
 
-                for(PATTERNINDEX nPat = 0; nPat < numPats; nPat++)
+                for(modplug::tracker::patternindex_t nPat = 0; nPat < numPats; nPat++)
                 {
                     ASSERT_CAN_READ_CHUNK(sizeof(DMFCHUNK_PATTERNHEADER));
                     DMFCHUNK_PATTERNHEADER *patHead = (DMFCHUNK_PATTERNHEADER *)(lpStream + dwMemPos);
@@ -995,16 +995,16 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
         settings.noteBuffer.assign(GetNumChannels(), NOTE_NONE);
         settings.lastNote.assign(GetNumChannels(), NOTE_NONE);
 
-        for(ORDERINDEX nOrd = 0; nOrd < Order.GetLength(); nOrd++)
+        for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLength(); nOrd++)
         {
             // Create one pattern for each order item, as the same pattern can be played with different settings
-            PATTERNINDEX nPat = Order[nOrd];
+            modplug::tracker::patternindex_t nPat = Order[nOrd];
             if(nPat < patternOffset.size() && patternOffset[nPat] != 0)
             {
                 nPat = ConvertDMFPattern(lpStream + patternOffset[nPat], patternLength[nPat], settings, this);
                 Order[nOrd] = nPat;
                 // Loop end?
-                if(nPat != PATTERNINDEX_INVALID && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
+                if(nPat != modplug::tracker::PATTERNINDEX_INVALID && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
                 {
                     TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (uint8_t)loopStart, false, ChannelIndexInvalid, false, weTryPreviousRow);
                 }

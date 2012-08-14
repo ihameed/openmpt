@@ -47,7 +47,7 @@ struct MODTREEDOCINFO
     CModDoc *pModDoc;
     // Module information
     SEQUENCEINDEX nSeqSel;
-    ORDERINDEX nOrdSel;
+    modplug::tracker::orderindex_t nOrdSel;
     // Tree state variables
     HTREEITEM hSong, hPatterns, hSamples, hInstruments, hComments, hOrders, hEffects;
     vector<HTREEITEM> tiPatterns;
@@ -63,7 +63,7 @@ struct MODTREEDOCINFO
     {
             pModDoc = NULL;
             nSeqSel = SEQUENCEINDEX_INVALID;
-            nOrdSel = ORDERINDEX_INVALID;
+            nOrdSel = modplug::tracker::ORDERINDEX_INVALID;
             hSong = hPatterns = hSamples = hInstruments = hComments = hOrders = hEffects = NULL;
             if(pSndFile != NULL)
             {

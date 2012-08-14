@@ -17,27 +17,27 @@ void CPatternContainer::ClearPatterns()
 void CPatternContainer::DestroyPatterns()
 //---------------------------------------
 {
-    for(PATTERNINDEX i = 0; i < m_Patterns.size(); i++)
+    for(modplug::tracker::patternindex_t i = 0; i < m_Patterns.size(); i++)
     {
             Remove(i);
     }
 }
 
 
-PATTERNINDEX CPatternContainer::Insert(const modplug::tracker::rowindex_t rows)
+modplug::tracker::patternindex_t CPatternContainer::Insert(const modplug::tracker::rowindex_t rows)
 //---------------------------------------------------------
 {
-    PATTERNINDEX i = 0;
+    modplug::tracker::patternindex_t i = 0;
     for(i = 0; i < m_Patterns.size(); i++)
             if(!m_Patterns[i]) break;
     if(Insert(i, rows))
-            return PATTERNINDEX_INVALID;
+            return modplug::tracker::PATTERNINDEX_INVALID;
     else return i;
 
 }
 
 
-bool CPatternContainer::Insert(const PATTERNINDEX index, const modplug::tracker::rowindex_t rows)
+bool CPatternContainer::Insert(const modplug::tracker::patternindex_t index, const modplug::tracker::rowindex_t rows)
 //---------------------------------------------------------------------------
 {
     const CModSpecifications& specs = m_rSndFile.GetModSpecifications();
@@ -72,7 +72,7 @@ bool CPatternContainer::Insert(const PATTERNINDEX index, const modplug::tracker:
 }
 
 
-bool CPatternContainer::Remove(const PATTERNINDEX ipat)
+bool CPatternContainer::Remove(const modplug::tracker::patternindex_t ipat)
 //-----------------------------------------------------
 {
     if(ipat >= m_Patterns.size())
@@ -82,7 +82,7 @@ bool CPatternContainer::Remove(const PATTERNINDEX ipat)
 }
 
 
-bool CPatternContainer::IsPatternEmpty(const PATTERNINDEX nPat) const
+bool CPatternContainer::IsPatternEmpty(const modplug::tracker::patternindex_t nPat) const
 //-------------------------------------------------------------------
 {
     if(!IsValidPat(nPat))
@@ -98,25 +98,25 @@ bool CPatternContainer::IsPatternEmpty(const PATTERNINDEX nPat) const
 }
 
 
-PATTERNINDEX CPatternContainer::GetIndex(const MODPATTERN* const pPat) const
+modplug::tracker::patternindex_t CPatternContainer::GetIndex(const MODPATTERN* const pPat) const
 //--------------------------------------------------------------------------
 {
-    const PATTERNINDEX endI = static_cast<PATTERNINDEX>(m_Patterns.size());
-    for(PATTERNINDEX i = 0; i<endI; i++)
+    const modplug::tracker::patternindex_t endI = static_cast<modplug::tracker::patternindex_t>(m_Patterns.size());
+    for(modplug::tracker::patternindex_t i = 0; i<endI; i++)
             if(&m_Patterns[i] == pPat) return i;
 
     return endI;
 }
 
 
-void CPatternContainer::ResizeArray(const PATTERNINDEX newSize)
+void CPatternContainer::ResizeArray(const modplug::tracker::patternindex_t newSize)
 //-------------------------------------------------------------
 {
     if(Size() <= newSize)
             m_Patterns.resize(newSize, MODPATTERN(*this));
     else
     {
-            for(PATTERNINDEX i = Size(); i > newSize; i--) Remove(i-1);
+            for(modplug::tracker::patternindex_t i = Size(); i > newSize; i--) Remove(i-1);
             m_Patterns.resize(newSize, MODPATTERN(*this));
     }
 }
@@ -134,7 +134,7 @@ void CPatternContainer::OnModTypeChanged(const MODTYPE /*oldtype*/)
     // remove pattern time signatures
     if(!specs.hasPatternSignatures)
     {
-            for(PATTERNINDEX nPat = 0; nPat < m_Patterns.size(); nPat++)
+            for(modplug::tracker::patternindex_t nPat = 0; nPat < m_Patterns.size(); nPat++)
             {
                     m_Patterns[nPat].RemoveSignature();
             }
@@ -145,7 +145,7 @@ void CPatternContainer::OnModTypeChanged(const MODTYPE /*oldtype*/)
 void CPatternContainer::Init()
 //----------------------------
 {
-    for(PATTERNINDEX i = 0; i < Size(); i++)
+    for(modplug::tracker::patternindex_t i = 0; i < Size(); i++)
     {
             Remove(i);
     }
@@ -154,14 +154,14 @@ void CPatternContainer::Init()
 }
 
 
-PATTERNINDEX CPatternContainer::GetNumNamedPatterns() const
+modplug::tracker::patternindex_t CPatternContainer::GetNumNamedPatterns() const
 //---------------------------------------------------------
 {
     if(Size() == 0)
     {
             return 0;
     }
-    for(PATTERNINDEX nPat = Size(); nPat > 0; nPat--)
+    for(modplug::tracker::patternindex_t nPat = Size(); nPat > 0; nPat--)
     {
             if(m_Patterns[nPat - 1].GetName() != "")
             {
@@ -178,7 +178,7 @@ void WriteModPatterns(std::ostream& oStrm, const CPatternContainer& patc)
 {
     srlztn::Ssb ssb(oStrm);
     ssb.BeginWrite(FileIdPatterns, MptVersion::num);
-    const PATTERNINDEX nPatterns = patc.Size();
+    const modplug::tracker::patternindex_t nPatterns = patc.Size();
     uint16_t nCount = 0;
     for(uint16_t i = 0; i < nPatterns; i++) if (patc[i])
     {
@@ -197,7 +197,7 @@ void ReadModPatterns(std::istream& iStrm, CPatternContainer& patc, const size_t)
     ssb.BeginRead(FileIdPatterns, MptVersion::num);
     if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
             return;
-    PATTERNINDEX nPatterns = patc.Size();
+    modplug::tracker::patternindex_t nPatterns = patc.Size();
     uint16_t nCount = UINT16_MAX;
     if (ssb.ReadItem(nCount, "num") != srlztn::Ssb::EntryNotFound)
             nPatterns = nCount;

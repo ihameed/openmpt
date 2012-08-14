@@ -14,7 +14,7 @@ public:
     ULONGLONG m_dwFileLimit;
     uint32_t m_dwSongLimit;
     bool m_bSelectPlay, m_bNormalize, m_bHighQuality, m_bGivePlugsIdleTime;
-    ORDERINDEX m_nMinOrder, m_nMaxOrder;
+    modplug::tracker::orderindex_t m_nMinOrder, m_nMaxOrder;
     CComboBox m_CbnSampleRate, m_CbnSampleFormat;
     CEdit m_EditMinOrder, m_EditMaxOrder;
 
@@ -25,7 +25,7 @@ public:
      bool m_bInstrumentMode;        // Render by instrument
 
 public:
-    CWaveConvert(CWnd *parent, ORDERINDEX nMinOrder = ORDERINDEX_INVALID, ORDERINDEX nMaxOrder = ORDERINDEX_INVALID);
+    CWaveConvert(CWnd *parent, modplug::tracker::orderindex_t nMinOrder = modplug::tracker::ORDERINDEX_INVALID, modplug::tracker::orderindex_t nMaxOrder = modplug::tracker::ORDERINDEX_INVALID);
 
 public:
     void UpdateDialog();

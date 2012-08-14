@@ -211,7 +211,7 @@ bool module_renderer::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
     Order.resize(pfh->nOrders, Order.GetInvalidPatIndex());
     for (UINT iOrd=0; iOrd < pfh->nOrders; iOrd++)
     {
-        Order[iOrd] = (PATTERNINDEX)pfh->Orders[iOrd];
+        Order[iOrd] = (modplug::tracker::patternindex_t)pfh->Orders[iOrd];
     }
     assign_without_padding(this->song_name, pfh->szSongName, 32);
 
@@ -268,7 +268,7 @@ bool module_renderer::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
     }
     // Load Patterns
     dwMemPos = dwExtraDataPos + nExtraDataLen;
-    for (PATTERNINDEX iPat=0; iPat < pfh->wPatterns; iPat++) if (dwMemPos < dwMemLength - 6)
+    for (modplug::tracker::patternindex_t iPat=0; iPat < pfh->wPatterns; iPat++) if (dwMemPos < dwMemLength - 6)
     {
         MT2PATTERN *pmp = (MT2PATTERN *)(lpStream+dwMemPos);
         UINT wDataLen = (pmp->wDataLen + 1) & ~1;

@@ -283,8 +283,8 @@ BOOL CViewPattern::SetCurrentRow(UINT row, BOOL bWrap, BOOL bUpdateHorizontalScr
                 UINT nCurOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
                 if ((nCurOrder > 0) && (nCurOrder < pSndFile->Order.size()) && (m_nPattern == pSndFile->Order[nCurOrder]))
                 {
-                    const ORDERINDEX prevOrd = pSndFile->Order.GetPreviousOrderIgnoringSkips(nCurOrder);
-                    const PATTERNINDEX nPrevPat = pSndFile->Order[prevOrd];
+                    const modplug::tracker::orderindex_t prevOrd = pSndFile->Order.GetPreviousOrderIgnoringSkips(nCurOrder);
+                    const modplug::tracker::patternindex_t nPrevPat = pSndFile->Order[prevOrd];
                     if ((nPrevPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nPrevPat].GetNumRows()))
                     {
                         SendCtrlMessage(CTRLMSG_SETCURRENTORDER, prevOrd);
@@ -311,8 +311,8 @@ BOOL CViewPattern::SetCurrentRow(UINT row, BOOL bWrap, BOOL bUpdateHorizontalScr
                 UINT nCurOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
                 if ((nCurOrder+1 < pSndFile->Order.size()) && (m_nPattern == pSndFile->Order[nCurOrder]))
                 {
-                    const ORDERINDEX nextOrder = pSndFile->Order.GetNextOrderIgnoringSkips(nCurOrder);
-                    const PATTERNINDEX nextPat = pSndFile->Order[nextOrder];
+                    const modplug::tracker::orderindex_t nextOrder = pSndFile->Order.GetNextOrderIgnoringSkips(nCurOrder);
+                    const modplug::tracker::patternindex_t nextPat = pSndFile->Order[nextOrder];
                     if ((nextPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nextPat].GetNumRows()))
                     {
                         const modplug::tracker::rowindex_t newRow = row - pSndFile->Patterns[m_nPattern].GetNumRows();
@@ -2807,7 +2807,7 @@ void CViewPattern::OnEditUndo()
     CModDoc *pModDoc = GetDocument();
     if (pModDoc && IsEditingEnabled_bmsg())
     {
-        PATTERNINDEX nPat = pModDoc->GetPatternUndo()->Undo();
+        modplug::tracker::patternindex_t nPat = pModDoc->GetPatternUndo()->Undo();
         if (nPat < pModDoc->GetSoundFile()->Patterns.Size())
         {
             pModDoc->SetModified();
@@ -3120,7 +3120,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
     const UINT nChn = GetChanFromCursor(m_dwCursor);
     const bool bUsePlaybackPosition = IsLiveRecord(*pModDoc, *pSndFile);
     modplug::tracker::rowindex_t nRow = m_nRow;
-    PATTERNINDEX nPattern = m_nPattern;
+    modplug::tracker::patternindex_t nPattern = m_nPattern;
     if(bUsePlaybackPosition == true)
         SetEditPos(*pSndFile, nRow, nPattern, pSndFile->m_nRow, pSndFile->m_nPattern);
 
@@ -3708,15 +3708,15 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcNextPattern:    {        UINT n = m_nPattern + 1;
                                 while ((n < pSndFile->Patterns.Size()) && (!pSndFile->Patterns[n])) n++;
                                 SetCurrentPattern((n < pSndFile->Patterns.Size()) ? n : 0);
-                                ORDERINDEX currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
-                                ORDERINDEX newOrder = pSndFile->FindOrder(m_nPattern, currentOrder, true);
+                                modplug::tracker::orderindex_t currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
+                                modplug::tracker::orderindex_t newOrder = pSndFile->FindOrder(m_nPattern, currentOrder, true);
                                 SendCtrlMessage(CTRLMSG_SETCURRENTORDER, newOrder);
                                 return wParam; }
         case kcPrevPattern: {    UINT n = (m_nPattern) ? m_nPattern - 1 : pSndFile->Patterns.Size()-1;
                                 while ((n > 0) && (!pSndFile->Patterns[n])) n--;
                                 SetCurrentPattern(n);
-                                ORDERINDEX currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
-                                ORDERINDEX newOrder = pSndFile->FindOrder(m_nPattern, currentOrder, false);
+                                modplug::tracker::orderindex_t currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
+                                modplug::tracker::orderindex_t newOrder = pSndFile->FindOrder(m_nPattern, currentOrder, false);
                                 SendCtrlMessage(CTRLMSG_SETCURRENTORDER, newOrder);
                                 return wParam; }
         case kcSelectWithCopySelect:
@@ -4085,7 +4085,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     // Get playback edit positions from play engine here in case they are needed below.
     const modplug::tracker::rowindex_t nRowPlayback = pSndFile->m_nRow;
     const UINT nTick = pSndFile->m_nTickCount;
-    const PATTERNINDEX nPatPlayback = pSndFile->m_nPattern;
+    const modplug::tracker::patternindex_t nPatPlayback = pSndFile->m_nPattern;
 
     const bool isSplit = (pModDoc->GetSplitKeyboardSettings()->IsSplitActive()) && (note <= pModDoc->GetSplitKeyboardSettings()->splitNote);
     UINT ins = 0;
@@ -4139,7 +4139,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
 
     //Work out where to put the note off
     modplug::tracker::rowindex_t nRow = m_nRow;
-    PATTERNINDEX nPat = m_nPattern;
+    modplug::tracker::patternindex_t nPat = m_nPattern;
 
     if(usePlaybackPosition)
         SetEditPos(*pSndFile, nRow, nPat, nRowPlayback, nPatPlayback);
@@ -4308,7 +4308,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         module_renderer *pSndFile = pModDoc->GetSoundFile();
         const modplug::tracker::rowindex_t nRowPlayback = pSndFile->m_nRow;
         const UINT nTick = pSndFile->m_nTickCount;
-        const PATTERNINDEX nPatPlayback = pSndFile->m_nPattern;
+        const modplug::tracker::patternindex_t nPatPlayback = pSndFile->m_nPattern;
 
         const bool bRecordEnabled = IsEditingEnabled();
         const UINT nChn = GetChanFromCursor(m_dwCursor);
@@ -4359,7 +4359,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         }
         m_dwLastNoteEntryTime = timeGetTime();
 
-        PATTERNINDEX nPat = m_nPattern;
+        modplug::tracker::patternindex_t nPat = m_nPattern;
 
         if(usePlaybackPosition)
             SetEditPos(*pSndFile, nRow, nPat, nRowPlayback, nPatPlayback);
@@ -5533,7 +5533,7 @@ void CViewPattern::OnShowTimeAtRow()
     if(!pSndFile) return;
 
     CString msg;
-    ORDERINDEX currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
+    modplug::tracker::orderindex_t currentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
     if(pSndFile->Order[currentOrder] == m_nPattern)
     {
         const double t = pSndFile->GetPlaybackTimeAt(currentOrder, m_nRow, false);
@@ -5555,8 +5555,8 @@ void CViewPattern::OnShowTimeAtRow()
 
 
 void CViewPattern::SetEditPos(const module_renderer& rSndFile,
-                              modplug::tracker::rowindex_t& iRow, PATTERNINDEX& iPat,
-                              const modplug::tracker::rowindex_t iRowCandidate, const PATTERNINDEX iPatCandidate) const
+                              modplug::tracker::rowindex_t& iRow, modplug::tracker::patternindex_t& iPat,
+                              const modplug::tracker::rowindex_t iRowCandidate, const modplug::tracker::patternindex_t iPatCandidate) const
 //-------------------------------------------------------------------------------------------
 {
     if(rSndFile.Patterns.IsValidPat(iPatCandidate) && rSndFile.Patterns[iPatCandidate].IsValidRow(iRowCandidate))

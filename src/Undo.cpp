@@ -39,7 +39,7 @@ void CPatternUndo::ClearUndo()
 //   - numChns: width
 //   - numRows: height
 //   - linkToPrevious: Don't create a separate undo step, but link this to the previous undo event. Useful for commands that modify several patterns at once.
-bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, modplug::tracker::chnindex_t firstChn, modplug::tracker::rowindex_t firstRow, modplug::tracker::chnindex_t numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious)
+bool CPatternUndo::PrepareUndo(modplug::tracker::patternindex_t pattern, modplug::tracker::chnindex_t firstChn, modplug::tracker::rowindex_t firstRow, modplug::tracker::chnindex_t numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(m_pModDoc == nullptr) return false;
@@ -92,7 +92,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, modplug::tracker::chnindex_
 
 
 // Restore an undo point. Returns which pattern has been modified.
-PATTERNINDEX CPatternUndo::Undo()
+modplug::tracker::patternindex_t CPatternUndo::Undo()
 //-------------------------------
 {
     return Undo(false);
@@ -101,19 +101,19 @@ PATTERNINDEX CPatternUndo::Undo()
 
 // Restore an undo point. Returns which pattern has been modified.
 // linkedFromPrevious is true if a connected undo event is going to be deleted (can only be called internally).
-PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
+modplug::tracker::patternindex_t CPatternUndo::Undo(bool linkedFromPrevious)
 //------------------------------------------------------
 {
-    if(m_pModDoc == nullptr) return PATTERNINDEX_INVALID;
+    if(m_pModDoc == nullptr) return modplug::tracker::PATTERNINDEX_INVALID;
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-    if(pSndFile == nullptr) return PATTERNINDEX_INVALID;
+    if(pSndFile == nullptr) return modplug::tracker::PATTERNINDEX_INVALID;
 
     modplug::tracker::modevent_t *pUndoData, *pPattern;
-    PATTERNINDEX nPattern;
+    modplug::tracker::patternindex_t nPattern;
     modplug::tracker::rowindex_t nRows;
     bool linkToPrevious = false;
 
-    if (CanUndo() == false) return PATTERNINDEX_INVALID;
+    if (CanUndo() == false) return modplug::tracker::PATTERNINDEX_INVALID;
 
     // If the most recent undo step is invalid, trash it.
     while(UndoBuffer.back().pattern >= pSndFile->Patterns.Size())
@@ -121,7 +121,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
             RemoveLastUndoStep();
             // The command which was connect to this command is no more valid, so don't search for the next command.
             if(linkedFromPrevious)
-                    return PATTERNINDEX_INVALID;
+                    return modplug::tracker::PATTERNINDEX_INVALID;
     }
 
     // Select most recent undo slot
@@ -135,7 +135,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
             {
                     modplug::tracker::modevent_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
                     modplug::tracker::modevent_t *oldPattern = pSndFile->Patterns[nPattern];
-                    if (!newPattern) return PATTERNINDEX_INVALID;
+                    if (!newPattern) return modplug::tracker::PATTERNINDEX_INVALID;
                     const modplug::tracker::rowindex_t nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
                     pSndFile->Patterns[nPattern].SetData(newPattern, nRows);
                     if(oldPattern)
@@ -147,7 +147,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
             linkToPrevious = pUndo->linkToPrevious;
             pUndoData = pUndo->pbuffer;
             pPattern = pSndFile->Patterns[nPattern];
-            if (!pSndFile->Patterns[nPattern]) return PATTERNINDEX_INVALID;
+            if (!pSndFile->Patterns[nPattern]) return modplug::tracker::PATTERNINDEX_INVALID;
             pPattern += pUndo->firstChannel + (pUndo->firstRow * pSndFile->GetNumChannels());
             for(modplug::tracker::rowindex_t iy = 0; iy < pUndo->numRows; iy++)
             {

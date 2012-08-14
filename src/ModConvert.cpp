@@ -84,7 +84,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
 {
     std::bitset<wNumWarnings> warnings;
     warnings.reset();
-    PATTERNINDEX nResizedPatterns = 0;
+    modplug::tracker::patternindex_t nResizedPatterns = 0;
 
     const MODTYPE nOldType = m_SndFile.GetType();
 
@@ -116,7 +116,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     const CModSpecifications& specs = m_SndFile.GetModSpecifications(nNewType);
 
     // Check if conversion to 64 rows is necessary
-    for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++)
     {
         if ((m_SndFile.Patterns[nPat]) && (m_SndFile.Patterns[nPat].GetNumRows() != 64))
             nResizedPatterns++;
@@ -139,7 +139,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         }
 
         // Resizing all patterns to 64 rows
-        for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++) if ((m_SndFile.Patterns[nPat]) && (m_SndFile.Patterns[nPat].GetNumRows() != 64))
+        for(modplug::tracker::patternindex_t nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++) if ((m_SndFile.Patterns[nPat]) && (m_SndFile.Patterns[nPat].GetNumRows() != 64))
         {
             // try to save short patterns by inserting a pattern break.
             if(m_SndFile.Patterns[nPat].GetNumRows() < 64)
@@ -171,7 +171,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     /////////////////////////////
     // Converting pattern data
 
-    for(PATTERNINDEX nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++) if (m_SndFile.Patterns[nPat])
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < m_SndFile.Patterns.Size(); nPat++) if (m_SndFile.Patterns[nPat])
     {
         modplug::tracker::modevent_t *m = m_SndFile.Patterns[nPat];
 
@@ -421,7 +421,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     // Check for patterns with custom time signatures (fixing will be applied in the pattern container)
     if(!module_renderer::GetModSpecifications(nNewType).hasPatternSignatures)
     {
-        for(PATTERNINDEX nPat = 0; nPat < m_SndFile.GetNumPatterns(); nPat++)
+        for(modplug::tracker::patternindex_t nPat = 0; nPat < m_SndFile.GetNumPatterns(); nPat++)
         {
             if(m_SndFile.Patterns[nPat].GetOverrideSignature())
             {

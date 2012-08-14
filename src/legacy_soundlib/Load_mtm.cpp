@@ -111,7 +111,7 @@ bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
     const uint8_t * pTracks = lpStream + dwMemPos;
     dwMemPos += 192 * pmh->numtracks;
     LPWORD pSeq = (LPWORD)(lpStream + dwMemPos);
-    for (PATTERNINDEX pat = 0; pat <= pmh->lastpattern; pat++)
+    for (modplug::tracker::patternindex_t pat = 0; pat <= pmh->lastpattern; pat++)
     {
         if(Patterns.Insert(pat, nPatRows)) break;
         for (UINT n=0; n<32; n++) if ((pSeq[n]) && (pSeq[n] <= pmh->numtracks) && (n < m_nChannels))

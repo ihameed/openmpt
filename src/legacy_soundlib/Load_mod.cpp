@@ -386,7 +386,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
     if(bFLT8)
     {
         // FLT8 has only even order items, so divide by two.
-        for(ORDERINDEX nOrd = 0; nOrd < Order.GetLength(); nOrd++)
+        for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLength(); nOrd++)
             Order[nOrd] >>= 1;
     }
 
@@ -426,7 +426,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
     bool bLeftPanning = false, bExtendedPanning = false;    // for detecting 800-880 panning
 
     // Reading patterns
-    for (PATTERNINDEX ipat = 0; ipat < nbp; ipat++)
+    for (modplug::tracker::patternindex_t ipat = 0; ipat < nbp; ipat++)
     {
         if (ipat < MAX_PATTERNS)
         {

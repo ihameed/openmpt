@@ -677,7 +677,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
                         uint16_t seqval = BigEndianW(pmps->seq[i]);
                         if ((seqval < wNumBlocks) && (nOrders < MAX_ORDERS-1))
                         {
-                            Order[nOrders++] = (ORDERINDEX)seqval;
+                            Order[nOrders++] = (modplug::tracker::orderindex_t)seqval;
                         }
                     }
                 }
@@ -805,7 +805,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
     if ((!dwBlockArr) || (dwBlockArr > dwMemLength - 4*wNumBlocks)) return true;
     pdwTable = (LPDWORD)(lpStream + dwBlockArr);
     playtransp += (version == '3') ? 24 : 48;
-    for (PATTERNINDEX iBlk=0; iBlk<wNumBlocks; iBlk++)
+    for (modplug::tracker::patternindex_t iBlk=0; iBlk<wNumBlocks; iBlk++)
     {
         UINT dwPos = BigEndian(pdwTable[iBlk]);
         if ((!dwPos) || (dwPos >= dwMemLength) || (dwPos >= dwMemLength - 8)) continue;

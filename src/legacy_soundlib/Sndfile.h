@@ -241,7 +241,7 @@ struct PatternCuePoint
 {
     bool            processed;                // has this point been processed by the main WAV render function yet?
     ULONGLONG    offset;                        // offset in the file (in samples)
-    ORDERINDEX    order;                        // which order is this?
+    modplug::tracker::orderindex_t    order;                        // which order is this?
 };
 
 // Data type for the visited rows routines.
@@ -254,9 +254,9 @@ struct GetLengthType
 {
     double duration;            // total time in seconds
     bool targetReached;            // true if the specified order/row combination has been reached while going through the module
-    ORDERINDEX lastOrder;    // last parsed order (if no target is specified, this is the first order that is parsed twice, i.e. not the *last* played order)
+    modplug::tracker::orderindex_t lastOrder;    // last parsed order (if no target is specified, this is the first order that is parsed twice, i.e. not the *last* played order)
     modplug::tracker::rowindex_t lastRow;            // last parsed row (dito)
-    ORDERINDEX endOrder;    // last order before module loops (UNDEFINED if a target is specified)
+    modplug::tracker::orderindex_t endOrder;    // last order before module loops (UNDEFINED if a target is specified)
     modplug::tracker::rowindex_t endRow;            // last row before module loops (dito)
 };
 
@@ -398,7 +398,7 @@ private:
 public:
     // Write pattern effect functions
     bool TryWriteEffect(
-        PATTERNINDEX nPat,
+        modplug::tracker::patternindex_t nPat,
         modplug::tracker::rowindex_t nRow,
         uint8_t nEffect,
         uint8_t nParam,
@@ -545,9 +545,9 @@ public:
 public:
     void InitializeVisitedRows(const bool bReset = true, VisitedRowsType *pRowVector = nullptr);
 private:
-    void SetRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bVisited = true, VisitedRowsType *pRowVector = nullptr);
-    bool IsRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bAutoSet = true, VisitedRowsType *pRowVector = nullptr);
-    size_t GetVisitedRowsVectorSize(const PATTERNINDEX nPat);
+    void SetRowVisited(const modplug::tracker::orderindex_t nOrd, const modplug::tracker::rowindex_t nRow, const bool bVisited = true, VisitedRowsType *pRowVector = nullptr);
+    bool IsRowVisited(const modplug::tracker::orderindex_t nOrd, const modplug::tracker::rowindex_t nRow, const bool bAutoSet = true, VisitedRowsType *pRowVector = nullptr);
+    size_t GetVisitedRowsVectorSize(const modplug::tracker::patternindex_t nPat);
 
 public:
     // "importance" of every FX command. Table is used for importing from formats with multiple effect columns
@@ -565,7 +565,7 @@ public: //Misc
 
     // Returns value in seconds. If given position won't be played at all, returns -1.
     // If updateVars is true, the state of various playback variables will be updated according to the playback position.
-    double GetPlaybackTimeAt(ORDERINDEX ord, modplug::tracker::rowindex_t row, bool updateVars);
+    double GetPlaybackTimeAt(modplug::tracker::orderindex_t ord, modplug::tracker::rowindex_t row, bool updateVars);
 
     uint16_t GetModFlags() const {return m_ModFlags;}
     void SetModFlags(const uint16_t v) {m_ModFlags = v;}
@@ -666,8 +666,8 @@ public:    // for Editing
     UINT m_nMusicSpeed, m_nMusicTempo;
     modplug::tracker::rowindex_t m_nNextRow, m_nRow;
     modplug::tracker::rowindex_t m_nNextPatStartRow; // for FT2's E60 bug
-    PATTERNINDEX m_nPattern;
-    ORDERINDEX m_nCurrentPattern, m_nNextPattern, m_nRestartPos, m_nSeqOverride;
+    modplug::tracker::patternindex_t m_nPattern;
+    modplug::tracker::orderindex_t m_nCurrentPattern, m_nNextPattern, m_nRestartPos, m_nSeqOverride;
     //NOTE: m_nCurrentPattern and m_nNextPattern refer to order index - not pattern index.
     bool m_bPatternTransitionOccurred;
     UINT m_nMasterVolume, m_nGlobalVolume, m_nSamplesToGlobalVolRampDest,
@@ -725,12 +725,12 @@ public:
     UINT GetMasterVolume() const { return m_nMasterVolume; }
 
     // Returns 1 + index of last valid pattern, zero if no such pattern exists.
-    PATTERNINDEX GetNumPatterns() const;
+    modplug::tracker::patternindex_t GetNumPatterns() const;
     INSTRUMENTINDEX GetNumInstruments() const { return m_nInstruments; }
     SAMPLEINDEX GetNumSamples() const { return m_nSamples; }
     UINT GetCurrentPos() const;
-    PATTERNINDEX GetCurrentPattern() const { return m_nPattern; }
-    ORDERINDEX GetCurrentOrder() const { return static_cast<ORDERINDEX>(m_nCurrentPattern); }
+    modplug::tracker::patternindex_t GetCurrentPattern() const { return m_nPattern; }
+    modplug::tracker::orderindex_t GetCurrentOrder() const { return static_cast<modplug::tracker::orderindex_t>(m_nCurrentPattern); }
     UINT GetMaxPosition() const;
     modplug::tracker::chnindex_t GetNumChannels() const { return m_nChannels; }
 
@@ -739,10 +739,10 @@ public:
     static const CModSpecifications& GetModSpecifications(const MODTYPE type);
 
     double GetCurrentBPM() const;
-    ORDERINDEX FindOrder(PATTERNINDEX nPat, UINT startFromOrder=0, bool direction = true);    //rewbs.playSongFromCursor
-    void DontLoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow = 0);            //rewbs.playSongFromCursor
+    modplug::tracker::orderindex_t FindOrder(modplug::tracker::patternindex_t nPat, UINT startFromOrder=0, bool direction = true);    //rewbs.playSongFromCursor
+    void DontLoopPattern(modplug::tracker::patternindex_t nPat, modplug::tracker::rowindex_t nRow = 0);            //rewbs.playSongFromCursor
     void SetCurrentPos(UINT nPos);
-    void SetCurrentOrder(ORDERINDEX nOrder);
+    void SetCurrentOrder(modplug::tracker::orderindex_t nOrder);
     void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
     LPCSTR GetTitle() const { return song_name.c_str(); }
     LPCTSTR GetSampleName(UINT nSample) const;
@@ -754,7 +754,7 @@ public:
     //specific order&row etc. Return value is in seconds.
     GetLengthType GetLength(
         enmGetLengthResetMode adjustMode,
-        ORDERINDEX ord = ORDERINDEX_INVALID,
+        modplug::tracker::orderindex_t ord = modplug::tracker::ORDERINDEX_INVALID,
         modplug::tracker::rowindex_t row = modplug::tracker::RowIndexInvalid
     );
 
@@ -766,7 +766,7 @@ public:
     void SetRepeatCount(int n) { m_nRepeatCount = n; }
     int GetRepeatCount() const { return m_nRepeatCount; }
     bool IsPaused() const {    return (m_dwSongFlags & (SONG_PAUSED|SONG_STEP)) ? true : false; }        // Added SONG_STEP as it seems to be desirable in most cases to check for this as well.
-    void LoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow = 0);
+    void LoopPattern(modplug::tracker::patternindex_t nPat, modplug::tracker::rowindex_t nRow = 0);
     void CheckCPUUsage(UINT nCPU);
 
     void SetupITBidiMode();

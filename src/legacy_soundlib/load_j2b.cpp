@@ -209,7 +209,7 @@ static uint8_t riffam_autovibtrans[] =
 
 
 // Convert RIFF AM(FF) pattern data to MPT pattern data.
-bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool bIsAM, module_renderer *pSndFile)
+bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool bIsAM, module_renderer *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 {
     // version false = AMFF, true = AM

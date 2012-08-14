@@ -173,7 +173,7 @@ void CCtrlGeneral::UpdateView(uint32_t dwHint, CObject *pHint)
     if (dwHint & HINT_MODSEQUENCE)
     {
             // Detecting max valid restart position
-            ORDERINDEX i = 0;
+            modplug::tracker::orderindex_t i = 0;
             for (i=0; i<m_pSndFile->Order.size(); i++) if (m_pSndFile->Order[i] == m_pSndFile->Order.GetInvalidPatIndex()) break;
             m_SpinRestartPos.SetRange32(0, i);
     }
@@ -473,9 +473,9 @@ void CCtrlGeneral::OnRestartPosChanged()
             m_EditRestartPos.GetWindowText(s, sizeof(s));
             if (s[0])
             {
-                    ORDERINDEX n = (ORDERINDEX)atoi(s);
+                    modplug::tracker::orderindex_t n = (modplug::tracker::orderindex_t)atoi(s);
                     n = CLAMP(n, 0, m_pSndFile->Order.size());
-                    for (ORDERINDEX i = 0; i <= n; i++)
+                    for (modplug::tracker::orderindex_t i = 0; i <= n; i++)
                             if (m_pSndFile->Order[i] == m_pSndFile->Order.GetInvalidPatIndex()) return;
 
                     if (n != m_pSndFile->m_nRestartPos)

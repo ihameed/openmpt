@@ -845,7 +845,7 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     if (m_nType)
     {
         SetModSpecsPointer(m_pModSpecs, m_nType);
-        const ORDERINDEX nMinLength = (std::min)(ModSequenceSet::s_nCacheSize, GetModSpecifications().ordersMax);
+        const modplug::tracker::orderindex_t nMinLength = (std::min)(ModSequenceSet::s_nCacheSize, GetModSpecifications().ordersMax);
         if (Order.GetLength() < nMinLength)
             Order.resize(nMinLength);
         return TRUE;
@@ -1008,11 +1008,11 @@ void module_renderer::SetMasterVolume(UINT nVol, bool adjustAGC)
 }
 
 
-PATTERNINDEX module_renderer::GetNumPatterns() const
+modplug::tracker::patternindex_t module_renderer::GetNumPatterns() const
 //---------------------------------------------
 {
-    PATTERNINDEX max = 0;
-    for(PATTERNINDEX i = 0; i < Patterns.Size(); i++)
+    modplug::tracker::patternindex_t max = 0;
+    for(modplug::tracker::patternindex_t i = 0; i < Patterns.Size(); i++)
     {
         if(Patterns.IsValidPat(i))
             max = i + 1;
@@ -1067,7 +1067,7 @@ double  module_renderer::GetCurrentBPM() const
 void module_renderer::SetCurrentPos(UINT nPos)
 //---------------------------------------
 {
-    ORDERINDEX nPattern;
+    modplug::tracker::orderindex_t nPattern;
     uint8_t resetMask = (!nPos) ? CHNRESET_SETPOS_FULL : CHNRESET_SETPOS_BASIC;
 
     for (modplug::tracker::chnindex_t i=0; i<MAX_VIRTUAL_CHANNELS; i++)
@@ -1134,7 +1134,7 @@ void module_renderer::SetCurrentPos(UINT nPos)
 
 
 
-void module_renderer::SetCurrentOrder(ORDERINDEX nOrder)
+void module_renderer::SetCurrentOrder(modplug::tracker::orderindex_t nOrder)
 //-------------------------------------------------
 {
     while ((nOrder < Order.size()) && (Order[nOrder] == Order.GetIgnoreIndex())) nOrder++;
@@ -1270,7 +1270,7 @@ void module_renderer::ResetChannels()
 
 
 
-void module_renderer::LoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow)
+void module_renderer::LoopPattern(modplug::tracker::patternindex_t nPat, modplug::tracker::rowindex_t nRow)
 //------------------------------------------------------------
 {
     if ((nPat < 0) || (nPat >= Patterns.Size()) || (!Patterns[nPat]))
@@ -1291,7 +1291,7 @@ void module_renderer::LoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_
     }
 }
 //rewbs.playSongFromCursor
-void module_renderer::DontLoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow)
+void module_renderer::DontLoopPattern(modplug::tracker::patternindex_t nPat, modplug::tracker::rowindex_t nRow)
 //----------------------------------------------------------------
 {
     if ((nPat < 0) || (nPat >= Patterns.Size()) || (!Patterns[nPat])) nPat = 0;
@@ -1307,13 +1307,13 @@ void module_renderer::DontLoopPattern(PATTERNINDEX nPat, modplug::tracker::rowin
     //m_nSeqOverride = 0;
 }
 
-ORDERINDEX module_renderer::FindOrder(PATTERNINDEX nPat, UINT startFromOrder, bool direction)
+modplug::tracker::orderindex_t module_renderer::FindOrder(modplug::tracker::patternindex_t nPat, UINT startFromOrder, bool direction)
 //--------------------------------------------------------------------------------------
 {
-    ORDERINDEX foundAtOrder = ORDERINDEX_INVALID;
-    ORDERINDEX candidateOrder = 0;
+    modplug::tracker::orderindex_t foundAtOrder = modplug::tracker::ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t candidateOrder = 0;
 
-    for (ORDERINDEX p = 0; p < Order.size(); p++)
+    for (modplug::tracker::orderindex_t p = 0; p < Order.size(); p++)
     {
         if (direction)
         {
@@ -2529,7 +2529,7 @@ SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
     }
     SAMPLEINDEX nExt = 0;
 
-    for (PATTERNINDEX nPat = 0; nPat < GetNumPatterns(); nPat++)
+    for (modplug::tracker::patternindex_t nPat = 0; nPat < GetNumPatterns(); nPat++)
     {
         const modplug::tracker::modevent_t *p = Patterns[nPat];
         if(p == nullptr)
@@ -2866,7 +2866,7 @@ bool module_renderer::SetTitle(const char* titleCandidate, size_t strSize)
 }
 
 
-double module_renderer::GetPlaybackTimeAt(ORDERINDEX ord, modplug::tracker::rowindex_t row, bool updateVars)
+double module_renderer::GetPlaybackTimeAt(modplug::tracker::orderindex_t ord, modplug::tracker::rowindex_t row, bool updateVars)
 //---------------------------------------------------------------------------------
 {
     const GetLengthType t = GetLength(updateVars ? eAdjust : eNoAdjust, ord, row);

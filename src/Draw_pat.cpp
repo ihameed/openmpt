@@ -522,10 +522,10 @@ void CViewPattern::OnDraw(CDC *pDC)
             // Display previous pattern
             if (CMainFrame::m_dwPatternSetup & PATTERN_SHOWPREVIOUS)
             {
-                const ORDERINDEX startOrder = static_cast<ORDERINDEX>(SendCtrlMessage(CTRLMSG_GETCURRENTORDER));
+                const modplug::tracker::orderindex_t startOrder = static_cast<modplug::tracker::orderindex_t>(SendCtrlMessage(CTRLMSG_GETCURRENTORDER));
                 if(startOrder > 0)
                 {
-                    ORDERINDEX prevOrder;
+                    modplug::tracker::orderindex_t prevOrder;
                     prevOrder = pSndFile->Order.GetPreviousOrderIgnoringSkips(startOrder);
                     //Skip +++ items
 
@@ -572,12 +572,12 @@ void CViewPattern::OnDraw(CDC *pDC)
         {
             UINT nNextPat = m_nPattern;
             BOOL bNextPatFound = FALSE;
-            const ORDERINDEX startOrder= static_cast<ORDERINDEX>(SendCtrlMessage(CTRLMSG_GETCURRENTORDER));
-            ORDERINDEX nNextOrder;
+            const modplug::tracker::orderindex_t startOrder= static_cast<modplug::tracker::orderindex_t>(SendCtrlMessage(CTRLMSG_GETCURRENTORDER));
+            modplug::tracker::orderindex_t nNextOrder;
             nNextOrder = pSndFile->Order.GetNextOrderIgnoringSkips(startOrder);
-            if(nNextOrder == startOrder) nNextOrder = ORDERINDEX_INVALID;
+            if(nNextOrder == startOrder) nNextOrder = modplug::tracker::ORDERINDEX_INVALID;
             //Ignore skip items(+++) from sequence.
-            const ORDERINDEX ordCount = pSndFile->Order.GetLength();
+            const modplug::tracker::orderindex_t ordCount = pSndFile->Order.GetLength();
 
             if ((nNextOrder < ordCount) && (pSndFile->Order[startOrder] == m_nPattern))
             {

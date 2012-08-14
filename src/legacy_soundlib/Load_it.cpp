@@ -1483,7 +1483,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         dwExtra += sizeof(MODMIDICFG);
     }
     // Pattern Names
-    const PATTERNINDEX numNamedPats = Patterns.GetNumNamedPatterns();
+    const modplug::tracker::patternindex_t numNamedPats = Patterns.GetNumNamedPatterns();
     if (numNamedPats > 0)
     {
         dwExtra += (numNamedPats * MAX_PATTERNNAME) + 8;
@@ -1519,7 +1519,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         d = numNamedPats * MAX_PATTERNNAME;
         fwrite(&d, 1, 4, f);
 
-        for(PATTERNINDEX nPat = 0; nPat < numNamedPats; nPat++)
+        for(modplug::tracker::patternindex_t nPat = 0; nPat < numNamedPats; nPat++)
         {
             char name[MAX_PATTERNNAME];
             MemsetZero(name);

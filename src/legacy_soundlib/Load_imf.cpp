@@ -348,11 +348,11 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
     }
 
     Order.resize(hdr.ordnum);
-    for(ORDERINDEX nOrd = 0; nOrd < hdr.ordnum; nOrd++)
-        Order[nOrd] = ((hdr.orderlist[nOrd] == 0xff) ? Order.GetIgnoreIndex() : (PATTERNINDEX)hdr.orderlist[nOrd]);
+    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < hdr.ordnum; nOrd++)
+        Order[nOrd] = ((hdr.orderlist[nOrd] == 0xff) ? Order.GetIgnoreIndex() : (modplug::tracker::patternindex_t)hdr.orderlist[nOrd]);
 
     // read patterns
-    for(PATTERNINDEX nPat = 0; nPat < hdr.patnum; nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < hdr.patnum; nPat++)
     {
         uint16_t length, nrows;
         uint8_t mask, channel;

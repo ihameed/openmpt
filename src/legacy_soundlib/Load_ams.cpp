@@ -173,7 +173,7 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
     Order.resize(pfh->orders, Order.GetInvalidPatIndex());
     for (UINT iOrd=0; iOrd < pfh->orders; iOrd++, dwMemPos += 2)
     {
-        Order[iOrd] = (PATTERNINDEX)*((uint16_t *)(lpStream + dwMemPos));
+        Order[iOrd] = (modplug::tracker::patternindex_t)*((uint16_t *)(lpStream + dwMemPos));
     }
 
     // Read Patterns

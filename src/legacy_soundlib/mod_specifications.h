@@ -24,8 +24,8 @@ struct CModSpecifications
     bool hasNoteCut;                  // True if format has notecut.
     bool hasNoteOff;                  // True if format has noteoff.
     bool hasNoteFade;                  // True if format has notefade.
-    PATTERNINDEX patternsMax;
-    ORDERINDEX ordersMax;
+    modplug::tracker::patternindex_t patternsMax;
+    modplug::tracker::orderindex_t ordersMax;
     modplug::tracker::chnindex_t channelsMin; // Minimum number of editable channels in pattern.
     modplug::tracker::chnindex_t channelsMax; // Maximum number of editable channels in pattern.
     TEMPO tempoMin;

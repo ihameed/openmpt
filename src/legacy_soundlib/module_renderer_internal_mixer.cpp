@@ -423,13 +423,13 @@ BOOL module_renderer::ProcessRow()
 
                     //if (!m_nRepeatCount) return FALSE;
 
-                    ORDERINDEX nRestartPosOverride = m_nRestartPos;
+                    modplug::tracker::orderindex_t nRestartPosOverride = m_nRestartPos;
                     if(!m_nRestartPos && m_nCurrentPattern <= Order.size() && m_nCurrentPattern > 0)
                     {
                         /* Subtune detection. Subtunes are separated by "---" order items, so if we're in a
                            subtune and there's no restart position, we go to the first order of the subtune
                            (i.e. the first order after the previous "---" item) */
-                        for(ORDERINDEX iOrd = m_nCurrentPattern - 1; iOrd > 0; iOrd--)
+                        for(modplug::tracker::orderindex_t iOrd = m_nCurrentPattern - 1; iOrd > 0; iOrd--)
                         {
                             if(Order[iOrd] == Order.GetInvalidPatIndex())
                             {

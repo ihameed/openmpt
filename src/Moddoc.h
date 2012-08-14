@@ -296,12 +296,12 @@ public:
     bool ConvertInstrumentsToSamples();
     UINT RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS]);
 
-    PATTERNINDEX InsertPattern(ORDERINDEX nOrd = ORDERINDEX_INVALID, modplug::tracker::rowindex_t nRows = 64);
+    modplug::tracker::patternindex_t InsertPattern(modplug::tracker::orderindex_t nOrd = modplug::tracker::ORDERINDEX_INVALID, modplug::tracker::rowindex_t nRows = 64);
     SAMPLEINDEX InsertSample(bool bLimit = false);
     INSTRUMENTINDEX InsertInstrument(SAMPLEINDEX lSample = SAMPLEINDEX_INVALID, INSTRUMENTINDEX lDuplicate = INSTRUMENTINDEX_INVALID);
     void InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT nsample=0);
-    bool RemoveOrder(SEQUENCEINDEX nSeq, ORDERINDEX nOrd);
-    bool RemovePattern(PATTERNINDEX nPat);
+    bool RemoveOrder(SEQUENCEINDEX nSeq, modplug::tracker::orderindex_t nOrd);
+    bool RemovePattern(modplug::tracker::patternindex_t nPat);
     bool RemoveSample(SAMPLEINDEX nSmp);
     bool RemoveInstrument(INSTRUMENTINDEX nIns);
     UINT PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol=-1, LONG loopstart=0, LONG loopend=0, int nCurrentChn=-1, const uint32_t nStartPos = UINT32_MAX); //rewbs.vstiLive: added current chan param
@@ -334,30 +334,30 @@ public:
     void ReinitRecordState(bool unselect = true);
 // -! NEW_FEATURE#0015
     modplug::tracker::chnindex_t GetNumChannels() const { return m_SndFile.m_nChannels; }
-    UINT GetPatternSize(PATTERNINDEX nPat) const;
+    UINT GetPatternSize(modplug::tracker::patternindex_t nPat) const;
     BOOL AdjustEndOfSample(UINT nSample);
     BOOL IsChildSample(UINT nIns, UINT nSmp) const;
     UINT FindSampleParent(UINT nSmp) const;
     UINT FindInstrumentChild(UINT nIns) const;
-    bool MoveOrder(ORDERINDEX nSourceNdx, ORDERINDEX nDestNdx, bool bUpdate = true, bool bCopy = false, SEQUENCEINDEX nSourceSeq = SEQUENCEINDEX_INVALID, SEQUENCEINDEX nDestSeq = SEQUENCEINDEX_INVALID);
-    BOOL ExpandPattern(PATTERNINDEX nPattern);
-    BOOL ShrinkPattern(PATTERNINDEX nPattern);
+    bool MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate = true, bool bCopy = false, SEQUENCEINDEX nSourceSeq = SEQUENCEINDEX_INVALID, SEQUENCEINDEX nDestSeq = SEQUENCEINDEX_INVALID);
+    BOOL ExpandPattern(modplug::tracker::patternindex_t nPattern);
+    BOOL ShrinkPattern(modplug::tracker::patternindex_t nPattern);
 
     // Copy&Paste
-    bool CopyPattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, uint32_t dwEndSel);
-    bool PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatternPasteModes pasteMode);
+    bool CopyPattern(modplug::tracker::patternindex_t nPattern, uint32_t dwBeginSel, uint32_t dwEndSel);
+    bool PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t dwBeginSel, enmPatternPasteModes pasteMode);
 
     bool CopyEnvelope(UINT nIns, enmEnvelopeTypes nEnv);
     bool PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv);
 
     LRESULT ActivateView(UINT nIdView, uint32_t dwParam);
     void UpdateAllViews(CView *pSender, LPARAM lHint=0L, CObject *pHint=NULL);
-    HWND GetEditPosition(modplug::tracker::rowindex_t &row, PATTERNINDEX &pat, ORDERINDEX &ord); //rewbs.customKeys
+    HWND GetEditPosition(modplug::tracker::rowindex_t &row, modplug::tracker::patternindex_t &pat, modplug::tracker::orderindex_t &ord); //rewbs.customKeys
     LRESULT OnCustomKeyMsg(WPARAM, LPARAM);                               //rewbs.customKeys
     void TogglePluginEditor(UINT m_nCurrentPlugin);               //rewbs.patPlugNames
     void RecordParamChange(int slot, long param);
     void LearnMacro(int macro, long param);
-    void SetElapsedTime(ORDERINDEX nOrd, modplug::tracker::rowindex_t nRow);
+    void SetElapsedTime(modplug::tracker::orderindex_t nOrd, modplug::tracker::rowindex_t nRow);
 
     bool RestartPosToPattern();
 
@@ -370,7 +370,7 @@ public:
     CSize GetOldPatternScrollbarsPos() const { return m_szOldPatternScrollbarsPos; };
     void SetOldPatternScrollbarsPos( CSize s ){ m_szOldPatternScrollbarsPos = s; };
 
-    void OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder);
+    void OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplug::tracker::orderindex_t nMaxOrder);
 
     // Returns formatted modplug::tracker::modinstrument_t name.
     // [in] bEmptyInsteadOfNoName: In case of unnamed instrument string, "(no name)" is returned unless this

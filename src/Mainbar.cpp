@@ -557,7 +557,7 @@ void CMainToolBar::SetRowsPerBeat(modplug::tracker::rowindex_t nNewRPB)
             return;
 
     pSndFile->m_nCurrentRowsPerBeat = nNewRPB;
-    PATTERNINDEX nPat = pSndFile->GetCurrentPattern();
+    modplug::tracker::patternindex_t nPat = pSndFile->GetCurrentPattern();
     if(pSndFile->Patterns[nPat].GetOverrideSignature())
     {
             if(nNewRPB <= pSndFile->Patterns[nPat].GetRowsPerMeasure())

@@ -205,7 +205,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
     for (UINT iOrd=0; iOrd < nOrders; iOrd++)
     {
         if (iOrd >= MAX_ORDERS) break;
-        Order[iOrd] = (PATTERNINDEX)BigEndianW(*((uint16_t *)(lpStream + dwMemPos + iOrd * 2)));
+        Order[iOrd] = (modplug::tracker::patternindex_t)BigEndianW(*((uint16_t *)(lpStream + dwMemPos + iOrd * 2)));
     }
     dwMemPos += 2*nOrders;
     while (dwMemPos + 10 < dwMemLength)
@@ -323,7 +323,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
         if (chunk_id == DBM_ID_PATT)
         {
             if (nPatterns > MAX_PATTERNS) nPatterns = MAX_PATTERNS;
-            for(PATTERNINDEX iPat = 0; iPat < nPatterns; iPat++)
+            for(modplug::tracker::patternindex_t iPat = 0; iPat < nPatterns; iPat++)
             {
                 DBMPATTERN *pph;
                 uint32_t pksize;

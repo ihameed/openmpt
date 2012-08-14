@@ -247,7 +247,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
     bool bS3MCommandSet = (GetBestSaveFormat() & (MOD_TYPE_S3M | MOD_TYPE_IT | MOD_TYPE_MPT)) != 0 ? true : false;
 
     // we'll start at position iPatternsOffset and decode all patterns
-    for (PATTERNINDEX iPat = 0; iPat < pHeader->NOP + 1; iPat++)
+    for (modplug::tracker::patternindex_t iPat = 0; iPat < pHeader->NOP + 1; iPat++)
     {
 
         if(iPatternsOffset + 2 > dwMemLength) break;

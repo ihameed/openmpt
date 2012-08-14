@@ -230,7 +230,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
 
     // m_nPatternNames
     memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
-    const PATTERNINDEX numNamedPats = id;
+    const modplug::tracker::patternindex_t numNamedPats = id;
     dwMemPos += sizeof(uint32_t);
 
     // pattern name string length (=MAX_PATTERNNAME)
@@ -250,7 +250,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
     if(n != 6) return false;
     dwMemPos += sizeof(uint32_t);
 
-    for(PATTERNINDEX npat=0; npat<size; npat++)
+    for(modplug::tracker::patternindex_t npat=0; npat<size; npat++)
     {
         // Patterns[npat].GetNumRows()
         ASSERT_CAN_READ(4);
@@ -593,7 +593,7 @@ bool module_renderer::SaveITProject(LPCSTR lpszFileName)
     fwrite(&id, 1, sizeof(id), f);
 
     // number of pattern name strings
-    PATTERNINDEX numNamedPats = Patterns.GetNumNamedPatterns();
+    modplug::tracker::patternindex_t numNamedPats = Patterns.GetNumNamedPatterns();
     numNamedPats = min(numNamedPats, MAX_PATTERNS);
     id = numNamedPats;
     fwrite(&id, 1, sizeof(id), f);
@@ -602,7 +602,7 @@ bool module_renderer::SaveITProject(LPCSTR lpszFileName)
     id = MAX_PATTERNNAME;
     fwrite(&id, 1, sizeof(id), f);
     // pattern name string
-    for(PATTERNINDEX nPat = 0; nPat < numNamedPats; nPat++)
+    for(modplug::tracker::patternindex_t nPat = 0; nPat < numNamedPats; nPat++)
     {
         char name[MAX_PATTERNNAME];
         MemsetZero(name);

@@ -92,7 +92,6 @@ void comment_view::legacy_update_module_comment() {
         return;
     }
 
-    uint8_t bytestr[256];
     uint8_t *old_comment = nullptr;
 
     if (legacy_module->m_lpszSongComments) {

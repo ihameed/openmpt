@@ -38,46 +38,46 @@ public:
 
     //Insert (default)pattern to given position. If pattern already exists at that position,
     //ignoring request. Returns true on failure, false otherwise.
-    bool Insert(const PATTERNINDEX index, const modplug::tracker::rowindex_t rows);
+    bool Insert(const modplug::tracker::patternindex_t index, const modplug::tracker::rowindex_t rows);
 
-    //Insert pattern to position with the lowest index, and return that index, PATTERNINDEX_INVALID
+    //Insert pattern to position with the lowest index, and return that index, modplug::tracker::PATTERNINDEX_INVALID
     //on failure.
-    PATTERNINDEX Insert(const modplug::tracker::rowindex_t rows);
+    modplug::tracker::patternindex_t Insert(const modplug::tracker::rowindex_t rows);
 
     //Remove pattern from given position. Currently it actually makes the pattern
     //'invisible' - the pattern data is cleared but the actual pattern object won't get removed.
-    bool Remove(const PATTERNINDEX index);
+    bool Remove(const modplug::tracker::patternindex_t index);
 
     // Applies function object for modcommands in patterns in given range.
     // Return: Copy of the function object.
     template <class Func>
-    Func ForEachModCommand(PATTERNINDEX nStartPat, PATTERNINDEX nLastPat, Func func);
+    Func ForEachModCommand(modplug::tracker::patternindex_t nStartPat, modplug::tracker::patternindex_t nLastPat, Func func);
     template <class Func>
     Func ForEachModCommand(Func func) {return ForEachModCommand(0, Size() - 1, func);}
 
-    PATTERNINDEX Size() const {return static_cast<PATTERNINDEX>(m_Patterns.size());}
+    modplug::tracker::patternindex_t Size() const {return static_cast<modplug::tracker::patternindex_t>(m_Patterns.size());}
 
     module_renderer& GetSoundFile() {return m_rSndFile;}
     const module_renderer& GetSoundFile() const {return m_rSndFile;}
 
     //Returns the index of given pattern, Size() if not found.
-    PATTERNINDEX GetIndex(const MODPATTERN* const pPat) const;
+    modplug::tracker::patternindex_t GetIndex(const MODPATTERN* const pPat) const;
 
     // Return true if pattern can be accessed with operator[](iPat), false otherwise.
-    bool IsValidIndex(const PATTERNINDEX iPat) const {return (iPat < Size());}
+    bool IsValidIndex(const modplug::tracker::patternindex_t iPat) const {return (iPat < Size());}
 
     // Return true if IsValidIndex() is true and the corresponding pattern has allocated modcommand array, false otherwise.
-    bool IsValidPat(const PATTERNINDEX iPat) const {return IsValidIndex(iPat) && (*this)[iPat];}
+    bool IsValidPat(const modplug::tracker::patternindex_t iPat) const {return IsValidIndex(iPat) && (*this)[iPat];}
 
     // Returns true if the pattern is empty, i.e. there are no notes/effects in this pattern
-    bool IsPatternEmpty(const PATTERNINDEX nPat) const;
+    bool IsPatternEmpty(const modplug::tracker::patternindex_t nPat) const;
 
-    void ResizeArray(const PATTERNINDEX newSize);
+    void ResizeArray(const modplug::tracker::patternindex_t newSize);
 
     void OnModTypeChanged(const MODTYPE oldtype);
 
     // Returns index of highest pattern with pattern named + 1.
-    PATTERNINDEX GetNumNamedPatterns() const;
+    modplug::tracker::patternindex_t GetNumNamedPatterns() const;
 
 //END: INTERFACE METHODS
 
@@ -92,12 +92,12 @@ private:
 
 
 template <class Func>
-Func CPatternContainer::ForEachModCommand(PATTERNINDEX nStartPat, PATTERNINDEX nLastPat, Func func)
+Func CPatternContainer::ForEachModCommand(modplug::tracker::patternindex_t nStartPat, modplug::tracker::patternindex_t nLastPat, Func func)
 //-------------------------------------------------------------------------------------------------
 {
     if (nStartPat > nLastPat || nLastPat >= Size())
             return func;
-    for (PATTERNINDEX nPat = nStartPat; nPat <= nLastPat; nPat++) if (m_Patterns[nPat])
+    for (modplug::tracker::patternindex_t nPat = nStartPat; nPat <= nLastPat; nPat++) if (m_Patterns[nPat])
             std::for_each(m_Patterns[nPat].Begin(), m_Patterns[nPat].End(), func);
     return func;
 }

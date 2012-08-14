@@ -86,7 +86,7 @@ BEGIN_MESSAGE_MAP(CWaveConvert, CDialog)
 END_MESSAGE_MAP()
 
 
-CWaveConvert::CWaveConvert(CWnd *parent, ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder):
+CWaveConvert::CWaveConvert(CWnd *parent, modplug::tracker::orderindex_t nMinOrder, modplug::tracker::orderindex_t nMaxOrder):
     CDialog(IDD_WAVECONVERT, parent)
 //-----------------------------------------------------------------------------------
 {
@@ -94,7 +94,7 @@ CWaveConvert::CWaveConvert(CWnd *parent, ORDERINDEX nMinOrder, ORDERINDEX nMaxOr
     m_bNormalize = false;
     m_bHighQuality = false;
     m_bSelectPlay = false;
-    if(nMinOrder != ORDERINDEX_INVALID && nMaxOrder != ORDERINDEX_INVALID)
+    if(nMinOrder != modplug::tracker::ORDERINDEX_INVALID && nMaxOrder != modplug::tracker::ORDERINDEX_INVALID)
     {
         // render selection
         m_nMinOrder = nMinOrder;
@@ -278,8 +278,8 @@ void CWaveConvert::OnOK()
     if (m_dwFileLimit) m_dwFileLimit = GetDlgItemInt(IDC_EDIT1, NULL, FALSE);
     if (m_dwSongLimit) m_dwSongLimit = GetDlgItemInt(IDC_EDIT2, NULL, FALSE);
     m_bSelectPlay = IsDlgButtonChecked(IDC_RADIO2) ? true : false;
-    m_nMinOrder = (ORDERINDEX)GetDlgItemInt(IDC_EDIT3, NULL, FALSE);
-    m_nMaxOrder = (ORDERINDEX)GetDlgItemInt(IDC_EDIT4, NULL, FALSE);
+    m_nMinOrder = (modplug::tracker::orderindex_t)GetDlgItemInt(IDC_EDIT3, NULL, FALSE);
+    m_nMaxOrder = (modplug::tracker::orderindex_t)GetDlgItemInt(IDC_EDIT4, NULL, FALSE);
     if (m_nMaxOrder < m_nMinOrder) m_bSelectPlay = false;
     //m_bHighQuality = IsDlgButtonChecked(IDC_CHECK3) ? true : false; //rewbs.resamplerConf - we don't want this anymore.
     m_bNormalize = IsDlgButtonChecked(IDC_CHECK5) ? true : false;
