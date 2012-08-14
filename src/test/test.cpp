@@ -176,7 +176,7 @@ void TestTypes()
     VERIFY_EQUAL(INT64_MAX, (std::numeric_limits<int64_t>::max)());
     VERIFY_EQUAL(UINT64_MAX, (std::numeric_limits<uint64_t>::max)());
 
-    VERIFY_EQUAL(ROWINDEX_MAX, (std::numeric_limits<modplug::tracker::rowindex_t>::max)());
+    VERIFY_EQUAL(RowIndexMax, (std::numeric_limits<modplug::tracker::rowindex_t>::max)());
     VERIFY_EQUAL(ORDERINDEX_MAX, (std::numeric_limits<ORDERINDEX>::max)());
     VERIFY_EQUAL(PATTERNINDEX_MAX, (std::numeric_limits<PATTERNINDEX>::max)());
     VERIFY_EQUAL(SAMPLEINDEX_MAX, (std::numeric_limits<SAMPLEINDEX>::max)());
@@ -499,7 +499,7 @@ void TestPCnoteSerialization()
             throw(std::runtime_error("pSndFile is nullptr"));
 
     // Set maximum number of channels.
-    pModDoc->ReArrangeChannels(std::vector<CHANNELINDEX>(ModSpecs::mptm.channelsMax , 0));
+    pModDoc->ReArrangeChannels(std::vector<modplug::tracker::chnindex_t>(ModSpecs::mptm.channelsMax , 0));
 
     pSndFile->Patterns.Remove(0);
     pSndFile->Patterns.Insert(0, ModSpecs::mptm.patternRowsMin);

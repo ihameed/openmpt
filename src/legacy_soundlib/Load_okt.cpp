@@ -110,13 +110,13 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
     if(pSndFile->Patterns.Insert(nPat, nRows))
             return;
 
-    const CHANNELINDEX nChns = pSndFile->GetNumChannels();
+    const modplug::tracker::chnindex_t nChns = pSndFile->GetNumChannels();
     modplug::tracker::modevent_t *mrow = pSndFile->Patterns[nPat], *m;
 
     for(modplug::tracker::rowindex_t nRow = 0; nRow < nRows; nRow++, mrow += nChns)
     {
             m = mrow;
-            for(CHANNELINDEX nChn = 0; nChn < nChns; nChn++, m++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < nChns; nChn++, m++)
             {
                     ASSERT_CAN_READ_OKTPAT(4);
                     m->note = lpStream[dwMemPos++];
@@ -304,7 +304,7 @@ bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLengt
                     if(m_nChannels > 0)
                             break;
                     ASSERT_CAN_READ(8);
-                    for(CHANNELINDEX nChn = 0; nChn < 4; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < 4; nChn++)
                     {
                             if(lpStream[dwMemPos + nChn * 2] || lpStream[dwMemPos + nChn * 2 + 1])
                             {

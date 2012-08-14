@@ -74,7 +74,7 @@ const RowMask DefaultRowMask = {
 struct ModCommandPos {
     PATTERNINDEX nPat;
     modplug::tracker::rowindex_t nRow;
-    CHANNELINDEX nChn;
+    modplug::tracker::chnindex_t nChn;
 };
 
 // Find/Replace data
@@ -83,8 +83,8 @@ struct FindReplaceStruct {
     modplug::tracker::modevent_t cmdReplace;
     uint32_t dwFindFlags;                    // PATSEARCH_XXX flags (=> PatternEditorDialogs.h)
     uint32_t dwReplaceFlags;
-    CHANNELINDEX nFindMinChn;                // Find in these channels (if PATSEARCH_CHANNEL is set)
-    CHANNELINDEX nFindMaxChn;
+    modplug::tracker::chnindex_t nFindMinChn;                // Find in these channels (if PATSEARCH_CHANNEL is set)
+    modplug::tracker::chnindex_t nFindMaxChn;
     signed char cInstrRelChange;             // relative instrument change (quick'n'dirty fix, this should be implemented in a less cryptic way)
     uint32_t dwBeginSel;                     // Find in this selection (if PATSEARCH_PATSELECTION is set)
     uint32_t dwEndSel;
@@ -375,16 +375,16 @@ private:
 
     modplug::tracker::rowindex_t GetSelectionStartRow();
     modplug::tracker::rowindex_t GetSelectionEndRow();
-    CHANNELINDEX GetSelectionStartChan();
-    CHANNELINDEX GetSelectionEndChan();
+    modplug::tracker::chnindex_t GetSelectionStartChan();
+    modplug::tracker::chnindex_t GetSelectionEndChan();
     UINT ListChansWhereColSelected(PatternColumns colType, CArray<UINT,UINT> &chans);
 
     static modplug::tracker::rowindex_t GetRowFromCursor(uint32_t cursor) { return (cursor >> 16); };
-    static CHANNELINDEX GetChanFromCursor(uint32_t cursor) { return static_cast<CHANNELINDEX>((cursor & 0xFFFF) >> 3); };
+    static modplug::tracker::chnindex_t GetChanFromCursor(uint32_t cursor) { return static_cast<modplug::tracker::chnindex_t>((cursor & 0xFFFF) >> 3); };
     static UINT GetColTypeFromCursor(uint32_t cursor) { return (cursor & 0x07); };
-    static uint32_t CreateCursor(modplug::tracker::rowindex_t row, CHANNELINDEX channel = 0, UINT column = 0) { return (row << 16) | ((channel << 3) & 0x1FFF) | (column & 0x07); };
+    static uint32_t CreateCursor(modplug::tracker::rowindex_t row, modplug::tracker::chnindex_t channel = 0, UINT column = 0) { return (row << 16) | ((channel << 3) & 0x1FFF) | (column & 0x07); };
 
-    bool IsInterpolationPossible(modplug::tracker::rowindex_t startRow, modplug::tracker::rowindex_t endRow, CHANNELINDEX chan, PatternColumns colType, module_renderer* pSndFile);
+    bool IsInterpolationPossible(modplug::tracker::rowindex_t startRow, modplug::tracker::rowindex_t endRow, modplug::tracker::chnindex_t chan, PatternColumns colType, module_renderer* pSndFile);
     void Interpolate(PatternColumns type);
 
     // Return true if recording live (i.e. editing while following playback).
@@ -414,14 +414,14 @@ private:
     void PatternStep(bool autoStep);
 
     // Add a channel.
-    void AddChannelBefore(CHANNELINDEX nBefore);
+    void AddChannelBefore(modplug::tracker::chnindex_t nBefore);
 
 public:
     afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
 private:
 
     void TogglePendingMute(UINT nChn);
-    void PendingSoloChn(const CHANNELINDEX nChn);
+    void PendingSoloChn(const modplug::tracker::chnindex_t nChn);
     void PendingUnmuteAllChn();
 
 public:

@@ -3,7 +3,9 @@
 #include "moddoc.h"
 #include "view_gen.h"
 #include "ChannelManagerDlg.h"
+#include "tracker/tracker.h"
 
+using namespace modplug::tracker;
 
 ///////////////////////////////////////////////////////////
 // CChannelManagerDlg
@@ -143,7 +145,7 @@ BOOL CChannelManagerDlg::OnInitDialog()
     TabCtrl_InsertItem(menu, 3, &tie);
     currentTab = 0;
 
-    for(CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++){
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS; nChn++){
             pattern[nChn] = nChn;
             removed[nChn] = false;
             select[nChn] = false;
@@ -178,11 +180,11 @@ void CChannelManagerDlg::OnApply()
 
     EnterCriticalSection(&applying);
 
-    CHANNELINDEX nChannels, newpat[MAX_BASECHANNELS], newMemory[4][MAX_BASECHANNELS];
+    modplug::tracker::chnindex_t nChannels, newpat[MAX_BASECHANNELS], newMemory[4][MAX_BASECHANNELS];
 
     // Count new number of channels , copy pattern pointers & manager internal store memory
     nChannels = 0;
-    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++){
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++){
             if(!removed[pattern[nChn]]){
                     newMemory[0][nChannels] = memory[0][nChannels];
                     newMemory[1][nChannels] = memory[1][nChannels];
@@ -195,8 +197,8 @@ void CChannelManagerDlg::OnApply()
     BEGIN_CRITICAL();
 
     //Creating new order-vector for ReArrangeChannels.
-    vector<CHANNELINDEX> newChnOrder; newChnOrder.reserve(nChannels);
-    for(CHANNELINDEX nChn = 0; nChn < nChannels; nChn++)
+    vector<modplug::tracker::chnindex_t> newChnOrder; newChnOrder.reserve(nChannels);
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < nChannels; nChn++)
     {
             newChnOrder.push_back(newpat[nChn]);
     }
@@ -214,7 +216,7 @@ void CChannelManagerDlg::OnApply()
 
 
     // Update manager internal store memory
-    for(CHANNELINDEX nChn = 0; nChn < nChannels; nChn++){
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < nChannels; nChn++){
             if(nChn != newpat[nChn]){
                     memory[0][nChn] = newMemory[0][newpat[nChn]];
                     memory[1][nChn] = newMemory[1][newpat[nChn]];
@@ -271,7 +273,7 @@ void CChannelManagerDlg::OnSelectAll()
     module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(m_pSndFile)
-            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                     select[nChn] = true;
 
     LeaveCriticalSection(&applying);
@@ -287,7 +289,7 @@ void CChannelManagerDlg::OnInvert()
     module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(m_pSndFile)
-            for(CHANNELINDEX nChn = 0 ; nChn < m_pSndFile->m_nChannels ; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0 ; nChn < m_pSndFile->m_nChannels ; nChn++)
                     select[nChn] = !select[nChn];
 
     LeaveCriticalSection(&applying);
@@ -308,17 +310,17 @@ void CChannelManagerDlg::OnAction1()
 
             switch(currentTab){
                     case 0:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(!removed[nThisChn]){
                                             if(select[nThisChn]) nbSelect++;
                                             if(select[nThisChn] && pModDoc->IsChannelSolo(nThisChn)) nbOk++;
                                     }
                             }
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(select[nThisChn] && !removed[nThisChn]){
                                             if(pModDoc->IsChannelMuted(nThisChn)) pModDoc->MuteChannel(nThisChn, false);
                                             if(nbSelect == nbOk) pModDoc->SoloChannel(nThisChn, !pModDoc->IsChannelSolo(nThisChn));
@@ -328,18 +330,18 @@ void CChannelManagerDlg::OnAction1()
                             }
                             break;
                     case 1:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(!removed[nThisChn]){
                                             if(select[nThisChn]) nbSelect++;
                                             uint8_t rec = pModDoc->IsChannelRecord(nThisChn);
                                             if(select[nThisChn] && rec == 1) nbOk++;
                                     }
                             }
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(!removed[nThisChn] && select[nThisChn]){
                                             if(select[nThisChn] && nbSelect != nbOk && pModDoc->IsChannelRecord(nThisChn) != 1) pModDoc->Record1Channel(nThisChn);
                                             else if(nbSelect == nbOk) pModDoc->Record1Channel(nThisChn, false);
@@ -347,16 +349,16 @@ void CChannelManagerDlg::OnAction1()
                             }
                             break;
                     case 2:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(select[nThisChn] && !removed[nThisChn]) pModDoc->NoFxChannel(nThisChn, false);
                             }
                             break;
                     case 3:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(select[nThisChn]) removed[nThisChn] = !removed[nThisChn];
                             }
                             break;
@@ -388,17 +390,17 @@ void CChannelManagerDlg::OnAction2()
 
             switch(currentTab){
                     case 0:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(!removed[nThisChn]){
                                             if(select[nThisChn]) nbSelect++;
                                             if(select[nThisChn] && pModDoc->IsChannelMuted(nThisChn)) nbOk++;
                                     }
                             }
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(select[nThisChn] && !removed[nThisChn]){
                                             if(pModDoc->IsChannelSolo(nThisChn)) pModDoc->SoloChannel(nThisChn, false);
                                             if(nbSelect == nbOk) pModDoc->MuteChannel(nThisChn, !pModDoc->IsChannelMuted(nThisChn));
@@ -407,18 +409,18 @@ void CChannelManagerDlg::OnAction2()
                             }
                             break;
                     case 1:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(!removed[nThisChn]){
                                             if(select[nThisChn]) nbSelect++;
                                             uint8_t rec = pModDoc->IsChannelRecord(nThisChn);
                                             if(select[nThisChn] && rec == 2) nbOk++;
                                     }
                             }
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(!removed[nThisChn] && select[nThisChn]){
                                             if(select[nThisChn] && nbSelect != nbOk && pModDoc->IsChannelRecord(nThisChn) != 2) pModDoc->Record2Channel(nThisChn);
                                             else if(nbSelect == nbOk) pModDoc->Record2Channel(nThisChn, false);
@@ -426,9 +428,9 @@ void CChannelManagerDlg::OnAction2()
                             }
                             break;
                     case 2:
-                            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             {
-                                    CHANNELINDEX nThisChn = pattern[nChn];
+                                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                                     if(select[nThisChn] && !removed[nThisChn]) pModDoc->NoFxChannel(nThisChn, true);
                             }
                             break;
@@ -458,24 +460,24 @@ void CChannelManagerDlg::OnStore(void)
 
     switch(currentTab){
             case 0:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                     {
-                            CHANNELINDEX nThisChn = pattern[nChn];
+                            modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                             memory[0][nThisChn] = 0;
                             if(pModDoc->IsChannelMuted(nThisChn)) memory[0][nChn] |= 1;
                             if(pModDoc->IsChannelSolo(nThisChn))  memory[0][nChn] |= 2;
                     }
                     break;
             case 1:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             memory[1][nChn] = pModDoc->IsChannelRecord(pattern[nChn]);
                     break;
             case 2:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             memory[2][nChn] = pModDoc->IsChannelNoFx(pattern[nChn]);
                     break;
             case 3:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             memory[3][nChn] = pattern[nChn];
                     break;
             default:
@@ -495,27 +497,27 @@ void CChannelManagerDlg::OnRestore(void)
 
     switch(currentTab){
             case 0:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                     {
-                            CHANNELINDEX nThisChn = pattern[nChn];
+                            modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                             pModDoc->MuteChannel(nThisChn, (memory[0][nChn] & 1) != 0 ? true : false);
                             pModDoc->SoloChannel(nThisChn, (memory[0][nChn] & 2) != 0 ? true : false);
                     }
                     break;
             case 1:
                     pModDoc->ReinitRecordState(true);
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                     {
                             if(memory[1][nChn] != 2) pModDoc->Record1Channel(pattern[nChn], memory[1][nChn] == 1);
                             if(memory[1][nChn] != 1) pModDoc->Record2Channel(pattern[nChn], memory[1][nChn] == 2);
                     }
                     break;
             case 2:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             pModDoc->NoFxChannel(pattern[nChn], memory[2][nChn] != 0 ? true : false);
                     break;
             case 3:
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                             pattern[nChn] = memory[3][nChn];
                     ResetState(false, false, false, false, true);
                     break;
@@ -706,7 +708,7 @@ void CChannelManagerDlg::OnPaint()
 
     CHAR s[256];
     UINT c=0,l=0;
-    CHANNELINDEX nChannels = m_pSndFile->m_nChannels;
+    modplug::tracker::chnindex_t nChannels = m_pSndFile->m_nChannels;
     UINT nLines = nChannels / CM_NB_COLS + (nChannels % CM_NB_COLS ? 1 : 0);
     CRect client,btn;
 
@@ -754,9 +756,9 @@ void CChannelManagerDlg::OnPaint()
                     FrameRect(pDC.hdc,&r,CMainFrame::brushBlack);
             }
 */
-            for(CHANNELINDEX nChn = 0; nChn < nChannels; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < nChannels; nChn++)
             {
-                    CHANNELINDEX nThisChn = pattern[nChn];
+                    modplug::tracker::chnindex_t nThisChn = pattern[nChn];
                     if(select[nThisChn]){
                             btn = move[nThisChn];
                             btn.left += mx - omx + 2;
@@ -790,9 +792,9 @@ void CChannelManagerDlg::OnPaint()
     HBRUSH red = CreateSolidBrush(RGB(192,96,96));
     HBRUSH green = CreateSolidBrush(RGB(96,192,96));
 
-    for(CHANNELINDEX nChn = 0; nChn < nChannels; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < nChannels; nChn++)
     {
-            CHANNELINDEX nThisChn = pattern[nChn];
+            modplug::tracker::chnindex_t nThisChn = pattern[nChn];
 
             if(m_pSndFile->ChnSettings[nThisChn].szName[0] >= 0x20)
             wsprintf(s, "%d: %s", (nThisChn + 1), m_pSndFile->ChnSettings[nThisChn].szName);
@@ -863,7 +865,7 @@ void CChannelManagerDlg::OnMove(int x, int y)
     nChannelsOld = 0;
 }
 
-bool CChannelManagerDlg::ButtonHit( CPoint point, CHANNELINDEX * id, CRect * invalidate )
+bool CChannelManagerDlg::ButtonHit( CPoint point, modplug::tracker::chnindex_t * id, CRect * invalidate )
 {
     CRect client;
     GetClientRect(&client);
@@ -888,7 +890,7 @@ bool CChannelManagerDlg::ButtonHit( CPoint point, CHANNELINDEX * id, CRect * inv
 
             x = x / dx;
             y = y / dy;
-            CHANNELINDEX n = static_cast<CHANNELINDEX>(y * nColns + x);
+            modplug::tracker::chnindex_t n = static_cast<modplug::tracker::chnindex_t>(y * nColns + x);
             if(n >= 0 && n < (int)m_pSndFile->m_nChannels){
                     if(id) *id = n;
                     if(invalidate){
@@ -905,7 +907,7 @@ bool CChannelManagerDlg::ButtonHit( CPoint point, CHANNELINDEX * id, CRect * inv
 
 void CChannelManagerDlg::ResetState(bool bSelection, bool bMove, bool bButton, bool bInternal, bool bOrder)
 {
-    for(CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
     {
             if(bSelection)
                     select[pattern[nChn]] = false;
@@ -988,44 +990,44 @@ void CChannelManagerDlg::OnLButtonUp(UINT /*nFlags*/,CPoint point)
     module_renderer * m_pSndFile = pModDoc ? pModDoc->GetSoundFile() : NULL;
 
     if(moveRect && m_pSndFile){
-            CHANNELINDEX n, i, k;
-            CHANNELINDEX newpat[MAX_BASECHANNELS];
+            modplug::tracker::chnindex_t n, i, k;
+            modplug::tracker::chnindex_t newpat[MAX_BASECHANNELS];
 
-            k = CHANNELINDEX_INVALID;
+            k = ChannelIndexInvalid;
             bool hit = ButtonHit(point,&n,NULL);
-            for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
-                    if(k == CHANNELINDEX_INVALID && select[pattern[nChn]]) k = nChn;
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    if(k == ChannelIndexInvalid && select[pattern[nChn]]) k = nChn;
 
-            if(hit && m_pSndFile && k != CHANNELINDEX_INVALID){
+            if(hit && m_pSndFile && k != ChannelIndexInvalid){
                     i = 0;
                     k = 0;
                     while(i < n){
                             while(i < n && select[pattern[i]]) i++;
                             if(i < n && !select[pattern[i]]){
                                     newpat[k] = pattern[i];
-                                    pattern[i] = CHANNELINDEX_INVALID;
+                                    pattern[i] = ChannelIndexInvalid;
                                     k++;
                                     i++;
                             }
                     }
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels ; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels ; nChn++)
                     {
-                            if(pattern[nChn] != CHANNELINDEX_INVALID && select[pattern[nChn]]){
+                            if(pattern[nChn] != ChannelIndexInvalid && select[pattern[nChn]]){
                                     newpat[k] = pattern[nChn];
-                                    pattern[nChn] = CHANNELINDEX_INVALID;
+                                    pattern[nChn] = ChannelIndexInvalid;
                                     k++;
                             }
                     }
                     i = 0;
                     while(i < m_pSndFile->m_nChannels){
-                            while(i < m_pSndFile->m_nChannels && pattern[i] == CHANNELINDEX_INVALID) i++;
-                            if(i < m_pSndFile->m_nChannels && pattern[i] != CHANNELINDEX_INVALID){
+                            while(i < m_pSndFile->m_nChannels && pattern[i] == ChannelIndexInvalid) i++;
+                            if(i < m_pSndFile->m_nChannels && pattern[i] != ChannelIndexInvalid){
                                     newpat[k] = pattern[i];
                                     k++;
                                     i++;
                             }
                     }
-                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
+                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++)
                     {
                             pattern[nChn] = newpat[nChn];
                             select[nChn] = false;
@@ -1039,7 +1041,7 @@ void CChannelManagerDlg::OnLButtonUp(UINT /*nFlags*/,CPoint point)
 
     leftButton = false;
 
-    for(CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS ; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS ; nChn++)
             state[pattern[nChn]] = false;
 
     if(pModDoc) pModDoc->UpdateAllViews(NULL,0xff,NULL);
@@ -1103,7 +1105,7 @@ void CChannelManagerDlg::OnRButtonDown(UINT nFlags,CPoint point)
 
 void CChannelManagerDlg::MouseEvent(UINT nFlags,CPoint point,uint8_t button)
 {
-    CHANNELINDEX n;
+    modplug::tracker::chnindex_t n;
     CRect client,invalidate;
     bool hit = ButtonHit(point, &n, &invalidate);
     if(hit) n = pattern[n];
@@ -1134,7 +1136,7 @@ void CChannelManagerDlg::MouseEvent(UINT nFlags,CPoint point,uint8_t button)
                                                     GetClientRect(&client);
                                                     pModDoc->MuteChannel(n, false);
                                                     pModDoc->SoloChannel(n, true);
-                                                    for(CHANNELINDEX nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++) if(nChn != n) pModDoc->MuteChannel(nChn, true);
+                                                    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_pSndFile->m_nChannels; nChn++) if(nChn != n) pModDoc->MuteChannel(nChn, true);
                                                     client.SetRect(client.left + 10,client.top + 38,client.right - 8,client.bottom - 30);
                                                     invalidate = client;
                                             }

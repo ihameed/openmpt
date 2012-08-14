@@ -2300,7 +2300,7 @@ void CCtrlInstruments::OnFilterModeChanged()
             //Update channel settings where this instrument is active, if required.
                     if(instFiltermode != FLTMODE_UNCHANGED)
                     {
-                            for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
+                            for (modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
                             {
                                     if (pSndFile->Chn[i].instrument == pIns)
                                             pSndFile->Chn[i].nFilterMode = instFiltermode;

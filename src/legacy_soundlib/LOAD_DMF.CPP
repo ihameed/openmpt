@@ -214,11 +214,11 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
     }
 
     modplug::tracker::modevent_t *m = pSndFile->Patterns[nPat];
-    const CHANNELINDEX numChannels = min(pSndFile->GetNumChannels(), patHead->numTracks);
+    const modplug::tracker::chnindex_t numChannels = min(pSndFile->GetNumChannels(), patHead->numTracks);
 
     // When breaking to a pattern with less channels that the previous pattern,
     // all voices in the now unused channels are killed:
-    for(CHANNELINDEX nChn = numChannels + 1; nChn < pSndFile->GetNumChannels(); nChn++)
+    for(modplug::tracker::chnindex_t nChn = numChannels + 1; nChn < pSndFile->GetNumChannels(); nChn++)
     {
         m[nChn].note = NOTE_NOTECUT;
     }
@@ -363,7 +363,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
 
         m = pSndFile->Patterns[nPat].GetpModCommand(nRow, 1);	// Reserve first channel for global effects
 
-        for(CHANNELINDEX nChn = 1; nChn <= numChannels; nChn++, m++)
+        for(modplug::tracker::chnindex_t nChn = 1; nChn <= numChannels; nChn++, m++)
         {
             // Track info counter reached 0 => read track data
             if(channelCounter[nChn] == 0)
@@ -718,17 +718,17 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
         {
             tempoChange = false;
             pSndFile->TryWriteEffect(nPat, nRow, CMD_TEMPO, (uint8_t)tempo, false, 0, false, weTryNextRow);
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_SPEED, (uint8_t)speed, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+            pSndFile->TryWriteEffect(nPat, nRow, CMD_SPEED, (uint8_t)speed, false, ChannelIndexInvalid, false, weTryNextRow);
         }
         // Try to put delay effects somewhere as well
         if(writeDelay & 0xF0)
         {
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0xE0 | (writeDelay >> 4), false, CHANNELINDEX_INVALID, true, weIgnore);
+            pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0xE0 | (writeDelay >> 4), false, ChannelIndexInvalid, true, weIgnore);
         }
         if(writeDelay & 0x0F)
         {
             const uint8_t param = (writeDelay & 0x0F) * settings.internalTicks / 15;
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0x60 | CLAMP(param, 1, 15), false, CHANNELINDEX_INVALID, true, weIgnore);
+            pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0x60 | CLAMP(param, 1, 15), false, ChannelIndexInvalid, true, weIgnore);
         }
         writeDelay = 0;
     }	// End for all rows
@@ -1006,7 +1006,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
                 // Loop end?
                 if(nPat != PATTERNINDEX_INVALID && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
                 {
-                    TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (uint8_t)loopStart, false, CHANNELINDEX_INVALID, false, weTryPreviousRow);
+                    TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (uint8_t)loopStart, false, ChannelIndexInvalid, false, weTryPreviousRow);
                 }
             }
         }

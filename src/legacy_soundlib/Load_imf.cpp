@@ -306,7 +306,7 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
     m_nInstruments = 0;
 
     m_nChannels = 0;
-    for(CHANNELINDEX nChn = 0; nChn < 32; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < 32; nChn++)
     {
         ChnSettings[nChn].nPan = hdr.channels[nChn].panning * 64 / 255;
         ChnSettings[nChn].nPan *= 4;
@@ -338,7 +338,7 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
     //From mikmod: work around an Orpheus bug
     if (hdr.channels[0].status == 0)
     {
-        CHANNELINDEX nChn;
+        modplug::tracker::chnindex_t nChn;
         for(nChn = 1; nChn < 16; nChn++)
             if(hdr.channels[nChn].status != 1)
                 break;

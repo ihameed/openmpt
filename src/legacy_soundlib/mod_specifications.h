@@ -26,8 +26,8 @@ struct CModSpecifications
     bool hasNoteFade;                  // True if format has notefade.
     PATTERNINDEX patternsMax;
     ORDERINDEX ordersMax;
-    CHANNELINDEX channelsMin; // Minimum number of editable channels in pattern.
-    CHANNELINDEX channelsMax; // Maximum number of editable channels in pattern.
+    modplug::tracker::chnindex_t channelsMin; // Minimum number of editable channels in pattern.
+    modplug::tracker::chnindex_t channelsMax; // Maximum number of editable channels in pattern.
     TEMPO tempoMin;
     TEMPO tempoMax;
     modplug::tracker::rowindex_t patternRowsMin;

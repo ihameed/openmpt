@@ -9,6 +9,9 @@
 #include "stdafx.h"
 #include "Moddoc.h"
 #include "legacy_soundlib/modsmp_ctrl.h"
+#include "tracker/tracker.h"
+
+using namespace modplug::tracker;
 
 /* TODO:
 stereo/16bit samples (only XM? stereo/16bit flags are defined in the S3M and IT specs...)
@@ -178,7 +181,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
                             if(autofix)
                             {
                                     m_SndFile.Patterns[i].Resize(originalSpecs->patternRowsMin);
-                                    m_SndFile.TryWriteEffect(i, patSize - 1, CMD_PATTERNBREAK, 0, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+                                    m_SndFile.TryWriteEffect(i, patSize - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weTryNextRow);
                             } else
                             {
                                     break;
@@ -232,7 +235,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 
     // Check for channel names
     foundHere = false;
-    for(CHANNELINDEX i = 0; i < m_SndFile.GetNumChannels(); i++)
+    for(modplug::tracker::chnindex_t i = 0; i < m_SndFile.GetNumChannels(); i++)
     {
             if(strcmp(m_SndFile.ChnSettings[i].szName, "") != 0)
             {

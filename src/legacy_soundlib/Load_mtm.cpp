@@ -98,7 +98,7 @@ bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
         dwMemPos += 37;
     }
     // Setting Channel Pan Position
-    for (CHANNELINDEX ich = 0; ich < m_nChannels; ich++)
+    for (modplug::tracker::chnindex_t ich = 0; ich < m_nChannels; ich++)
     {
         ChnSettings[ich].nPan = ((pmh->panpos[ich] & 0x0F) << 4) + 8;
         ChnSettings[ich].nVolume = 64;

@@ -39,7 +39,7 @@ void CPatternUndo::ClearUndo()
 //   - numChns: width
 //   - numRows: height
 //   - linkToPrevious: Don't create a separate undo step, but link this to the previous undo event. Useful for commands that modify several patterns at once.
-bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, modplug::tracker::rowindex_t firstRow, CHANNELINDEX numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious)
+bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, modplug::tracker::chnindex_t firstChn, modplug::tracker::rowindex_t firstRow, modplug::tracker::chnindex_t numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(m_pModDoc == nullptr) return false;

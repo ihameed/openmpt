@@ -562,7 +562,7 @@ void CViewGlobals::OnTabSelchange(NMHDR*, LRESULT* pResult)
     if (pResult) *pResult = 0;
 }
 
-void CViewGlobals::OnMute(const CHANNELINDEX chnMod4, const UINT itemID)
+void CViewGlobals::OnMute(const modplug::tracker::chnindex_t chnMod4, const UINT itemID)
 //----------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -570,7 +570,7 @@ void CViewGlobals::OnMute(const CHANNELINDEX chnMod4, const UINT itemID)
     if (pModDoc)
     {
             const bool b = (IsDlgButtonChecked(itemID)) ? true : false;
-            const CHANNELINDEX nChn = (CHANNELINDEX)(m_nActiveTab * 4) + chnMod4;
+            const modplug::tracker::chnindex_t nChn = (modplug::tracker::chnindex_t)(m_nActiveTab * 4) + chnMod4;
             pModDoc->MuteChannel(nChn, b);
             pModDoc->UpdateAllViews(this, HINT_MODCHANNELS | (m_nActiveTab << HINT_SHIFT_CHNTAB));
     }
@@ -582,7 +582,7 @@ void CViewGlobals::OnMute3() {OnMute(2, IDC_CHECK5);}
 void CViewGlobals::OnMute4() {OnMute(3, IDC_CHECK7);}
 
 
-void CViewGlobals::OnSurround(const CHANNELINDEX chnMod4, const UINT itemID)
+void CViewGlobals::OnSurround(const modplug::tracker::chnindex_t chnMod4, const UINT itemID)
 //--------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -590,7 +590,7 @@ void CViewGlobals::OnSurround(const CHANNELINDEX chnMod4, const UINT itemID)
     if (pModDoc)
     {
             const bool b = (IsDlgButtonChecked(itemID)) ? true : false;
-            const CHANNELINDEX nChn = (CHANNELINDEX)(m_nActiveTab * 4) + chnMod4;
+            const modplug::tracker::chnindex_t nChn = (modplug::tracker::chnindex_t)(m_nActiveTab * 4) + chnMod4;
             pModDoc->SurroundChannel(nChn, b);
             pModDoc->UpdateAllViews(this, HINT_MODCHANNELS | (m_nActiveTab << HINT_SHIFT_CHNTAB));
             UpdateView(HINT_MODCHANNELS);
@@ -602,11 +602,11 @@ void CViewGlobals::OnSurround2() {OnSurround(1, IDC_CHECK4);}
 void CViewGlobals::OnSurround3() {OnSurround(2, IDC_CHECK6);}
 void CViewGlobals::OnSurround4() {OnSurround(3, IDC_CHECK8);}
 
-void CViewGlobals::OnEditVol(const CHANNELINDEX chnMod4, const UINT itemID)
+void CViewGlobals::OnEditVol(const modplug::tracker::chnindex_t chnMod4, const UINT itemID)
 //-------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    const CHANNELINDEX nChn = (CHANNELINDEX)(m_nActiveTab * 4) + chnMod4;
+    const modplug::tracker::chnindex_t nChn = (modplug::tracker::chnindex_t)(m_nActiveTab * 4) + chnMod4;
     const int vol = GetDlgItemIntEx(itemID);
     if ((pModDoc) && (vol >= 0) && (vol <= 64) && (!m_nLockCount))
     {
@@ -624,11 +624,11 @@ void CViewGlobals::OnEditVol3() {OnEditVol(2, IDC_EDIT5);}
 void CViewGlobals::OnEditVol4() {OnEditVol(3, IDC_EDIT7);}
 
 
-void CViewGlobals::OnEditPan(const CHANNELINDEX chnMod4, const UINT itemID)
+void CViewGlobals::OnEditPan(const modplug::tracker::chnindex_t chnMod4, const UINT itemID)
 //-------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
-    const CHANNELINDEX nChn = (CHANNELINDEX)(m_nActiveTab * 4) + chnMod4;
+    const modplug::tracker::chnindex_t nChn = (modplug::tracker::chnindex_t)(m_nActiveTab * 4) + chnMod4;
     const int pan = GetDlgItemIntEx(itemID);
     if ((pModDoc) && (pan >= 0) && (pan <= 256) && (!m_nLockCount))
     {
@@ -654,20 +654,20 @@ void CViewGlobals::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
     CHAR s[64];
     CModDoc *pModDoc;
-    CHANNELINDEX nChn;
+    modplug::tracker::chnindex_t nChn;
 
     CFormView::OnHScroll(nSBCode, nPos, pScrollBar);
 
     pModDoc = GetDocument();
-    nChn = (CHANNELINDEX)(m_nActiveTab * 4);
+    nChn = (modplug::tracker::chnindex_t)(m_nActiveTab * 4);
     if ((pModDoc) && (!IsLocked()) && (nChn < MAX_BASECHANNELS))
     {
             BOOL bUpdate = FALSE;
             short int pos;
 
             LockControls();
-            const CHANNELINDEX nLoopLimit = min(4, pModDoc->GetSoundFile()->GetNumChannels() - nChn);
-            for (CHANNELINDEX iCh = 0; iCh < nLoopLimit; iCh++)
+            const modplug::tracker::chnindex_t nLoopLimit = min(4, pModDoc->GetSoundFile()->GetNumChannels() - nChn);
+            for (modplug::tracker::chnindex_t iCh = 0; iCh < nLoopLimit; iCh++)
             {
                     // Volume sliders
                     pos = (short int)m_sbVolume[iCh].GetPos();
@@ -790,7 +790,7 @@ void CViewGlobals::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 }
 
 
-void CViewGlobals::OnEditName(const CHANNELINDEX chnMod4, const UINT itemID)
+void CViewGlobals::OnEditName(const modplug::tracker::chnindex_t chnMod4, const UINT itemID)
 //----------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -819,7 +819,7 @@ void CViewGlobals::OnEditName3() {OnEditName(2, IDC_EDIT11);}
 void CViewGlobals::OnEditName4() {OnEditName(3, IDC_EDIT12);}
 
 
-void CViewGlobals::OnFxChanged(const CHANNELINDEX chnMod4)
+void CViewGlobals::OnFxChanged(const modplug::tracker::chnindex_t chnMod4)
 //--------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -1411,7 +1411,7 @@ bool CViewGlobals::MovePlug(PLUGINDEX src, PLUGINDEX dest, bool bAdjustPat)
             }
     }
     // Update channels
-    for (CHANNELINDEX nChn=0; nChn<pSndFile->m_nChannels; nChn++) {
+    for (modplug::tracker::chnindex_t nChn=0; nChn<pSndFile->m_nChannels; nChn++) {
             if (pSndFile->ChnSettings[nChn].nMixPlugin == src+1) {
                     pSndFile->ChnSettings[nChn].nMixPlugin = dest+1;
             }

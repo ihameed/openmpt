@@ -40,7 +40,7 @@ protected:
 
 public:
     UINT m_nNote, m_nInstr, m_nVolCmd, m_nVol, m_nCommand, m_nParam;
-    CHANNELINDEX m_nMinChannel, m_nMaxChannel;
+    modplug::tracker::chnindex_t m_nMinChannel, m_nMaxChannel;
     signed char cInstrRelChange;
     bool m_bPatSel;
     uint32_t m_dwFlags;
@@ -335,14 +335,14 @@ class CChannelRenameDlg: public CDialog
 //=====================================
 {
 protected:
-    CHANNELINDEX m_nChannel;
+    modplug::tracker::chnindex_t m_nChannel;
 
 public:
     CHAR m_sName[MAX_CHANNELNAME];
     bool bChanged;
 
 public:
-    CChannelRenameDlg(CWnd *parent, CHAR *sName, CHANNELINDEX nChannel) : CDialog(IDD_CHANNEL_NAME, parent)
+    CChannelRenameDlg(CWnd *parent, CHAR *sName, modplug::tracker::chnindex_t nChannel) : CDialog(IDD_CHANNEL_NAME, parent)
     {
             strcpy(m_sName, sName);
             m_nChannel = nChannel;

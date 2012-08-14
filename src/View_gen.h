@@ -77,12 +77,12 @@ public:
     //}}AFX_VIRTUAL
 
 private:
-    void OnMute(const CHANNELINDEX chnMod4, const UINT itemID);
-    void OnSurround(const CHANNELINDEX chnMod4, const UINT itemID);
-    void OnEditVol(const CHANNELINDEX chnMod4, const UINT itemID);
-    void OnEditPan(const CHANNELINDEX chnMod4, const UINT itemID);
-    void OnEditName(const CHANNELINDEX chnMod4, const UINT itemID);
-    void OnFxChanged(const CHANNELINDEX chnMod4);
+    void OnMute(const modplug::tracker::chnindex_t chnMod4, const UINT itemID);
+    void OnSurround(const modplug::tracker::chnindex_t chnMod4, const UINT itemID);
+    void OnEditVol(const modplug::tracker::chnindex_t chnMod4, const UINT itemID);
+    void OnEditPan(const modplug::tracker::chnindex_t chnMod4, const UINT itemID);
+    void OnEditName(const modplug::tracker::chnindex_t chnMod4, const UINT itemID);
+    void OnFxChanged(const modplug::tracker::chnindex_t chnMod4);
 
 protected:
     //{{AFX_MSG(CViewGlobals)

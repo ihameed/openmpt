@@ -370,7 +370,7 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
     {
             BEGIN_CRITICAL();
             pSmp->global_volume = min((uint16_t)(pSmp->global_volume / dAmplify), 64);
-            for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
+            for (modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
             {
                     if(pSndFile->Chn[i].sample_data == pSmp->sample_data)
                     {
@@ -559,7 +559,7 @@ bool ConvertToMono(modplug::tracker::modsample_t *pSmp, module_renderer *pSndFil
 
     BEGIN_CRITICAL();
     pSmp->flags &= ~(CHN_STEREO);
-    for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
+    for (modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
             if(pSndFile->Chn[i].sample_data == pSmp->sample_data)
             {
@@ -587,7 +587,7 @@ void ReplaceSample( modplug::tracker::modchannel_t (&Chn)[MAX_VIRTUAL_CHANNELS],
                                     uint32_t orFlags /* = 0*/,
                                     uint32_t andFlags /* = MAXDWORD*/)
 {
-    for (CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
+    for (modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
             if (Chn[i].sample_data == pOldSample)
             {

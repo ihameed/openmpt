@@ -85,12 +85,12 @@ class CRemoveChannelsDlg: public CDialog
 public:
     module_renderer *m_pSndFile;
     vector<bool> m_bKeepMask;
-    CHANNELINDEX m_nChannels, m_nRemove;
+    modplug::tracker::chnindex_t m_nChannels, m_nRemove;
     CListBox m_RemChansList;                //rewbs.removeChansDlgCleanup
     bool m_ShowCancel;
 
 public:
-    CRemoveChannelsDlg(module_renderer *pSndFile, CHANNELINDEX nChns, bool showCancel = true, CWnd *parent=NULL):CDialog(IDD_REMOVECHANNELS, parent)
+    CRemoveChannelsDlg(module_renderer *pSndFile, modplug::tracker::chnindex_t nChns, bool showCancel = true, CWnd *parent=NULL):CDialog(IDD_REMOVECHANNELS, parent)
             { m_pSndFile = pSndFile;
               m_nChannels = m_pSndFile->GetNumChannels();
               m_nRemove = nChns;

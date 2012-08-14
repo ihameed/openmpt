@@ -40,6 +40,9 @@
 #include "Mainfrm.h"
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "ModConvert.h"
+#include "tracker/types.h"
+
+using namespace modplug::tracker;
 
 
 #define CHANGEMODTYPE_WARNING(x)    warnings.set(x);
@@ -141,14 +144,14 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             // try to save short patterns by inserting a pattern break.
             if(m_SndFile.Patterns[nPat].GetNumRows() < 64)
             {
-                m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CMD_PATTERNBREAK, 0, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+                m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weTryNextRow);
             }
             m_SndFile.Patterns[nPat].Resize(64, false);
             CHANGEMODTYPE_WARNING(wResizedPatterns);
         }
 
         // Removing all instrument headers from channels
-        for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
+        for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
         {
             m_SndFile.Chn[nChn].instrument = nullptr;
         }
@@ -181,7 +184,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         }
 
         bool addBreak = false;    // When converting to XM, avoid the E60 bug.
-        CHANNELINDEX nChannel = m_SndFile.m_nChannels - 1;
+        modplug::tracker::chnindex_t nChannel = m_SndFile.m_nChannels - 1;
 
         for (UINT len = m_SndFile.Patterns[nPat].GetNumRows() * m_SndFile.m_nChannels; len; m++, len--)
         {
@@ -246,7 +249,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         }
         if(addBreak)
         {
-            m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CMD_PATTERNBREAK, 0, false, CHANNELINDEX_INVALID, false, weIgnore);
+            m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weIgnore);
         }
     }
 
@@ -394,7 +397,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     }
 
     // Fix channel settings (pan/vol)
-    for(CHANNELINDEX nChn = 0; nChn < m_SndFile.m_nChannels; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_SndFile.m_nChannels; nChn++)
     {
         if(newTypeIsMOD_XM || newTypeIsS3M)
         {

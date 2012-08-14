@@ -36,10 +36,10 @@ inline TCHAR GetDigit(const size_t val)
 
 // Change the number of channels.
 // Return true on success.
-bool CModDoc::ChangeNumChannels(CHANNELINDEX nNewChannels, const bool showCancelInRemoveDlg)
+bool CModDoc::ChangeNumChannels(modplug::tracker::chnindex_t nNewChannels, const bool showCancelInRemoveDlg)
 //------------------------------------------------------------------------------------------
 {
-    const CHANNELINDEX maxChans = m_SndFile.GetModSpecifications().channelsMax;
+    const modplug::tracker::chnindex_t maxChans = m_SndFile.GetModSpecifications().channelsMax;
 
     if (nNewChannels > maxChans)
     {
@@ -55,7 +55,7 @@ bool CModDoc::ChangeNumChannels(CHANNELINDEX nNewChannels, const bool showCancel
     {
             // Remove channels
             UINT nChnToRemove = 0;
-            CHANNELINDEX nFound = 0;
+            modplug::tracker::chnindex_t nFound = 0;
 
             //nNewChannels = 0 means user can choose how many channels to remove
             if(nNewChannels > 0)
@@ -78,8 +78,8 @@ bool CModDoc::ChangeNumChannels(CHANNELINDEX nNewChannels, const bool showCancel
     {
             // Increasing number of channels
             BeginWaitCursor();
-            vector<CHANNELINDEX> channels(nNewChannels, CHANNELINDEX_INVALID);
-            for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
+            vector<modplug::tracker::chnindex_t> channels(nNewChannels, ChannelIndexInvalid);
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < GetNumChannels(); nChn++)
             {
                     channels[nChn] = nChn;
             }
@@ -102,7 +102,7 @@ bool CModDoc::RemoveChannels(const vector<bool> &keepMask)
 {
     UINT nRemainingChannels = 0;
     //First calculating how many channels are to be left
-    for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < GetNumChannels(); nChn++)
     {
             if(keepMask[nChn]) nRemainingChannels++;
     }
@@ -117,9 +117,9 @@ bool CModDoc::RemoveChannels(const vector<bool> &keepMask)
 
     BeginWaitCursor();
     // Create new channel order, with only channels from m_bChnMask left.
-    vector<CHANNELINDEX> channels(nRemainingChannels, 0);
-    CHANNELINDEX i = 0;
-    for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
+    vector<modplug::tracker::chnindex_t> channels(nRemainingChannels, 0);
+    modplug::tracker::chnindex_t i = 0;
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < GetNumChannels(); nChn++)
     {
             if(keepMask[nChn])
             {
@@ -140,7 +140,7 @@ bool CModDoc::RemoveChannels(const vector<bool> &keepMask)
 
 // Base code for adding, removing, moving and duplicating channels. Returns new number of channels on success, CHANNELINDEX_INVALID otherwise.
 // The new channel vector can contain CHANNELINDEX_INVALID for adding new (empty) channels.
-CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
+modplug::tracker::chnindex_t CModDoc::ReArrangeChannels(const vector<modplug::tracker::chnindex_t> &newOrder)
 //---------------------------------------------------------------------------
 {
     //newOrder[i] tells which current channel should be placed to i:th position in
@@ -148,14 +148,14 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     //added to position i. If index of some current channel is missing from the
     //newOrder-vector, then the channel gets removed.
 
-    const CHANNELINDEX nRemainingChannels = static_cast<CHANNELINDEX>(newOrder.size());
+    const modplug::tracker::chnindex_t nRemainingChannels = static_cast<modplug::tracker::chnindex_t>(newOrder.size());
 
     if(nRemainingChannels > m_SndFile.GetModSpecifications().channelsMax || nRemainingChannels < m_SndFile.GetModSpecifications().channelsMin)
     {
             CString str;
             str.Format(GetStrI18N(_TEXT("Can't apply change: Number of channels should be within [%u,%u]")), m_SndFile.GetModSpecifications().channelsMin, m_SndFile.GetModSpecifications().channelsMax);
             CMainFrame::GetMainFrame()->MessageBox(str , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
-            return CHANNELINDEX_INVALID;
+            return ChannelIndexInvalid;
     }
 
     bool first = true;
@@ -182,12 +182,12 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
                     {
                             END_CRITICAL();
                             CMainFrame::GetMainFrame()->MessageBox("ERROR: Pattern allocation failed in ReArrangechannels(...)" , "ReArrangeChannels", MB_OK | MB_ICONINFORMATION);
-                            return CHANNELINDEX_INVALID;
+                            return ChannelIndexInvalid;
                     }
                     modplug::tracker::modevent_t *tmpsrc = p, *tmpdest = newp;
                     for(modplug::tracker::rowindex_t nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
                     {
-                            for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
+                            for(modplug::tracker::chnindex_t nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
                             {
                                     if(newOrder[nChn] < GetNumChannels()) //Case: getting old channel to the new channel order.
                                             *tmpdest = tmpsrc[nRow * GetNumChannels() + newOrder[nChn]];
@@ -206,7 +206,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     vector<UINT> recordStates(GetNumChannels(), 0);
     vector<bool> chnMutePendings(GetNumChannels(), false);
 
-    for(CHANNELINDEX nChn = 0; nChn < GetNumChannels(); nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < GetNumChannels(); nChn++)
     {
             settings[nChn] = m_SndFile.ChnSettings[nChn];
             chns[nChn] = m_SndFile.Chn[nChn];
@@ -216,7 +216,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 
     ReinitRecordState();
 
-    for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < nRemainingChannels; nChn++)
     {
             if(newOrder[nChn] < GetNumChannels())
             {
@@ -237,7 +237,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
     m_SndFile.m_nChannels = nRemainingChannels;
 
     // Reset removed channels. Most notably, clear the channel name.
-    for(CHANNELINDEX nChn = GetNumChannels(); nChn < MAX_BASECHANNELS; nChn++)
+    for(modplug::tracker::chnindex_t nChn = GetNumChannels(); nChn < MAX_BASECHANNELS; nChn++)
     {
             m_SndFile.InitChannel(nChn);
             m_SndFile.Chn[nChn].flags |= CHN_MUTE;
@@ -249,7 +249,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
 }
 
 
-bool CModDoc::MoveChannel(CHANNELINDEX chnFrom, CHANNELINDEX chnTo)
+bool CModDoc::MoveChannel(modplug::tracker::chnindex_t chnFrom, modplug::tracker::chnindex_t chnTo)
 //-----------------------------------------------------------------
 {
     //Implementation of move channel using ReArrangeChannels(...). So this function
@@ -261,16 +261,16 @@ bool CModDoc::MoveChannel(CHANNELINDEX chnFrom, CHANNELINDEX chnTo)
             CMainFrame::GetMainFrame()->MessageBox(str , "MoveChannel(...)", MB_OK | MB_ICONINFORMATION);
             return true;
     }
-    vector<CHANNELINDEX> newOrder;
+    vector<modplug::tracker::chnindex_t> newOrder;
     //First creating new order identical to current order...
-    for(CHANNELINDEX i = 0; i < GetNumChannels(); i++)
+    for(modplug::tracker::chnindex_t i = 0; i < GetNumChannels(); i++)
     {
             newOrder.push_back(i);
     }
     //...and then add the move channel effect.
     if(chnFrom < chnTo)
     {
-            CHANNELINDEX temp = newOrder[chnFrom];
+            modplug::tracker::chnindex_t temp = newOrder[chnFrom];
             for(UINT i = chnFrom; i < chnTo; i++)
             {
                     newOrder[i] = newOrder[i + 1];
@@ -279,7 +279,7 @@ bool CModDoc::MoveChannel(CHANNELINDEX chnFrom, CHANNELINDEX chnTo)
     }
     else //case chnFrom > chnTo(can't be equal, since it has been examined earlier.)
     {
-            CHANNELINDEX temp = newOrder[chnFrom];
+            modplug::tracker::chnindex_t temp = newOrder[chnFrom];
             for(UINT i = chnFrom; i >= chnTo + 1; i--)
             {
                     newOrder[i] = newOrder[i - 1];
@@ -908,7 +908,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
             {
                     const TEMPO spdmax = m_SndFile.GetModSpecifications().speedMax;
                     const uint32_t dwMemSize = GlobalSize(hCpy);
-                    CHANNELINDEX ncol = (dwBeginSel & 0xFFFF) >> 3, col;
+                    modplug::tracker::chnindex_t ncol = (dwBeginSel & 0xFFFF) >> 3, col;
                     const modplug::tracker::rowindex_t startRow = (modplug::tracker::rowindex_t)(dwBeginSel >> 16);
                     modplug::tracker::rowindex_t nrow = startRow;
                     bool bOk = false;
@@ -1342,7 +1342,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 
 
 // Check which channels contain note data. maxRemoveCount specified how many empty channels are reported at max.
-void CModDoc::CheckUsedChannels(vector<bool> &usedMask, CHANNELINDEX maxRemoveCount) const
+void CModDoc::CheckUsedChannels(vector<bool> &usedMask, modplug::tracker::chnindex_t maxRemoveCount) const
 //----------------------------------------------------------------------------------------
 {
     // Checking for unused channels
@@ -1361,10 +1361,10 @@ void CModDoc::CheckUsedChannels(vector<bool> &usedMask, CHANNELINDEX maxRemoveCo
 
 
 // Check if a given channel contains note data.
-bool CModDoc::IsChannelUnused(CHANNELINDEX nChn) const
+bool CModDoc::IsChannelUnused(modplug::tracker::chnindex_t nChn) const
 //----------------------------------------------------
 {
-    const CHANNELINDEX nChannels = GetNumChannels();
+    const modplug::tracker::chnindex_t nChannels = GetNumChannels();
     if(nChn >= nChannels)
     {
             return true;
@@ -1393,9 +1393,9 @@ bool CModDoc::RestartPosToPattern()
 {
     bool result = false;
     GetLengthType length = m_SndFile.GetLength(eNoAdjust);
-    if(length.endOrder != ORDERINDEX_INVALID && length.endRow != ROWINDEX_INVALID)
+    if(length.endOrder != ORDERINDEX_INVALID && length.endRow != RowIndexInvalid)
     {
-            result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+            result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, ChannelIndexInvalid, false, weTryNextRow);
     }
     m_SndFile.m_nRestartPos = 0;
     return result;

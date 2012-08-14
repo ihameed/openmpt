@@ -225,7 +225,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
 
     dwMemPos++;
 
-    const CHANNELINDEX nChannels = pSndFile->GetNumChannels();
+    const modplug::tracker::chnindex_t nChannels = pSndFile->GetNumChannels();
     if(nChannels == 0)
         return false;
 
@@ -504,7 +504,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 // It seems like there's no way to differentiate between
                 // Muted and Surround channels (they're all 0xA0) - might
                 // be a limitation in mod2j2b.
-                for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
+                for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
                 {
                     ChnSettings[nChn].nVolume = 64;
                     ChnSettings[nChn].nPan = 128;

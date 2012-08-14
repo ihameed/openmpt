@@ -707,7 +707,7 @@ BOOL CModDoc::InitializeMod()
             m_SndFile.m_nSamplePreAmp = m_SndFile.m_nVSTiVolume = 128;
         }
 
-        for (CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
+        for (modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
         {
             m_SndFile.ChnSettings[nChn].dwFlags = 0;
             m_SndFile.ChnSettings[nChn].nVolume = 64;
@@ -1091,7 +1091,7 @@ BOOL CModDoc::IsNotePlaying(UINT note, UINT nsmp, UINT nins)
 }
 
 
-bool CModDoc::MuteChannel(CHANNELINDEX nChn, bool doMute)
+bool CModDoc::MuteChannel(modplug::tracker::chnindex_t nChn, bool doMute)
 //-------------------------------------------------------
 {
     uint32_t muteType = (CMainFrame::m_dwPatternSetup&PATTERN_SYNCMUTE)? CHN_SYNCMUTE:CHN_MUTE;
@@ -1146,14 +1146,14 @@ bool CModDoc::MuteChannel(CHANNELINDEX nChn, bool doMute)
 
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-bool CModDoc::IsChannelSolo(CHANNELINDEX nChn) const
+bool CModDoc::IsChannelSolo(modplug::tracker::chnindex_t nChn) const
 //--------------------------------------------------
 {
     if (nChn >= m_SndFile.m_nChannels) return true;
     return (m_SndFile.ChnSettings[nChn].dwFlags & CHN_SOLO) ? true : false;
 }
 
-bool CModDoc::SoloChannel(CHANNELINDEX nChn, bool bSolo)
+bool CModDoc::SoloChannel(modplug::tracker::chnindex_t nChn, bool bSolo)
 //------------------------------------------------------
 {
     if (nChn >= m_SndFile.m_nChannels) return false;
@@ -1167,14 +1167,14 @@ bool CModDoc::SoloChannel(CHANNELINDEX nChn, bool bSolo)
 
 // -> CODE#0015
 // -> DESC="channels management dlg"
-bool CModDoc::IsChannelNoFx(CHANNELINDEX nChn) const
+bool CModDoc::IsChannelNoFx(modplug::tracker::chnindex_t nChn) const
 //------------------------------------------
 {
     if (nChn >= m_SndFile.m_nChannels) return true;
     return (m_SndFile.ChnSettings[nChn].dwFlags & CHN_NOFX) ? true : false;
 }
 
-bool CModDoc::NoFxChannel(CHANNELINDEX nChn, bool bNoFx, bool updateMix)
+bool CModDoc::NoFxChannel(modplug::tracker::chnindex_t nChn, bool bNoFx, bool updateMix)
 //----------------------------------------------------------------------
 {
     if (nChn >= m_SndFile.m_nChannels) return false;
@@ -1191,20 +1191,20 @@ bool CModDoc::NoFxChannel(CHANNELINDEX nChn, bool bNoFx, bool updateMix)
 }
 
 
-bool CModDoc::IsChannelRecord1(CHANNELINDEX channel) const
+bool CModDoc::IsChannelRecord1(modplug::tracker::chnindex_t channel) const
 //--------------------------------------------------------
 {
     return m_bsMultiRecordMask[channel];
 }
 
 
-bool CModDoc::IsChannelRecord2(CHANNELINDEX channel) const
+bool CModDoc::IsChannelRecord2(modplug::tracker::chnindex_t channel) const
 //--------------------------------------------------------
 {
     return m_bsMultiSplitRecordMask[channel];
 }
 
-uint8_t CModDoc::IsChannelRecord(CHANNELINDEX channel) const
+uint8_t CModDoc::IsChannelRecord(modplug::tracker::chnindex_t channel) const
 //-------------------------------------------------------
 {
     if(IsChannelRecord1(channel)) return 1;
@@ -1212,7 +1212,7 @@ uint8_t CModDoc::IsChannelRecord(CHANNELINDEX channel) const
     return 0;
 }
 
-void CModDoc::Record1Channel(CHANNELINDEX channel, bool select)
+void CModDoc::Record1Channel(modplug::tracker::chnindex_t channel, bool select)
 //-------------------------------------------------------------
 {
     if (!select)
@@ -1227,7 +1227,7 @@ void CModDoc::Record1Channel(CHANNELINDEX channel, bool select)
     }
 }
 
-void CModDoc::Record2Channel(CHANNELINDEX channel, bool select)
+void CModDoc::Record2Channel(modplug::tracker::chnindex_t channel, bool select)
 //-------------------------------------------------------------
 {
     if (!select)
@@ -1278,7 +1278,7 @@ bool CModDoc::MuteInstrument(INSTRUMENTINDEX nInstr, bool bMute)
 }
 
 
-bool CModDoc::SurroundChannel(CHANNELINDEX nChn, bool bSurround)
+bool CModDoc::SurroundChannel(modplug::tracker::chnindex_t nChn, bool bSurround)
 //--------------------------------------------------------------
 {
     uint32_t d = (bSurround) ? CHN_SURROUND : 0;
@@ -1305,7 +1305,7 @@ bool CModDoc::SurroundChannel(CHANNELINDEX nChn, bool bSurround)
 }
 
 
-bool CModDoc::SetChannelGlobalVolume(CHANNELINDEX nChn, UINT nVolume)
+bool CModDoc::SetChannelGlobalVolume(modplug::tracker::chnindex_t nChn, UINT nVolume)
 //-------------------------------------------------------------------
 {
     bool bOk = false;
@@ -1321,7 +1321,7 @@ bool CModDoc::SetChannelGlobalVolume(CHANNELINDEX nChn, UINT nVolume)
 }
 
 
-bool CModDoc::SetChannelDefaultPan(CHANNELINDEX nChn, UINT nPan)
+bool CModDoc::SetChannelDefaultPan(modplug::tracker::chnindex_t nChn, UINT nPan)
 //--------------------------------------------------------------
 {
     bool bOk = false;
@@ -1338,7 +1338,7 @@ bool CModDoc::SetChannelDefaultPan(CHANNELINDEX nChn, UINT nPan)
 }
 
 
-bool CModDoc::IsChannelMuted(CHANNELINDEX nChn) const
+bool CModDoc::IsChannelMuted(modplug::tracker::chnindex_t nChn) const
 //---------------------------------------------------
 {
     if (nChn >= m_SndFile.m_nChannels) return true;
@@ -1535,7 +1535,7 @@ void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
 
         nRenderPasses = m_SndFile.GetNumChannels();
         channelFlags.resize(nRenderPasses, 0);
-        for(CHANNELINDEX i = 0; i < m_SndFile.GetNumChannels(); i++)
+        for(modplug::tracker::chnindex_t i = 0; i < m_SndFile.GetNumChannels(); i++)
         {
             // Save channels' flags
             channelFlags[i] = m_SndFile.ChnSettings[i].dwFlags;
@@ -1656,7 +1656,7 @@ void CModDoc::OnFileWaveConvert(ORDERINDEX nMinOrder, ORDERINDEX nMaxOrder)
     // Restore channels' flags
     if(wsdlg.m_bChannelMode)
     {
-        for(CHANNELINDEX i = 0; i < m_SndFile.GetNumChannels(); i++)
+        for(modplug::tracker::chnindex_t i = 0; i < m_SndFile.GetNumChannels(); i++)
         {
             m_SndFile.ChnSettings[i].dwFlags = channelFlags[i];
         }
@@ -2203,7 +2203,7 @@ BOOL CModDoc::IsExtendedEffect(UINT ndx) const
 }
 
 
-bool CModDoc::GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool bXX, CHANNELINDEX nChn) //rewbs.xinfo: added chan arg
+bool CModDoc::GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool bXX, modplug::tracker::chnindex_t nChn) //rewbs.xinfo: added chan arg
 //------------------------------------------------------------------------------------------------------
 {
     bool bSupported;
@@ -2253,7 +2253,7 @@ bool CModDoc::GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool
                 break;
             case CMD_MIDI:
             case CMD_SMOOTHMIDI:
-                if (param < 0x80 && nChn != CHANNELINDEX_INVALID)
+                if (param < 0x80 && nChn != ChannelIndexInvalid)
                 {
                     macroText = m_SndFile.m_MidiCfg.szMidiSFXExt[m_SndFile.Chn[nChn].nActiveMacro];
                     chanSpec.Format(": currently %d: ", m_SndFile.Chn[nChn].nActiveMacro);
@@ -3630,9 +3630,9 @@ void CModDoc::ChangeFileExtension(MODTYPE nNewType)
 UINT CModDoc::FindAvailableChannel()
 //----------------------------------
 {
-    CHANNELINDEX nStoppedChannel = CHANNELINDEX_INVALID;
+    modplug::tracker::chnindex_t nStoppedChannel = ChannelIndexInvalid;
     // Search for available channel
-    for (CHANNELINDEX j = m_SndFile.m_nChannels; j < MAX_VIRTUAL_CHANNELS; j++)
+    for (modplug::tracker::chnindex_t j = m_SndFile.m_nChannels; j < MAX_VIRTUAL_CHANNELS; j++)
     {
         modplug::tracker::modchannel_t *p = &m_SndFile.Chn[j];
         if (!p->length)
@@ -3642,7 +3642,7 @@ UINT CModDoc::FindAvailableChannel()
     }
 
     // Nothing found: return one that's stopped
-    if(nStoppedChannel != CHANNELINDEX_INVALID)
+    if(nStoppedChannel != ChannelIndexInvalid)
         return nStoppedChannel;
 
     //Last resort: go for first virutal channel.
@@ -3715,7 +3715,7 @@ void CModDoc::SongProperties()
             bShowLog = true;
         }
 
-        CHANNELINDEX nNewChannels = CLAMP(dlg.m_nChannels, m_SndFile.GetModSpecifications().channelsMin, m_SndFile.GetModSpecifications().channelsMax);
+        modplug::tracker::chnindex_t nNewChannels = CLAMP(dlg.m_nChannels, m_SndFile.GetModSpecifications().channelsMin, m_SndFile.GetModSpecifications().channelsMax);
 
         if (nNewChannels != GetSoundFile()->GetNumChannels())
         {
@@ -3836,7 +3836,7 @@ void CModDoc::FixNullStrings()
     }
 
     // Channel names
-    for(CHANNELINDEX nChn = 0; nChn < m_SndFile.GetNumChannels(); nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_SndFile.GetNumChannels(); nChn++)
     {
         FixNullString(m_SndFile.ChnSettings[nChn].szName);
     }

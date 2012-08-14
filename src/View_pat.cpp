@@ -830,7 +830,7 @@ void CViewPattern::OnShrinkSelection()
 
         for (UINT i = (startSel & 0xFFFF); i <= (endSel & 0xFFFF); i++) if (GetColTypeFromCursor(i) <= LAST_COLUMN)
         {
-            const CHANNELINDEX chn = GetChanFromCursor(i);
+            const modplug::tracker::chnindex_t chn = GetChanFromCursor(i);
             if ((chn >= pSndFile->GetNumChannels()) || (srcRow >= pSndFile->Patterns[m_nPattern].GetNumRows())
                                                || (row    >= pSndFile->Patterns[m_nPattern].GetNumRows())) continue;
             modplug::tracker::modevent_t *dest = pSndFile->Patterns[m_nPattern].GetpModCommand(row, chn);
@@ -1160,8 +1160,8 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
     }
     if ((!bItemSelected) || (!m_nDragItem)) return;
     InvalidateRect(&m_rcDragItem, FALSE);
-    const CHANNELINDEX nItemNo = (m_nDragItem & DRAGITEM_VALUEMASK);
-    const CHANNELINDEX nTargetNo = (m_nDropItem != 0) ? (m_nDropItem & DRAGITEM_VALUEMASK) : CHANNELINDEX_INVALID;
+    const modplug::tracker::chnindex_t nItemNo = (m_nDragItem & DRAGITEM_VALUEMASK);
+    const modplug::tracker::chnindex_t nTargetNo = (m_nDropItem != 0) ? (m_nDropItem & DRAGITEM_VALUEMASK) : ChannelIndexInvalid;
 
     switch(m_nDragItem & DRAGITEM_MASK)
     {
@@ -1190,12 +1190,12 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
             InvalidateRect(&m_rcDropItem, FALSE);
 
             const bool duplicate = (nFlags & MK_SHIFT) ? true : false;
-            const CHANNELINDEX newChannels = pModDoc->GetNumChannels() + (duplicate ? 1 : 0);
-            vector<CHANNELINDEX> channels(newChannels, 0);
-            CHANNELINDEX i = 0;
+            const modplug::tracker::chnindex_t newChannels = pModDoc->GetNumChannels() + (duplicate ? 1 : 0);
+            vector<modplug::tracker::chnindex_t> channels(newChannels, 0);
+            modplug::tracker::chnindex_t i = 0;
             bool modified = duplicate;
 
-            for(CHANNELINDEX nChn = 0; nChn < newChannels; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < newChannels; nChn++)
             {
                 if(nChn == nTargetNo)
                 {
@@ -1214,7 +1214,7 @@ void CViewPattern::OnLButtonUp(UINT nFlags, CPoint point)
                     modified = true;
                 }
             }
-            if(modified && pModDoc->ReArrangeChannels(channels) != CHANNELINDEX_INVALID)
+            if(modified && pModDoc->ReArrangeChannels(channels) != ChannelIndexInvalid)
             {
                 if(duplicate)
                 {
@@ -1305,7 +1305,7 @@ void CViewPattern::OnRButtonDown(UINT, CPoint pt)
             SetCursorPosition( GetRowFromCursor(m_nMenuParam), m_nMenuParam & 0xFFFF );
         }
     }
-    const CHANNELINDEX nChn = GetChanFromCursor(m_nMenuParam);
+    const modplug::tracker::chnindex_t nChn = GetChanFromCursor(m_nMenuParam);
     if ((nChn < pSndFile->GetNumChannels()) && (pSndFile->Patterns[m_nPattern]))
     {
         CString MenuText;
@@ -1513,7 +1513,7 @@ void CViewPattern::OnSelectCurrentColumn()
 void CViewPattern::OnChannelReset()
 //---------------------------------
 {
-    const CHANNELINDEX nChn = GetChanFromCursor(m_nMenuParam);
+    const modplug::tracker::chnindex_t nChn = GetChanFromCursor(m_nMenuParam);
     CModDoc *pModDoc = GetDocument();
     module_renderer* pSndFile;
     if (pModDoc == 0 || (pSndFile = pModDoc->GetSoundFile()) == 0) return;
@@ -1537,14 +1537,14 @@ void CViewPattern::OnMuteChannel(bool current)
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-        const CHANNELINDEX nChn = GetChanFromCursor(current ? m_dwCursor : m_nMenuParam);
+        const modplug::tracker::chnindex_t nChn = GetChanFromCursor(current ? m_dwCursor : m_nMenuParam);
         pModDoc->SoloChannel(nChn, false); //rewbs.merge: recover old solo/mute behaviour
         pModDoc->MuteChannel(nChn, !pModDoc->IsChannelMuted(nChn));
 
         //If we just unmuted a channel, make sure none are still considered "solo".
         if(!pModDoc->IsChannelMuted(nChn))
         {
-            for(CHANNELINDEX i = 0; i < pModDoc->GetNumChannels(); i++)
+            for(modplug::tracker::chnindex_t i = 0; i < pModDoc->GetNumChannels(); i++)
             {
                 pModDoc->SoloChannel(i, false);
             }
@@ -1569,7 +1569,7 @@ void CViewPattern::OnSoloChannel(bool current)
     CModDoc *pModDoc = GetDocument();
     if (pModDoc == nullptr) return;
 
-    const CHANNELINDEX nChn = GetChanFromCursor(current ? m_dwCursor : m_nMenuParam);
+    const modplug::tracker::chnindex_t nChn = GetChanFromCursor(current ? m_dwCursor : m_nMenuParam);
     if (nChn >= pModDoc->GetNumChannels())
     {
         return;
@@ -1578,7 +1578,7 @@ void CViewPattern::OnSoloChannel(bool current)
     if (pModDoc->IsChannelSolo(nChn))
     {
         bool nChnIsOnlyUnMutedChan=true;
-        for (CHANNELINDEX i = 0; i < pModDoc->GetNumChannels(); i++)    //check status of all other chans
+        for (modplug::tracker::chnindex_t i = 0; i < pModDoc->GetNumChannels(); i++)    //check status of all other chans
         {
             if (i != nChn && !pModDoc->IsChannelMuted(i))
             {
@@ -1592,7 +1592,7 @@ void CViewPattern::OnSoloChannel(bool current)
             return;
         }
     }
-    for(CHANNELINDEX i = 0; i < pModDoc->GetNumChannels(); i++)
+    for(modplug::tracker::chnindex_t i = 0; i < pModDoc->GetNumChannels(); i++)
     {
         pModDoc->MuteChannel(i, !(i == nChn)); //mute all chans except nChn, unmute nChn
         pModDoc->SoloChannel(i, (i == nChn));  //unsolo all chans except nChn, solo nChn
@@ -1644,8 +1644,8 @@ void CViewPattern::OnUnmuteAll()
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-        const CHANNELINDEX nChns = pModDoc->GetNumChannels();
-        for(CHANNELINDEX i = 0; i < nChns; i++)
+        const modplug::tracker::chnindex_t nChns = pModDoc->GetNumChannels();
+        for(modplug::tracker::chnindex_t i = 0; i < nChns; i++)
         {
             pModDoc->MuteChannel(i, false);
             pModDoc->SoloChannel(i, false); //rewbs.merge: binary solo/mute behaviour
@@ -1937,13 +1937,13 @@ void CViewPattern::OnEditFindNext()
             if (m_findReplace.dwFindFlags & PATSEARCH_CHANNEL)
             {
                 // limit to given channels
-                const CHANNELINDEX ch = n % pSndFile->m_nChannels;
+                const modplug::tracker::chnindex_t ch = n % pSndFile->m_nChannels;
                 if ((ch < m_findReplace.nFindMinChn) || (ch > m_findReplace.nFindMaxChn)) bFound = false;
             }
             if (m_findReplace.dwFindFlags & PATSEARCH_PATSELECTION)
             {
                 // limit to pattern selection
-                const CHANNELINDEX ch = n % pSndFile->m_nChannels;
+                const modplug::tracker::chnindex_t ch = n % pSndFile->m_nChannels;
                 const modplug::tracker::rowindex_t row = n / pSndFile->m_nChannels;
 
                 if ((ch < GetChanFromCursor(m_findReplace.dwBeginSel)) || (ch > GetChanFromCursor(m_findReplace.dwEndSel))) bFound = false;
@@ -2170,7 +2170,7 @@ void CViewPattern::PatternStep(bool autoStep)
         if ((!pSndFile->Patterns.IsValidPat(m_nPattern)) || (!pSndFile->Patterns[m_nPattern].GetNumRows())) return;
         BEGIN_CRITICAL();
         // Cut instruments/samples in virtual channels
-        for (CHANNELINDEX i = pSndFile->GetNumChannels(); i < MAX_VIRTUAL_CHANNELS; i++)
+        for (modplug::tracker::chnindex_t i = pSndFile->GetNumChannels(); i < MAX_VIRTUAL_CHANNELS; i++)
         {
             pSndFile->Chn[i].flags |= CHN_NOTEFADE | CHN_KEYOFF;
         }
@@ -2653,7 +2653,7 @@ void CViewPattern::OnRemoveChannel()
         return;
     }
 
-    CHANNELINDEX nChn = GetChanFromCursor(m_nMenuParam);
+    modplug::tracker::chnindex_t nChn = GetChanFromCursor(m_nMenuParam);
     const bool isEmpty = pModDoc->IsChannelUnused(nChn);
 
     CString str;
@@ -2668,7 +2668,7 @@ void CViewPattern::OnRemoveChannel()
 }
 
 
-void CViewPattern::AddChannelBefore(CHANNELINDEX nBefore)
+void CViewPattern::AddChannelBefore(modplug::tracker::chnindex_t nBefore)
 //-------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -2676,9 +2676,9 @@ void CViewPattern::AddChannelBefore(CHANNELINDEX nBefore)
 
     BeginWaitCursor();
     // Create new channel order, with channel nBefore being an invalid (and thus empty) channel.
-    vector<CHANNELINDEX> channels(pModDoc->GetNumChannels() + 1, CHANNELINDEX_INVALID);
-    CHANNELINDEX i = 0;
-    for(CHANNELINDEX nChn = 0; nChn < pModDoc->GetNumChannels() + 1; nChn++)
+    vector<modplug::tracker::chnindex_t> channels(pModDoc->GetNumChannels() + 1, ChannelIndexInvalid);
+    modplug::tracker::chnindex_t i = 0;
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < pModDoc->GetNumChannels() + 1; nChn++)
     {
         if(nChn != nBefore)
         {
@@ -2686,7 +2686,7 @@ void CViewPattern::AddChannelBefore(CHANNELINDEX nBefore)
         }
     }
 
-    if (pModDoc->ReArrangeChannels(channels) != CHANNELINDEX_INVALID)
+    if (pModDoc->ReArrangeChannels(channels) != ChannelIndexInvalid)
     {
         pModDoc->SetModified();
         pModDoc->UpdateAllViews(NULL, HINT_MODCHANNELS); //refresh channel headers
@@ -2706,15 +2706,15 @@ void CViewPattern::OnDuplicateChannel()
     if(AfxMessageBox(GetStrI18N(_TEXT("This affects all patterns, proceed?")), MB_YESNO) != IDYES)
         return;
 
-    const CHANNELINDEX nDupChn = GetChanFromCursor(m_nMenuParam);
+    const modplug::tracker::chnindex_t nDupChn = GetChanFromCursor(m_nMenuParam);
     if(nDupChn >= pModDoc->GetNumChannels())
         return;
 
     BeginWaitCursor();
     // Create new channel order, with channel nDupChn duplicated.
-    vector<CHANNELINDEX> channels(pModDoc->GetNumChannels() + 1, 0);
-    CHANNELINDEX i = 0;
-    for(CHANNELINDEX nChn = 0; nChn < pModDoc->GetNumChannels() + 1; nChn++)
+    vector<modplug::tracker::chnindex_t> channels(pModDoc->GetNumChannels() + 1, 0);
+    modplug::tracker::chnindex_t i = 0;
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < pModDoc->GetNumChannels() + 1; nChn++)
     {
         channels[nChn] = i;
         if(nChn != nDupChn)
@@ -2724,7 +2724,7 @@ void CViewPattern::OnDuplicateChannel()
     }
 
     // Check that duplication happened and in that case update.
-    if(pModDoc->ReArrangeChannels(channels) != CHANNELINDEX_INVALID)
+    if(pModDoc->ReArrangeChannels(channels) != ChannelIndexInvalid)
     {
         pModDoc->SetModified();
         pModDoc->UpdateAllViews(NULL, HINT_MODCHANNELS);
@@ -2840,7 +2840,7 @@ void CViewPattern::OnPatternAmplify()
         {
             modplug::tracker::modevent_t *p = pSndFile->Patterns[m_nPattern];
 
-            CHANNELINDEX firstChannel = GetSelectionStartChan(), lastChannel = GetSelectionEndChan();
+            modplug::tracker::chnindex_t firstChannel = GetSelectionStartChan(), lastChannel = GetSelectionEndChan();
             modplug::tracker::rowindex_t firstRow = GetSelectionStartRow(), lastRow = GetSelectionEndRow();
             firstChannel = CLAMP(firstChannel, 0, pSndFile->m_nChannels - 1);
             lastChannel = CLAMP(lastChannel, firstChannel, pSndFile->m_nChannels - 1);
@@ -2875,7 +2875,7 @@ void CViewPattern::OnPatternAmplify()
             for (modplug::tracker::rowindex_t nRow = firstRow; nRow <= lastRow; nRow++)
             {
                 modplug::tracker::modevent_t *m = p + nRow * pSndFile->m_nChannels + firstChannel;
-                for (CHANNELINDEX nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
+                for (modplug::tracker::chnindex_t nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
                 {
                     if ((m->command == CMD_VOLUME) && (m->param <= 64))
                     {
@@ -2928,7 +2928,7 @@ void CViewPattern::OnPatternAmplify()
             {
                 modplug::tracker::modevent_t *m = p + nRow * pSndFile->m_nChannels + firstChannel;
                 const int cy = lastRow - firstRow + 1; // total rows (for fading)
-                for (CHANNELINDEX nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
+                for (modplug::tracker::chnindex_t nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
                 {
                     if ((!m->volcmd) && (m->command != CMD_VOLUME)
                      && (m->note) && (m->note <= NOTE_MAX) && (m->instr))
@@ -4121,10 +4121,10 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
 
     const bool bIsLiveRecord = IsLiveRecord(*pMainFrm, *pModDoc, *pSndFile);
 
-    const CHANNELINDEX nChnCursor = GetChanFromCursor(m_dwCursor);
+    const modplug::tracker::chnindex_t nChnCursor = GetChanFromCursor(m_dwCursor);
 
     uint8_t* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
-    const CHANNELINDEX nChn = (activeNoteMap[note] < pSndFile->GetNumChannels()) ? activeNoteMap[note] : nChnCursor;
+    const modplug::tracker::chnindex_t nChn = (activeNoteMap[note] < pSndFile->GetNumChannels()) ? activeNoteMap[note] : nChnCursor;
 
     activeNoteMap[note] = 0xFF;    //unlock channel
 
@@ -4569,7 +4569,7 @@ void CViewPattern::TempEnterChord(int note)
     if ((pModDoc) && (pMainFrm))
     {
         module_renderer *pSndFile = pModDoc->GetSoundFile();
-        const CHANNELINDEX nChn = GetChanFromCursor(m_dwCursor);
+        const modplug::tracker::chnindex_t nChn = GetChanFromCursor(m_dwCursor);
         UINT nPlayIns = 0;
         // Simply backup the whole row.
         pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, nChn, m_nRow, pSndFile->GetNumChannels(), 1);
@@ -4578,7 +4578,7 @@ void CViewPattern::TempEnterChord(int note)
         modplug::tracker::modevent_t* pTarget = &prowbase[nChn];
         // Save old row contents
         vector<modplug::tracker::modevent_t> newrow(pSndFile->GetNumChannels());
-        for(CHANNELINDEX n = 0; n < pSndFile->GetNumChannels(); n++)
+        for(modplug::tracker::chnindex_t n = 0; n < pSndFile->GetNumChannels(); n++)
         {
             newrow[n] = prowbase[n];
         }
@@ -4660,7 +4660,7 @@ void CViewPattern::TempEnterChord(int note)
             sel = GetRowFromCursor(sel) | GetChanFromCursor(sel);
             if(modified)
             {
-                for(CHANNELINDEX n = 0; n < pSndFile->GetNumChannels(); n++)
+                for(modplug::tracker::chnindex_t n = 0; n < pSndFile->GetNumChannels(); n++)
                 {
                     prowbase[n] = newrow[n];
                 }
@@ -4848,7 +4848,7 @@ void CViewPattern::OnSelectPCNoteParam(UINT nID)
     modplug::tracker::modevent_t *p;
     for(modplug::tracker::rowindex_t nRow = GetSelectionStartRow(); nRow <= GetSelectionEndRow(); nRow++)
     {
-        for(CHANNELINDEX nChn = GetSelectionStartChan(); nChn <= GetSelectionEndChan(); nChn++)
+        for(modplug::tracker::chnindex_t nChn = GetSelectionStartChan(); nChn <= GetSelectionEndChan(); nChn++)
         {
             p = pSndFile->Patterns[m_nPattern] + nRow * pSndFile->GetNumChannels() + nChn;
             if(p && p->IsPcNote() && (p->GetValueVolCol() != paramNdx))
@@ -4961,7 +4961,7 @@ bool CViewPattern::BuildSoloMuteCtxMenu(HMENU hMenu, CInputHandler* ih, UINT nCh
     bool bSolo = false, bUnmuteAll = false;
     bool bSoloPending = false, bUnmuteAllPending = false; // doesn't work perfectly yet
 
-    for (CHANNELINDEX i = 0; i < pSndFile->m_nChannels; i++) {
+    for (modplug::tracker::chnindex_t i = 0; i < pSndFile->m_nChannels; i++) {
         if (i != nChn)
         {
             if (!(pSndFile->ChnSettings[i].dwFlags & CHN_MUTE)) bSolo = bSoloPending = true;
@@ -5387,13 +5387,13 @@ modplug::tracker::rowindex_t CViewPattern::GetSelectionEndRow()
     return max(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
 }
 
-CHANNELINDEX CViewPattern::GetSelectionStartChan()
+modplug::tracker::chnindex_t CViewPattern::GetSelectionStartChan()
 //------------------------------------------------
 {
     return min(GetChanFromCursor(m_dwBeginSel), GetChanFromCursor(m_dwEndSel));
 }
 
-CHANNELINDEX CViewPattern::GetSelectionEndChan()
+modplug::tracker::chnindex_t CViewPattern::GetSelectionEndChan()
 //----------------------------------------------
 {
     return max(GetChanFromCursor(m_dwBeginSel), GetChanFromCursor(m_dwEndSel));
@@ -5419,7 +5419,7 @@ UINT CViewPattern::ListChansWhereColSelected(PatternColumns colType, CArray<UINT
 }
 
 
-bool CViewPattern::IsInterpolationPossible(modplug::tracker::rowindex_t startRow, modplug::tracker::rowindex_t endRow, CHANNELINDEX chan,
+bool CViewPattern::IsInterpolationPossible(modplug::tracker::rowindex_t startRow, modplug::tracker::rowindex_t endRow, modplug::tracker::chnindex_t chan,
                                            PatternColumns colType, module_renderer* pSndFile)
 //--------------------------------------------------------------------------------------
 {
@@ -5483,7 +5483,7 @@ void CViewPattern::OnPendingUnmuteAllChnFromClick()
     InvalidateChannelsHeaders();
 }
 
-void CViewPattern::PendingSoloChn(const CHANNELINDEX nChn)
+void CViewPattern::PendingSoloChn(const modplug::tracker::chnindex_t nChn)
 //---------------------------------------------
 {
     GetDocument()->GetSoundFile()->GetPlaybackEventer().PatternTranstionChnSolo(nChn);
@@ -5580,7 +5580,7 @@ void CViewPattern::OnRenameChannel()
     module_renderer *pSndFile = pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return;
 
-    CHANNELINDEX nChn = GetChanFromCursor(m_nMenuParam);
+    modplug::tracker::chnindex_t nChn = GetChanFromCursor(m_nMenuParam);
     CChannelRenameDlg dlg(this, pSndFile->ChnSettings[nChn].szName, nChn + 1);
     if(dlg.DoModal() != IDOK || dlg.bChanged == false) return;
 
@@ -5724,7 +5724,7 @@ void CViewPattern::SelectBeatOrMeasure(bool selectBeat)
     // Snap to end of beat / measure of lower-right corner of current selection
     const modplug::tracker::rowindex_t endRow = GetSelectionEndRow() + adjust - (GetSelectionEndRow() % adjust) - 1;
 
-    CHANNELINDEX startChannel = GetSelectionStartChan(), endChannel = GetSelectionEndChan();
+    modplug::tracker::chnindex_t startChannel = GetSelectionStartChan(), endChannel = GetSelectionEndChan();
     UINT startColumn = 0, endColumn = 0;
 
     if(m_dwBeginSel == m_dwEndSel)

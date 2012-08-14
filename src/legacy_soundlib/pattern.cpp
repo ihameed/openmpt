@@ -11,7 +11,7 @@ module_renderer& CPattern::GetSoundFile() {return m_rPatternContainer.GetSoundFi
 const module_renderer& CPattern::GetSoundFile() const {return m_rPatternContainer.GetSoundFile();}
 
 
-CHANNELINDEX CPattern::GetNumChannels() const
+modplug::tracker::chnindex_t CPattern::GetNumChannels() const
 //-------------------------------------------
 {
     return GetSoundFile().GetNumChannels();
@@ -144,7 +144,7 @@ bool CPattern::Expand()
 
     rModDoc.BeginWaitCursor();
     const modplug::tracker::rowindex_t nRows = m_Rows;
-    const CHANNELINDEX nChns = sndFile.m_nChannels;
+    const modplug::tracker::chnindex_t nChns = sndFile.m_nChannels;
     newPattern = AllocatePattern(nRows * 2, nChns);
     if (!newPattern) return true;
 
@@ -176,7 +176,7 @@ bool CPattern::Shrink()
 
     rModDoc.BeginWaitCursor();
     modplug::tracker::rowindex_t nRows = m_Rows;
-    const CHANNELINDEX nChns = sndFile.m_nChannels;
+    const modplug::tracker::chnindex_t nChns = sndFile.m_nChannels;
     const PATTERNINDEX nPattern = m_rPatternContainer.GetIndex(this);
     rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
     nRows /= 2;
@@ -184,7 +184,7 @@ bool CPattern::Shrink()
     {
             modplug::tracker::modevent_t *psrc = sndFile.Patterns[nPattern] + (y * 2 * nChns);
             modplug::tracker::modevent_t *pdest = sndFile.Patterns[nPattern] + (y * nChns);
-            for (CHANNELINDEX x = 0; x < nChns; x++)
+            for (modplug::tracker::chnindex_t x = 0; x < nChns; x++)
             {
                     pdest[x] = psrc[x];
                     if ((!pdest[x].note) && (!pdest[x].instr))
@@ -244,7 +244,7 @@ bool CPattern::GetName(char *buffer, size_t maxChars) const
 ////////////////////////////////////////////////////////////////////////
 
 
-modplug::tracker::modevent_t *CPattern::AllocatePattern(modplug::tracker::rowindex_t rows, CHANNELINDEX nchns)
+modplug::tracker::modevent_t *CPattern::AllocatePattern(modplug::tracker::rowindex_t rows, modplug::tracker::chnindex_t nchns)
 //----------------------------------------------------------------------
 {
     modplug::tracker::modevent_t *p = new modplug::tracker::modevent_t[rows*nchns];
@@ -272,7 +272,7 @@ bool CPattern::WriteITPdata(FILE* f) const
 {
     for(modplug::tracker::rowindex_t r = 0; r<GetNumRows(); r++)
     {
-            for(CHANNELINDEX c = 0; c<GetNumChannels(); c++)
+            for(modplug::tracker::chnindex_t c = 0; c<GetNumChannels(); c++)
             {
                     modplug::tracker::modevent_t mc = GetModCommand(r,c);
                     fwrite(&mc, sizeof(modplug::tracker::modevent_t), 1, f);
@@ -398,12 +398,12 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
             return;
 
     const modplug::tracker::rowindex_t rows = pat.GetNumRows();
-    const CHANNELINDEX chns = pat.GetNumChannels();
+    const modplug::tracker::chnindex_t chns = pat.GetNumChannels();
     vector<modplug::tracker::modevent_t> lastChnMC(chns);
 
     for(modplug::tracker::rowindex_t r = 0; r<rows; r++)
     {
-            for(CHANNELINDEX c = 0; c<chns; c++)
+            for(modplug::tracker::chnindex_t c = 0; c<chns; c++)
             {
                     const modplug::tracker::modevent_t m = *pat.GetpModCommand(r, c);
                     // Writing only commands not writting in IT-pattern writing:
@@ -451,7 +451,7 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
     if (!pat) // Expecting patterns to be allocated and resized properly.
             return;
 
-    const CHANNELINDEX chns = pat.GetNumChannels();
+    const modplug::tracker::chnindex_t chns = pat.GetNumChannels();
     const modplug::tracker::rowindex_t rows = pat.GetNumRows();
 
     vector<modplug::tracker::modevent_t> lastChnMC(chns);
@@ -467,7 +467,7 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
                     continue;
             }
 
-            CHANNELINDEX ch = (t & IT_bitmask_patternChanField_c);
+            modplug::tracker::chnindex_t ch = (t & IT_bitmask_patternChanField_c);
             if(ch > 0)
                     ch--;
 

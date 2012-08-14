@@ -105,7 +105,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
 
     // read channel pan map... 0...15 = channel panning, 16 = surround channel, 255 = channel does not exist
     m_nChannels = 32;
-    for(CHANNELINDEX i = 0; i < 32; i++)
+    for(modplug::tracker::chnindex_t i = 0; i < 32; i++)
     {
         if(pHeader->PanMap[i] < 16)
         {

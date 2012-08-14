@@ -336,7 +336,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
 
                                     if(lpStream[dwSettingsOffset + 1] < MAX_BASECHANNELS)
                                     {
-                                        CHANNELINDEX nChn = lpStream[dwSettingsOffset + 1];
+                                        modplug::tracker::chnindex_t nChn = lpStream[dwSettingsOffset + 1];
                                         switch(lpStream[dwSettingsOffset + 3])
                                         {
                                         case 0: // use panning
@@ -391,7 +391,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                         if(subChunkSize & 1) return false;
                         for(uint32_t i = 0; i < subChunkSize; i += 2)
                         {
-                            CHANNELINDEX nChn = (CHANNELINDEX)(i >> 1);
+                            modplug::tracker::chnindex_t nChn = (modplug::tracker::chnindex_t)(i >> 1);
                             if(nChn >= m_nChannels) break;
                             switch(lpStream[dwChunkPos + i])
                             {
@@ -503,7 +503,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
     m_nDefaultSpeed = subsongs[0].defaultSpeed;
     m_nDefaultTempo = subsongs[0].defaultTempo;
     m_nRestartPos = subsongs[0].restartPos;
-    for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
     {
         ChnSettings[nChn].nVolume = subsongs[0].channelVolume[nChn];
         ChnSettings[nChn].nPan = subsongs[0].channelPanning[nChn];
@@ -771,7 +771,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
             // subsongs with different panning setup -> write to pattern (MUSIC_C.PSM)
             if(bSubsongPanningDiffers)
             {
-                for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
+                for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
                 {
                     if(subsongs[i].channelSurround[nChn] == true)
                         TryWriteEffect(startPattern, 0, CMD_S3MCMDEX, 0x91, false, nChn, false, weTryNextRow);
@@ -780,8 +780,8 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 }
             }
             // write default tempo/speed to pattern
-            TryWriteEffect(startPattern, 0, CMD_SPEED, subsongs[i].defaultSpeed, false, CHANNELINDEX_INVALID, false, weTryNextRow);
-            TryWriteEffect(startPattern, 0, CMD_TEMPO, subsongs[i].defaultTempo, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+            TryWriteEffect(startPattern, 0, CMD_SPEED, subsongs[i].defaultSpeed, false, ChannelIndexInvalid, false, weTryNextRow);
+            TryWriteEffect(startPattern, 0, CMD_TEMPO, subsongs[i].defaultTempo, false, ChannelIndexInvalid, false, weTryNextRow);
 
             // don't write channel volume for now, as it's always set to 100% anyway
 
@@ -799,7 +799,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                         break;
                     }
                 }
-                TryWriteEffect(endPattern, lastRow, CMD_POSITIONJUMP, (uint8_t)subsongs[i].restartPos, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+                TryWriteEffect(endPattern, lastRow, CMD_POSITIONJUMP, (uint8_t)subsongs[i].restartPos, false, ChannelIndexInvalid, false, weTryNextRow);
             }
         }
     }
@@ -908,7 +908,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
     ASSERT_CAN_READ(32);
     if(LittleEndian(shdr->panOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x4E415050) // PPAN
     {
-        for(CHANNELINDEX i = 0; i < 32; i++)
+        for(modplug::tracker::chnindex_t i = 0; i < 32; i++)
         {
             ChnSettings[i].nPan = lpStream[dwMemPos + i] << 4;
             ChnSettings[i].nVolume = 64;
@@ -1192,7 +1192,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
             }
             // Pattern break for short patterns (so saving the modules as S3M won't break it)
             if(phdr->numRows != 64)
-                TryWriteEffect(nPat, phdr->numRows - 1, CMD_PATTERNBREAK, 0, false, CHANNELINDEX_INVALID, false, weTryNextRow);
+                TryWriteEffect(nPat, phdr->numRows - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weTryNextRow);
 
             dwMemPos = dwNextPattern;
             if(dwMemPos > dwPatEndPos) break;

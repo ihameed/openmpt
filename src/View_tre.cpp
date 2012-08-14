@@ -2167,7 +2167,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
     module_renderer *pSndFile = pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return;
 
-    for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
     {
             if(pSndFile->Chn[nChn].active_sample_data != nullptr)
             {

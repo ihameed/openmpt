@@ -236,7 +236,13 @@ public:
     void ActivateWindow();
 
     // Effects Description
-    bool GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool bXX = false, CHANNELINDEX nChn = CHANNELINDEX_INVALID); // bXX: Nxx: ...
+    bool GetEffectName(
+        LPSTR pszDescription,
+        UINT command,
+        UINT param,
+        bool bXX = false,
+        modplug::tracker::chnindex_t nChn = modplug::tracker::ChannelIndexInvalid
+    ); // bXX: Nxx: ...
     UINT GetNumEffects() const;
     bool GetEffectInfo(UINT ndx, LPSTR s, bool bXX = false, uint32_t *prangeMin=NULL, uint32_t *prangeMax=NULL);
     LONG GetIndexFromEffect(UINT command, UINT param);
@@ -276,11 +282,11 @@ public:
 public:
     bool ChangeModType(MODTYPE wType);
 
-    bool ChangeNumChannels(CHANNELINDEX nNewChannels, const bool showCancelInRemoveDlg = true);
-    CHANNELINDEX ReArrangeChannels(const vector<CHANNELINDEX> &fromToArray);
-    bool MoveChannel(CHANNELINDEX chn_from, CHANNELINDEX chn_to);
+    bool ChangeNumChannels(modplug::tracker::chnindex_t nNewChannels, const bool showCancelInRemoveDlg = true);
+    modplug::tracker::chnindex_t ReArrangeChannels(const vector<modplug::tracker::chnindex_t> &fromToArray);
+    bool MoveChannel(modplug::tracker::chnindex_t chn_from, modplug::tracker::chnindex_t chn_to);
     bool RemoveChannels(const vector<bool> &keepMask);
-    void CheckUsedChannels(vector<bool> &usedMask, CHANNELINDEX maxRemoveCount = MAX_BASECHANNELS) const;
+    void CheckUsedChannels(vector<bool> &usedMask, modplug::tracker::chnindex_t maxRemoveCount = MAX_BASECHANNELS) const;
 
     bool ConvertInstrumentsToSamples();
     UINT RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS]);
@@ -297,32 +303,32 @@ public:
     BOOL NoteOff(UINT note, BOOL bFade=FALSE, UINT nins=-1, UINT nCurrentChn=-1); //rewbs.vstiLive: add params
 
     BOOL IsNotePlaying(UINT note, UINT nsmp=0, UINT nins=0);
-    bool MuteChannel(CHANNELINDEX nChn, bool bMute);
+    bool MuteChannel(modplug::tracker::chnindex_t nChn, bool bMute);
     bool MuteSample(SAMPLEINDEX nSample, bool bMute);
     bool MuteInstrument(INSTRUMENTINDEX nInstr, bool bMute);
 // -> CODE#0012
 // -> DESC="midi keyboard split"
-    bool SoloChannel(CHANNELINDEX nChn, bool bSolo);
-    bool IsChannelSolo(CHANNELINDEX nChn) const;
+    bool SoloChannel(modplug::tracker::chnindex_t nChn, bool bSolo);
+    bool IsChannelSolo(modplug::tracker::chnindex_t nChn) const;
 // -! NEW_FEATURE#0012
-    bool SurroundChannel(CHANNELINDEX nChn, bool bSurround);
-    bool SetChannelGlobalVolume(CHANNELINDEX nChn, UINT nVolume);
-    bool SetChannelDefaultPan(CHANNELINDEX nChn, UINT nPan);
-    bool IsChannelMuted(CHANNELINDEX nChn) const;
+    bool SurroundChannel(modplug::tracker::chnindex_t nChn, bool bSurround);
+    bool SetChannelGlobalVolume(modplug::tracker::chnindex_t nChn, UINT nVolume);
+    bool SetChannelDefaultPan(modplug::tracker::chnindex_t nChn, UINT nPan);
+    bool IsChannelMuted(modplug::tracker::chnindex_t nChn) const;
     bool IsSampleMuted(SAMPLEINDEX nSample) const;
     bool IsInstrumentMuted(INSTRUMENTINDEX nInstr) const;
 // -> CODE#0015
 // -> DESC="channels management dlg"
-    bool NoFxChannel(CHANNELINDEX nChn, bool bNoFx, bool updateMix = true);
-    bool IsChannelNoFx(CHANNELINDEX nChn) const;
-    bool IsChannelRecord1(CHANNELINDEX channel) const;
-    bool IsChannelRecord2(CHANNELINDEX channel) const;
-    uint8_t IsChannelRecord(CHANNELINDEX channel) const;
-    void Record1Channel(CHANNELINDEX channel, bool select = true);
-    void Record2Channel(CHANNELINDEX channel, bool select = true);
+    bool NoFxChannel(modplug::tracker::chnindex_t nChn, bool bNoFx, bool updateMix = true);
+    bool IsChannelNoFx(modplug::tracker::chnindex_t nChn) const;
+    bool IsChannelRecord1(modplug::tracker::chnindex_t channel) const;
+    bool IsChannelRecord2(modplug::tracker::chnindex_t channel) const;
+    uint8_t IsChannelRecord(modplug::tracker::chnindex_t channel) const;
+    void Record1Channel(modplug::tracker::chnindex_t channel, bool select = true);
+    void Record2Channel(modplug::tracker::chnindex_t channel, bool select = true);
     void ReinitRecordState(bool unselect = true);
 // -! NEW_FEATURE#0015
-    CHANNELINDEX GetNumChannels() const { return m_SndFile.m_nChannels; }
+    modplug::tracker::chnindex_t GetNumChannels() const { return m_SndFile.m_nChannels; }
     UINT GetPatternSize(PATTERNINDEX nPat) const;
     BOOL AdjustEndOfSample(UINT nSample);
     BOOL IsChildSample(UINT nIns, UINT nSmp) const;
@@ -368,7 +374,7 @@ public:
     CString GetPatternViewInstrumentName(UINT nInstr, bool bEmptyInsteadOfNoName = false, bool bIncludeIndex = true) const;
 
     // Check if a given channel contains data.
-    bool IsChannelUnused(CHANNELINDEX nChn) const;
+    bool IsChannelUnused(modplug::tracker::chnindex_t nChn) const;
 
 // protected members
 protected:

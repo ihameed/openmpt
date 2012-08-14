@@ -3284,8 +3284,8 @@ void CVstPlugin::GetInputChannelList(CArray<UINT,UINT> &list)
     list.RemoveAll();
 
     UINT nThisMixPlug = m_nSlot+1;            //m_nSlot is position in mixplug array.
-    const CHANNELINDEX chnCount = m_pSndFile->GetNumChannels();
-    for (CHANNELINDEX nChn=0; nChn<chnCount; nChn++) {
+    const modplug::tracker::chnindex_t chnCount = m_pSndFile->GetNumChannels();
+    for (modplug::tracker::chnindex_t nChn=0; nChn<chnCount; nChn++) {
         if (m_pSndFile->ChnSettings[nChn].nMixPlugin==nThisMixPlug) {
             list.Add(nChn);
         }

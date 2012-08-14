@@ -132,7 +132,7 @@ bool module_renderer::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSampl
 
     modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     Instruments[nInstr] = nullptr;
-    for(CHANNELINDEX i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
+    for(modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
         if (Chn[i].instrument == pIns)
         {

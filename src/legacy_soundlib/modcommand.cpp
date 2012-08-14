@@ -10,6 +10,10 @@
 
 #include "Sndfile.h"
 
+#include "../tracker/tracker.h"
+
+using namespace modplug::tracker;
+
 extern uint8_t ImpulseTrackerPortaVolCmd[16];
 
 
@@ -685,20 +689,20 @@ uint16_t module_renderer::GetEffectWeight(modplug::tracker::cmd_t cmd)
               bRetry - For internal use only. Indicates whether an effect "rewrite" has already taken place (for recursive calls)
    NOTE: Effect remapping is only implemented for a few basic effects.
 */
-bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
+bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, modplug::tracker::chnindex_t nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     // First, reject invalid parameters.
-    if(!Patterns.IsValidIndex(nPat) || nRow >= Patterns[nPat].GetNumRows() || (nChn >= GetNumChannels() && nChn != CHANNELINDEX_INVALID))
+    if(!Patterns.IsValidIndex(nPat) || nRow >= Patterns[nPat].GetNumRows() || (nChn >= GetNumChannels() && nChn != ChannelIndexInvalid))
     {
             return false;
     }
 
-    CHANNELINDEX nScanChnMin = nChn, nScanChnMax = nChn;
+    modplug::tracker::chnindex_t nScanChnMin = nChn, nScanChnMax = nChn;
     modplug::tracker::modevent_t *p = Patterns[nPat], *m;
 
     // Scan all channels
-    if(nChn == CHANNELINDEX_INVALID)
+    if(nChn == ChannelIndexInvalid)
     {
             nScanChnMin = 0;
             nScanChnMax = m_nChannels - 1;
@@ -707,7 +711,7 @@ bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowind
     // Scan channel(s) for same effect type - if an effect of the same type is already present, exit.
     if(!bAllowMultipleEffects)
     {
-            for(CHANNELINDEX i = nScanChnMin; i <= nScanChnMax; i++)
+            for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++)
             {
                     m = p + nRow * m_nChannels + i;
                     if(!bIsVolumeEffect && m->command == nEffect)
@@ -718,7 +722,7 @@ bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowind
     }
 
     // Easy case: check if there's some space left to put the effect somewhere
-    for(CHANNELINDEX i = nScanChnMin; i <= nScanChnMax; i++)
+    for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++)
     {
             m = p + nRow * m_nChannels + i;
             if(!bIsVolumeEffect && m->command == CMD_NONE)
@@ -741,7 +745,7 @@ bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowind
             // Move some effects that also work in the volume column, so there's place for our new effect.
             if(!bIsVolumeEffect)
             {
-                    for(CHANNELINDEX i = nScanChnMin; i <= nScanChnMax; i++)
+                    for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++)
                     {
                             m = p + nRow * m_nChannels + i;
                             switch(m->command)

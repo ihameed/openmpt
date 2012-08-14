@@ -820,7 +820,7 @@ bool CModCleanupDlg::RemoveUnusedPlugins()
     for (PLUGINDEX nPlug = 0; nPlug < MAX_MIXPLUGINS; nPlug++) {
 
             //Is the plugin assigned to a channel?
-            for (CHANNELINDEX nChn = 0; nChn < pSndFile->GetNumChannels(); nChn++)
+            for (modplug::tracker::chnindex_t nChn = 0; nChn < pSndFile->GetNumChannels(); nChn++)
             {
                     if (pSndFile->ChnSettings[nChn].nMixPlugin == nPlug + 1)
                     {

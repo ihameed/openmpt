@@ -143,9 +143,9 @@ void CModTypeDlg::UpdateChannelCBox()
 //-----------------------------------
 {
     const MODTYPE type = m_TypeBox.GetItemData(m_TypeBox.GetCurSel());
-    CHANNELINDEX currChanSel = m_ChannelsBox.GetItemData(m_ChannelsBox.GetCurSel());
-    const CHANNELINDEX minChans = module_renderer::GetModSpecifications(type).channelsMin;
-    const CHANNELINDEX maxChans = module_renderer::GetModSpecifications(type).channelsMax;
+    modplug::tracker::chnindex_t currChanSel = m_ChannelsBox.GetItemData(m_ChannelsBox.GetCurSel());
+    const modplug::tracker::chnindex_t minChans = module_renderer::GetModSpecifications(type).channelsMin;
+    const modplug::tracker::chnindex_t maxChans = module_renderer::GetModSpecifications(type).channelsMax;
     if(m_ChannelsBox.GetCount() < 1
             ||
        m_ChannelsBox.GetItemData(0) != minChans
@@ -156,7 +156,7 @@ void CModTypeDlg::UpdateChannelCBox()
             if(m_ChannelsBox.GetCount() < 1) currChanSel = m_nChannels;
             char s[256];
             m_ChannelsBox.ResetContent();
-            for (CHANNELINDEX i=minChans; i<=maxChans; i++)
+            for (modplug::tracker::chnindex_t i=minChans; i<=maxChans; i++)
             {
                     wsprintf(s, "%d Channel%s", i, (i != 1) ? "s" : "");
                     m_ChannelsBox.SetItemData(m_ChannelsBox.AddString(s), i);
@@ -337,7 +337,7 @@ bool CModTypeDlg::VerifyData()
     int sel = m_ChannelsBox.GetItemData(m_ChannelsBox.GetCurSel());
     int type = m_TypeBox.GetItemData(m_TypeBox.GetCurSel());
 
-    CHANNELINDEX maxChans = module_renderer::GetModSpecifications(type).channelsMax;
+    modplug::tracker::chnindex_t maxChans = module_renderer::GetModSpecifications(type).channelsMax;
 
     if (sel > maxChans)
     {

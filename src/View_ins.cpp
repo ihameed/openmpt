@@ -9,8 +9,12 @@
 #include "legacy_soundlib/dlsbank.h"
 #include "channelManagerDlg.h"
 #include "ScaleEnvPointsDlg.h"
-#include ".\view_ins.h"
+#include "view_ins.h"
 #include "legacy_soundlib/midi.h"
+
+#include "tracker/types.h"
+
+using namespace modplug::tracker;
 
 #define ENV_ZOOM                            4.0f
 #define ENV_MIN_ZOOM                    2.0f
@@ -117,7 +121,7 @@ CViewInstrument::CViewInstrument()
     memset(m_NcButtonState, 0, sizeof(m_NcButtonState));
     m_bmpEnvBar.Create(IDB_ENVTOOLBAR, 20, 0, RGB(192,192,192));
     memset(m_baPlayingNote, 0, sizeof(bool)*NOTE_MAX);        //rewbs.customKeys
-    m_nPlayingChannel = CHANNELINDEX_INVALID;                        //rewbs.customKeys
+    m_nPlayingChannel = ChannelIndexInvalid;                        //rewbs.customKeys
     //rewbs.envRowGrid
     m_bGrid=true;
     m_bGridForceRedraw=false;
@@ -559,7 +563,7 @@ bool CViewInstrument::EnvToggleEnv(modplug::tracker::modenvelope_t *pEnv, module
     } else
     {
             pEnv->flags &= ~(ENV_ENABLED|dwExtraFlags);
-            for(CHANNELINDEX nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_VIRTUAL_CHANNELS; nChn++)
             {
                     if(pSndFile->Chn[nChn].instrument == pIns)
                             pSndFile->Chn[nChn].flags &= ~dwChanFlag;
@@ -1140,7 +1144,7 @@ LRESULT CViewInstrument::OnPlayerNotify(MPTNOTIFICATION *pnotify)
                             break;
                     }
                     memset(m_baPlayingNote, 0, sizeof(bool)*NOTE_MAX);         //rewbs.instViewNNA
-                    m_nPlayingChannel = CHANNELINDEX_INVALID;                        //rewbs.instViewNNA
+                    m_nPlayingChannel = ChannelIndexInvalid;                        //rewbs.instViewNNA
             }
     } else
     if ((pnotify->dwType & dwType) && ((pnotify->dwType & 0xFFFF) == m_nInstrument))

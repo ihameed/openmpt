@@ -94,7 +94,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
     retval.duration = 0.0;
     retval.targetReached = false;
     retval.lastOrder = retval.endOrder = ORDERINDEX_INVALID;
-    retval.lastRow = retval.endRow = ROWINDEX_INVALID;
+    retval.lastRow = retval.endRow = RowIndexInvalid;
 
 // -> CODE#0022
 // -> DESC="alternative BPM/Speed interpretation method"
@@ -119,7 +119,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
 
     InitializeVisitedRows(true, &visitedRows);
 
-    for(CHANNELINDEX icv = 0; icv < m_nChannels; icv++) chnvols[icv] = ChnSettings[icv].nVolume;
+    for(modplug::tracker::chnindex_t icv = 0; icv < m_nChannels; icv++) chnvols[icv] = ChnSettings[icv].nVolume;
     nCurrentPattern = nNextPattern = 0;
     nPattern = Order[0];
     nRow = nNextRow = 0;
@@ -201,7 +201,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
         modplug::tracker::modchannel_t *pChn = Chn;
         modplug::tracker::modevent_t *p = Patterns[nPattern] + nRow * m_nChannels;
         modplug::tracker::modevent_t *nextRow = NULL;
-        for (CHANNELINDEX nChn = 0; nChn < m_nChannels; p++, pChn++, nChn++) if (*((uint32_t *)p))
+        for (modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; p++, pChn++, nChn++) if (*((uint32_t *)p))
         {
             if((GetType() == MOD_TYPE_S3M) && (ChnSettings[nChn].dwFlags & CHN_MUTE) != 0)    // not even effects are processed on muted S3M channels
                 continue;
@@ -440,7 +440,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
         }
     }
 
-    if(retval.targetReached || endOrder == ORDERINDEX_INVALID || endRow == ROWINDEX_INVALID)
+    if(retval.targetReached || endOrder == ORDERINDEX_INVALID || endRow == RowIndexInvalid)
     {
         retval.lastOrder = nCurrentPattern;
         retval.lastRow = nRow;
@@ -450,14 +450,14 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
     // Store final variables
     if ((adjustMode & eAdjust))
     {
-        if (retval.targetReached || endOrder == ORDERINDEX_INVALID || endRow == ROWINDEX_INVALID)
+        if (retval.targetReached || endOrder == ORDERINDEX_INVALID || endRow == RowIndexInvalid)
         {
             // Target found, or there is no target (i.e. play whole song)...
             m_nGlobalVolume = nGlbVol;
             m_nOldGlbVolSlide = nOldGlbVolSlide;
             m_nMusicSpeed = nMusicSpeed;
             m_nMusicTempo = nMusicTempo;
-            for (CHANNELINDEX n = 0; n < m_nChannels; n++)
+            for (modplug::tracker::chnindex_t n = 0; n < m_nChannels; n++)
             {
                 Chn[n].nGlobalVol = chnvols[n];
                 if (notes[n]) Chn[n].nNewNote = notes[n];
@@ -1301,14 +1301,14 @@ BOOL module_renderer::ProcessEffects()
 //-------------------------------
 {
     modplug::tracker::modchannel_t *pChn = Chn;
-    modplug::tracker::rowindex_t nBreakRow = ROWINDEX_INVALID, nPatLoopRow = ROWINDEX_INVALID;
+    modplug::tracker::rowindex_t nBreakRow = RowIndexInvalid, nPatLoopRow = RowIndexInvalid;
     ORDERINDEX nPosJump = ORDERINDEX_INVALID;
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
     modplug::tracker::modevent_t* m = nullptr;
 // -! NEW_FEATURE#0010
-    for (CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++, pChn++)
+    for (modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++, pChn++)
     {
         UINT instr = pChn->nRowInstr;
         UINT volcmd = pChn->nRowVolCmd;
@@ -2153,7 +2153,7 @@ BOOL module_renderer::ProcessEffects()
     if(m_dwSongFlags & SONG_FIRSTTICK)
     {
         // Pattern Loop
-        if (nPatLoopRow != ROWINDEX_INVALID)
+        if (nPatLoopRow != RowIndexInvalid)
         {
             m_nNextPattern = m_nCurrentPattern;
             m_nNextRow = nPatLoopRow;
@@ -2165,10 +2165,10 @@ BOOL module_renderer::ProcessEffects()
             }
         } else
         // Pattern Break / Position Jump only if no loop running
-        if ((nBreakRow != ROWINDEX_INVALID) || (nPosJump != ORDERINDEX_INVALID))
+        if ((nBreakRow != RowIndexInvalid) || (nPosJump != ORDERINDEX_INVALID))
         {
             if (nPosJump == ORDERINDEX_INVALID) nPosJump = m_nCurrentPattern + 1;
-            if (nBreakRow == ROWINDEX_INVALID) nBreakRow = 0;
+            if (nBreakRow == RowIndexInvalid) nBreakRow = 0;
             m_dwSongFlags |= SONG_BREAKTOROW;
 
             if (nPosJump >= Order.size())
@@ -2183,7 +2183,7 @@ BOOL module_renderer::ProcessEffects()
                 // IT compatibility: don't reset loop count on pattern break
                 if (nPosJump != (int)m_nCurrentPattern && !IsCompatibleMode(TRK_IMPULSETRACKER))
                 {
-                    for (CHANNELINDEX i = 0; i < m_nChannels; i++)
+                    for (modplug::tracker::chnindex_t i = 0; i < m_nChannels; i++)
                     {
                         Chn[i].nPatternLoopCount = 0;
                     }
@@ -4051,7 +4051,7 @@ void module_renderer::HandlePatternTransitionEvents()
     }
 
     // Channel mutes
-    for (CHANNELINDEX chan=0; chan<m_nChannels; chan++)
+    for (modplug::tracker::chnindex_t chan=0; chan<m_nChannels; chan++)
     {
         if (m_bChannelMuteTogglePending[chan])
         {

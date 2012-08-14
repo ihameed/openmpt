@@ -1892,7 +1892,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     {
         // Previously this function took modcommand directly from pattern. ASSERT is there
         // to detect possible behaviour change now that the data is accessed from channel.
-        const modplug::tracker::modevent_t mc = *Patterns[m_nPattern].GetpModCommand(m_nRow, static_cast<CHANNELINDEX>(nChn));
+        const modplug::tracker::modevent_t mc = *Patterns[m_nPattern].GetpModCommand(m_nRow, static_cast<modplug::tracker::chnindex_t>(nChn));
         ASSERT( mc.IsPcNote() ||
             (note == mc.note && instr == mc.instr && volcmd == mc.volcmd && vol == mc.vol));
     }

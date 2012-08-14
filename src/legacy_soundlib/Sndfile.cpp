@@ -569,7 +569,7 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     Patterns.ClearPatterns();
     ResetMidiCfg();
 
-    for (CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
+    for (modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
     {
         InitChannel(nChn);
     }
@@ -1070,7 +1070,7 @@ void module_renderer::SetCurrentPos(UINT nPos)
     ORDERINDEX nPattern;
     uint8_t resetMask = (!nPos) ? CHNRESET_SETPOS_FULL : CHNRESET_SETPOS_BASIC;
 
-    for (CHANNELINDEX i=0; i<MAX_VIRTUAL_CHANNELS; i++)
+    for (modplug::tracker::chnindex_t i=0; i<MAX_VIRTUAL_CHANNELS; i++)
         ResetChannelState(i, resetMask);
 
     if (!nPos)
@@ -1139,7 +1139,7 @@ void module_renderer::SetCurrentOrder(ORDERINDEX nOrder)
 {
     while ((nOrder < Order.size()) && (Order[nOrder] == Order.GetIgnoreIndex())) nOrder++;
     if ((nOrder >= Order.size()) || (Order[nOrder] >= Patterns.Size())) return;
-    for (CHANNELINDEX j = 0; j < MAX_VIRTUAL_CHANNELS; j++)
+    for (modplug::tracker::chnindex_t j = 0; j < MAX_VIRTUAL_CHANNELS; j++)
     {
         Chn[j].nPeriod = 0;
         Chn[j].nNote = NOTE_NONE;
@@ -1396,7 +1396,7 @@ CString module_renderer::GetInstrumentName(UINT nInstr) const
 }
 
 
-bool module_renderer::InitChannel(CHANNELINDEX nChn)
+bool module_renderer::InitChannel(modplug::tracker::chnindex_t nChn)
 //---------------------------------------------
 {
     if(nChn >= MAX_BASECHANNELS) return true;
@@ -1419,7 +1419,7 @@ bool module_renderer::InitChannel(CHANNELINDEX nChn)
     return false;
 }
 
-void module_renderer::ResetChannelState(CHANNELINDEX i, uint8_t resetMask)
+void module_renderer::ResetChannelState(modplug::tracker::chnindex_t i, uint8_t resetMask)
 //----------------------------------------------------------------
 {
     if(i >= MAX_VIRTUAL_CHANNELS) return;
@@ -2891,7 +2891,7 @@ void module_renderer::SetupMODPanning(bool bForceSetup)
     // Setup LRRL panning, max channel volume
     if((m_nType & MOD_TYPE_MOD) == 0 && bForceSetup == false) return;
 
-    for(CHANNELINDEX nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS; nChn++)
     {
         ChnSettings[nChn].nVolume = 64;
         if(deprecated_global_sound_setup_bitmask & SNDMIX_MAXDEFAULTPAN)

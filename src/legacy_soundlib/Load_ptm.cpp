@@ -99,7 +99,7 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
     nOrders = (pfh.norders < MAX_ORDERS) ? pfh.norders : MAX_ORDERS-1;
     Order.ReadAsByte(pfh.orders, nOrders, nOrders);
 
-    for (CHANNELINDEX ipan = 0; ipan < m_nChannels; ipan++)
+    for (modplug::tracker::chnindex_t ipan = 0; ipan < m_nChannels; ipan++)
     {
         ChnSettings[ipan].nVolume = 64;
         ChnSettings[ipan].nPan = ((pfh.chnpan[ipan] & 0x0F) << 4) + 4;

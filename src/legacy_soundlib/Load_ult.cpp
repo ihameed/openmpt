@@ -238,7 +238,7 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
 struct PostFixUltCommands
 //=======================
 {
-    PostFixUltCommands(CHANNELINDEX numChannels)
+    PostFixUltCommands(modplug::tracker::chnindex_t numChannels)
     {
             this->numChannels = numChannels;
             curChannel = 0;
@@ -300,7 +300,7 @@ struct PostFixUltCommands
 
     vector<bool> isPortaActive;
     bool writeT125;
-    CHANNELINDEX numChannels, curChannel;
+    modplug::tracker::chnindex_t numChannels, curChannel;
 };
 
 
@@ -413,14 +413,14 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
     if(ult_version >= 3)
     {
             ASSERT_CAN_READ(m_nChannels);
-            for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
             {
                     ChnSettings[nChn].nPan = ((lpStream[dwMemPos + nChn] & 0x0F) << 4) + 8;
             }
             dwMemPos += m_nChannels;
     } else
     {
-            for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
+            for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
             {
                     ChnSettings[nChn].nPan = (nChn & 1) ? 192 : 64;
             }
@@ -432,7 +432,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
                     return false;
     }
 
-    for(CHANNELINDEX nChn = 0; nChn < m_nChannels; nChn++)
+    for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
     {
             modplug::tracker::modevent_t evnote;
             modplug::tracker::modevent_t *note;

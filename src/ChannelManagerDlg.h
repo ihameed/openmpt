@@ -30,15 +30,15 @@ protected:
     ~CChannelManagerDlg(void);
 
     CRITICAL_SECTION applying;
-    CHANNELINDEX memory[4][MAX_BASECHANNELS];
-    CHANNELINDEX pattern[MAX_BASECHANNELS];
+    modplug::tracker::chnindex_t memory[4][MAX_BASECHANNELS];
+    modplug::tracker::chnindex_t pattern[MAX_BASECHANNELS];
     bool removed[MAX_BASECHANNELS];
     bool select[MAX_BASECHANNELS];
     bool state[MAX_BASECHANNELS];
     CRect move[MAX_BASECHANNELS];
     void * parentCtrl;
     bool mouseTracking;
-    CHANNELINDEX nChannelsOld;
+    modplug::tracker::chnindex_t nChannelsOld;
     bool rightButton;
     bool leftButton;
     int currentTab;
@@ -48,7 +48,7 @@ protected:
     bool show;
     int mx,my;
 
-    bool ButtonHit(CPoint point, CHANNELINDEX * id, CRect * invalidate);
+    bool ButtonHit(CPoint point, modplug::tracker::chnindex_t * id, CRect * invalidate);
     void MouseEvent(UINT nFlags,CPoint point, uint8_t button);
     void ResetState(bool bSelection = true, bool bMove = true, bool bButton = true, bool bInternal = true, bool bOrder = false);
 
@@ -85,4 +85,3 @@ public:
 };
 
 // -! NEW_FEATURE#0015
-

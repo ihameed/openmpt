@@ -420,7 +420,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
     // Setup channel pan positions and volume
     SetupMODPanning();
 
-    const CHANNELINDEX nMaxChn = (bFLT8) ? 4 : m_nChannels; // 4 channels per pattern in FLT8 format.
+    const modplug::tracker::chnindex_t nMaxChn = (bFLT8) ? 4 : m_nChannels; // 4 channels per pattern in FLT8 format.
     if(bFLT8) nbp++; // as one logical pattern consists of two real patterns in FLT8 format, the highest pattern number has to be increased by one.
     bool bHasTempoCommands = false;    // for detecting VBlank MODs
     bool bLeftPanning = false, bExtendedPanning = false;    // for detecting 800-880 panning
@@ -459,7 +459,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
                     // FLT8: either write to channel 1 to 4 (even patterns) or 5 to 8 (odd patterns).
                     m = Patterns[ipat >> 1] + nRow * 8 + ((ipat & 1) ? 4 : 0);
                 }
-                for(CHANNELINDEX nChn = 0; nChn < nMaxChn; nChn++, m++, p += 4)
+                for(modplug::tracker::chnindex_t nChn = 0; nChn < nMaxChn; nChn++, m++, p += 4)
                 {
                     uint8_t A0 = p[0], A1 = p[1], A2 = p[2], A3 = p[3];
                     UINT n = ((((UINT)A0 & 0x0F) << 8) | (A1));

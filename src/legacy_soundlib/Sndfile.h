@@ -396,7 +396,17 @@ private:
     UINT GetNumTicksOnCurrentRow() const { return m_nMusicSpeed * (m_nPatternDelay + 1) + m_nFrameDelay; };
 public:
     // Write pattern effect functions
-    bool TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn = CHANNELINDEX_INVALID, bool bAllowMultipleEffects = true, writeEffectAllowRowChange allowRowChange = weIgnore, bool bRetry = true);
+    bool TryWriteEffect(
+        PATTERNINDEX nPat,
+        modplug::tracker::rowindex_t nRow,
+        uint8_t nEffect,
+        uint8_t nParam,
+        bool bIsVolumeEffect,
+        modplug::tracker::chnindex_t nChn = modplug::tracker::ChannelIndexInvalid,
+        bool bAllowMultipleEffects = true,
+        writeEffectAllowRowChange allowRowChange = weIgnore,
+        bool bRetry = true
+    );
 
     // Read/Write sample functions
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
@@ -636,7 +646,7 @@ public:    // Static Members
 public:    // for Editing
     CModDoc* m_pModDoc;            // Can be a null pointer f.e. when previewing samples from the treeview.
     MODTYPE m_nType;
-    CHANNELINDEX m_nChannels;
+    modplug::tracker::chnindex_t m_nChannels;
     SAMPLEINDEX m_nSamples;
     INSTRUMENTINDEX m_nInstruments;
     UINT m_nDefaultSpeed, m_nDefaultTempo, m_nDefaultGlobalVolume;
@@ -721,7 +731,7 @@ public:
     PATTERNINDEX GetCurrentPattern() const { return m_nPattern; }
     ORDERINDEX GetCurrentOrder() const { return static_cast<ORDERINDEX>(m_nCurrentPattern); }
     UINT GetMaxPosition() const;
-    CHANNELINDEX GetNumChannels() const { return m_nChannels; }
+    modplug::tracker::chnindex_t GetNumChannels() const { return m_nChannels; }
 
     IMixPlugin* GetInstrumentPlugin(INSTRUMENTINDEX instr);
     const CModSpecifications& GetModSpecifications() const {return *m_pModSpecs;}
@@ -744,7 +754,7 @@ public:
     GetLengthType GetLength(
         enmGetLengthResetMode adjustMode,
         ORDERINDEX ord = ORDERINDEX_INVALID,
-        modplug::tracker::rowindex_t row = modplug::tracker::ROWINDEX_INVALID
+        modplug::tracker::rowindex_t row = modplug::tracker::RowIndexInvalid
     );
 
 public:
@@ -760,8 +770,8 @@ public:
 
     void SetupITBidiMode();
 
-    bool InitChannel(CHANNELINDEX nChn);
-    void ResetChannelState(CHANNELINDEX chn, uint8_t resetStyle);
+    bool InitChannel(modplug::tracker::chnindex_t nChn);
+    void ResetChannelState(modplug::tracker::chnindex_t chn, uint8_t resetStyle);
 
     // Module Loaders
     bool ReadXM(const uint8_t * const lpStream, const uint32_t dwMemLength);

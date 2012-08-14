@@ -118,7 +118,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
 
     // m_nChannels
     memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
-    m_nChannels = (CHANNELINDEX)id;
+    m_nChannels = (modplug::tracker::chnindex_t)id;
     dwMemPos += sizeof(uint32_t);
     if(m_nChannels > 127) return false;
 

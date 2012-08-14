@@ -55,7 +55,7 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
 
     const QRect &clipping_rect = evt->rect();
 
-    CHANNELINDEX channel_count = renderer.GetNumChannels();
+    modplug::tracker::chnindex_t channel_count = renderer.GetNumChannels();
     note_column notehomie;
 
     draw_state state = {
@@ -71,7 +71,7 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         colors
     };
 
-    for (CHANNELINDEX idx = 0; idx < channel_count; ++idx) {
+    for (modplug::tracker::chnindex_t idx = 0; idx < channel_count; ++idx) {
         notehomie.draw_header(state, idx);
         notehomie.draw_column(state, idx);
     }

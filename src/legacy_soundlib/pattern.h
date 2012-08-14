@@ -38,8 +38,8 @@ public:
 
 //BEGIN: INTERFACE METHODS
 public:
-    modplug::tracker::modevent_t* GetpModCommand(const modplug::tracker::rowindex_t r, const CHANNELINDEX c) { return &m_ModCommands[r * GetNumChannels() + c]; }
-    const modplug::tracker::modevent_t* GetpModCommand(const modplug::tracker::rowindex_t r, const CHANNELINDEX c) const { return &m_ModCommands[r * GetNumChannels() + c]; }
+    modplug::tracker::modevent_t* GetpModCommand(const modplug::tracker::rowindex_t r, const modplug::tracker::chnindex_t c) { return &m_ModCommands[r * GetNumChannels() + c]; }
+    const modplug::tracker::modevent_t* GetpModCommand(const modplug::tracker::rowindex_t r, const modplug::tracker::chnindex_t c) const { return &m_ModCommands[r * GetNumChannels() + c]; }
 
     modplug::tracker::rowindex_t GetNumRows() const { return m_Rows; }
     modplug::tracker::rowindex_t GetRowsPerBeat() const { return m_RowsPerBeat; }                        // pattern-specific rows per beat
@@ -53,7 +53,7 @@ public:
     // at (iRow, iChn) can be accessed with GetRow(iRow)[iChn].
     PatternRow GetRow(const modplug::tracker::rowindex_t iRow) { return GetpModCommand(iRow, 0); }
 
-    CHANNELINDEX GetNumChannels() const;
+    modplug::tracker::chnindex_t GetNumChannels() const;
 
     bool Resize(const modplug::tracker::rowindex_t newRowCount, const bool showDataLossWarning = true);
 
@@ -95,7 +95,7 @@ public:
     //Returns true on error.
 
     // Static allocation / deallocation helpers
-    static modplug::tracker::modevent_t* AllocatePattern(modplug::tracker::rowindex_t rows, CHANNELINDEX nchns);
+    static modplug::tracker::modevent_t* AllocatePattern(modplug::tracker::rowindex_t rows, modplug::tracker::chnindex_t nchns);
     static void FreePattern(modplug::tracker::modevent_t *pat);
 
 //END: INTERFACE METHODS
@@ -115,9 +115,9 @@ protected:
     modplug::tracker::modevent_t& GetModCommand(size_t i) { return m_ModCommands[i]; }
     //Returns modcommand from (floor[i/channelCount], i%channelCount)
 
-    modplug::tracker::modevent_t& GetModCommand(modplug::tracker::rowindex_t r, CHANNELINDEX c) { return m_ModCommands[r*GetNumChannels()+c]; }
+    modplug::tracker::modevent_t& GetModCommand(modplug::tracker::rowindex_t r, modplug::tracker::chnindex_t c) { return m_ModCommands[r*GetNumChannels()+c]; }
 public:
-    const modplug::tracker::modevent_t& GetModCommand(modplug::tracker::rowindex_t r, CHANNELINDEX c) const { return m_ModCommands[r*GetNumChannels()+c]; }
+    const modplug::tracker::modevent_t& GetModCommand(modplug::tracker::rowindex_t r, modplug::tracker::chnindex_t c) const { return m_ModCommands[r*GetNumChannels()+c]; }
 
 
 //BEGIN: DATA
