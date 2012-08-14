@@ -62,6 +62,7 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         font,
         font_metrics,
         0,
+        playback_row,
         colors
     };
 
@@ -70,6 +71,12 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         notehomie.draw_column(state, idx);
     }
 }
+
+void pattern_editor::update_playback_row(ROWINDEX playback_row) {
+    this->playback_row = playback_row;
+    repaint();
+}
+
 
 }
 }

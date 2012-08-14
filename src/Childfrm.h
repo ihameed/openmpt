@@ -149,9 +149,6 @@ protected:
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg void OnSetFocus(CWnd* pOldWnd); //rewbs.customKeysAutoEffects
-
-private:
-    std::unique_ptr<QWinWidget> qwinwidget;
 };
 
 /////////////////////////////////////////////////////////////////////////////

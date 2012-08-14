@@ -18,6 +18,10 @@
 #include "legacy_soundlib/midi.h"
 #include <cmath>
 
+#include "qwinwidget.h"
+#include "gui/qt4/pattern_editor.h"
+#include "gui/qt4/document_window.h"
+
 using namespace modplug::tracker;
 
 #define    PLUGNAME_HEIGHT        16        //rewbs.patPlugName
@@ -183,6 +187,19 @@ void CViewPattern::OnInitialUpdate()
     m_nFoundInstrument = 0;
     m_nLastPlayedRow = 0;
     m_nLastPlayedOrder = 0;
+
+    DEBUG_FUNC("creating my homie");
+    auto pModDoc = GetDocument();
+    DEBUG_FUNC("pModDoc = %p", pModDoc);
+    auto pSndFile = pModDoc->GetSoundFile();
+    qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this->m_hWnd));
+    pattern_test = new modplug::gui::qt4::document_window(
+        pSndFile,
+        CMainFrame::GetMainFrame()->global_config,
+        qwinwidget.get()
+    );
+    pattern_test->resize(400, 400);
+    pattern_test->show();
 }
 
 
@@ -2994,6 +3011,9 @@ void CViewPattern::OnPatternAmplify()
 LRESULT CViewPattern::OnPlayerNotify(MPTNOTIFICATION *pnotify)
 //------------------------------------------------------------
 {
+    if (this->qwinwidget) {
+        this->pattern_test->test_notification(pnotify);
+    }
     CModDoc *pModDoc = GetDocument();
     if ((!pModDoc) || (!pnotify)) return 0;
     if (pnotify->dwType & MPTNOTIFY_POSITION)

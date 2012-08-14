@@ -11,6 +11,7 @@
 
 #include "colors.h"
 #include "util.h"
+#include "../legacy_soundlib/Snd_defs.h"
 
 using namespace modplug::pervasives;
 using namespace modplug::tracker;
@@ -30,6 +31,7 @@ struct draw_state {
     QImage &font;
     const pattern_font_metrics_t &font_metrics;
     const int pattern_number;
+    const ROWINDEX playback_row;
     const colors_t &colors;
 
     void set_foreground(const colors_t::colortype_t colortype) {
@@ -91,6 +93,11 @@ struct note_column: pattern_column {
     }
 
     void set_background(draw_state &state, size_t row) {
+        if (row == state.playback_row) {
+            state.set_background(colors_t::PlayCursor);
+            return;
+        }
+
         auto current_pattern = state.renderer.Patterns[state.pattern_number];
         auto measure_length = state.renderer.m_nDefaultRowsPerMeasure;
         auto beat_length = state.renderer.m_nDefaultRowsPerBeat;

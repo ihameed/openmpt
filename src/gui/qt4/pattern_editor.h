@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <cstdint>
 #include "colors.h"
+#include "..\legacy_soundlib\Snd_defs.h"
 
 class module_renderer;
 
@@ -131,6 +132,7 @@ public:
     pattern_editor(module_renderer &renderer, const colors_t &colors);
 
     void update_colors(const colors_t &colors);
+    void update_playback_row(ROWINDEX playback_row);
 
 protected:
     virtual void paintEvent(QPaintEvent *) override;
@@ -138,6 +140,8 @@ protected:
 private:
     pattern_selection_t selection_start;
     pattern_selection_t selection_end;
+
+    ROWINDEX playback_row;
 
     module_renderer &renderer;
 

@@ -95,10 +95,16 @@ struct FindReplaceStruct {
 // Pattern editing class
 
 
+namespace modplug { namespace gui { namespace qt4 { class document_window; } } }
+class QWinWidget;
 //=======================================
 class CViewPattern: public CModScrollView
 //=======================================
 {
+private:
+    std::unique_ptr<QWinWidget> qwinwidget;
+    modplug::gui::qt4::document_window *pattern_test;
+
 protected:
     CFastBitmap m_Dib;
     CEditCommand *m_pEditWnd;

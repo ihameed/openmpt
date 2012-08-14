@@ -244,6 +244,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_document_window.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_mfc_root.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
@@ -269,6 +273,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_config_gui.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_document_window.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -300,6 +308,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_document_window.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_mfc_root.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -316,6 +328,7 @@
     <ClCompile Include="gui\qt4\config_audioio.cpp" />
     <ClCompile Include="gui\qt4\config_dialog.cpp" />
     <ClCompile Include="gui\qt4\config_gui.cpp" />
+    <ClCompile Include="gui\qt4\document_window.cpp" />
     <ClCompile Include="gui\qt4\mfc_root.cpp" />
     <ClCompile Include="gui\qt4\pattern_editor.cpp" />
     <ClCompile Include="gui\qt4\util.cpp" />
@@ -528,6 +541,20 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -D_AFXDLL  "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui"</Command>
     </CustomBuild>
     <ClInclude Include="gui\qt4\colors.h" />
+    <CustomBuild Include="gui\qt4\document_window.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing document_window.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/document_window.h"  -D_DEBUG -DWIN32 -D_WINDOWS -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing document_window.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/document_window.h"  -DNDEBUG -DWIN32 -D_WINDOWS -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Moc%27ing document_window.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui"</Command>
+    </CustomBuild>
     <ClInclude Include="gui\qt4\pattern_editor_column.h" />
     <ClInclude Include="gui\qt4\util.h" />
     <ClInclude Include="gui\widget.h" />

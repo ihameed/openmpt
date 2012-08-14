@@ -368,17 +368,6 @@ typedef struct MPTNOTIFICATION
 } MPTNOTIFICATION, *PMPTNOTIFICATION;
 
 /////////////////////////////////////////////////////////////////////////
-// EQ Presets
-
-typedef struct _EQPRESET
-{
-    CHAR szName[12];
-    UINT Gains[MAX_EQ_BANDS];
-    UINT Freqs[MAX_EQ_BANDS];
-} EQPRESET, *PEQPRESET;
-
-
-/////////////////////////////////////////////////////////////////////////
 // Default directories
 
 enum Directory
