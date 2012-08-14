@@ -5665,7 +5665,7 @@ modplug::tracker::rowindex_t CViewPattern::GetRowsPerMeasure() const
 }
 
 
-void CViewPattern::SetSelectionInstrument(const INSTRUMENTINDEX nIns)
+void CViewPattern::SetSelectionInstrument(const modplug::tracker::instrumentindex_t nIns)
 //-------------------------------------------------------------------
 {
     CModDoc *pModDoc;

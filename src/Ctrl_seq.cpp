@@ -83,7 +83,7 @@ void COrderList::EnsureVisible(modplug::tracker::orderindex_t order)
 //----------------------------------------------
 {
     // nothing needs to be done
-    if(!IsOrderInMargins(order, m_nXScroll) || order == modplug::tracker::ORDERINDEX_INVALID) return;
+    if(!IsOrderInMargins(order, m_nXScroll) || order == modplug::tracker::OrderIndexInvalid) return;
 
     if(order < m_nXScroll)
     {
@@ -110,7 +110,7 @@ COrderList::COrderList()
     m_cxFont = m_cyFont = 0;
     m_pModDoc = nullptr;
     m_nScrollPos = m_nXScroll = 0;
-    m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+    m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
     m_nOrderlistMargins = s_nDefaultMargins;
     m_bScrolling = false;
     m_bDragging = false;
@@ -199,7 +199,7 @@ void COrderList::InvalidateSelection() const
 {
     modplug::tracker::orderindex_t nOrdLo = m_nScrollPos, nCount = 1;
     static modplug::tracker::orderindex_t m_nScrollPos2Old = m_nScrollPos2nd;
-    if(m_nScrollPos2Old != modplug::tracker::ORDERINDEX_INVALID)
+    if(m_nScrollPos2Old != modplug::tracker::OrderIndexInvalid)
     {
             // there were multiple orders selected - remove them all
             modplug::tracker::orderindex_t nOrdHi = m_nScrollPos;
@@ -247,7 +247,7 @@ ORD_SELECTION COrderList::GetCurSel(bool bIgnoreSelection) const
     ORD_SELECTION result;
     result.nOrdLo = result.nOrdHi = m_nScrollPos;
     // bIgnoreSelection: true if only first selection marker is important.
-    if(!bIgnoreSelection && m_nScrollPos2nd != modplug::tracker::ORDERINDEX_INVALID) {
+    if(!bIgnoreSelection && m_nScrollPos2nd != modplug::tracker::OrderIndexInvalid) {
             if(m_nScrollPos2nd < m_nScrollPos) // ord2 < ord1
                     result.nOrdLo = m_nScrollPos2nd;
             else
@@ -330,7 +330,7 @@ bool COrderList::SetCurSel(modplug::tracker::orderindex_t sel, bool bEdit, bool 
             }
     }
     UpdateInfoText();
-    if(m_nScrollPos == m_nScrollPos2nd) m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+    if(m_nScrollPos == m_nScrollPos2nd) m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
     return true;
 }
 
@@ -781,7 +781,7 @@ void COrderList::OnPaint()
             while (rect.left < rcClient.right)
             {
                     bool bHighLight = ((bFocus) && (nIndex >= selection.nOrdLo && nIndex <= selection.nOrdHi)) ? true : false;
-                    const modplug::tracker::patternindex_t nPat = (nIndex < pSndFile->Order.GetLength()) ? pSndFile->Order[nIndex] : modplug::tracker::PATTERNINDEX_INVALID;
+                    const modplug::tracker::patternindex_t nPat = (nIndex < pSndFile->Order.GetLength()) ? pSndFile->Order[nIndex] : modplug::tracker::PatternIndexInvalid;
                     if ((rect.right = rect.left + m_cxFont) > rcClient.right) rect.right = rcClient.right;
                     rect.right--;
                     if (bHighLight) {
@@ -876,9 +876,9 @@ void COrderList::OnLButtonDown(UINT nFlags, CPoint pt)
                     ORD_SELECTION selection = GetCurSel(false);
 
                     // check if cursor is in selection - if it is, only react on MouseUp as the user might want to drag those orders
-                    if(m_nScrollPos2nd == modplug::tracker::ORDERINDEX_INVALID || nOrder < selection.nOrdLo || nOrder > selection.nOrdHi)
+                    if(m_nScrollPos2nd == modplug::tracker::OrderIndexInvalid || nOrder < selection.nOrdLo || nOrder > selection.nOrdHi)
                     {
-                            m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+                            m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
                             SetCurSel(nOrder, true, ih->ShiftPressed());
                     }
                     m_bDragging = IsOrderInMargins(m_nScrollPos, oldXScroll) ? false : true;
@@ -911,7 +911,7 @@ void COrderList::OnLButtonUp(UINT nFlags, CPoint pt)
             if (rect.PtInRect(pt))
             {
                     modplug::tracker::orderindex_t n = GetOrderFromPoint(rect, pt);
-                    if ((n != modplug::tracker::ORDERINDEX_INVALID) && (n == m_nDropPos) && (m_pModDoc))
+                    if ((n != modplug::tracker::OrderIndexInvalid) && (n == m_nDropPos) && (m_pModDoc))
                     {
                             // drag multiple orders (not quite as easy...)
                             ORD_SELECTION selection = GetCurSel(false);
@@ -955,10 +955,10 @@ void COrderList::OnLButtonUp(UINT nFlags, CPoint pt)
                             ORD_SELECTION selection = GetCurSel(false);
 
                             // this should actually have equal signs but that breaks multiselect: nOrder >= selection.nOrdLo && nOrder <= section.nOrdHi
-                            if (pt.y < rect.bottom && m_nScrollPos2nd != modplug::tracker::ORDERINDEX_INVALID && nOrder > selection.nOrdLo && nOrder < selection.nOrdHi)
+                            if (pt.y < rect.bottom && m_nScrollPos2nd != modplug::tracker::OrderIndexInvalid && nOrder > selection.nOrdLo && nOrder < selection.nOrdHi)
                             {
                                     // Remove selection if we didn't drag anything but multiselect was active
-                                    m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+                                    m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
                                     SetFocus();
                                     SetCurSel(GetOrderFromPoint(rect, pt));
                             }
@@ -980,23 +980,23 @@ void COrderList::OnMouseMove(UINT nFlags, CPoint pt)
             CRect rect;
 
             GetClientRect(&rect);
-            modplug::tracker::orderindex_t n = modplug::tracker::ORDERINDEX_INVALID;
+            modplug::tracker::orderindex_t n = modplug::tracker::OrderIndexInvalid;
             if (rect.PtInRect(pt))
             {
                     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
                     n = GetOrderFromPoint(rect, pt);
-                    if (n >= pSndFile->Order.GetLength() || n >= pSndFile->GetModSpecifications().ordersMax) n = modplug::tracker::ORDERINDEX_INVALID;
+                    if (n >= pSndFile->Order.GetLength() || n >= pSndFile->GetModSpecifications().ordersMax) n = modplug::tracker::OrderIndexInvalid;
             }
             if (n != m_nDropPos)
             {
-                    if (n != modplug::tracker::ORDERINDEX_INVALID)
+                    if (n != modplug::tracker::OrderIndexInvalid)
                     {
                             m_nDropPos = n;
                             InvalidateRect(NULL, FALSE);
                             SetCursor(CMainFrame::curDragging);
                     } else
                     {
-                            m_nDropPos = modplug::tracker::ORDERINDEX_INVALID;
+                            m_nDropPos = modplug::tracker::OrderIndexInvalid;
                             SetCursor(CMainFrame::curNoDrop);
                     }
             }
@@ -1010,7 +1010,7 @@ void COrderList::OnMouseMove(UINT nFlags, CPoint pt)
 void COrderList::OnSelectSequence(UINT nid)
 //-----------------------------------------
 {
-    SelectSequence(static_cast<SEQUENCEINDEX>(nid - ID_SEQUENCE_ITEM));
+    SelectSequence(static_cast<modplug::tracker::sequenceindex_t>(nid - ID_SEQUENCE_ITEM));
 }
 
 
@@ -1021,14 +1021,14 @@ void COrderList::OnRButtonDown(UINT nFlags, CPoint pt)
     GetClientRect(&rect);
     if (m_bDragging)
     {
-            m_nDropPos = modplug::tracker::ORDERINDEX_INVALID;
+            m_nDropPos = modplug::tracker::OrderIndexInvalid;
             OnLButtonUp(nFlags, pt);
     }
     if (pt.y >= rect.bottom) return;
 
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
 
-    bool bMultiSelection = (m_nScrollPos2nd != modplug::tracker::ORDERINDEX_INVALID);
+    bool bMultiSelection = (m_nScrollPos2nd != modplug::tracker::OrderIndexInvalid);
 
     if(!bMultiSelection) SetCurSel(GetOrderFromPoint(rect, pt));
     SetFocus();
@@ -1084,8 +1084,8 @@ void COrderList::OnRButtonDown(UINT nFlags, CPoint pt)
                     HMENU menuSequence = ::CreatePopupMenu();
                     AppendMenu(hMenu, MF_POPUP, (uintptr_t)menuSequence, TEXT("Sequences"));
 
-                    const SEQUENCEINDEX numSequences = pSndFile->Order.GetNumSequences();
-                    for(SEQUENCEINDEX i = 0; i < numSequences; i++)
+                    const modplug::tracker::sequenceindex_t numSequences = pSndFile->Order.GetNumSequences();
+                    for(modplug::tracker::sequenceindex_t i = 0; i < numSequences; i++)
                     {
                             CString str;
                             if(pSndFile->Order.GetSequence(i).m_sName.IsEmpty())
@@ -1118,7 +1118,7 @@ void COrderList::OnLButtonDblClk(UINT, CPoint)
 {
     if ((m_pModDoc) && (m_pParent))
     {
-            m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+            m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
             SetFocus();
             module_renderer *pSndFile = m_pModDoc->GetSoundFile();
             m_pParent->SetCurrentPattern(pSndFile->Order[m_nScrollPos]);
@@ -1217,7 +1217,7 @@ void COrderList::OnInsertOrder()
             if(nInsertCount > 0)
                     m_nScrollPos2nd = min(m_nScrollPos + nInsertCount, pSndFile->Order.GetLastIndex());
             else
-                    m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+                    m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
 
             InvalidateSelection();
             EnsureVisible(m_nScrollPos2nd);
@@ -1247,7 +1247,7 @@ void COrderList::OnDeleteOrder()
 
             ORD_SELECTION selection = GetCurSel(false);
             // remove selection
-            m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+            m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
 
             pSndFile->Order.Remove(selection.nOrdLo, selection.nOrdHi);
 
@@ -1389,7 +1389,7 @@ uint8_t COrderList::SetMargins(int i)
     return GetMargins();
 }
 
-void COrderList::SelectSequence(const SEQUENCEINDEX nSeq)
+void COrderList::SelectSequence(const modplug::tracker::sequenceindex_t nSeq)
 //-------------------------------------------------------
 {
     BEGIN_CRITICAL();

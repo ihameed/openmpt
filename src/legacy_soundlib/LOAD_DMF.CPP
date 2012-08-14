@@ -208,7 +208,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
 
     const modplug::tracker::rowindex_t numRows = CLAMP(LittleEndianW(patHead->numRows), 1, MAX_PATTERN_ROWS);
     const modplug::tracker::patternindex_t nPat = pSndFile->Patterns.Insert(numRows);
-    if(nPat == modplug::tracker::PATTERNINDEX_INVALID)
+    if(nPat == modplug::tracker::PatternIndexInvalid)
     {
         return nPat;
     }
@@ -740,7 +740,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
 }
 
 
-uint32_t ConvertDMFSample(const SAMPLEINDEX nSmp, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool isV8, uint8_t &sampleFlags, module_renderer *pSndFile)
+uint32_t ConvertDMFSample(const modplug::tracker::sampleindex_t nSmp, const uint8_t * const lpStream, const uint32_t dwMemLength, const bool isV8, uint8_t &sampleFlags, module_renderer *pSndFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     #define ASSERT_CAN_READ_SAMPLE(x) ASSERT_CAN_READ_PROTOTYPE(dwMemPos, dwMemLength, x, return 0);
@@ -848,7 +848,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
     vector<uint32_t> patternOffset;
     vector<uint32_t> patternLength;
 
-    modplug::tracker::orderindex_t loopStart = 0, loopEnd = modplug::tracker::ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t loopStart = 0, loopEnd = modplug::tracker::OrderIndexInvalid;
 
     // go through all chunks now
     while(dwMemPos < dwMemLength)
@@ -927,11 +927,11 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
             if(m_nSamples == 0)
             {
                 ASSERT_CAN_READ_CHUNK(1);
-                m_nSamples = (SAMPLEINDEX)min(MAX_SAMPLES - 1, lpStream[dwMemPos]);
+                m_nSamples = (modplug::tracker::sampleindex_t)min(MAX_SAMPLES - 1, lpStream[dwMemPos]);
                 dwMemPos++;
 
                 sampleFlags.assign(m_nSamples, 0);
-                for(SAMPLEINDEX nSmp = 0; nSmp < m_nSamples; nSmp++)
+                for(modplug::tracker::sampleindex_t nSmp = 0; nSmp < m_nSamples; nSmp++)
                 {
                     const uint32_t bytesRead = ConvertDMFSample(nSmp + 1, lpStream + dwMemPos, dwChunkEnd - dwMemPos, (pHeader->version >= 8), sampleFlags[nSmp], this);
                     if(bytesRead == 0)
@@ -945,7 +945,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
             break;
 
         case DMF_SMPD:	// "SMPD" - Sample data
-            for(SAMPLEINDEX nSmp = 1; nSmp <= m_nSamples; nSmp++)
+            for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= m_nSamples; nSmp++)
             {
                 ASSERT_CAN_READ_CHUNK(4);
                 const uint32_t length = LittleEndian(*(uint32_t *)(lpStream + dwMemPos));
@@ -1004,7 +1004,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
                 nPat = ConvertDMFPattern(lpStream + patternOffset[nPat], patternLength[nPat], settings, this);
                 Order[nOrd] = nPat;
                 // Loop end?
-                if(nPat != modplug::tracker::PATTERNINDEX_INVALID && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
+                if(nPat != modplug::tracker::PatternIndexInvalid && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
                 {
                     TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (uint8_t)loopStart, false, ChannelIndexInvalid, false, weTryPreviousRow);
                 }

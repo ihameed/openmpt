@@ -177,10 +177,10 @@ void TestTypes()
     VERIFY_EQUAL(UINT64_MAX, (std::numeric_limits<uint64_t>::max)());
 
     VERIFY_EQUAL(RowIndexMax, (std::numeric_limits<modplug::tracker::rowindex_t>::max)());
-    VERIFY_EQUAL(ORDERINDEX_MAX, (std::numeric_limits<modplug::tracker::orderindex_t>::max)());
-    VERIFY_EQUAL(PATTERNINDEX_MAX, (std::numeric_limits<modplug::tracker::patternindex_t>::max)());
-    VERIFY_EQUAL(SAMPLEINDEX_MAX, (std::numeric_limits<SAMPLEINDEX>::max)());
-    VERIFY_EQUAL(INSTRUMENTINDEX_MAX, (std::numeric_limits<INSTRUMENTINDEX>::max)());
+    VERIFY_EQUAL(OrderIndexMax, (std::numeric_limits<modplug::tracker::orderindex_t>::max)());
+    VERIFY_EQUAL(PatternIndexMax, (std::numeric_limits<modplug::tracker::patternindex_t>::max)());
+    VERIFY_EQUAL(SampleIndexMax, (std::numeric_limits<modplug::tracker::sampleindex_t>::max)());
+    VERIFY_EQUAL(InstrumentIndexMax, (std::numeric_limits<modplug::tracker::instrumentindex_t>::max)());
 }
 
 

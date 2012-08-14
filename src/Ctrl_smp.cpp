@@ -322,7 +322,7 @@ void CCtrlSamples::RecalcLayout()
 }
 
 
-bool CCtrlSamples::SetCurrentSample(SAMPLEINDEX nSmp, LONG lZoom, bool bUpdNum)
+bool CCtrlSamples::SetCurrentSample(modplug::tracker::sampleindex_t nSmp, LONG lZoom, bool bUpdNum)
 //-----------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -392,7 +392,7 @@ void CCtrlSamples::OnActivatePage(LPARAM lParam)
             }
         }
     }
-    SetCurrentSample((lParam > 0) ? ((SAMPLEINDEX)lParam) : m_nSample);
+    SetCurrentSample((lParam > 0) ? ((modplug::tracker::sampleindex_t)lParam) : m_nSample);
 
     m_nFinetuneStep = (uint16_t)GetPrivateProfileInt("Sample Editor", "FinetuneStep", 25, theApp.GetConfigFileName());
 
@@ -436,7 +436,7 @@ LRESULT CCtrlSamples::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
             LPDRAGONDROP pDropInfo = (LPDRAGONDROP)lParam;
             module_renderer *pSndFile = (module_renderer *)(pDropInfo->lDropParam);
             if (pDropInfo->pModDoc) pSndFile = pDropInfo->pModDoc->GetSoundFile();
-            if (pSndFile) return OpenSample(pSndFile, (SAMPLEINDEX)pDropInfo->dwDropItem) ? TRUE : FALSE;
+            if (pSndFile) return OpenSample(pSndFile, (modplug::tracker::sampleindex_t)pDropInfo->dwDropItem) ? TRUE : FALSE;
         }
         break;
 
@@ -445,7 +445,7 @@ LRESULT CCtrlSamples::OnModCtrlMsg(WPARAM wParam, LPARAM lParam)
         break;
 
     case CTRLMSG_SETCURRENTINSTRUMENT:
-        SetCurrentSample((SAMPLEINDEX)lParam, -1, TRUE);
+        SetCurrentSample((modplug::tracker::sampleindex_t)lParam, -1, TRUE);
         break;
 
     //rewbs.customKeys
@@ -830,7 +830,7 @@ OpenError:
 }
 
 
-bool CCtrlSamples::OpenSample(module_renderer *pSndFile, SAMPLEINDEX nSample)
+bool CCtrlSamples::OpenSample(module_renderer *pSndFile, modplug::tracker::sampleindex_t nSample)
 //----------------------------------------------------------------------
 {
     if ((!pSndFile) || (!nSample) || (nSample > pSndFile->m_nSamples)) return false;
@@ -862,7 +862,7 @@ void CCtrlSamples::OnSampleChanged()
 {
     if ((!IsLocked()) && (m_pSndFile))
     {
-        SAMPLEINDEX n = (SAMPLEINDEX)GetDlgItemInt(IDC_EDIT_SAMPLE);
+        modplug::tracker::sampleindex_t n = (modplug::tracker::sampleindex_t)GetDlgItemInt(IDC_EDIT_SAMPLE);
         if ((n > 0) && (n <= m_pSndFile->m_nSamples) && (n != m_nSample))
         {
             SetCurrentSample(n, -1, FALSE);
@@ -899,10 +899,10 @@ void CCtrlSamples::OnSampleNew()
 {
     bool bDuplicate = CMainFrame::GetInputHandler()->ShiftPressed();
 
-    SAMPLEINDEX smp = m_pModDoc->InsertSample(true);
-    if (smp != SAMPLEINDEX_INVALID)
+    modplug::tracker::sampleindex_t smp = m_pModDoc->InsertSample(true);
+    if (smp != modplug::tracker::SampleIndexInvalid)
     {
-        SAMPLEINDEX nOldSmp = m_nSample;
+        modplug::tracker::sampleindex_t nOldSmp = m_nSample;
         module_renderer *pSndFile = m_pModDoc->GetSoundFile();
         SetCurrentSample(smp);
 
@@ -1106,7 +1106,7 @@ void CCtrlSamples::OnNormalize()
         return;
 
     //Default case: Normalize current sample
-    SAMPLEINDEX iMinSample = m_nSample, iMaxSample = m_nSample;
+    modplug::tracker::sampleindex_t iMinSample = m_nSample, iMaxSample = m_nSample;
     //If only one sample is selected, parts of it may be amplified
     UINT iStart = 0, iEnd = 0;
 
@@ -1130,7 +1130,7 @@ void CCtrlSamples::OnNormalize()
     BeginWaitCursor();
     bool bModified = false;
 
-    for(SAMPLEINDEX iSmp = iMinSample; iSmp <= iMaxSample; iSmp++)
+    for(modplug::tracker::sampleindex_t iSmp = iMinSample; iSmp <= iMaxSample; iSmp++)
     {
         if (m_pSndFile->Samples[iSmp].sample_data)
         {
@@ -1272,7 +1272,7 @@ void CCtrlSamples::OnRemoveDCOffset()
     if(!m_pModDoc || !m_pSndFile)
         return;
 
-    SAMPLEINDEX iMinSample = m_nSample, iMaxSample = m_nSample;
+    modplug::tracker::sampleindex_t iMinSample = m_nSample, iMaxSample = m_nSample;
 
     //Shift -> Process all samples
     if(CMainFrame::GetInputHandler()->ShiftPressed())
@@ -1289,7 +1289,7 @@ void CCtrlSamples::OnRemoveDCOffset()
     UINT iModified = 0;
     float fReportOffset = 0;
 
-    for(SAMPLEINDEX iSmp = iMinSample; iSmp <= iMaxSample; iSmp++)
+    for(modplug::tracker::sampleindex_t iSmp = iMinSample; iSmp <= iMaxSample; iSmp++)
     {
         UINT iStart, iEnd;
 

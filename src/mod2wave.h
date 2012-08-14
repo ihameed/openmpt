@@ -25,7 +25,7 @@ public:
      bool m_bInstrumentMode;        // Render by instrument
 
 public:
-    CWaveConvert(CWnd *parent, modplug::tracker::orderindex_t nMinOrder = modplug::tracker::ORDERINDEX_INVALID, modplug::tracker::orderindex_t nMaxOrder = modplug::tracker::ORDERINDEX_INVALID);
+    CWaveConvert(CWnd *parent, modplug::tracker::orderindex_t nMinOrder = modplug::tracker::OrderIndexInvalid, modplug::tracker::orderindex_t nMaxOrder = modplug::tracker::OrderIndexInvalid);
 
 public:
     void UpdateDialog();

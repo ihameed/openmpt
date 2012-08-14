@@ -17,7 +17,7 @@ protected:
     POINT m_ptMenu;
     RECT m_rcClient;
     bool m_baPlayingNote[128]; //rewbs.instViewNNA
-    INSTRUMENTINDEX m_nInstrument;
+    modplug::tracker::instrumentindex_t m_nInstrument;
     enmEnvelopeTypes m_nEnv;
     UINT m_nDragItem, m_nBtnMouseOver, m_nPlayingChannel;
     uint32_t m_dwStatus;
@@ -118,7 +118,7 @@ protected:
     // Misc stuff
     void UpdateScrollSize();
     void SetInstrumentModified();
-    BOOL SetCurrentInstrument(INSTRUMENTINDEX nIns, enmEnvelopeTypes m_nEnv = ENV_VOLUME);
+    BOOL SetCurrentInstrument(modplug::tracker::instrumentindex_t nIns, enmEnvelopeTypes m_nEnv = ENV_VOLUME);
     modplug::tracker::modinstrument_t *GetInstrumentPtr() const;
     modplug::tracker::modenvelope_t *GetEnvelopePtr() const;
     UINT EnvInsertPoint(int nTick, int nValue);

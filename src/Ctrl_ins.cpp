@@ -317,14 +317,14 @@ void CNoteMapWnd::OnRButtonDown(UINT, CPoint pt)
                             AppendMenu(hMenu, MF_STRING, ID_INSTRUMENT_SAMPLEMAP, "Edit Sample &Map\t" + ih->GetKeyTextFromCommand(kcInsNoteMapEditSampleMap));
                             if (hSubMenu)
                             {
-                                    const SAMPLEINDEX numSamps = pSndFile->GetNumSamples();
+                                    const modplug::tracker::sampleindex_t numSamps = pSndFile->GetNumSamples();
                                     vector<bool> smpused(numSamps + 1, false);
                                     for (UINT i=1; i<NOTE_MAX; i++)
                                     {
-                                            SAMPLEINDEX nsmp = pIns->Keyboard[i];
+                                            modplug::tracker::sampleindex_t nsmp = pIns->Keyboard[i];
                                             if (nsmp <= numSamps) smpused[nsmp] = true;
                                     }
-                                    for (SAMPLEINDEX j = 1; j <= numSamps; j++)
+                                    for (modplug::tracker::sampleindex_t j = 1; j <= numSamps; j++)
                                     {
                                             if (smpused[j])
                                             {
@@ -1626,7 +1626,7 @@ void CCtrlInstruments::OnInstrumentNew()
             }
             bool bFirst = (pSndFile->GetNumInstruments() == 0);
             LONG ins = m_pModDoc->InsertInstrument();
-            if (ins != INSTRUMENTINDEX_INVALID)
+            if (ins != modplug::tracker::InstrumentIndexInvalid)
             {
                     SetCurrentInstrument(ins);
                     m_pModDoc->UpdateAllViews(NULL, (ins << HINT_SHIFT_INS) | HINT_INSTRUMENT | HINT_INSNAMES | HINT_ENVELOPE);
@@ -1647,8 +1647,8 @@ void CCtrlInstruments::OnInstrumentDuplicate()
             if ((pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) && (pSndFile->m_nInstruments > 0))
             {
                     BOOL bFirst = (pSndFile->m_nInstruments) ? FALSE : TRUE;
-                    LONG ins = m_pModDoc->InsertInstrument(INSTRUMENTINDEX_INVALID, m_nInstrument);
-                    if (ins != INSTRUMENTINDEX_INVALID)
+                    LONG ins = m_pModDoc->InsertInstrument(modplug::tracker::InstrumentIndexInvalid, m_nInstrument);
+                    if (ins != modplug::tracker::InstrumentIndexInvalid)
                     {
                             SetCurrentInstrument(ins);
                             m_pModDoc->UpdateAllViews(NULL, (ins << HINT_SHIFT_INS) | HINT_INSTRUMENT | HINT_INSNAMES | HINT_ENVELOPE);
@@ -1873,7 +1873,7 @@ void CCtrlInstruments::OnSetPanningChanged()
                     bool smpPanningInUse = false;
                     for(uint8_t i = 0; i<CountOf(pIns->Keyboard); i++)
                     {
-                            const SAMPLEINDEX smp = pIns->Keyboard[i];
+                            const modplug::tracker::sampleindex_t smp = pIns->Keyboard[i];
                             if(smp <= m_pSndFile->GetNumSamples() && m_pSndFile->Samples[smp].flags & CHN_PANNING)
                             {
                                     smpPanningInUse = true;
@@ -1891,7 +1891,7 @@ void CCtrlInstruments::OnSetPanningChanged()
                             {
                                     for(uint8_t i = 0; i < CountOf(pIns->Keyboard); i++)
                                     {
-                                            const SAMPLEINDEX smp = pIns->Keyboard[i];
+                                            const modplug::tracker::sampleindex_t smp = pIns->Keyboard[i];
                                             if(smp <= m_pSndFile->GetNumSamples())
                                                     m_pSndFile->Samples[smp].flags &= ~CHN_PANNING;
                                     }

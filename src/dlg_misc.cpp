@@ -1754,7 +1754,7 @@ void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::note_t no
 }
 
 
-void AppendNotesToControlEx(CComboBox& combobox, const module_renderer* const pSndFile /* = nullptr*/, const INSTRUMENTINDEX nInstr/* = MAX_INSTRUMENTS*/)
+void AppendNotesToControlEx(CComboBox& combobox, const module_renderer* const pSndFile /* = nullptr*/, const modplug::tracker::instrumentindex_t nInstr/* = MAX_INSTRUMENTS*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 {
     const modplug::tracker::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;

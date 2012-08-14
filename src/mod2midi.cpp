@@ -168,7 +168,7 @@ BOOL CModToMidi::OnInitDialog()
     m_nCurrInstr = 1;
     if (m_pSndFile->m_nInstruments)
     {
-            for(INSTRUMENTINDEX nIns = 1; nIns <= m_pSndFile->m_nInstruments; nIns++)
+            for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_pSndFile->m_nInstruments; nIns++)
             {
                     modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[nIns];
                     if ((pIns) && (m_pSndFile->IsInstrumentUsed(nIns)))
@@ -181,7 +181,7 @@ BOOL CModToMidi::OnInitDialog()
             }
     } else
     {
-            for(SAMPLEINDEX nSmp = 1; nSmp <= m_pSndFile->m_nSamples; nSmp++)
+            for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= m_pSndFile->m_nSamples; nSmp++)
             {
                     if ((m_pSndFile->Samples[nSmp].sample_data)
                      && (m_pSndFile->IsSampleUsed(nSmp)))

@@ -118,7 +118,7 @@ struct PSMSUBSONG // For internal use (pattern conversion)
         memset(songName, 0, sizeof(songName));
         defaultTempo = 125;
         defaultSpeed = 6;
-        startOrder = endOrder = restartPos = modplug::tracker::ORDERINDEX_INVALID;
+        startOrder = endOrder = restartPos = modplug::tracker::OrderIndexInvalid;
     }
 };
 
@@ -281,7 +281,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                                             if(patternIDs[i] == nPattern)
                                             {
                                                 // found the right pattern, copy offset + start / end positions.
-                                                if(subsong.startOrder == modplug::tracker::ORDERINDEX_INVALID)
+                                                if(subsong.startOrder == modplug::tracker::OrderIndexInvalid)
                                                     subsong.startOrder = (modplug::tracker::orderindex_t)orderOffsets.size();
                                                 subsong.endOrder = (modplug::tracker::orderindex_t)orderOffsets.size();
 
@@ -441,7 +441,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 // original header
                 if(chunkSize < sizeof(PSMOLDSAMPLEHEADER)) return false;
                 PSMOLDSAMPLEHEADER *pSample = (PSMOLDSAMPLEHEADER *)(lpStream + dwMemPos);
-                SAMPLEINDEX smp = (SAMPLEINDEX)(LittleEndianW(pSample->sampleNumber) + 1);
+                modplug::tracker::sampleindex_t smp = (modplug::tracker::sampleindex_t)(LittleEndianW(pSample->sampleNumber) + 1);
                 m_nSamples = max(m_nSamples, smp);
                 memcpy(m_szNames[smp], pSample->sampleName, 31);
                 SpaceToNullStringFixed<31>(m_szNames[smp]);
@@ -465,7 +465,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 // Sinaria uses a slightly different sample header
                 if(chunkSize < sizeof(PSMNEWSAMPLEHEADER)) return false;
                 PSMNEWSAMPLEHEADER *pSample = (PSMNEWSAMPLEHEADER *)(lpStream + dwMemPos);
-                SAMPLEINDEX smp = (SAMPLEINDEX)(LittleEndianW(pSample->sampleNumber) + 1);
+                modplug::tracker::sampleindex_t smp = (modplug::tracker::sampleindex_t)(LittleEndianW(pSample->sampleNumber) + 1);
                 m_nSamples = max(m_nSamples, smp);
                 memcpy(m_szNames[smp], pSample->sampleName, 31);
                 SpaceToNullStringFixed<31>(m_szNames[smp]);
@@ -760,7 +760,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
         for(uint32_t i = 0; i < subsongs.size(); i++)
         {
             modplug::tracker::patternindex_t startPattern = Order[subsongs[i].startOrder], endPattern = Order[subsongs[i].endOrder];
-            if(startPattern == modplug::tracker::PATTERNINDEX_INVALID || endPattern == modplug::tracker::PATTERNINDEX_INVALID) continue; // what, invalid subtune?
+            if(startPattern == modplug::tracker::PatternIndexInvalid || endPattern == modplug::tracker::PatternIndexInvalid) continue; // what, invalid subtune?
 
             // set the subsong name to all pattern names
             for(modplug::tracker::patternindex_t nPat = startPattern; nPat <= endPattern; nPat++)
@@ -786,7 +786,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
             // don't write channel volume for now, as it's always set to 100% anyway
 
             // there's a restart pos, so let's try to insert a Bxx command in the last pattern
-            if(subsongs[i].restartPos != modplug::tracker::ORDERINDEX_INVALID)
+            if(subsongs[i].restartPos != modplug::tracker::OrderIndexInvalid)
             {
                 modplug::tracker::rowindex_t lastRow = Patterns[endPattern].GetNumRows() - 1;
                 modplug::tracker::modevent_t *row_data;
@@ -921,7 +921,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
     ASSERT_CAN_READ(0);
     if(LittleEndian(shdr->smpOffset) > 4 && LittleEndian(*(uint32_t *)(lpStream + dwMemPos - 4)) == 0x48415350) // PSAH
     {
-        SAMPLEINDEX iSmpCount = 0;
+        modplug::tracker::sampleindex_t iSmpCount = 0;
         m_nSamples = LittleEndianW(shdr->numSamples);
         while(iSmpCount < LittleEndianW(shdr->numSamples))
         {
@@ -929,7 +929,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
             PSM16SMPHEADER *smphdr = (PSM16SMPHEADER *)(lpStream + dwMemPos);
             dwMemPos += sizeof(PSM16SMPHEADER);
 
-            SAMPLEINDEX iSmp = LittleEndianW(smphdr->sampleNumber);
+            modplug::tracker::sampleindex_t iSmp = LittleEndianW(smphdr->sampleNumber);
             m_nSamples = max(m_nSamples, iSmp);
 
             memcpy(m_szNames[iSmp], smphdr->name, 24);

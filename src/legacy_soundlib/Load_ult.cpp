@@ -336,11 +336,11 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
     dwMemPos += nNumLines * 32;
 
     ASSERT_CAN_READ(1);
-    m_nSamples = (SAMPLEINDEX)lpStream[dwMemPos++];
+    m_nSamples = (modplug::tracker::sampleindex_t)lpStream[dwMemPos++];
     if(m_nSamples >= MAX_SAMPLES)
             return false;
 
-    for(SAMPLEINDEX nSmp = 0; nSmp < m_nSamples; nSmp++)
+    for(modplug::tracker::sampleindex_t nSmp = 0; nSmp < m_nSamples; nSmp++)
     {
             ULT_SAMPLE ultSmp;
             modsample_t *pSmp = &(Samples[nSmp + 1]);
@@ -462,7 +462,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
     // Post-fix some effects.
     Patterns.ForEachModCommand(PostFixUltCommands(m_nChannels));
 
-    for(SAMPLEINDEX nSmp = 0; nSmp < m_nSamples; nSmp++)
+    for(modplug::tracker::sampleindex_t nSmp = 0; nSmp < m_nSamples; nSmp++)
     {
             dwMemPos += ReadSample(&Samples[nSmp + 1], (Samples[nSmp + 1].flags & CHN_16BIT) ? RS_PCM16S : RS_PCM8S, (LPCSTR)(lpStream + dwMemPos), dwMemLength - dwMemPos);
     }

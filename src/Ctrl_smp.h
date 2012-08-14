@@ -24,7 +24,7 @@ protected:
     CSpinButtonCtrl m_SpinFineTune, m_SpinSample;
     CComboBox m_ComboAutoVib, m_ComboLoopType, m_ComboSustainType, m_ComboZoom, m_CbnBaseNote;
     CButton m_CheckPanning;
-    SAMPLEINDEX m_nSample;
+    modplug::tracker::sampleindex_t m_nSample;
     double m_dTimeStretchRatio; //rewbs.timeStretchMods
     uint32_t m_nStretchProcessStepLength;
     uint32_t m_nSequenceMs;
@@ -53,9 +53,9 @@ public:
     CCtrlSamples();
     ~CCtrlSamples();
 
-    bool SetCurrentSample(SAMPLEINDEX nSmp, LONG lZoom = -1, bool bUpdNum = true);
+    bool SetCurrentSample(modplug::tracker::sampleindex_t nSmp, LONG lZoom = -1, bool bUpdNum = true);
     bool OpenSample(LPCSTR lpszFileName);
-    bool OpenSample(module_renderer *pSndFile, SAMPLEINDEX nSample);
+    bool OpenSample(module_renderer *pSndFile, modplug::tracker::sampleindex_t nSample);
     LONG* GetSplitPosRef() {return &CMainFrame::glSampleWindowHeight;}         //rewbs.varWindowSize
 
 public:

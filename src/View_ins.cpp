@@ -179,7 +179,7 @@ void CViewInstrument::SetInstrumentModified()
 }
 
 
-BOOL CViewInstrument::SetCurrentInstrument(INSTRUMENTINDEX nIns, enmEnvelopeTypes nEnv)
+BOOL CViewInstrument::SetCurrentInstrument(modplug::tracker::instrumentindex_t nIns, enmEnvelopeTypes nEnv)
 //-------------------------------------------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();
@@ -2144,7 +2144,7 @@ LRESULT CViewInstrument::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
             default:
                     if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDITOPLUG && CMainFrame::GetMainFrame()->GetModPlaying() == pModDoc)
                     {
-                            const INSTRUMENTINDEX instr = m_nInstrument;
+                            const modplug::tracker::instrumentindex_t instr = m_nInstrument;
                             IMixPlugin* plug = pSndFile->GetInstrumentPlugin(instr);
                             if(plug)
                             {

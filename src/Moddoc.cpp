@@ -242,7 +242,7 @@ BOOL CModDoc::OnOpenDocument(LPCTSTR lpszPathName)
         BeginWaitCursor();
         LPMIDILIBSTRUCT lpMidiLib = CTrackApp::GetMidiLibrary();
         // Scan Instruments
-        if (lpMidiLib) for (INSTRUMENTINDEX nIns = 1; nIns <= m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
+        if (lpMidiLib) for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
         {
             LPCSTR pszMidiMapName;
             modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
@@ -483,7 +483,7 @@ BOOL CModDoc::SaveModified()
 
         bool unsavedInstrument = false;
 
-        for(INSTRUMENTINDEX i = 0 ; i < m_SndFile.GetNumInstruments() ; i++)
+        for(modplug::tracker::instrumentindex_t i = 0 ; i < m_SndFile.GetNumInstruments() ; i++)
         {
             if(m_bsInstrumentModified[i])
             {
@@ -494,7 +494,7 @@ BOOL CModDoc::SaveModified()
 
         if(unsavedInstrument && ::MessageBox(NULL,"Do you want to save modified instruments?",NULL,MB_ICONQUESTION | MB_YESNO | MB_APPLMODAL) == IDYES){
 
-            for(INSTRUMENTINDEX i = 0 ; i < m_SndFile.m_nInstruments ; i++){
+            for(modplug::tracker::instrumentindex_t i = 0 ; i < m_SndFile.m_nInstruments ; i++){
                 if(m_SndFile.m_szInstrumentPath[i][0] != '\0'){
                     int size = strlen(m_SndFile.m_szInstrumentPath[i]);
                     bool iti = _stricmp(&m_SndFile.m_szInstrumentPath[i][size-3],"iti") == 0;
@@ -1259,7 +1259,7 @@ void CModDoc::ReinitRecordState(bool unselect)
 // -! NEW_FEATURE#0015
 
 
-bool CModDoc::MuteSample(SAMPLEINDEX nSample, bool bMute)
+bool CModDoc::MuteSample(modplug::tracker::sampleindex_t nSample, bool bMute)
 //-------------------------------------------------------
 {
     if ((nSample < 1) || (nSample > m_SndFile.m_nSamples)) return false;
@@ -1268,7 +1268,7 @@ bool CModDoc::MuteSample(SAMPLEINDEX nSample, bool bMute)
     return true;
 }
 
-bool CModDoc::MuteInstrument(INSTRUMENTINDEX nInstr, bool bMute)
+bool CModDoc::MuteInstrument(modplug::tracker::instrumentindex_t nInstr, bool bMute)
 //--------------------------------------------------------------
 {
     if ((nInstr < 1) || (nInstr > m_SndFile.m_nInstruments) || (!m_SndFile.Instruments[nInstr])) return false;
@@ -1346,7 +1346,7 @@ bool CModDoc::IsChannelMuted(modplug::tracker::chnindex_t nChn) const
 }
 
 
-bool CModDoc::IsSampleMuted(SAMPLEINDEX nSample) const
+bool CModDoc::IsSampleMuted(modplug::tracker::sampleindex_t nSample) const
 //----------------------------------------------------
 {
     if ((!nSample) || (nSample > m_SndFile.m_nSamples)) return false;
@@ -1354,7 +1354,7 @@ bool CModDoc::IsSampleMuted(SAMPLEINDEX nSample) const
 }
 
 
-bool CModDoc::IsInstrumentMuted(INSTRUMENTINDEX nInstr) const
+bool CModDoc::IsInstrumentMuted(modplug::tracker::instrumentindex_t nInstr) const
 //-----------------------------------------------------------
 {
     if ((!nInstr) || (nInstr > m_SndFile.m_nInstruments) || (!m_SndFile.Instruments[nInstr])) return false;
@@ -1488,7 +1488,7 @@ void CModDoc::UpdateAllViews(CView *pSender, LPARAM lHint, CObject *pHint)
 void CModDoc::OnFileWaveConvert()
 //-------------------------------
 {
-    OnFileWaveConvert(modplug::tracker::ORDERINDEX_INVALID, modplug::tracker::ORDERINDEX_INVALID);
+    OnFileWaveConvert(modplug::tracker::OrderIndexInvalid, modplug::tracker::OrderIndexInvalid);
 }
 
 void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplug::tracker::orderindex_t nMaxOrder)
@@ -1552,7 +1552,7 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
         {
             nRenderPasses = m_SndFile.GetNumSamples();
             instrMuteState.resize(nRenderPasses, false);
-            for(SAMPLEINDEX i = 0; i < m_SndFile.GetNumSamples(); i++)
+            for(modplug::tracker::sampleindex_t i = 0; i < m_SndFile.GetNumSamples(); i++)
             {
                 instrMuteState[i] = IsSampleMuted(i + 1);
                 MuteSample(i + 1, true);
@@ -1561,7 +1561,7 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
         {
             nRenderPasses = m_SndFile.GetNumInstruments();
             instrMuteState.resize(nRenderPasses, false);
-            for(INSTRUMENTINDEX i = 0; i < m_SndFile.GetNumInstruments(); i++)
+            for(modplug::tracker::instrumentindex_t i = 0; i < m_SndFile.GetNumInstruments(); i++)
             {
                 instrMuteState[i] = IsInstrumentMuted(i + 1);
                 MuteInstrument(i + 1, true);
@@ -1605,9 +1605,9 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
             if(m_SndFile.GetNumInstruments() == 0)
             {
                 // Re-mute previously processed sample
-                if(i > 0) MuteSample((SAMPLEINDEX)i, true);
+                if(i > 0) MuteSample((modplug::tracker::sampleindex_t)i, true);
 
-                if(m_SndFile.Samples[i + 1].sample_data == nullptr || !m_SndFile.IsSampleUsed((SAMPLEINDEX)(i + 1)))
+                if(m_SndFile.Samples[i + 1].sample_data == nullptr || !m_SndFile.IsSampleUsed((modplug::tracker::sampleindex_t)(i + 1)))
                     continue;
                 // Add sample number & name (if available) to path string
                 if(strlen(m_SndFile.m_szNames[i + 1]) > 0)
@@ -1615,20 +1615,20 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
                 else
                     wsprintf(sFilenameAdd, "-%03d.wav", i + 1);
                 // Unmute sample to process
-                MuteSample((SAMPLEINDEX)(i + 1), false);
+                MuteSample((modplug::tracker::sampleindex_t)(i + 1), false);
             } else
             {
                 // Re-mute previously processed instrument
-                if(i > 0) MuteInstrument((INSTRUMENTINDEX)i, true);
+                if(i > 0) MuteInstrument((modplug::tracker::instrumentindex_t)i, true);
 
-                if(m_SndFile.Instruments[i + 1] == nullptr || !m_SndFile.IsInstrumentUsed((INSTRUMENTINDEX)(i + 1)))
+                if(m_SndFile.Instruments[i + 1] == nullptr || !m_SndFile.IsInstrumentUsed((modplug::tracker::instrumentindex_t)(i + 1)))
                     continue;
                 if(strlen(m_SndFile.Instruments[i + 1]->name) > 0)
                     wsprintf(sFilenameAdd, "-%03d_%s.wav", i + 1, m_SndFile.Instruments[i + 1]->name);
                 else
                     wsprintf(sFilenameAdd, "-%03d.wav", i + 1);
                 // Unmute instrument to process
-                MuteInstrument((INSTRUMENTINDEX)(i + 1), false);
+                MuteInstrument((modplug::tracker::instrumentindex_t)(i + 1), false);
             }
         }
         if(_tcslen(sFilenameAdd) > 0)
@@ -1666,13 +1666,13 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
     {
         if(m_SndFile.GetNumInstruments() == 0)
         {
-            for(SAMPLEINDEX i = 0; i < m_SndFile.GetNumSamples(); i++)
+            for(modplug::tracker::sampleindex_t i = 0; i < m_SndFile.GetNumSamples(); i++)
             {
                 MuteSample(i + 1, instrMuteState[i]);
             }
         } else
         {
-            for(INSTRUMENTINDEX i = 0; i < m_SndFile.GetNumInstruments(); i++)
+            for(modplug::tracker::instrumentindex_t i = 0; i < m_SndFile.GetNumInstruments(); i++)
             {
                 MuteInstrument(i + 1, instrMuteState[i]);
             }
@@ -2030,7 +2030,7 @@ void CModDoc::OnInsertSample()
 //----------------------------
 {
     LONG smp = InsertSample();
-    if (smp != SAMPLEINDEX_INVALID) ViewSample(smp);
+    if (smp != modplug::tracker::SampleIndexInvalid) ViewSample(smp);
 }
 
 
@@ -2038,7 +2038,7 @@ void CModDoc::OnInsertInstrument()
 //--------------------------------
 {
     LONG ins = InsertInstrument();
-    if (ins != INSTRUMENTINDEX_INVALID) ViewInstrument(ins);
+    if (ins != modplug::tracker::InstrumentIndexInvalid) ViewInstrument(ins);
 }
 
 
@@ -3129,7 +3129,7 @@ HWND CModDoc::GetEditPosition(modplug::tracker::rowindex_t &row, modplug::tracke
     if (pSndFile->Order[ord]!=pat)
     {
         modplug::tracker::orderindex_t tentativeOrder = pSndFile->FindOrder(pat);
-        if (tentativeOrder != modplug::tracker::ORDERINDEX_INVALID)    //ensure a valid order exists.
+        if (tentativeOrder != modplug::tracker::OrderIndexInvalid)    //ensure a valid order exists.
         {
             ord = tentativeOrder;
         }
@@ -3763,7 +3763,7 @@ CString CModDoc::GetPatternViewInstrumentName(UINT nInstr,
     // If instrument name is empty, use name of the sample mapped to C-5.
     if (instrumentName.IsEmpty())
     {
-        const SAMPLEINDEX nSmp = m_SndFile.Instruments[nInstr]->Keyboard[NOTE_MIDDLEC - 1];
+        const modplug::tracker::sampleindex_t nSmp = m_SndFile.Instruments[nInstr]->Keyboard[NOTE_MIDDLEC - 1];
         if (nSmp < CountOf(m_SndFile.Samples) && m_SndFile.Samples[nSmp].sample_data)
             instrumentName.Format(TEXT("s: %s"), m_SndFile.GetSampleName(nSmp)); //60 is C-5
     }
@@ -3819,14 +3819,14 @@ void CModDoc::FixNullStrings()
 //----------------------------
 {
     // Sample names + filenames
-    for(SAMPLEINDEX nSmp = 1; nSmp < m_SndFile.GetNumSamples(); nSmp++)
+    for(modplug::tracker::sampleindex_t nSmp = 1; nSmp < m_SndFile.GetNumSamples(); nSmp++)
     {
         FixNullString(m_SndFile.m_szNames[nSmp]);
         FixNullString(m_SndFile.Samples[nSmp].legacy_filename);
     }
 
     // Instrument names
-    for(INSTRUMENTINDEX nIns = 1; nIns < m_SndFile.GetNumInstruments(); nIns++)
+    for(modplug::tracker::instrumentindex_t nIns = 1; nIns < m_SndFile.GetNumInstruments(); nIns++)
     {
         if(m_SndFile.Instruments[nIns] != nullptr)
         {

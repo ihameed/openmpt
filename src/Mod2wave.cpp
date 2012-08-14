@@ -94,7 +94,7 @@ CWaveConvert::CWaveConvert(CWnd *parent, modplug::tracker::orderindex_t nMinOrde
     m_bNormalize = false;
     m_bHighQuality = false;
     m_bSelectPlay = false;
-    if(nMinOrder != modplug::tracker::ORDERINDEX_INVALID && nMaxOrder != modplug::tracker::ORDERINDEX_INVALID)
+    if(nMinOrder != modplug::tracker::OrderIndexInvalid && nMaxOrder != modplug::tracker::OrderIndexInvalid)
     {
         // render selection
         m_nMinOrder = nMinOrder;

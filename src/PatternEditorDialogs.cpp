@@ -1419,7 +1419,7 @@ BOOL CSplitKeyboadSettings::OnInitDialog()
     m_CbnSplitInstrument.SetItemData(m_CbnSplitInstrument.AddString("No Instrument"), 0);
 
     if (m_pSndFile->m_nInstruments)        {
-            for (INSTRUMENTINDEX nIns = 1; nIns <= m_pSndFile->m_nInstruments; nIns++)
+            for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_pSndFile->m_nInstruments; nIns++)
             {
                     if (m_pSndFile->Instruments[nIns] == nullptr)
                             continue;
@@ -1430,7 +1430,7 @@ BOOL CSplitKeyboadSettings::OnInitDialog()
             }
     } else
     {
-            for (SAMPLEINDEX nSmp = 1; nSmp <= m_pSndFile->m_nSamples; nSmp++)
+            for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= m_pSndFile->m_nSamples; nSmp++)
             {
                     if ((m_pSndFile->m_szNames[nSmp][0]) || (m_pSndFile->Samples[nSmp].sample_data))
                     {

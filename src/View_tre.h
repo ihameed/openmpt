@@ -46,7 +46,7 @@ struct MODTREEDOCINFO
 {
     CModDoc *pModDoc;
     // Module information
-    SEQUENCEINDEX nSeqSel;
+    modplug::tracker::sequenceindex_t nSeqSel;
     modplug::tracker::orderindex_t nOrdSel;
     // Tree state variables
     HTREEITEM hSong, hPatterns, hSamples, hInstruments, hComments, hOrders, hEffects;
@@ -62,14 +62,14 @@ struct MODTREEDOCINFO
     MODTREEDOCINFO(const module_renderer* const pSndFile)
     {
             pModDoc = NULL;
-            nSeqSel = SEQUENCEINDEX_INVALID;
-            nOrdSel = modplug::tracker::ORDERINDEX_INVALID;
+            nSeqSel = modplug::tracker::SequenceIndexInvalid;
+            nOrdSel = modplug::tracker::OrderIndexInvalid;
             hSong = hPatterns = hSamples = hInstruments = hComments = hOrders = hEffects = NULL;
             if(pSndFile != NULL)
             {
                     tiPatterns.resize(pSndFile->Patterns.Size(), NULL);
                     tiOrders.resize(pSndFile->Order.GetNumSequences());
-                    for(SEQUENCEINDEX i = 0; i < tiOrders.size(); i++)
+                    for(modplug::tracker::sequenceindex_t i = 0; i < tiOrders.size(); i++)
                     {
                             //tiOrders[i].resize(pSndFile->Order.GetSequence(i)->GetLength(), NULL);
                     }

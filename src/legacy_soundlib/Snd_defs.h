@@ -12,17 +12,10 @@
 
 #include <cstdint>
 #include "../typedefs.h"
+#include "../tracker/types.h"
 typedef uint8_t  PLUGINDEX;
 typedef uint16_t TEMPO;
-typedef uint16_t SAMPLEINDEX;
-    const SAMPLEINDEX SAMPLEINDEX_MAX    = UINT16_MAX;
-    const SAMPLEINDEX SAMPLEINDEX_INVALID    = SAMPLEINDEX_MAX;
-typedef uint16_t INSTRUMENTINDEX;
-    const INSTRUMENTINDEX INSTRUMENTINDEX_MAX    = UINT16_MAX;
-    const INSTRUMENTINDEX INSTRUMENTINDEX_INVALID    = INSTRUMENTINDEX_MAX;
-typedef uint8_t SEQUENCEINDEX;
-    const SEQUENCEINDEX SEQUENCEINDEX_MAX    = UINT8_MAX;
-    const SEQUENCEINDEX SEQUENCEINDEX_INVALID    = SEQUENCEINDEX_MAX;
+
 typedef uint32_t MODTYPE;
 
 #define MAX_PATTERN_ROWS    1024        // -> CODE#0008 -> DESC="#define to set pattern size" -! BEHAVIOUR_CHANGE#0008
@@ -39,7 +32,7 @@ typedef uint32_t MODTYPE;
 #define MAX_PATTERNS            240
 #define MAX_SAMPLES                    4000
 
-const SEQUENCEINDEX MAX_SEQUENCES = 50;
+const modplug::tracker::sequenceindex_t MAX_SEQUENCES = 50;
 
 const size_t MAX_INSTRUMENTS = 256;    //200 // -> CODE#0006 -> DESC="misc quantity changes" // -! BEHAVIOUR_CHANGE#0006
 //#ifdef FASTSOUNDLIB

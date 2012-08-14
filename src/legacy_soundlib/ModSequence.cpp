@@ -280,7 +280,7 @@ ModSequenceSet::ModSequenceSet(module_renderer& sndFile)
 }
 
 
-const ModSequence& ModSequenceSet::GetSequence(SEQUENCEINDEX nSeq) const
+const ModSequence& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq) const
 //----------------------------------------------------------------------
 {
     if (nSeq == GetCurrentSequenceIndex())
@@ -290,7 +290,7 @@ const ModSequence& ModSequenceSet::GetSequence(SEQUENCEINDEX nSeq) const
 }
 
 
-ModSequence& ModSequenceSet::GetSequence(SEQUENCEINDEX nSeq)
+ModSequence& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq)
 //----------------------------------------------------------
 {
     if (nSeq == GetCurrentSequenceIndex())
@@ -328,7 +328,7 @@ void ModSequenceSet::CopyStorageToCache()
 }
 
 
-void ModSequenceSet::SetSequence(SEQUENCEINDEX n)
+void ModSequenceSet::SetSequence(modplug::tracker::sequenceindex_t n)
 //-----------------------------------------------
 {
     CopyCacheToStorage();
@@ -337,11 +337,11 @@ void ModSequenceSet::SetSequence(SEQUENCEINDEX n)
 }
 
 
-SEQUENCEINDEX ModSequenceSet::AddSequence(bool bDuplicate)
+modplug::tracker::sequenceindex_t ModSequenceSet::AddSequence(bool bDuplicate)
 //--------------------------------------------------------
 {
     if(GetNumSequences() == MAX_SEQUENCES)
-            return SEQUENCEINDEX_INVALID;
+            return modplug::tracker::SequenceIndexInvalid;
     m_Sequences.push_back(ModSequence(*m_pSndFile, s_nCacheSize));
     if (bDuplicate)
     {
@@ -353,7 +353,7 @@ SEQUENCEINDEX ModSequenceSet::AddSequence(bool bDuplicate)
 }
 
 
-void ModSequenceSet::RemoveSequence(SEQUENCEINDEX i)
+void ModSequenceSet::RemoveSequence(modplug::tracker::sequenceindex_t i)
 //--------------------------------------------------
 {
     // Do nothing if index is invalid or if there's only one sequence left.
@@ -372,8 +372,8 @@ void ModSequenceSet::OnModTypeChanged(const MODTYPE oldtype)
 //----------------------------------------------------------
 {
     const MODTYPE newtype = m_pSndFile->GetType();
-    const SEQUENCEINDEX nSeqs = GetNumSequences();
-    for(SEQUENCEINDEX n = 0; n < nSeqs; n++)
+    const modplug::tracker::sequenceindex_t nSeqs = GetNumSequences();
+    for(modplug::tracker::sequenceindex_t n = 0; n < nSeqs; n++)
     {
             GetSequence(n).AdjustToNewModType(oldtype);
     }
@@ -430,7 +430,7 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
                             modplug::tracker::orderindex_t startOrd = nOrd;
                             modified = true;
 
-                            SEQUENCEINDEX newSeq = AddSequence(false);
+                            modplug::tracker::sequenceindex_t newSeq = AddSequence(false);
                             SetSequence(newSeq);
 
                             // resize new seqeuence if necessary
@@ -481,9 +481,9 @@ bool ModSequenceSet::MergeSequences()
     CHAR s[256];
     SetSequence(0);
     resize(GetLengthTailTrimmed());
-    SEQUENCEINDEX removedSequences = 0; // sequence count
-    vector <SEQUENCEINDEX> patternsFixed; // pattern fixed by other sequence already?
-    patternsFixed.resize(m_pSndFile->Patterns.Size(), SEQUENCEINDEX_INVALID);
+    modplug::tracker::sequenceindex_t removedSequences = 0; // sequence count
+    vector <modplug::tracker::sequenceindex_t> patternsFixed; // pattern fixed by other sequence already?
+    patternsFixed.resize(m_pSndFile->Patterns.Size(), modplug::tracker::SequenceIndexInvalid);
     // Set up vector
     for(modplug::tracker::orderindex_t nOrd = 0; nOrd < GetLengthTailTrimmed(); nOrd++)
     {
@@ -518,11 +518,11 @@ bool ModSequenceSet::MergeSequences()
                     {
                             if(m->command == CMD_POSITIONJUMP)
                             {
-                                    if(patternsFixed[nPat] != SEQUENCEINDEX_INVALID && patternsFixed[nPat] != removedSequences)
+                                    if(patternsFixed[nPat] != modplug::tracker::SequenceIndexInvalid && patternsFixed[nPat] != removedSequences)
                                     {
                                             // Oops, some other sequence uses this pattern already.
                                             const modplug::tracker::patternindex_t nNewPat = m_pSndFile->Patterns.Insert(m_pSndFile->Patterns[nPat].GetNumRows());
-                                            if(nNewPat != SEQUENCEINDEX_INVALID)
+                                            if(nNewPat != modplug::tracker::SequenceIndexInvalid)
                                             {
                                                     // could create new pattern - copy data over and continue from here.
                                                     At(nFirstOrder + nOrd) = nNewPat;
@@ -530,7 +530,7 @@ bool ModSequenceSet::MergeSequences()
                                                     modplug::tracker::modevent_t *pDest = m_pSndFile->Patterns[nNewPat];
                                                     memcpy(pDest, pSrc, m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels * sizeof(modplug::tracker::modevent_t));
                                                     m = pDest + len;
-                                                    patternsFixed.resize(max(nNewPat + 1, (modplug::tracker::patternindex_t)patternsFixed.size()), SEQUENCEINDEX_INVALID);
+                                                    patternsFixed.resize(max(nNewPat + 1, (modplug::tracker::patternindex_t)patternsFixed.size()), modplug::tracker::SequenceIndexInvalid);
                                                     nPat = nNewPat;
                                             } else
                                             {

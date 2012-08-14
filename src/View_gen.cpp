@@ -1418,7 +1418,7 @@ bool CViewGlobals::MovePlug(PLUGINDEX src, PLUGINDEX dest, bool bAdjustPat)
     }
 
     // Update instruments
-    for (INSTRUMENTINDEX nIns=1; nIns<=pSndFile->m_nInstruments; nIns++) {
+    for (modplug::tracker::instrumentindex_t nIns=1; nIns<=pSndFile->m_nInstruments; nIns++) {
             if (pSndFile->Instruments[nIns] && (pSndFile->Instruments[nIns]->nMixPlug == src+1)) {
                     pSndFile->Instruments[nIns]->nMixPlug = static_cast<uint8_t>(dest+1);
             }

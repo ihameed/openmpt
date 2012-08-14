@@ -543,7 +543,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 AMFFCHUNK_INSTRUMENT *instheader = (AMFFCHUNK_INSTRUMENT *)(lpStream + dwMemPos);
                 dwMemPos += sizeof(AMFFCHUNK_INSTRUMENT);
 
-                const INSTRUMENTINDEX nIns = instheader->index + 1;
+                const modplug::tracker::instrumentindex_t nIns = instheader->index + 1;
                 if(nIns >= MAX_INSTRUMENTS)
                     break;
 
@@ -590,7 +590,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                     if(m_nSamples + 1 >= MAX_SAMPLES)
                         break;
 
-                    const SAMPLEINDEX nSmp = ++m_nSamples;
+                    const modplug::tracker::sampleindex_t nSmp = ++m_nSamples;
 
                     MemsetZero(Samples[nSmp]);
 
@@ -654,7 +654,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 const AMCHUNK_INSTRUMENT *instheader = (AMCHUNK_INSTRUMENT *)(lpStream + dwMemPos);
                 dwMemPos += sizeof(AMCHUNK_INSTRUMENT);
 
-                const INSTRUMENTINDEX nIns = instheader->index + 1;
+                const modplug::tracker::instrumentindex_t nIns = instheader->index + 1;
                 if(nIns >= MAX_INSTRUMENTS)
                     break;
 
@@ -715,7 +715,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                     // Moved this stuff here (was below the next ASSERT_CAN_READ_CHUNK) because of instrument 12 in Carrotus.j2b
                     if(m_nSamples + 1 >= MAX_SAMPLES)
                         break;
-                    const SAMPLEINDEX nSmp = ++m_nSamples;
+                    const modplug::tracker::sampleindex_t nSmp = ++m_nSamples;
 
                     ASSERT_CAN_READ_CHUNK(sizeof(AMCHUNK_SAMPLE));
                     const AMCHUNK_SAMPLE *smpchunk = (AMCHUNK_SAMPLE *)(lpStream + dwChunkPos);

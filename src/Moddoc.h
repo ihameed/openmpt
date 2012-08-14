@@ -222,8 +222,8 @@ public:
     void PostMessageToAllViews(UINT uMsg, WPARAM wParam=0, LPARAM lParam=0);
     void SendMessageToActiveViews(UINT uMsg, WPARAM wParam=0, LPARAM lParam=0);
     MODTYPE GetModType() const { return m_SndFile.m_nType; }
-    INSTRUMENTINDEX GetNumInstruments() const { return m_SndFile.m_nInstruments; }
-    SAMPLEINDEX GetNumSamples() const { return m_SndFile.m_nSamples; }
+    modplug::tracker::instrumentindex_t GetNumInstruments() const { return m_SndFile.m_nInstruments; }
+    modplug::tracker::sampleindex_t GetNumSamples() const { return m_SndFile.m_nSamples; }
     BOOL AddToLog(LPCSTR lpszLog);
     LPCSTR GetLog() const { return m_lpszLog; }
     BOOL ClearLog();
@@ -296,21 +296,21 @@ public:
     bool ConvertInstrumentsToSamples();
     UINT RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS]);
 
-    modplug::tracker::patternindex_t InsertPattern(modplug::tracker::orderindex_t nOrd = modplug::tracker::ORDERINDEX_INVALID, modplug::tracker::rowindex_t nRows = 64);
-    SAMPLEINDEX InsertSample(bool bLimit = false);
-    INSTRUMENTINDEX InsertInstrument(SAMPLEINDEX lSample = SAMPLEINDEX_INVALID, INSTRUMENTINDEX lDuplicate = INSTRUMENTINDEX_INVALID);
+    modplug::tracker::patternindex_t InsertPattern(modplug::tracker::orderindex_t nOrd = modplug::tracker::OrderIndexInvalid, modplug::tracker::rowindex_t nRows = 64);
+    modplug::tracker::sampleindex_t InsertSample(bool bLimit = false);
+    modplug::tracker::instrumentindex_t InsertInstrument(modplug::tracker::sampleindex_t lSample = modplug::tracker::SampleIndexInvalid, modplug::tracker::instrumentindex_t lDuplicate = modplug::tracker::InstrumentIndexInvalid);
     void InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT nsample=0);
-    bool RemoveOrder(SEQUENCEINDEX nSeq, modplug::tracker::orderindex_t nOrd);
+    bool RemoveOrder(modplug::tracker::sequenceindex_t nSeq, modplug::tracker::orderindex_t nOrd);
     bool RemovePattern(modplug::tracker::patternindex_t nPat);
-    bool RemoveSample(SAMPLEINDEX nSmp);
-    bool RemoveInstrument(INSTRUMENTINDEX nIns);
+    bool RemoveSample(modplug::tracker::sampleindex_t nSmp);
+    bool RemoveInstrument(modplug::tracker::instrumentindex_t nIns);
     UINT PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol=-1, LONG loopstart=0, LONG loopend=0, int nCurrentChn=-1, const uint32_t nStartPos = UINT32_MAX); //rewbs.vstiLive: added current chan param
     BOOL NoteOff(UINT note, BOOL bFade=FALSE, UINT nins=-1, UINT nCurrentChn=-1); //rewbs.vstiLive: add params
 
     BOOL IsNotePlaying(UINT note, UINT nsmp=0, UINT nins=0);
     bool MuteChannel(modplug::tracker::chnindex_t nChn, bool bMute);
-    bool MuteSample(SAMPLEINDEX nSample, bool bMute);
-    bool MuteInstrument(INSTRUMENTINDEX nInstr, bool bMute);
+    bool MuteSample(modplug::tracker::sampleindex_t nSample, bool bMute);
+    bool MuteInstrument(modplug::tracker::instrumentindex_t nInstr, bool bMute);
 // -> CODE#0012
 // -> DESC="midi keyboard split"
     bool SoloChannel(modplug::tracker::chnindex_t nChn, bool bSolo);
@@ -320,8 +320,8 @@ public:
     bool SetChannelGlobalVolume(modplug::tracker::chnindex_t nChn, UINT nVolume);
     bool SetChannelDefaultPan(modplug::tracker::chnindex_t nChn, UINT nPan);
     bool IsChannelMuted(modplug::tracker::chnindex_t nChn) const;
-    bool IsSampleMuted(SAMPLEINDEX nSample) const;
-    bool IsInstrumentMuted(INSTRUMENTINDEX nInstr) const;
+    bool IsSampleMuted(modplug::tracker::sampleindex_t nSample) const;
+    bool IsInstrumentMuted(modplug::tracker::instrumentindex_t nInstr) const;
 // -> CODE#0015
 // -> DESC="channels management dlg"
     bool NoFxChannel(modplug::tracker::chnindex_t nChn, bool bNoFx, bool updateMix = true);
@@ -339,7 +339,7 @@ public:
     BOOL IsChildSample(UINT nIns, UINT nSmp) const;
     UINT FindSampleParent(UINT nSmp) const;
     UINT FindInstrumentChild(UINT nIns) const;
-    bool MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate = true, bool bCopy = false, SEQUENCEINDEX nSourceSeq = SEQUENCEINDEX_INVALID, SEQUENCEINDEX nDestSeq = SEQUENCEINDEX_INVALID);
+    bool MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate = true, bool bCopy = false, modplug::tracker::sequenceindex_t nSourceSeq = modplug::tracker::SequenceIndexInvalid, modplug::tracker::sequenceindex_t nDestSeq = modplug::tracker::SequenceIndexInvalid);
     BOOL ExpandPattern(modplug::tracker::patternindex_t nPattern);
     BOOL ShrinkPattern(modplug::tracker::patternindex_t nPattern);
 

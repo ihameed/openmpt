@@ -362,7 +362,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if(pSndFile == nullptr) return false;
 
-    const SEQUENCEINDEX maxSeqIndex = pSndFile->Order.GetNumSequences();
+    const modplug::tracker::sequenceindex_t maxSeqIndex = pSndFile->Order.GetNumSequences();
     const modplug::tracker::patternindex_t maxPatIndex = pSndFile->Patterns.Size();
     vector<OrigPatSettings> patternSettings(maxPatIndex, defaultSettings);
 
@@ -374,7 +374,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     BeginWaitCursor();
     // First, find all used patterns in all sequences.
     modplug::tracker::patternindex_t maxpat = 0;
-    for(SEQUENCEINDEX nSeq = 0; nSeq < maxSeqIndex; nSeq++)
+    for(modplug::tracker::sequenceindex_t nSeq = 0; nSeq < maxSeqIndex; nSeq++)
     {
             for (modplug::tracker::orderindex_t nOrd = 0; nOrd < pSndFile->Order.GetSequence(nSeq).GetLength(); nOrd++)
             {
@@ -427,13 +427,13 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
     }
 
     for(modplug::tracker::patternindex_t i = 0; i < maxPatIndex; i++)
-            patternSettings[i].newIndex = modplug::tracker::PATTERNINDEX_INVALID;
+            patternSettings[i].newIndex = modplug::tracker::PatternIndexInvalid;
 
-    SEQUENCEINDEX oldSequence = pSndFile->Order.GetCurrentSequenceIndex();        // workaround, as GetSequence doesn't allow writing to sequences ATM
+    modplug::tracker::sequenceindex_t oldSequence = pSndFile->Order.GetCurrentSequenceIndex();        // workaround, as GetSequence doesn't allow writing to sequences ATM
 
     // Re-order pattern numbers based on sequence
     modplug::tracker::patternindex_t nPats = 0;        // last used index
-    for(SEQUENCEINDEX nSeq = 0; nSeq < maxSeqIndex; nSeq++)
+    for(modplug::tracker::sequenceindex_t nSeq = 0; nSeq < maxSeqIndex; nSeq++)
     {
             pSndFile->Order.SetSequence(nSeq);
             modplug::tracker::orderindex_t imap = 0;
@@ -442,7 +442,7 @@ bool CModCleanupDlg::RemoveUnusedPatterns(bool bRemove)
                     modplug::tracker::patternindex_t n = pSndFile->Order.GetSequence(nSeq)[imap];
                     if (n < maxPatIndex)
                     {
-                            if (patternSettings[n].newIndex == modplug::tracker::PATTERNINDEX_INVALID) patternSettings[n].newIndex = nPats++;
+                            if (patternSettings[n].newIndex == modplug::tracker::PatternIndexInvalid) patternSettings[n].newIndex = nPats++;
                             pSndFile->Order[imap] = patternSettings[n].newIndex;
                     }
             }
@@ -523,7 +523,7 @@ bool CModCleanupDlg::RemoveUnusedSamples()
     vector<bool> samplesUsed(pSndFile->GetNumSamples() + 1, true);
 
     BeginWaitCursor();
-    for (SAMPLEINDEX nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].sample_data)
+    for (modplug::tracker::sampleindex_t nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].sample_data)
     {
             if (!pSndFile->IsSampleUsed(nSmp))
             {
@@ -532,10 +532,10 @@ bool CModCleanupDlg::RemoveUnusedSamples()
             }
     }
     BEGIN_CRITICAL();
-    SAMPLEINDEX nRemoved = pSndFile->RemoveSelectedSamples(samplesUsed);
+    modplug::tracker::sampleindex_t nRemoved = pSndFile->RemoveSelectedSamples(samplesUsed);
     END_CRITICAL();
 
-    SAMPLEINDEX nExt = pSndFile->DetectUnusedSamples(samplesUsed);
+    modplug::tracker::sampleindex_t nExt = pSndFile->DetectUnusedSamples(samplesUsed);
 
     EndWaitCursor();
 
@@ -545,7 +545,7 @@ bool CModCleanupDlg::RemoveUnusedSamples()
                     "but not used in the song. Do you want to remove them?", nExt, (nExt == 1) ? "" : "s");
             if (::MessageBox(NULL, s, "Sample Cleanup", MB_YESNO | MB_ICONQUESTION) == IDYES)
             {
-                    for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
+                    for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
                     {
                             if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].sample_data))
                             {
@@ -576,7 +576,7 @@ bool CModCleanupDlg::OptimizeSamples()
 
     UINT nLoopOpt = 0;
 
-    for (SAMPLEINDEX nSmp=1; nSmp <= pSndFile->m_nSamples; nSmp++)
+    for (modplug::tracker::sampleindex_t nSmp=1; nSmp <= pSndFile->m_nSamples; nSmp++)
     {
             if(pSndFile->Samples[nSmp].sample_data && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
                     && (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2)) nLoopOpt++;
@@ -588,7 +588,7 @@ bool CModCleanupDlg::OptimizeSamples()
             "Do you want to optimize %s and remove this unused data?", nLoopOpt, (nLoopOpt == 1) ? " has" : "s have", (nLoopOpt == 1) ? "it" : "them");
     if (::MessageBox(NULL, s, "Sample Optimization", MB_YESNO | MB_ICONQUESTION) == IDYES)
     {
-            for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
+            for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
             {
                     if ((pSndFile->Samples[nSmp].flags & CHN_LOOP)
                             && (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2))
@@ -619,15 +619,15 @@ bool CModCleanupDlg::RearrangeSamples()
     if(pSndFile->m_nSamples < 2)
             return false;
 
-    SAMPLEINDEX nRemap = 0; // remap count
-    std::vector<SAMPLEINDEX> nSampleMap(pSndFile->GetNumSamples() + 1);
-    for(SAMPLEINDEX i = 0; i <= pSndFile->GetNumSamples(); i++)
+    modplug::tracker::sampleindex_t nRemap = 0; // remap count
+    std::vector<modplug::tracker::sampleindex_t> nSampleMap(pSndFile->GetNumSamples() + 1);
+    for(modplug::tracker::sampleindex_t i = 0; i <= pSndFile->GetNumSamples(); i++)
     {
             nSampleMap[i] = i;
     }
 
     // First, find out which sample slots are unused and create the new sample map
-    for(SAMPLEINDEX i = 1; i <= pSndFile->GetNumSamples(); i++)
+    for(modplug::tracker::sampleindex_t i = 1; i <= pSndFile->GetNumSamples(); i++)
     {
             if(!pSndFile->Samples[i].sample_data)
             {
@@ -643,7 +643,7 @@ bool CModCleanupDlg::RearrangeSamples()
             return false;
 
     // Now, move everything around
-    for(SAMPLEINDEX i = 1; i <= pSndFile->GetNumSamples(); i++)
+    for(modplug::tracker::sampleindex_t i = 1; i <= pSndFile->GetNumSamples(); i++)
     {
             if(nSampleMap[i] != i)
             {
@@ -656,7 +656,7 @@ bool CModCleanupDlg::RearrangeSamples()
                     memset(pSndFile->m_szNames[i], 0, sizeof(pSndFile->m_szNames[i]));
 
                     // Also update instrument mapping (if module is in instrument mode)
-                    for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->GetNumInstruments(); nIns++)
+                    for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= pSndFile->GetNumInstruments(); nIns++)
                     {
                             modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[nIns];
                             if(pIns)
@@ -699,11 +699,11 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
     if(pSndFile == nullptr) return false;
 
     vector<bool> usedmap;
-    INSTRUMENTINDEX swapmap[MAX_INSTRUMENTS];
-    INSTRUMENTINDEX swapdest[MAX_INSTRUMENTS];
+    modplug::tracker::instrumentindex_t swapmap[MAX_INSTRUMENTS];
+    modplug::tracker::instrumentindex_t swapdest[MAX_INSTRUMENTS];
     CHAR s[512];
     UINT nRemoved = 0;
-    INSTRUMENTINDEX nSwap, nIndex;
+    modplug::tracker::instrumentindex_t nSwap, nIndex;
     bool bReorg = false;
 
     if (!pSndFile->m_nInstruments) return false;
@@ -723,7 +723,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
     BeginWaitCursor();
     usedmap.resize(pSndFile->GetNumInstruments() + 1, false);
 
-    for(INSTRUMENTINDEX i = pSndFile->GetNumInstruments(); i >= 1; i--)
+    for(modplug::tracker::instrumentindex_t i = pSndFile->GetNumInstruments(); i >= 1; i--)
     {
             if (!pSndFile->IsInstrumentUsed(i))
             {
@@ -752,7 +752,7 @@ bool CModCleanupDlg::RemoveUnusedInstruments()
             BEGIN_CRITICAL();
             nSwap = 0;
             nIndex = 1;
-            for (INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
+            for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
             {
                     if (usedmap[nIns])
                     {
@@ -830,7 +830,7 @@ bool CModCleanupDlg::RemoveUnusedPlugins()
             }
 
             //Is the plugin used by an instrument?
-            for (INSTRUMENTINDEX nIns=1; nIns<=pSndFile->GetNumInstruments(); nIns++)
+            for (modplug::tracker::instrumentindex_t nIns=1; nIns<=pSndFile->GetNumInstruments(); nIns++)
             {
                     if (pSndFile->Instruments[nIns] && (pSndFile->Instruments[nIns]->nMixPlug == nPlug + 1))
                     {
@@ -893,7 +893,7 @@ bool CModCleanupDlg::ResetVariables()
     pSndFile->m_nRestartPos = 0;
 
     // reset instruments (if there are any)
-    for(INSTRUMENTINDEX i = 1; i <= pSndFile->GetNumInstruments(); i++) if(pSndFile->Instruments[i])
+    for(modplug::tracker::instrumentindex_t i = 1; i <= pSndFile->GetNumInstruments(); i++) if(pSndFile->Instruments[i])
     {
             pSndFile->Instruments[i]->fadeout = 256;
             pSndFile->Instruments[i]->global_volume = 64;
@@ -963,7 +963,7 @@ bool CModCleanupDlg::RemoveAllSamples()
     if (pSndFile->GetNumSamples() == 0) return false;
     vector<bool> keepSamples(pSndFile->GetNumSamples() + 1, false);
 
-    for (SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
+    for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
     {
             m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete, 0, pSndFile->Samples[nSmp].length);
     }
@@ -992,7 +992,7 @@ bool CModCleanupDlg::RemoveAllInstruments(bool bConfirm)
             }
     }
 
-    for (INSTRUMENTINDEX i = 1; i <= pSndFile->GetNumInstruments(); i++)
+    for (modplug::tracker::instrumentindex_t i = 1; i <= pSndFile->GetNumInstruments(); i++)
     {
             pSndFile->DestroyInstrument(i, -1);
     }

@@ -15,7 +15,7 @@ protected:
     CImageList m_bmpEnvBar;
     CRect m_rcClient;
     SIZE m_sizeTotal;
-    SAMPLEINDEX m_nSample;
+    modplug::tracker::sampleindex_t m_nSample;
     UINT m_nZoom, m_nScrollPos, m_nScrollFactor, m_nBtnMouseOver;
     uint32_t m_dwStatus, m_dwBeginSel, m_dwEndSel, m_dwBeginDrag, m_dwEndDrag;
     uint32_t m_dwMenuParam;
@@ -33,7 +33,7 @@ public:
 public:
     void UpdateScrollSize() {UpdateScrollSize(m_nZoom);}
     void UpdateScrollSize(const UINT nZoomOld);
-    BOOL SetCurrentSample(SAMPLEINDEX nSmp);
+    BOOL SetCurrentSample(modplug::tracker::sampleindex_t nSmp);
     BOOL SetZoom(UINT nZoom);
     LONG SampleToScreen(LONG n) const;
     uint32_t ScreenToSample(LONG x) const;
@@ -90,7 +90,7 @@ protected:
     afx_msg LRESULT OnNcHitTest(CPoint point);
 #else
     afx_msg UINT OnNcHitTest(CPoint point);
-#endif 
+#endif
     afx_msg void OnNcPaint();
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
     afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
@@ -139,4 +139,3 @@ protected:
 
 
 #endif
-

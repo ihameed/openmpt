@@ -68,7 +68,7 @@ public:
     bool ShowDialog();
     bool TestExpression();
     bool CanRenderSample();
-    bool RenderSample(module_renderer *pSndFile, SAMPLEINDEX nSample);
+    bool RenderSample(module_renderer *pSndFile, modplug::tracker::sampleindex_t nSample);
 
     CSampleGenerator();
 

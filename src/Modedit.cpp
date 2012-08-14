@@ -401,7 +401,7 @@ modplug::tracker::patternindex_t CModDoc::InsertPattern(modplug::tracker::orderi
 //------------------------------------------------------------------
 {
     const modplug::tracker::patternindex_t i = m_SndFile.Patterns.Insert(nRows);
-    if(i == modplug::tracker::PATTERNINDEX_INVALID)
+    if(i == modplug::tracker::PatternIndexInvalid)
             return i;
 
     //Increasing orderlist size if given order is beyond current limit,
@@ -416,7 +416,7 @@ modplug::tracker::patternindex_t CModDoc::InsertPattern(modplug::tracker::orderi
     for (UINT j=0; j<m_SndFile.Order.size(); j++)
     {
             if (m_SndFile.Order[j] == i) break;
-            if (m_SndFile.Order[j] == m_SndFile.Order.GetInvalidPatIndex() && nOrd == modplug::tracker::ORDERINDEX_INVALID)
+            if (m_SndFile.Order[j] == m_SndFile.Order.GetInvalidPatIndex() && nOrd == modplug::tracker::OrderIndexInvalid)
             {
                     m_SndFile.Order[j] = i;
                     break;
@@ -437,10 +437,10 @@ modplug::tracker::patternindex_t CModDoc::InsertPattern(modplug::tracker::orderi
 }
 
 
-SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
+modplug::tracker::sampleindex_t CModDoc::InsertSample(bool bLimit)
 //--------------------------------------------
 {
-    SAMPLEINDEX i = 1;
+    modplug::tracker::sampleindex_t i = 1;
     for(i = 1; i <= m_SndFile.m_nSamples; i++)
     {
             if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].sample_data == NULL))
@@ -453,7 +453,7 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
      || (i > m_SndFile.GetModSpecifications().samplesMax))
     {
             ErrorBox(IDS_ERR_TOOMANYSMP, CMainFrame::GetMainFrame());
-            return SAMPLEINDEX_INVALID;
+            return modplug::tracker::SampleIndexInvalid;
     }
     if (!m_SndFile.m_szNames[i][0]) strcpy(m_SndFile.m_szNames[i], "untitled");
     modplug::tracker::modsample_t *pSmp = &m_SndFile.Samples[i];
@@ -477,25 +477,25 @@ SAMPLEINDEX CModDoc::InsertSample(bool bLimit)
 
 // Insert a new instrument assigned to sample nSample or duplicate instrument nDuplicate.
 // If nSample is invalid, an approriate sample slot is selected. 0 means "no sample".
-INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX nDuplicate)
+modplug::tracker::instrumentindex_t CModDoc::InsertInstrument(modplug::tracker::sampleindex_t nSample, modplug::tracker::instrumentindex_t nDuplicate)
 //----------------------------------------------------------------------------------------
 {
     modplug::tracker::modinstrument_t *pDup = nullptr;
-    const INSTRUMENTINDEX nInstrumentMax = m_SndFile.GetModSpecifications().instrumentsMax - 1;
-    if ((m_SndFile.m_nType != MOD_TYPE_XM) && !(m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))) return INSTRUMENTINDEX_INVALID;
+    const modplug::tracker::instrumentindex_t nInstrumentMax = m_SndFile.GetModSpecifications().instrumentsMax - 1;
+    if ((m_SndFile.m_nType != MOD_TYPE_XM) && !(m_SndFile.m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))) return modplug::tracker::InstrumentIndexInvalid;
     if ((nDuplicate > 0) && (nDuplicate <= m_SndFile.m_nInstruments))
     {
             pDup = m_SndFile.Instruments[nDuplicate];
     }
     if ((!m_SndFile.m_nInstruments) && ((m_SndFile.m_nSamples > 1) || (m_SndFile.Samples[1].sample_data)))
     {
-            if (pDup) return INSTRUMENTINDEX_INVALID;
+            if (pDup) return modplug::tracker::InstrumentIndexInvalid;
             UINT n = CMainFrame::GetMainFrame()->MessageBox("Convert existing samples to instruments first?", NULL, MB_YESNOCANCEL|MB_ICONQUESTION);
             if (n == IDYES)
             {
-                    SAMPLEINDEX nInstruments = m_SndFile.m_nSamples;
+                    modplug::tracker::sampleindex_t nInstruments = m_SndFile.m_nSamples;
                     if (nInstruments > nInstrumentMax) nInstruments = nInstrumentMax;
-                    for (SAMPLEINDEX smp = 1; smp <= nInstruments; smp++)
+                    for (modplug::tracker::sampleindex_t smp = 1; smp <= nInstruments; smp++)
                     {
                             m_SndFile.Samples[smp].flags &= ~CHN_MUTE;
                             if (!m_SndFile.Instruments[smp])
@@ -504,7 +504,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
                                     if (!p)
                                     {
                                             ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
-                                            return INSTRUMENTINDEX_INVALID;
+                                            return modplug::tracker::InstrumentIndexInvalid;
                                     }
                                     InitializeInstrument(p, smp);
                                     m_SndFile.Instruments[smp] = p;
@@ -513,10 +513,10 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
                     }
                     m_SndFile.m_nInstruments = nInstruments;
             } else
-            if (n != IDNO) return INSTRUMENTINDEX_INVALID;
+            if (n != IDNO) return modplug::tracker::InstrumentIndexInvalid;
     }
     UINT newins = 0;
-    for (INSTRUMENTINDEX i = 1; i <= m_SndFile.m_nInstruments; i++)
+    for (modplug::tracker::instrumentindex_t i = 1; i <= m_SndFile.m_nInstruments; i++)
     {
             if (!m_SndFile.Instruments[i])
             {
@@ -529,21 +529,21 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
             if (m_SndFile.m_nInstruments >= nInstrumentMax)
             {
                     ErrorBox(IDS_ERR_TOOMANYINS, CMainFrame::GetMainFrame());
-                    return INSTRUMENTINDEX_INVALID;
+                    return modplug::tracker::InstrumentIndexInvalid;
             }
             newins = ++m_SndFile.m_nInstruments;
     }
     modplug::tracker::modinstrument_t *pIns = new modplug::tracker::modinstrument_t;
     if (pIns)
     {
-            SAMPLEINDEX newsmp = 0;
+            modplug::tracker::sampleindex_t newsmp = 0;
             if (nSample < m_SndFile.GetModSpecifications().samplesMax)
             {
                     newsmp = nSample;
             } else
             if (!pDup)
             {
-                    for(SAMPLEINDEX k = 1; k <= m_SndFile.m_nSamples; k++)
+                    for(modplug::tracker::sampleindex_t k = 1; k <= m_SndFile.m_nSamples; k++)
                     {
                             if (!m_SndFile.IsSampleUsed(k))
                             {
@@ -554,7 +554,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
                     if (!newsmp)
                     {
                             int inssmp = InsertSample();
-                            if (inssmp != SAMPLEINDEX_INVALID) newsmp = inssmp;
+                            if (inssmp != modplug::tracker::SampleIndexInvalid) newsmp = inssmp;
                     }
             }
             BEGIN_CRITICAL();
@@ -576,7 +576,7 @@ INSTRUMENTINDEX CModDoc::InsertInstrument(SAMPLEINDEX nSample, INSTRUMENTINDEX n
     } else
     {
             ErrorBox(IDS_ERR_OUTOFMEMORY, CMainFrame::GetMainFrame());
-            return INSTRUMENTINDEX_INVALID;
+            return modplug::tracker::InstrumentIndexInvalid;
     }
     return newins;
 }
@@ -602,14 +602,14 @@ void CModDoc::InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT
 }
 
 
-bool CModDoc::RemoveOrder(SEQUENCEINDEX nSeq, modplug::tracker::orderindex_t nOrd)
+bool CModDoc::RemoveOrder(modplug::tracker::sequenceindex_t nSeq, modplug::tracker::orderindex_t nOrd)
 //------------------------------------------------------------
 {
     if (nSeq >= m_SndFile.Order.GetNumSequences() || nOrd >= m_SndFile.Order.GetSequence(nSeq).size())
             return false;
 
     BEGIN_CRITICAL();
-    SEQUENCEINDEX nOldSeq = m_SndFile.Order.GetCurrentSequenceIndex();
+    modplug::tracker::sequenceindex_t nOldSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     m_SndFile.Order.SetSequence(nSeq);
     for (modplug::tracker::orderindex_t i = nOrd; i < m_SndFile.Order.GetSequence(nSeq).size() - 1; i++)
     {
@@ -639,7 +639,7 @@ bool CModDoc::RemovePattern(modplug::tracker::patternindex_t nPat)
 }
 
 
-bool CModDoc::RemoveSample(SAMPLEINDEX nSmp)
+bool CModDoc::RemoveSample(modplug::tracker::sampleindex_t nSmp)
 //------------------------------------------
 {
     if ((nSmp) && (nSmp <= m_SndFile.m_nSamples))
@@ -658,7 +658,7 @@ bool CModDoc::RemoveSample(SAMPLEINDEX nSmp)
 }
 
 
-bool CModDoc::RemoveInstrument(INSTRUMENTINDEX nIns)
+bool CModDoc::RemoveInstrument(modplug::tracker::instrumentindex_t nIns)
 //--------------------------------------------------
 {
     if ((nIns) && (nIns <= m_SndFile.m_nInstruments) && (m_SndFile.Instruments[nIns]))
@@ -677,19 +677,19 @@ bool CModDoc::RemoveInstrument(INSTRUMENTINDEX nIns)
 }
 
 
-bool CModDoc::MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate, bool bCopy, SEQUENCEINDEX nSourceSeq, SEQUENCEINDEX nDestSeq)
+bool CModDoc::MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate, bool bCopy, modplug::tracker::sequenceindex_t nSourceSeq, modplug::tracker::sequenceindex_t nDestSeq)
 //---------------------------------------------------------------------------------------------------------------------------------------------
 {
     if (max(nSourceNdx, nDestNdx) >= m_SndFile.Order.size()) return false;
     if (nDestNdx >= m_SndFile.GetModSpecifications().ordersMax) return false;
 
-    if(nSourceSeq == SEQUENCEINDEX_INVALID) nSourceSeq = m_SndFile.Order.GetCurrentSequenceIndex();
-    if(nDestSeq == SEQUENCEINDEX_INVALID) nDestSeq = m_SndFile.Order.GetCurrentSequenceIndex();
+    if(nSourceSeq == modplug::tracker::SequenceIndexInvalid) nSourceSeq = m_SndFile.Order.GetCurrentSequenceIndex();
+    if(nDestSeq == modplug::tracker::SequenceIndexInvalid) nDestSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     if (max(nSourceSeq, nDestSeq) >= m_SndFile.Order.GetNumSequences()) return false;
     modplug::tracker::patternindex_t nSourcePat = m_SndFile.Order.GetSequence(nSourceSeq)[nSourceNdx];
 
     // save current working sequence
-    SEQUENCEINDEX nWorkingSeq = m_SndFile.Order.GetCurrentSequenceIndex();
+    modplug::tracker::sequenceindex_t nWorkingSeq = m_SndFile.Order.GetCurrentSequenceIndex();
 
     // Delete source
     if (!bCopy)
@@ -1393,7 +1393,7 @@ bool CModDoc::RestartPosToPattern()
 {
     bool result = false;
     GetLengthType length = m_SndFile.GetLength(eNoAdjust);
-    if(length.endOrder != modplug::tracker::ORDERINDEX_INVALID && length.endRow != RowIndexInvalid)
+    if(length.endOrder != modplug::tracker::OrderIndexInvalid && length.endRow != RowIndexInvalid)
     {
             result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, ChannelIndexInvalid, false, weTryNextRow);
     }

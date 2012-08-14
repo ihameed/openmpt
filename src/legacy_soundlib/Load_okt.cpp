@@ -57,10 +57,10 @@ struct OKT_SAMPLEINFO
 void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vector<bool> &sample7bit, module_renderer *pSndFile)
 //------------------------------------------------------------------------------------------------------------------
 {
-    pSndFile->m_nSamples = min((SAMPLEINDEX)(dwMemLength / 32), MAX_SAMPLES - 1);        // typically 36
+    pSndFile->m_nSamples = min((modplug::tracker::sampleindex_t)(dwMemLength / 32), MAX_SAMPLES - 1);        // typically 36
     sample7bit.resize(pSndFile->GetNumSamples());
 
-    for(SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
+    for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
     {
             modsample_t *pSmp = &pSndFile->Samples[nSmp];
             OKT_SAMPLE oktsmp;
@@ -404,7 +404,7 @@ bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLengt
 
     // Read samples
     size_t nFileSmp = 0;
-    for(SAMPLEINDEX nSmp = 1; nSmp < m_nSamples; nSmp++)
+    for(modplug::tracker::sampleindex_t nSmp = 1; nSmp < m_nSamples; nSmp++)
     {
             if(nFileSmp >= samplePos.size())
                     break;

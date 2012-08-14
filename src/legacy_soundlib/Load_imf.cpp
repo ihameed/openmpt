@@ -479,7 +479,7 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
     }
 
     // read instruments
-    for (INSTRUMENTINDEX nIns = 0; nIns < hdr.insnum; nIns++)
+    for (modplug::tracker::instrumentindex_t nIns = 0; nIns < hdr.insnum; nIns++)
     {
         IMFINSTRUMENT imfins;
         modinstrument_t *pIns;
@@ -530,7 +530,7 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
             pIns->fadeout = 8192;
 
         // read this instrument's samples
-        for(SAMPLEINDEX nSmp = 0; nSmp < imfins.smpnum; nSmp++)
+        for(modplug::tracker::sampleindex_t nSmp = 0; nSmp < imfins.smpnum; nSmp++)
         {
             IMFSAMPLE imfsmp;
             uint32_t blen;

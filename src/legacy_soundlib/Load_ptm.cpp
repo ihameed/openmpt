@@ -104,7 +104,7 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
         ChnSettings[ipan].nVolume = 64;
         ChnSettings[ipan].nPan = ((pfh.chnpan[ipan] & 0x0F) << 4) + 4;
     }
-    for (SAMPLEINDEX ismp = 0; ismp < m_nSamples; ismp++, dwMemPos += SIZEOF_PTMSAMPLE)
+    for (modplug::tracker::sampleindex_t ismp = 0; ismp < m_nSamples; ismp++, dwMemPos += SIZEOF_PTMSAMPLE)
     {
         modsample_t *pSmp = &Samples[ismp+1];
         PTMSAMPLE *psmp = (PTMSAMPLE *)(lpStream+dwMemPos);

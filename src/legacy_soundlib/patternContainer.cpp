@@ -31,7 +31,7 @@ modplug::tracker::patternindex_t CPatternContainer::Insert(const modplug::tracke
     for(i = 0; i < m_Patterns.size(); i++)
             if(!m_Patterns[i]) break;
     if(Insert(i, rows))
-            return modplug::tracker::PATTERNINDEX_INVALID;
+            return modplug::tracker::PatternIndexInvalid;
     else return i;
 
 }

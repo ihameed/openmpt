@@ -222,7 +222,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
         if (chunk_id == DBM_ID_INST)
         {
             if (nInstruments >= MAX_INSTRUMENTS) nInstruments = MAX_INSTRUMENTS-1;
-            for(INSTRUMENTINDEX iIns = 0; iIns < nInstruments; iIns++)
+            for(modplug::tracker::instrumentindex_t iIns = 0; iIns < nInstruments; iIns++)
             {
                 modsample_t *psmp;
                 modinstrument_t *pIns;

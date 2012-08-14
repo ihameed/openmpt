@@ -46,8 +46,8 @@ MPTM version history for cwtv-field in "IT" header (only for MPTM files!):
 static bool AreNonDefaultTuningsUsed(module_renderer& sf)
 //--------------------------------------------------
 {
-    const INSTRUMENTINDEX iCount = sf.GetNumInstruments();
-    for(INSTRUMENTINDEX i = 1; i <= iCount; i++)
+    const modplug::tracker::instrumentindex_t iCount = sf.GetNumInstruments();
+    for(modplug::tracker::instrumentindex_t i = 1; i <= iCount; i++)
     {
         if(sf.Instruments[i] != nullptr && sf.Instruments[i]->pTuning != 0)
             return true;
@@ -1431,7 +1431,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         header.cwtv = LittleEndianW(0x5000 | (uint16_t)((vVersion >> 16) & 0x0FFF)); // format: txyy (t = tracker ID, x = version major, yy = version minor), e.g. 0x5117 (OpenMPT = 5, 117 = v1.17)
         header.cmwt = LittleEndianW(0x0214);    // Common compatible tracker :)
         // hack from schism tracker:
-        for(INSTRUMENTINDEX nIns = 1; nIns <= GetNumInstruments(); nIns++)
+        for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= GetNumInstruments(); nIns++)
         {
             if(Instruments[nIns] && Instruments[nIns]->pitch_envelope.flags & ENV_FILTER)
             {
@@ -2046,7 +2046,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
     header.cwtv = LittleEndianW(0x5000 | (uint16_t)((vVersion >> 16) & 0x0FFF)); // format: txyy (t = tracker ID, x = version major, yy = version minor), e.g. 0x5117 (OpenMPT = 5, 117 = v1.17)
     header.cmwt = LittleEndianW(0x0214);    // Common compatible tracker :)
     // hack from schism tracker:
-    for(INSTRUMENTINDEX nIns = 1; nIns <= GetNumInstruments(); nIns++)
+    for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= GetNumInstruments(); nIns++)
     {
         if(Instruments[nIns] && Instruments[nIns]->pitch_envelope.flags & ENV_FILTER)
         {
@@ -2971,7 +2971,7 @@ void module_renderer::SaveExtendedInstrumentProperties(modinstrument_t *instrume
 
     if (m_nType & MOD_TYPE_MPT) {
         UINT maxNodes = 0;
-        for (INSTRUMENTINDEX nIns = 1; nIns <= m_nInstruments; nIns++) if(Instruments[nIns] != nullptr) {
+        for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_nInstruments; nIns++) if(Instruments[nIns] != nullptr) {
             maxNodes = max(maxNodes, Instruments[nIns]->volume_envelope.num_nodes);
             maxNodes = max(maxNodes, Instruments[nIns]->panning_envelope.num_nodes);
             maxNodes = max(maxNodes, Instruments[nIns]->pitch_envelope.num_nodes);

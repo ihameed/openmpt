@@ -37,8 +37,8 @@ struct CModSpecifications
     uint16_t sampleFilenameLengthMax;        // Dito
     uint16_t instrNameLengthMax;                // Dito
     uint16_t instrFilenameLengthMax;        // Dito
-    SAMPLEINDEX samplesMax;
-    INSTRUMENTINDEX instrumentsMax;
+    modplug::tracker::sampleindex_t samplesMax;
+    modplug::tracker::instrumentindex_t instrumentsMax;
     uint8_t defaultMixLevels;
     uint8_t MIDIMappingDirectivesMax;
     UINT speedMin;                                        // Minimum ticks per frame

@@ -184,7 +184,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
     // m_nInstruments
     ASSERT_CAN_READ(4);
     memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
-    m_nInstruments = (INSTRUMENTINDEX)id;
+    m_nInstruments = (modplug::tracker::instrumentindex_t)id;
     if(m_nInstruments > MAX_INSTRUMENTS) return false;
     dwMemPos += sizeof(uint32_t);
 
@@ -297,7 +297,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
     ASSERT_CAN_READ(4);
     memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
     if(id > MAX_SAMPLES) return false;
-    m_nSamples = (SAMPLEINDEX)id;
+    m_nSamples = (modplug::tracker::sampleindex_t)id;
     dwMemPos += sizeof(uint32_t);
 
     // Read number of embeded samples
@@ -384,7 +384,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
     CMappedFile f;
     LPBYTE lpFile;
 
-    for(INSTRUMENTINDEX i = 0; i < m_nInstruments; i++)
+    for(modplug::tracker::instrumentindex_t i = 0; i < m_nInstruments; i++)
     {
 
         if(m_szInstrumentPath[i][0] == '\0' || !f.Open(m_szInstrumentPath[i])) continue;

@@ -278,7 +278,7 @@ void CCtrlPatterns::UpdateView(uint32_t dwHintMask, CObject *pObj)
                     m_CbnInstrument.SetRedraw(FALSE);
                     m_CbnInstrument.ResetContent();
                     m_CbnInstrument.SetItemData(m_CbnInstrument.AddString(" No Instrument"), 0);
-                    const INSTRUMENTINDEX nSplitIns = m_pModDoc->GetSplitKeyboardSettings()->splitInstrument;
+                    const modplug::tracker::instrumentindex_t nSplitIns = m_pModDoc->GetSplitKeyboardSettings()->splitInstrument;
                     const modplug::tracker::note_t noteSplit = 1 + m_pModDoc->GetSplitKeyboardSettings()->splitNote;
                     const CString sSplitInsName = m_pModDoc->GetPatternViewInstrumentName(nSplitIns, true, false);
                     if (m_pSndFile->m_nInstruments)
@@ -526,7 +526,7 @@ BOOL CCtrlPatterns::SetCurrentInstrument(UINT nIns)
                     if (m_CbnInstrument.GetItemData(i) == nIns)
                     {
                             m_CbnInstrument.SetCurSel(i);
-                            m_nInstrument = static_cast<INSTRUMENTINDEX>(nIns);
+                            m_nInstrument = static_cast<modplug::tracker::instrumentindex_t>(nIns);
                             //rewbs.instroVST
                             if (HasValidPlug(m_nInstrument))
                                     ::EnableWindow(::GetDlgItem(m_hWnd, IDC_PATINSTROPLUGGUI), true);
@@ -562,7 +562,7 @@ void CCtrlPatterns::OnActivatePage(LPARAM lParam)
             modplug::tracker::patternindex_t nPat = (modplug::tracker::patternindex_t)(lParam & 0x7FFF);
             if(m_pSndFile->Patterns.IsValidIndex(nPat))
             {
-                    for (SEQUENCEINDEX nSeq = 0; nSeq < m_pSndFile->Order.GetNumSequences(); nSeq++)
+                    for (modplug::tracker::sequenceindex_t nSeq = 0; nSeq < m_pSndFile->Order.GetNumSequences(); nSeq++)
                     {
                             for (modplug::tracker::orderindex_t nOrd = 0; nOrd < m_pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd++)
                             {
@@ -581,7 +581,7 @@ void CCtrlPatterns::OnActivatePage(LPARAM lParam)
     {
             // Order item
             modplug::tracker::orderindex_t nOrd = (modplug::tracker::orderindex_t)(lParam & 0x7FFF);
-            SEQUENCEINDEX nSeq = (SEQUENCEINDEX)(lParam >> 16);
+            modplug::tracker::sequenceindex_t nSeq = (modplug::tracker::sequenceindex_t)(lParam >> 16);
             if(nSeq < m_pSndFile->Order.GetNumSequences())
             {
                     m_OrderList.SelectSequence(nSeq);
@@ -722,7 +722,7 @@ void CCtrlPatterns::OnInstrumentChanged()
             int nmax = (m_pSndFile->m_nInstruments) ? m_pSndFile->m_nInstruments : m_pSndFile->m_nSamples;
             if ((n >= 0) && (n <= nmax) && (n != (int)m_nInstrument))
             {
-                    m_nInstrument = static_cast<INSTRUMENTINDEX>(n);
+                    m_nInstrument = static_cast<modplug::tracker::instrumentindex_t>(n);
                     if (m_pParent) m_pParent->InstrumentChanged(m_nInstrument);
             }
             SwitchToView();
@@ -788,7 +788,7 @@ void CCtrlPatterns::OnPatternNew()
                     rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
             }
             modplug::tracker::patternindex_t nNewPat = m_pModDoc->InsertPattern(nCurOrd, rows);
-            if ((nNewPat != modplug::tracker::PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()))
+            if ((nNewPat != modplug::tracker::PatternIndexInvalid) && (nNewPat < pSndFile->Patterns.Size()))
             {
                     // update time signature
                     if(pSndFile->Patterns.IsValidIndex(nCurPat) && pSndFile->Patterns[nCurPat].GetOverrideSignature())
@@ -823,19 +823,19 @@ void CCtrlPatterns::OnPatternDuplicate()
             bool bSuccess = false;
             // has this pattern been duplicated already? (for multiselect)
             vector<modplug::tracker::patternindex_t> pReplaceIndex;
-            pReplaceIndex.resize(pSndFile->Patterns.Size(), modplug::tracker::PATTERNINDEX_INVALID);
+            pReplaceIndex.resize(pSndFile->Patterns.Size(), modplug::tracker::PatternIndexInvalid);
 
             for(modplug::tracker::orderindex_t i = 0; i <= nInsertCount; i++)
             {
                     modplug::tracker::patternindex_t nCurPat = pSndFile->Order[selection.nOrdLo + i];
                     modplug::tracker::rowindex_t rows = 64;
-                    if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == modplug::tracker::PATTERNINDEX_INVALID)
+                    if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == modplug::tracker::PatternIndexInvalid)
                     {
                             rows = pSndFile->Patterns[nCurPat].GetNumRows();
                             rows = CLAMP(rows, pSndFile->GetModSpecifications().patternRowsMin, pSndFile->GetModSpecifications().patternRowsMax);
 
                             modplug::tracker::patternindex_t nNewPat = m_pModDoc->InsertPattern(nInsertWhere + i, rows);
-                            if ((nNewPat != modplug::tracker::PATTERNINDEX_INVALID) && (nNewPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nCurPat] != nullptr))
+                            if ((nNewPat != modplug::tracker::PatternIndexInvalid) && (nNewPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nCurPat] != nullptr))
                             {
                                     // update time signature
                                     if(pSndFile->Patterns[nCurPat].GetOverrideSignature())
@@ -862,7 +862,7 @@ void CCtrlPatterns::OnPatternDuplicate()
                             // invalid pattern, or it has been duplicated before (multiselect)
                             for (int j = pSndFile->Order.size() - 1; j > selection.nOrdLo + i + nInsertCount + 1; j--) pSndFile->Order[j] = pSndFile->Order[j - 1];
                             modplug::tracker::patternindex_t nNewPat;
-                            if(nCurPat < pSndFile->Patterns.Size() && pReplaceIndex[nCurPat] != modplug::tracker::PATTERNINDEX_INVALID)
+                            if(nCurPat < pSndFile->Patterns.Size() && pReplaceIndex[nCurPat] != modplug::tracker::PatternIndexInvalid)
                                     nNewPat = pReplaceIndex[nCurPat]; // take care of patterns that have been duplicated before
                             else
                                     nNewPat= pSndFile->Order[selection.nOrdLo + i];
@@ -1273,7 +1273,7 @@ void CCtrlPatterns::OnSequenceNumChanged()
 {
     if ((m_EditSequence.m_hWnd) && (m_EditSequence.GetWindowTextLength() > 0))
     {
-            SEQUENCEINDEX newSeq = (SEQUENCEINDEX)GetDlgItemInt(IDC_EDIT_SEQNUM);
+            modplug::tracker::sequenceindex_t newSeq = (modplug::tracker::sequenceindex_t)GetDlgItemInt(IDC_EDIT_SEQNUM);
 
             // avoid reloading the order list and thus setting the document modified
             if(newSeq == m_pSndFile->Order.GetCurrentSequenceIndex())

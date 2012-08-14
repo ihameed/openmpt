@@ -298,8 +298,8 @@ VOID CModTree::AddDocument(CModDoc *pModDoc)
             if (pInfo)
             {
                     pInfo->pModDoc = pModDoc;
-                    pInfo->nSeqSel = SEQUENCEINDEX_INVALID;
-                    pInfo->nOrdSel = modplug::tracker::ORDERINDEX_INVALID;
+                    pInfo->nSeqSel = modplug::tracker::SequenceIndexInvalid;
+                    pInfo->nOrdSel = modplug::tracker::OrderIndexInvalid;
                     DocInfo[nNewNdx] = pInfo;
                     UpdateView(nNewNdx, HINT_MODTYPE);
                     if (pInfo->hSong)
@@ -738,8 +738,8 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
 
             HTREEITEM hAncestorNode = pInfo->hOrders;
 
-            SEQUENCEINDEX nSeqMin = 0, nSeqMax = pSndFile->Order.GetNumSequences() - 1;
-            SEQUENCEINDEX nHintParam = lHint >> HINT_SHIFT_SEQUENCE;
+            modplug::tracker::sequenceindex_t nSeqMin = 0, nSeqMax = pSndFile->Order.GetNumSequences() - 1;
+            modplug::tracker::sequenceindex_t nHintParam = lHint >> HINT_SHIFT_SEQUENCE;
             if ((hintFlagPart == HINT_SEQNAMES) && (nHintParam <= nSeqMax)) nSeqMin = nSeqMax = nHintParam;
 
             // Adjust caption of the "Sequence" node (if only one sequence exists, it should be labeled with the sequence name)
@@ -754,7 +754,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
             }
 
             // go through all sequences
-            for(SEQUENCEINDEX nSeq = nSeqMin; nSeq <= nSeqMax; nSeq++)
+            for(modplug::tracker::sequenceindex_t nSeq = nSeqMin; nSeq <= nSeqMax; nSeq++)
             {
                     if(pSndFile->Order.GetNumSequences() > 1)
                     {
@@ -899,10 +899,10 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
     // Add Samples
     if ((pInfo->hSamples) && (hintFlagPart != HINT_INSNAMES) && (hintFlagPart != HINT_PATNAMES))
     {
-            const SAMPLEINDEX nSmp = (SAMPLEINDEX)(lHint >> HINT_SHIFT_SMP);
-            SAMPLEINDEX smin = 1, smax = MAX_SAMPLES - 1;
+            const modplug::tracker::sampleindex_t nSmp = (modplug::tracker::sampleindex_t)(lHint >> HINT_SHIFT_SMP);
+            modplug::tracker::sampleindex_t smin = 1, smax = MAX_SAMPLES - 1;
             if ((hintFlagPart == HINT_SMPNAMES) && (nSmp) && (nSmp < MAX_SAMPLES)) { smin = smax = nSmp; }
-            for(SAMPLEINDEX nSmp = smin; nSmp <= smax; nSmp++)
+            for(modplug::tracker::sampleindex_t nSmp = smin; nSmp <= smax; nSmp++)
             {
                     if (nSmp <= pSndFile->m_nSamples)
                     {
@@ -941,8 +941,8 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
     // Add Instruments
     if ((pInfo->hInstruments) && (hintFlagPart != HINT_SMPNAMES) && (hintFlagPart != HINT_PATNAMES))
     {
-            INSTRUMENTINDEX smin = 1, smax = MAX_INSTRUMENTS - 1;
-            const INSTRUMENTINDEX nIns = (INSTRUMENTINDEX)(lHint >> HINT_SHIFT_INS);
+            modplug::tracker::instrumentindex_t smin = 1, smax = MAX_INSTRUMENTS - 1;
+            const modplug::tracker::instrumentindex_t nIns = (modplug::tracker::instrumentindex_t)(lHint >> HINT_SHIFT_INS);
             if ((hintFlagPart == HINT_INSNAMES) && (nIns) && (nIns < MAX_INSTRUMENTS))
             {
                     smin = smax = nIns;
@@ -960,7 +960,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
                             }
                     }
             }
-            for (INSTRUMENTINDEX nIns = smin; nIns <= smax; nIns++)
+            for (modplug::tracker::instrumentindex_t nIns = smin; nIns <= smax; nIns++)
             {
                     if ((nIns <= pSndFile->m_nInstruments) && (pSndFile->Instruments[nIns]))
                     {
@@ -1087,7 +1087,7 @@ uint64_t CModTree::GetModItem(HTREEITEM hItem)
                     if ((hItemParent == pSong->hOrders) || (hItemParentParent == pSong->hOrders))
                     {
                             // find sequence this item belongs to
-                            for(SEQUENCEINDEX nSeq = 0; nSeq < pSong->tiOrders.size(); nSeq++)
+                            for(modplug::tracker::sequenceindex_t nSeq = 0; nSeq < pSong->tiOrders.size(); nSeq++)
                             {
                                     if(hItem == pSong->tiSequences[nSeq]) return (MODITEM_SEQUENCE | (nSeq << 16));
                                     for(modplug::tracker::orderindex_t nOrd = 0; nOrd < pSong->tiOrders[nSeq].size(); nOrd++)
@@ -1404,14 +1404,14 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
             {
                     wsprintf(s, _T("Remove sequence %d?"), modItemID);
                     if(MessageBox(s, _T("Confirmation"), MB_YESNO | MB_DEFBUTTON2) == IDNO) break;
-                    pSndFile->Order.RemoveSequence((SEQUENCEINDEX)(modItemID));
+                    pSndFile->Order.RemoveSequence((modplug::tracker::sequenceindex_t)(modItemID));
                     pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE, NULL);
             }
             break;
 
     case MODITEM_ORDER:
             // might be slightly annoying to ask for confirmation here, and it's rather easy to restore the orderlist anyway.
-            if ((pModDoc) && (pModDoc->RemoveOrder((SEQUENCEINDEX)(modItemID >> 16), (modplug::tracker::orderindex_t)(modItemID & 0xFFFF))))
+            if ((pModDoc) && (pModDoc->RemoveOrder((modplug::tracker::sequenceindex_t)(modItemID >> 16), (modplug::tracker::orderindex_t)(modItemID & 0xFFFF))))
             {
                     pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE, NULL);
             }
@@ -1429,8 +1429,8 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
     case MODITEM_SAMPLE:
             wsprintf(s, _T("Remove sample %d?"), modItemID);
             if (pModDoc == nullptr || MessageBox(s, _T("Confirmation"), MB_YESNO | MB_DEFBUTTON2) == IDNO) break;
-            pModDoc->GetSampleUndo()->PrepareUndo((SAMPLEINDEX)modItemID, sundo_replace);
-            if (pModDoc->RemoveSample((SAMPLEINDEX)modItemID))
+            pModDoc->GetSampleUndo()->PrepareUndo((modplug::tracker::sampleindex_t)modItemID, sundo_replace);
+            if (pModDoc->RemoveSample((modplug::tracker::sampleindex_t)modItemID))
             {
                     pModDoc->UpdateAllViews(NULL, (UINT(modItemID) << HINT_SHIFT_SMP) | HINT_SMPNAMES|HINT_SAMPLEDATA|HINT_SAMPLEINFO);
             }
@@ -1439,7 +1439,7 @@ BOOL CModTree::DeleteTreeItem(HTREEITEM hItem)
     case MODITEM_INSTRUMENT:
             wsprintf(s, _T("Remove instrument %d?"), modItemID);
             if (pModDoc == nullptr || MessageBox(s, _T("Confirmation"), MB_YESNO | MB_DEFBUTTON2) == IDNO) break;
-            if (pModDoc->RemoveInstrument((INSTRUMENTINDEX)modItemID))
+            if (pModDoc->RemoveInstrument((modplug::tracker::instrumentindex_t)modItemID))
             {
                     pModDoc->UpdateAllViews(NULL, (UINT(modItemID) << HINT_SHIFT_INS) | HINT_MODTYPE|HINT_ENVELOPE|HINT_INSTRUMENT);
             }
@@ -2040,12 +2040,12 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
                     // drop an order somewhere
                     if (bDoDrop)
                     {
-                            SEQUENCEINDEX nSeqFrom = (SEQUENCEINDEX)(modItemDragID >> 16), nSeqTo = (SEQUENCEINDEX)(modItemDropID >> 16);
+                            modplug::tracker::sequenceindex_t nSeqFrom = (modplug::tracker::sequenceindex_t)(modItemDragID >> 16), nSeqTo = (modplug::tracker::sequenceindex_t)(modItemDropID >> 16);
                             modplug::tracker::orderindex_t nOrdFrom = (modplug::tracker::orderindex_t)(modItemDragID & 0xFFFF), nOrdTo = (modplug::tracker::orderindex_t)(modItemDropID & 0xFFFF);
                             if(modItemDropType == MODITEM_SEQUENCE)
                             {
                                     // drop on sequence -> attach
-                                    nSeqTo = (SEQUENCEINDEX)(modItemDropID & 0xFFFF);
+                                    nSeqTo = (modplug::tracker::sequenceindex_t)(modItemDropID & 0xFFFF);
                                     nOrdTo = pSndFile->Order.GetSequence(nSeqTo).GetLengthTailTrimmed();
                             }
 
@@ -2072,7 +2072,7 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
                             if(pDragDoc == nullptr) return false;
                             module_renderer *pDragSndFile = pDragDoc->GetSoundFile();
                             if(pDragSndFile == nullptr) return false;
-                            const SEQUENCEINDEX nOrigSeq = (SEQUENCEINDEX)modItemDragID;
+                            const modplug::tracker::sequenceindex_t nOrigSeq = (modplug::tracker::sequenceindex_t)modItemDragID;
                             const ModSequence *pOrigSeq = &(pDragSndFile->Order.GetSequence(nOrigSeq));
                             if(pOrigSeq == nullptr) return false;
 
@@ -2138,8 +2138,8 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
     UINT nDocNdx = GetDocumentIDFromModDoc(pModDoc);
     if(nDocNdx >= MODTREE_MAX_DOCUMENTS) return;
 
-    modplug::tracker::orderindex_t nNewOrd = (pNotify) ? pNotify->nOrder : modplug::tracker::ORDERINDEX_INVALID;
-    SEQUENCEINDEX nNewSeq = (pModDoc->GetSoundFile() != nullptr) ? pModDoc->GetSoundFile()->Order.GetCurrentSequenceIndex() : SEQUENCEINDEX_INVALID;
+    modplug::tracker::orderindex_t nNewOrd = (pNotify) ? pNotify->nOrder : modplug::tracker::OrderIndexInvalid;
+    modplug::tracker::sequenceindex_t nNewSeq = (pModDoc->GetSoundFile() != nullptr) ? pModDoc->GetSoundFile()->Order.GetCurrentSequenceIndex() : modplug::tracker::SequenceIndexInvalid;
     if (nNewOrd != DocInfo[nDocNdx]->nOrdSel || nNewSeq != DocInfo[nDocNdx]->nSeqSel)
     {
             DocInfo[nDocNdx]->nOrdSel = nNewOrd;
@@ -2173,7 +2173,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
             {
                     if(bUpdateSamples)
                     {
-                            for(SAMPLEINDEX nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
+                            for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->m_nSamples; nSmp++)
                             {
                                     if(pSndFile->Chn[nChn].sample == &pSndFile->Samples[nSmp])
                                     {
@@ -2184,7 +2184,7 @@ VOID CModTree::UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify)
                     }
                     if(bUpdateInstruments)
                     {
-                            for(INSTRUMENTINDEX nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
+                            for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= pSndFile->m_nInstruments; nIns++)
                             {
                                     if(pSndFile->Chn[nChn].instrument == pSndFile->Instruments[nIns])
                                     {
@@ -2405,11 +2405,11 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
                                     module_renderer *pSndFile = (pModDoc) ? pModDoc->GetSoundFile() : nullptr;
                                     if(pModDoc && pSndFile && (pModDoc->GetModType() == MOD_TYPE_MPT))
                                     {
-                                            if(pSndFile->Order.GetSequence((SEQUENCEINDEX)modItemID).GetLength() == 0)
+                                            if(pSndFile->Order.GetSequence((modplug::tracker::sequenceindex_t)modItemID).GetLength() == 0)
                                             {
                                                     nDefault = ID_MODTREE_SWITCHTO;
                                             }
-                                            isCurSeq = (pSndFile->Order.GetCurrentSequenceIndex() == (SEQUENCEINDEX)modItemID);
+                                            isCurSeq = (pSndFile->Order.GetCurrentSequenceIndex() == (modplug::tracker::sequenceindex_t)modItemID);
                                     }
 
                                     if(!isCurSeq)
@@ -2446,7 +2446,7 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
                                     if ((pModDoc) && (!pModDoc->GetNumInstruments()))
                                     {
                                             AppendMenu(hMenu, MF_SEPARATOR, NULL, "");
-                                            AppendMenu(hMenu, (pModDoc->IsSampleMuted((SAMPLEINDEX)modItemID) ? MF_CHECKED:0)|MF_STRING, ID_MODTREE_MUTE, "&Mute Sample");
+                                            AppendMenu(hMenu, (pModDoc->IsSampleMuted((modplug::tracker::sampleindex_t)modItemID) ? MF_CHECKED:0)|MF_STRING, ID_MODTREE_MUTE, "&Mute Sample");
                                             AppendMenu(hMenu, MF_STRING, ID_MODTREE_SOLO, "&Solo Sample");
                                             AppendMenu(hMenu, MF_STRING, ID_MODTREE_UNMUTEALL, "&Unmute all");
                                     }
@@ -2463,7 +2463,7 @@ void CModTree::OnItemRightClick(LPNMHDR, LRESULT *pResult)
                                     if ((pModDoc) && (pModDoc->GetNumInstruments()))
                                     {
                                             AppendMenu(hMenu, MF_SEPARATOR, NULL, "");
-                                            AppendMenu(hMenu, (pModDoc->IsInstrumentMuted((INSTRUMENTINDEX)modItemID) ? MF_CHECKED:0)|MF_STRING, ID_MODTREE_MUTE, "&Mute Instrument");
+                                            AppendMenu(hMenu, (pModDoc->IsInstrumentMuted((modplug::tracker::instrumentindex_t)modItemID) ? MF_CHECKED:0)|MF_STRING, ID_MODTREE_MUTE, "&Mute Instrument");
                                             AppendMenu(hMenu, MF_STRING, ID_MODTREE_SOLO, "&Solo Instrument");
                                             AppendMenu(hMenu, MF_STRING, ID_MODTREE_UNMUTEALL, "&Unmute all");
 // -> CODE#0023
@@ -2844,12 +2844,12 @@ void CModTree::OnMuteTreeItem()
     {
             if ((modItemType == MODITEM_SAMPLE) && (!pModDoc->GetNumInstruments()))
             {
-                    pModDoc->MuteSample((SAMPLEINDEX)modItemID, (pModDoc->IsSampleMuted((SAMPLEINDEX)modItemID)) ? false : true);
+                    pModDoc->MuteSample((modplug::tracker::sampleindex_t)modItemID, (pModDoc->IsSampleMuted((modplug::tracker::sampleindex_t)modItemID)) ? false : true);
                     UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_SMPNAMES | HINT_SAMPLEINFO);
             } else
             if ((modItemType == MODITEM_INSTRUMENT) && (pModDoc->GetNumInstruments()))
             {
-                    pModDoc->MuteInstrument((INSTRUMENTINDEX)modItemID, (pModDoc->IsInstrumentMuted((INSTRUMENTINDEX)modItemID)) ? false : true);
+                    pModDoc->MuteInstrument((modplug::tracker::instrumentindex_t)modItemID, (pModDoc->IsInstrumentMuted((modplug::tracker::instrumentindex_t)modItemID)) ? false : true);
                     UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_INSNAMES | HINT_INSTRUMENT);
             } else
             if ((modItemType == MODITEM_EFFECT))
@@ -2884,10 +2884,10 @@ void CModTree::OnSoloTreeItem()
     pModDoc = GetDocumentFromItem(hItem);
     if (pModDoc)
     {
-            INSTRUMENTINDEX nInstruments = pModDoc->GetNumInstruments();
+            modplug::tracker::instrumentindex_t nInstruments = pModDoc->GetNumInstruments();
             if ((modItemType == MODITEM_SAMPLE) && (!nInstruments))
             {
-                    for (SAMPLEINDEX nSmp = 1; nSmp <= pModDoc->GetNumSamples(); nSmp++)
+                    for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pModDoc->GetNumSamples(); nSmp++)
                     {
                             pModDoc->MuteSample(nSmp, (nSmp == modItemID) ? false : true);
                             UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_SMPNAMES | HINT_SAMPLEINFO);
@@ -2895,7 +2895,7 @@ void CModTree::OnSoloTreeItem()
             } else
             if ((modItemType == MODITEM_INSTRUMENT) && (nInstruments))
             {
-                    for (INSTRUMENTINDEX nIns = 1; nIns <= nInstruments; nIns++)
+                    for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= nInstruments; nIns++)
                     {
                             pModDoc->MuteInstrument(nIns, (nIns == modItemID) ? false : true);
                             UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_INSNAMES | HINT_INSTRUMENT);
@@ -2920,12 +2920,12 @@ void CModTree::OnUnmuteAllTreeItem()
     {
             if ((modItemType == MODITEM_SAMPLE) || (modItemType == MODITEM_INSTRUMENT))
             {
-                    for (SAMPLEINDEX nSmp = 1; nSmp <= pModDoc->GetNumSamples(); nSmp++)
+                    for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pModDoc->GetNumSamples(); nSmp++)
                     {
                             pModDoc->MuteSample(nSmp, false);
                             UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_SMPNAMES | HINT_SAMPLEINFO);
                     }
-                    for (INSTRUMENTINDEX nIns = 1; nIns <= pModDoc->GetNumInstruments(); nIns++)
+                    for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= pModDoc->GetNumInstruments(); nIns++)
                     {
                             pModDoc->MuteInstrument(nIns, false);
                             UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_INSNAMES | HINT_INSTRUMENT);
@@ -2950,7 +2950,7 @@ void CModTree::OnDuplicateTreeItem()
 
     if (pModDoc && pSndFile && ((modItemType == MODITEM_SEQUENCE) || (modItemType == MODITEM_HDR_ORDERS)))
     {
-            pSndFile->Order.SetSequence((SEQUENCEINDEX)modItemID);
+            pSndFile->Order.SetSequence((modplug::tracker::sequenceindex_t)modItemID);
             pSndFile->Order.AddSequence(true);
             pModDoc->SetModified();
             UpdateView(GetDocumentIDFromModDoc(pModDoc), HINT_SEQNAMES|HINT_MODSEQUENCE);
@@ -3056,9 +3056,9 @@ void CModTree::OnSaveItem()
                     BOOL xi  = _stricmp(&pSndFile->m_szInstrumentPath[modItemID - 1][size-2],"xi") == 0;
 
                     if(iti || (!iti && !xi  && pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT)))
-                            pSndFile->SaveITIInstrument((INSTRUMENTINDEX)modItemID, pSndFile->m_szInstrumentPath[modItemID - 1]);
+                            pSndFile->SaveITIInstrument((modplug::tracker::instrumentindex_t)modItemID, pSndFile->m_szInstrumentPath[modItemID - 1]);
                     if(xi  || (!xi  && !iti && pSndFile->m_nType == MOD_TYPE_XM))
-                            pSndFile->SaveXIInstrument((INSTRUMENTINDEX)modItemID, pSndFile->m_szInstrumentPath[modItemID - 1]);
+                            pSndFile->SaveXIInstrument((modplug::tracker::instrumentindex_t)modItemID, pSndFile->m_szInstrumentPath[modItemID - 1]);
 
                     pModDoc->m_bsInstrumentModified.reset(modItemID - 1);
             }

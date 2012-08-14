@@ -260,7 +260,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
 
     // Check for sample extensions
     foundHere = false;
-    for(SAMPLEINDEX i = 1; i <= m_SndFile.GetNumSamples(); i++)
+    for(modplug::tracker::sampleindex_t i = 1; i <= m_SndFile.GetNumSamples(); i++)
     {
             modplug::tracker::modsample_t &smp = m_SndFile.Samples[i];
             if(m_SndFile.GetType() == MOD_TYPE_XM && smp.GetNumChannels() > 1)
@@ -290,7 +290,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
     // Check for instrument extensions
     foundHere = false;
     bool foundEnvelopes = false;
-    for(INSTRUMENTINDEX i = 1; i <= m_SndFile.GetNumInstruments(); i++)
+    for(modplug::tracker::instrumentindex_t i = 1; i <= m_SndFile.GetNumInstruments(); i++)
     {
             modplug::tracker::modinstrument_t *instr = m_SndFile.Instruments[i];
             if(instr == nullptr) continue;

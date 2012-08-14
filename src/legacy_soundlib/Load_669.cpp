@@ -72,7 +72,7 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
     assign_without_padding(this->song_name, pfh->songmessage, 16);
 
     m_nSamples = pfh->samples;
-    for (SAMPLEINDEX nSmp = 1; nSmp <= m_nSamples; nSmp++, psmp++)
+    for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= m_nSamples; nSmp++, psmp++)
     {
         uint32_t len = LittleEndian(*((uint32_t *)(&psmp->length)));
         uint32_t loopstart = LittleEndian(*((uint32_t *)(&psmp->loopstart)));

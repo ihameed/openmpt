@@ -93,7 +93,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
     GetLengthType retval;
     retval.duration = 0.0;
     retval.targetReached = false;
-    retval.lastOrder = retval.endOrder = modplug::tracker::ORDERINDEX_INVALID;
+    retval.lastOrder = retval.endOrder = modplug::tracker::OrderIndexInvalid;
     retval.lastRow = retval.endRow = RowIndexInvalid;
 
 // -> CODE#0022
@@ -440,7 +440,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
         }
     }
 
-    if(retval.targetReached || endOrder == modplug::tracker::ORDERINDEX_INVALID || endRow == RowIndexInvalid)
+    if(retval.targetReached || endOrder == modplug::tracker::OrderIndexInvalid || endRow == RowIndexInvalid)
     {
         retval.lastOrder = nCurrentPattern;
         retval.lastRow = nRow;
@@ -450,7 +450,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
     // Store final variables
     if ((adjustMode & eAdjust))
     {
-        if (retval.targetReached || endOrder == modplug::tracker::ORDERINDEX_INVALID || endRow == RowIndexInvalid)
+        if (retval.targetReached || endOrder == modplug::tracker::OrderIndexInvalid || endRow == RowIndexInvalid)
         {
             // Target found, or there is no target (i.e. play whole song)...
             m_nGlobalVolume = nGlbVol;
@@ -1302,7 +1302,7 @@ BOOL module_renderer::ProcessEffects()
 {
     modplug::tracker::modchannel_t *pChn = Chn;
     modplug::tracker::rowindex_t nBreakRow = RowIndexInvalid, nPatLoopRow = RowIndexInvalid;
-    modplug::tracker::orderindex_t nPosJump = modplug::tracker::ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t nPosJump = modplug::tracker::OrderIndexInvalid;
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
@@ -1486,7 +1486,7 @@ BOOL module_renderer::ProcessEffects()
                     // This is only applied if the instrument column is empty and if there is either no note or a "normal" note (e.g. no note off)
                     if(instr == 0 && note <= NOTE_MAX)
                     {
-                        for(INSTRUMENTINDEX nIns = 1; nIns <= m_nInstruments; nIns++)
+                        for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_nInstruments; nIns++)
                         {
                             if(Instruments[nIns] == pChn->instrument)
                             {
@@ -2165,9 +2165,9 @@ BOOL module_renderer::ProcessEffects()
             }
         } else
         // Pattern Break / Position Jump only if no loop running
-        if ((nBreakRow != RowIndexInvalid) || (nPosJump != modplug::tracker::ORDERINDEX_INVALID))
+        if ((nBreakRow != RowIndexInvalid) || (nPosJump != modplug::tracker::OrderIndexInvalid))
         {
-            if (nPosJump == modplug::tracker::ORDERINDEX_INVALID) nPosJump = m_nCurrentPattern + 1;
+            if (nPosJump == modplug::tracker::OrderIndexInvalid) nPosJump = m_nCurrentPattern + 1;
             if (nBreakRow == RowIndexInvalid) nBreakRow = 0;
             m_dwSongFlags |= SONG_BREAKTOROW;
 

@@ -132,14 +132,14 @@ public:
     ModSequenceSet(module_renderer& sndFile);
 
     const ModSequence& GetSequence() {return GetSequence(GetCurrentSequenceIndex());}
-    const ModSequence& GetSequence(SEQUENCEINDEX nSeq) const;
-    ModSequence& GetSequence(SEQUENCEINDEX nSeq);
-    SEQUENCEINDEX GetNumSequences() const {return static_cast<SEQUENCEINDEX>(m_Sequences.size());}
-    void SetSequence(SEQUENCEINDEX);                        // Sets working sequence.
-    SEQUENCEINDEX AddSequence(bool bDuplicate = true);        // Adds new sequence. If bDuplicate is true, new sequence is a duplicate of the old one. Returns the ID of the new sequence.
+    const ModSequence& GetSequence(modplug::tracker::sequenceindex_t nSeq) const;
+    ModSequence& GetSequence(modplug::tracker::sequenceindex_t nSeq);
+    modplug::tracker::sequenceindex_t GetNumSequences() const {return static_cast<modplug::tracker::sequenceindex_t>(m_Sequences.size());}
+    void SetSequence(modplug::tracker::sequenceindex_t);                        // Sets working sequence.
+    modplug::tracker::sequenceindex_t AddSequence(bool bDuplicate = true);        // Adds new sequence. If bDuplicate is true, new sequence is a duplicate of the old one. Returns the ID of the new sequence.
     void RemoveSequence() {RemoveSequence(GetCurrentSequenceIndex());}
-    void RemoveSequence(SEQUENCEINDEX);                // Removes given sequence
-    SEQUENCEINDEX GetCurrentSequenceIndex() const {return m_nCurrentSeq;}
+    void RemoveSequence(modplug::tracker::sequenceindex_t);                // Removes given sequence
+    modplug::tracker::sequenceindex_t GetCurrentSequenceIndex() const {return m_nCurrentSeq;}
 
     void OnModTypeChanged(const MODTYPE oldtype);
 
@@ -163,7 +163,7 @@ private:
 
     modplug::tracker::patternindex_t m_Cache[s_nCacheSize];                // Local cache array.
     std::vector<ModSequence> m_Sequences;        // Array of sequences.
-    SEQUENCEINDEX m_nCurrentSeq;                        // Index of current sequence.
+    modplug::tracker::sequenceindex_t m_nCurrentSeq;                        // Index of current sequence.
 };
 
 

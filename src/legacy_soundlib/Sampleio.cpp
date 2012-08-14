@@ -18,7 +18,7 @@
 
 #pragma warning(disable:4244)
 
-bool module_renderer::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadSampleFromFile(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //--------------------------------------------------------------------------------------------
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
@@ -34,7 +34,7 @@ bool module_renderer::ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, 
 }
 
 
-bool module_renderer::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadInstrumentFromFile(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr >= MAX_INSTRUMENTS)) return false;
@@ -48,7 +48,7 @@ bool module_renderer::ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMe
 }
 
 
-bool module_renderer::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadSampleAsInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------------
 {
     uint32_t *psig = (uint32_t *)lpMemFile;
@@ -104,7 +104,7 @@ bool module_renderer::ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMe
 // -> CODE#0003
 // -> DESC="remove instrument's samples"
 // BOOL CSoundFile::DestroyInstrument(UINT nInstr)
-bool module_renderer::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples)
+bool module_renderer::DestroyInstrument(modplug::tracker::instrumentindex_t nInstr, char removeSamples)
 //----------------------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr > m_nInstruments)) return false;
@@ -145,7 +145,7 @@ bool module_renderer::DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSampl
 
 
 // Removing all unused samples
-bool module_renderer::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
+bool module_renderer::RemoveInstrumentSamples(modplug::tracker::instrumentindex_t nInstr)
 //--------------------------------------------------------------
 {
     vector<bool> sampleused(GetNumSamples() + 1, false);
@@ -158,7 +158,7 @@ bool module_renderer::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
             UINT n = p->Keyboard[r];
             if (n <= GetNumSamples()) sampleused[n] = true;
         }
-        for (INSTRUMENTINDEX nIns = 1; nIns < MAX_INSTRUMENTS; nIns++) if ((Instruments[nIns]) && (nIns != nInstr))
+        for (modplug::tracker::instrumentindex_t nIns = 1; nIns < MAX_INSTRUMENTS; nIns++) if ((Instruments[nIns]) && (nIns != nInstr))
         {
             p = Instruments[nIns];
             for (UINT r=0; r<128; r++)
@@ -167,7 +167,7 @@ bool module_renderer::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
                 if (n <= GetNumSamples()) sampleused[n] = false;
             }
         }
-        for (SAMPLEINDEX nSmp = 1; nSmp <= GetNumSamples(); nSmp++) if (sampleused[nSmp])
+        for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= GetNumSamples(); nSmp++) if (sampleused[nSmp])
         {
             DestroySample(nSmp);
             strcpy(m_szNames[nSmp], "");
@@ -182,7 +182,7 @@ bool module_renderer::RemoveInstrumentSamples(INSTRUMENTINDEX nInstr)
 // I/O From another song
 //
 
-bool module_renderer::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, module_renderer *pSrcSong, UINT nSrcInstr)
+bool module_renderer::ReadInstrumentFromSong(modplug::tracker::instrumentindex_t nInstr, module_renderer *pSrcSong, UINT nSrcInstr)
 //---------------------------------------------------------------------------------------------------
 {
     if ((!pSrcSong) || (!nSrcInstr) || (nSrcInstr > pSrcSong->m_nInstruments)
@@ -247,7 +247,7 @@ bool module_renderer::ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, module_rend
 }
 
 
-bool module_renderer::ReadSampleFromSong(SAMPLEINDEX nSample, module_renderer *pSrcSong, UINT nSrcSample)
+bool module_renderer::ReadSampleFromSong(modplug::tracker::sampleindex_t nSample, module_renderer *pSrcSong, UINT nSrcSample)
 //---------------------------------------------------------------------------------------------
 {
     if ((!pSrcSong) || (!nSrcSample) || (nSrcSample > pSrcSong->m_nSamples) || (nSample >= MAX_SAMPLES)) return false;
@@ -294,7 +294,7 @@ bool module_renderer::ReadSampleFromSong(SAMPLEINDEX nSample, module_renderer *p
 
 extern BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, uint32_t dwBytes, UINT pkBlkAlign);
 
-bool module_renderer::ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset)
+bool module_renderer::ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset)
 //-------------------------------------------------------------------------------------------------------------
 {
     uint32_t dwMemPos = 0, dwDataPos;
@@ -829,7 +829,7 @@ void PatchToSample(module_renderer *that, UINT nSample, LPBYTE lpStream, uint32_
 }
 
 
-bool module_renderer::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadPATSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpStream, uint32_t dwMemLength)
 //-------------------------------------------------------------------------------------
 {
     uint32_t dwMemPos = sizeof(GF1PATCHFILEHEADER)+sizeof(GF1INSTRUMENT)+sizeof(GF1LAYER);
@@ -852,7 +852,7 @@ bool module_renderer::ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpStream, uint32
 
 
 // PAT Instrument
-bool module_renderer::ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpStream, uint32_t dwMemLength)
+bool module_renderer::ReadPATInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpStream, uint32_t dwMemLength)
 //--------------------------------------------------------------------------------------------
 {
     GF1PATCHFILEHEADER *phdr = (GF1PATCHFILEHEADER *)lpStream;
@@ -994,7 +994,7 @@ typedef struct S3ISAMPLESTRUCT
     uint32_t scrs;
 } S3ISAMPLESTRUCT;
 
-bool module_renderer::ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadS3ISample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------
 {
     S3ISAMPLESTRUCT *pss = (S3ISAMPLESTRUCT *)lpMemFile;
@@ -1074,7 +1074,7 @@ typedef struct XISAMPLEHEADER
 
 
 
-bool module_renderer::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadXIInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //---------------------------------------------------------------------------------------------
 {
     XIFILEHEADER *pxh = (XIFILEHEADER *)lpMemFile;
@@ -1267,7 +1267,7 @@ bool module_renderer::ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile,
 }
 
 
-bool module_renderer::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
+bool module_renderer::SaveXIInstrument(modplug::tracker::instrumentindex_t nInstr, LPCSTR lpszFileName)
 //----------------------------------------------------------------------------
 {
     XIFILEHEADER xfh;
@@ -1397,7 +1397,7 @@ bool module_renderer::SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileNa
 }
 
 
-bool module_renderer::ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadXISample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //--------------------------------------------------------------------------------------
 {
     XIFILEHEADER *pxh = (XIFILEHEADER *)lpMemFile;
@@ -1542,7 +1542,7 @@ static uint32_t Ext2Long(LPBYTE p)
 
 
 
-bool module_renderer::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadAIFFSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
 //----------------------------------------------------------------------------------------
 {
     uint32_t dwMemPos = sizeof(AIFFFILEHEADER);
@@ -1613,7 +1613,7 @@ bool module_renderer::ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
 //BOOL CSoundFile::ReadITSSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
-UINT module_renderer::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
+UINT module_renderer::ReadITSSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset)
 //-------------------------------------------------------------------------------------------------------
 {
     ITSAMPLESTRUCT *pis = (ITSAMPLESTRUCT *)lpMemFile;
@@ -1691,7 +1691,7 @@ UINT module_renderer::ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint3
 }
 
 
-bool module_renderer::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
+bool module_renderer::ReadITIInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength)
 //----------------------------------------------------------------------------------------------
 {
     ITINSTRUMENT *pinstr = (ITINSTRUMENT *)lpMemFile;
@@ -1778,7 +1778,7 @@ bool module_renderer::ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile
 }
 
 
-bool module_renderer::SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName)
+bool module_renderer::SaveITIInstrument(modplug::tracker::instrumentindex_t nInstr, LPCSTR lpszFileName)
 //-----------------------------------------------------------------------------
 {
     uint8_t buffer[554];

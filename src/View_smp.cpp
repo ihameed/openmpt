@@ -203,7 +203,7 @@ void CViewSample::UpdateScrollSize(const UINT nZoomOld)
 }
 
 
-BOOL CViewSample::SetCurrentSample(SAMPLEINDEX nSmp)
+BOOL CViewSample::SetCurrentSample(modplug::tracker::sampleindex_t nSmp)
 //--------------------------------------------------
 {
     CModDoc *pModDoc = GetDocument();

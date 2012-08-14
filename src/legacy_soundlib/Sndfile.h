@@ -414,52 +414,52 @@ public:
     UINT PackSample(int &sample, int next);
     bool CanPackSample(LPSTR pSample, UINT nLen, UINT nPacking, uint8_t *result=NULL);
     UINT ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlags, LPCSTR pMemFile, uint32_t dwMemLength, const uint16_t format = 1);
-    bool DestroySample(SAMPLEINDEX nSample);
+    bool DestroySample(modplug::tracker::sampleindex_t nSample);
 
 // -> CODE#0020
 // -> DESC="rearrange sample list"
-    bool MoveSample(SAMPLEINDEX from, SAMPLEINDEX to);
+    bool MoveSample(modplug::tracker::sampleindex_t from, modplug::tracker::sampleindex_t to);
 // -! NEW_FEATURE#0020
 
 // -> CODE#0003
 // -> DESC="remove instrument's samples"
     //BOOL DestroyInstrument(UINT nInstr);
-    bool DestroyInstrument(INSTRUMENTINDEX nInstr, char removeSamples = 0);
+    bool DestroyInstrument(modplug::tracker::instrumentindex_t nInstr, char removeSamples = 0);
 // -! BEHAVIOUR_CHANGE#0003
-    bool IsSampleUsed(SAMPLEINDEX nSample) const;
-    bool IsInstrumentUsed(INSTRUMENTINDEX nInstr) const;
-    bool RemoveInstrumentSamples(INSTRUMENTINDEX nInstr);
-    SAMPLEINDEX DetectUnusedSamples(vector<bool> &sampleUsed) const;
-    SAMPLEINDEX RemoveSelectedSamples(const vector<bool> &keepSamples);
+    bool IsSampleUsed(modplug::tracker::sampleindex_t nSample) const;
+    bool IsInstrumentUsed(modplug::tracker::instrumentindex_t nInstr) const;
+    bool RemoveInstrumentSamples(modplug::tracker::instrumentindex_t nInstr);
+    modplug::tracker::sampleindex_t DetectUnusedSamples(vector<bool> &sampleUsed) const;
+    modplug::tracker::sampleindex_t RemoveSelectedSamples(const vector<bool> &keepSamples);
     void AdjustSampleLoop(modplug::tracker::modsample_t *pSmp);
     // Samples file I/O
-    bool ReadSampleFromFile(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadWAVSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset=NULL);
-    bool ReadPATSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadS3ISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadAIFFSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadXISample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadSampleFromFile(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset=NULL);
+    bool ReadPATSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadS3ISample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadAIFFSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadXISample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
 //    BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
-    UINT ReadITSSample(SAMPLEINDEX nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
+    UINT ReadITSSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
 // -! NEW_FEATURE#0027
 
     bool Read8SVXSample(UINT nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
     bool SaveWAVSample(UINT nSample, LPCSTR lpszFileName);
     bool SaveRAWSample(UINT nSample, LPCSTR lpszFileName);
     // Instrument file I/O
-    bool ReadInstrumentFromFile(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadXIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadITIInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadPATInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadSampleAsInstrument(INSTRUMENTINDEX nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool SaveXIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName);
-    bool SaveITIInstrument(INSTRUMENTINDEX nInstr, LPCSTR lpszFileName);
+    bool ReadInstrumentFromFile(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadXIInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadITIInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadPATInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool ReadSampleAsInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
+    bool SaveXIInstrument(modplug::tracker::instrumentindex_t nInstr, LPCSTR lpszFileName);
+    bool SaveITIInstrument(modplug::tracker::instrumentindex_t nInstr, LPCSTR lpszFileName);
     // I/O from another sound file
-    bool ReadInstrumentFromSong(INSTRUMENTINDEX nInstr, module_renderer *pSrcSong, UINT nSrcInstrument);
-    bool ReadSampleFromSong(SAMPLEINDEX nSample, module_renderer *pSrcSong, UINT nSrcSample);
+    bool ReadInstrumentFromSong(modplug::tracker::instrumentindex_t nInstr, module_renderer *pSrcSong, UINT nSrcInstrument);
+    bool ReadSampleFromSong(modplug::tracker::sampleindex_t nSample, module_renderer *pSrcSong, UINT nSrcSample);
     // Period/Note functions
     UINT GetNoteFromPeriod(UINT period) const;
     UINT GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const;
@@ -591,7 +591,7 @@ public:
     static CTuningCollection& GetLocalTunings() {return *s_pTuningsSharedLocal;}
     CTuningCollection& GetTuneSpecificTunings() {return *m_pTuningsTuneSpecific;}
 
-    std::string GetNoteName(const int16_t&, const INSTRUMENTINDEX inst = INSTRUMENTINDEX_INVALID) const;
+    std::string GetNoteName(const int16_t&, const modplug::tracker::instrumentindex_t inst = modplug::tracker::InstrumentIndexInvalid) const;
 private:
     CTuningCollection* m_pTuningsTuneSpecific;
     static CTuningCollection* s_pTuningsSharedBuiltIn;
@@ -648,8 +648,8 @@ public:    // for Editing
     CModDoc* m_pModDoc;            // Can be a null pointer f.e. when previewing samples from the treeview.
     MODTYPE m_nType;
     modplug::tracker::chnindex_t m_nChannels;
-    SAMPLEINDEX m_nSamples;
-    INSTRUMENTINDEX m_nInstruments;
+    modplug::tracker::sampleindex_t m_nSamples;
+    modplug::tracker::instrumentindex_t m_nInstruments;
     UINT m_nDefaultSpeed, m_nDefaultTempo, m_nDefaultGlobalVolume;
     uint32_t m_dwSongFlags;                                                    // Song flags SONG_XXXX
     bool m_bIsRendering;
@@ -726,15 +726,15 @@ public:
 
     // Returns 1 + index of last valid pattern, zero if no such pattern exists.
     modplug::tracker::patternindex_t GetNumPatterns() const;
-    INSTRUMENTINDEX GetNumInstruments() const { return m_nInstruments; }
-    SAMPLEINDEX GetNumSamples() const { return m_nSamples; }
+    modplug::tracker::instrumentindex_t GetNumInstruments() const { return m_nInstruments; }
+    modplug::tracker::sampleindex_t GetNumSamples() const { return m_nSamples; }
     UINT GetCurrentPos() const;
     modplug::tracker::patternindex_t GetCurrentPattern() const { return m_nPattern; }
     modplug::tracker::orderindex_t GetCurrentOrder() const { return static_cast<modplug::tracker::orderindex_t>(m_nCurrentPattern); }
     UINT GetMaxPosition() const;
     modplug::tracker::chnindex_t GetNumChannels() const { return m_nChannels; }
 
-    IMixPlugin* GetInstrumentPlugin(INSTRUMENTINDEX instr);
+    IMixPlugin* GetInstrumentPlugin(modplug::tracker::instrumentindex_t instr);
     const CModSpecifications& GetModSpecifications() const {return *m_pModSpecs;}
     static const CModSpecifications& GetModSpecifications(const MODTYPE type);
 
@@ -754,7 +754,7 @@ public:
     //specific order&row etc. Return value is in seconds.
     GetLengthType GetLength(
         enmGetLengthResetMode adjustMode,
-        modplug::tracker::orderindex_t ord = modplug::tracker::ORDERINDEX_INVALID,
+        modplug::tracker::orderindex_t ord = modplug::tracker::OrderIndexInvalid,
         modplug::tracker::rowindex_t row = modplug::tracker::RowIndexInvalid
     );
 
@@ -858,7 +858,7 @@ inline uint32_t modplug::tracker::modsample_t::GetSampleRate(const MODTYPE type)
 }
 
 
-inline IMixPlugin* module_renderer::GetInstrumentPlugin(INSTRUMENTINDEX instr)
+inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instrumentindex_t instr)
 //-----------------------------------------------------------------------
 {
     if(instr > 0 && instr < MAX_INSTRUMENTS && Instruments[instr] && Instruments[instr]->nMixPlug && Instruments[instr]->nMixPlug <= MAX_MIXPLUGINS)

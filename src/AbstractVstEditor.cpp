@@ -766,8 +766,8 @@ bool CAbstractVstEditor::CreateInstrument()
     }
 
     bool bFirst = (pSndFile->GetNumInstruments() == 0);
-    INSTRUMENTINDEX nIns = pModDoc->InsertInstrument(0);
-    if(nIns == INSTRUMENTINDEX_INVALID)
+    modplug::tracker::instrumentindex_t nIns = pModDoc->InsertInstrument(0);
+    if(nIns == modplug::tracker::InstrumentIndexInvalid)
     {
             return false;
     }

@@ -88,7 +88,7 @@ protected:
     CSliderCtrl m_SliderVolSwing, m_SliderPanSwing, m_SliderCutSwing, m_SliderResSwing,
                     m_SliderCutOff, m_SliderResonance;
     CNoteMapWnd m_NoteMap;
-    INSTRUMENTINDEX m_nInstrument;
+    modplug::tracker::instrumentindex_t m_nInstrument;
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"

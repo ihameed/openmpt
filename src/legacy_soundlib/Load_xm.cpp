@@ -298,10 +298,10 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
     }
 
     vector<bool> samples_used; // for removing unused samples
-    SAMPLEINDEX unused_samples = 0; // dito
+    modplug::tracker::sampleindex_t unused_samples = 0; // dito
 
     // Reading instruments
-    for (INSTRUMENTINDEX iIns = 1; iIns <= m_nInstruments; iIns++)
+    for (modplug::tracker::instrumentindex_t iIns = 1; iIns <= m_nInstruments; iIns++)
     {
         XMINSTRUMENTHEADER pih;
         uint8_t flags[32];
@@ -398,9 +398,9 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
                     if (!unused_samples)
                     {
                         unused_samples = DetectUnusedSamples(samples_used);
-                        if (!unused_samples) unused_samples = SAMPLEINDEX_INVALID;
+                        if (!unused_samples) unused_samples = modplug::tracker::SampleIndexInvalid;
                     }
-                    if ((unused_samples) && (unused_samples != SAMPLEINDEX_INVALID))
+                    if ((unused_samples) && (unused_samples != modplug::tracker::SampleIndexInvalid))
                     {
                         for (UINT iext=m_nSamples; iext>=1; iext--) if (!samples_used[iext])
                         {
@@ -587,7 +587,7 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
         dwMemPos = ReadXMPatterns(lpStream, dwMemLength, dwMemPos, &xmheader, this);
         if(dwMemPos == 0) return true;
 
-        for(SAMPLEINDEX iSmp = 1; iSmp <= m_nSamples; iSmp++)
+        for(modplug::tracker::sampleindex_t iSmp = 1; iSmp <= m_nSamples; iSmp++)
         {
             ReadSample(&Samples[iSmp], (Samples[iSmp].flags & CHN_16BIT) ? RS_PCM16D : RS_PCM8D, (LPSTR)(lpStream + dwMemPos), dwMemLength - dwMemPos);
             dwMemPos += Samples[iSmp].GetSampleSizeInBytes();

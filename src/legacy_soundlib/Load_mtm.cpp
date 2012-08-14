@@ -68,7 +68,7 @@ bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
     m_nSamples = pmh->numsamples;
     m_nChannels = pmh->numchannels;
     // Reading instruments
-    for    (SAMPLEINDEX i = 1; i <= m_nSamples; i++)
+    for    (modplug::tracker::sampleindex_t i = 1; i <= m_nSamples; i++)
     {
         MTMSAMPLE *pms = (MTMSAMPLE *)(lpStream + dwMemPos);
         memcpy(m_szNames[i], pms->samplename, 22);

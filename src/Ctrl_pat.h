@@ -46,8 +46,8 @@ public:
     UINT GetCurrentPattern() const;
     // make the current selection the secondary selection (used for keyboard orderlist navigation)
     inline void SetCurSelTo2ndSel(bool isSelectionKeyPressed)
-    {        if(isSelectionKeyPressed && m_nScrollPos2nd == modplug::tracker::ORDERINDEX_INVALID) m_nScrollPos2nd = m_nScrollPos;
-            else if(!isSelectionKeyPressed && m_nScrollPos2nd != modplug::tracker::ORDERINDEX_INVALID) m_nScrollPos2nd = modplug::tracker::ORDERINDEX_INVALID;
+    {        if(isSelectionKeyPressed && m_nScrollPos2nd == modplug::tracker::OrderIndexInvalid) m_nScrollPos2nd = m_nScrollPos;
+            else if(!isSelectionKeyPressed && m_nScrollPos2nd != modplug::tracker::OrderIndexInvalid) m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
     };
     bool SetCurSel(modplug::tracker::orderindex_t sel, bool bEdit = true, bool bShiftClick = false, bool bIgnoreCurSel = false);
     BOOL UpdateScrollInfo();
@@ -90,7 +90,7 @@ public:
     void EnsureVisible(modplug::tracker::orderindex_t order);
 
     // Set given sqeuence and update orderlist display.
-    void SelectSequence(const SEQUENCEINDEX nSeq);
+    void SelectSequence(const modplug::tracker::sequenceindex_t nSeq);
 
     // Little helper function to avoid copypasta
     bool IsSelectionKeyPressed() {return CMainFrame::GetInputHandler()->SelectionPressed();}
@@ -170,7 +170,7 @@ protected:
     CPatEdit m_EditSpacing, m_EditPatName, m_EditOrderListMargins, m_EditSequence;
     CSpinButtonCtrl m_SpinInstrument, m_SpinSpacing, m_SpinOrderListMargins, m_SpinSequence;
     CModControlBar m_ToolBar;
-    INSTRUMENTINDEX m_nInstrument;
+    modplug::tracker::instrumentindex_t m_nInstrument;
     UINT m_nDetailLevel;
     BOOL m_bRecord, m_bVUMeters, m_bPluginNames;
 

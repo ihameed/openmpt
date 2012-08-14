@@ -575,7 +575,7 @@ void CViewPattern::OnDraw(CDC *pDC)
             const modplug::tracker::orderindex_t startOrder= static_cast<modplug::tracker::orderindex_t>(SendCtrlMessage(CTRLMSG_GETCURRENTORDER));
             modplug::tracker::orderindex_t nNextOrder;
             nNextOrder = pSndFile->Order.GetNextOrderIgnoringSkips(startOrder);
-            if(nNextOrder == startOrder) nNextOrder = modplug::tracker::ORDERINDEX_INVALID;
+            if(nNextOrder == startOrder) nNextOrder = modplug::tracker::OrderIndexInvalid;
             //Ignore skip items(+++) from sequence.
             const modplug::tracker::orderindex_t ordCount = pSndFile->Order.GetLength();
 

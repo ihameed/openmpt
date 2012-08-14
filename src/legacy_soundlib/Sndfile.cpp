@@ -1310,7 +1310,7 @@ void module_renderer::DontLoopPattern(modplug::tracker::patternindex_t nPat, mod
 modplug::tracker::orderindex_t module_renderer::FindOrder(modplug::tracker::patternindex_t nPat, UINT startFromOrder, bool direction)
 //--------------------------------------------------------------------------------------
 {
-    modplug::tracker::orderindex_t foundAtOrder = modplug::tracker::ORDERINDEX_INVALID;
+    modplug::tracker::orderindex_t foundAtOrder = modplug::tracker::OrderIndexInvalid;
     modplug::tracker::orderindex_t candidateOrder = 0;
 
     for (modplug::tracker::orderindex_t p = 0; p < Order.size(); p++)
@@ -2471,7 +2471,7 @@ void module_renderer::CheckCPUUsage(UINT nCPU)
 // Check whether a sample is used.
 // In sample mode, the sample numbers in all patterns are checked.
 // In instrument mode, it is only checked if a sample is referenced by an instrument (but not if the sample is actually played anywhere)
-bool module_renderer::IsSampleUsed(SAMPLEINDEX nSample) const
+bool module_renderer::IsSampleUsed(modplug::tracker::sampleindex_t nSample) const
 //------------------------------------------------------
 {
     if ((!nSample) || (nSample > GetNumSamples())) return false;
@@ -2500,7 +2500,7 @@ bool module_renderer::IsSampleUsed(SAMPLEINDEX nSample) const
 }
 
 
-bool module_renderer::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
+bool module_renderer::IsInstrumentUsed(modplug::tracker::instrumentindex_t nInstr) const
 //-------------------------------------------------------------
 {
     if ((!nInstr) || (nInstr > GetNumInstruments()) || (!Instruments[nInstr])) return false;
@@ -2518,7 +2518,7 @@ bool module_renderer::IsInstrumentUsed(INSTRUMENTINDEX nInstr) const
 
 // Detect samples that are referenced by an instrument, but actually not used in a song.
 // Only works in instrument mode. Unused samples are marked as false in the vector.
-SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
+modplug::tracker::sampleindex_t module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
 //-------------------------------------------------------------------------
 {
     sampleUsed.assign(GetNumSamples() + 1, false);
@@ -2527,7 +2527,7 @@ SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
     {
         return 0;
     }
-    SAMPLEINDEX nExt = 0;
+    modplug::tracker::sampleindex_t nExt = 0;
 
     for (modplug::tracker::patternindex_t nPat = 0; nPat < GetNumPatterns(); nPat++)
     {
@@ -2547,17 +2547,17 @@ SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
                     modplug::tracker::modinstrument_t *pIns = Instruments[p->instr];
                     if (pIns)
                     {
-                        SAMPLEINDEX n = pIns->Keyboard[p->note-1];
+                        modplug::tracker::sampleindex_t n = pIns->Keyboard[p->note-1];
                         if (n <= GetNumSamples()) sampleUsed[n] = true;
                     }
                 } else
                 {
-                    for (INSTRUMENTINDEX k = GetNumInstruments(); k >= 1; k--)
+                    for (modplug::tracker::instrumentindex_t k = GetNumInstruments(); k >= 1; k--)
                     {
                         modplug::tracker::modinstrument_t *pIns = Instruments[k];
                         if (pIns)
                         {
-                            SAMPLEINDEX n = pIns->Keyboard[p->note-1];
+                            modplug::tracker::sampleindex_t n = pIns->Keyboard[p->note-1];
                             if (n <= GetNumSamples()) sampleUsed[n] = true;
                         }
                     }
@@ -2565,7 +2565,7 @@ SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
             }
         }
     }
-    for (SAMPLEINDEX ichk = GetNumSamples(); ichk >= 1; ichk--)
+    for (modplug::tracker::sampleindex_t ichk = GetNumSamples(); ichk >= 1; ichk--)
     {
         if ((!sampleUsed[ichk]) && (Samples[ichk].sample_data)) nExt++;
     }
@@ -2575,15 +2575,15 @@ SAMPLEINDEX module_renderer::DetectUnusedSamples(vector<bool> &sampleUsed) const
 
 
 // Destroy samples where keepSamples index is false. First sample is keepSamples[1]!
-SAMPLEINDEX module_renderer::RemoveSelectedSamples(const vector<bool> &keepSamples)
+modplug::tracker::sampleindex_t module_renderer::RemoveSelectedSamples(const vector<bool> &keepSamples)
 //----------------------------------------------------------------------------
 {
     if(keepSamples.empty())
     {
         return 0;
     }
-    SAMPLEINDEX nRemoved = 0;
-    for(SAMPLEINDEX nSmp = (SAMPLEINDEX)min(GetNumSamples(), keepSamples.size() - 1); nSmp >= 1; nSmp--)
+    modplug::tracker::sampleindex_t nRemoved = 0;
+    for(modplug::tracker::sampleindex_t nSmp = (modplug::tracker::sampleindex_t)min(GetNumSamples(), keepSamples.size() - 1); nSmp >= 1; nSmp--)
     {
         if(!keepSamples[nSmp])
         {
@@ -2598,7 +2598,7 @@ SAMPLEINDEX module_renderer::RemoveSelectedSamples(const vector<bool> &keepSampl
 }
 
 
-bool module_renderer::DestroySample(SAMPLEINDEX nSample)
+bool module_renderer::DestroySample(modplug::tracker::sampleindex_t nSample)
 //-------------------------------------------------
 {
     if ((!nSample) || (nSample >= MAX_SAMPLES)) return false;
@@ -2622,7 +2622,7 @@ bool module_renderer::DestroySample(SAMPLEINDEX nSample)
 
 // -> CODE#0020
 // -> DESC="rearrange sample list"
-bool module_renderer::MoveSample(SAMPLEINDEX from, SAMPLEINDEX to)
+bool module_renderer::MoveSample(modplug::tracker::sampleindex_t from, modplug::tracker::sampleindex_t to)
 //-----------------------------------------------------------
 {
     if (!from || from >= MAX_SAMPLES || !to || to >= MAX_SAMPLES) return false;
@@ -2780,13 +2780,13 @@ long module_renderer::GetSampleOffset()
     return 0;
 }
 
-string module_renderer::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const INSTRUMENTINDEX inst) const
+string module_renderer::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const modplug::tracker::instrumentindex_t inst) const
 //--------------------------------------------------------------------------------------------------
 {
-    if((inst >= MAX_INSTRUMENTS && inst != INSTRUMENTINDEX_INVALID) || note < 1 || note > NOTE_MAX) return "BUG";
+    if((inst >= MAX_INSTRUMENTS && inst != modplug::tracker::InstrumentIndexInvalid) || note < 1 || note > NOTE_MAX) return "BUG";
 
     // For MPTM instruments with custom tuning, find the appropriate note name. Else, use default note names.
-    if(inst != INSTRUMENTINDEX_INVALID && m_nType == MOD_TYPE_MPT && Instruments[inst] && Instruments[inst]->pTuning)
+    if(inst != modplug::tracker::InstrumentIndexInvalid && m_nType == MOD_TYPE_MPT && Instruments[inst] && Instruments[inst]->pTuning)
         return Instruments[inst]->pTuning->GetNoteName(note - NOTE_MIDDLEC);
     else
         return szDefaultNoteNames[note - 1];

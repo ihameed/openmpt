@@ -155,7 +155,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
     // read samples
     m_nSamples = pHeader->NOS + 1;
 
-    for(SAMPLEINDEX iSmp = 1; iSmp <= m_nSamples; iSmp++)
+    for(modplug::tracker::sampleindex_t iSmp = 1; iSmp <= m_nSamples; iSmp++)
     {
         const PGDMSAMPLEHEADER pSample = (PGDMSAMPLEHEADER)(lpStream + iSamHeadOffset + (iSmp - 1) * sizeof(GDMSAMPLEHEADER));
 

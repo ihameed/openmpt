@@ -156,7 +156,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             m_SndFile.Chn[nChn].instrument = nullptr;
         }
 
-        for(INSTRUMENTINDEX nIns = 0; nIns < m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
+        for(modplug::tracker::instrumentindex_t nIns = 0; nIns < m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
         {
             delete m_SndFile.Instruments[nIns];
             m_SndFile.Instruments[nIns] = nullptr;
@@ -258,7 +258,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
 
 
     // Do some sample conversion
-    for(SAMPLEINDEX nSmp = 1; nSmp <= m_SndFile.GetNumSamples(); nSmp++)
+    for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= m_SndFile.GetNumSamples(); nSmp++)
     {
         // Too many samples? Only 31 samples allowed in MOD format...
         if(newTypeIsMOD && nSmp > 31 && m_SndFile.Samples[nSmp].length > 0)
@@ -331,7 +331,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         }
     }
 
-    for(INSTRUMENTINDEX nIns = 1; nIns <= m_SndFile.GetNumInstruments(); nIns++)
+    for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_SndFile.GetNumInstruments(); nIns++)
     {
         // Convert IT/MPT to XM (fix instruments)
         if(oldTypeIsIT_MPT && newTypeIsXM)
@@ -478,7 +478,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     m_SndFile.m_nDefaultTempo = CLAMP(m_SndFile.m_nDefaultTempo, specs.tempoMin, specs.tempoMax);
     m_SndFile.m_nDefaultSpeed = CLAMP(m_SndFile.m_nDefaultSpeed, specs.speedMin, specs.speedMax);
 
-    for(INSTRUMENTINDEX i = 1; i <= m_SndFile.m_nInstruments; i++) if(m_SndFile.Instruments[i] != nullptr)
+    for(modplug::tracker::instrumentindex_t i = 1; i <= m_SndFile.m_nInstruments; i++) if(m_SndFile.Instruments[i] != nullptr)
     {
         UpdateEnvelopes(&(m_SndFile.Instruments[i]->volume_envelope), &m_SndFile, warnings);
         UpdateEnvelopes(&(m_SndFile.Instruments[i]->panning_envelope), &m_SndFile, warnings);

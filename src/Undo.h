@@ -102,8 +102,8 @@ private:
     CModDoc *m_pModDoc;
 
     // Sample undo helper functions
-    void DeleteUndoStep(const SAMPLEINDEX nSmp, const UINT nStep);
-    bool SampleBufferExists(const SAMPLEINDEX nSmp, bool bForceCreation = true);
+    void DeleteUndoStep(const modplug::tracker::sampleindex_t nSmp, const UINT nStep);
+    bool SampleBufferExists(const modplug::tracker::sampleindex_t nSmp, bool bForceCreation = true);
     void RestrictBufferSize();
     UINT GetUndoBufferCapacity();
 
@@ -111,11 +111,11 @@ public:
 
     // Sample undo functions
     void ClearUndo();
-    void ClearUndo(const SAMPLEINDEX nSmp);
-    bool PrepareUndo(const SAMPLEINDEX nSmp, sampleUndoTypes nChangeType, UINT nChangeStart = 0, UINT nChangeEnd = 0);
-    bool Undo(const SAMPLEINDEX nSmp);
-    bool CanUndo(const SAMPLEINDEX nSmp);
-    void RemoveLastUndoStep(const SAMPLEINDEX nSmp);
+    void ClearUndo(const modplug::tracker::sampleindex_t nSmp);
+    bool PrepareUndo(const modplug::tracker::sampleindex_t nSmp, sampleUndoTypes nChangeType, UINT nChangeStart = 0, UINT nChangeEnd = 0);
+    bool Undo(const modplug::tracker::sampleindex_t nSmp);
+    bool CanUndo(const modplug::tracker::sampleindex_t nSmp);
+    void RemoveLastUndoStep(const modplug::tracker::sampleindex_t nSmp);
 
     void SetParent(CModDoc *pModDoc) {m_pModDoc = pModDoc;}
 
