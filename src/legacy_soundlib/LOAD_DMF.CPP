@@ -206,7 +206,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
     DMFCHUNK_PATTERNHEADER *patHead = (DMFCHUNK_PATTERNHEADER *)(lpStream + dwMemPos);
     dwMemPos += sizeof(DMFCHUNK_PATTERNHEADER);
 
-    const ROWINDEX numRows = CLAMP(LittleEndianW(patHead->numRows), 1, MAX_PATTERN_ROWS);
+    const modplug::tracker::rowindex_t numRows = CLAMP(LittleEndianW(patHead->numRows), 1, MAX_PATTERN_ROWS);
     const PATTERNINDEX nPat = pSndFile->Patterns.Insert(numRows);
     if(nPat == PATTERNINDEX_INVALID)
     {
@@ -231,7 +231,7 @@ PATTERNINDEX ConvertDMFPattern(const uint8_t * const lpStream, const uint32_t dw
     // Counters for channel packing (including global track)
     vector<uint8_t> channelCounter(numChannels + 1, 0);
 
-    for(ROWINDEX nRow = 0; nRow < numRows; nRow++)
+    for(modplug::tracker::rowindex_t nRow = 0; nRow < numRows; nRow++)
     {
         // Global track info counter reached 0 => read global track data
         if(channelCounter[0] == 0)

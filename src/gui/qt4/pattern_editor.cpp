@@ -26,7 +26,7 @@ void pattern_editor::update_colors(const colors_t &colors) {
     repaint();
 }
 
-void pattern_editor::update_playback_row(ROWINDEX playback_row) {
+void pattern_editor::update_playback_row(modplug::tracker::rowindex_t playback_row) {
     this->playback_row = playback_row;
     repaint();
 }

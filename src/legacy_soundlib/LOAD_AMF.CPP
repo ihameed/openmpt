@@ -313,7 +313,7 @@ bool module_renderer::ReadAMF(const uint8_t * const lpStream, const uint32_t dwM
     }
     // Setup sequence list
     Order.resize(pfh->numorders, Order.GetInvalidPatIndex());
-    vector<ROWINDEX> patternLength(pfh->numorders, 64);
+    vector<modplug::tracker::rowindex_t> patternLength(pfh->numorders, 64);
     for (UINT iOrd=0; iOrd < pfh->numorders; iOrd++)
     {
         Order[iOrd] = iOrd;

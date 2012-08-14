@@ -363,7 +363,7 @@ typedef struct MPTNOTIFICATION
     uint32_t dwLatency;
     ORDERINDEX nOrder;                        // Always valid
     PATTERNINDEX nPattern;                // dito
-    ROWINDEX nRow;                                // dito
+    modplug::tracker::rowindex_t nRow;                                // dito
     uint32_t dwPos[MAX_VIRTUAL_CHANNELS];        // sample/envelope pos for each channel if >= 0
 } MPTNOTIFICATION, *PMPTNOTIFICATION;
 

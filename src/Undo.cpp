@@ -39,7 +39,7 @@ void CPatternUndo::ClearUndo()
 //   - numChns: width
 //   - numRows: height
 //   - linkToPrevious: Don't create a separate undo step, but link this to the previous undo event. Useful for commands that modify several patterns at once.
-bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWINDEX firstRow, CHANNELINDEX numChns, ROWINDEX numRows, bool linkToPrevious)
+bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, modplug::tracker::rowindex_t firstRow, CHANNELINDEX numChns, modplug::tracker::rowindex_t numRows, bool linkToPrevious)
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     if(m_pModDoc == nullptr) return false;
@@ -48,7 +48,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
 
     PATTERNUNDOBUFFER sUndo;
     modplug::tracker::modevent_t *pUndoData, *pPattern;
-    ROWINDEX nRows;
+    modplug::tracker::rowindex_t nRows;
 
     if (!pSndFile->Patterns.IsValidPat(pattern)) return false;
     nRows = pSndFile->Patterns[pattern].GetNumRows();
@@ -77,7 +77,7 @@ bool CPatternUndo::PrepareUndo(PATTERNINDEX pattern, CHANNELINDEX firstChn, ROWI
     sUndo.pbuffer = pUndoData;
     sUndo.linkToPrevious = linkToPrevious;
     pPattern += firstChn + firstRow * pSndFile->GetNumChannels();
-    for(ROWINDEX iy = 0; iy < numRows; iy++)
+    for(modplug::tracker::rowindex_t iy = 0; iy < numRows; iy++)
     {
             memcpy(pUndoData, pPattern, numChns * sizeof(modplug::tracker::modevent_t));
             pUndoData += numChns;
@@ -110,7 +110,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
 
     modplug::tracker::modevent_t *pUndoData, *pPattern;
     PATTERNINDEX nPattern;
-    ROWINDEX nRows;
+    modplug::tracker::rowindex_t nRows;
     bool linkToPrevious = false;
 
     if (CanUndo() == false) return PATTERNINDEX_INVALID;
@@ -136,7 +136,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
                     modplug::tracker::modevent_t *newPattern = CPattern::AllocatePattern(nRows, pSndFile->GetNumChannels());
                     modplug::tracker::modevent_t *oldPattern = pSndFile->Patterns[nPattern];
                     if (!newPattern) return PATTERNINDEX_INVALID;
-                    const ROWINDEX nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
+                    const modplug::tracker::rowindex_t nOldRowCount = pSndFile->Patterns[nPattern].GetNumRows();
                     pSndFile->Patterns[nPattern].SetData(newPattern, nRows);
                     if(oldPattern)
                     {
@@ -149,7 +149,7 @@ PATTERNINDEX CPatternUndo::Undo(bool linkedFromPrevious)
             pPattern = pSndFile->Patterns[nPattern];
             if (!pSndFile->Patterns[nPattern]) return PATTERNINDEX_INVALID;
             pPattern += pUndo->firstChannel + (pUndo->firstRow * pSndFile->GetNumChannels());
-            for(ROWINDEX iy = 0; iy < pUndo->numRows; iy++)
+            for(modplug::tracker::rowindex_t iy = 0; iy < pUndo->numRows; iy++)
             {
                     memcpy(pPattern, pUndoData, pUndo->numChannels * sizeof(modplug::tracker::modevent_t));
                     pPattern += pSndFile->GetNumChannels();

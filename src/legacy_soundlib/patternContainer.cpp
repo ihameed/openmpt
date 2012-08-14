@@ -24,7 +24,7 @@ void CPatternContainer::DestroyPatterns()
 }
 
 
-PATTERNINDEX CPatternContainer::Insert(const ROWINDEX rows)
+PATTERNINDEX CPatternContainer::Insert(const modplug::tracker::rowindex_t rows)
 //---------------------------------------------------------
 {
     PATTERNINDEX i = 0;
@@ -37,7 +37,7 @@ PATTERNINDEX CPatternContainer::Insert(const ROWINDEX rows)
 }
 
 
-bool CPatternContainer::Insert(const PATTERNINDEX index, const ROWINDEX rows)
+bool CPatternContainer::Insert(const PATTERNINDEX index, const modplug::tracker::rowindex_t rows)
 //---------------------------------------------------------------------------
 {
     const CModSpecifications& specs = m_rSndFile.GetModSpecifications();

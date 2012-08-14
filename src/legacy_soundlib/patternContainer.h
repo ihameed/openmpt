@@ -38,11 +38,11 @@ public:
 
     //Insert (default)pattern to given position. If pattern already exists at that position,
     //ignoring request. Returns true on failure, false otherwise.
-    bool Insert(const PATTERNINDEX index, const ROWINDEX rows);
+    bool Insert(const PATTERNINDEX index, const modplug::tracker::rowindex_t rows);
 
     //Insert pattern to position with the lowest index, and return that index, PATTERNINDEX_INVALID
     //on failure.
-    PATTERNINDEX Insert(const ROWINDEX rows);
+    PATTERNINDEX Insert(const modplug::tracker::rowindex_t rows);
 
     //Remove pattern from given position. Currently it actually makes the pattern
     //'invisible' - the pattern data is cleared but the actual pattern object won't get removed.

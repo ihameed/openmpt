@@ -545,7 +545,7 @@ void CMainToolBar::OnVScroll(UINT nCode, UINT nPos, CScrollBar *pScrollBar)
 }
 
 
-void CMainToolBar::SetRowsPerBeat(ROWINDEX nNewRPB)
+void CMainToolBar::SetRowsPerBeat(modplug::tracker::rowindex_t nNewRPB)
 //-------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();

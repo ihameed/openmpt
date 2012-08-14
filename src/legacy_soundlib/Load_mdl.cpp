@@ -243,7 +243,7 @@ bool module_renderer::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLengt
     const uint8_t *ppanenv;
     const uint8_t *ppitchenv;
     UINT nvolenv, npanenv, npitchenv;
-    vector<ROWINDEX> patternLength;
+    vector<modplug::tracker::rowindex_t> patternLength;
 
     if ((!lpStream) || (dwMemLength < 1024)) return false;
     if ((pmsh->id != 0x4C444D44) || ((pmsh->version & 0xF0) > 0x10)) return false;

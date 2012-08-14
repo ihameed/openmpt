@@ -11,10 +11,13 @@
 #include "../version.h"
 #include "../misc_util.h"
 #include "../serialization_utils.h"
+#include "../tracker/types.h"
 #include <limits>
 #include <fstream>
 #include <strstream>
 
+
+using namespace modplug::tracker;
 
 #ifdef _DEBUG
     #define new DEBUG_NEW
@@ -173,7 +176,7 @@ void TestTypes()
     VERIFY_EQUAL(INT64_MAX, (std::numeric_limits<int64_t>::max)());
     VERIFY_EQUAL(UINT64_MAX, (std::numeric_limits<uint64_t>::max)());
 
-    VERIFY_EQUAL(ROWINDEX_MAX, (std::numeric_limits<ROWINDEX>::max)());
+    VERIFY_EQUAL(ROWINDEX_MAX, (std::numeric_limits<modplug::tracker::rowindex_t>::max)());
     VERIFY_EQUAL(ORDERINDEX_MAX, (std::numeric_limits<ORDERINDEX>::max)());
     VERIFY_EQUAL(PATTERNINDEX_MAX, (std::numeric_limits<PATTERNINDEX>::max)());
     VERIFY_EQUAL(SAMPLEINDEX_MAX, (std::numeric_limits<SAMPLEINDEX>::max)());

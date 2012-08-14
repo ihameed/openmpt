@@ -285,7 +285,7 @@ public:
     bool ConvertInstrumentsToSamples();
     UINT RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS]);
 
-    PATTERNINDEX InsertPattern(ORDERINDEX nOrd = ORDERINDEX_INVALID, ROWINDEX nRows = 64);
+    PATTERNINDEX InsertPattern(ORDERINDEX nOrd = ORDERINDEX_INVALID, modplug::tracker::rowindex_t nRows = 64);
     SAMPLEINDEX InsertSample(bool bLimit = false);
     INSTRUMENTINDEX InsertInstrument(SAMPLEINDEX lSample = SAMPLEINDEX_INVALID, INSTRUMENTINDEX lDuplicate = INSTRUMENTINDEX_INVALID);
     void InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT nsample=0);
@@ -341,12 +341,12 @@ public:
 
     LRESULT ActivateView(UINT nIdView, uint32_t dwParam);
     void UpdateAllViews(CView *pSender, LPARAM lHint=0L, CObject *pHint=NULL);
-    HWND GetEditPosition(ROWINDEX &row, PATTERNINDEX &pat, ORDERINDEX &ord); //rewbs.customKeys
+    HWND GetEditPosition(modplug::tracker::rowindex_t &row, PATTERNINDEX &pat, ORDERINDEX &ord); //rewbs.customKeys
     LRESULT OnCustomKeyMsg(WPARAM, LPARAM);                               //rewbs.customKeys
     void TogglePluginEditor(UINT m_nCurrentPlugin);               //rewbs.patPlugNames
     void RecordParamChange(int slot, long param);
     void LearnMacro(int macro, long param);
-    void SetElapsedTime(ORDERINDEX nOrd, ROWINDEX nRow);
+    void SetElapsedTime(ORDERINDEX nOrd, modplug::tracker::rowindex_t nRow);
 
     bool RestartPosToPattern();
 

@@ -185,7 +185,7 @@ CHANNELINDEX CModDoc::ReArrangeChannels(const vector<CHANNELINDEX> &newOrder)
                             return CHANNELINDEX_INVALID;
                     }
                     modplug::tracker::modevent_t *tmpsrc = p, *tmpdest = newp;
-                    for(ROWINDEX nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
+                    for(modplug::tracker::rowindex_t nRow = 0; nRow < m_SndFile.Patterns[nPat].GetNumRows(); nRow++) //Scrolling rows
                     {
                             for(CHANNELINDEX nChn = 0; nChn < nRemainingChannels; nChn++, tmpdest++) //Scrolling channels.
                             {
@@ -397,7 +397,7 @@ BOOL CModDoc::AdjustEndOfSample(UINT nSample)
 }
 
 
-PATTERNINDEX CModDoc::InsertPattern(ORDERINDEX nOrd, ROWINDEX nRows)
+PATTERNINDEX CModDoc::InsertPattern(ORDERINDEX nOrd, modplug::tracker::rowindex_t nRows)
 //------------------------------------------------------------------
 {
     const PATTERNINDEX i = m_SndFile.Patterns.Insert(nRows);
@@ -909,8 +909,8 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
                     const TEMPO spdmax = m_SndFile.GetModSpecifications().speedMax;
                     const uint32_t dwMemSize = GlobalSize(hCpy);
                     CHANNELINDEX ncol = (dwBeginSel & 0xFFFF) >> 3, col;
-                    const ROWINDEX startRow = (ROWINDEX)(dwBeginSel >> 16);
-                    ROWINDEX nrow = startRow;
+                    const modplug::tracker::rowindex_t startRow = (modplug::tracker::rowindex_t)(dwBeginSel >> 16);
+                    modplug::tracker::rowindex_t nrow = startRow;
                     bool bOk = false;
                     bool bPrepareUndo = true;        // prepare pattern for undo next time
                     bool bFirstUndo = true;                // for chaining undos (see overflow paste)
@@ -923,7 +923,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
                     const bool doMixPaste = ((pasteMode == pm_mixpaste) || doITStyleMix);
 
                     ORDERINDEX oCurrentOrder; //jojo.echopaste
-                    ROWINDEX rTemp;
+                    modplug::tracker::rowindex_t rTemp;
                     PATTERNINDEX pTemp;
                     GetEditPosition(rTemp, pTemp, oCurrentOrder);
 
@@ -998,7 +998,7 @@ bool CModDoc::PastePattern(PATTERNINDEX nPattern, uint32_t dwBeginSel, enmPatter
                                             // push channel data below paste point first.
                                             if(pasteMode == pm_pushforwardpaste)
                                             {
-                                                    for(ROWINDEX nPushRow = m_SndFile.Patterns[nPattern].GetNumRows() - 1 - nrow; nPushRow > 0; nPushRow--)
+                                                    for(modplug::tracker::rowindex_t nPushRow = m_SndFile.Patterns[nPattern].GetNumRows() - 1 - nrow; nPushRow > 0; nPushRow--)
                                                     {
                                                             m[col + nPushRow * m_SndFile.m_nChannels] = m[col + (nPushRow - 1) * m_SndFile.m_nChannels];
                                                     }
@@ -1374,7 +1374,7 @@ bool CModDoc::IsChannelUnused(CHANNELINDEX nChn) const
             if(m_SndFile.Patterns.IsValidPat(nPat))
             {
                     const modplug::tracker::modevent_t *p = m_SndFile.Patterns[nPat] + nChn;
-                    for(ROWINDEX nRow = m_SndFile.Patterns[nPat].GetNumRows(); nRow > 0; nRow--, p += nChannels)
+                    for(modplug::tracker::rowindex_t nRow = m_SndFile.Patterns[nPat].GetNumRows(); nRow > 0; nRow--, p += nChannels)
                     {
                             if(!p->IsEmpty())
                             {

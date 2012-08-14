@@ -6,6 +6,7 @@
 
 
 #include "modevent.h"
+#include "types.h"
 
 class CTuningBase;
 typedef CTuningBase CTuning;
@@ -206,7 +207,7 @@ __declspec(align(32)) struct modchannel_t {
     uint32_t nOldGlobalVolSlide;
     uint32_t nEFxOffset; // offset memory for Invert Loop (EFx, .MOD only)
     int nRetrigCount, nRetrigParam;
-    ROWINDEX nPatternLoop;
+    rowindex_t nPatternLoop;
 
     uint8_t nRestoreResonanceOnNewNote; //Like above
     uint8_t nRestoreCutoffOnNewNote; //Like above

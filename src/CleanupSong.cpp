@@ -346,9 +346,9 @@ struct OrigPatSettings
     PATTERNINDEX newIndex;                // map old pattern index <-> new pattern index
     // This stuff is needed for copying the old pattern properties to the new pattern number
     modplug::tracker::modevent_t *data;                        // original pattern data
-    ROWINDEX numRows;                        // original pattern sizes
-    ROWINDEX rowsPerBeat;                // original pattern highlight
-    ROWINDEX rowsPerMeasure;        // original pattern highlight
+    modplug::tracker::rowindex_t numRows;                        // original pattern sizes
+    modplug::tracker::rowindex_t rowsPerBeat;                // original pattern highlight
+    modplug::tracker::rowindex_t rowsPerMeasure;        // original pattern highlight
     CString name;                                // original pattern name
 };
 

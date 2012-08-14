@@ -3085,7 +3085,7 @@ void* CModDoc::GetChildFrame()
     return NULL;
 }
 
-HWND CModDoc::GetEditPosition(ROWINDEX &row, PATTERNINDEX &pat, ORDERINDEX &ord)
+HWND CModDoc::GetEditPosition(modplug::tracker::rowindex_t &row, PATTERNINDEX &pat, ORDERINDEX &ord)
 //------------------------------------------------------------------------------
 {
     HWND followSonghWnd;
@@ -3334,7 +3334,7 @@ void CModDoc::OnPatternRestart()
 
         module_renderer *pSndFile = GetSoundFile();
 
-        ROWINDEX nRow;
+        modplug::tracker::rowindex_t nRow;
         PATTERNINDEX nPat;
         ORDERINDEX nOrd;
 
@@ -3394,7 +3394,7 @@ void CModDoc::OnPatternPlay()
 
         module_renderer *pSndFile = GetSoundFile();
 
-        ROWINDEX nRow;
+        modplug::tracker::rowindex_t nRow;
         PATTERNINDEX nPat;
         ORDERINDEX nOrd;
 
@@ -3450,7 +3450,7 @@ void CModDoc::OnPatternPlayNoLoop()
 
         module_renderer *pSndFile = GetSoundFile();
 
-        ROWINDEX nRow;
+        modplug::tracker::rowindex_t nRow;
         PATTERNINDEX nPat;
         ORDERINDEX nOrd;
 
@@ -3735,7 +3735,7 @@ void CModDoc::SongProperties()
 
 // Sets playback timer to playback time at given position.
 // At the same time, the playback parameters (global volume, channel volume and stuff like that) are calculated for this position.
-void CModDoc::SetElapsedTime(ORDERINDEX nOrd, ROWINDEX nRow)
+void CModDoc::SetElapsedTime(ORDERINDEX nOrd, modplug::tracker::rowindex_t nRow)
 //----------------------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();

@@ -1270,7 +1270,7 @@ void module_renderer::ResetChannels()
 
 
 
-void module_renderer::LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
+void module_renderer::LoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow)
 //------------------------------------------------------------
 {
     if ((nPat < 0) || (nPat >= Patterns.Size()) || (!Patterns[nPat]))
@@ -1291,7 +1291,7 @@ void module_renderer::LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
     }
 }
 //rewbs.playSongFromCursor
-void module_renderer::DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow)
+void module_renderer::DontLoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow)
 //----------------------------------------------------------------
 {
     if ((nPat < 0) || (nPat >= Patterns.Size()) || (!Patterns[nPat])) nPat = 0;
@@ -2866,7 +2866,7 @@ bool module_renderer::SetTitle(const char* titleCandidate, size_t strSize)
 }
 
 
-double module_renderer::GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars)
+double module_renderer::GetPlaybackTimeAt(ORDERINDEX ord, modplug::tracker::rowindex_t row, bool updateVars)
 //---------------------------------------------------------------------------------
 {
     const GetLengthType t = GetLength(updateVars ? eAdjust : eNoAdjust, ord, row);

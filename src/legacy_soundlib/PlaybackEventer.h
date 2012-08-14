@@ -13,7 +13,7 @@ public:
     CPlaybackEventer(module_renderer& sndf) : m_rSndFile(sndf) {}
     ~CPlaybackEventer();
 
-    //SetPatternEvent(const PATTERNINDEX pattern, const ROWINDEX row, const CHANNELINDEX column);
+    //SetPatternEvent(const PATTERNINDEX pattern, const modplug::tracker::rowindex_t row, const CHANNELINDEX column);
 
     void PatternTranstionChnSolo(const CHANNELINDEX chnIndex);
     void PatternTransitionChnUnmuteAll();

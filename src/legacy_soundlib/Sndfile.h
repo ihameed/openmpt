@@ -254,9 +254,9 @@ struct GetLengthType
     double duration;            // total time in seconds
     bool targetReached;            // true if the specified order/row combination has been reached while going through the module
     ORDERINDEX lastOrder;    // last parsed order (if no target is specified, this is the first order that is parsed twice, i.e. not the *last* played order)
-    ROWINDEX lastRow;            // last parsed row (dito)
+    modplug::tracker::rowindex_t lastRow;            // last parsed row (dito)
     ORDERINDEX endOrder;    // last order before module loops (UNDEFINED if a target is specified)
-    ROWINDEX endRow;            // last row before module loops (dito)
+    modplug::tracker::rowindex_t endRow;            // last row before module loops (dito)
 };
 
 // Reset mode for GetLength()
@@ -396,7 +396,7 @@ private:
     UINT GetNumTicksOnCurrentRow() const { return m_nMusicSpeed * (m_nPatternDelay + 1) + m_nFrameDelay; };
 public:
     // Write pattern effect functions
-    bool TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn = CHANNELINDEX_INVALID, bool bAllowMultipleEffects = true, writeEffectAllowRowChange allowRowChange = weIgnore, bool bRetry = true);
+    bool TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn = CHANNELINDEX_INVALID, bool bAllowMultipleEffects = true, writeEffectAllowRowChange allowRowChange = weIgnore, bool bRetry = true);
 
     // Read/Write sample functions
     char GetDeltaValue(char prev, UINT n) const { return (char)(prev + CompressionTable[n & 0x0F]); }
@@ -534,8 +534,8 @@ public:
 public:
     void InitializeVisitedRows(const bool bReset = true, VisitedRowsType *pRowVector = nullptr);
 private:
-    void SetRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bVisited = true, VisitedRowsType *pRowVector = nullptr);
-    bool IsRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bAutoSet = true, VisitedRowsType *pRowVector = nullptr);
+    void SetRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bVisited = true, VisitedRowsType *pRowVector = nullptr);
+    bool IsRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bAutoSet = true, VisitedRowsType *pRowVector = nullptr);
     size_t GetVisitedRowsVectorSize(const PATTERNINDEX nPat);
 
 public:
@@ -554,7 +554,7 @@ public: //Misc
 
     // Returns value in seconds. If given position won't be played at all, returns -1.
     // If updateVars is true, the state of various playback variables will be updated according to the playback position.
-    double GetPlaybackTimeAt(ORDERINDEX ord, ROWINDEX row, bool updateVars);
+    double GetPlaybackTimeAt(ORDERINDEX ord, modplug::tracker::rowindex_t row, bool updateVars);
 
     uint16_t GetModFlags() const {return m_ModFlags;}
     void SetModFlags(const uint16_t v) {m_ModFlags = v;}
@@ -648,13 +648,13 @@ public:    // for Editing
     UINT m_nPatternDelay, m_nFrameDelay;    // m_nPatternDelay = pattern delay, m_nFrameDelay = fine pattern delay
     ULONG m_lTotalSampleCount;    // rewbs.VSTTimeInfo
     UINT m_nSamplesPerTick;            // rewbs.betterBPM
-    ROWINDEX m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;    // default rows per beat and measure for this module // rewbs.betterBPM
-    ROWINDEX m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;    // current rows per beat and measure for this module
+    modplug::tracker::rowindex_t m_nDefaultRowsPerBeat, m_nDefaultRowsPerMeasure;    // default rows per beat and measure for this module // rewbs.betterBPM
+    modplug::tracker::rowindex_t m_nCurrentRowsPerBeat, m_nCurrentRowsPerMeasure;    // current rows per beat and measure for this module
     uint8_t m_nTempoMode;                    // rewbs.betterBPM
     uint8_t m_nMixLevels;
     UINT m_nMusicSpeed, m_nMusicTempo;
-    ROWINDEX m_nNextRow, m_nRow;
-    ROWINDEX m_nNextPatStartRow; // for FT2's E60 bug
+    modplug::tracker::rowindex_t m_nNextRow, m_nRow;
+    modplug::tracker::rowindex_t m_nNextPatStartRow; // for FT2's E60 bug
     PATTERNINDEX m_nPattern;
     ORDERINDEX m_nCurrentPattern, m_nNextPattern, m_nRestartPos, m_nSeqOverride;
     //NOTE: m_nCurrentPattern and m_nNextPattern refer to order index - not pattern index.
@@ -729,7 +729,7 @@ public:
 
     double GetCurrentBPM() const;
     ORDERINDEX FindOrder(PATTERNINDEX nPat, UINT startFromOrder=0, bool direction = true);    //rewbs.playSongFromCursor
-    void DontLoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);            //rewbs.playSongFromCursor
+    void DontLoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow = 0);            //rewbs.playSongFromCursor
     void SetCurrentPos(UINT nPos);
     void SetCurrentOrder(ORDERINDEX nOrder);
     void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
@@ -741,7 +741,11 @@ public:
 
     //Get modlength in various cases: total length, length to
     //specific order&row etc. Return value is in seconds.
-    GetLengthType GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX ord = ORDERINDEX_INVALID, ROWINDEX row = ROWINDEX_INVALID);
+    GetLengthType GetLength(
+        enmGetLengthResetMode adjustMode,
+        ORDERINDEX ord = ORDERINDEX_INVALID,
+        modplug::tracker::rowindex_t row = modplug::tracker::ROWINDEX_INVALID
+    );
 
 public:
     //Returns song length in seconds.
@@ -751,7 +755,7 @@ public:
     void SetRepeatCount(int n) { m_nRepeatCount = n; }
     int GetRepeatCount() const { return m_nRepeatCount; }
     bool IsPaused() const {    return (m_dwSongFlags & (SONG_PAUSED|SONG_STEP)) ? true : false; }        // Added SONG_STEP as it seems to be desirable in most cases to check for this as well.
-    void LoopPattern(PATTERNINDEX nPat, ROWINDEX nRow = 0);
+    void LoopPattern(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow = 0);
     void CheckCPUUsage(UINT nCPU);
 
     void SetupITBidiMode();

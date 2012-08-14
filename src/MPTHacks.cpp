@@ -161,7 +161,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
     {
             if(m_SndFile.Patterns.IsValidPat(i))
             {
-                    const ROWINDEX patSize = m_SndFile.Patterns[i].GetNumRows();
+                    const modplug::tracker::rowindex_t patSize = m_SndFile.Patterns[i].GetNumRows();
                     if(patSize > originalSpecs->patternRowsMax)
                     {
                             foundHacks = foundHere = true;

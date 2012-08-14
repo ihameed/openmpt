@@ -10,11 +10,12 @@
 #include "legacy_soundlib/tuningbase.h"
 #include <string>
 
-#include "gui/qt4/pattern_editor.h"
+#include "gui/qt4/pattern_bitmap_fonts.h"
 
 using std::string;
 
 using namespace modplug::tracker;
+using namespace modplug::gui::qt4;
 
 // Headers
 #define ROWHDR_WIDTH            32        // Row header
@@ -703,7 +704,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
         row_bkcol = MODCOLOR_BACKNORMAL;
 
         // time signature highlighting
-        ROWINDEX nBeat = pSndFile->m_nDefaultRowsPerBeat, nMeasure = pSndFile->m_nDefaultRowsPerMeasure;
+        modplug::tracker::rowindex_t nBeat = pSndFile->m_nDefaultRowsPerBeat, nMeasure = pSndFile->m_nDefaultRowsPerMeasure;
         if(pSndFile->Patterns[nPattern].GetOverrideSignature())
         {
             nBeat = pSndFile->Patterns[nPattern].GetRowsPerBeat();

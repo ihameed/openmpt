@@ -73,7 +73,7 @@ const RowMask DefaultRowMask = {
 
 struct ModCommandPos {
     PATTERNINDEX nPat;
-    ROWINDEX nRow;
+    modplug::tracker::rowindex_t nRow;
     CHANNELINDEX nChn;
 };
 
@@ -175,8 +175,8 @@ public:
     POINT GetPointFromPosition(uint32_t dwPos);
     uint32_t GetPositionFromPoint(POINT pt);
     uint32_t GetDragItem(CPoint point, LPRECT lpRect);
-    ROWINDEX GetRowsPerBeat() const;
-    ROWINDEX GetRowsPerMeasure() const;
+    modplug::tracker::rowindex_t GetRowsPerBeat() const;
+    modplug::tracker::rowindex_t GetRowsPerMeasure() const;
 
     void InvalidatePattern(BOOL bHdr=FALSE);
     void InvalidateRow(int n=-1);
@@ -373,18 +373,18 @@ private:
     bool BuildChannelMiscCtxMenu(HMENU hMenu, module_renderer* pSndFile);
     bool BuildPCNoteCtxMenu(HMENU hMenu, CInputHandler* ih, module_renderer* pSndFile);
 
-    ROWINDEX GetSelectionStartRow();
-    ROWINDEX GetSelectionEndRow();
+    modplug::tracker::rowindex_t GetSelectionStartRow();
+    modplug::tracker::rowindex_t GetSelectionEndRow();
     CHANNELINDEX GetSelectionStartChan();
     CHANNELINDEX GetSelectionEndChan();
     UINT ListChansWhereColSelected(PatternColumns colType, CArray<UINT,UINT> &chans);
 
-    static ROWINDEX GetRowFromCursor(uint32_t cursor) { return (cursor >> 16); };
+    static modplug::tracker::rowindex_t GetRowFromCursor(uint32_t cursor) { return (cursor >> 16); };
     static CHANNELINDEX GetChanFromCursor(uint32_t cursor) { return static_cast<CHANNELINDEX>((cursor & 0xFFFF) >> 3); };
     static UINT GetColTypeFromCursor(uint32_t cursor) { return (cursor & 0x07); };
-    static uint32_t CreateCursor(ROWINDEX row, CHANNELINDEX channel = 0, UINT column = 0) { return (row << 16) | ((channel << 3) & 0x1FFF) | (column & 0x07); };
+    static uint32_t CreateCursor(modplug::tracker::rowindex_t row, CHANNELINDEX channel = 0, UINT column = 0) { return (row << 16) | ((channel << 3) & 0x1FFF) | (column & 0x07); };
 
-    bool IsInterpolationPossible(ROWINDEX startRow, ROWINDEX endRow, CHANNELINDEX chan, PatternColumns colType, module_renderer* pSndFile);
+    bool IsInterpolationPossible(modplug::tracker::rowindex_t startRow, modplug::tracker::rowindex_t endRow, CHANNELINDEX chan, PatternColumns colType, module_renderer* pSndFile);
     void Interpolate(PatternColumns type);
 
     // Return true if recording live (i.e. editing while following playback).
@@ -395,8 +395,8 @@ private:
     // If given edit positions are valid, sets them to iRow and iPat.
     // If not valid, set edit cursor position.
     void SetEditPos(const module_renderer& rSndFile,
-                    ROWINDEX& iRow, PATTERNINDEX& iPat,
-                    const ROWINDEX iRowCandidate, const PATTERNINDEX iPatCandidate) const;
+                    modplug::tracker::rowindex_t& iRow, PATTERNINDEX& iPat,
+                    const modplug::tracker::rowindex_t iRowCandidate, const PATTERNINDEX iPatCandidate) const;
 
     // Returns edit position.
     ModCommandPos GetEditPos(module_renderer& rSf, const bool bLiveRecord) const;

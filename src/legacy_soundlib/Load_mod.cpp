@@ -452,7 +452,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
 
             const uint8_t *p = lpStream + dwMemPos;
 
-            for(ROWINDEX nRow = 0; nRow < 64; nRow++)
+            for(modplug::tracker::rowindex_t nRow = 0; nRow < 64; nRow++)
             {
                 if(bFLT8)
                 {

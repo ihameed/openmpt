@@ -343,7 +343,6 @@
     <ClInclude Include="legacy_soundlib\pattern.h" />
     <ClInclude Include="legacy_soundlib\patternContainer.h" />
     <ClInclude Include="legacy_soundlib\PlaybackEventer.h" />
-    <ClInclude Include="legacy_soundlib\Snd_defs.h" />
     <ClInclude Include="legacy_soundlib\Sndfile.h" />
     <ClInclude Include="legacy_soundlib\tuning.h" />
     <ClInclude Include="legacy_soundlib\tuningbase.h" />
@@ -370,6 +369,15 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\qt4\colors.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt4\pattern_bitmap_fonts.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="legacy_soundlib\Snd_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\types.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -446,6 +454,11 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;cxx;c;def</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
   </ItemGroup>

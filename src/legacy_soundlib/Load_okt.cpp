@@ -104,7 +104,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
     uint32_t dwMemPos = 0;
 
     ASSERT_CAN_READ_OKTPAT(2);
-    ROWINDEX nRows = CLAMP(BigEndianW(*(uint16_t *)(lpStream + dwMemPos)), 1, MAX_PATTERN_ROWS);
+    modplug::tracker::rowindex_t nRows = CLAMP(BigEndianW(*(uint16_t *)(lpStream + dwMemPos)), 1, MAX_PATTERN_ROWS);
     dwMemPos += 2;
 
     if(pSndFile->Patterns.Insert(nPat, nRows))
@@ -113,7 +113,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
     const CHANNELINDEX nChns = pSndFile->GetNumChannels();
     modplug::tracker::modevent_t *mrow = pSndFile->Patterns[nPat], *m;
 
-    for(ROWINDEX nRow = 0; nRow < nRows; nRow++, mrow += nChns)
+    for(modplug::tracker::rowindex_t nRow = 0; nRow < nRows; nRow++, mrow += nChns)
     {
             m = mrow;
             for(CHANNELINDEX nChn = 0; nChn < nChns; nChn++, m++)

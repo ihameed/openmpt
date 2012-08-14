@@ -780,7 +780,7 @@ void CCtrlPatterns::OnPatternNew()
             module_renderer *pSndFile = m_pModDoc->GetSoundFile();
             ORDERINDEX nCurOrd = m_OrderList.GetCurSel(true).nOrdLo;
             PATTERNINDEX nCurPat = pSndFile->Order[nCurOrd];
-            ROWINDEX rows = 64;
+            modplug::tracker::rowindex_t rows = 64;
             if(pSndFile->Patterns.IsValidPat(nCurPat))
             {
                     nCurOrd++;        // only if the current oder is already occupied, create a new pattern at the next position.
@@ -828,7 +828,7 @@ void CCtrlPatterns::OnPatternDuplicate()
             for(ORDERINDEX i = 0; i <= nInsertCount; i++)
             {
                     PATTERNINDEX nCurPat = pSndFile->Order[selection.nOrdLo + i];
-                    ROWINDEX rows = 64;
+                    modplug::tracker::rowindex_t rows = 64;
                     if (pSndFile->Patterns.IsValidIndex(nCurPat) && pReplaceIndex[nCurPat] == PATTERNINDEX_INVALID)
                     {
                             rows = pSndFile->Patterns[nCurPat].GetNumRows();

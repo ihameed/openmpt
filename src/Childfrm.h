@@ -28,7 +28,7 @@ typedef struct PATTERNVIEWSTATE
 {
     uint32_t cbStruct;
     PATTERNINDEX nPattern;
-    ROWINDEX nRow;
+    modplug::tracker::rowindex_t nRow;
     UINT nCursor;
     uint32_t dwBeginSel;
     uint32_t dwEndSel;

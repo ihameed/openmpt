@@ -685,7 +685,7 @@ uint16_t module_renderer::GetEffectWeight(modplug::tracker::cmd_t cmd)
               bRetry - For internal use only. Indicates whether an effect "rewrite" has already taken place (for recursive calls)
    NOTE: Effect remapping is only implemented for a few basic effects.
 */
-bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, ROWINDEX nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
+bool module_renderer::TryWriteEffect(PATTERNINDEX nPat, modplug::tracker::rowindex_t nRow, uint8_t nEffect, uint8_t nParam, bool bIsVolumeEffect, CHANNELINDEX nChn, bool bAllowMultipleEffects, writeEffectAllowRowChange allowRowChange, bool bRetry)
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 {
     // First, reject invalid parameters.

@@ -315,7 +315,7 @@ BOOL CViewPattern::SetCurrentRow(UINT row, BOOL bWrap, BOOL bUpdateHorizontalScr
                     const PATTERNINDEX nextPat = pSndFile->Order[nextOrder];
                     if ((nextPat < pSndFile->Patterns.Size()) && (pSndFile->Patterns[nextPat].GetNumRows()))
                     {
-                        const ROWINDEX newRow = row - pSndFile->Patterns[m_nPattern].GetNumRows();
+                        const modplug::tracker::rowindex_t newRow = row - pSndFile->Patterns[m_nPattern].GetNumRows();
                         SendCtrlMessage(CTRLMSG_SETCURRENTORDER, nextOrder);
                         if (SetCurrentPattern(nextPat))
                             return SetCurrentRow(newRow);
@@ -1944,7 +1944,7 @@ void CViewPattern::OnEditFindNext()
             {
                 // limit to pattern selection
                 const CHANNELINDEX ch = n % pSndFile->m_nChannels;
-                const ROWINDEX row = n / pSndFile->m_nChannels;
+                const modplug::tracker::rowindex_t row = n / pSndFile->m_nChannels;
 
                 if ((ch < GetChanFromCursor(m_findReplace.dwBeginSel)) || (ch > GetChanFromCursor(m_findReplace.dwEndSel))) bFound = false;
                 if ((row < GetRowFromCursor(m_findReplace.dwBeginSel)) || (row > GetRowFromCursor(m_findReplace.dwEndSel))) bFound = false;
@@ -2841,7 +2841,7 @@ void CViewPattern::OnPatternAmplify()
             modplug::tracker::modevent_t *p = pSndFile->Patterns[m_nPattern];
 
             CHANNELINDEX firstChannel = GetSelectionStartChan(), lastChannel = GetSelectionEndChan();
-            ROWINDEX firstRow = GetSelectionStartRow(), lastRow = GetSelectionEndRow();
+            modplug::tracker::rowindex_t firstRow = GetSelectionStartRow(), lastRow = GetSelectionEndRow();
             firstChannel = CLAMP(firstChannel, 0, pSndFile->m_nChannels - 1);
             lastChannel = CLAMP(lastChannel, firstChannel, pSndFile->m_nChannels - 1);
             firstRow = CLAMP(firstRow, 0, pSndFile->Patterns[m_nPattern].GetNumRows() - 1);
@@ -2872,7 +2872,7 @@ void CViewPattern::OnPatternAmplify()
             // Volume memory for each channel.
             vector<uint8_t> chvol(lastChannel + 1, 64);
 
-            for (ROWINDEX nRow = firstRow; nRow <= lastRow; nRow++)
+            for (modplug::tracker::rowindex_t nRow = firstRow; nRow <= lastRow; nRow++)
             {
                 modplug::tracker::modevent_t *m = p + nRow * pSndFile->m_nChannels + firstChannel;
                 for (CHANNELINDEX nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
@@ -2924,7 +2924,7 @@ void CViewPattern::OnPatternAmplify()
                 }
             }
 
-            for (ROWINDEX nRow = firstRow; nRow <= lastRow; nRow++)
+            for (modplug::tracker::rowindex_t nRow = firstRow; nRow <= lastRow; nRow++)
             {
                 modplug::tracker::modevent_t *m = p + nRow * pSndFile->m_nChannels + firstChannel;
                 const int cy = lastRow - firstRow + 1; // total rows (for fading)
@@ -3119,7 +3119,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
     //Work out where to put the new data
     const UINT nChn = GetChanFromCursor(m_dwCursor);
     const bool bUsePlaybackPosition = IsLiveRecord(*pModDoc, *pSndFile);
-    ROWINDEX nRow = m_nRow;
+    modplug::tracker::rowindex_t nRow = m_nRow;
     PATTERNINDEX nPattern = m_nPattern;
     if(bUsePlaybackPosition == true)
         SetEditPos(*pSndFile, nRow, nPattern, pSndFile->m_nRow, pSndFile->m_nPattern);
@@ -4083,7 +4083,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
 
     // Get playback edit positions from play engine here in case they are needed below.
-    const ROWINDEX nRowPlayback = pSndFile->m_nRow;
+    const modplug::tracker::rowindex_t nRowPlayback = pSndFile->m_nRow;
     const UINT nTick = pSndFile->m_nTickCount;
     const PATTERNINDEX nPatPlayback = pSndFile->m_nPattern;
 
@@ -4138,7 +4138,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     const bool usePlaybackPosition = (!bChordMode) && (bIsLiveRecord && (CMainFrame::m_dwPatternSetup & PATTERN_AUTODELAY));
 
     //Work out where to put the note off
-    ROWINDEX nRow = m_nRow;
+    modplug::tracker::rowindex_t nRow = m_nRow;
     PATTERNINDEX nPat = m_nPattern;
 
     if(usePlaybackPosition)
@@ -4304,9 +4304,9 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
     if ((pModDoc) && (pMainFrm))
     {
         bool modified = false;
-        ROWINDEX nRow = m_nRow;
+        modplug::tracker::rowindex_t nRow = m_nRow;
         module_renderer *pSndFile = pModDoc->GetSoundFile();
-        const ROWINDEX nRowPlayback = pSndFile->m_nRow;
+        const modplug::tracker::rowindex_t nRowPlayback = pSndFile->m_nRow;
         const UINT nTick = pSndFile->m_nTickCount;
         const PATTERNINDEX nPatPlayback = pSndFile->m_nPattern;
 
@@ -4846,7 +4846,7 @@ void CViewPattern::OnSelectPCNoteParam(UINT nID)
     UINT paramNdx = nID - ID_CHANGE_PCNOTE_PARAM;
     bool bModified = false;
     modplug::tracker::modevent_t *p;
-    for(ROWINDEX nRow = GetSelectionStartRow(); nRow <= GetSelectionEndRow(); nRow++)
+    for(modplug::tracker::rowindex_t nRow = GetSelectionStartRow(); nRow <= GetSelectionEndRow(); nRow++)
     {
         for(CHANNELINDEX nChn = GetSelectionStartChan(); nChn <= GetSelectionEndChan(); nChn++)
         {
@@ -5375,13 +5375,13 @@ bool CViewPattern::BuildPCNoteCtxMenu(HMENU hMenu, CInputHandler* ih, module_ren
 }
 
 
-ROWINDEX CViewPattern::GetSelectionStartRow()
+modplug::tracker::rowindex_t CViewPattern::GetSelectionStartRow()
 //-------------------------------------------
 {
     return min(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
 }
 
-ROWINDEX CViewPattern::GetSelectionEndRow()
+modplug::tracker::rowindex_t CViewPattern::GetSelectionEndRow()
 //-----------------------------------------
 {
     return max(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
@@ -5419,7 +5419,7 @@ UINT CViewPattern::ListChansWhereColSelected(PatternColumns colType, CArray<UINT
 }
 
 
-bool CViewPattern::IsInterpolationPossible(ROWINDEX startRow, ROWINDEX endRow, CHANNELINDEX chan,
+bool CViewPattern::IsInterpolationPossible(modplug::tracker::rowindex_t startRow, modplug::tracker::rowindex_t endRow, CHANNELINDEX chan,
                                            PatternColumns colType, module_renderer* pSndFile)
 //--------------------------------------------------------------------------------------
 {
@@ -5555,8 +5555,8 @@ void CViewPattern::OnShowTimeAtRow()
 
 
 void CViewPattern::SetEditPos(const module_renderer& rSndFile,
-                              ROWINDEX& iRow, PATTERNINDEX& iPat,
-                              const ROWINDEX iRowCandidate, const PATTERNINDEX iPatCandidate) const
+                              modplug::tracker::rowindex_t& iRow, PATTERNINDEX& iPat,
+                              const modplug::tracker::rowindex_t iRowCandidate, const PATTERNINDEX iPatCandidate) const
 //-------------------------------------------------------------------------------------------
 {
     if(rSndFile.Patterns.IsValidPat(iPatCandidate) && rSndFile.Patterns[iPatCandidate].IsValidRow(iRowCandidate))
@@ -5639,7 +5639,7 @@ void CViewPattern::OnTogglePCNotePluginEditor()
 }
 
 
-ROWINDEX CViewPattern::GetRowsPerBeat() const
+modplug::tracker::rowindex_t CViewPattern::GetRowsPerBeat() const
 //-------------------------------------------
 {
     module_renderer *pSndFile;
@@ -5652,7 +5652,7 @@ ROWINDEX CViewPattern::GetRowsPerBeat() const
 }
 
 
-ROWINDEX CViewPattern::GetRowsPerMeasure() const
+modplug::tracker::rowindex_t CViewPattern::GetRowsPerMeasure() const
 //----------------------------------------------
 {
     module_renderer *pSndFile;
@@ -5717,12 +5717,12 @@ void CViewPattern::SetSelectionInstrument(const INSTRUMENTINDEX nIns)
 void CViewPattern::SelectBeatOrMeasure(bool selectBeat)
 //-----------------------------------------------------
 {
-    const ROWINDEX adjust = selectBeat ? GetRowsPerBeat() : GetRowsPerMeasure();
+    const modplug::tracker::rowindex_t adjust = selectBeat ? GetRowsPerBeat() : GetRowsPerMeasure();
 
     // Snap to start of beat / measure of upper-left corner of current selection
-    const ROWINDEX startRow = GetSelectionStartRow() - (GetSelectionStartRow() % adjust);
+    const modplug::tracker::rowindex_t startRow = GetSelectionStartRow() - (GetSelectionStartRow() % adjust);
     // Snap to end of beat / measure of lower-right corner of current selection
-    const ROWINDEX endRow = GetSelectionEndRow() + adjust - (GetSelectionEndRow() % adjust) - 1;
+    const modplug::tracker::rowindex_t endRow = GetSelectionEndRow() + adjust - (GetSelectionEndRow() % adjust) - 1;
 
     CHANNELINDEX startChannel = GetSelectionStartChan(), endChannel = GetSelectionEndChan();
     UINT startColumn = 0, endColumn = 0;

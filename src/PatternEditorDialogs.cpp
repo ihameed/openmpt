@@ -501,7 +501,7 @@ void CPatternPropertiesDlg::OnOK()
             {
                     if(IsDlgButtonChecked(IDC_CHECK1))        // Enable signature
                     {
-                            ROWINDEX nNewBeat = (ROWINDEX)GetDlgItemInt(IDC_EDIT_ROWSPERBEAT, NULL, FALSE), nNewMeasure = (ROWINDEX)GetDlgItemInt(IDC_EDIT_ROWSPERMEASURE, NULL, FALSE);
+                            modplug::tracker::rowindex_t nNewBeat = (modplug::tracker::rowindex_t)GetDlgItemInt(IDC_EDIT_ROWSPERBEAT, NULL, FALSE), nNewMeasure = (modplug::tracker::rowindex_t)GetDlgItemInt(IDC_EDIT_ROWSPERMEASURE, NULL, FALSE);
                             if(nNewBeat != pSndFile->Patterns[m_nPattern].GetRowsPerBeat() || nNewMeasure != pSndFile->Patterns[m_nPattern].GetRowsPerMeasure())
                             {
                                     if(!pSndFile->Patterns[m_nPattern].SetSignature(nNewBeat, nNewMeasure))

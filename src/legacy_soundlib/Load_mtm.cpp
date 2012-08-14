@@ -107,7 +107,7 @@ bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
     Order.ReadAsByte(lpStream + dwMemPos, pmh->lastorder + 1, dwMemLength - dwMemPos);
     dwMemPos += 128;
     // Reading Patterns
-    ROWINDEX nPatRows = CLAMP(pmh->beatspertrack, 1, MAX_PATTERN_ROWS);
+    modplug::tracker::rowindex_t nPatRows = CLAMP(pmh->beatspertrack, 1, MAX_PATTERN_ROWS);
     const uint8_t * pTracks = lpStream + dwMemPos;
     dwMemPos += 192 * pmh->numtracks;
     LPWORD pSeq = (LPWORD)(lpStream + dwMemPos);

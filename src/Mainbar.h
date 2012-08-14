@@ -48,7 +48,7 @@ public:
     virtual ~CMainToolBar() {}
 
 protected:
-    void SetRowsPerBeat(ROWINDEX nNewRPB);
+    void SetRowsPerBeat(modplug::tracker::rowindex_t nNewRPB);
 
 public:
     //{{AFX_VIRTUAL(CMainToolBar)

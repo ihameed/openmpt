@@ -442,7 +442,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
             for(PATTERNINDEX nPat = 0; nPat < nNumPats; nPat++)
             {
                     note = Patterns[nPat] + nChn;
-                    ROWINDEX nRow = 0;
+                    modplug::tracker::rowindex_t nRow = 0;
                     while(nRow < 64)
                     {
                             repeat = ReadULTEvent(&evnote, lpStream, &dwMemPos, dwMemLength);

@@ -12,10 +12,6 @@
 
 #include <cstdint>
 #include "../typedefs.h"
-
-typedef uint32_t ROWINDEX;
-    const ROWINDEX ROWINDEX_MAX = UINT32_MAX;
-    const ROWINDEX ROWINDEX_INVALID = ROWINDEX_MAX;
 typedef uint16_t CHANNELINDEX;
     const CHANNELINDEX CHANNELINDEX_MAX    = UINT16_MAX;
     const CHANNELINDEX CHANNELINDEX_INVALID    = CHANNELINDEX_MAX;
@@ -42,7 +38,7 @@ typedef uint32_t MODTYPE;
 
 
 #define MOD_AMIGAC2                    0x1AB
-// -> CODE#0006 
+// -> CODE#0006
 // -> DESC="misc quantity changes"
 #define MAX_SAMPLE_LENGTH    0x10000000        // 0x04000000 (64MB -> now 256MB).
                                         // Note: Sample size in bytes can be more than 256 MB.

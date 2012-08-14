@@ -266,7 +266,7 @@ void CEffectVis::DrawGrid()
 {
     // Lots of room for optimisation here.
     // Draw vertical grid lines
-    ROWINDEX nBeat = m_pSndFile->m_nDefaultRowsPerBeat, nMeasure = m_pSndFile->m_nDefaultRowsPerMeasure;
+    modplug::tracker::rowindex_t nBeat = m_pSndFile->m_nDefaultRowsPerBeat, nMeasure = m_pSndFile->m_nDefaultRowsPerMeasure;
     if(m_pSndFile->Patterns[m_nPattern].GetOverrideSignature())
     {
             nBeat = m_pSndFile->Patterns[m_nPattern].GetRowsPerBeat();

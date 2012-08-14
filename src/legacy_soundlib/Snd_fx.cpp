@@ -16,6 +16,9 @@
 #include "../misc_util.h"
 // -! NEW_FEATURE#0022
 #include "tuning.h"
+#include "../tracker/types.h"
+
+using namespace modplug::tracker;
 
 #pragma warning(disable:4244)
 
@@ -84,7 +87,7 @@ void CSoundFile::GenerateSamplePosMap() {
 // [out] lastRow: last parsed row (dito)
 // [out] endOrder: last order before module loops (UNDEFINED if a target is specified)
 // [out] endRow: last row before module loops (dito)
-GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX endOrder, ROWINDEX endRow)
+GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDERINDEX endOrder, modplug::tracker::rowindex_t endRow)
 //---------------------------------------------------------------------------------------------------------
 {
     GetLengthType retval;
@@ -96,8 +99,8 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
 // -> CODE#0022
 // -> DESC="alternative BPM/Speed interpretation method"
 //    UINT dwElapsedTime=0, nRow=0, nCurrentPattern=0, nNextPattern=0, nPattern=Order[0];
-    ROWINDEX nRow = 0;
-    ROWINDEX nNextPatStartRow = 0; // FT2 E60 bug
+    modplug::tracker::rowindex_t nRow = 0;
+    modplug::tracker::rowindex_t nNextPatStartRow = 0; // FT2 E60 bug
     ORDERINDEX nCurrentPattern = 0;
     ORDERINDEX nNextPattern = 0;
     PATTERNINDEX nPattern = Order[0];
@@ -111,7 +114,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, ORDER
     vector<uint8_t> oldparam(m_nChannels, 0);
     vector<UINT> chnvols(m_nChannels, 64);
     vector<double> patloop(m_nChannels, 0);
-    vector<ROWINDEX> patloopstart(m_nChannels, 0);
+    vector<modplug::tracker::rowindex_t> patloopstart(m_nChannels, 0);
     VisitedRowsType visitedRows;    // temporary visited rows vector (so that GetLength() won't interfere with the player code if the module is playing at the same time)
 
     InitializeVisitedRows(true, &visitedRows);
@@ -1298,7 +1301,7 @@ BOOL module_renderer::ProcessEffects()
 //-------------------------------
 {
     modplug::tracker::modchannel_t *pChn = Chn;
-    ROWINDEX nBreakRow = ROWINDEX_INVALID, nPatLoopRow = ROWINDEX_INVALID;
+    modplug::tracker::rowindex_t nBreakRow = ROWINDEX_INVALID, nPatLoopRow = ROWINDEX_INVALID;
     ORDERINDEX nPosJump = ORDERINDEX_INVALID;
 
 // -> CODE#0010
@@ -2156,7 +2159,7 @@ BOOL module_renderer::ProcessEffects()
             m_nNextRow = nPatLoopRow;
             if (m_nPatternDelay) m_nNextRow++;
             // As long as the pattern loop is running, mark the looped rows as not visited yet
-            for(ROWINDEX nRow = nPatLoopRow; nRow <= m_nRow; nRow++)
+            for(modplug::tracker::rowindex_t nRow = nPatLoopRow; nRow <= m_nRow; nRow++)
             {
                 SetRowVisited(m_nCurrentPattern, nRow, false);
             }
@@ -4156,7 +4159,7 @@ void module_renderer::InitializeVisitedRows(const bool bReset, VisitedRowsType *
 // nOrd, nRow - which row should be (un)set
 // If bVisited is true, the row will be set as visited.
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-void module_renderer::SetRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bVisited, VisitedRowsType *pRowVector)
+void module_renderer::SetRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bVisited, VisitedRowsType *pRowVector)
 //--------------------------------------------------------------------------------------------------------------------------
 {
     const ORDERINDEX nMaxOrd = Order.GetLengthTailTrimmed();
@@ -4184,7 +4187,7 @@ void module_renderer::SetRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, 
 // If bAutoSet is true, the queried row will automatically be marked as visited.
 // Use this parameter instead of consecutive IsRowVisited/SetRowVisited calls.
 // If pRowVector is specified, an alternative row vector instead of the module's global one will be used (f.e. when using GetLength()).
-bool module_renderer::IsRowVisited(const ORDERINDEX nOrd, const ROWINDEX nRow, const bool bAutoSet, VisitedRowsType *pRowVector)
+bool module_renderer::IsRowVisited(const ORDERINDEX nOrd, const modplug::tracker::rowindex_t nRow, const bool bAutoSet, VisitedRowsType *pRowVector)
 //-------------------------------------------------------------------------------------------------------------------------
 {
     const ORDERINDEX nMaxOrd = Order.GetLengthTailTrimmed();

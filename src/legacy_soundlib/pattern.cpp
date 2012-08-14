@@ -18,7 +18,7 @@ CHANNELINDEX CPattern::GetNumChannels() const
 }
 
 
-bool CPattern::SetSignature(const ROWINDEX rowsPerBeat, const ROWINDEX rowsPerMeasure)
+bool CPattern::SetSignature(const modplug::tracker::rowindex_t rowsPerBeat, const modplug::tracker::rowindex_t rowsPerMeasure)
 //------------------------------------------------------------------------------------
 {
     if(rowsPerBeat < GetSoundFile().GetModSpecifications().patternRowsMin || rowsPerBeat > GetSoundFile().GetModSpecifications().patternRowsMax
@@ -31,7 +31,7 @@ bool CPattern::SetSignature(const ROWINDEX rowsPerBeat, const ROWINDEX rowsPerMe
 }
 
 
-bool CPattern::Resize(const ROWINDEX newRowCount, const bool showDataLossWarning)
+bool CPattern::Resize(const modplug::tracker::rowindex_t newRowCount, const bool showDataLossWarning)
 //-------------------------------------------------------------------------------
 {
     if(m_ModCommands == nullptr)
@@ -143,7 +143,7 @@ bool CPattern::Expand()
     if ((!m_ModCommands) || (m_Rows > sndFile.GetModSpecifications().patternRowsMax / 2)) return true;
 
     rModDoc.BeginWaitCursor();
-    const ROWINDEX nRows = m_Rows;
+    const modplug::tracker::rowindex_t nRows = m_Rows;
     const CHANNELINDEX nChns = sndFile.m_nChannels;
     newPattern = AllocatePattern(nRows * 2, nChns);
     if (!newPattern) return true;
@@ -151,7 +151,7 @@ bool CPattern::Expand()
     const PATTERNINDEX nPattern = m_rPatternContainer.GetIndex(this);
     rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
     oldPattern = m_ModCommands;
-    for (ROWINDEX y = 0; y < nRows; y++)
+    for (modplug::tracker::rowindex_t y = 0; y < nRows; y++)
     {
             memcpy(newPattern + y * 2 * nChns, oldPattern + y * nChns, nChns * sizeof(modplug::tracker::modevent_t));
     }
@@ -175,12 +175,12 @@ bool CPattern::Shrink()
     if (!m_ModCommands || m_Rows < sndFile.GetModSpecifications().patternRowsMin * 2) return true;
 
     rModDoc.BeginWaitCursor();
-    ROWINDEX nRows = m_Rows;
+    modplug::tracker::rowindex_t nRows = m_Rows;
     const CHANNELINDEX nChns = sndFile.m_nChannels;
     const PATTERNINDEX nPattern = m_rPatternContainer.GetIndex(this);
     rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
     nRows /= 2;
-    for (ROWINDEX y = 0; y < nRows; y++)
+    for (modplug::tracker::rowindex_t y = 0; y < nRows; y++)
     {
             modplug::tracker::modevent_t *psrc = sndFile.Patterns[nPattern] + (y * 2 * nChns);
             modplug::tracker::modevent_t *pdest = sndFile.Patterns[nPattern] + (y * nChns);
@@ -244,7 +244,7 @@ bool CPattern::GetName(char *buffer, size_t maxChars) const
 ////////////////////////////////////////////////////////////////////////
 
 
-modplug::tracker::modevent_t *CPattern::AllocatePattern(ROWINDEX rows, CHANNELINDEX nchns)
+modplug::tracker::modevent_t *CPattern::AllocatePattern(modplug::tracker::rowindex_t rows, CHANNELINDEX nchns)
 //----------------------------------------------------------------------
 {
     modplug::tracker::modevent_t *p = new modplug::tracker::modevent_t[rows*nchns];
@@ -270,7 +270,7 @@ void CPattern::FreePattern(modplug::tracker::modevent_t *pat)
 bool CPattern::WriteITPdata(FILE* f) const
 //----------------------------------------
 {
-    for(ROWINDEX r = 0; r<GetNumRows(); r++)
+    for(modplug::tracker::rowindex_t r = 0; r<GetNumRows(); r++)
     {
             for(CHANNELINDEX c = 0; c<GetNumChannels(); c++)
             {
@@ -397,11 +397,11 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
     if(!pat)
             return;
 
-    const ROWINDEX rows = pat.GetNumRows();
+    const modplug::tracker::rowindex_t rows = pat.GetNumRows();
     const CHANNELINDEX chns = pat.GetNumChannels();
     vector<modplug::tracker::modevent_t> lastChnMC(chns);
 
-    for(ROWINDEX r = 0; r<rows; r++)
+    for(modplug::tracker::rowindex_t r = 0; r<rows; r++)
     {
             for(CHANNELINDEX c = 0; c<chns; c++)
             {
@@ -452,11 +452,11 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
             return;
 
     const CHANNELINDEX chns = pat.GetNumChannels();
-    const ROWINDEX rows = pat.GetNumRows();
+    const modplug::tracker::rowindex_t rows = pat.GetNumRows();
 
     vector<modplug::tracker::modevent_t> lastChnMC(chns);
 
-    ROWINDEX row = 0;
+    modplug::tracker::rowindex_t row = 0;
     while(row < rows && iStrm.good())
     {
             uint8_t t = 0;

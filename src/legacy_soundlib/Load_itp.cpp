@@ -256,7 +256,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
         ASSERT_CAN_READ(4);
         memcpy(&id,lpStream+dwMemPos,sizeof(uint32_t));
         if(id > MAX_PATTERN_ROWS) return false;
-        const ROWINDEX nRows = id;
+        const modplug::tracker::rowindex_t nRows = id;
         dwMemPos += sizeof(uint32_t);
 
         // Try to allocate & read only sized patterns

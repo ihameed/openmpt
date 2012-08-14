@@ -31,7 +31,7 @@ struct draw_state {
     QImage &font;
     const pattern_font_metrics_t &font_metrics;
     const int pattern_number;
-    const ROWINDEX playback_row;
+    const modplug::tracker::rowindex_t playback_row;
     const colors_t &colors;
 
     void set_foreground(const colors_t::colortype_t colortype) {
@@ -68,7 +68,7 @@ struct note_column: pattern_column {
 
     virtual void draw_column(draw_state &state, int column) {
         auto current_pattern = state.renderer.Patterns[state.pattern_number];
-        ROWINDEX nrows = current_pattern ? current_pattern.GetNumRows() : 0;
+        modplug::tracker::rowindex_t nrows = current_pattern ? current_pattern.GetNumRows() : 0;
 
         const QRect rect(
             column * state.standard_width,

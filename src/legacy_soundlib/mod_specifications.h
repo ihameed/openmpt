@@ -1,7 +1,7 @@
 #ifndef MOD_SPECIFICATIONS_H
 #define MOD_SPECIFICATIONS_H
 
-#include "Snd_defs.h"
+#include "../tracker/types.h"
 #include "../tracker/modevent.h"
 #include "../tracker/tracker.h"
 #include "../SoundFilePlayConfig.h" // mixlevel constants.
@@ -30,8 +30,8 @@ struct CModSpecifications
     CHANNELINDEX channelsMax; // Maximum number of editable channels in pattern.
     TEMPO tempoMin;
     TEMPO tempoMax;
-    ROWINDEX patternRowsMin;
-    ROWINDEX patternRowsMax;
+    modplug::tracker::rowindex_t patternRowsMin;
+    modplug::tracker::rowindex_t patternRowsMax;
     uint16_t modNameLengthMax;                // Meaning 'usable letters', possible null character is not included.
     uint16_t sampleNameLengthMax;                // Dito
     uint16_t sampleFilenameLengthMax;        // Dito

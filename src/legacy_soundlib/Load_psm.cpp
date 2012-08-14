@@ -788,7 +788,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
             // there's a restart pos, so let's try to insert a Bxx command in the last pattern
             if(subsongs[i].restartPos != ORDERINDEX_INVALID)
             {
-                ROWINDEX lastRow = Patterns[endPattern].GetNumRows() - 1;
+                modplug::tracker::rowindex_t lastRow = Patterns[endPattern].GetNumRows() - 1;
                 modplug::tracker::modevent_t *row_data;
                 row_data = Patterns[endPattern];
                 for(uint32_t nCell = 0; nCell < m_nChannels * Patterns[endPattern].GetNumRows(); nCell++, row_data++)
@@ -1002,7 +1002,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                 break;
 
             modplug::tracker::modevent_t *row_data;
-            ROWINDEX iRow = 0;
+            modplug::tracker::rowindex_t iRow = 0;
 
             while(dwMemPos < dwNextPattern && iRow < phdr->numRows)
             {

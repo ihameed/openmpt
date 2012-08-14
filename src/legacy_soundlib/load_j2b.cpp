@@ -218,7 +218,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
 
     ASSERT_CAN_READ(1);
 
-    ROWINDEX nRows = CLAMP(lpStream[0] + 1, 1, MAX_PATTERN_ROWS);
+    modplug::tracker::rowindex_t nRows = CLAMP(lpStream[0] + 1, 1, MAX_PATTERN_ROWS);
 
     if(pSndFile == nullptr || pSndFile->Patterns.Insert(nPat, nRows))
         return false;
@@ -231,7 +231,7 @@ bool Convert_RIFF_AM_Pattern(const PATTERNINDEX nPat, const uint8_t * const lpSt
 
     modplug::tracker::modevent_t *mrow = pSndFile->Patterns[nPat];
     modplug::tracker::modevent_t *m = mrow;
-    ROWINDEX nRow = 0;
+    modplug::tracker::rowindex_t nRow = 0;
 
     while((nRow < nRows) && (dwMemPos < dwMemLength))
     {
