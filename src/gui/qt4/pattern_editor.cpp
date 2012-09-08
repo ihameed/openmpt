@@ -17,41 +17,35 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
+QImage load_font() {
+    auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
+    auto instance = GetModuleHandle(nullptr);
+    auto hdc      = GetDC(nullptr);
+
+    auto font_bitmap = load_bmp_resource(resource, instance, hdc)
+                      .convertToFormat(QImage::Format_MonoLSB);
+
+    font_bitmap.setColor(0, qRgba(0xff, 0xff, 0xff, 0x00));
+    font_bitmap.setColor(1, qRgba(0xff, 0xff, 0xff, 0xff));
+
+    ReleaseDC(nullptr, hdc);
+
+    return font_bitmap;
+};
+
 pattern_editor::pattern_editor(module_renderer &renderer,
                                const colors_t &colors) :
     renderer(renderer),
     font_metrics(small_pattern_font),
     follow_playback(true)
 {
-    auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
-    auto instance = GetModuleHandle(nullptr);
-    auto hdc      = GetDC(nullptr);
-
-    font_bitmap = load_bmp_resource(resource, instance, hdc)
-                 .convertToFormat(QImage::Format_MonoLSB);
-
-    font_mask.convertFromImage(font_bitmap);
-
-    ReleaseDC(nullptr, hdc);
-
+    font_bitmap = load_font();
     update_colors(colors);
 }
 
 void pattern_editor::update_colors(const colors_t &newcolors) {
     colors = newcolors;
-
-    for (size_t i = 0; i < colors_t::MAX_COLORS; ++i) {
-        auto &color = colors[(colors_t::colortype_t) i];
-        auto &colorized_font = font[i];
-        font_bitmap.setColor(1, color.foreground.rgba());
-        font_bitmap.setColor(0, color.background.rgba());
-        font_bitmap.setColor(0, qRgba(0xff, 0xff, 0xff, 0x00));
-        font_bitmap.setColor(1, qRgba(0xff, 0xff, 0xff, 0xff));
-        colorized_font.convertFromImage(font_bitmap);
-        colorized_font.setMask(font_mask);
-    };
-
-    update();
+    updateGL();
 }
 
 void pattern_editor::update_playback_position(
@@ -71,12 +65,11 @@ void pattern_editor::initializeGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    resizeGL(100, 100);
-    for (size_t i = 0; i < colors_t::MAX_COLORS; ++i) {
-        font_textures[i] = bindTexture(font[i]);
-    }
+    font_texture = bindTexture(font_bitmap);
 
-    glBindTexture(GL_TEXTURE_2D, font_textures[0]);
+    resizeGL(100, 100);
+
+    glBindTexture(GL_TEXTURE_2D, font_texture);
 }
 
 void pattern_editor::resizeGL(int width, int height) {
@@ -104,27 +97,85 @@ void pattern_editor::paintGL() {
         renderer.GetNumPatterns(),
         clipping_rect,
 
-        font_metrics.width,
-        font_metrics.height,
-
-        font_textures,
-        font_metrics,
-        colors_t::Normal,
-
         playback_pos,
         active_pos,
 
-        colors
+        colors,
+
+        selection_start,
+        selection_end,
+        false
     };
 
-    chnindex_t idx = 0;
     int painted_width = 0;
 
-    for (; idx < channel_count && painted_width < width;
-         ++idx, painted_width += font_metrics.width)
+    for (chnindex_t idx = 0;
+         idx < channel_count && painted_width < width;
+         ++idx)
     {
-        note_column notehomie(state);
-        notehomie.draw_column(state, idx);
+        note_column notehomie(painted_width, idx, font_metrics);
+        notehomie.draw_column(state);
+        painted_width += notehomie.width();
+    }
+}
+
+bool pattern_editor::position_from_point(const QPoint &point,
+                                         selection_position_t &pos)
+{
+    chnindex_t channel_count = renderer.GetNumChannels();
+
+    int left = 0;
+
+    bool success = false;
+
+    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
+        note_column notehomie(left, idx, font_metrics);
+        success = notehomie.position_from_point(point, pos);
+        if (success) {
+            break;
+        }
+        left += notehomie.width();
+    }
+
+    return success;
+}
+
+void pattern_editor::set_selection(const QPoint &point, selection_position_t &pos) {
+    selection_position_t newpos;
+    if (position_from_point(point, newpos)) {
+        pos = newpos;
+    }
+}
+
+void pattern_editor::set_selection_start(const QPoint &point) {
+    set_selection(point, selection_start);
+}
+
+void pattern_editor::set_selection_end(const QPoint &point) {
+    set_selection(point, selection_end);
+}
+
+void pattern_editor::mousePressEvent(QMouseEvent *event) {
+    if (event->buttons() == Qt::LeftButton) {
+        is_dragging = true;
+        set_selection_start(event->pos());
+        set_selection_end(event->pos());
+        repaint();
+    }
+}
+
+void pattern_editor::mouseMoveEvent(QMouseEvent *event) {
+    if (event->buttons() == Qt::LeftButton && is_dragging) {
+        set_selection_end(event->pos());
+        repaint();
+    }
+}
+
+void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->buttons() == Qt::LeftButton) {
+        is_dragging = false;
+        set_selection_end(event->pos());
+        repaint();
     }
 }
 

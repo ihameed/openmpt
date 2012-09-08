@@ -15,14 +15,6 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-enum sub_column_t {
-    NOTE,
-    INSTRUMENT,
-    VOLUME,
-    EFFECT,
-    EFFECT_PARAMETER
-};
-
 struct editor_position_t {
     modplug::tracker::orderindex_t   order;
     modplug::tracker::patternindex_t pattern;
@@ -37,11 +29,42 @@ struct editor_position_t {
                       : order(order), pattern(pattern), row(row) { }
 };
 
-struct pattern_selection_t {
+struct selection_position_t {
     uint32_t row;
     uint32_t column;
-    sub_column_t sub_column;
+    elem_t   subcolumn;
 };
+
+inline bool in_selection(const selection_position_t &start,
+                         const selection_position_t &end,
+                         const selection_position_t &pos)
+{
+    auto minrow = min(start.row, end.row);
+    auto maxrow = max(start.row, end.row);
+
+    auto mincol = min(start.column, end.column);
+    auto maxcol = max(start.column, end.column);
+
+    elem_t minsub = start.column == mincol ? start.subcolumn : end.subcolumn;
+    elem_t maxsub = start.column == mincol ? end.subcolumn : start.subcolumn;
+
+    if (minrow <= pos.row && pos.row <= maxrow) {
+        if (mincol < pos.column && pos.column < maxcol) {
+            return true;
+        }
+        if (mincol == pos.column && maxcol == pos.column) {
+            return minsub <= pos.subcolumn && pos.subcolumn <= maxsub;
+        }
+        if (mincol == pos.column) {
+            return minsub <= pos.subcolumn;
+        }
+        if (maxcol == pos.column) {
+            return pos.subcolumn <= maxsub;
+        }
+    }
+
+    return false;
+}
 
 class pattern_editor : public QGLWidget {
     Q_OBJECT
@@ -51,14 +74,26 @@ public:
     void update_colors(const colors_t &colors);
     void update_playback_position(const editor_position_t &);
 
+    bool position_from_point(const QPoint &, selection_position_t &);
+
+    void set_selection_start(const QPoint &);
+    void set_selection_end(const QPoint &);
+    void set_selection(const QPoint &, selection_position_t &);
+
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeGL(int, int) override;
 
+    virtual void mousePressEvent(QMouseEvent *) override;
+    virtual void mouseMoveEvent(QMouseEvent *) override;
+    virtual void mouseReleaseEvent(QMouseEvent *) override;
+
 private:
-    pattern_selection_t selection_start;
-    pattern_selection_t selection_end;
+    bool selection_active;
+    bool is_dragging;
+    selection_position_t selection_start;
+    selection_position_t selection_end;
 
     editor_position_t playback_pos;
     editor_position_t active_pos;
@@ -68,14 +103,12 @@ private:
 
     const pattern_font_metrics_t &font_metrics;
     QImage font_bitmap;
-    QPixmap font[colors_t::MAX_COLORS];
-    QBitmap font_mask;
     colors_t colors;
 
     int width;
     int height;
 
-    GLuint font_textures[colors_t::MAX_COLORS];
+    GLuint font_texture;
     QRect clipping_rect;
 };
 

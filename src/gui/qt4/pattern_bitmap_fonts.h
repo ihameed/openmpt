@@ -16,6 +16,13 @@ enum elem_t {
     ElemMax
 };
 
+inline elem_t operator ++ (elem_t &elem) {
+    elem = elem < ElemMax
+        ? (elem_t) ((int) elem + 1)
+        : elem;
+    return elem;
+}
+
 struct pattern_font_metrics_t {
     int32_t  width,      height;     // Column Width & Height, including 4-pixels border
 

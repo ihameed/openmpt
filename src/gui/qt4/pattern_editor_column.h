@@ -29,32 +29,72 @@ struct draw_state {
 
     const patternindex_t num_patterns;
 
-    //QPainter &painter;
     const QRect &clip;
-
-    const int standard_width;
-    const int row_height;
-
-    //QImage &font;
-    GLuint *font_textures;
-    const pattern_font_metrics_t &font_metrics;
-    colors_t::colortype_t background;
 
     const editor_position_t &playback_pos;
     const editor_position_t &active_pos;
 
     const colors_t &colors;
+
+    const selection_position_t &selection_start;
+    const selection_position_t &selection_end;
+    const bool selection_active;
 };
 
 struct note_column {
-    draw_state &state;
+    const int left;
+    const int column;
+    const pattern_font_metrics_t &font_metrics;
+
+    selection_position_t pos;
+
     colors_t::colortype_t foreground;
 
-    note_column(draw_state &state) : state(state) { }
+    note_column(
+        const int left,
+        const int column,
+        const pattern_font_metrics_t &font_metrics
+    )
+        : font_metrics(font_metrics), column(column), left(left)
+    { }
 
-    void draw_header(draw_state &state, int column) {
-        QRect rect(state.standard_width * column, 0,
-                   state.standard_width, column_header_height);
+    int32_t width() {
+        return font_metrics.width;
+    }
+
+    bool position_from_point(const QPoint &point, selection_position_t &pos) {
+        int top = column_header_height + 1;
+
+        if (point.x() < left) {
+            return false;
+        }
+        if (point.x() > left + font_metrics.width) {
+            return false;
+        }
+
+        int localx = point.x() - left;
+        int localy = point.y() - top;
+
+        int row = localy / font_metrics.height;
+        DEBUG_FUNC("row = %d, localy = %d, height = %d", row, localy, font_metrics.height);
+        int elemright = 0;
+
+        for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
+            elemright += font_metrics.element_widths[elem];
+            if (localx < elemright) {
+                pos.row        = row;
+                pos.column     = column;
+                pos.subcolumn = elem;
+                return true;
+            };
+        }
+
+        return false;
+    }
+
+    void draw_header(draw_state &state) {
+        QRect rect(left, 0,
+                   font_metrics.width, column_header_height);
         //state.painter.drawRect(rect);
         const char *fmt = state.renderer.m_bChannelMuteTogglePending[column]
             ? "[Channel %1]"
@@ -65,7 +105,7 @@ struct note_column {
                                */
     }
 
-    void draw_column(draw_state &state, int column) {
+    void draw_column(draw_state &state) {
         if (state.active_pos.pattern > state.num_patterns) {
             return;
         }
@@ -74,19 +114,20 @@ struct note_column {
 
         auto clip_bottom = rect_bottom(state.clip);
 
-        const int left = column * state.standard_width;
-        const int height = state.font_metrics.height;
+        const int left = column * font_metrics.width;
+        const int height = font_metrics.height;
 
         int top = column_header_height + 1;
+
+        pos.column = column;
 
         for (size_t row = 0;
              row < nrows && top + height <= clip_bottom;
              ++row)
         {
-            draw_background(
-                state, left, top,
-                background_color(state, pattern, row)
-            );
+            pos.row = row;
+            draw_background(state, left, top,
+                            background_color(state, pattern, row));
             draw_row(state, pattern,
                      row, column,
                      left, top);
@@ -103,6 +144,8 @@ struct note_column {
             state.active_pos.pattern == state.playback_pos.pattern)
         {
             return colors_t::PlayCursor;
+        } else if (row == state.selection_end.row) {
+            return colors_t::CurrentRow;
         }
 
         auto measure_length  = state.renderer.m_nDefaultRowsPerMeasure;
@@ -116,19 +159,17 @@ struct note_column {
         if (row % measure_length == 0) {
             return colors_t::HighlightPrimary;
         } else if (row % beat_length == 0) {
-            return colors_t::HighlightPrimary;
+            return colors_t::HighlightSecondary;
         } else {
             return colors_t::Normal;
         }
     }
 
-    void draw_background(draw_state &state, int x, int y,
-        colors_t::colortype_t color)
-    {
-        const float left = x;
-        const float top = y;
-        const float right = x + state.font_metrics.width;
-        const float bottom = y + state.font_metrics.height;
+    void draw_rect(int x, int y, int width, int height, const QColor &color) {
+        const float left   = x;
+        const float top    = y;
+        const float right  = x + width;
+        const float bottom = y + height;
 
         GLint vertices[] = {
             left,  top,
@@ -137,41 +178,54 @@ struct note_column {
             left,  bottom
         };
 
-        const auto &qcolor = state.colors[color].background;
-
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_TEXTURE_COORD_ARRAY);
-        glColor3f(qcolor.redF(), qcolor.greenF(), qcolor.blueF());
+        glColor3f(color.redF(), color.greenF(), color.blueF());
         glVertexPointer(2, GL_INT, 0, vertices);
         glDrawArrays(GL_QUADS, 0, 4);
+    }
+
+    void draw_background(draw_state &state, int x, int y,
+        colors_t::colortype_t color)
+    {
+        draw_rect(
+            x, y,
+            font_metrics.width, font_metrics.height,
+            state.colors[color].background
+        );
     }
 
     void draw_row(draw_state &state, const CPattern &pattern,
                   int row, int column, int x, int y)
     {
         auto &evt = pattern.GetModCommand(row, column);
-        auto &widths = state.font_metrics.element_widths;
+        auto &widths = font_metrics.element_widths;
 
+        pos.subcolumn = ElemNote;
         draw_note(state, x, y, evt);
-        x += widths[ElemNote];
+        x += widths[pos.subcolumn];
 
+        pos.subcolumn = ElemInstr;
         draw_instr(state, x, y, evt);
-        x += widths[ElemInstr];
+        x += widths[pos.subcolumn];
 
+        pos.subcolumn = ElemVol;
         draw_vol(state, x, y, evt);
-        x += widths[ElemVol];
+        x += widths[pos.subcolumn];
 
+        pos.subcolumn = ElemCmd;
         draw_cmd(state, x, y, evt);
-        x += widths[ElemCmd];
+        x += widths[pos.subcolumn];
 
+        pos.subcolumn = ElemParam;
         draw_param(state, x, y, evt);
-        x += widths[ElemParam];
+        x += widths[pos.subcolumn];
     }
 
     void draw_note(draw_state &state, int x, int y,
                    const modevent_t &evt)
     {
-        auto &metrics = state.font_metrics;
+        auto &metrics = font_metrics;
         auto note = evt.note;
         auto srcx = metrics.note_x;
         auto srcy = metrics.note_y;
@@ -219,7 +273,7 @@ struct note_column {
     void draw_instr(draw_state &state, int x, int y,
                     const modevent_t &evt)
     {
-        auto &metrics = state.font_metrics;
+        auto &metrics = font_metrics;
         auto instr = evt.instr;
 
         if (instr) {
@@ -253,7 +307,7 @@ struct note_column {
     void draw_vol(draw_state &state, int x, int y,
                   const modevent_t &evt)
     {
-        auto &metrics = state.font_metrics;
+        auto &metrics = font_metrics;
 
         if (evt.volcmd) {
             auto volcmd = evt.volcmd & 0x0f;
@@ -285,7 +339,7 @@ struct note_column {
     void draw_cmd(draw_state &state, int x, int y,
                   const modevent_t &evt)
     {
-        auto &metrics = state.font_metrics;
+        auto &metrics = font_metrics;
 
         if (evt.command) {
             foreground = colors_t::Pitch;
@@ -305,7 +359,7 @@ struct note_column {
     void draw_param(draw_state &state, int x, int y,
                     const modevent_t &evt)
     {
-        auto &metrics = state.font_metrics;
+        auto &metrics = font_metrics;
 
         if (evt.command) {
             foreground = colors_t::Panning;
@@ -328,7 +382,7 @@ struct note_column {
     void draw_letter(draw_state &state, int x, int y,
         int width, int x_offset, char letter)
     {
-        auto &metrics = state.font_metrics;
+        auto &metrics = font_metrics;
         auto srcx = metrics.space_x;
         auto srcy = metrics.space_y;
 
@@ -380,15 +434,15 @@ struct note_column {
     void draw_spacer(draw_state &state, int x, int y, elem_t elem_type) {
         int offset = 0;
         for (size_t i = 0; i < (size_t) elem_type; ++i) {
-            offset += state.font_metrics.element_widths[i];
+            offset += font_metrics.element_widths[i];
         }
         foreground = colors_t::Normal;
 
 
         draw_glyph(state, x, y,
-            state.font_metrics.clear_x + offset,
-            state.font_metrics.clear_y,
-            state.font_metrics.element_widths[elem_type]);
+            font_metrics.clear_x + offset,
+            font_metrics.clear_y,
+            font_metrics.element_widths[elem_type]);
     }
 
     void tex_coords(GLfloat *arr, int left, int top, int width, int height) {
@@ -405,7 +459,6 @@ struct note_column {
         arr[2] = texright; arr[3] = textop;
         arr[4] = texright; arr[5] = texbottom;
         arr[6] = texleft;  arr[7] = texbottom;
-
     }
 
     void draw_glyph(draw_state &state, int x, int y,
@@ -413,12 +466,12 @@ struct note_column {
     {
         GLfloat font_vertices[8];
         tex_coords(font_vertices, glyph_x, glyph_y,
-            glyph_width, state.font_metrics.height);
+            glyph_width, font_metrics.height);
 
-        const float left = x;
-        const float top = y;
-        const float right = x + glyph_width;
-        const float bottom = y + state.font_metrics.height;
+        const float left   = x;
+        const float top    = y;
+        const float right  = x + glyph_width;
+        const float bottom = y + font_metrics.height;
 
         GLint vertices[] = {
             left,  top,
@@ -427,11 +480,18 @@ struct note_column {
             left,  bottom
         };
 
-        const auto &color = state.colors[foreground].foreground;
+        const QColor *color = &state.colors[foreground].foreground;
+
+        if (in_selection(state.selection_start, state.selection_end, pos)) {
+            auto &selected_color = state.colors[colors_t::Selected];
+            color = &selected_color.foreground;
+            draw_rect(left, top, glyph_width, font_metrics.height,
+                      selected_color.background);
+        }
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_TEXTURE_COORD_ARRAY);
-        glColor3f(color.redF(), color.greenF(), color.blueF());
+        glColor3f(color->redF(), color->greenF(), color->blueF());
 
         glVertexPointer(2, GL_INT, 0, vertices);
         glTexCoordPointer(2, GL_FLOAT, 0, font_vertices);
