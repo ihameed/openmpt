@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtGui>
+#include <QGLWidget>
 #include <cstdint>
 #include "colors.h"
 #include "pattern_bitmap_fonts.h"
@@ -42,18 +43,18 @@ struct pattern_selection_t {
     sub_column_t sub_column;
 };
 
-class pattern_editor : public QWidget {
+class pattern_editor : public QGLWidget {
     Q_OBJECT
-
 public:
-
     pattern_editor(module_renderer &renderer, const colors_t &colors);
 
     void update_colors(const colors_t &colors);
     void update_playback_position(const editor_position_t &);
 
 protected:
-    virtual void paintEvent(QPaintEvent *) override;
+    virtual void initializeGL() override;
+    virtual void paintGL() override;
+    virtual void resizeGL(int, int) override;
 
 private:
     pattern_selection_t selection_start;
@@ -66,8 +67,16 @@ private:
     module_renderer &renderer;
 
     const pattern_font_metrics_t &font_metrics;
-    QImage font;
+    QImage font_bitmap;
+    QPixmap font[colors_t::MAX_COLORS];
+    QBitmap font_mask;
     colors_t colors;
+
+    int width;
+    int height;
+
+    GLuint font_textures[colors_t::MAX_COLORS];
+    QRect clipping_rect;
 };
 
 

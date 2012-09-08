@@ -46,7 +46,7 @@ struct pattern_font_metrics_t {
     int32_t  instr_firstchar_width;
 };
 
-static const int32_t grid_height = 13;
+static const uint32_t grid_height = 13;
 
 static const pattern_font_metrics_t medium_pattern_font = {
     92, 13,              // Column Width & Height

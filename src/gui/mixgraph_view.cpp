@@ -48,7 +48,7 @@ struct line {
     double x1, y1, x2, y2;
     int f;
 
-    line(double x1_, double y1_, double x2_, double y2_) : 
+    line(double x1_, double y1_, double x2_, double y2_) :
         x1(x1_), y1(y1_), x2(x2_), y2(y2_), f(0) {}
 
     void rewind(unsigned) { f = 0; }
@@ -64,7 +64,7 @@ struct bezier_curve_t {
 
     void set_endpoints(point_t &headpos, point_t &tailpos) {
         //c.approximation_scale(0.025);
-        c.init(headpos.x, headpos.y, 
+        c.init(headpos.x, headpos.y,
                headpos.x + 100, headpos.y,
                tailpos.x - 100, tailpos.y,
                tailpos.x, tailpos.y);
@@ -446,7 +446,7 @@ struct mixgraph_viewstate_t {
 
         selection_state.active = false;
 
-        font_manager.init("HelveticaNeueLt Std Lt", flip_y);
+        font_manager.init("Nimbus Sans Novus D Light", flip_y);
         //font_manager.init("Tahoma", flip_y);
 
         //ftype_ = agg::glyph_ren_agg_gray8;
@@ -467,6 +467,7 @@ struct mixgraph_viewstate_t {
         }
 
 
+        /*
         auto &arrows = graph->arrows;
         for (auto iter = arrows.begin(); iter != arrows.end(); ++iter) {
             auto item = *iter;
@@ -483,6 +484,7 @@ struct mixgraph_viewstate_t {
             guiarrow->head->out_arrows.push_back(guiarrow);
             guiarrow->tail->in_arrows.push_back(guiarrow);
         }
+        */
 
         return true;
     }
@@ -570,13 +572,13 @@ struct mixgraph_viewstate_t {
         int width   = layout.nub_width;
         int height  = layout.nub_height;
         int padding = layout.vertical_padding;
-    
+
         ras.move_to_d(x, y);
         ras.line_to_d(x + width, y);
         ras.line_to_d(x + width, y + height);
         ras.line_to_d(x, y + height);
         ras.line_to_d(x, y);
-    
+
         return y + height + padding;
     }
 
@@ -609,7 +611,7 @@ struct mixgraph_viewstate_t {
         for_each_rev(arrow_guistate, f);
     }
 
-    
+
     template <typename rasterizer_t, typename scanline_t, typename renderer_t>
     void draw_vertex(rasterizer_t &ras, scanline_t &sl, renderer_t &ren, vertex_guistate_t *guivtx) {
         const char *label = guivtx->vertex->name.c_str();
@@ -622,19 +624,19 @@ struct mixgraph_viewstate_t {
         int width    = layout.main_width;
         int outnub_x = x + width + layout.nub_width;
         int padding  = layout.vertical_padding;
-    
+
         int out_nub_y = y + padding;
         for (size_t idx = 0; idx < out_nubs; ++idx) {
             out_nub_y = draw_nub(ras, outnub_x, out_nub_y);
         }
-    
+
         int in_nub_y = y + padding;
         for (size_t idx = 0; idx < in_nubs; ++idx) {
             in_nub_y = draw_nub(ras, x, in_nub_y);
         }
-    
+
         int height = max(out_nub_y, in_nub_y) - y;
-    
+
         draw_mainbox(ras, sl, x + layout.nub_width, y, height, width);
 
         auto id = guivtx->vertex->id;
@@ -642,7 +644,7 @@ struct mixgraph_viewstate_t {
         ren.color(color);
 
         agg::render_scanlines(ras, sl, ren);
-    
+
         font_manager.draw_text(ras, sl, ren, x, y, label, layout.text_color);
     }
 
@@ -672,14 +674,14 @@ struct mixgraph_viewstate_t {
         ras.line_to_d(box.left, box.bottom);
         agg::render_scanlines(ras, sl, ren);
     }
-    
+
     void paint_agg(graphicsbuffer_t &gfxbuf, rect_t &clipping_rect, rectsize_t &client_size) {
         agg::rendering_buffer rbuf;
         buffer_attach(rbuf, gfxbuf, y_factor);
-    
+
         pixel_format_t pixf(rbuf);
         base_render_t  renb(pixf);
-    
+
 
         antialiased_renderer_t antialiased(renb);
         primitive_renderer_t   primitive(renb);
@@ -697,7 +699,7 @@ struct mixgraph_viewstate_t {
 
         draw_selection_box(primitive_rasterizer, sl, primitive);
 
-        //draw_clipping_debug_box(antialiased_rasterizer, sl, antialiased, clipping_rect);
+        draw_clipping_debug_box(antialiased_rasterizer, sl, antialiased, clipping_rect);
     }
 
     bool hit_test(arrow_guistate_t *arrow) {
@@ -716,7 +718,7 @@ struct mixgraph_viewstate_t {
                 int cx = vtx->pos.x + vtx->pos.width;
                 int cy = vtx->pos.y + vtx->pos.height;
                 //debug_log("mouse (%d, %d) testing against (%d, %d), (%d, %d)", mouse_pos.x, mouse_pos.y, x, y, cx, cy);
-    
+
                 if ((mouse_pos.x >= x && mouse_pos.x < cx) && (mouse_pos.y >= y && mouse_pos.y < cy)) {
                     this->hompy_selected = true;
                     this->selected_id = id;
@@ -771,15 +773,16 @@ struct mixgraph_viewstate_t {
 
     void invalidate() {
         InvalidateRect(this->hwnd, nullptr, false);
-        UpdateWindow(this->hwnd);
+        //UpdateWindow(this->hwnd);
         //force_paint();
         //RedrawWindow(hwnd, nullptr, nullptr, RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_UPDATENOW);
     }
 
     void paint_common(hdc_t hdc, rect_t &update_rect, rect_t &client_rect) {
-        auto update_size = rect_size(update_rect);
+        //auto update_size = rect_size(update_rect);
+        auto update_size = rect_size(client_rect);
         auto client_size = rect_size(client_rect);
-    
+
         BITMAPINFO bmp_info;
         bmp_info.bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
         bmp_info.bmiHeader.biWidth         = client_size.width;
@@ -792,17 +795,17 @@ struct mixgraph_viewstate_t {
         bmp_info.bmiHeader.biYPelsPerMeter = 0;
         bmp_info.bmiHeader.biClrUsed       = 0;
         bmp_info.bmiHeader.biClrImportant  = 0;
-    
+
         hdc_t mem_dc = CreateCompatibleDC(hdc);
         void *buf = nullptr;
-    
+
         HBITMAP bmp  = CreateDIBSection(mem_dc, &bmp_info, DIB_RGB_COLORS, &buf, 0, 0);
         HBITMAP temp = (HBITMAP) SelectObject(mem_dc, bmp);
 
         graphicsbuffer_t gfxbuf(buf, client_size.width, client_size.height);
-    
+
         paint_agg(gfxbuf, update_rect, client_size);
-    
+
 
         BitBlt(hdc,
                update_rect.left, update_rect.top,
@@ -810,7 +813,7 @@ struct mixgraph_viewstate_t {
                mem_dc,
                update_rect.left, update_rect.top,
                SRCCOPY);
-    
+
         SelectObject(mem_dc, temp);
         DeleteObject(bmp);
         DeleteObject(mem_dc);
@@ -824,7 +827,7 @@ struct mixgraph_viewstate_t {
         paint_common(hdc, update_rect, update_rect);
         ReleaseDC(hwnd, hdc);
     }
-    
+
     LRESULT paint() {
         PAINTSTRUCT ps;
 

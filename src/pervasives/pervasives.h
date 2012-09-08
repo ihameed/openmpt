@@ -18,6 +18,31 @@ typedef int32_t int24_t;
 namespace modplug {
 namespace pervasives {
 
+class ghettotimer {
+public:
+    ghettotimer(const char *name) : name(name), start(0), end(0), freq(0) {
+        QueryPerformanceFrequency((LARGE_INTEGER *)&freq);
+        QueryPerformanceCounter((LARGE_INTEGER *)&start);
+    }
+
+    ~ghettotimer() {
+        QueryPerformanceCounter((LARGE_INTEGER *)&end);
+        double sec = ((double)end - start) / freq;
+        double fps = 1 / sec;
+        if (freq != 0) {
+            debug_log("%s: ghettotimer: took %f ms; fps = %f, freq = %I64d hz",
+                name, sec * 1000, fps, freq);
+        } else {
+            debug_log("%s: ghettotimer: OH MY HEIMER");
+        }
+    }
+
+    const char *name;
+    __int64 start;
+    __int64 end;
+    __int64 freq;
+};
+
 class noncopyable {
 protected:
     noncopyable() { };

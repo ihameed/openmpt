@@ -7,6 +7,9 @@
 #include "pattern_editor_column.h"
 #include "util.h"
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+
 using namespace modplug::pervasives;
 using namespace modplug::tracker;
 
@@ -24,8 +27,10 @@ pattern_editor::pattern_editor(module_renderer &renderer,
     auto instance = GetModuleHandle(nullptr);
     auto hdc      = GetDC(nullptr);
 
-    font = load_bmp_resource(resource, instance, hdc)
-          .convertToFormat(QImage::Format_MonoLSB);
+    font_bitmap = load_bmp_resource(resource, instance, hdc)
+                 .convertToFormat(QImage::Format_MonoLSB);
+
+    font_mask.convertFromImage(font_bitmap);
 
     ReleaseDC(nullptr, hdc);
 
@@ -34,6 +39,17 @@ pattern_editor::pattern_editor(module_renderer &renderer,
 
 void pattern_editor::update_colors(const colors_t &newcolors) {
     colors = newcolors;
+
+    for (size_t i = 0; i < colors_t::MAX_COLORS; ++i) {
+        auto &color = colors[(colors_t::colortype_t) i];
+        auto &colorized_font = font[i];
+        font_bitmap.setColor(1, color.foreground.rgba());
+        font_bitmap.setColor(0, color.background.rgba());
+        font_bitmap.setColor(0, qRgba(0xff, 0xff, 0xff, 0x00));
+        font_bitmap.setColor(1, qRgba(0xff, 0xff, 0xff, 0xff));
+        colorized_font.convertFromImage(font_bitmap);
+        colorized_font.setMask(font_mask);
+    };
 
     update();
 }
@@ -45,34 +61,55 @@ void pattern_editor::update_playback_position(
     if (follow_playback) {
         active_pos = playback_pos;
     }
-    update();
+    repaint();
 }
 
-void pattern_editor::paintEvent(QPaintEvent *evt) {
-    QPainter painter(this);
-    painter.setRenderHints( QPainter::Antialiasing
-                          | QPainter::TextAntialiasing
-                          | QPainter::SmoothPixmapTransform
-                          | QPainter::HighQualityAntialiasing
-                          , false);
-    painter.setViewTransformEnabled(false);
+void pattern_editor::initializeGL() {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
 
-    const QRect &clipping_rect = evt->rect();
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    resizeGL(100, 100);
+    for (size_t i = 0; i < colors_t::MAX_COLORS; ++i) {
+        font_textures[i] = bindTexture(font[i]);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, font_textures[0]);
+}
+
+void pattern_editor::resizeGL(int width, int height) {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, width, height, 0);
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_MODELVIEW);
+
+    clipping_rect = QRect(0, 0, width, height);
+
+    this->width = width;
+    this->height = height;
+}
+
+void pattern_editor::paintGL() {
+    ghettotimer homesled(__FUNCTION__);
 
     chnindex_t channel_count = renderer.GetNumChannels();
-    note_column notehomie;
 
     draw_state state = {
         renderer,
 
-        painter,
+        renderer.GetNumPatterns(),
         clipping_rect,
 
         font_metrics.width,
         font_metrics.height,
 
-        font,
+        font_textures,
         font_metrics,
+        colors_t::Normal,
 
         playback_pos,
         active_pos,
@@ -80,8 +117,13 @@ void pattern_editor::paintEvent(QPaintEvent *evt) {
         colors
     };
 
-    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
-        notehomie.draw_header(state, idx);
+    chnindex_t idx = 0;
+    int painted_width = 0;
+
+    for (; idx < channel_count && painted_width < width;
+         ++idx, painted_width += font_metrics.width)
+    {
+        note_column notehomie(state);
         notehomie.draw_column(state, idx);
     }
 }

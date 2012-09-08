@@ -14,6 +14,7 @@
 
 using std::string;
 
+using namespace modplug::pervasives;
 using namespace modplug::tracker;
 using namespace modplug::gui::qt4;
 
@@ -378,6 +379,8 @@ void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modev
 void CViewPattern::OnDraw(CDC *pDC)
 //---------------------------------
 {
+    ghettotimer homie(__FUNCTION__);
+
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CHAR s[256];
     HGDIOBJ oldpen;
@@ -1327,18 +1330,22 @@ void CViewPattern::InvalidatePattern(BOOL bHdr)
 {
     CRect rect;
     GetClientRect(&rect);
+    /*
     if (!bHdr)
     {
         rect.left += m_szHeader.cx;
         rect.top += m_szHeader.cy;
     }
-    InvalidateRect(&rect, FALSE);
+    */
+    //XXXih: turkish
+    InvalidateRect(&rect, TRUE);
 }
 
 
 void CViewPattern::InvalidateRow(int n)
 //-------------------------------------
 {
+    /*
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
@@ -1354,6 +1361,12 @@ void CViewPattern::InvalidateRow(int n)
         rect.bottom = rect.top + m_szCell.cy;
         InvalidateRect(&rect, FALSE);
     }
+    */
+
+    CRect rect;
+    GetClientRect(&rect);
+    //XXXih: turkish
+    InvalidateRect(&rect, TRUE);
 
 }
 
@@ -1361,6 +1374,7 @@ void CViewPattern::InvalidateRow(int n)
 void CViewPattern::InvalidateArea(uint32_t dwBegin, uint32_t dwEnd)
 //-----------------------------------------------------------
 {
+    /*
     RECT rect;
     POINT pt;
     pt = GetPointFromPosition(dwBegin);
@@ -1370,16 +1384,29 @@ void CViewPattern::InvalidateArea(uint32_t dwBegin, uint32_t dwEnd)
     rect.right = pt.x;
     rect.bottom = pt.y;
     InvalidateRect(&rect, FALSE);
+    */
+
+    CRect rect;
+    GetClientRect(&rect);
+    //XXXih: turkish
+    InvalidateRect(&rect, TRUE);
 }
 
 
 void CViewPattern::InvalidateChannelsHeaders()
 //--------------------------------------------
 {
+    /*
     CRect rect;
     GetClientRect(&rect);
     rect.bottom = rect.top + m_szHeader.cy;
     InvalidateRect(&rect, FALSE);
+    */
+
+    CRect rect;
+    GetClientRect(&rect);
+    //XXXih: turkish
+    InvalidateRect(&rect, TRUE);
 }
 
 

@@ -13,6 +13,8 @@
 #include "util.h"
 #include "../legacy_soundlib/Snd_defs.h"
 
+#include <GL/gl.h>
+
 using namespace modplug::pervasives;
 using namespace modplug::tracker;
 
@@ -25,89 +27,82 @@ static const int column_header_height = 20;
 struct draw_state {
     const module_renderer &renderer;
 
-    QPainter &painter;
+    const patternindex_t num_patterns;
+
+    //QPainter &painter;
     const QRect &clip;
 
     const int standard_width;
     const int row_height;
 
-    QImage &font;
+    //QImage &font;
+    GLuint *font_textures;
     const pattern_font_metrics_t &font_metrics;
+    colors_t::colortype_t background;
 
     const editor_position_t &playback_pos;
     const editor_position_t &active_pos;
 
     const colors_t &colors;
-
-    void set_foreground(const colors_t::colortype_t colortype) {
-        font.setColor(1, colors[colortype].foreground.rgba());
-    }
-
-    void set_background(const colors_t::colortype_t colortype) {
-        font.setColor(0, colors[colortype].background.rgba());
-    }
 };
 
-struct pattern_column: modplug::pervasives::noncopyable {
-    virtual void draw_header(draw_state &, int) = 0;
-    virtual void draw_column(draw_state &, int) = 0;
-};
+struct note_column {
+    draw_state &state;
+    colors_t::colortype_t foreground;
 
-struct automation_column: pattern_column {
-};
+    note_column(draw_state &state) : state(state) { }
 
-struct wave_column: pattern_column {
-};
-
-struct note_column: pattern_column {
-    virtual void draw_header(draw_state &state, int column) {
+    void draw_header(draw_state &state, int column) {
         QRect rect(state.standard_width * column, 0,
                    state.standard_width, column_header_height);
-        state.painter.drawRect(rect);
+        //state.painter.drawRect(rect);
         const char *fmt = state.renderer.m_bChannelMuteTogglePending[column]
             ? "[Channel %1]"
             : "Channel %1";
+            /*
         state.painter.drawText(rect, Qt::AlignCenter,
                                QString(fmt).arg(column + 1));
+                               */
     }
 
-    virtual void draw_column(draw_state &state, int column) {
-        if (state.active_pos.pattern > state.renderer.GetNumPatterns()) {
+    void draw_column(draw_state &state, int column) {
+        if (state.active_pos.pattern > state.num_patterns) {
             return;
         }
         auto pattern = state.renderer.Patterns[state.active_pos.pattern];
         rowindex_t nrows = pattern ? pattern.GetNumRows() : 0;
 
-        const QRect rect(
-            column * state.standard_width,
-            column_header_height + 1,
-            state.standard_width,
-            state.font_metrics.height
-        );
-        QRect cell(rect);
-
         auto clip_bottom = rect_bottom(state.clip);
 
+        const int left = column * state.standard_width;
+        const int height = state.font_metrics.height;
+
+        int top = column_header_height + 1;
+
         for (size_t row = 0;
-             row < nrows && rect_bottom(cell) <= clip_bottom;
+             row < nrows && top + height <= clip_bottom;
              ++row)
         {
-            set_background(state, pattern, row);
+            draw_background(
+                state, left, top,
+                background_color(state, pattern, row)
+            );
             draw_row(state, pattern,
                      row, column,
-                     cell.left(), cell.top());
-            cell.setTop(cell.top() + state.font_metrics.height);
+                     left, top);
+            top += height;
         }
     }
 
-    void set_background(draw_state &state, const CPattern &pattern,
-                        size_t row)
+    colors_t::colortype_t background_color(
+        draw_state &state,
+        const CPattern &pattern,
+        size_t row)
     {
         if (row == state.playback_pos.row &&
             state.active_pos.pattern == state.playback_pos.pattern)
         {
-            state.set_background(colors_t::PlayCursor);
-            return;
+            return colors_t::PlayCursor;
         }
 
         auto measure_length  = state.renderer.m_nDefaultRowsPerMeasure;
@@ -115,16 +110,40 @@ struct note_column: pattern_column {
 
         if (pattern.GetOverrideSignature()) {
             measure_length = pattern.GetRowsPerMeasure();
-            beat_length = pattern.GetRowsPerBeat();
+            beat_length    = pattern.GetRowsPerBeat();
         }
 
         if (row % measure_length == 0) {
-            state.set_background(colors_t::HighlightPrimary);
+            return colors_t::HighlightPrimary;
         } else if (row % beat_length == 0) {
-            state.set_background(colors_t::HighlightSecondary);
+            return colors_t::HighlightPrimary;
         } else {
-            state.set_background(colors_t::Normal);
+            return colors_t::Normal;
         }
+    }
+
+    void draw_background(draw_state &state, int x, int y,
+        colors_t::colortype_t color)
+    {
+        const float left = x;
+        const float top = y;
+        const float right = x + state.font_metrics.width;
+        const float bottom = y + state.font_metrics.height;
+
+        GLint vertices[] = {
+            left,  top,
+            right, top,
+            right, bottom,
+            left,  bottom
+        };
+
+        const auto &qcolor = state.colors[color].background;
+
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_COORD_ARRAY);
+        glColor3f(qcolor.redF(), qcolor.greenF(), qcolor.blueF());
+        glVertexPointer(2, GL_INT, 0, vertices);
+        glDrawArrays(GL_QUADS, 0, 4);
     }
 
     void draw_row(draw_state &state, const CPattern &pattern,
@@ -158,7 +177,7 @@ struct note_column: pattern_column {
         auto srcy = metrics.note_y;
         auto width = metrics.element_widths[ElemNote];
 
-        state.set_foreground(colors_t::Note);
+        foreground = colors_t::Note;
 
         switch (note) {
         case 0:
@@ -195,7 +214,6 @@ struct note_column: pattern_column {
             } else {
             }
         }
-        draw_debug(state, x, y, ElemNote);
     }
 
     void draw_instr(draw_state &state, int x, int y,
@@ -207,7 +225,7 @@ struct note_column: pattern_column {
         if (instr) {
             auto width = metrics.instr_firstchar_width;
 
-            state.set_foreground(colors_t::Instrument);
+            foreground = colors_t::Instrument;
 
             if (instr < 100) {
                 draw_glyph(state, x, y,
@@ -230,7 +248,6 @@ struct note_column: pattern_column {
         } else {
             draw_spacer(state, x, y, ElemInstr);
         }
-        draw_debug(state, x, y, ElemInstr);
     }
 
     void draw_vol(draw_state &state, int x, int y,
@@ -242,7 +259,7 @@ struct note_column: pattern_column {
             auto volcmd = evt.volcmd & 0x0f;
             auto vol    = evt.vol & 0x7f;
 
-            state.set_foreground(colors_t::Volume);
+            foreground = colors_t::Volume;
 
             draw_glyph(state, x, y,
                 metrics.nVolX, metrics.nVolY + volcmd * grid_height,
@@ -263,7 +280,6 @@ struct note_column: pattern_column {
         } else {
             draw_spacer(state, x, y, ElemVol);
         }
-        draw_debug(state, x, y, ElemVol);
     }
 
     void draw_cmd(draw_state &state, int x, int y,
@@ -272,7 +288,7 @@ struct note_column: pattern_column {
         auto &metrics = state.font_metrics;
 
         if (evt.command) {
-            state.set_foreground(colors_t::Pitch);
+            foreground = colors_t::Pitch;
             auto rawcommand = evt.command & 0x3f;
             char command = state.renderer.m_nType & (MOD_TYPE_MOD | MOD_TYPE_XM)
                 ? mod_command_glyphs[rawcommand]
@@ -284,7 +300,6 @@ struct note_column: pattern_column {
         } else {
             draw_spacer(state, x, y, ElemCmd);
         }
-        draw_debug(state, x, y, ElemCmd);
     }
 
     void draw_param(draw_state &state, int x, int y,
@@ -293,7 +308,7 @@ struct note_column: pattern_column {
         auto &metrics = state.font_metrics;
 
         if (evt.command) {
-            state.set_foreground(colors_t::Panning);
+            foreground = colors_t::Panning;
             draw_glyph(state, x, y,
                 metrics.num_x,
                 metrics.num_y + (evt.param >> 4) * grid_height,
@@ -308,7 +323,6 @@ struct note_column: pattern_column {
         } else {
             draw_spacer(state, x, y, ElemParam);
         }
-        draw_debug(state, x, y, ElemParam);
     }
 
     void draw_letter(draw_state &state, int x, int y,
@@ -365,33 +379,63 @@ struct note_column: pattern_column {
 
     void draw_spacer(draw_state &state, int x, int y, elem_t elem_type) {
         int offset = 0;
-        for (size_t i = 0; i < elem_type; ++i) {
+        for (size_t i = 0; i < (size_t) elem_type; ++i) {
             offset += state.font_metrics.element_widths[i];
         }
-        state.set_foreground(colors_t::Normal);
+        foreground = colors_t::Normal;
+
+
         draw_glyph(state, x, y,
             state.font_metrics.clear_x + offset,
             state.font_metrics.clear_y,
             state.font_metrics.element_widths[elem_type]);
     }
 
-    void draw_debug(draw_state &state, int x, int y, elem_t elem_type) {
-        if (false) {
-            state.set_foreground(colors_t::Normal);
-            state.painter.drawRect(x, y,
-                state.font_metrics.element_widths[elem_type],
-                state.font_metrics.height);
-        }
+    void tex_coords(GLfloat *arr, int left, int top, int width, int height) {
+        const float bitmap_width = 176.0f;
+        const float bitmap_height = 274.0f;
+
+        const float texleft = left / bitmap_width;
+        const float textop = 1 - top / bitmap_height;
+
+        const float texright = (left + width) / bitmap_width;
+        const float texbottom = textop - height / bitmap_height;
+
+        arr[0] = texleft;  arr[1] = textop;
+        arr[2] = texright; arr[3] = textop;
+        arr[4] = texright; arr[5] = texbottom;
+        arr[6] = texleft;  arr[7] = texbottom;
+
     }
 
     void draw_glyph(draw_state &state, int x, int y,
                     int glyph_x, int glyph_y, int glyph_width)
     {
-        state.painter.drawImage(
-            x, y, state.font,
-            glyph_x, glyph_y, glyph_width,
-            state.font_metrics.height
-        );
+        GLfloat font_vertices[8];
+        tex_coords(font_vertices, glyph_x, glyph_y,
+            glyph_width, state.font_metrics.height);
+
+        const float left = x;
+        const float top = y;
+        const float right = x + glyph_width;
+        const float bottom = y + state.font_metrics.height;
+
+        GLint vertices[] = {
+            left,  top,
+            right, top,
+            right, bottom,
+            left,  bottom
+        };
+
+        const auto &color = state.colors[foreground].foreground;
+
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_COORD_ARRAY);
+        glColor3f(color.redF(), color.greenF(), color.blueF());
+
+        glVertexPointer(2, GL_INT, 0, vertices);
+        glTexCoordPointer(2, GL_FLOAT, 0, font_vertices);
+        glDrawArrays(GL_QUADS, 0, 4);
     }
 };
 

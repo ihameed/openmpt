@@ -351,12 +351,15 @@ BOOL CViewPattern::SetCurrentRow(UINT row, BOOL bWrap, BOOL bUpdateHorizontalScr
     SetCurSel(sel0, sel);
     UpdateIndicator();
 
+    //XXXih: turkish
+    /*
     Log("Row: %d; Chan: %d; ColType: %d; cursor&0xFFFF: %x; cursor>>16: %x;\n",
         GetRowFromCursor(sel0),
         GetChanFromCursor(sel0),
         GetColTypeFromCursor(sel0),
         (int)(sel0&0xFFFF),
         (int)(sel0>>16));
+        */
 
 
     return TRUE;
@@ -3011,6 +3014,7 @@ void CViewPattern::OnPatternAmplify()
 LRESULT CViewPattern::OnPlayerNotify(MPTNOTIFICATION *pnotify)
 //------------------------------------------------------------
 {
+    //XXXih: TURKISH
     if (this->qwinwidget) {
         this->pattern_test->test_notification(pnotify);
     }
