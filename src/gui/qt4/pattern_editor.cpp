@@ -231,19 +231,23 @@ keycontext_t pattern_editor::keycontext() const{
 
 
 void pattern_editor::move_up(pattern_editor &editor) {
-    editor.move_to(editor.pos().prev_row());
+    auto pos = editor.pos().prev_row();
+    editor.move_to(pos);
 }
 
 void pattern_editor::move_down(pattern_editor &editor) {
-    editor.move_to(editor.pos().next_row());
+    auto pos = editor.pos().next_row();
+    editor.move_to(pos);
 }
 
 void pattern_editor::move_left(pattern_editor &editor) {
-    editor.move_to(editor.pos().prev_subcol());
+    auto pos = editor.pos().prev_subcol();
+    editor.move_to(pos);
 }
 
 void pattern_editor::move_right(pattern_editor &editor) {
-    editor.move_to(editor.pos().next_subcol());
+    auto pos = editor.pos().next_subcol();
+    editor.move_to(pos);
 }
 
 void pattern_editor::select_up(pattern_editor &editor) {

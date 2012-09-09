@@ -10,7 +10,6 @@
 #include "ctrl_pat.h"
 #include "vstplug.h"    // for writing plug params to pattern
 
-#include "EffectVis.h"            //rewbs.fxvis
 #include "PatternGotoDialog.h"
 #include "view_pat.h"
 #include "View_gen.h"
@@ -706,11 +705,6 @@ void CViewPattern::OnDestroy()
     {
         pModDoc->SetOldPatternScrollbarsPos(CSize(m_nXScroll*m_szCell.cx, m_nYScroll*m_szCell.cy));
     };
-    if (m_pEffectVis)    {
-        m_pEffectVis->DoClose();
-        delete m_pEffectVis;
-        m_pEffectVis = NULL;
-    }
 
     if (m_pEditWnd)    {
         m_pEditWnd->DestroyWindow();
@@ -2277,30 +2271,6 @@ void CViewPattern::OnInterpolateVolume()
 void CViewPattern::OnVisualizeEffect()
 //--------------------------------------
 {
-    CModDoc *pModDoc = GetDocument();
-    if (pModDoc)
-    {
-        //CSoundFile *pSndFile = pModDoc->GetSoundFile();
-        UINT row0 = GetRowFromCursor(m_dwBeginSel), row1 = GetRowFromCursor(m_dwEndSel), nchn = GetChanFromCursor(m_dwBeginSel);
-        if (m_pEffectVis)
-        {
-            //window already there, update data
-            m_pEffectVis->UpdateSelection(row0, row1, nchn, pModDoc, m_nPattern);
-        }
-        else
-        {
-            //Open window & send data
-            m_pEffectVis = new CEffectVis(this, row0, row1, nchn, pModDoc, m_nPattern);
-            if (m_pEffectVis)
-            {
-                m_pEffectVis->OpenEditor(CMainFrame::GetMainFrame());
-                // HACK: to get status window set up; must create clear destinction between
-                // construction, 1st draw code and all draw code.
-                m_pEffectVis->OnSize(0,0,0);
-
-            }
-        }
-    }
 }
 //end rewbs.fxvis
 
@@ -3059,10 +3029,6 @@ LRESULT CViewPattern::OnPlayerNotify(MPTNOTIFICATION *pnotify)
         if (nOrd >= pSndFile->Order.GetLength() || pSndFile->Order[nOrd] != nPat) {
             //order doesn't correlate with pattern, so mark it as invalid
             nOrd = 0xFFFF;
-        }
-
-        if (m_pEffectVis && m_pEffectVis->m_hWnd) {
-            m_pEffectVis->SetPlayCursor(nPat, nRow);
         }
 
         if ((m_dwStatus & (PATSTATUS_FOLLOWSONG|PATSTATUS_DRAGVSCROLL|PATSTATUS_DRAGHSCROLL|PATSTATUS_MOUSEDRAGSEL|PATSTATUS_SELECTROW)) == PATSTATUS_FOLLOWSONG)

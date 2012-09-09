@@ -94,7 +94,6 @@
 #define IDD_SELECTMIXPLUGIN             423
 #define IDD_PLUGINEDITOR                424
 #define IDD_SETUP_REVERB                425
-#define IDD_EFFECTVISUALIZER            426
 #define IDB_VISNODE                     427
 #define IDB_SPLASHTEST                  432
 #define IDR_VSTMENU                     436
@@ -645,7 +644,6 @@
 #define IDC_SAMPLE_DOWNSAMPLE           2084
 #define IDC_COMBO7                      2085
 #define IDC_TREE1                       2086
-#define IDC_VISSTATUS                   2087
 #define IDC_CHOICECOMBO                 2090
 #define IDC_CHOICECOMBO2                2092
 #define IDC_KEYCATEGORY                 2092
@@ -677,8 +675,6 @@
 #define IDC_VISFILLBLANKS               2115
 #define IDC_CHECK158                    2116
 #define IDC_TEXT70                      2116
-#define IDC_VISEFFECTLIST               2116
-#define IDC_VISACTION                   2117
 #define IDC_COMBO8                      2121
 #define IDC_COMBO_SPLITNOTE             2122
 #define IDC_COMBO_OCTAVEMODIFIER        2123
@@ -735,7 +731,6 @@
 #define IDC_SLIDER_VSTIVOL              2251
 #define IDC_MACROCC                     2252
 #define IDC_GENMACROLABEL               2253
-#define IDC_RENDERZONE                  2254
 #define IDC_PATTERN_LOOP                2255
 #define IDC_EDIT_FACTORX                2256
 #define IDC_EDIT_FACTORY                2257

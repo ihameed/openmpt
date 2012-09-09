@@ -223,7 +223,6 @@
     <ClCompile Include="DefaultVstEditor.cpp" />
     <ClCompile Include="dlg_misc.cpp" />
     <ClCompile Include="draw_pat.cpp" />
-    <ClCompile Include="EffectVis.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_app_config.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -599,7 +598,6 @@
     <ClInclude Include="ctrl_smp.h" />
     <ClInclude Include="DefaultVstEditor.h" />
     <ClInclude Include="dlg_misc.h" />
-    <ClInclude Include="EffectVis.h" />
     <ClInclude Include="fxp.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="InputHandler.h" />

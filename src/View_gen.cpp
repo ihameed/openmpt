@@ -7,7 +7,6 @@
 #include "ctrl_gen.h"
 #include "view_gen.h"
 #include "vstplug.h"
-#include "EffectVis.h"
 #include "ChannelManagerDlg.h"
 #include ".\view_gen.h"
 

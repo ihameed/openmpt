@@ -5,7 +5,6 @@
 #include "dlg_misc.h"
 #include "globals.h"
 #include "view_pat.h"
-#include "EffectVis.h"            //rewbs.fxvis
 #include "ChannelManagerDlg.h"
 #include "legacy_soundlib/tuningbase.h"
 #include <string>
@@ -617,14 +616,6 @@ void CViewPattern::OnDraw(CDC *pDC)
         DrawDragSel(hdc);
     }
     if (oldpen) ::SelectObject(hdc, oldpen);
-
-    //rewbs.fxVis
-    if (m_pEffectVis)
-    {
-        //HACK: Update visualizer on every pattern redraw. Cleary there's space for opt here.
-        if (m_pEffectVis->m_hWnd) m_pEffectVis->Update();
-    }
-
 
 // -> CODE#0015
 // -> DESC="channels management dlg"
