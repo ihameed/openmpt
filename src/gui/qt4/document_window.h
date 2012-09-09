@@ -11,7 +11,7 @@ namespace qt4 {
 
 class pattern_editor;
 class app_config;
-class comment_view;
+class comment_editor;
 
 class document_window : public QDialog {
     Q_OBJECT
@@ -24,7 +24,7 @@ public slots:
 
 private:
     pattern_editor *editor;
-    comment_view *comments;
+    comment_editor *comments;
     app_config &global_config;
 
     QTabWidget tab_bar;

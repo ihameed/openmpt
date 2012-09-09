@@ -228,7 +228,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_comment_view.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_comment_editor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -260,7 +260,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_comment_view.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_comment_editor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -292,7 +292,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_comment_view.cpp">
+    <ClCompile Include="GeneratedFiles\Template\moc_comment_editor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -324,7 +324,7 @@
     <ClCompile Include="gui\mixgraph_view.cpp" />
     <ClCompile Include="gui\qt4\app_config.cpp" />
     <ClCompile Include="gui\qt4\colors.cpp" />
-    <ClCompile Include="gui\qt4\comment_view.cpp" />
+    <ClCompile Include="gui\qt4\comment_editor.cpp" />
     <ClCompile Include="gui\qt4\config_audioio.cpp" />
     <ClCompile Include="gui\qt4\config_dialog.cpp" />
     <ClCompile Include="gui\qt4\config_gui.cpp" />
@@ -468,19 +468,19 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DQT_OPENGL_LIB -D_AFXDLL  "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL"</Command>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\comment_view.h">
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing comment_view.h...</Message>
+    <CustomBuild Include="gui\qt4\comment_editor.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing comment_editor.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -D_DEBUG -DWIN32 -D_WINDOWS -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_OPENGL_LIB -D_VC80_UPGRADE=0x0710 -D_AFXDLL  "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL" "-fstdafx.h" "-f../../gui/qt4/comment_view.h"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing comment_view.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/comment_editor.h"  -D_DEBUG -DWIN32 -D_WINDOWS -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_OPENGL_LIB -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing comment_editor.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DNDEBUG -DWIN32 -D_WINDOWS -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_OPENGL_LIB -D_VC80_UPGRADE=0x0710 -D_AFXDLL  "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL" "-fstdafx.h" "-f../../gui/qt4/comment_view.h"</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Moc%27ing comment_view.h...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp" "-fstdafx.h" "-f../../gui/qt4/comment_editor.h"  -DNDEBUG -DWIN32 -D_WINDOWS -DMODPLUG_TRACKER -DNO_PACKING -DHAVE_DOT_NET -DENABLE_AMD -DENABLE_SSE -DENABLE_AMDNOW -DENABLE_MMX -DQT_LARGEFILE_SUPPORT -DQT_NO_WIN_ACTIVEQT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_OPENGL_LIB -D_VC80_UPGRADE=0x0710 -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Moc%27ing comment_editor.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DQT_OPENGL_LIB -D_AFXDLL  "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DQT_OPENGL_LIB -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL"</Command>
     </CustomBuild>
     <CustomBuild Include="gui\qt4\app_config.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>

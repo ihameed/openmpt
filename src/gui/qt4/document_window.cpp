@@ -2,7 +2,7 @@
 
 #include "app_config.h"
 #include "document_window.h"
-#include "comment_view.h"
+#include "comment_editor.h"
 #include "pattern_editor.h"
 #include "..\MainFrm.h"
 
@@ -28,7 +28,8 @@ document_window::document_window(module_renderer *renderer,
         global_config.colors()
     );
 
-    comments = new comment_view(renderer);
+    comments = new comment_editor(renderer);
+    comments->legacy_set_comments_from_module(true);
 
     tab_bar.addTab(editor, "Patterns");
     tab_bar.addTab(comments, "Comments");

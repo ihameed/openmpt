@@ -4,8 +4,6 @@
 
 class QWinWidget;
 
-namespace modplug { namespace gui { namespace qt4 { class comment_view; } } }
-
 //========================================
 class CCtrlComments: public CModControlDlg
 //========================================

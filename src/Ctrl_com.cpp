@@ -6,9 +6,6 @@
 #include "ctrl_com.h"
 #include "view_com.h"
 
-#include "gui/qt4/comment_view.h"
-#include "qwinwidget.h"
-
 BEGIN_MESSAGE_MAP(CCtrlComments, CModControlDlg)
     //{{AFX_MSG_MAP(CCtrlComments)
     ON_MESSAGE(WM_MOD_KEYCOMMAND,        OnCustomKeyMsg)        //rewbs.customKeys
@@ -75,16 +72,10 @@ void CCtrlComments::RecalcLayout()
 void CCtrlComments::UpdateView(uint32_t dwHint, CObject *pHint) {
     DEBUG_FUNC("dwHint = %x", dwHint);
     if ((pHint == this) || (!m_pSndFile) || (!(dwHint & (HINT_MODCOMMENTS|HINT_MPTOPTIONS|HINT_MODTYPE)))) return;
-
-    //XXXih
-    //commentbox->legacy_set_comments_from_module(dwHint & HINT_MODCOMMENTS);
 }
 
 void CCtrlComments::OnCommentsChanged() {
     DEBUG_FUNC("");
-
-    //XXXih
-    //commentbox->legacy_update_module_comment();
 }
 
 LRESULT CCtrlComments::OnCustomKeyMsg(WPARAM wParam, LPARAM) {
