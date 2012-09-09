@@ -294,11 +294,6 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
 
     switch(nID)
     {
-        //rewbs.graph
-        case IDD_CONTROL_GRAPH:
-            nIndex = 5;
-            break;
-        //end rewbs.graph
         case IDD_CONTROL_COMMENTS:
             nIndex = 4;
             break;
@@ -446,7 +441,6 @@ void CModControlView::UpdateView(uint32_t lHint, CObject *pObject)
             if (mask & 2) m_TabCtrl.InsertItem(count++, "Patterns", IDD_CONTROL_PATTERNS, IMAGE_PATTERNS);
             if (mask & 4) m_TabCtrl.InsertItem(count++, "Samples", IDD_CONTROL_SAMPLES, IMAGE_SAMPLES);
             if (mask & 8) m_TabCtrl.InsertItem(count++, "Instruments", IDD_CONTROL_INSTRUMENTS, IMAGE_INSTRUMENTS);
-            if (mask & 32) m_TabCtrl.InsertItem(count++, "Graph", IDD_CONTROL_GRAPH, IMAGE_GRAPH); //rewbs.graph
             if (mask & 16) m_TabCtrl.InsertItem(count++, "Comments", IDD_CONTROL_COMMENTS, IMAGE_COMMENTS);
         }
     }

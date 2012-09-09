@@ -407,7 +407,6 @@
     <ClCompile Include="MPTHacks.cpp" />
     <ClCompile Include="mptrack.cpp" />
     <ClCompile Include="PatternEditorDialogs.cpp" />
-    <ClCompile Include="PatternGotoDialog.cpp" />
     <ClCompile Include="PerformanceCounter.cpp" />
     <ClCompile Include="pervasives\debug.cpp" />
     <ClCompile Include="pervasives\pervasives.cpp" />
@@ -614,7 +613,6 @@
     <ClInclude Include="Mpdlgs.h" />
     <ClInclude Include="mptrack.h" />
     <ClInclude Include="PatternEditorDialogs.h" />
-    <ClInclude Include="PatternGotoDialog.h" />
     <ClInclude Include="PerformanceCounter.h" />
     <ClInclude Include="pervasives\debug.h" />
     <ClInclude Include="pervasives\pervasives.h" />

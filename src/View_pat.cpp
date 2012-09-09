@@ -10,7 +10,6 @@
 #include "ctrl_pat.h"
 #include "vstplug.h"    // for writing plug params to pattern
 
-#include "PatternGotoDialog.h"
 #include "view_pat.h"
 #include "View_gen.h"
 #include "misc_util.h"
@@ -710,12 +709,6 @@ void CViewPattern::OnDestroy()
         m_pEditWnd->DestroyWindow();
         delete m_pEditWnd;
         m_pEditWnd = NULL;
-    }
-
-    if (m_pGotoWnd)    {
-        m_pGotoWnd->DestroyWindow();
-        delete m_pGotoWnd;
-        m_pGotoWnd = NULL;
     }
 
     CModScrollView::OnDestroy();
@@ -1773,110 +1766,9 @@ void CViewPattern::OnInsertRows()
 }
 //end rewbs.customKeys
 
-void CViewPattern::OnEditFind()
-//-----------------------------
-{
-    CModDoc *pModDoc = GetDocument();
-    if (pModDoc)
-    {
-        CFindReplaceTab pageFind(IDD_EDIT_FIND, false, pModDoc);
-        CFindReplaceTab pageReplace(IDD_EDIT_REPLACE, true, pModDoc);
-        CPropertySheet dlg("Find/Replace");
+void CViewPattern::OnEditFind() { }
 
-        pageFind.m_nNote = m_findReplace.cmdFind.note;
-        pageFind.m_nInstr = m_findReplace.cmdFind.instr;
-        pageFind.m_nVolCmd = m_findReplace.cmdFind.volcmd;
-        pageFind.m_nVol = m_findReplace.cmdFind.vol;
-        pageFind.m_nCommand = m_findReplace.cmdFind.command;
-        pageFind.m_nParam = m_findReplace.cmdFind.param;
-        pageFind.m_dwFlags = m_findReplace.dwFindFlags;
-        pageFind.m_nMinChannel = m_findReplace.nFindMinChn;
-        pageFind.m_nMaxChannel = m_findReplace.nFindMaxChn;
-        pageFind.m_bPatSel = (m_dwBeginSel != m_dwEndSel) ? true : false;
-        pageReplace.m_nNote = m_findReplace.cmdReplace.note;
-        pageReplace.m_nInstr = m_findReplace.cmdReplace.instr;
-        pageReplace.m_nVolCmd = m_findReplace.cmdReplace.volcmd;
-        pageReplace.m_nVol = m_findReplace.cmdReplace.vol;
-        pageReplace.m_nCommand = m_findReplace.cmdReplace.command;
-        pageReplace.m_nParam = m_findReplace.cmdReplace.param;
-        pageReplace.m_dwFlags = m_findReplace.dwReplaceFlags;
-        pageReplace.cInstrRelChange = m_findReplace.cInstrRelChange;
-        if(m_dwBeginSel != m_dwEndSel)
-        {
-            pageFind.m_dwFlags |= PATSEARCH_PATSELECTION;
-            pageFind.m_dwFlags &= ~PATSEARCH_FULLSEARCH;
-        }
-        dlg.AddPage(&pageFind);
-        dlg.AddPage(&pageReplace);
-        if (dlg.DoModal() == IDOK)
-        {
-            m_findReplace.cmdFind.note = pageFind.m_nNote;
-            m_findReplace.cmdFind.instr = pageFind.m_nInstr;
-            m_findReplace.cmdFind.volcmd = pageFind.m_nVolCmd;
-            m_findReplace.cmdFind.vol = pageFind.m_nVol;
-            m_findReplace.cmdFind.command = pageFind.m_nCommand;
-            m_findReplace.cmdFind.param = pageFind.m_nParam;
-            m_findReplace.nFindMinChn = pageFind.m_nMinChannel;
-            m_findReplace.nFindMaxChn = pageFind.m_nMaxChannel;
-            m_findReplace.dwFindFlags = pageFind.m_dwFlags;
-            m_findReplace.cmdReplace.note = pageReplace.m_nNote;
-            m_findReplace.cmdReplace.instr = pageReplace.m_nInstr;
-            m_findReplace.cmdReplace.volcmd = pageReplace.m_nVolCmd;
-            m_findReplace.cmdReplace.vol = pageReplace.m_nVol;
-            m_findReplace.cmdReplace.command = pageReplace.m_nCommand;
-            m_findReplace.cmdReplace.param = pageReplace.m_nParam;
-            m_findReplace.dwReplaceFlags = pageReplace.m_dwFlags;
-            m_findReplace.cInstrRelChange = pageReplace.cInstrRelChange;
-            m_findReplace.dwBeginSel = m_dwBeginSel;
-            m_findReplace.dwEndSel = m_dwEndSel;
-            m_bContinueSearch = false;
-            OnEditFindNext();
-        }
-    }
-}
-
-void CViewPattern::OnEditGoto()
-//-----------------------------
-{
-    CModDoc* pModDoc = GetDocument();
-    if (!pModDoc)
-        return;
-
-
-    if (!m_pGotoWnd)
-    {
-        m_pGotoWnd = new CPatternGotoDialog(this);
-        //if (m_pGotoWnd) m_pGotoWnd->SetParent(this/*, GetDocument()*/);
-    }
-    if (m_pGotoWnd)
-    {
-        module_renderer* pSndFile = pModDoc->GetSoundFile();
-        UINT nCurrentOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
-        UINT nCurrentChannel = GetChanFromCursor(m_dwCursor) + 1;
-
-        m_pGotoWnd->UpdatePos(m_nRow, nCurrentChannel, m_nPattern, nCurrentOrder, pSndFile);
-
-        if (m_pGotoWnd->DoModal() == IDOK)
-        {
-            //Position should be valididated.
-
-            if (m_pGotoWnd->m_nPattern != m_nPattern)
-                SetCurrentPattern(m_pGotoWnd->m_nPattern);
-
-            if (m_pGotoWnd->m_nOrder != nCurrentOrder)
-                SendCtrlMessage(CTRLMSG_SETCURRENTORDER,  m_pGotoWnd->m_nOrder);
-
-            if (m_pGotoWnd->m_nChannel != nCurrentChannel)
-                SetCurrentColumn((m_pGotoWnd->m_nChannel-1) << 3);
-
-            if (m_pGotoWnd->m_nRow != m_nRow)
-                SetCurrentRow(m_pGotoWnd->m_nRow);
-
-            pModDoc->SetElapsedTime(m_pGotoWnd->m_nOrder, m_pGotoWnd->m_nRow);
-        }
-    }
-    return;
-}
+void CViewPattern::OnEditGoto() { }
 
 void CViewPattern::OnEditFindNext()
 //---------------------------------

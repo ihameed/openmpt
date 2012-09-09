@@ -35,7 +35,6 @@
     <ClCompile Include="MPTHacks.cpp" />
     <ClCompile Include="mptrack.cpp" />
     <ClCompile Include="PatternEditorDialogs.cpp" />
-    <ClCompile Include="PatternGotoDialog.cpp" />
     <ClCompile Include="PerformanceCounter.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
     <ClCompile Include="SampleEditorDialogs.cpp" />
@@ -277,7 +276,6 @@
     <ClInclude Include="Mpdlgs.h" />
     <ClInclude Include="mptrack.h" />
     <ClInclude Include="PatternEditorDialogs.h" />
-    <ClInclude Include="PatternGotoDialog.h" />
     <ClInclude Include="PerformanceCounter.h" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />

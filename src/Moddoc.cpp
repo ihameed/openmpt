@@ -1958,13 +1958,7 @@ void CModDoc::OnEditComments()
     if (m_SndFile.m_nType & (MOD_TYPE_XM|MOD_TYPE_IT | MOD_TYPE_MPT)) SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_COMMENTS);
 }
 
-//rewbs.graph
-void CModDoc::OnEditGraph()
-//-------------------------
-{
-    if (m_SndFile.m_nType & (MOD_TYPE_XM|MOD_TYPE_IT | MOD_TYPE_MPT)) SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_GRAPH);
-}
-//end rewbs.graph
+void CModDoc::OnEditGraph() { }
 
 
 void CModDoc::OnShowCleanup()
@@ -3494,12 +3488,7 @@ void CModDoc::OnPatternPlayNoLoop()
 }
 
 
-void CModDoc::OnViewEditHistory()
-//-------------------------------
-{
-    CEditHistoryDlg dlg(CMainFrame::GetMainFrame(), this);
-    dlg.DoModal();
-}
+void CModDoc::OnViewEditHistory() { }
 
 
 void CModDoc::OnViewMPTHacks()
