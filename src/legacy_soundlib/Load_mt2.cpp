@@ -135,31 +135,31 @@ static void ConvertMT2Command(module_renderer *that, modplug::tracker::modevent_
     // Volume Column
     if ((p->vol >= 0x10) && (p->vol <= 0x90))
     {
-        m->volcmd = VOLCMD_VOLUME;
+        m->volcmd = VolCmdVol;
         m->vol = (p->vol - 0x10) >> 1;
     } else
     if ((p->vol >= 0xA0) && (p->vol <= 0xAF))
     {
-        m->volcmd = VOLCMD_VOLSLIDEDOWN;
+        m->volcmd = VolCmdSlideDown;
         m->vol = (p->vol & 0x0f);
     } else
     if ((p->vol >= 0xB0) && (p->vol <= 0xBF))
     {
-        m->volcmd = VOLCMD_VOLSLIDEUP;
+        m->volcmd = VolCmdSlideUp;
         m->vol = (p->vol & 0x0f);
     } else
     if ((p->vol >= 0xC0) && (p->vol <= 0xCF))
     {
-        m->volcmd = VOLCMD_FINEVOLDOWN;
+        m->volcmd = VolCmdFineDown;
         m->vol = (p->vol & 0x0f);
     } else
     if ((p->vol >= 0xD0) && (p->vol <= 0xDF))
     {
-        m->volcmd = VOLCMD_FINEVOLUP;
+        m->volcmd = VolCmdFineUp;
         m->vol = (p->vol & 0x0f);
     } else
     {
-        m->volcmd = 0;
+        m->volcmd = modplug::tracker::VolCmdNone;
         m->vol = 0;
     }
     // Effects

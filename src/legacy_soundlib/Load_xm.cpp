@@ -181,7 +181,7 @@ uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t 
                     if (p->instr == 0xff) p->instr = 0;
                     if ((vol >= 0x10) && (vol <= 0x50))
                     {
-                        p->volcmd = VOLCMD_VOLUME;
+                        p->volcmd = VolCmdVol;
                         p->vol = vol - 0x10;
                     } else
                     if (vol >= 0x60)
@@ -192,25 +192,25 @@ uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t 
                         switch(v)
                         {
                         // 60-6F: Volume Slide Down
-                        case 0x60:    p->volcmd = VOLCMD_VOLSLIDEDOWN; break;
+                        case 0x60:    p->volcmd = VolCmdSlideDown; break;
                         // 70-7F: Volume Slide Up:
-                        case 0x70:    p->volcmd = VOLCMD_VOLSLIDEUP; break;
+                        case 0x70:    p->volcmd = VolCmdSlideUp; break;
                         // 80-8F: Fine Volume Slide Down
-                        case 0x80:    p->volcmd = VOLCMD_FINEVOLDOWN; break;
+                        case 0x80:    p->volcmd = VolCmdFineDown; break;
                         // 90-9F: Fine Volume Slide Up
-                        case 0x90:    p->volcmd = VOLCMD_FINEVOLUP; break;
+                        case 0x90:    p->volcmd = VolCmdFineUp; break;
                         // A0-AF: Set Vibrato Speed
-                        case 0xA0:    p->volcmd = VOLCMD_VIBRATOSPEED; break;
+                        case 0xA0:    p->volcmd = VolCmdVibratoSpeed; break;
                         // B0-BF: Vibrato
-                        case 0xB0:    p->volcmd = VOLCMD_VIBRATODEPTH; break;
+                        case 0xB0:    p->volcmd = VolCmdVibratoDepth; break;
                         // C0-CF: Set Panning
-                        case 0xC0:    p->volcmd = VOLCMD_PANNING; p->vol = (vol << 2) + 2; break;
+                        case 0xC0:    p->volcmd = VolCmdPan; p->vol = (vol << 2) + 2; break;
                         // D0-DF: Panning Slide Left
-                        case 0xD0:    p->volcmd = VOLCMD_PANSLIDELEFT; break;
+                        case 0xD0:    p->volcmd = VolCmdPanSlideLeft; break;
                         // E0-EF: Panning Slide Right
-                        case 0xE0:    p->volcmd = VOLCMD_PANSLIDERIGHT; break;
+                        case 0xE0:    p->volcmd = VolCmdPanSlideRight; break;
                         // F0-FF: Tone Portamento
-                        case 0xF0:    p->volcmd = VOLCMD_TONEPORTAMENTO; break;
+                        case 0xF0:    p->volcmd = VolCmdPortamento; break;
                         }
                     }
                     p++;
@@ -845,27 +845,27 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
             {
                 switch(p->volcmd)
                 {
-                case VOLCMD_VOLUME:                    vol = 0x10 + p->vol; break;
-                case VOLCMD_VOLSLIDEDOWN:    vol = 0x60 + (p->vol & 0x0F); break;
-                case VOLCMD_VOLSLIDEUP:            vol = 0x70 + (p->vol & 0x0F); break;
-                case VOLCMD_FINEVOLDOWN:    vol = 0x80 + (p->vol & 0x0F); break;
-                case VOLCMD_FINEVOLUP:            vol = 0x90 + (p->vol & 0x0F); break;
-                case VOLCMD_VIBRATOSPEED:    vol = 0xA0 + (p->vol & 0x0F); break;
-                case VOLCMD_VIBRATODEPTH:    vol = 0xB0 + (p->vol & 0x0F); break;
-                case VOLCMD_PANNING:            vol = 0xC0 + (p->vol >> 2); if (vol > 0xCF) vol = 0xCF; break;
-                case VOLCMD_PANSLIDELEFT:    vol = 0xD0 + (p->vol & 0x0F); break;
-                case VOLCMD_PANSLIDERIGHT:    vol = 0xE0 + (p->vol & 0x0F); break;
-                case VOLCMD_TONEPORTAMENTO:    vol = 0xF0 + (p->vol & 0x0F); break;
+                case VolCmdVol:                    vol = 0x10 + p->vol; break;
+                case VolCmdSlideDown:    vol = 0x60 + (p->vol & 0x0F); break;
+                case VolCmdSlideUp:            vol = 0x70 + (p->vol & 0x0F); break;
+                case VolCmdFineDown:    vol = 0x80 + (p->vol & 0x0F); break;
+                case VolCmdFineUp:            vol = 0x90 + (p->vol & 0x0F); break;
+                case VolCmdVibratoSpeed:    vol = 0xA0 + (p->vol & 0x0F); break;
+                case VolCmdVibratoDepth:    vol = 0xB0 + (p->vol & 0x0F); break;
+                case VolCmdPan:            vol = 0xC0 + (p->vol >> 2); if (vol > 0xCF) vol = 0xCF; break;
+                case VolCmdPanSlideLeft:    vol = 0xD0 + (p->vol & 0x0F); break;
+                case VolCmdPanSlideRight:    vol = 0xE0 + (p->vol & 0x0F); break;
+                case VolCmdPortamento:    vol = 0xF0 + (p->vol & 0x0F); break;
                 }
                 // Those values are ignored in FT2. Don't save them, also to avoid possible problems with other trackers (or MPT itself)
                 if(bCompatibilityExport && p->vol == 0)
                 {
                     switch(p->volcmd)
                     {
-                    case VOLCMD_VOLUME:
-                    case VOLCMD_PANNING:
-                    case VOLCMD_VIBRATODEPTH:
-                    case VOLCMD_TONEPORTAMENTO:
+                    case VolCmdVol:
+                    case VolCmdPan:
+                    case VolCmdVibratoDepth:
+                    case VolCmdPortamento:
                         break;
                     default:
                         // no memory here.

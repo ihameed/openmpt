@@ -98,6 +98,10 @@ typedef
     std::unordered_map<key_t, std::string>
     pattern_keymap_t;
 
+extern template global_actionmap_t;
+extern template global_keymap_t;
+extern template pattern_actionmap_t;
+extern template pattern_keymap_t;
 
 extern global_actionmap_t global_actionmap;
 extern pattern_actionmap_t pattern_actionmap;

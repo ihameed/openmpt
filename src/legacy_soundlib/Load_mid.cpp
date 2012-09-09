@@ -881,7 +881,7 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                                 }
                                 m[nchn].note = realnote+1;
                                 m[nchn].instr = MapMidiInstrument(pmidich->program + ((UINT)pmidich->bank << 7), midich, note);
-                                m[nchn].volcmd = VOLCMD_VOLUME;
+                                m[nchn].volcmd = VolCmdVol;
                                 LONG vol = CDLSBank::DLSMidiVolumeToLinear(velocity) >> 8;
                                 vol = (vol * (LONG)pmidich->volume * (LONG)pmidich->expression) >> 13;
                                 if (vol > 256) vol = 256;

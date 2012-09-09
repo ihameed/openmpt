@@ -226,7 +226,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                                     }
                                     // 0x40 is set volume -- fall through
                             case 0: case 1: case 2: case 3:
-                                    m->volcmd = VOLCMD_VOLUME;
+                                    m->volcmd = VolCmdVol;
                                     m->vol = m->param;
                                     m->command = CMD_NONE;
                                     m->param = 0;

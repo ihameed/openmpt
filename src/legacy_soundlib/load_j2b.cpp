@@ -268,9 +268,9 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                         if(m->param == 0) m->command = CMD_NONE;
                         break;
                     case CMD_VOLUME:
-                        if(m->volcmd == VOLCMD_NONE)
+                        if(m->volcmd == VolCmdNone)
                         {
-                            m->volcmd = VOLCMD_VOLUME;
+                            m->volcmd = VolCmdVol;
                             m->vol = CLAMP(m->param, 0, 64);
                             m->command = CMD_NONE;
                             m->param = 0;
@@ -328,14 +328,14 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                 m->instr = lpStream[dwMemPos];
                 m->note = lpStream[dwMemPos + 1];
                 if(m->note == 0x80) m->note = NoteKeyOff;
-                else if(m->note > 0x80) m->note = NOTE_FADE;    // I guess the support for IT "note fade" notes was not intended in mod2j2b, but hey, it works! :-D
+                else if(m->note > 0x80) m->note = NoteFade;    // I guess the support for IT "note fade" notes was not intended in mod2j2b, but hey, it works! :-D
                 dwMemPos += 2;
             }
 
             if (flags & 0x20) // volume
             {
                 ASSERT_CAN_READ(1);
-                m->volcmd = VOLCMD_VOLUME;
+                m->volcmd = VolCmdVol;
                 if(!bIsAM)
                     m->vol = lpStream[dwMemPos];
                 else

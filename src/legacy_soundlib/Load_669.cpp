@@ -138,7 +138,7 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
                 }
                 if (p[0] <= 0xFE)
                 {
-                    m->volcmd = VOLCMD_VOLUME;
+                    m->volcmd = VolCmdVol;
                     m->vol = (vol << 2) + 2;
                 }
                 if (p[2] != 0xFF)

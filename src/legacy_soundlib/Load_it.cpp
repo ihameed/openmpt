@@ -1142,7 +1142,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                     if (note < 0x80) note++;
                     if(!(m_nType & MOD_TYPE_MPT))
                     {
-                        if(note > NOTE_MAX && note < 0xFD) note = NOTE_FADE;
+                        if(note > NOTE_MAX && note < 0xFD) note = NoteFade;
                         else if(note == 0xFD) note = NoteNone;
                     }
                     m[ch].note = note;
@@ -1167,34 +1167,34 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                 if (ch < m_nChannels)
                 {
                     // 0-64: Set Volume
-                    if (vol <= 64) { m[ch].volcmd = VOLCMD_VOLUME; m[ch].vol = vol; } else
+                    if (vol <= 64) { m[ch].volcmd = VolCmdVol; m[ch].vol = vol; } else
                     // 128-192: Set Panning
-                    if ((vol >= 128) && (vol <= 192)) { m[ch].volcmd = VOLCMD_PANNING; m[ch].vol = vol - 128; } else
+                    if ((vol >= 128) && (vol <= 192)) { m[ch].volcmd = VolCmdPan; m[ch].vol = vol - 128; } else
                     // 65-74: Fine Volume Up
-                    if (vol < 75) { m[ch].volcmd = VOLCMD_FINEVOLUP; m[ch].vol = vol - 65; } else
+                    if (vol < 75) { m[ch].volcmd = VolCmdFineUp; m[ch].vol = vol - 65; } else
                     // 75-84: Fine Volume Down
-                    if (vol < 85) { m[ch].volcmd = VOLCMD_FINEVOLDOWN; m[ch].vol = vol - 75; } else
+                    if (vol < 85) { m[ch].volcmd = VolCmdFineDown; m[ch].vol = vol - 75; } else
                     // 85-94: Volume Slide Up
-                    if (vol < 95) { m[ch].volcmd = VOLCMD_VOLSLIDEUP; m[ch].vol = vol - 85; } else
+                    if (vol < 95) { m[ch].volcmd = VolCmdSlideUp; m[ch].vol = vol - 85; } else
                     // 95-104: Volume Slide Down
-                    if (vol < 105) { m[ch].volcmd = VOLCMD_VOLSLIDEDOWN; m[ch].vol = vol - 95; } else
+                    if (vol < 105) { m[ch].volcmd = VolCmdSlideDown; m[ch].vol = vol - 95; } else
                     // 105-114: Pitch Slide Up
-                    if (vol < 115) { m[ch].volcmd = VOLCMD_PORTADOWN; m[ch].vol = vol - 105; } else
+                    if (vol < 115) { m[ch].volcmd = VolCmdPortamentoDown; m[ch].vol = vol - 105; } else
                     // 115-124: Pitch Slide Down
-                    if (vol < 125) { m[ch].volcmd = VOLCMD_PORTAUP; m[ch].vol = vol - 115; } else
+                    if (vol < 125) { m[ch].volcmd = VolCmdPortamentoUp; m[ch].vol = vol - 115; } else
                     // 193-202: Portamento To
-                    if ((vol >= 193) && (vol <= 202)) { m[ch].volcmd = VOLCMD_TONEPORTAMENTO; m[ch].vol = vol - 193; } else
+                    if ((vol >= 193) && (vol <= 202)) { m[ch].volcmd = VolCmdPortamento; m[ch].vol = vol - 193; } else
                     // 203-212: Vibrato depth
                     if ((vol >= 203) && (vol <= 212))
                     {
-                        m[ch].volcmd = VOLCMD_VIBRATODEPTH; m[ch].vol = vol - 203;
+                        m[ch].volcmd = VolCmdVibratoDepth; m[ch].vol = vol - 203;
                         // Old versions of ModPlug saved this as vibrato speed instead, so let's fix that
                         if(m_dwLastSavedWithVersion && m_dwLastSavedWithVersion <= MAKE_VERSION_NUMERIC(1, 17, 02, 54))
-                            m[ch].volcmd = VOLCMD_VIBRATOSPEED;
+                            m[ch].volcmd = VolCmdVibratoSpeed;
                     } else
                     // 213-222: Unused (was velocity)
                     // 223-232: Offset
-                    if ((vol >= 223) && (vol <= 232)) { m[ch].volcmd = VOLCMD_OFFSET; m[ch].vol = vol - 223; } //rewbs.volOff
+                    if ((vol >= 223) && (vol <= 232)) { m[ch].volcmd = VolCmdOffset; m[ch].vol = vol - 223; } //rewbs.volOff
                     lastvalue[ch].volcmd = m[ch].volcmd;
                     lastvalue[ch].vol = m[ch].vol;
                 }
@@ -1721,25 +1721,25 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                 UINT note = m->note;
                 if (note) b |= 1;
                 if ((note) && (note < NOTE_MIN_SPECIAL)) note--;
-                if (note == NOTE_FADE && GetType() != MOD_TYPE_MPT) note = 0xF6;
+                if (note == NoteFade && GetType() != MOD_TYPE_MPT) note = 0xF6;
                 if (m->instr) b |= 2;
                 if (m->volcmd)
                 {
                     UINT volcmd = m->volcmd;
                     switch(volcmd)
                     {
-                    case VOLCMD_VOLUME:                    vol = m->vol; if (vol > 64) vol = 64; break;
-                    case VOLCMD_PANNING:            vol = m->vol + 128; if (vol > 192) vol = 192; break;
-                    case VOLCMD_VOLSLIDEUP:            vol = 85 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_VOLSLIDEDOWN:    vol = 95 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_FINEVOLUP:            vol = 65 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_FINEVOLDOWN:    vol = 75 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_VIBRATODEPTH:    vol = 203 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_VIBRATOSPEED:    vol = 0xFF /*203 + ConvertVolParam(m->vol)*/; break; // not supported!
-                    case VOLCMD_TONEPORTAMENTO:    vol = 193 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTADOWN:            vol = 105 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTAUP:            vol = 115 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_OFFSET:                    vol = 223 + ConvertVolParam(m->vol); break; //rewbs.volOff
+                    case VolCmdVol:                    vol = m->vol; if (vol > 64) vol = 64; break;
+                    case VolCmdPan:            vol = m->vol + 128; if (vol > 192) vol = 192; break;
+                    case VolCmdSlideUp:            vol = 85 + ConvertVolParam(m->vol); break;
+                    case VolCmdSlideDown:    vol = 95 + ConvertVolParam(m->vol); break;
+                    case VolCmdFineUp:            vol = 65 + ConvertVolParam(m->vol); break;
+                    case VolCmdFineDown:    vol = 75 + ConvertVolParam(m->vol); break;
+                    case VolCmdVibratoDepth:    vol = 203 + ConvertVolParam(m->vol); break;
+                    case VolCmdVibratoSpeed:    vol = 0xFF /*203 + ConvertVolParam(m->vol)*/; break; // not supported!
+                    case VolCmdPortamento:    vol = 193 + ConvertVolParam(m->vol); break;
+                    case VolCmdPortamentoDown:            vol = 105 + ConvertVolParam(m->vol); break;
+                    case VolCmdPortamentoUp:            vol = 115 + ConvertVolParam(m->vol); break;
+                    case VolCmdOffset:                    vol = 223 + ConvertVolParam(m->vol); break; //rewbs.volOff
                     default:                                    vol = 0xFF;
                     }
                 }
@@ -1762,7 +1762,8 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                         } else
                         {
                             lastvalue[ch].note = note;
-                            lastvalue[ch].volcmd |= 1;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 1);
                         }
                     }
                     // Same instrument ?
@@ -1775,7 +1776,8 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                         } else
                         {
                             lastvalue[ch].instr = m->instr;
-                            lastvalue[ch].volcmd |= 2;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 2);
                         }
                     }
                     // Same volume column byte ?
@@ -1788,7 +1790,8 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                         } else
                         {
                             lastvalue[ch].vol = vol;
-                            lastvalue[ch].volcmd |= 4;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 4);
                         }
                     }
                     // Same command / param ?
@@ -1802,7 +1805,8 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                         {
                             lastvalue[ch].command = command;
                             lastvalue[ch].param = param;
-                            lastvalue[ch].volcmd |= 8;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 8);
                         }
                     }
                     if (b != chnmask[ch])
@@ -2310,27 +2314,27 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                 if(note == NOTE_PC || note == NOTE_PCS) note = NoteNone;
                 if (note) b |= 1;
                 if ((note) && (note < NOTE_MIN_SPECIAL)) note--;
-                if (note == NOTE_FADE) note = 0xF6;
+                if (note == NoteFade) note = 0xF6;
                 if (m->instr) b |= 2;
                 if (m->volcmd)
                 {
                     UINT volcmd = m->volcmd;
                     switch(volcmd)
                     {
-                    case VOLCMD_VOLUME:                    vol = m->vol; if (vol > 64) vol = 64; break;
-                    case VOLCMD_PANNING:            vol = m->vol + 128; if (vol > 192) vol = 192; break;
-                    case VOLCMD_VOLSLIDEUP:            vol = 85 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_VOLSLIDEDOWN:    vol = 95 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_FINEVOLUP:            vol = 65 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_FINEVOLDOWN:    vol = 75 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_VIBRATODEPTH:    vol = 203 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_VIBRATOSPEED:    if(command == CMD_NONE) { // illegal command -> move if possible
+                    case VolCmdVol:                    vol = m->vol; if (vol > 64) vol = 64; break;
+                    case VolCmdPan:            vol = m->vol + 128; if (vol > 192) vol = 192; break;
+                    case VolCmdSlideUp:            vol = 85 + ConvertVolParam(m->vol); break;
+                    case VolCmdSlideDown:    vol = 95 + ConvertVolParam(m->vol); break;
+                    case VolCmdFineUp:            vol = 65 + ConvertVolParam(m->vol); break;
+                    case VolCmdFineDown:    vol = 75 + ConvertVolParam(m->vol); break;
+                    case VolCmdVibratoDepth:    vol = 203 + ConvertVolParam(m->vol); break;
+                    case VolCmdVibratoSpeed:    if(command == CMD_NONE) { // illegal command -> move if possible
                                                     command = CMD_VIBRATO; param = ConvertVolParam(m->vol) << 4; vol = 0xFF;
                                                 } else { vol = 203;}
                                                 break;
-                    case VOLCMD_TONEPORTAMENTO:    vol = 193 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTADOWN:            vol = 105 + ConvertVolParam(m->vol); break;
-                    case VOLCMD_PORTAUP:            vol = 115 + ConvertVolParam(m->vol); break;
+                    case VolCmdPortamento:    vol = 193 + ConvertVolParam(m->vol); break;
+                    case VolCmdPortamentoDown:            vol = 105 + ConvertVolParam(m->vol); break;
+                    case VolCmdPortamentoUp:            vol = 115 + ConvertVolParam(m->vol); break;
                     default:                                    vol = 0xFF;
                     }
                 }
@@ -2353,7 +2357,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                         } else
                         {
                             lastvalue[ch].note = note;
-                            lastvalue[ch].volcmd |= 1;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 1);
                         }
                     }
                     // Same instrument ?
@@ -2366,7 +2371,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                         } else
                         {
                             lastvalue[ch].instr = m->instr;
-                            lastvalue[ch].volcmd |= 2;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 2);
                         }
                     }
                     // Same volume column byte ?
@@ -2379,7 +2385,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                         } else
                         {
                             lastvalue[ch].vol = vol;
-                            lastvalue[ch].volcmd |= 4;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 4);
                         }
                     }
                     // Same command / param ?
@@ -2393,7 +2400,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                         {
                             lastvalue[ch].command = command;
                             lastvalue[ch].param = param;
-                            lastvalue[ch].volcmd |= 8;
+                            //XXXih: gross!!
+                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 8);
                         }
                     }
                     if (b != chnmask[ch])

@@ -267,7 +267,7 @@ void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 14*COLUMN_HEIGHT);
     } else
-    if(note == NOTE_FADE)
+    if(note == NoteFade)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 17*COLUMN_HEIGHT);
     } else
@@ -641,7 +641,10 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
     UINT bRowSel, bSpeedUp, nColumnWidth, ncols, maxcol;
 
     ncols = pSndFile->GetNumChannels();
-    m0.note = m0.instr = m0.vol = m0.volcmd = m0.command = m0.param = 0;
+
+    m0.note = m0.instr = m0.vol = m0.command = m0.param = 0;
+    m0.volcmd = VolCmdNone;
+
     nColumnWidth = m_szCell.cx;
     rect.SetRect(m_szHeader.cx, rcClient.top, m_szHeader.cx+nColumnWidth, rcClient.bottom);
     for (UINT cmk=xofs; cmk<ncols; cmk++)
@@ -861,7 +864,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
                         tx_col = MODCOLOR_TEXTSELECTED;
                         bk_col = MODCOLOR_BACKSELECTED;
                     } else
-                    if ((!m->IsPcNote()) && (m->volcmd) && (m->volcmd < MAX_VOLCMDS) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
+                    if ((!m->IsPcNote()) && (m->volcmd) && (m->volcmd < VolCmdMax) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
                     {
                         if(gVolEffectColors[m->volcmd] != 0)
                             tx_col = gVolEffectColors[m->volcmd];

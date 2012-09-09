@@ -450,11 +450,11 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
                         if ((vol >= 128) && (vol <= 192))
                         {
                             vol -= 128;
-                            m->volcmd = VOLCMD_PANNING;
+                            m->volcmd = VolCmdPan;
                         } else
                         {
                             if (vol > 64) vol = 64;
-                            m->volcmd = VOLCMD_VOLUME;
+                            m->volcmd = VolCmdVol;
                         }
                         m->vol = vol;
                     }
@@ -677,11 +677,11 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
                     if (command == CMD_VOLUME)
                     {
                         command = 0;
-                        volcmd = VOLCMD_VOLUME;
+                        volcmd = VolCmdVol;
                         vol = min(param, 64);
                     }
-                    if (volcmd == VOLCMD_VOLUME) b |= 0x40; else
-                    if (volcmd == VOLCMD_PANNING) { vol |= 0x80; b |= 0x40; }
+                    if (volcmd == VolCmdVol) b |= 0x40; else
+                    if (volcmd == VolCmdPan) { vol |= 0x80; b |= 0x40; }
                     if (command)
                     {
                         S3MSaveConvert(&command, &param, false, true);

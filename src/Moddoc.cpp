@@ -2971,21 +2971,21 @@ typedef struct MPTVOLCMDINFO
 
 const MPTVOLCMDINFO gVolCmdInfo[MAX_VOLINFO] =
 {
-    {VOLCMD_VOLUME,                    MOD_TYPE_NOMOD,                "v: Set Volume"},
-    {VOLCMD_PANNING,            MOD_TYPE_NOMOD,                "p: Set Panning"},
-    {VOLCMD_VOLSLIDEUP,            MOD_TYPE_XMITMPT,        "c: Volume slide up"},
-    {VOLCMD_VOLSLIDEDOWN,    MOD_TYPE_XMITMPT,        "d: Volume slide down"},
-    {VOLCMD_FINEVOLUP,            MOD_TYPE_XMITMPT,        "a: Fine volume up"},
-    {VOLCMD_FINEVOLDOWN,    MOD_TYPE_XMITMPT,        "b: Fine volume down"},
-    {VOLCMD_VIBRATOSPEED,    MOD_TYPE_XM,                "u: Vibrato speed"},
-    {VOLCMD_VIBRATODEPTH,    MOD_TYPE_XMITMPT,        "h: Vibrato depth"},
-    {VOLCMD_PANSLIDELEFT,    MOD_TYPE_XM,                "l: Pan slide left"},
-    {VOLCMD_PANSLIDERIGHT,    MOD_TYPE_XM,                "r: Pan slide right"},
-    {VOLCMD_TONEPORTAMENTO,    MOD_TYPE_XMITMPT,        "g: Tone portamento"},
-    {VOLCMD_PORTAUP,            MOD_TYPE_ITMPT,                "f: Portamento up"},
-    {VOLCMD_PORTADOWN,            MOD_TYPE_ITMPT,                "e: Portamento down"},
-    {VOLCMD_DELAYCUT,            MOD_TYPE_NONE,                ":: (currently unused)"},
-    {VOLCMD_OFFSET,                    MOD_TYPE_ITMPT,                "o: Offset"},                //rewbs.volOff
+    {VolCmdVol,                    MOD_TYPE_NOMOD,                "v: Set Volume"},
+    {VolCmdPan,            MOD_TYPE_NOMOD,                "p: Set Panning"},
+    {VolCmdSlideUp,            MOD_TYPE_XMITMPT,        "c: Volume slide up"},
+    {VolCmdSlideDown,    MOD_TYPE_XMITMPT,        "d: Volume slide down"},
+    {VolCmdFineUp,            MOD_TYPE_XMITMPT,        "a: Fine volume up"},
+    {VolCmdFineDown,    MOD_TYPE_XMITMPT,        "b: Fine volume down"},
+    {VolCmdVibratoSpeed,    MOD_TYPE_XM,                "u: Vibrato speed"},
+    {VolCmdVibratoDepth,    MOD_TYPE_XMITMPT,        "h: Vibrato depth"},
+    {VolCmdPanSlideLeft,    MOD_TYPE_XM,                "l: Pan slide left"},
+    {VolCmdPanSlideRight,    MOD_TYPE_XM,                "r: Pan slide right"},
+    {VolCmdPortamento,    MOD_TYPE_XMITMPT,        "g: Tone portamento"},
+    {VolCmdPortamentoUp,            MOD_TYPE_ITMPT,                "f: Portamento up"},
+    {VolCmdPortamentoDown,            MOD_TYPE_ITMPT,                "e: Portamento down"},
+    {VolCmdDelayCut,            MOD_TYPE_NONE,                ":: (currently unused)"},
+    {VolCmdOffset,                    MOD_TYPE_ITMPT,                "o: Offset"},                //rewbs.volOff
 };
 
 
@@ -3026,11 +3026,11 @@ BOOL CModDoc::GetVolCmdInfo(UINT ndx, LPSTR s, uint32_t *prangeMin, uint32_t *pr
     {
         switch(gVolCmdInfo[ndx].dwVolCmd)
         {
-        case VOLCMD_VOLUME:
+        case VolCmdVol:
             *prangeMax = 64;
             break;
 
-        case VOLCMD_PANNING:
+        case VolCmdPan:
             *prangeMax = 64;
             if (m_SndFile.GetType() & MOD_TYPE_XM)
             {

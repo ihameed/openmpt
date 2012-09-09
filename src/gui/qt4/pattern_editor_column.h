@@ -271,7 +271,7 @@ struct note_column {
         case NoteKeyOff:
             draw_glyph(state, x, y, srcx, srcy + 14 * grid_height, width);
             break;
-        case NOTE_FADE:
+        case NoteFade:
             draw_glyph(state, x, y, srcx, srcy + 17 * grid_height, width);
             break;
         case NOTE_PC:

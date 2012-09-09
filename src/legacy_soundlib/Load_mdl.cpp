@@ -155,7 +155,8 @@ void UnpackMDLTrack(modplug::tracker::modevent_t *pat, UINT nChannels, UINT nRow
         lpTracks += 2;
     }
     cmd.note = cmd.instr = 0;
-    cmd.volcmd = cmd.vol = 0;
+    cmd.volcmd = VolCmdNone;
+    cmd.vol = 0;
     cmd.command = cmd.param = 0;
     while ((row < nRows) && (pos < len))
     {
@@ -184,7 +185,8 @@ void UnpackMDLTrack(modplug::tracker::modevent_t *pat, UINT nChannels, UINT nRow
             {
                 cmd.note = (xx & 0x01) ? lpTracks[pos++] : 0;
                 cmd.instr = (xx & 0x02) ? lpTracks[pos++] : 0;
-                cmd.volcmd = cmd.vol = 0;
+                cmd.volcmd = VolCmdNone;
+                cmd.vol = 0;
                 cmd.command = cmd.param = 0;
                 if ((cmd.note < NOTE_MAX-12) && (cmd.note)) cmd.note += 12;
                 UINT volume = (xx & 0x04) ? lpTracks[pos++] : 0;
@@ -201,7 +203,7 @@ void UnpackMDLTrack(modplug::tracker::modevent_t *pat, UINT nChannels, UINT nRow
                 }
                 if (volume)
                 {
-                    cmd.volcmd = VOLCMD_VOLUME;
+                    cmd.volcmd = VolCmdVol;
                     cmd.vol = (volume+1) >> 2;
                 }
                 ConvertMDLCommand(&cmd, command1, param1);

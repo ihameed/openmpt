@@ -160,7 +160,7 @@ bool module_renderer::ReadDSM(const uint8_t * const lpStream, const uint32_t dwM
                     }
                     if (flag & 0x20)
                     {
-                        m[ch].volcmd = VOLCMD_VOLUME;
+                        m[ch].volcmd = VolCmdVol;
                         m[ch].vol = lpStream[dwPos++];
                     }
                     if (flag & 0x10)

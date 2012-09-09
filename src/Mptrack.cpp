@@ -215,7 +215,7 @@ const uint8_t gEffectColors[MAX_EFFECTS] =
     MODCOLOR_PITCH,
 };
 
-const uint8_t gVolEffectColors[MAX_VOLCMDS] =
+const uint8_t gVolEffectColors[modplug::tracker::VolCmdMax] =
 {
     0,                                    MODCOLOR_VOLUME,        MODCOLOR_PANNING,        MODCOLOR_VOLUME,
     MODCOLOR_VOLUME,    MODCOLOR_VOLUME,        MODCOLOR_VOLUME,        MODCOLOR_PITCH,

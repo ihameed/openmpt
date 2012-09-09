@@ -75,7 +75,7 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             if(arg != 0xFF)
             {
                 if (!m->instr) m->instr = lastinstr;
-                m->volcmd = VOLCMD_VOLUME;
+                m->volcmd = VolCmdVol;
                 m->vol = arg;
             }
         } else
@@ -92,7 +92,7 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
         } else
         if (cmd == 0x83) // volume
         {
-            m->volcmd = VOLCMD_VOLUME;
+            m->volcmd = VolCmdVol;
             m->vol = arg;
         } else
         // effect
@@ -153,7 +153,7 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             case 0x15:	command = CMD_TEMPO; break;
             // 0x17: Panning
             case 0x17:	param = (param + 64) & 0x7F;
-                        if (m->command) { if (!m->volcmd) { m->volcmd = VOLCMD_PANNING;  m->vol = param >> 1; } command = 0; }
+                        if (m->command) { if (!m->volcmd) { m->volcmd = VolCmdPan;  m->vol = param >> 1; } command = 0; }
                         else { command = CMD_PANNING8; }
                         break;
             // Unknown effects

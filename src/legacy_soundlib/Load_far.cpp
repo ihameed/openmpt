@@ -162,7 +162,7 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
             }
             if (vol & 0x0F)
             {
-                m->volcmd = VOLCMD_VOLUME;
+                m->volcmd = VolCmdVol;
                 m->vol = (vol & 0x0F) << 2;
                 if (m->vol <= 4) m->vol = 0;
             }
@@ -210,7 +210,7 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
                 break;
             // A.x: Port to vol
             case 0xA0:
-                m->volcmd = VOLCMD_VOLUME;
+                m->volcmd = VolCmdVol;
                 m->vol = ((eff & 0x0F) << 2) + 4;
                 break;
             // B.x: Set Balance

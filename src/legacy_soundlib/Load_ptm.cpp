@@ -177,12 +177,12 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                         ConvertModCommand(&m[nChn]);
                         MODExx2S3MSxx(&m[nChn]);
                         // Note cut does just mute the sample, not cut it. We have to fix that, if possible.
-                        if(m[nChn].command == CMD_S3MCMDEX && (m[nChn].param & 0xF0) == 0xC0 && m[nChn].volcmd == VOLCMD_NONE)
+                        if(m[nChn].command == CMD_S3MCMDEX && (m[nChn].param & 0xF0) == 0xC0 && m[nChn].volcmd == VolCmdNone)
                         {
                             // SCx => v00 + SDx
                             // This is a pretty dumb solution because many (?) PTM files make usage of the volume column + note cut at the same time.
                             m[nChn].param = 0xD0 | (m[nChn].param & 0x0F);
-                            m[nChn].volcmd = VOLCMD_VOLUME;
+                            m[nChn].volcmd = VolCmdVol;
                             m[nChn].vol = 0;
                         }
                     } else
@@ -206,7 +206,7 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                 if (b & 0x80)
                 {
                     if (dwMemPos >= dwMemLength) break;
-                    m[nChn].volcmd = VOLCMD_VOLUME;
+                    m[nChn].volcmd = VolCmdVol;
                     m[nChn].vol = lpStream[dwMemPos++];
                 }
             } else

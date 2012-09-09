@@ -210,7 +210,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
             UINT note = p->note;
             if (p->instr) { instr[nChn] = p->instr; notes[nChn] = 0; vols[nChn] = 0xFF; }
             if ((note) && (note <= NOTE_MAX)) notes[nChn] = note;
-            if (p->volcmd == VOLCMD_VOLUME)    { vols[nChn] = p->vol; }
+            if (p->volcmd == VolCmdVol)    { vols[nChn] = p->vol; }
             if (command) switch (command)
             {
             // Position Jump
@@ -1315,7 +1315,7 @@ BOOL module_renderer::ProcessEffects()
         UINT vol = pChn->nRowVolume;
         UINT cmd = pChn->nRowCommand;
         UINT param = pChn->nRowParam;
-        bool bPorta = ((cmd != CMD_TONEPORTAMENTO) && (cmd != CMD_TONEPORTAVOL) && (volcmd != VOLCMD_TONEPORTAMENTO)) ? false : true;
+        bool bPorta = ((cmd != CMD_TONEPORTAMENTO) && (cmd != CMD_TONEPORTAVOL) && (volcmd != VolCmdPortamento)) ? false : true;
 
         UINT nStartTick = 0;
 
@@ -1611,13 +1611,13 @@ BOOL module_renderer::ProcessEffects()
                 }
             }
             // Tick-0 only volume commands
-            if (volcmd == VOLCMD_VOLUME)
+            if (volcmd == VolCmdVol)
             {
                 if (vol > 64) vol = 64;
                 pChn->nVolume = vol << 2;
                 pChn->flags |= CHN_FASTVOLRAMP;
             } else
-            if (volcmd == VOLCMD_PANNING)
+            if (volcmd == VolCmdPan)
             {
                 if (vol > 64) vol = 64;
                 pChn->nPan = vol << 2;
@@ -1648,9 +1648,9 @@ BOOL module_renderer::ProcessEffects()
             so... hxx = (hx | (oldhxx & 0xf0))  ???
             TODO is this done correctly?
         */
-        if ((volcmd > VOLCMD_PANNING) && (m_nTickCount >= nStartTick))
+        if ((volcmd > VolCmdPan) && (m_nTickCount >= nStartTick))
         {
-            if (volcmd == VOLCMD_TONEPORTAMENTO)
+            if (volcmd == VolCmdPortamento)
             {
                 if (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))
                     TonePortamento(pChn, ImpulseTrackerPortaVolCmd[vol & 0x0F]);
@@ -1663,14 +1663,14 @@ BOOL module_renderer::ProcessEffects()
                 {
                     switch(volcmd)
                     {
-                    case VOLCMD_VOLUME:
-                    case VOLCMD_PANNING:
-                    case VOLCMD_VIBRATODEPTH:
-                    case VOLCMD_TONEPORTAMENTO:
+                    case VolCmdVol:
+                    case VolCmdPan:
+                    case VolCmdVibratoDepth:
+                    case VolCmdPortamento:
                         break;
                     default:
                         // no memory here.
-                        volcmd = VOLCMD_NONE;
+                        volcmd = VolCmdNone;
                     }
 
                 } else
@@ -1680,15 +1680,15 @@ BOOL module_renderer::ProcessEffects()
 
                 switch(volcmd)
                 {
-                case VOLCMD_VOLSLIDEUP:
+                case VolCmdSlideUp:
                     VolumeSlide(pChn, vol << 4);
                     break;
 
-                case VOLCMD_VOLSLIDEDOWN:
+                case VolCmdSlideDown:
                     VolumeSlide(pChn, vol);
                     break;
 
-                case VOLCMD_FINEVOLUP:
+                case VolCmdFineUp:
                     if (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))
                     {
                         if (m_nTickCount == nStartTick) VolumeSlide(pChn, (vol << 4) | 0x0F);
@@ -1696,7 +1696,7 @@ BOOL module_renderer::ProcessEffects()
                         FineVolumeUp(pChn, vol);
                     break;
 
-                case VOLCMD_FINEVOLDOWN:
+                case VolCmdFineDown:
                     if (m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))
                     {
                         if (m_nTickCount == nStartTick) VolumeSlide(pChn, 0xF0 | vol);
@@ -1704,7 +1704,7 @@ BOOL module_renderer::ProcessEffects()
                         FineVolumeDown(pChn, vol);
                     break;
 
-                case VOLCMD_VIBRATOSPEED:
+                case VolCmdVibratoSpeed:
                     // FT2 does not automatically enable vibrato with the "set vibrato speed" command
                     if(IsCompatibleMode(TRK_FASTTRACKER2))
                         pChn->nVibratoSpeed = vol & 0x0F;
@@ -1712,19 +1712,19 @@ BOOL module_renderer::ProcessEffects()
                         Vibrato(pChn, vol << 4);
                     break;
 
-                case VOLCMD_VIBRATODEPTH:
+                case VolCmdVibratoDepth:
                     Vibrato(pChn, vol);
                     break;
 
-                case VOLCMD_PANSLIDELEFT:
+                case VolCmdPanSlideLeft:
                     PanningSlide(pChn, vol);
                     break;
 
-                case VOLCMD_PANSLIDERIGHT:
+                case VolCmdPanSlideRight:
                     PanningSlide(pChn, vol << 4);
                     break;
 
-                case VOLCMD_PORTAUP:
+                case VolCmdPortamentoUp:
                     //IT compatibility (one of the first testcases - link effect memory)
                     if(IsCompatibleMode(TRK_IMPULSETRACKER))
                         PortamentoUp(pChn, vol << 2, true);
@@ -1732,7 +1732,7 @@ BOOL module_renderer::ProcessEffects()
                         PortamentoUp(pChn, vol << 2, false);
                     break;
 
-                case VOLCMD_PORTADOWN:
+                case VolCmdPortamentoDown:
                     //IT compatibility (one of the first testcases - link effect memory)
                     if(IsCompatibleMode(TRK_IMPULSETRACKER))
                         PortamentoDown(pChn, vol << 2, true);
@@ -1740,7 +1740,7 @@ BOOL module_renderer::ProcessEffects()
                         PortamentoDown(pChn, vol << 2, false);
                     break;
 
-                case VOLCMD_OFFSET:                                    //rewbs.volOff
+                case VolCmdOffset:                                    //rewbs.volOff
                     if (m_nTickCount == nStartTick)
                         SampleOffset(nChn, vol<<3, bPorta);
                     break;
@@ -1863,7 +1863,7 @@ BOOL module_renderer::ProcessEffects()
                 if (param)
                     pChn->nRetrigParam = (uint8_t)(param & 0xFF);
 
-                if (volcmd == VOLCMD_OFFSET)
+                if (volcmd == VolCmdOffset)
                     RetrigNote(nChn, pChn->nRetrigParam, vol << 3);
                 else
                     RetrigNote(nChn, pChn->nRetrigParam);
@@ -1873,7 +1873,7 @@ BOOL module_renderer::ProcessEffects()
                 // XM Retrig
                 if (param) pChn->nRetrigParam = (uint8_t)(param & 0xFF); else param = pChn->nRetrigParam;
                 //RetrigNote(nChn, param);
-                if (volcmd == VOLCMD_OFFSET)
+                if (volcmd == VolCmdOffset)
                     RetrigNote(nChn, param, vol << 3);
                 else
                     RetrigNote(nChn, param);
@@ -3406,7 +3406,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
         if(m_dwSongFlags & SONG_FIRSTTICK)
         {
             // here are some really stupid things FT2 does
-            if(pChn->nRowVolCmd == VOLCMD_VOLUME) return;
+            if(pChn->nRowVolCmd == VolCmdVol) return;
             if(pChn->nRowInstr > 0 && pChn->nRowNote == NoteNone) nRetrigCount = 1;
             if(pChn->nRowNote != NoteNone && pChn->nRowNote <= GetModSpecifications().noteMax) nRetrigCount++;
         }
@@ -3431,7 +3431,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
         {
             int realspeed = nRetrigSpeed;
             // FT2 bug: if a retrig (Rxy) occours together with a volume command, the first retrig interval is increased by one tick
-            if ((param & 0x100) && (pChn->nRowVolCmd == VOLCMD_VOLUME) && (pChn->nRowParam & 0xF0)) realspeed++;
+            if ((param & 0x100) && (pChn->nRowVolCmd == VolCmdVol) && (pChn->nRowParam & 0xF0)) realspeed++;
             if (!(m_dwSongFlags & SONG_FIRSTTICK) || (param & 0x100))
             {
                 if (!realspeed) realspeed = 1;
@@ -3453,7 +3453,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
             int vol = pChn->nVolume;
 
             // XM compatibility: Retrig + volume will not change volume of retrigged notes
-            if(!IsCompatibleMode(TRK_FASTTRACKER2) || !(pChn->nRowVolCmd == VOLCMD_VOLUME))
+            if(!IsCompatibleMode(TRK_FASTTRACKER2) || !(pChn->nRowVolCmd == VolCmdVol))
             {
                 if (retrigTable1[dv])
                     vol = (vol * retrigTable1[dv]) >> 4;

@@ -139,7 +139,7 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                     if ((note == 0xFE) || (note == 0xFC)) m->note = 0xFE; else
                     // if note < 251, then all three bytes are stored in the file
                     if (note < 0xFC) m->note = (note >> 4)*12 + (note&0xf) + 37;
-                    if (vol <= 64) { m->volcmd = VOLCMD_VOLUME; m->vol = vol; }
+                    if (vol <= 64) { m->volcmd = VolCmdVol; m->vol = vol; }
                     m->param = p->cmdinf;
                     switch(cmd)
                     {

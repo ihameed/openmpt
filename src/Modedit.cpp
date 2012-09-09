@@ -797,7 +797,7 @@ bool CModDoc::CopyPattern(modplug::tracker::patternindex_t nPattern, uint32_t dw
                                             case NoteNone:                p[1] = p[2] = p[3] = '.'; break;
                                             case NoteKeyOff:        p[1] = p[2] = p[3] = '='; break;
                                             case NoteNoteCut:        p[1] = p[2] = p[3] = '^'; break;
-                                            case NOTE_FADE:        p[1] = p[2] = p[3] = '~'; break;
+                                            case NoteFade:        p[1] = p[2] = p[3] = '~'; break;
                                             case NOTE_PC: p[1] = 'P'; p[2] = 'C'; p[3] = ' '; break;
                                             case NOTE_PCS: p[1] = 'P'; p[2] = 'C'; p[3] = 'S'; break;
                                             default:
@@ -836,7 +836,7 @@ bool CModDoc::CopyPattern(modplug::tracker::patternindex_t nPattern, uint32_t dw
                                             }
                                             else
                                             {
-                                                    if ((m->volcmd) && (m->volcmd <= MAX_VOLCMDS))
+                                                    if ((m->volcmd) && (m->volcmd <= VolCmdMax))
                                                     {
                                                             p[6] = vol_command_glyphs[m->volcmd];
                                                             p[7] = '0' + (m->vol / 10);
@@ -1012,7 +1012,7 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                     m[col].note = NoteNone;
                                                     if (s[0] == '=') m[col].note = NoteKeyOff; else
                                                     if (s[0] == '^') m[col].note = NoteNoteCut; else
-                                                    if (s[0] == '~') m[col].note = NOTE_FADE; else
+                                                    if (s[0] == '~') m[col].note = NoteFade; else
                                                     if (s[0] == 'P')
                                                     {
                                                             if(s[2] == 'S')
@@ -1056,18 +1056,21 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                             }
                                                             else
                                                             {
-                                                                    m[col].volcmd = 0;
-                                                                    for (UINT i=1; i<MAX_VOLCMDS; i++)
+                                                                    m[col].volcmd = modplug::tracker::VolCmdNone;
+                                                                    for (UINT i=1; i<VolCmdMax; i++)
                                                                     {
                                                                             if (s[5] == vol_command_glyphs[i])
                                                                             {
-                                                                                    m[col].volcmd = i;
+                                                                                    m[col].volcmd = (modplug::tracker::volcmd_t) i;
                                                                                     break;
                                                                             }
                                                                     }
                                                                     m[col].vol = (s[6]-'0')*10 + (s[7]-'0');
                                                             }
-                                                    } else m[col].volcmd = m[col].vol = 0;
+                                                    } else {
+                                                        m[col].volcmd = modplug::tracker::VolCmdNone;
+                                                        m[col].vol = 0;
+                                                    }
                                             }
 
                                             if (m[col].IsPcNote())

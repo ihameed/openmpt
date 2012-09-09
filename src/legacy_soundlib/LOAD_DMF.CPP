@@ -433,7 +433,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 if((channelInfo & DMFPAT_VOLUME) != 0)
                 {
                     ASSERT_CAN_READ_PATTERN(1);
-                    m->volcmd = VOLCMD_VOLUME;
+                    m->volcmd = VolCmdVol;
                     m->vol = (lpStream[dwMemPos++] + 3) / 4;
                 }
 
@@ -649,18 +649,18 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     }
                 }
                 // If one of the effects is unused, temporarily put volume commands in there
-                if(m->volcmd == VOLCMD_VOLUME)
+                if(m->volcmd == VolCmdVol)
                 {
                     if(effect2 == CMD_NONE)
                     {
                         effect2 = CMD_VOLUME;
                         effectParam2 = m->vol;
-                        m->volcmd = VOLCMD_NONE;
+                        m->volcmd = VolCmdNone;
                     } else if(effect3 == CMD_NONE)
                     {
                         effect3 = CMD_VOLUME;
                         effectParam3 = m->vol;
-                        m->volcmd = VOLCMD_NONE;
+                        m->volcmd = VolCmdNone;
                     }
                 }
 
@@ -691,9 +691,10 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 if (!effect3)
                     effectParam3 = 0;
 
-                if(m->volcmd == VOLCMD_NONE && effect2 != VOLCMD_NONE)
+                if(m->volcmd == VolCmdNone && effect2 != VolCmdNone)
                 {
-                    m->volcmd = effect2;
+                    //XXXih: gross
+                    m->volcmd = (modplug::tracker::volcmd_t) effect2;
                     m->vol = effectParam2;
                 }
                 // Prefer instrument effects over any other effects

@@ -23,8 +23,8 @@ using namespace modplug::tracker;
 #define    PLUGNAME_HEIGHT        16        //rewbs.patPlugName
 
 FindReplaceStruct CViewPattern::m_findReplace = {
-    { note_t(0), 0, 0, 0, 0, 0 },
-    { note_t(0), 0, 0, 0, 0, 0 },
+    { note_t(0), 0, VolCmdNone, 0, 0, 0 },
+    { note_t(0), 0, VolCmdNone, 0, 0, 0 },
     PATSEARCH_FULLSEARCH,
     PATSEARCH_REPLACEALL,
     0,
@@ -34,7 +34,7 @@ FindReplaceStruct CViewPattern::m_findReplace = {
     0
 };
 
-modevent_t CViewPattern::m_cmdOld = {0,0,0,0,0,0};
+modevent_t CViewPattern::m_cmdOld = { note_t(0), 0, VolCmdNone, 0, 0, 0 };
 
 IMPLEMENT_SERIAL(CViewPattern, CModScrollView, 0)
 
@@ -764,7 +764,7 @@ void CViewPattern::OnGrowSelection()
                 case NOTE_COLUMN:    dest->note    = src->note;    blank->note = NoteNone;                break;
                 case INST_COLUMN:    dest->instr   = src->instr;   blank->instr = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = src->vol;     blank->vol = 0;
-                                    dest->volcmd  = src->volcmd;  blank->volcmd = VOLCMD_NONE;    break;
+                                    dest->volcmd  = src->volcmd;  blank->volcmd = VolCmdNone;    break;
                 case EFFECT_COLUMN:    dest->command = src->command; blank->command = 0;                        break;
                 case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CMD_NONE;                break;
             }
@@ -816,7 +816,7 @@ void CViewPattern::OnShrinkSelection()
                 const modplug::tracker::modevent_t *srcNext = pSndFile->Patterns[m_nPattern].GetpModCommand(srcRow + 1, chn);
                 if(src->note == NoteNone) src->note = srcNext->note;
                 if(src->instr == 0) src->instr = srcNext->instr;
-                if(src->volcmd == VOLCMD_NONE)
+                if(src->volcmd == VolCmdNone)
                 {
                     src->volcmd = srcNext->volcmd;
                     src->vol = srcNext->vol;
@@ -852,7 +852,7 @@ void CViewPattern::OnShrinkSelection()
                 case NOTE_COLUMN:    dest->note    = NoteNone;                break;
                 case INST_COLUMN:    dest->instr   = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = 0;
-                                    dest->volcmd  = VOLCMD_NONE;    break;
+                                    dest->volcmd  = VolCmdNone;    break;
                 case EFFECT_COLUMN:    dest->command = CMD_NONE;                break;
                 case PARAM_COLUMN:    dest->param   = 0;                                break;
             }
@@ -923,7 +923,8 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
                 break;
             case VOL_COLUMN:    // Clear volume
                 if (rm.volume)
-                    m->volcmd = m->vol = 0;
+                    m->volcmd = VolCmdNone;
+                    m->vol = 0;
                 break;
             case EFFECT_COLUMN: // Clear Command
                 if (rm.command)
@@ -2229,11 +2230,11 @@ void CViewPattern::Interpolate(PatternColumns type)
                 vdest = destCmd.vol;
                 vcmd = srcCmd.volcmd;
                 verr = (distance * 63) / 128;
-                if(srcCmd.volcmd == VOLCMD_NONE)
+                if(srcCmd.volcmd == VolCmdNone)
                 {
                     vsrc = vdest;
                     vcmd = destCmd.volcmd;
-                } else if(destCmd.volcmd == VOLCMD_NONE)
+                } else if(destCmd.volcmd == VolCmdNone)
                 {
                     vdest = vsrc;
                 }
@@ -2291,7 +2292,8 @@ void CViewPattern::Interpolate(PatternColumns type)
                     if ((!pcmd->volcmd) || (pcmd->volcmd == vcmd))    {
                         int vol = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
                         pcmd->vol = (uint8_t)vol;
-                        pcmd->volcmd = vcmd;
+                        //XXXih: gross
+                        pcmd->volcmd = (modplug::tracker::volcmd_t) vcmd;
                     }
                     break;
                 case EFFECT_COLUMN:
@@ -2732,7 +2734,7 @@ void CViewPattern::OnPatternAmplify()
                         chvol[nChn] = m->param;
                         break;
                     }
-                    if (m->volcmd == VOLCMD_VOLUME)
+                    if (m->volcmd == VolCmdVol)
                     {
                         chvol[nChn] = m->vol;
                         break;
@@ -2760,7 +2762,7 @@ void CViewPattern::OnPatternAmplify()
                         {    //nonexistant sample and no volume present in patten? assume volume=64.
                             if(useVolCol)
                             {
-                                m->volcmd = VOLCMD_VOLUME;
+                                m->volcmd = VolCmdVol;
                                 m->vol = 64;
                             } else
                             {
@@ -2805,7 +2807,7 @@ void CViewPattern::OnPatternAmplify()
                         {
                             if(useVolCol)
                             {
-                                m->volcmd = VOLCMD_VOLUME;
+                                m->volcmd = VolCmdVol;
                                 m->vol = (overrideSampleVol) ? 64 : pSndFile->Samples[nSmp].default_volume >> 2;
                             } else
                             {
@@ -2814,12 +2816,12 @@ void CViewPattern::OnPatternAmplify()
                             }
                         }
                     }
-                    if (m->volcmd == VOLCMD_VOLUME) chvol[nChn] = (uint8_t)m->vol;
+                    if (m->volcmd == VolCmdVol) chvol[nChn] = (uint8_t)m->vol;
                     if (((dlg.m_bFadeIn) || (dlg.m_bFadeOut)) && (m->command != CMD_VOLUME) && (!m->volcmd))
                     {
                         if(useVolCol)
                         {
-                            m->volcmd = VOLCMD_VOLUME;
+                            m->volcmd = VolCmdVol;
                             m->vol = chvol[nChn];
                         } else
                         {
@@ -2827,7 +2829,7 @@ void CViewPattern::OnPatternAmplify()
                             m->param = chvol[nChn];
                         }
                     }
-                    if (m->volcmd == VOLCMD_VOLUME)
+                    if (m->volcmd == VolCmdVol)
                     {
                         int vol = m->vol * dlg.m_nFactor;
                         if (dlg.m_bFadeIn) vol = (vol * (nRow+1-firstRow)) / cy;
@@ -3600,8 +3602,8 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcNoteCutOld:            TempEnterNote(NoteNoteCut, true);  return wParam;
         case kcNoteOff:                    TempEnterNote(NoteKeyOff, false); return wParam;
         case kcNoteOffOld:            TempEnterNote(NoteKeyOff, true);  return wParam;
-        case kcNoteFade:            TempEnterNote(NOTE_FADE, false); return wParam;
-        case kcNoteFadeOld:            TempEnterNote(NOTE_FADE, true);  return wParam;
+        case kcNoteFade:            TempEnterNote(NoteFade, false); return wParam;
+        case kcNoteFadeOld:            TempEnterNote(NoteFade, true);  return wParam;
         case kcNotePC:                    TempEnterNote(NOTE_PC); return wParam;
         case kcNotePCS:                    TempEnterNote(NOTE_PCS); return wParam;
 
@@ -3734,35 +3736,35 @@ void CViewPattern::TempEnterVol(int v)
         }
         else
         {
-            UINT volcmd = p->volcmd;
+            modplug::tracker::volcmd_t volcmd = p->volcmd;
             UINT vol = p->vol;
             if ((v >= 0) && (v <= 9))
             {
                 vol = ((vol * 10) + v) % 100;
-                if (!volcmd) volcmd = VOLCMD_VOLUME;
+                if (!volcmd) volcmd = VolCmdVol;
             }
             else
                 switch(v+kcSetVolumeStart)
                 {
-                case kcSetVolumeVol:                    volcmd = VOLCMD_VOLUME; break;
-                case kcSetVolumePan:                    volcmd = VOLCMD_PANNING; break;
-                case kcSetVolumeVolSlideUp:            volcmd = VOLCMD_VOLSLIDEUP; break;
-                case kcSetVolumeVolSlideDown:    volcmd = VOLCMD_VOLSLIDEDOWN; break;
-                case kcSetVolumeFineVolUp:            volcmd = VOLCMD_FINEVOLUP; break;
-                case kcSetVolumeFineVolDown:    volcmd = VOLCMD_FINEVOLDOWN; break;
-                case kcSetVolumeVibratoSpd:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_VIBRATOSPEED; break;
-                case kcSetVolumeVibrato:            volcmd = VOLCMD_VIBRATODEPTH; break;
-                case kcSetVolumeXMPanLeft:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDELEFT; break;
-                case kcSetVolumeXMPanRight:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VOLCMD_PANSLIDERIGHT; break;
-                case kcSetVolumePortamento:            volcmd = VOLCMD_TONEPORTAMENTO; break;
-                case kcSetVolumeITPortaUp:            if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTAUP; break;
-                case kcSetVolumeITPortaDown:    if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_PORTADOWN; break;
-                case kcSetVolumeITOffset:            if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VOLCMD_OFFSET; break;                //rewbs.volOff
+                case kcSetVolumeVol:                    volcmd = VolCmdVol; break;
+                case kcSetVolumePan:                    volcmd = VolCmdPan; break;
+                case kcSetVolumeVolSlideUp:            volcmd = VolCmdSlideUp; break;
+                case kcSetVolumeVolSlideDown:    volcmd = VolCmdSlideDown; break;
+                case kcSetVolumeFineVolUp:            volcmd = VolCmdFineUp; break;
+                case kcSetVolumeFineVolDown:    volcmd = VolCmdFineDown; break;
+                case kcSetVolumeVibratoSpd:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VolCmdVibratoSpeed; break;
+                case kcSetVolumeVibrato:            volcmd = VolCmdVibratoDepth; break;
+                case kcSetVolumeXMPanLeft:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VolCmdPanSlideLeft; break;
+                case kcSetVolumeXMPanRight:            if (pSndFile->m_nType & MOD_TYPE_XM) volcmd = VolCmdPanSlideRight; break;
+                case kcSetVolumePortamento:            volcmd = VolCmdPortamento; break;
+                case kcSetVolumeITPortaUp:            if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VolCmdPortamentoUp; break;
+                case kcSetVolumeITPortaDown:    if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VolCmdPortamentoDown; break;
+                case kcSetVolumeITOffset:            if (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) volcmd = VolCmdOffset; break;                //rewbs.volOff
                 }
-            //if ((pSndFile->m_nType & MOD_TYPE_MOD) && (volcmd > VOLCMD_PANNING)) volcmd = vol = 0;
+            //if ((pSndFile->m_nType & MOD_TYPE_MOD) && (volcmd > VolCmdPan)) volcmd = vol = 0;
 
             UINT max = 64;
-            if (volcmd > VOLCMD_PANNING)
+            if (volcmd > VolCmdPan)
             {
                 max = (pSndFile->m_nType == MOD_TYPE_XM) ? 0x0F : 9;
             }
@@ -4030,8 +4032,8 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     }
     p->instr = (bChordMode) ? 0 : ins; //p->instr = 0;
     //Writing the instrument as well - probably someone finds this annoying :)
-    p->volcmd    = 0;
-    p->vol            = 0;
+    p->volcmd = VolCmdNone;
+    p->vol    = 0;
 
     pModDoc->SetModified();
 
@@ -4157,7 +4159,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
             note = pSndFile->GetModSpecifications().noteMin;
 
         // Special case: Convert note off commands to C00 for MOD files
-        if((pSndFile->GetType() == MOD_TYPE_MOD) && (note == NoteNoteCut || note == NOTE_FADE || note == NoteKeyOff))
+        if((pSndFile->GetType() == MOD_TYPE_MOD) && (note == NoteNoteCut || note == NoteFade || note == NoteKeyOff))
         {
             TempEnterFX(CMD_VOLUME, 0);
             return;
@@ -4243,9 +4245,9 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
 
         if(volWrite != -1)
         {
-            if(pSndFile->GetModSpecifications().HasVolCommand(VOLCMD_VOLUME))
+            if(pSndFile->GetModSpecifications().HasVolCommand(VolCmdVol))
             {
-                newcmd.volcmd = VOLCMD_VOLUME;
+                newcmd.volcmd = VolCmdVol;
                 newcmd.vol = (modplug::tracker::vol_t)volWrite;
             } else
             {
@@ -4597,7 +4599,7 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
         {
             case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NoteNone; if (ITStyle) p->instr = 0;}  break;                //Note
             case INST_COLUMN:    p->instr = 0; break;                                //instr
-            case VOL_COLUMN:    p->vol = 0; p->volcmd = 0; break;        //Vol
+            case VOL_COLUMN:    p->vol = 0; p->volcmd = VolCmdNone; break;        //Vol
             case EFFECT_COLUMN:    p->command = 0;        break;                                //Effect
             case PARAM_COLUMN:    p->param = 0; break;                                //Param
             default:                    p->Clear();                                                        //If not specified, delete them all! :)
@@ -5287,7 +5289,7 @@ bool CViewPattern::IsInterpolationPossible(modplug::tracker::rowindex_t startRow
         case VOL_COLUMN:
             startRowCmd = startRowMC.volcmd;
             endRowCmd = endRowMC.volcmd;
-            result = (startRowCmd == endRowCmd && startRowCmd != VOLCMD_NONE) || (startRowCmd != VOLCMD_NONE && endRowCmd == VOLCMD_NONE) || (startRowCmd == VOLCMD_NONE && endRowCmd != VOLCMD_NONE);
+            result = (startRowCmd == endRowCmd && startRowCmd != VolCmdNone) || (startRowCmd != VolCmdNone && endRowCmd == VolCmdNone) || (startRowCmd == VolCmdNone && endRowCmd != VolCmdNone);
             break;
         default:
             result = false;

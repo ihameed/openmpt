@@ -12,6 +12,7 @@
     #error include 'stdafx.h' before including this file for PCH
 #endif
 
+#include "stdafx.h"
 #include "resource.h"       // main symbols
 #include "legacy_soundlib/Sndfile.h"
 #include <windows.h>
@@ -360,7 +361,7 @@ LPCTSTR GetNoteStr(const modplug::tracker::note_t);
 // Tables
 
 extern const uint8_t gEffectColors[MAX_EFFECTS];
-extern const uint8_t gVolEffectColors[MAX_VOLCMDS];
+extern const uint8_t gVolEffectColors[modplug::tracker::VolCmdMax];
 extern const LPCSTR szNoteNames[12];
 extern const LPCTSTR szDefaultNoteNames[NOTE_COUNT];
 //const LPCTSTR szSpecialNoteNames[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("PCs"), TEXT("PC"), TEXT("~~"), TEXT("^^"), TEXT("==")};

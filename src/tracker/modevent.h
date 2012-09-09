@@ -4,10 +4,6 @@
 #include <cstdint>
 
 
-// 253, IT's action for illegal notes
-// DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
-#define NOTE_FADE    (::modplug::tracker::note_t(0xFD))
-
 // 252, Param Control 'note'. Changes param value on first tick.
 #define NOTE_PC      (::modplug::tracker::note_t(0xFC))
 
@@ -26,7 +22,6 @@
 #define NOTE_IS_VALID(n) \
     ((n) == NoteNone || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
 
-
 namespace modplug {
 namespace tracker {
 
@@ -35,17 +30,43 @@ namespace tracker {
 typedef uint8_t note_t;
 typedef uint8_t instr_t;
 typedef uint8_t vol_t;
-typedef uint8_t volcmd_t;
+//typedef uint8_t volcmd_t;
 typedef uint8_t cmd_t;
 typedef uint8_t param_t;
+
+enum volcmd_t {
+    VolCmdMin            = 0,
+    VolCmdNone           = VolCmdMin,
+    VolCmdVol            = 1,
+    VolCmdPan            = 2,
+    VolCmdSlideUp        = 3,
+    VolCmdSlideDown      = 4,
+    VolCmdFineUp         = 5,
+    VolCmdFineDown       = 6,
+    VolCmdVibratoSpeed   = 7,
+    VolCmdVibratoDepth   = 8,
+    VolCmdPanSlideLeft   = 9,
+    VolCmdPanSlideRight  = 10,
+    VolCmdPortamento     = 11,
+    VolCmdPortamentoUp   = 12,
+    VolCmdPortamentoDown = 13,
+    VolCmdDelayCut       = 14,
+    VolCmdOffset         = 15,
+
+    VolCmdMax
+};
 
 }
 }
 
 const modplug::tracker::note_t NoteNone    = 0;
 const modplug::tracker::note_t NoteMiddleC = 5 * 12 + 1;
-const modplug::tracker::note_t NoteKeyOff  = 0xff;
-const modplug::tracker::note_t NoteNoteCut = 0xfe;
+const modplug::tracker::note_t NoteKeyOff  = 255;
+const modplug::tracker::note_t NoteNoteCut = 254;
+
+// 253, IT's action for illegal notes
+// DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
+const modplug::tracker::note_t NoteFade = 253;
 
 namespace modplug {
 namespace tracker {
@@ -64,7 +85,7 @@ struct modevent_t {
     enum { MaxColumnValue = 999 };
 
     static modevent_t empty() {
-        modevent_t ret = { note_t(0), 0, 0, 0, 0, 0 };
+        modevent_t ret = { note_t(0), 0, VolCmdNone, 0, 0, 0 };
         return ret;
     }
 
@@ -91,8 +112,9 @@ struct modevent_t {
         return (volcmd << 8) + vol;
     }
 
+    //XXXih: gross
     void SetValueVolCol(const uint16_t val) {
-        volcmd = static_cast<uint8_t>(val >> 8);
+        volcmd = static_cast<volcmd_t>(val >> 8);
         vol = static_cast<uint8_t>(val & 0xFF);
     }
 
@@ -142,8 +164,12 @@ struct modevent_t {
     }
 
     // Swap volume and effect column (doesn't do any conversion as it's mainly for importing formats with multiple effect columns, so beware!)
+    //XXXih: gross
     void SwapEffects() {
-        std::swap(volcmd, command);
+        auto tmp = command;
+        command  = (int) volcmd;
+        volcmd   = (volcmd_t) tmp;
+
         std::swap(vol, param);
     }
 };
@@ -151,26 +177,6 @@ struct modevent_t {
 
 }
 }
-
-
-// Volume Column commands
-#define VOLCMD_NONE            0
-#define VOLCMD_VOLUME          1
-#define VOLCMD_PANNING         2
-#define VOLCMD_VOLSLIDEUP      3
-#define VOLCMD_VOLSLIDEDOWN    4
-#define VOLCMD_FINEVOLUP       5
-#define VOLCMD_FINEVOLDOWN     6
-#define VOLCMD_VIBRATOSPEED    7
-#define VOLCMD_VIBRATODEPTH    8
-#define VOLCMD_PANSLIDELEFT    9
-#define VOLCMD_PANSLIDERIGHT   10
-#define VOLCMD_TONEPORTAMENTO  11
-#define VOLCMD_PORTAUP         12
-#define VOLCMD_PORTADOWN       13
-#define VOLCMD_DELAYCUT        14 //currently unused
-#define VOLCMD_OFFSET          15 //rewbs.volOff
-#define MAX_VOLCMDS            16
 
 
 // Effect column commands

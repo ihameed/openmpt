@@ -277,13 +277,12 @@ void pattern_editor::select_right(pattern_editor &editor) {
 void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
     int tone_number)
 {
-    editor.selection_start = editor.selection_end = editor.pos();
+    auto &pos = editor.selection_start = editor.selection_end = editor.pos();
 
     auto &renderer = editor.renderer;
     auto &modspec = renderer.GetModSpecifications();
 
     auto patternidx = editor.active_pos.pattern;
-    auto &pos = editor.pos();
 
     modevent_t *evt = renderer.Patterns[patternidx]
                               .GetpModCommand(pos.row, pos.column);
@@ -297,6 +296,19 @@ void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
 }
 
 void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
+    auto &pos = editor.selection_start = editor.selection_end = editor.pos();
+
+    auto &renderer = editor.renderer;
+    auto &modspec = renderer.GetModSpecifications();
+
+    auto patternidx = editor.active_pos.pattern;
+
+    modevent_t *evt = renderer.Patterns[patternidx]
+                              .GetpModCommand(pos.row, pos.column);
+    modevent_t newcmd = *evt;
+
+    *evt = newcmd;
+
     DEBUG_FUNC("digit = %d", digit);
 }
 

@@ -223,7 +223,8 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
     if (!cmd2)
             param2 = 0;
 
-    note->volcmd = cmd1;
+    //XXXih: gross
+    note->volcmd = (modplug::tracker::volcmd_t) cmd1;
     note->vol = param1;
     note->command = cmd2;
     note->param = param2;
@@ -257,27 +258,27 @@ struct PostFixUltCommands
                     isPortaActive[curChannel] = false;
                     m.command = CMD_NONE;
             }
-            if(m.volcmd == VOLCMD_TONEPORTAMENTO && m.vol == 0)
+            if(m.volcmd == VolCmdPortamento && m.vol == 0)
             {
                     isPortaActive[curChannel] = false;
-                    m.volcmd = VOLCMD_NONE;
+                    m.volcmd = VolCmdNone;
             }
 
             // Apply porta?
             if(m.note == NoteNone && isPortaActive[curChannel])
             {
-                    if(m.command == CMD_NONE && m.vol != VOLCMD_TONEPORTAMENTO)
+                    if(m.command == CMD_NONE && m.vol != VolCmdPortamento)
                     {
                             m.command = CMD_TONEPORTAMENTO;
                             m.param = 0;
-                    } else if(m.volcmd == VOLCMD_NONE && m.command != CMD_TONEPORTAMENTO)
+                    } else if(m.volcmd == VolCmdNone && m.command != CMD_TONEPORTAMENTO)
                     {
-                            m.volcmd = VOLCMD_TONEPORTAMENTO;
+                            m.volcmd = VolCmdPortamento;
                             m.vol = 0;
                     }
             } else        // new note -> stop porta (or initialize again)
             {
-                    isPortaActive[curChannel] = (m.command == CMD_TONEPORTAMENTO || m.volcmd == VOLCMD_TONEPORTAMENTO);
+                    isPortaActive[curChannel] = (m.command == CMD_TONEPORTAMENTO || m.volcmd == VolCmdPortamento);
             }
 
             // attempt to fix F00 (reset to tempo 125, speed 6)

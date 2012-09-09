@@ -217,7 +217,7 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
                 {
                     if (ch < m_nChannels)
                     {
-                        m[ch].volcmd = VOLCMD_VOLUME;
+                        m[ch].volcmd = VolCmdVol;
                         m[ch].vol = b1 & 0x3F;
                     }
                 } else
@@ -228,7 +228,7 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
                         UINT cmd = b1 & 0x3F;
                         if (cmd == 0x0C)
                         {
-                            m[ch].volcmd = VOLCMD_VOLUME;
+                            m[ch].volcmd = VolCmdVol;
                             m[ch].vol = b2 >> 1;
                         } else
                         if (cmd == 0x0E)
@@ -547,7 +547,7 @@ bool module_renderer::ReadAMS2(const uint8_t * /*lpStream*/, uint32_t /*dwMemLen
                         byte2 = psrc[pos++];
                         if (byte2 & 0x40)
                         {
-                            m[ch].volcmd = VOLCMD_VOLUME;
+                            m[ch].volcmd = VolCmdVol;
                             m[ch].vol = byte2 & 0x3F;
                         } else
                         {
@@ -555,7 +555,7 @@ bool module_renderer::ReadAMS2(const uint8_t * /*lpStream*/, uint32_t /*dwMemLen
                             UINT param = psrc[pos++];
                             if (command == 0x0C)
                             {
-                                m[ch].volcmd = VOLCMD_VOLUME;
+                                m[ch].volcmd = VolCmdVol;
                                 m[ch].vol = param / 2;
                             } else
                             if (command < 0x10)

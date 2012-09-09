@@ -492,7 +492,7 @@ BOOL CModToMidi::DoConvert()
                                                     } else nsmp = 0;
                                             }
                                             if ((nsmp) && (nsmp < MAX_SAMPLES)) vol = m_pSndFile->Samples[nsmp].default_volume;
-                                            if (m->volcmd == VOLCMD_VOLUME) vol = m->vol*4;
+                                            if (m->volcmd == modplug::tracker::VolCmdVol) vol = m->vol*4;
                                             if (m->command == CMD_VOLUME) vol = m->param*4;
                                             vol = LinearToDLSMidiVolume(vol<<8);
                                             if (vol > 0x7f) vol = 0x7f;

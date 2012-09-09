@@ -409,7 +409,8 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                                         if (!cmd2)
                                             param2 = 0;
 
-                                        m[ch].volcmd = cmd1;
+                                        //XXXih: gross!
+                                        m[ch].volcmd = (modplug::tracker::volcmd_t) cmd1;
                                         m[ch].vol = param1;
                                         m[ch].command = cmd2;
                                         m[ch].param = param2;

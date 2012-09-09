@@ -577,7 +577,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 {
                     if(dwRowOffset + 1 > dwMemLength) return false;
                     // Volume present
-                    m->volcmd = VOLCMD_VOLUME;
+                    m->volcmd = VolCmdVol;
                     m->vol = (min(lpStream[dwRowOffset], 127) + 1) >> 1;
                     dwRowOffset++;
                 }
@@ -1027,7 +1027,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                 {
                     // volume present
                     ASSERT_CAN_READ(1);
-                    row_data->volcmd = VOLCMD_VOLUME;
+                    row_data->volcmd = VolCmdVol;
                     row_data->vol = lpStream[dwMemPos++];
                 }
                 if(bChnFlag & 0x20)

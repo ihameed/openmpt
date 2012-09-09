@@ -41,13 +41,13 @@ struct CModSpecifications
     modplug::tracker::instrumentindex_t instrumentsMax;
     uint8_t defaultMixLevels;
     uint8_t MIDIMappingDirectivesMax;
-    UINT speedMin;                                        // Minimum ticks per frame
-    UINT speedMax;                                        // Maximum ticks per frame
+    uint32_t speedMin;                                        // Minimum ticks per frame
+    uint32_t speedMax;                                        // Maximum ticks per frame
     bool hasComments;                                // True if format has a comments field
-    UINT envelopePointsMax;                        // Maximum number of points of each envelope
+    uint32_t envelopePointsMax;                        // Maximum number of points of each envelope
     bool hasReleaseNode;                        // Envelope release node
     char commands[MAX_EFFECTS + 1]; // An array holding all commands this format supports; commands that are not supported are marked with "?"
-    char volcommands[MAX_VOLCMDS + 1]; // dito, but for volume column
+    char volcommands[modplug::tracker::VolCmdMax + 1]; // dito, but for volume column
     bool hasIgnoreIndex;                        // Does "+++" pattern exist?
     bool hasRestartPos;
     bool supportsPlugins;

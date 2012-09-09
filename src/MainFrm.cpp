@@ -1709,8 +1709,8 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nS
         m[1].note = (uint8_t)nNote;
         m[1].instr = 1;
         m = m_WaveFile.Patterns[1];
-        m[32*4].note = NOTE_FADE;
-        m[32*4+1].note = NOTE_FADE;
+        m[32*4].note = NoteFade;
+        m[32*4+1].note = NoteFade;
         m[63*4].note = NoteKeyOff;
         m[63*4+1].note = NoteKeyOff;
     }

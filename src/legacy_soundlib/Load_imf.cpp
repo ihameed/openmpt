@@ -233,9 +233,9 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
         break;
     }
     note->command = (note->command < 0x24) ? imf_efftrans[note->command] : CMD_NONE;
-    if (note->command == CMD_VOLUME && note->volcmd == VOLCMD_NONE)
+    if (note->command == CMD_VOLUME && note->volcmd == VolCmdNone)
     {
-        note->volcmd = VOLCMD_VOLUME;
+        note->volcmd = VolCmdVol;
         note->vol = note->param;
         note->command = CMD_NONE;
         note->param = 0;
@@ -435,25 +435,25 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
                 if (e1c == 0xc)
                 {
                     note->vol = min(e1d, 0x40);
-                    note->volcmd = VOLCMD_VOLUME;
+                    note->volcmd = VolCmdVol;
                     note->command = e2c;
                     note->param = e2d;
                 } else if (e2c == 0xc)
                 {
                     note->vol = min(e2d, 0x40);
-                    note->volcmd = VOLCMD_VOLUME;
+                    note->volcmd = VolCmdVol;
                     note->command = e1c;
                     note->param = e1d;
                 } else if (e1c == 0xa)
                 {
                     note->vol = e1d * 64 / 255;
-                    note->volcmd = VOLCMD_PANNING;
+                    note->volcmd = VolCmdPan;
                     note->command = e2c;
                     note->param = e2d;
                 } else if (e2c == 0xa)
                 {
                     note->vol = e2d * 64 / 255;
-                    note->volcmd = VOLCMD_PANNING;
+                    note->volcmd = VolCmdPan;
                     note->command = e1c;
                     note->param = e1d;
                 } else

@@ -59,7 +59,7 @@ struct FixHackedPatterns
             {
                     *foundHacks = true;
                     if(autofix)
-                            m.volcmd = VOLCMD_NONE;
+                            m.volcmd = VolCmdNone;
             }
 
             if(type == MOD_TYPE_XM)                // ModPlug XM extensions

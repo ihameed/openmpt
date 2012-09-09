@@ -11,7 +11,7 @@ bool CModSpecifications::HasNote(note_t note) const {
         switch (note) {
         case NoteNoteCut: return hasNoteCut;
         case NoteKeyOff:  return hasNoteOff;
-        case NOTE_FADE:    return hasNoteFade;
+        case NoteFade:    return hasNoteFade;
         default:
             return (memcmp(fileExtension, ModSpecs::mptm.fileExtension, 4) == 0);
         }
@@ -22,7 +22,7 @@ bool CModSpecifications::HasNote(note_t note) const {
 }
 
 bool CModSpecifications::HasVolCommand(volcmd_t volcmd) const {
-    if (volcmd >= MAX_VOLCMDS) {
+    if (volcmd >= VolCmdMax) {
         return false;
     }
     if (volcommands[volcmd] == '?') {
@@ -42,7 +42,7 @@ bool CModSpecifications::HasCommand(cmd_t cmd) const {
 }
 
 char CModSpecifications::GetVolEffectLetter(volcmd_t volcmd) const {
-    if (volcmd >= MAX_VOLCMDS) {
+    if (volcmd >= VolCmdMax) {
         return '?';
     }
     return volcommands[volcmd];

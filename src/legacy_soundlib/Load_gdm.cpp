@@ -297,7 +297,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                     // effect(s) follow
 
                     m->command = CMD_NONE;
-                    m->volcmd = CMD_NONE;
+                    m->volcmd = VolCmdNone;
 
                     while(true)
                     {
@@ -325,7 +325,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                             if(bS3MCommandSet)
                             {
                                 command = CMD_NONE;
-                                volcommand = VOLCMD_VOLUME;
+                                volcommand = VolCmdVol;
                                 volparam = min(param, 64);
                             }
                             else
@@ -471,7 +471,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                             // move pannings to volume column - should never happen
                             if(m->command == CMD_S3MCMDEX && ((m->param >> 4) == 0x8) && volcommand == CMD_NONE)
                             {
-                                volcommand = VOLCMD_PANNING;
+                                volcommand = VolCmdPan;
                                 volparam = ((param & 0x0F) << 2) + 2;
                             }
 
@@ -480,7 +480,8 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                         }
                         if(volcommand != CMD_NONE)
                         {
-                            m->volcmd = volcommand;
+                            //XXXih: gross!
+                            m->volcmd = (modplug::tracker::volcmd_t) volcommand;
                             m->vol = volparam;
                         }
 

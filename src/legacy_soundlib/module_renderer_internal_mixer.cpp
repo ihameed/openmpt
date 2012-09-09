@@ -1887,7 +1887,9 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     const modplug::tracker::note_t note = pChn->nRowNote;
     const modplug::tracker::instr_t instr = pChn->nRowInstr;
     const modplug::tracker::vol_t vol = pChn->nRowVolume;
-    const modplug::tracker::volcmd_t volcmd = pChn->nRowVolCmd;
+
+    //XXXih: gross!
+    const modplug::tracker::volcmd_t volcmd = (modplug::tracker::volcmd_t) pChn->nRowVolCmd;
     // Debug
     {
         // Previously this function took modcommand directly from pattern. ASSERT is there
@@ -1931,7 +1933,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
             if((note >= NOTE_MIN) && (note <= NOTE_MAX))
                 realNote = pIns->NoteMap[note - 1];
             pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, pChn->nVolume, nChn);
-        } else if (volcmd == VOLCMD_VOLUME)
+        } else if (volcmd == modplug::tracker::VolCmdVol)
         {
             pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Fine, vol, nChn);
         }
@@ -1939,7 +1941,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
     }
 
 
-    const bool hasVolCommand = (volcmd == VOLCMD_VOLUME);
+    const bool hasVolCommand = (volcmd == modplug::tracker::VolCmdVol);
     const UINT defaultVolume = pIns->global_volume;
 
 

@@ -700,7 +700,8 @@ void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
                     m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
                     m_bModified = true;
             }
-            m->volcmd = volcmd;
+            //XXXih: gross
+            m->volcmd = (modplug::tracker::volcmd_t) volcmd;
             m->vol = vol;
             m_pModDoc->SetModified();
             // -> CODE#0008

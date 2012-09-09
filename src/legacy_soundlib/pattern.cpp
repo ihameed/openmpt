@@ -434,14 +434,14 @@ void WriteData(std::ostream& oStrm, const CPattern& pat)
 }
 
 
-#define READITEM(itembit,id)            \
-if(diffmask & itembit)                            \
-{                                                                    \
-    Binaryread<uint8_t>(iStrm, temp);        \
-    if(ch < chns)                                        \
-            lastChnMC[ch].id = temp;        \
-}                                                                    \
-if(ch < chns)                                            \
+#define READITEM(itembit,id)          \
+if(diffmask & itembit)                \
+{                                     \
+    Binaryread<uint8_t>(iStrm, temp); \
+    if(ch < chns)                     \
+            lastChnMC[ch].id = temp;  \
+}                                     \
+if(ch < chns)                         \
     m.id = lastChnMC[ch].id;
 
 
@@ -481,7 +481,11 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
 
             READITEM(noteBit, note);
             READITEM(instrBit, instr);
-            READITEM(volcmdBit, volcmd);
+
+            //XXXih: gross!!
+            READITEM(volcmdBit, vol);
+            lastChnMC[ch].volcmd = (modplug::tracker::volcmd_t) lastChnMC[ch].vol;
+
             READITEM(volBit, vol);
             READITEM(commandBit, command);
             READITEM(effectParamBit, param);
