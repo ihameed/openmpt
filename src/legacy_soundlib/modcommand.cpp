@@ -33,8 +33,8 @@ void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
     case 0x60: m->param = (m->param & 0x0F) | 0xB0; break;
     case 0x70: m->param = (m->param & 0x03) | 0x40; break;
     case 0x90: m->command = CmdRetrig; m->param = (m->param & 0x0F); break;
-    case 0xA0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param = (m->param << 4) | 0x0F; } else m->command = 0; break;
-    case 0xB0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param |= 0xF0; } else m->command = 0; break;
+    case 0xA0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param = (m->param << 4) | 0x0F; } else m->command = CmdNone; break;
+    case 0xB0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param |= 0xF0; } else m->command = CmdNone; break;
     case 0xC0: if (m->param == 0xC0) { m->command = CmdNone; m->note = NoteNoteCut; }        // this does different things in IT and ST3
     case 0xD0: if (m->param == 0xD0) { m->command = CmdNone; }        // dito
                             // rest are the same
@@ -163,7 +163,8 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                             m->volcmd = VolCmdVol;
                             m->vol = m->param;
                             if (m->vol > 0x40) m->vol = 0x40;
-                            m->command = m->param = 0;
+                            m->command = CmdNone;
+                            m->param = 0;
                     }
                     break;
             case CmdPortaUp:
@@ -552,7 +553,8 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             // remove EDx if no note is next to it, or it will retrigger the note in FT2 mode
             if(m->command == CmdModCmdEx && (m->param & 0xF0) == 0xD0 && m->note == NoteNone)
             {
-                    m->command = m->param = 0;
+                    m->command = CmdNone;
+                    m->param = 0;
             }
 
             if(!m->command) switch(m->volcmd)
@@ -724,60 +726,57 @@ bool module_renderer::TryWriteEffect(modplug::tracker::patternindex_t nPat, modp
     // Easy case: check if there's some space left to put the effect somewhere
     for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++)
     {
-            m = p + nRow * m_nChannels + i;
-            if(!bIsVolumeEffect && m->command == CmdNone)
-            {
-                    m->command = nEffect;
-                    m->param = nParam;
-                    return true;
-            }
-            if(bIsVolumeEffect && m->volcmd == VolCmdNone)
-            {
-                //XXXih: gross
-                    m->volcmd = (modplug::tracker::volcmd_t) nEffect;
-                    m->vol = nParam;
-                    return true;
-            }
+        m = p + nRow * m_nChannels + i;
+        if(!bIsVolumeEffect && m->command == CmdNone) {
+            //XXXih: gross
+            m->command = (modplug::tracker::cmd_t) nEffect;
+            m->param = nParam;
+            return true;
+        }
+        if(bIsVolumeEffect && m->volcmd == VolCmdNone) {
+            //XXXih: gross
+            m->volcmd = (modplug::tracker::volcmd_t) nEffect;
+            m->vol = nParam;
+            return true;
+        }
     }
 
     // Ok, apparently there's no space. If we haven't tried already, try to map it to the volume column or effect column instead.
-    if(bRetry)
-    {
+    if(bRetry) {
             // Move some effects that also work in the volume column, so there's place for our new effect.
-            if(!bIsVolumeEffect)
-            {
-                    for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++)
-                    {
-                            m = p + nRow * m_nChannels + i;
-                            switch(m->command)
-                            {
-                            case CmdVol:
-                                    m->volcmd = VolCmdVol;
-                                    m->vol = m->param;
-                                    m->command = nEffect;
-                                    m->param = nParam;
-                                    return true;
+            if(!bIsVolumeEffect) {
+                for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++) {
+                    m = p + nRow * m_nChannels + i;
+                    switch(m->command) {
+                    case CmdVol:
+                        m->volcmd = VolCmdVol;
+                        m->vol = m->param;
+                        //XXXih: gross
+                        m->command = (modplug::tracker::cmd_t) nEffect;
+                        m->param = nParam;
+                        return true;
 
-                            case CmdPanning8:
-                                    if(m_nType & MOD_TYPE_S3M && nParam > 0x80)
-                                            break;
+                    case CmdPanning8:
+                        if(m_nType & MOD_TYPE_S3M && nParam > 0x80)
+                                break;
 
-                                    m->volcmd = VolCmdPan;
-                                    m->command = nEffect;
+                        m->volcmd = VolCmdPan;
+                        //XXXih: gross
+                        m->command = (modplug::tracker::cmd_t) nEffect;
 
-                                    if(m_nType & MOD_TYPE_S3M)
-                                    {
-                                            m->vol = m->param >> 1;
-                                    }
-                                    else
-                                    {
-                                            m->vol = (m->param >> 2) + 1;
-                                    }
+                        if(m_nType & MOD_TYPE_S3M)
+                        {
+                                m->vol = m->param >> 1;
+                        }
+                        else
+                        {
+                                m->vol = (m->param >> 2) + 1;
+                        }
 
-                                    m->param = nParam;
-                                    return true;
-                            }
+                        m->param = nParam;
+                        return true;
                     }
+                }
             }
 
             // Let's try it again by writing into the "other" effect column.

@@ -10,6 +10,7 @@
 
 #define new DEBUG_NEW
 
+using namespace modplug::tracker;
 
 ModSequence::ModSequence(module_renderer& rSf,
                                              modplug::tracker::patternindex_t* pArray,

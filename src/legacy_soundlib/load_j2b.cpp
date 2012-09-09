@@ -252,14 +252,16 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
             if (flags & 0x80) // effect
             {
                 ASSERT_CAN_READ(2);
-                m->command = lpStream[dwMemPos + 1];
+                //XXXih: gross
+                m->command = (modplug::tracker::cmd_t) lpStream[dwMemPos + 1];
                 m->param = lpStream[dwMemPos];
                 dwMemPos += 2;
 
                 if(m->command < CountOf(riffam_efftrans))
                 {
                     // command translation
-                    m->command = riffam_efftrans[m->command];
+                    //XXXih: gross!
+                    m->command = (modplug::tracker::cmd_t) riffam_efftrans[m->command];
 
                     // handling special commands
                     switch(m->command)

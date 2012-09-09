@@ -1660,7 +1660,7 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
                     modplug::tracker::modevent_t *m = m_WaveFile.Patterns[1];
                     if (m)
                     {
-                        m[63*4].command = CmdPositionJump;
+                        m[63*4].command = modplug::tracker::CmdPositionJump;
                         m[63*4].param = 1;
                     }
                 }

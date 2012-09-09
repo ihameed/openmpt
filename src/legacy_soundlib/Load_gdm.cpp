@@ -475,7 +475,8 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                                 volparam = ((param & 0x0F) << 2) + 2;
                             }
 
-                            m->command = command;
+                            //XXXih: gross!
+                            m->command = (modplug::tracker::cmd_t) command;
                             m->param = param;
                         }
                         if(volcommand != CmdNone)

@@ -1088,13 +1088,14 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                     if (s[8] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.command==0) ||
                                                                                                             (doITStyleMix && origModCmd.command==0 && origModCmd.param==0))))
                                                     {
-                                                            m[col].command = 0;
+                                                            m[col].command = CmdNone;
                                                             if (s[8] != '.')
                                                             {
                                                                     LPCSTR psc = (bS3MCommands) ? s3m_command_glyphs : mod_command_glyphs;
                                                                     for (UINT i=1; i<CmdMax; i++)
                                                                     {
-                                                                            if ((s[8] == psc[i]) && (psc[i] != '?')) m[col].command = i;
+                                                                            //XXXih: gross
+                                                                            if ((s[8] == psc[i]) && (psc[i] != '?')) m[col].command = (cmd_t) i;
                                                                     }
                                                             }
                                                     }

@@ -170,7 +170,8 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                 if (b & 0x40)
                 {
                     if (dwMemPos + 2 > dwMemLength) break;
-                    m[nChn].command = lpStream[dwMemPos++];
+                    //XXXih: gross
+                    m[nChn].command = (modplug::tracker::cmd_t) lpStream[dwMemPos++];
                     m[nChn].param = lpStream[dwMemPos++];
                     if (m[nChn].command < 0x10)
                     {
@@ -199,7 +200,7 @@ bool module_renderer::ReadPTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                             m[nChn].command = CmdFineVibrato;
                             break;
                         default:
-                            m[nChn].command = 0;
+                            m[nChn].command = CmdNone;
                         }
                     }
                 }

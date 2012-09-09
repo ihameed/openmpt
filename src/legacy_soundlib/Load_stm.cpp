@@ -170,7 +170,8 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                     // Xxx amiga command 8xx
                     case 0x18:        m->command = CmdPanning8; break;
                     default:
-                            m->command = m->param = 0;
+                            m->command = CmdNone;
+                            m->param = 0;
                     }
             }
             dwMemPos += 64*4*4;

@@ -232,7 +232,8 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
             note->param = n | (note->param & 0xf);
         break;
     }
-    note->command = (note->command < 0x24) ? imf_efftrans[note->command] : CmdNone;
+    //XXXih: gross!
+    note->command = (note->command < 0x24) ? (modplug::tracker::cmd_t) imf_efftrans[note->command] : CmdNone;
     if (note->command == CmdVol && note->volcmd == VolCmdNone)
     {
         note->volcmd = VolCmdVol;
@@ -436,25 +437,29 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
                 {
                     note->vol = min(e1d, 0x40);
                     note->volcmd = VolCmdVol;
-                    note->command = e2c;
+                    //XXXih: gross
+                    note->command = (modplug::tracker::cmd_t) e2c;
                     note->param = e2d;
                 } else if (e2c == 0xc)
                 {
                     note->vol = min(e2d, 0x40);
                     note->volcmd = VolCmdVol;
-                    note->command = e1c;
+                    //XXXih: gross
+                    note->command = (modplug::tracker::cmd_t) e1c;
                     note->param = e1d;
                 } else if (e1c == 0xa)
                 {
                     note->vol = e1d * 64 / 255;
                     note->volcmd = VolCmdPan;
-                    note->command = e2c;
+                    //XXXih: gross
+                    note->command = (modplug::tracker::cmd_t) e2c;
                     note->param = e2d;
                 } else if (e2c == 0xa)
                 {
                     note->vol = e2d * 64 / 255;
                     note->volcmd = VolCmdPan;
-                    note->command = e1c;
+                    //XXXih: gross
+                    note->command = (modplug::tracker::cmd_t) e1c;
                     note->param = e1d;
                 } else
                 {
@@ -462,14 +467,16 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
                     -- if so, put it in some unused channel instead.
                     otherwise pick the most important effect. */
                     lostfx++;
-                    note->command = e2c;
+                    //XXXih: gross
+                    note->command = (modplug::tracker::cmd_t) e2c;
                     note->param = e2d;
                 }
             } else if(mask & 0xc0)
             {
                 // there's one effect, just stick it in the effect column
                 ASSERT_CAN_READ(2);
-                note->command = *((uint8_t *)(lpStream + dwMemPos));
+                //XXXih: gross
+                note->command = (modplug::tracker::cmd_t) *((uint8_t *)(lpStream + dwMemPos));
                 note->param = *((uint8_t *)(lpStream + dwMemPos + 1));
                 dwMemPos += 2;
             }

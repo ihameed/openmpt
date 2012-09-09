@@ -21,7 +21,8 @@ extern uint16_t ProTrackerPeriodTable[6*12];
 void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
 //-----------------------------------------------------
 {
-    UINT command = m->command, param = m->param;
+    modplug::tracker::cmd_t command = m->command;
+    modplug::tracker::param_t param = m->param;
 
     switch(command)
     {
@@ -41,7 +42,7 @@ void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
     case 0x0D:    command = CmdPatternBreak; param = ((param >> 4) * 10) + (param & 0x0F); break;
     case 0x0E:    command = CmdModCmdEx; break;
     case 0x0F:    command = (param <= ((m_nType & (MOD_TYPE_MOD)) ? 0x20 : 0x1F)) ? CmdSpeed : CmdTempo;
-                if ((param == 0xFF) && (m_nSamples == 15) && (m_nType & MOD_TYPE_MOD)) command = 0; break; //<rewbs> what the hell is this?! :) //<jojo> it's the "stop tune" command! :-P
+                if ((param == 0xFF) && (m_nSamples == 15) && (m_nType & MOD_TYPE_MOD)) command = CmdNone; break; //<rewbs> what the hell is this?! :) //<jojo> it's the "stop tune" command! :-P
     // Extension for XM extended effects
     case 'G' - 55:    command = CmdGlobalVol; break;                //16
     case 'H' - 55:    command = CmdGlobalVolSlide; if (param & 0xF0) param &= 0xF0; break;
@@ -465,7 +466,8 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
                     UINT n = ((((UINT)A0 & 0x0F) << 8) | (A1));
                     if ((n) && (n != 0xFFF)) m->note = GetNoteFromPeriod(n << 2);
                     m->instr = ((UINT)A2 >> 4) | (A0 & 0x10);
-                    m->command = A2 & 0x0F;
+                    //XXXih: gross!
+                    m->command = (modplug::tracker::cmd_t) (A2 & 0x0F);
                     m->param = A3;
                     if ((m->command) || (m->param)) ConvertModCommand(m);
 

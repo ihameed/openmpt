@@ -163,13 +163,14 @@ static void ConvertMT2Command(module_renderer *that, modplug::tracker::modevent_
         m->vol = 0;
     }
     // Effects
-    m->command = 0;
+    m->command = CmdNone;
     m->param = 0;
     if ((p->fxcmd) || (p->fxparam1) || (p->fxparam2))
     {
         if (!p->fxcmd)
         {
-            m->command = p->fxparam2;
+            //XXXih: gross!
+            m->command = (modplug::tracker::cmd_t) p->fxparam2;
             m->param = p->fxparam1;
             that->ConvertModCommand(m);
             that->MODExx2S3MSxx(m);

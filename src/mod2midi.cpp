@@ -5,6 +5,8 @@
 
 #pragma pack(1)
 
+using namespace modplug::tracker;
+
 typedef struct _RMIDDATACHUNK
 {
     uint32_t id_RIFF;        // "RIFF"

@@ -251,12 +251,14 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
                                 case 0xA0:    if (param & 0x0F) { command = CmdVolumeSlide; param = (param << 4) | 0x0F; } else command=param=0; break;
                                 case 0xB0:    if (param & 0x0F) { command = CmdVolumeSlide; param |= 0xF0; } else command=param=0; break;
                                 }
-                                m[ch].command = command;
+                                //XXXih: gross
+                                m[ch].command = (modplug::tracker::cmd_t) command;
                                 m[ch].param = param;
                             }
                         } else
                         {
-                            m[ch].command = cmd;
+                            //XXXih: gross
+                            m[ch].command = (modplug::tracker::cmd_t) cmd;
                             m[ch].param = b2;
                             ConvertModCommand(&m[ch]);
                         }

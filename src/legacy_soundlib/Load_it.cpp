@@ -1209,7 +1209,8 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                 {
                     if (cmd)
                     {
-                        m[ch].command = cmd;
+                        //XXXih: gross
+                        m[ch].command = (modplug::tracker::cmd_t) cmd;
                         m[ch].param = param;
                         S3MConvert(&m[ch], true);
                         lastvalue[ch].command = m[ch].command;
@@ -1803,10 +1804,11 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                             b |= 0x80;
                         } else
                         {
-                            lastvalue[ch].command = command;
+                            //XXXih: gross!
+                            lastvalue[ch].command = (modplug::tracker::cmd_t) command;
                             lastvalue[ch].param = param;
                             //XXXih: gross!!
-                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 8);
+                            lastvalue[ch].volcmd = (modplug::tracker::volcmd_t) (lastvalue[ch].volcmd | 8);
                         }
                     }
                     if (b != chnmask[ch])
@@ -2398,10 +2400,11 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                             b |= 0x80;
                         } else
                         {
-                            lastvalue[ch].command = command;
+                            //XXXih: gross!
+                            lastvalue[ch].command = (modplug::tracker::cmd_t) command;
                             lastvalue[ch].param = param;
                             //XXXih: gross!!
-                            lastvalue[ch].volcmd = (volcmd_t) (lastvalue[ch].volcmd | 8);
+                            lastvalue[ch].volcmd = (modplug::tracker::volcmd_t) (lastvalue[ch].volcmd | 8);
                         }
                     }
                     if (b != chnmask[ch])

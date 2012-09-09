@@ -46,7 +46,7 @@ struct CModSpecifications
     bool hasComments;                                // True if format has a comments field
     uint32_t envelopePointsMax;                        // Maximum number of points of each envelope
     bool hasReleaseNode;                        // Envelope release node
-    char commands[CmdMax + 1]; // An array holding all commands this format supports; commands that are not supported are marked with "?"
+    char commands[modplug::tracker::CmdMax + 1]; // An array holding all commands this format supports; commands that are not supported are marked with "?"
     char volcommands[modplug::tracker::VolCmdMax + 1]; // dito, but for volume column
     bool hasIgnoreIndex;                        // Does "+++" pattern exist?
     bool hasRestartPos;

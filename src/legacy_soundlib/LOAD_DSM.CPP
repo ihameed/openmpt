@@ -195,7 +195,8 @@ bool module_renderer::ReadDSM(const uint8_t * const lpStream, const uint32_t dwM
                             // Volume + Offset (?)
                             command = ((command & 0xF0) == 0x20) ? 0x09 : 0;
                         }
-                        m[ch].command = (uint8_t)command;
+                        //XXXih: gross!
+                        m[ch].command = (modplug::tracker::cmd_t) command;
                         m[ch].param = (uint8_t)param;
                         if (command) ConvertModCommand(&m[ch]);
                     }

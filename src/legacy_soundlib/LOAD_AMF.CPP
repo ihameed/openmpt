@@ -161,7 +161,8 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             }
             if (command)
             {
-                m->command = command;
+                //XXXih: gross
+                m->command = (modplug::tracker::cmd_t) command;
                 m->param = param;
             }
         }
@@ -235,14 +236,15 @@ bool module_renderer::ReadAMF(const uint8_t * const lpStream, const uint32_t dwM
                     p->note = pin[0] + 13;
                 }
                 p->instr = pin[1];
-                p->command = pin[2];
+                //XXXih: gross
+                p->command = (modplug::tracker::cmd_t) pin[2];
                 p->param = pin[3];
                 if (p->command > 0x0F)
                 {
                 #ifdef AMFLOG
                     Log("0x%02X.0x%02X ?", p->command, p->param);
                 #endif
-                    p->command = 0;
+                    p->command = CmdNone;
                 }
                 ConvertModCommand(p);
                 pin += 4;

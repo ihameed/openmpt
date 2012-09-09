@@ -469,7 +469,8 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
 #endif
         command = param = 0;
     }
-    p->command = command;
+    //XXXih: gross!
+    p->command = (modplug::tracker::cmd_t) command;
     p->param = param;
 }
 
@@ -831,7 +832,8 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
                     if (s[0] & 0x40) instr |= 0x20;
                     if ((note) && (note <= 132)) p->note = note + playtransp;
                     p->instr = instr;
-                    p->command = s[1] & 0x0F;
+                    //XXXih: gross!
+                    p->command = (modplug::tracker::cmd_t) (s[1] & 0x0F);
                     p->param = s[2];
                     // if (!iBlk) Log("%02X.%02X.%02X | ", s[0], s[1], s[2]);
                     MedConvert(p, pmsh);
@@ -899,7 +901,8 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
                         p->note = (uint8_t)rnote;
                     }
                     p->instr = s[1];
-                    p->command = s[2];
+                    //XXXih: gross!
+                    p->command = (modplug::tracker::cmd_t) s[2];
                     p->param = s[3];
                     if (pcmdext) p->vol = pcmdext[x];
                     MedConvert(p, pmsh);

@@ -23,8 +23,8 @@ using namespace modplug::tracker;
 #define    PLUGNAME_HEIGHT        16        //rewbs.patPlugName
 
 FindReplaceStruct CViewPattern::m_findReplace = {
-    { note_t(0), 0, VolCmdNone, 0, 0, 0 },
-    { note_t(0), 0, VolCmdNone, 0, 0, 0 },
+    { note_t(0), 0, VolCmdNone, CmdNone, 0, 0 },
+    { note_t(0), 0, VolCmdNone, CmdNone, 0, 0 },
     PATSEARCH_FULLSEARCH,
     PATSEARCH_REPLACEALL,
     0,
@@ -34,7 +34,7 @@ FindReplaceStruct CViewPattern::m_findReplace = {
     0
 };
 
-modevent_t CViewPattern::m_cmdOld = { note_t(0), 0, VolCmdNone, 0, 0, 0 };
+modevent_t CViewPattern::m_cmdOld = { note_t(0), 0, VolCmdNone, CmdNone, 0, 0 };
 
 IMPLEMENT_SERIAL(CViewPattern, CModScrollView, 0)
 
@@ -765,7 +765,7 @@ void CViewPattern::OnGrowSelection()
                 case INST_COLUMN:    dest->instr   = src->instr;   blank->instr = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = src->vol;     blank->vol = 0;
                                     dest->volcmd  = src->volcmd;  blank->volcmd = VolCmdNone;    break;
-                case EFFECT_COLUMN:    dest->command = src->command; blank->command = 0;                        break;
+                case EFFECT_COLUMN:    dest->command = src->command; blank->command = CmdNone;                        break;
                 case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CmdNone;                break;
             }
         }
@@ -929,7 +929,7 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
             case EFFECT_COLUMN: // Clear Command
                 if (rm.command)
                 {
-                    m->command = 0;
+                    m->command = CmdNone;
                     if(m->IsPcNote())
                     {
                         m->SetValueEffectCol(0);
@@ -2315,7 +2315,8 @@ void CViewPattern::Interpolate(PatternColumns type)
                         {
                             int val = vsrc + ((vdest - vsrc) * (int)i + verr) / distance;
                             pcmd->param = (uint8_t)val;
-                            pcmd->command = vcmd;
+                            //XXXih: gross
+                            pcmd->command = (modplug::tracker::cmd_t) vcmd;
                         }
                     }
                     break;
@@ -3809,11 +3810,14 @@ void CViewPattern::SetSpacing(int n)
 
 
 // Enter an effect letter in the pattenr
-void CViewPattern::TempEnterFX(int c, int v)
+void CViewPattern::TempEnterFX(int raw_c, int v)
 //------------------------------------------
 {
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CModDoc *pModDoc = GetDocument();
+
+    //XXXih: gross
+    auto c = (modplug::tracker::cmd_t) raw_c;
 
     if(!IsEditingEnabled_bmsg()) return;
 
@@ -4600,7 +4604,7 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
             case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NoteNone; if (ITStyle) p->instr = 0;}  break;                //Note
             case INST_COLUMN:    p->instr = 0; break;                                //instr
             case VOL_COLUMN:    p->vol = 0; p->volcmd = VolCmdNone; break;        //Vol
-            case EFFECT_COLUMN:    p->command = 0;        break;                                //Effect
+            case EFFECT_COLUMN:    p->command = CmdNone;        break;                                //Effect
             case PARAM_COLUMN:    p->param = 0; break;                                //Param
             default:                    p->Clear();                                                        //If not specified, delete them all! :)
         }

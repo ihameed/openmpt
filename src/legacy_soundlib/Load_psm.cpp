@@ -741,7 +741,8 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
 
                     }
 
-                    m->command = command;
+                    //XXXih: gross
+                    m->command = (modplug::tracker::cmd_t) command;
                     m->param = param;
 
                     dwRowOffset += 2;
@@ -1186,7 +1187,8 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                         break;
                     }
 
-                    row_data->command = command;
+                    //XXXih: gross
+                    row_data->command = (modplug::tracker::cmd_t) command;
                     row_data->param = param;
                 }
             }

@@ -14,6 +14,10 @@
 #include "Mainfrm.h"
 #include "PatternEditorDialogs.h"
 
+#include "tracker/modevent.h"
+
+using namespace modplug::tracker;
+
 
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
@@ -713,9 +717,10 @@ void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
 }
 
 
-void CEditCommand::UpdateEffect(UINT command, UINT param)
+void CEditCommand::UpdateEffect(UINT raw_command, UINT param)
 //-------------------------------------------------------
 {
+    auto command = (modplug::tracker::cmd_t) raw_command;
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     if ((m_nPattern >= pSndFile->Patterns.Size()) || (!m_pModDoc)
             || (m_nRow >= pSndFile->Patterns[m_nPattern].GetNumRows())

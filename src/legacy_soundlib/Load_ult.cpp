@@ -226,7 +226,7 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
     //XXXih: gross
     note->volcmd = (modplug::tracker::volcmd_t) cmd1;
     note->vol = param1;
-    note->command = cmd2;
+    note->command = (modplug::tracker::cmd_t) cmd2;
     note->param = param2;
 
     *dwMP = dwMemPos;

@@ -686,25 +686,26 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     }
                     effect2 = CmdNone;
                 }
-                if (!effect2)
+                if (!effect2) {
                     effectParam2 = 0;
-                if (!effect3)
+                }
+                if (!effect3) {
                     effectParam3 = 0;
+                }
 
-                if(m->volcmd == VolCmdNone && effect2 != VolCmdNone)
-                {
+                if(m->volcmd == VolCmdNone && effect2 != VolCmdNone) {
                     //XXXih: gross
                     m->volcmd = (modplug::tracker::volcmd_t) effect2;
                     m->vol = effectParam2;
                 }
                 // Prefer instrument effects over any other effects
-                if(effect1 != CmdNone)
-                {
-                    m->command = effect1;
+                if(effect1 != CmdNone) {
+                    //XXXih: gross
+                    m->command = (modplug::tracker::cmd_t) effect1;
                     m->param = effectParam1;
-                } else if(effect3 != CmdNone)
-                {
-                    m->command = effect3;
+                } else if(effect3 != CmdNone) {
+                    //XXXih: gross
+                    m->command = (modplug::tracker::cmd_t) effect3;
                     m->param = effectParam3;
                 }
 

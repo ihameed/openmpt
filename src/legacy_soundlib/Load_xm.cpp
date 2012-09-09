@@ -165,14 +165,16 @@ uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t 
                         if (b & 1) p->note = src[j++];
                         if (b & 2) p->instr = src[j++];
                         if (b & 4) vol = src[j++];
-                        if (b & 8) p->command = src[j++];
+                        //XXXih: gross!!
+                        if (b & 8) p->command = (modplug::tracker::cmd_t) src[j++];
                         if (b & 16) p->param = src[j++];
                     } else
                     {
                         p->note = b;
                         p->instr = src[j++];
                         vol = src[j++];
-                        p->command = src[j++];
+                        //XXXih: gross!!
+                        p->command = (modplug::tracker::cmd_t) src[j++];
                         p->param = src[j++];
                     }
                     if (p->note == 97) p->note = NoteKeyOff; else

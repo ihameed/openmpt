@@ -113,7 +113,8 @@ void module_renderer::S3MConvert(modplug::tracker::modevent_t *m, bool bIT) cons
     case '[':    command = CmdExtendedParameter; break;
     default:    command = 0;
     }
-    m->command = command;
+    //XXXih: gross
+    m->command = (modplug::tracker::cmd_t) command;
     m->param = param;
 }
 
@@ -461,7 +462,8 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
                     if (b & 0x80)
                     {
                         if(j + nInd + 2 >= dwMemLength) break;
-                        m->command = src[j++];
+                        //XXXih: gross
+                        m->command = (modplug::tracker::cmd_t) src[j++];
                         m->param = src[j++];
                         if (m->command) S3MConvert(m, false);
                         if(m->command == CmdMidi)

@@ -242,7 +242,8 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                                     break;
                             default:
                                     // Junk.
-                                    m->command = m->param = 0;
+                                    m->command = CmdNone;
+                                    m->param = 0;
                                     break;
                             }
                             break;
@@ -255,7 +256,8 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
 #endif
 
                     default:
-                            m->command = m->param = 0;
+                            m->command = CmdNone;
+                            m->param = 0;
                             //ASSERT(false);
                             break;
                     }

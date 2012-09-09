@@ -485,9 +485,11 @@ void ReadData(std::istream& iStrm, CPattern& pat, const size_t)
             //XXXih: gross!!
             READITEM(volcmdBit, vol);
             lastChnMC[ch].volcmd = (modplug::tracker::volcmd_t) lastChnMC[ch].vol;
-
             READITEM(volBit, vol);
-            READITEM(commandBit, command);
+
+            READITEM(commandBit, param);
+            lastChnMC[ch].command = (modplug::tracker::cmd_t) lastChnMC[ch].param;
+
             READITEM(effectParamBit, param);
             if(diffmask & extraData)
             {

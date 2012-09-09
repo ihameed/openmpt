@@ -29,6 +29,8 @@
 
 // VU-Meter
 
+using namespace modplug::tracker;
+
 static const unsigned int VUMETER_DECAY = 4;
 
 // SNDMIX: These are global flags for playback control

@@ -162,7 +162,8 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
                     if (command)
                     {
                         if (command == CmdSpeed) mspeed = NULL;
-                        m->command = command;
+                        //XXXih: gross
+                        m->command = (modplug::tracker::cmd_t) command;
                         m->param = param;
                     }
                 }

@@ -128,7 +128,8 @@ bool module_renderer::ReadMTM(const uint8_t * lpStream, uint32_t dwMemLength)
                 {
                     if (param & 0xF0) param &= 0xF0; else param &= 0x0F;
                 }
-                m->command = cmd;
+                //XXXih: gross!
+                m->command = (modplug::tracker::cmd_t) cmd;
                 m->param = param;
                 if ((cmd) || (param))
                 {

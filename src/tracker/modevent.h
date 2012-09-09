@@ -30,12 +30,11 @@ namespace tracker {
 typedef uint8_t note_t;
 typedef uint8_t instr_t;
 typedef uint8_t vol_t;
-//typedef uint8_t volcmd_t;
-typedef uint8_t cmd_t;
 typedef uint8_t param_t;
 
 enum volcmd_t {
     VolCmdMin            = 0,
+
     VolCmdNone           = VolCmdMin,
     VolCmdVol            = 1,
     VolCmdPan            = 2,
@@ -54,6 +53,50 @@ enum volcmd_t {
     VolCmdOffset         = 15,
 
     VolCmdMax
+};
+
+enum cmd_t {
+    CmdMin = 0,
+
+    CmdNone                 = CmdMin,
+    CmdArpeggio             = 1,
+    CmdPortaUp              = 2,
+    CmdPortaDown            = 3,
+    CmdPorta                = 4,
+    CmdVibrato              = 5,
+    CmdPortamentoVol        = 6,
+    CmdVibratoVol           = 7,
+    CmdTremolo              = 8,
+    CmdPanning8             = 9,
+    CmdOffset               = 10,
+    CmdVolumeSlide          = 11,
+    CmdPositionJump         = 12,
+    CmdVol                  = 13,
+    CmdPatternBreak         = 14,
+    CmdRetrig               = 15,
+    CmdSpeed                = 16,
+    CmdTempo                = 17,
+    CmdTremor               = 18,
+    CmdModCmdEx             = 19,
+    CmdS3mCmdEx             = 20,
+    CmdChannelVol           = 21,
+    CmdChannelVolSlide      = 22,
+    CmdGlobalVol            = 23,
+    CmdGlobalVolSlide       = 24,
+    CmdKeyOff               = 25,
+    CmdFineVibrato          = 26,
+    CmdPanbrello            = 27,
+    CmdExtraFinePortaUpDown = 28,
+    CmdPanningSlide         = 29,
+    CmdSetEnvelopePosition  = 30,
+    CmdMidi                 = 31,
+    CmdSmoothMidi           = 32,
+    CmdDelayCut             = 33,
+    CmdExtendedParameter    = 34, // extended pattern effect parameter mechanism
+    CmdNoteSlideUp          = 35, // IMF Gxy
+    CmdNoteSlideDown        = 36, // IMF Hxy
+
+    CmdMax
 };
 
 }
@@ -85,7 +128,7 @@ struct modevent_t {
     enum { MaxColumnValue = 999 };
 
     static modevent_t empty() {
-        modevent_t ret = { note_t(0), 0, VolCmdNone, 0, 0, 0 };
+        modevent_t ret = { note_t(0), 0, VolCmdNone, CmdNone, 0, 0 };
         return ret;
     }
 
@@ -126,8 +169,9 @@ struct modevent_t {
         return (command << 8) + param;
     }
 
+    //XXXih: gross
     void SetValueEffectCol(const uint16_t val) {
-        command = static_cast<uint8_t>(val >> 8);
+        command = static_cast<cmd_t>(val >> 8);
         param = static_cast<uint8_t>(val & 0xFF);
     }
 
@@ -166,8 +210,8 @@ struct modevent_t {
     // Swap volume and effect column (doesn't do any conversion as it's mainly for importing formats with multiple effect columns, so beware!)
     //XXXih: gross
     void SwapEffects() {
-        auto tmp = command;
-        command  = (int) volcmd;
+        int tmp = command;
+        command  = (cmd_t) ((int) volcmd);
         volcmd   = (volcmd_t) tmp;
 
         std::swap(vol, param);
@@ -177,44 +221,3 @@ struct modevent_t {
 
 }
 }
-
-
-// Effect column commands
-#define CmdNone             0
-#define CmdArpeggio         1
-#define CmdPortaUp     2
-#define CmdPortaDown   3
-#define CmdPorta   4
-#define CmdVibrato          5
-#define CmdPortamentoVol     6
-#define CmdVibratoVol       7
-#define CmdTremolo          8
-#define CmdPanning8         9
-#define CmdOffset           10
-#define CmdVolumeSlide      11
-#define CmdPositionJump     12
-#define CmdVol           13
-#define CmdPatternBreak     14
-#define CmdRetrig           15
-#define CmdSpeed            16
-#define CmdTempo            17
-#define CmdTremor           18
-#define CmdModCmdEx         19
-#define CmdS3mCmdEx         20
-#define CmdChannelVol    21
-#define CmdChannelVolSlide  22
-#define CmdGlobalVol     23
-#define CmdGlobalVolSlide   24
-#define CmdKeyOff           25
-#define CmdFineVibrato      26
-#define CmdPanbrello        27
-#define CmdExtraFinePortaUpDown 28
-#define CmdPanningSlide     29
-#define CmdSetEnvelopePosition   30
-#define CmdMidi             31
-#define CmdSmoothMidi       32 //rewbs.smoothVST
-#define CmdDelayCut         33
-#define CmdExtendedParameter           34 // extended pattern effect parameter mechanism
-#define CmdNoteSlideUp      35 // IMF Gxy
-#define CmdNoteSlideDown    36 // IMF Hxy
-#define CmdMax          37

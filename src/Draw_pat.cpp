@@ -642,7 +642,8 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
 
     ncols = pSndFile->GetNumChannels();
 
-    m0.note = m0.instr = m0.vol = m0.command = m0.param = 0;
+    m0.note = m0.instr = m0.vol = m0.param = 0;
+    m0.command = CmdNone;
     m0.volcmd = VolCmdNone;
 
     nColumnWidth = m_szCell.cx;
