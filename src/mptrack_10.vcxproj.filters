@@ -278,7 +278,6 @@
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SampleEditorDialogs.h" />
-    <ClInclude Include="SampleGenerator.h" />
     <ClInclude Include="ScaleEnvPointsDlg.h" />
     <ClInclude Include="serialization_utils.h" />
     <ClInclude Include="SoundFilePlayConfig.h" />
