@@ -12,7 +12,7 @@ namespace gui {
 namespace qt4 {
 
 
-comment_editor::comment_editor(module_renderer *legacy_module)
+comment_editor::comment_editor(module_renderer &legacy_module)
     : QWidget(), legacy_module(legacy_module), busy_loading_comments(false)
 {
     auto layout = new QVBoxLayout();
@@ -43,11 +43,11 @@ void comment_editor::legacy_set_comments_from_module(bool allow_editing) {
     editor.clear();
     editor.setUndoRedoEnabled(false);
 
-    if (legacy_module->m_lpszSongComments) {
+    if (legacy_module.m_lpszSongComments) {
         uint8_t bytestr[256];
         uint8_t curchar;
         uint8_t *iter = reinterpret_cast<uint8_t *>(
-            legacy_module->m_lpszSongComments
+            legacy_module.m_lpszSongComments
         );
         unsigned int line_length = 0;
 
@@ -88,17 +88,17 @@ void comment_editor::legacy_update_module_comment() {
         return;
     }
 
-    if (!legacy_module->GetModSpecifications().hasComments) {
+    if (!legacy_module.GetModSpecifications().hasComments) {
         return;
     }
 
     uint8_t *old_comment = nullptr;
 
-    if (legacy_module->m_lpszSongComments) {
+    if (legacy_module.m_lpszSongComments) {
         old_comment = reinterpret_cast<uint8_t *>(
-            legacy_module->m_lpszSongComments
+            legacy_module.m_lpszSongComments
         );
-        legacy_module->m_lpszSongComments = nullptr;
+        legacy_module.m_lpszSongComments = nullptr;
     }
 
     auto comment_lines = editor.
@@ -116,11 +116,11 @@ void comment_editor::legacy_update_module_comment() {
     auto raw_comment_length = raw_comment.length();
 
     if (raw_comment_length > 0) {
-        legacy_module->m_lpszSongComments = reinterpret_cast<char *>(
+        legacy_module.m_lpszSongComments = reinterpret_cast<char *>(
             new uint8_t[raw_comment_length + 1]
         );
         std::copy_n(raw_comment.constData(), raw_comment_length + 1,
-                    legacy_module->m_lpszSongComments);
+                    legacy_module.m_lpszSongComments);
     }
 
     if (old_comment) {

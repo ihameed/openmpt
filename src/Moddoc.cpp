@@ -59,7 +59,6 @@ BEGIN_MESSAGE_MAP(CModDoc, CDocument)
     ON_COMMAND(ID_VIEW_PATTERNS,            OnEditPatterns)
     ON_COMMAND(ID_VIEW_SAMPLES,                    OnEditSamples)
     ON_COMMAND(ID_VIEW_INSTRUMENTS,            OnEditInstruments)
-    ON_COMMAND(ID_VIEW_COMMENTS,            OnEditComments)
     ON_COMMAND(ID_VIEW_GRAPH,                    OnEditGraph) //rewbs.graph
     ON_COMMAND(ID_VIEW_EDITHISTORY,            OnViewEditHistory)
     ON_COMMAND(ID_VIEW_MPTHACKS,            OnViewMPTHacks)
@@ -1951,13 +1950,6 @@ void CModDoc::OnEditInstruments()
     SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_INSTRUMENTS);
 }
 
-
-void CModDoc::OnEditComments()
-//----------------------------
-{
-    if (m_SndFile.m_nType & (MOD_TYPE_XM|MOD_TYPE_IT | MOD_TYPE_MPT)) SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_COMMENTS);
-}
-
 void CModDoc::OnEditGraph() { }
 
 
@@ -3520,7 +3512,6 @@ LRESULT CModDoc::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcViewPattern: OnEditPatterns(); break;
         case kcViewSamples: OnEditSamples(); break;
         case kcViewInstruments: OnEditInstruments(); break;
-        case kcViewComments: OnEditComments(); break;
         case kcViewGraph: OnEditGraph(); break; //rewbs.graph
         case kcViewSongProperties: SongProperties(); break;
 

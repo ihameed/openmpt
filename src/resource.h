@@ -13,7 +13,6 @@
 #define IDD_OPTIONS_PATTERN             112
 #define IDD_LOADRAWSAMPLE               113
 #define IDD_CONTROL_GLOBALS             114
-#define IDD_CONTROL_COMMENTS            115
 #define IDD_CONTROL_PATTERNS            116
 #define IDD_CONTROL_SAMPLES             117
 #define IDD_CONTROL_INSTRUMENTS         118
@@ -83,8 +82,6 @@
 #define IDD_MIDIMACRO                   404
 #define IDD_WAVECOMPRESSION             405
 #define IDD_CHORDEDIT                   406
-#define IDD_LAYER3CONVERT               407
-#define IDD_SPLASHSCREEN                408
 #define IDD_TREEVIEW                    409
 #define IDD_MOD2MIDI                    420
 #define IDD_SAVEPRESET                  421
@@ -550,7 +547,6 @@
 #define IDC_QUESTION1                   1999
 #define IDC_COMBO_BASEOCTAVE            2001
 #define IDC_COMBO_INSTRUMENT            2002
-#define IDC_EDIT_COMMENTS               2004
 #define IDC_EDIT_SONGTITLE              2005
 #define IDC_EDIT_TEMPO                  2007
 #define IDC_EDIT_SPEED                  2008
@@ -619,7 +615,6 @@
 #define IDC_TOOLBAR2                    2075
 #define IDC_TOOLBAR_DETAILS             2076
 #define IDC_KEYBOARD1                   2078
-#define IDC_SPLASH                      2079
 #define IDC_TREEVIEW                    2081
 #define IDC_COMMANDKEY                  2081
 #define IDC_VUMETER_LEFT                2082

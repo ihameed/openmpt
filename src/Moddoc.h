@@ -432,7 +432,6 @@ public:
     afx_msg void OnEditPatterns();
     afx_msg void OnEditSamples();
     afx_msg void OnEditInstruments();
-    afx_msg void OnEditComments();
     afx_msg void OnEditGraph();    //rewbs.Graph
     afx_msg void OnInsertPattern();
     afx_msg void OnInsertSample();

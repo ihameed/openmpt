@@ -11,7 +11,6 @@
 #include "ctrl_pat.h"
 #include "ctrl_smp.h"
 #include "ctrl_ins.h"
-#include "ctrl_com.h"
 #include ".\globals.h"
 
 #ifdef _DEBUG
@@ -294,9 +293,6 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
 
     switch(nID)
     {
-        case IDD_CONTROL_COMMENTS:
-            nIndex = 4;
-            break;
         case IDD_CONTROL_GLOBALS:
             nIndex = 0;
             break;
@@ -342,16 +338,6 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
     {
         switch(nID)
         {
-        //rewbs.graph
-            //XXXih: bluh?
-/*            case IDD_CONTROL_GRAPH:
-            pDlg = new CCtrlGraph();
-            break;
-            */
-        //end rewbs.graph
-        case IDD_CONTROL_COMMENTS:
-            pDlg = new CCtrlComments();
-            break;
         case IDD_CONTROL_GLOBALS:
             pDlg = new CCtrlGeneral();
             break;
@@ -420,7 +406,7 @@ void CModControlView::UpdateView(uint32_t lHint, CObject *pObject)
         module_renderer *pSndFile = pDoc->GetSoundFile();
         UINT nCount = 4;
         UINT nType = pSndFile->GetType();
-        UINT mask = 1 | 2 | 4 | 16;
+        UINT mask = 1 | 2 | 4;
 
         if (nType & (MOD_TYPE_XM|MOD_TYPE_IT|MOD_TYPE_MPT))
         {
@@ -441,7 +427,6 @@ void CModControlView::UpdateView(uint32_t lHint, CObject *pObject)
             if (mask & 2) m_TabCtrl.InsertItem(count++, "Patterns", IDD_CONTROL_PATTERNS, IMAGE_PATTERNS);
             if (mask & 4) m_TabCtrl.InsertItem(count++, "Samples", IDD_CONTROL_SAMPLES, IMAGE_SAMPLES);
             if (mask & 8) m_TabCtrl.InsertItem(count++, "Instruments", IDD_CONTROL_INSTRUMENTS, IMAGE_INSTRUMENTS);
-            if (mask & 16) m_TabCtrl.InsertItem(count++, "Comments", IDD_CONTROL_COMMENTS, IMAGE_COMMENTS);
         }
     }
     // Update child dialogs

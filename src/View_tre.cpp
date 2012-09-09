@@ -1164,10 +1164,6 @@ BOOL CModTree::ExecuteItem(HTREEITEM hItem)
             CModDoc *pModDoc = (pInfo) ? pInfo->pModDoc : NULL;
             switch(modItemType)
             {
-            case MODITEM_COMMENTS:
-                    if (pModDoc) pModDoc->ActivateView(IDD_CONTROL_COMMENTS, 0);
-                    return TRUE;
-
             /*case MODITEM_SEQUENCE:
                     if (pModDoc) pModDoc->ActivateView(IDD_CONTROL_PATTERNS, (dwItem << 16) | 0x8000);
                     return TRUE;*/
