@@ -28,7 +28,6 @@ class CModDoc;
 class CAutoSaver;
 class ISoundDevice;
 class ISoundSource;
-class CPerformanceCounter;
 
 #define NUM_AUDIO_BUFFERS                    3
 #define MIN_AUDIO_BUFFERSIZE            1024
@@ -535,7 +534,6 @@ public:
     static void TranslateKeyboardMap(LPSTR pszKbd);
     static VOID GetKeyName(LONG lParam, LPSTR pszName, UINT cbSize);
     static CInputHandler *m_InputHandler;         //rewbs.customKeys
-    static CPerformanceCounter *m_pPerfCounter;
 
     static bool WritePrivateProfileLong(const CString section, const CString key, const long value, const CString iniFile);
     static long GetPrivateProfileLong(const CString section, const CString key, const long defaultValue, const CString iniFile);

@@ -11,7 +11,6 @@
 #include "moptions.h"
 #include "vstplug.h"
 #include "KeyConfigDlg.h"
-#include "performancecounter.h"
 #include "mainfrm.h"
 // -> CODE#0015
 // -> DESC="channels management dlg"
@@ -248,7 +247,6 @@ const TCHAR CMainFrame::m_szDirectoryToSettingsName[NUM_DIRS][32] =
 
 
 CInputHandler *CMainFrame::m_InputHandler = nullptr; //rewbs.customKeys
-CPerformanceCounter *CMainFrame::m_pPerfCounter = nullptr;
 
 static UINT indicators[] =
 {
@@ -356,7 +354,6 @@ CMainFrame::CMainFrame() :
     }
 
     m_InputHandler = new CInputHandler(this);     //rewbs.customKeys
-    m_pPerfCounter= new CPerformanceCounter();
 
     //Loading static tunings here - probably not the best place to do that but anyway.
     module_renderer::LoadStaticTunings();
@@ -646,7 +643,6 @@ CMainFrame::~CMainFrame()
 {
     DeleteCriticalSection(&m_csAudio);
     delete m_InputHandler;     //rewbs.customKeys
-    delete m_pPerfCounter;
 
     CChannelManagerDlg::DestroySharedInstance();
     module_renderer::DeleteStaticdata();
