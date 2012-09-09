@@ -274,19 +274,26 @@ void pattern_editor::select_right(pattern_editor &editor) {
     editor.update();
 }
 
+void pattern_editor::collapse_selection() {
+    auto &newpos = selection_start = selection_end = pos();
+    move_to(newpos);
+}
+
+modevent_t *pattern_editor::active_event() {
+    auto &modspec = renderer.GetModSpecifications();
+    auto patternidx = active_pos.pattern;
+    modevent_t *evt = renderer.Patterns[patternidx]
+                              .GetpModCommand(pos().row, pos().column);
+    return evt;
+}
+
 void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
     int tone_number)
 {
-    auto &pos = editor.selection_start = editor.selection_end = editor.pos();
+    editor.collapse_selection();
+    auto evt = editor.active_event();
+    auto newcmd = *evt;
 
-    auto &renderer = editor.renderer;
-    auto &modspec = renderer.GetModSpecifications();
-
-    auto patternidx = editor.active_pos.pattern;
-
-    modevent_t *evt = renderer.Patterns[patternidx]
-                              .GetpModCommand(pos.row, pos.column);
-    modevent_t newcmd = *evt;
     newcmd.note = 1 + tone_number + 12 * (octave + editor.base_octave);
 
     *evt = newcmd;
@@ -295,16 +302,9 @@ void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
 }
 
 void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
-    auto &pos = editor.selection_start = editor.selection_end = editor.pos();
-
-    auto &renderer = editor.renderer;
-    auto &modspec = renderer.GetModSpecifications();
-
-    auto patternidx = editor.active_pos.pattern;
-
-    modevent_t *evt = renderer.Patterns[patternidx]
-                              .GetpModCommand(pos.row, pos.column);
-    modevent_t newcmd = *evt;
+    editor.collapse_selection();
+    auto evt = editor.active_event();
+    auto newcmd = *evt;
 
     if (newcmd.volcmd == VolCmdNone) {
         newcmd.volcmd = VolCmdVol;
@@ -320,6 +320,19 @@ void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
 
     editor.update();
 }
+
+void pattern_editor::insert_volcmd(pattern_editor &editor, volcmd_t cmd) {
+    editor.collapse_selection();
+    auto evt = editor.active_event();
+    auto newcmd = *evt;
+
+    newcmd.volcmd = cmd;
+
+    *evt = newcmd;
+
+    editor.update();
+}
+
 
 
 

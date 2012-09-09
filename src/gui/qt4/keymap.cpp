@@ -6,8 +6,10 @@
 #include "../pervasives/pervasives.h"
 
 #include "pattern_editor.h"
+#include "../../tracker/modevent.h"
 
 using namespace modplug::pervasives;
+using namespace modplug::tracker;
 
 namespace modplug {
 namespace gui {
@@ -73,6 +75,28 @@ static actionmap_assoc<pattern_action_t> pattern_actions[] = {
     { "select_right", &pattern_editor::select_right },
 };
 
+struct volcmd_assoc {
+    const char *key;
+    volcmd_t val;
+};
+
+static volcmd_assoc volcmds[] = {
+    { "vol_vol",             VolCmdVol },
+    { "vol_pan",             VolCmdPan },
+    { "vol_slide_up",        VolCmdSlideUp },
+    { "vol_slide_down",      VolCmdSlideDown },
+    { "vol_fine_slide_up",   VolCmdFineUp },
+    { "vol_fine_slide_down", VolCmdFineDown },
+    { "vol_vibrato_speed",   VolCmdVibratoSpeed },
+    { "vol_vibrato_depth",   VolCmdVibratoDepth },
+    { "vol_xm_pan_left",     VolCmdPanSlideLeft },
+    { "vol_xm_pan_right",    VolCmdPanSlideRight },
+    { "vol_portamento",      VolCmdPortamento },
+    { "vol_portamento_up",   VolCmdPortamentoUp },
+    { "vol_portamento_down", VolCmdPortamentoDown },
+    { "vol_offset",          VolCmdOffset },
+};
+
 template <typename amap_t, typename f_t, size_t size>
 void init_actions(amap_t &actionmap, const actionmap_assoc<f_t> (&assocs)[size]) {
     for (size_t idx = 0; idx < size; ++idx) {
@@ -112,6 +136,13 @@ void init_note_maps() {
             pattern_editor::insert_volparam(editor, digit);
         };
     }
+
+    for_each(volcmds, [&m] (volcmd_assoc &assoc) {
+        volcmd_t val = assoc.val;
+        m[assoc.key] = [val] (pattern_editor &editor) {
+            pattern_editor::insert_volcmd(editor, val);
+        };
+    });
 }
 
 void init_action_maps() {
@@ -218,7 +249,6 @@ pattern_keymap_t default_pattern_keymap() {
     volkey(Qt::Key_U, "vol_vibrato_speed");
     volkey(Qt::Key_L, "vol_xm_pan_left");
     volkey(Qt::Key_R, "vol_xm_pan_right");
-    volkey(Qt::Key_L, "vol_xm_pan_left");
     volkey(Qt::Key_G, "vol_portamento");
     volkey(Qt::Key_F, "vol_portamento_up");
     volkey(Qt::Key_E, "vol_portamento_down");

@@ -9,6 +9,7 @@
 #include "keymap.h"
 #include "../../legacy_soundlib/Snd_defs.h"
 #include "../../tracker/types.h"
+#include "../../tracker/modevent.h"
 
 class module_renderer;
 
@@ -47,9 +48,7 @@ struct editor_position_t {
 
     editor_position_t next_row() const {
         auto newpos = *this;
-        if (newpos.row > 0) {
-            newpos.row++;
-        }
+        newpos.row++;
         return newpos;
     }
 
@@ -131,6 +130,9 @@ public:
 
     void set_base_octave(uint8_t octave);
 
+    void collapse_selection();
+    modplug::tracker::modevent_t *active_event();
+
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
@@ -181,6 +183,7 @@ public:
 
     static void insert_note(pattern_editor &, uint8_t, int);
     static void insert_volparam(pattern_editor &, uint8_t);
+    static void insert_volcmd(pattern_editor &, modplug::tracker::volcmd_t);
 };
 
 
