@@ -425,7 +425,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     settings.playDir[nChn] = false;
                 }
 
-                uint8_t effect1 = CMD_NONE, effect2 = CMD_NONE, effect3 = CMD_NONE;
+                uint8_t effect1 = CmdNone, effect2 = CmdNone, effect3 = CmdNone;
                 uint8_t effectParam1 = 0, effectParam2 = 0, effectParam3 = 0;
 
                 ////////////////////////////////////////////////////////////////
@@ -449,26 +449,26 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     {
                     case 1:		// Stop Sample
                         m->note = NoteNoteCut;
-                        effect1 = CMD_NONE;
+                        effect1 = CmdNone;
                         break;
                     case 2:		// Stop Sample Loop
                         m->note = NoteKeyOff;
-                        effect1 = CMD_NONE;
+                        effect1 = CmdNone;
                         break;
                     case 3:		// Instrument Volume Override (aka "Restart")
                         m->note = settings.lastNote[nChn];
                         settings.playDir[nChn] = false;
-                        effect1 = CMD_NONE;
+                        effect1 = CmdNone;
                         break;
                     case 4:		// Sample Delay
                         effectParam1 = DMFdelay2MPT(effectParam1, settings.internalTicks);
                         if(effectParam1)
                         {
-                            effect1 = CMD_S3MCMDEX;
+                            effect1 = CmdS3mCmdEx;
                             effectParam1 = 0xD0 | (effectParam1);
                         } else
                         {
-                            effect1 = CMD_NONE;
+                            effect1 = CmdNone;
                         }
                         if(m->note == NoteNone)
                         {
@@ -478,7 +478,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         break;
                     case 5:		// Tremolo Retrig Sample (who invented those stupid effect names?)
                         effectParam1 = max(1, DMFdelay2MPT(effectParam1, settings.internalTicks));
-                        effect1 = CMD_RETRIG;
+                        effect1 = CmdRetrig;
                         settings.playDir[nChn] = false;
                         break;
                     case 6:		// Offset
@@ -488,13 +488,13 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         // Put high offset on previous row
                         if(nRow > 0)
                         {
-                            pSndFile->TryWriteEffect(nPat, nRow - 1, CMD_S3MCMDEX, (0xA0 | (effect1 - 6)), false, nChn, false, weTryPreviousRow);
+                            pSndFile->TryWriteEffect(nPat, nRow - 1, CmdS3mCmdEx, (0xA0 | (effect1 - 6)), false, nChn, false, weTryPreviousRow);
                         }
-                        effect1 = CMD_OFFSET;
+                        effect1 = CmdOffset;
                         settings.playDir[nChn] = false;
                         break;
                     case 10:	// Invert Sample play direction ("Tekkno Invert")
-                        effect1 = CMD_S3MCMDEX;
+                        effect1 = CmdS3mCmdEx;
                         if(settings.playDir[nChn] == false)
                             effectParam1 = 0x9F;
                         else
@@ -502,7 +502,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         settings.playDir[nChn] = !settings.playDir[nChn];
                         break;
                     default:
-                        effect1 = CMD_NONE;
+                        effect1 = CmdNone;
                         break;
                     }
                 }
@@ -518,7 +518,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     switch(effect2)
                     {
                     case 1:		// Note Finetune
-                        effect2 = (effectParam2 < 128) ? CMD_PORTAMENTOUP : CMD_PORTAMENTODOWN;
+                        effect2 = (effectParam2 < 128) ? CmdPortaUp : CmdPortaDown;
                         if(effectParam2 > 128) effectParam2 = 255 - effectParam2 + 1;
                         effectParam2 = 0xF0 | min(0x0F, effectParam2);	// Well, this is not too accurate...
                         break;
@@ -526,20 +526,20 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         effectParam2 = DMFdelay2MPT(effectParam2, settings.internalTicks);
                         if(effectParam2)
                         {
-                            effect2 = CMD_S3MCMDEX;
+                            effect2 = CmdS3mCmdEx;
                             effectParam2 = 0xD0 | (effectParam2);
                         } else
                         {
-                            effect2 = CMD_NONE;
+                            effect2 = CmdNone;
                         }
                         break;
                     case 3:		// Arpeggio
-                        effect2 = CMD_ARPEGGIO;
+                        effect2 = CmdArpeggio;
                         break;
                     case 4:		// Portamento Up
                     case 5:		// Portamento Down
                         effectParam2 = DMFporta2MPT(effectParam2, settings.internalTicks, true);
-                        effect2 = (effect2 == 4) ? CMD_PORTAMENTOUP : CMD_PORTAMENTODOWN;
+                        effect2 = (effect2 == 4) ? CmdPortaUp : CmdPortaDown;
                         break;
                     case 6:		// Portamento to Note
                         if(m->note == NoteNone)
@@ -547,11 +547,11 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                             m->note = settings.noteBuffer[nChn];
                         }
                         effectParam2 = DMFporta2MPT(effectParam2, settings.internalTicks, false);
-                        effect2 = CMD_TONEPORTAMENTO;
+                        effect2 = CmdPorta;
                         break;
                     case 7:		// Scratch to Note (neat! but we don't have such an effect...)
                         m->note = CLAMP(effectParam2 + 25, NOTE_MIN, NOTE_MAX);
-                        effect2 = CMD_TONEPORTAMENTO;
+                        effect2 = CmdPorta;
                         effectParam2 = 0xFF;
                         break;
                     case 8:		// Vibrato Sine
@@ -560,29 +560,29 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         // Put vibrato type on previous row
                         if(nRow > 0)
                         {
-                            pSndFile->TryWriteEffect(nPat, nRow - 1, CMD_S3MCMDEX, (0x30 | (effect2 - 8)), false, nChn, false, weTryPreviousRow);
+                            pSndFile->TryWriteEffect(nPat, nRow - 1, CmdS3mCmdEx, (0x30 | (effect2 - 8)), false, nChn, false, weTryPreviousRow);
                         }
-                        effect2 = CMD_VIBRATO;
+                        effect2 = CmdVibrato;
                         effectParam2 = DMFvibrato2MPT(effectParam2, settings.internalTicks);
                         break;
                     case 11:	 // Note Tremolo
                         effectParam2 = DMFtremor2MPT(effectParam2, settings.internalTicks);
-                        effect2 = CMD_TREMOR;
+                        effect2 = CmdTremor;
                         break;
                     case 12:	// Note Cut
                         effectParam2 = DMFdelay2MPT(effectParam2, settings.internalTicks);
                         if(effectParam2)
                         {
-                            effect2 = CMD_S3MCMDEX;
+                            effect2 = CmdS3mCmdEx;
                             effectParam2 = 0xC0 | (effectParam2);
                         } else
                         {
-                            effect2 = CMD_NONE;
+                            effect2 = CmdNone;
                             m->note = NoteNoteCut;
                         }
                         break;
                     default:
-                        effect2 = CMD_NONE;
+                        effect2 = CmdNone;
                         break;
                     }
                 }
@@ -600,11 +600,11 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     case 1:		// Volume Slide Up
                     case 2:		// Volume Slide Down
                         effectParam3 = DMFslide2MPT(effectParam3, settings.internalTicks, (effect3 == 1));
-                        effect3 = CMD_VOLUMESLIDE;
+                        effect3 = CmdVolumeSlide;
                         break;
                     case 3:		// Volume Tremolo (actually this is Tremor)
                         effectParam3 = DMFtremor2MPT(effectParam3, settings.internalTicks);
-                        effect3 = CMD_TREMOR;
+                        effect3 = CmdTremor;
                         break;
                     case 4:		// Tremolo Sine
                     case 5:		// Tremolo Triangle (ramp down should be close enough)
@@ -612,25 +612,25 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         // Put tremolo type on previous row
                         if(nRow > 0)
                         {
-                            pSndFile->TryWriteEffect(nPat, nRow - 1, CMD_S3MCMDEX, (0x40 | (effect3 - 4)), false, nChn, false, weTryPreviousRow);
+                            pSndFile->TryWriteEffect(nPat, nRow - 1, CmdS3mCmdEx, (0x40 | (effect3 - 4)), false, nChn, false, weTryPreviousRow);
                         }
-                        effect3 = CMD_TREMOLO;
+                        effect3 = CmdTremolo;
                         effectParam3 = DMFvibrato2MPT(effectParam3, settings.internalTicks);
                         break;
                     case 7:		// Set Balance
-                        effect3 = CMD_PANNING8;
+                        effect3 = CmdPanning8;
                         break;
                     case 8:		// Slide Balance Left
                     case 9:		// Slide Balance Right
                         effectParam3 = DMFslide2MPT(effectParam3, settings.internalTicks, (effect3 == 8));
-                        effect3 = CMD_PANNINGSLIDE;
+                        effect3 = CmdPanningSlide;
                         break;
                     case 10:	// Balance Vibrato Left/Right (always sine modulated)
-                        effect3 = CMD_PANBRELLO;
+                        effect3 = CmdPanbrello;
                         effectParam3 = DMFvibrato2MPT(effectParam3, settings.internalTicks);
                         break;
                     default:
-                        effect3 = CMD_NONE;
+                        effect3 = CmdNone;
                         break;
                     }
                 }
@@ -638,27 +638,27 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 // I guess this is close enough to "not retriggering the note"
                 if(slideNote && m->note != NoteNone && NOTE_IS_VALID(m->note))
                 {
-                    if(effect2 == CMD_NONE)
+                    if(effect2 == CmdNone)
                     {
-                        effect2 = CMD_TONEPORTAMENTO;
+                        effect2 = CmdPorta;
                         effectParam2 = 0xFF;
-                    } else if(effect3 == CMD_NONE && effect2 != CMD_TONEPORTAMENTO)	// Tone portamentos normally go in effect #2
+                    } else if(effect3 == CmdNone && effect2 != CmdPorta)	// Tone portamentos normally go in effect #2
                     {
-                        effect3 = CMD_TONEPORTAMENTO;
+                        effect3 = CmdPorta;
                         effectParam3 = 0xFF;
                     }
                 }
                 // If one of the effects is unused, temporarily put volume commands in there
                 if(m->volcmd == VolCmdVol)
                 {
-                    if(effect2 == CMD_NONE)
+                    if(effect2 == CmdNone)
                     {
-                        effect2 = CMD_VOLUME;
+                        effect2 = CmdVol;
                         effectParam2 = m->vol;
                         m->volcmd = VolCmdNone;
-                    } else if(effect3 == CMD_NONE)
+                    } else if(effect3 == CmdNone)
                     {
-                        effect3 = CMD_VOLUME;
+                        effect3 = CmdVol;
                         effectParam3 = m->vol;
                         m->volcmd = VolCmdNone;
                     }
@@ -684,7 +684,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         std::swap(effect2, effect3);
                         std::swap(effectParam2, effectParam3);
                     }
-                    effect2 = CMD_NONE;
+                    effect2 = CmdNone;
                 }
                 if (!effect2)
                     effectParam2 = 0;
@@ -698,11 +698,11 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     m->vol = effectParam2;
                 }
                 // Prefer instrument effects over any other effects
-                if(effect1 != CMD_NONE)
+                if(effect1 != CmdNone)
                 {
                     m->command = effect1;
                     m->param = effectParam1;
-                } else if(effect3 != CMD_NONE)
+                } else if(effect3 != CmdNone)
                 {
                     m->command = effect3;
                     m->param = effectParam3;
@@ -718,18 +718,18 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
         if(tempoChange)
         {
             tempoChange = false;
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_TEMPO, (uint8_t)tempo, false, 0, false, weTryNextRow);
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_SPEED, (uint8_t)speed, false, ChannelIndexInvalid, false, weTryNextRow);
+            pSndFile->TryWriteEffect(nPat, nRow, CmdTempo, (uint8_t)tempo, false, 0, false, weTryNextRow);
+            pSndFile->TryWriteEffect(nPat, nRow, CmdSpeed, (uint8_t)speed, false, ChannelIndexInvalid, false, weTryNextRow);
         }
         // Try to put delay effects somewhere as well
         if(writeDelay & 0xF0)
         {
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0xE0 | (writeDelay >> 4), false, ChannelIndexInvalid, true, weIgnore);
+            pSndFile->TryWriteEffect(nPat, nRow, CmdS3mCmdEx, 0xE0 | (writeDelay >> 4), false, ChannelIndexInvalid, true, weIgnore);
         }
         if(writeDelay & 0x0F)
         {
             const uint8_t param = (writeDelay & 0x0F) * settings.internalTicks / 15;
-            pSndFile->TryWriteEffect(nPat, nRow, CMD_S3MCMDEX, 0x60 | CLAMP(param, 1, 15), false, ChannelIndexInvalid, true, weIgnore);
+            pSndFile->TryWriteEffect(nPat, nRow, CmdS3mCmdEx, 0x60 | CLAMP(param, 1, 15), false, ChannelIndexInvalid, true, weIgnore);
         }
         writeDelay = 0;
     }	// End for all rows
@@ -1007,7 +1007,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
                 // Loop end?
                 if(nPat != modplug::tracker::PatternIndexInvalid && nOrd == loopEnd && (loopStart > 0 || nOrd < Order.GetLength() - 1))
                 {
-                    TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CMD_POSITIONJUMP, (uint8_t)loopStart, false, ChannelIndexInvalid, false, weTryPreviousRow);
+                    TryWriteEffect(nPat, Patterns[nPat].GetNumRows() - 1, CmdPositionJump, (uint8_t)loopStart, false, ChannelIndexInvalid, false, weTryPreviousRow);
                 }
             }
         }

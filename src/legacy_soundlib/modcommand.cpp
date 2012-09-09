@@ -21,22 +21,22 @@ extern uint8_t ImpulseTrackerPortaVolCmd[16];
 void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
 //-------------------------------------------
 {
-    if(m->command != CMD_MODCMDEX) return;
-    m->command = CMD_S3MCMDEX;
+    if(m->command != CmdModCmdEx) return;
+    m->command = CmdS3mCmdEx;
     switch(m->param & 0xF0)
     {
-    case 0x10: m->command = CMD_PORTAMENTOUP; m->param |= 0xF0; break;
-    case 0x20: m->command = CMD_PORTAMENTODOWN; m->param |= 0xF0; break;
+    case 0x10: m->command = CmdPortaUp; m->param |= 0xF0; break;
+    case 0x20: m->command = CmdPortaDown; m->param |= 0xF0; break;
     case 0x30: m->param = (m->param & 0x0F) | 0x10; break;
     case 0x40: m->param = (m->param & 0x03) | 0x30; break;
     case 0x50: m->param = (m->param & 0x0F) | 0x20; break;
     case 0x60: m->param = (m->param & 0x0F) | 0xB0; break;
     case 0x70: m->param = (m->param & 0x03) | 0x40; break;
-    case 0x90: m->command = CMD_RETRIG; m->param = (m->param & 0x0F); break;
-    case 0xA0: if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param = (m->param << 4) | 0x0F; } else m->command = 0; break;
-    case 0xB0: if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param |= 0xF0; } else m->command = 0; break;
-    case 0xC0: if (m->param == 0xC0) { m->command = CMD_NONE; m->note = NoteNoteCut; }        // this does different things in IT and ST3
-    case 0xD0: if (m->param == 0xD0) { m->command = CMD_NONE; }        // dito
+    case 0x90: m->command = CmdRetrig; m->param = (m->param & 0x0F); break;
+    case 0xA0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param = (m->param << 4) | 0x0F; } else m->command = 0; break;
+    case 0xB0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param |= 0xF0; } else m->command = 0; break;
+    case 0xC0: if (m->param == 0xC0) { m->command = CmdNone; m->note = NoteNoteCut; }        // this does different things in IT and ST3
+    case 0xD0: if (m->param == 0xD0) { m->command = CmdNone; }        // dito
                             // rest are the same
     }
 }
@@ -46,8 +46,8 @@ void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
 void module_renderer::S3MSxx2MODExx(modplug::tracker::modevent_t *m)
 //-------------------------------------------
 {
-    if(m->command != CMD_S3MCMDEX) return;
-    m->command = CMD_MODCMDEX;
+    if(m->command != CmdS3mCmdEx) return;
+    m->command = CmdModCmdEx;
     switch(m->param & 0xF0)
     {
     case 0x10: m->param = (m->param & 0x0F) | 0x30; break;
@@ -57,9 +57,9 @@ void module_renderer::S3MSxx2MODExx(modplug::tracker::modevent_t *m)
     case 0x50:
     case 0x60:
     case 0x90:
-    case 0xA0: m->command = CMD_XFINEPORTAUPDOWN; break;
+    case 0xA0: m->command = CmdExtraFinePortaUpDown; break;
     case 0xB0: m->param = (m->param & 0x0F) | 0x60; break;
-    case 0x70: m->command = CMD_NONE;        // No NNA / envelope control in MOD/XM format
+    case 0x70: m->command = CmdNone;        // No NNA / envelope control in MOD/XM format
             // rest are the same
     }
 }
@@ -90,7 +90,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
     //////////////////////////
     // Convert 8-bit Panning
-    if(m->command == CMD_PANNING8)
+    if(m->command == CmdPanning8)
     {
             if(newTypeIsS3M)
             {
@@ -101,7 +101,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                     if(m->param == 0xA4)
                     {
                             // surround remap
-                            m->command = (nNewType & (MOD_TYPE_IT|MOD_TYPE_MPT)) ? CMD_S3MCMDEX : CMD_XFINEPORTAUPDOWN;
+                            m->command = (nNewType & (MOD_TYPE_IT|MOD_TYPE_MPT)) ? CmdS3mCmdEx : CmdExtraFinePortaUpDown;
                             m->param = 0x91;
                     }
                     else
@@ -117,14 +117,14 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             if(m->IsPcNote())
             {
-                    modplug::tracker::cmd_t newcommand = (m->note == NOTE_PC) ? CMD_MIDI : CMD_SMOOTHMIDI;
+                    modplug::tracker::cmd_t newcommand = (m->note == NOTE_PC) ? CmdMidi : CmdSmoothMidi;
                     if(!GetModSpecifications(nNewType).HasCommand(newcommand))
                     {
-                            newcommand = CMD_MIDI;        // assuming that this was CMD_SMOOTHMIDI
+                            newcommand = CmdMidi;        // assuming that this was CMD_SMOOTHMIDI
                     }
                     if(!GetModSpecifications(nNewType).HasCommand(newcommand))
                     {
-                            newcommand = CMD_NONE;
+                            newcommand = CmdNone;
                     }
 
                     m->param = (uint8_t)(min(modplug::tracker::modevent_t::MaxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::MaxColumnValue);
@@ -135,14 +135,14 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             }
 
             // adjust extended envelope control commands
-            if((m->command == CMD_S3MCMDEX) && ((m->param & 0xF0) == 0x70) && ((m->param & 0x0F) > 0x0C))
+            if((m->command == CmdS3mCmdEx) && ((m->param & 0xF0) == 0x70) && ((m->param & 0x0F) > 0x0C))
             {
                     m->param = 0x7C;
             }
 
-            if(m->command == CMD_DELAYCUT)
+            if(m->command == CmdDelayCut)
             {
-                    m->command = CMD_S3MCMDEX; // when converting to MOD/XM, this will be converted to CMD_MODCMDEX later
+                    m->command = CmdS3mCmdEx; // when converting to MOD/XM, this will be converted to CMD_MODCMDEX later
                     m->param = 0xD0 | (m->param >> 4); // preserve delay nibble.
             }
     } // End if(oldTypeIsMPT)
@@ -153,10 +153,10 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             switch(m->command)
             {
-            case CMD_MODCMDEX:
+            case CmdModCmdEx:
                     MODExx2S3MSxx(m);
                     break;
-            case CMD_VOLUME:
+            case CmdVol:
                     // Effect column volume command overrides the volume column in XM.
                     if (m->volcmd == VolCmdNone || m->volcmd == VolCmdVol)
                     {
@@ -166,43 +166,43 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                             m->command = m->param = 0;
                     }
                     break;
-            case CMD_PORTAMENTOUP:
+            case CmdPortaUp:
                     if (m->param > 0xDF) m->param = 0xDF;
                     break;
-            case CMD_PORTAMENTODOWN:
+            case CmdPortaDown:
                     if (m->param > 0xDF) m->param = 0xDF;
                     break;
-            case CMD_XFINEPORTAUPDOWN:
+            case CmdExtraFinePortaUpDown:
                     switch(m->param & 0xF0)
                     {
-                    case 0x10:        m->command = CMD_PORTAMENTOUP; m->param = (m->param & 0x0F) | 0xE0; break;
-                    case 0x20:        m->command = CMD_PORTAMENTODOWN; m->param = (m->param & 0x0F) | 0xE0; break;
+                    case 0x10:        m->command = CmdPortaUp; m->param = (m->param & 0x0F) | 0xE0; break;
+                    case 0x20:        m->command = CmdPortaDown; m->param = (m->param & 0x0F) | 0xE0; break;
                     case 0x50:
                     case 0x60:
                     case 0x70:
                     case 0x90:
                     case 0xA0:
-                            m->command = CMD_S3MCMDEX;
+                            m->command = CmdS3mCmdEx;
                             // surround remap (this is the "official" command)
                             if(nNewType & MOD_TYPE_S3M && m->param == 0x91)
                             {
-                                    m->command = CMD_PANNING8;
+                                    m->command = CmdPanning8;
                                     m->param = 0xA4;
                             }
                             break;
                     }
                     break;
-            case CMD_KEYOFF:
+            case CmdKeyOff:
                     if(m->note == 0)
                     {
                             m->note = (newTypeIsS3M) ? NoteNoteCut : NoteKeyOff;
-                            m->command = CMD_S3MCMDEX;
+                            m->command = CmdS3mCmdEx;
                             if(m->param == 0)
                                     m->instr = 0;
                             m->param = 0xD0 | (m->param & 0x0F);
                     }
                     break;
-            case CMD_PANNINGSLIDE:
+            case CmdPanningSlide:
                     // swap L/R
                     m->param = ((m->param & 0x0F) << 4) | (m->param >> 4);
             default:
@@ -219,7 +219,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             {
                     // convert note cut to EC0
                     m->note = NoteNone;
-                    m->command = CMD_MODCMDEX;
+                    m->command = CmdModCmdEx;
                     m->param = 0xC0;
             } else if(m->note == NoteFade)
             {
@@ -229,74 +229,74 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
             switch(m->command)
             {
-            case CMD_S3MCMDEX:
+            case CmdS3mCmdEx:
                     S3MSxx2MODExx(m);
                     break;
-            case CMD_VOLUMESLIDE:
+            case CmdVolumeSlide:
                     if ((m->param & 0xF0) && ((m->param & 0x0F) == 0x0F))
                     {
-                            m->command = CMD_MODCMDEX;
+                            m->command = CmdModCmdEx;
                             m->param = (m->param >> 4) | 0xA0;
                     } else
                             if ((m->param & 0x0F) && ((m->param & 0xF0) == 0xF0))
                             {
-                                    m->command = CMD_MODCMDEX;
+                                    m->command = CmdModCmdEx;
                                     m->param = (m->param & 0x0F) | 0xB0;
                             }
                             break;
-            case CMD_PORTAMENTOUP:
+            case CmdPortaUp:
                     if (m->param >= 0xF0)
                     {
-                            m->command = CMD_MODCMDEX;
+                            m->command = CmdModCmdEx;
                             m->param = (m->param & 0x0F) | 0x10;
                     } else
                             if (m->param >= 0xE0)
                             {
                                     if(newTypeIsXM)
                                     {
-                                            m->command = CMD_XFINEPORTAUPDOWN;
+                                            m->command = CmdExtraFinePortaUpDown;
                                             m->param = 0x10 | (m->param & 0x0F);
                                     } else
                                     {
-                                            m->command = CMD_MODCMDEX;
+                                            m->command = CmdModCmdEx;
                                             m->param = (((m->param & 0x0F) + 3) >> 2) | 0x10;
                                     }
-                            } else m->command = CMD_PORTAMENTOUP;
+                            } else m->command = CmdPortaUp;
                     break;
-            case CMD_PORTAMENTODOWN:
+            case CmdPortaDown:
                     if (m->param >= 0xF0)
                     {
-                            m->command = CMD_MODCMDEX;
+                            m->command = CmdModCmdEx;
                             m->param = (m->param & 0x0F) | 0x20;
                     } else
                             if (m->param >= 0xE0)
                             {
                                     if(newTypeIsXM)
                                     {
-                                            m->command = CMD_XFINEPORTAUPDOWN;
+                                            m->command = CmdExtraFinePortaUpDown;
                                             m->param = 0x20 | (m->param & 0x0F);
                                     } else
                                     {
-                                            m->command = CMD_MODCMDEX;
+                                            m->command = CmdModCmdEx;
                                             m->param = (((m->param & 0x0F) + 3) >> 2) | 0x20;
                                     }
-                            } else m->command = CMD_PORTAMENTODOWN;
+                            } else m->command = CmdPortaDown;
                     break;
-            case CMD_SPEED:
+            case CmdSpeed:
                     {
                             m->param = min(m->param, (nNewType == MOD_TYPE_XM) ? 0x1F : 0x20);
                     }
                     break;
-            case CMD_TEMPO:
-                    if(m->param < 0x20) m->command = CMD_NONE; // no tempo slides
+            case CmdTempo:
+                    if(m->param < 0x20) m->command = CmdNone; // no tempo slides
                     break;
-            case CMD_PANNINGSLIDE:
+            case CmdPanningSlide:
                     // swap L/R
                     m->param = ((m->param & 0x0F) << 4) | (m->param >> 4);
                     // remove fine slides
                     if((m->param > 0xF0) || ((m->param & 0x0F) == 0x0F && m->param != 0x0F))
-                            m->command = CMD_NONE;
-            case CMD_RETRIG:
+                            m->command = CmdNone;
+            case CmdRetrig:
                     // Retrig: Q0y doesn't change volume in IT/S3M, but R0y in XM takes the last x parameter
                     if(m->param != 0 && (m->param & 0xF0) == 0)
                     {
@@ -318,26 +318,26 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
             switch(m->command)
             {
-            case CMD_S3MCMDEX:
+            case CmdS3mCmdEx:
                     switch(m->param & 0xF0)
                     {
-                    case 0x70: m->command = CMD_NONE; break;        // No NNA / envelope control in S3M format
+                    case 0x70: m->command = CmdNone; break;        // No NNA / envelope control in S3M format
                     case 0x90:
                             if(m->param == 0x91)
                             {
                                     // surround remap (this is the "official" command)
-                                    m->command = CMD_PANNING8;
+                                    m->command = CmdPanning8;
                                     m->param = 0xA4;
                             } else if(m->param == 0x90)
                             {
-                                    m->command = CMD_PANNING8;
+                                    m->command = CmdPanning8;
                                     m->param = 0x40;
                             }
                             break;
                     }
                     break;
-            case CMD_SMOOTHMIDI:
-                    m->command = CMD_MIDI;
+            case CmdSmoothMidi:
+                    m->command = CmdMidi;
                     break;
             default:
                     break;
@@ -350,7 +350,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             switch(m->command)
             {
-            case CMD_SPEED:
+            case CmdSpeed:
                     m->param = min(m->param, 0x1F);
                     break;
             }
@@ -358,7 +358,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             switch(m->command)
             {
-            case CMD_TEMPO:
+            case CmdTempo:
                     m->param = max(m->param, 0x21);
                     break;
             }
@@ -371,16 +371,16 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             switch(m->command)
             {
-            case CMD_TONEPORTAVOL: // lacks memory -> 500 is the same as 300
-                    if(m->param == 0x00) m->command = CMD_TONEPORTAMENTO;
+            case CmdPortamentoVol: // lacks memory -> 500 is the same as 300
+                    if(m->param == 0x00) m->command = CmdPorta;
                     break;
-            case CMD_VIBRATOVOL: // lacks memory -> 600 is the same as 400
-                    if(m->param == 0x00) m->command = CMD_VIBRATO;
+            case CmdVibratoVol: // lacks memory -> 600 is the same as 400
+                    if(m->param == 0x00) m->command = CmdVibrato;
                     break;
 
-            case CMD_MODCMDEX: // This would turn into "Set Active Macro", so let's better remove it
-            case CMD_S3MCMDEX:
-                    if((m->param & 0xF0) == 0xF0) m->command = CMD_NONE;
+            case CmdModCmdEx: // This would turn into "Set Active Macro", so let's better remove it
+            case CmdS3mCmdEx:
+                    if((m->param & 0xF0) == 0xF0) m->command = CmdNone;
                     break;
             }
     } // End if (oldTypeIsMOD && newTypeIsXM)
@@ -394,12 +394,12 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             {
                     m->note = NoteNone;
                     // no effect present, so just convert note off to volume 0
-                    if(m->command == CMD_NONE)
+                    if(m->command == CmdNone)
                     {
-                            m->command = CMD_VOLUME;
+                            m->command = CmdVol;
                             m->param = 0;
                             // EDx effect present, so convert it to ECx
-                    } else if((m->command == CMD_MODCMDEX) && ((m->param & 0xF0) == 0xD0))
+                    } else if((m->command == CmdModCmdEx) && ((m->param & 0xF0) == 0xD0))
                     {
                             m->param = 0xC0 | (m->param & 0x0F);
                     }
@@ -407,64 +407,64 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
             if(m->command) switch(m->command)
             {
-                    case CMD_RETRIG: // MOD only has E9x
-                            m->command = CMD_MODCMDEX;
+                    case CmdRetrig: // MOD only has E9x
+                            m->command = CmdModCmdEx;
                             m->param = 0x90 | (m->param & 0x0F);
                             break;
-                    case CMD_MODCMDEX: // This would turn into "Invert Loop", so let's better remove it
-                            if((m->param & 0xF0) == 0xF0) m->command = CMD_NONE;
+                    case CmdModCmdEx: // This would turn into "Invert Loop", so let's better remove it
+                            if((m->param & 0xF0) == 0xF0) m->command = CmdNone;
                             break;
             }
 
             else switch(m->volcmd)
             {
                     case VolCmdVol:
-                            m->command = CMD_VOLUME;
+                            m->command = CmdVol;
                             m->param = m->vol;
                             break;
                     case VolCmdPan:
-                            m->command = CMD_PANNING8;
+                            m->command = CmdPanning8;
                             m->param = CLAMP(m->vol << 2, 0, 0xFF);
                             break;
                     case VolCmdSlideDown:
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             m->param = m->vol;
                             break;
                     case VolCmdSlideUp:
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             m->param = m->vol << 4;
                             break;
                     case VolCmdFineDown:
-                            m->command = CMD_MODCMDEX;
+                            m->command = CmdModCmdEx;
                             m->param = 0xB0 | m->vol;
                             break;
                     case VolCmdFineUp:
-                            m->command = CMD_MODCMDEX;
+                            m->command = CmdModCmdEx;
                             m->param = 0xA0 | m->vol;
                             break;
                     case VolCmdPortamentoDown:
-                            m->command = CMD_PORTAMENTODOWN;
+                            m->command = CmdPortaDown;
                             m->param = m->vol << 2;
                             break;
                     case VolCmdPortamentoUp:
-                            m->command = CMD_PORTAMENTOUP;
+                            m->command = CmdPortaUp;
                             m->param = m->vol << 2;
                             break;
                     case VolCmdPortamento:
-                            m->command = CMD_TONEPORTAMENTO;
+                            m->command = CmdPorta;
                             m->param = m->vol << 2;
                             break;
                     case VolCmdVibratoDepth:
-                            m->command = CMD_VIBRATO;
+                            m->command = CmdVibrato;
                             m->param = m->vol;
                             break;
                     case VolCmdVibratoSpeed:
-                            m->command = CMD_VIBRATO;
+                            m->command = CmdVibrato;
                             m->param = m->vol << 4;
                             break;
                             // OpenMPT-specific commands
                     case VolCmdOffset:
-                            m->command = CMD_OFFSET;
+                            m->command = CmdOffset;
                             m->param = m->vol << 3;
                             break;
                     default:
@@ -480,63 +480,63 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             if(!m->command) switch(m->volcmd)
             {
                     case VolCmdSlideDown:
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             m->param = m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdSlideUp:
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             m->param = m->vol << 4;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdFineDown:
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             m->param = 0xF0 | m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdFineUp:
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             m->param = (m->vol << 4) | 0x0F;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPortamentoDown:
-                            m->command = CMD_PORTAMENTODOWN;
+                            m->command = CmdPortaDown;
                             m->param = m->vol << 2;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPortamentoUp:
-                            m->command = CMD_PORTAMENTOUP;
+                            m->command = CmdPortaUp;
                             m->param = m->vol << 2;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPortamento:
-                            m->command = CMD_TONEPORTAMENTO;
+                            m->command = CmdPorta;
                             m->param = m->vol << 2;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdVibratoDepth:
-                            m->command = CMD_VIBRATO;
+                            m->command = CmdVibrato;
                             m->param = m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdVibratoSpeed:
-                            m->command = CMD_VIBRATO;
+                            m->command = CmdVibrato;
                             m->param = m->vol << 4;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPanSlideLeft:
-                            m->command = CMD_PANNINGSLIDE;
+                            m->command = CmdPanningSlide;
                             m->param = m->vol << 4;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPanSlideRight:
-                            m->command = CMD_PANNINGSLIDE;
+                            m->command = CmdPanningSlide;
                             m->param = m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                             // OpenMPT-specific commands
                     case VolCmdOffset:
-                            m->command = CMD_OFFSET;
+                            m->command = CmdOffset;
                             m->param = m->vol << 3;
                             m->volcmd = VolCmdNone;
                             break;
@@ -550,7 +550,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     if (newTypeIsXM)
     {
             // remove EDx if no note is next to it, or it will retrigger the note in FT2 mode
-            if(m->command == CMD_MODCMDEX && (m->param & 0xF0) == 0xD0 && m->note == NoteNone)
+            if(m->command == CmdModCmdEx && (m->param & 0xF0) == 0xD0 && m->note == NoteNone)
             {
                     m->command = m->param = 0;
             }
@@ -558,18 +558,18 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             if(!m->command) switch(m->volcmd)
             {
                     case VolCmdPortamentoDown:
-                            m->command = CMD_PORTAMENTODOWN;
+                            m->command = CmdPortaDown;
                             m->param = m->vol << 2;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPortamentoUp:
-                            m->command = CMD_PORTAMENTOUP;
+                            m->command = CmdPortaUp;
                             m->param = m->vol << 2;
                             m->volcmd = VolCmdNone;
                             break;
                             // OpenMPT-specific commands
                     case VolCmdOffset:
-                            m->command = CMD_OFFSET;
+                            m->command = CmdOffset;
                             m->param = m->vol << 3;
                             m->volcmd = VolCmdNone;
                             break;
@@ -597,17 +597,17 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                             m->vol = min(m->vol, 9);
                             break;
                     case VolCmdPanSlideLeft:
-                            m->command = CMD_PANNINGSLIDE;
+                            m->command = CmdPanningSlide;
                             m->param = m->vol << 4;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdPanSlideRight:
-                            m->command = CMD_PANNINGSLIDE;
+                            m->command = CmdPanningSlide;
                             m->param = m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdVibratoSpeed:
-                            m->command = CMD_VIBRATO;
+                            m->command = CmdVibrato;
                             m->param = m->vol << 4;
                             m->volcmd = VolCmdNone;
                             break;
@@ -621,7 +621,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
 
     // ensure the commands really exist in this format
     if(module_renderer::GetModSpecifications(nNewType).HasCommand(m->command) == false)
-            m->command = CMD_NONE;
+            m->command = CmdNone;
     if(module_renderer::GetModSpecifications(nNewType).HasVolCommand(m->volcmd) == false)
             m->volcmd = VolCmdNone;
 
@@ -635,43 +635,43 @@ uint16_t module_renderer::GetEffectWeight(modplug::tracker::cmd_t cmd)
 {
     switch(cmd)
     {
-    case CMD_PATTERNBREAK    : return 288;
-    case CMD_POSITIONJUMP    : return 280;
-    case CMD_SPEED           : return 272;
-    case CMD_TEMPO           : return 264;
-    case CMD_GLOBALVOLUME    : return 256;
-    case CMD_GLOBALVOLSLIDE  : return 248;
-    case CMD_CHANNELVOLUME   : return 240;
-    case CMD_CHANNELVOLSLIDE : return 232;
-    case CMD_TONEPORTAVOL    : return 224;
-    case CMD_TONEPORTAMENTO  : return 216;
-    case CMD_ARPEGGIO        : return 208;
-    case CMD_RETRIG          : return 200;
-    case CMD_TREMOR          : return 192;
-    case CMD_OFFSET          : return 184;
-    case CMD_VOLUME          : return 176;
-    case CMD_VIBRATOVOL      : return 168;
-    case CMD_VOLUMESLIDE     : return 160;
-    case CMD_PORTAMENTODOWN  : return 152;
-    case CMD_PORTAMENTOUP    : return 133;
-    case CMD_NOTESLIDEDOWN   : return 136;
-    case CMD_NOTESLIDEUP     : return 128;
-    case CMD_PANNING8        : return 120;
-    case CMD_PANNINGSLIDE    : return 112;
-    case CMD_SMOOTHMIDI      : return 104;
-    case CMD_MIDI            : return  96;
-    case CMD_DELAYCUT        : return  88;
-    case CMD_MODCMDEX        : return  80;
-    case CMD_S3MCMDEX        : return  72;
-    case CMD_PANBRELLO       : return  64;
-    case CMD_XFINEPORTAUPDOWN: return  56;
-    case CMD_VIBRATO         : return  48;
-    case CMD_FINEVIBRATO     : return  40;
-    case CMD_TREMOLO         : return  32;
-    case CMD_KEYOFF          : return  24;
-    case CMD_SETENVPOSITION  : return  16;
-    case CMD_XPARAM          : return   8;
-    case CMD_NONE            :
+    case CmdPatternBreak    : return 288;
+    case CmdPositionJump    : return 280;
+    case CmdSpeed           : return 272;
+    case CmdTempo           : return 264;
+    case CmdGlobalVol    : return 256;
+    case CmdGlobalVolSlide  : return 248;
+    case CmdChannelVol   : return 240;
+    case CmdChannelVolSlide : return 232;
+    case CmdPortamentoVol    : return 224;
+    case CmdPorta  : return 216;
+    case CmdArpeggio        : return 208;
+    case CmdRetrig          : return 200;
+    case CmdTremor          : return 192;
+    case CmdOffset          : return 184;
+    case CmdVol          : return 176;
+    case CmdVibratoVol      : return 168;
+    case CmdVolumeSlide     : return 160;
+    case CmdPortaDown  : return 152;
+    case CmdPortaUp    : return 133;
+    case CmdNoteSlideDown   : return 136;
+    case CmdNoteSlideUp     : return 128;
+    case CmdPanning8        : return 120;
+    case CmdPanningSlide    : return 112;
+    case CmdSmoothMidi      : return 104;
+    case CmdMidi            : return  96;
+    case CmdDelayCut        : return  88;
+    case CmdModCmdEx        : return  80;
+    case CmdS3mCmdEx        : return  72;
+    case CmdPanbrello       : return  64;
+    case CmdExtraFinePortaUpDown: return  56;
+    case CmdVibrato         : return  48;
+    case CmdFineVibrato     : return  40;
+    case CmdTremolo         : return  32;
+    case CmdKeyOff          : return  24;
+    case CmdSetEnvelopePosition  : return  16;
+    case CmdExtendedParameter          : return   8;
+    case CmdNone            :
     default                  : return   0;
     }
 }
@@ -725,7 +725,7 @@ bool module_renderer::TryWriteEffect(modplug::tracker::patternindex_t nPat, modp
     for(modplug::tracker::chnindex_t i = nScanChnMin; i <= nScanChnMax; i++)
     {
             m = p + nRow * m_nChannels + i;
-            if(!bIsVolumeEffect && m->command == CMD_NONE)
+            if(!bIsVolumeEffect && m->command == CmdNone)
             {
                     m->command = nEffect;
                     m->param = nParam;
@@ -751,14 +751,14 @@ bool module_renderer::TryWriteEffect(modplug::tracker::patternindex_t nPat, modp
                             m = p + nRow * m_nChannels + i;
                             switch(m->command)
                             {
-                            case CMD_VOLUME:
+                            case CmdVol:
                                     m->volcmd = VolCmdVol;
                                     m->vol = m->param;
                                     m->command = nEffect;
                                     m->param = nParam;
                                     return true;
 
-                            case CMD_PANNING8:
+                            case CmdPanning8:
                                     if(m_nType & MOD_TYPE_S3M && nParam > 0x80)
                                             break;
 
@@ -781,46 +781,46 @@ bool module_renderer::TryWriteEffect(modplug::tracker::patternindex_t nPat, modp
             }
 
             // Let's try it again by writing into the "other" effect column.
-            uint8_t nNewEffect = CMD_NONE;
+            uint8_t nNewEffect = CmdNone;
             if(bIsVolumeEffect)
             {
                     switch(nEffect)
                     {
                     case VolCmdPan:
-                            nNewEffect = CMD_PANNING8;
+                            nNewEffect = CmdPanning8;
                             if(m_nType & MOD_TYPE_S3M)
                                     nParam <<= 1;
                             else
                                     nParam = min(nParam << 2, 0xFF);
                             break;
                     case VolCmdVol:
-                            nNewEffect = CMD_VOLUME;
+                            nNewEffect = CmdVol;
                             break;
                     }
             } else
             {
                     switch(nEffect)
                     {
-                    case CMD_PANNING8:
+                    case CmdPanning8:
                             nNewEffect = VolCmdPan;
                             if(m_nType & MOD_TYPE_S3M)
                             {
                                     if(nParam <= 0x80)
                                             nParam >>= 1;
                                     else
-                                            nNewEffect = CMD_NONE;
+                                            nNewEffect = CmdNone;
                             }
                             else
                             {
                                     nParam = (nParam >> 2) + 1;
                             }
                             break;
-                    case CMD_VOLUME:
-                            nNewEffect = CMD_VOLUME;
+                    case CmdVol:
+                            nNewEffect = CmdVol;
                             break;
                     }
             }
-            if(nNewEffect != CMD_NONE)
+            if(nNewEffect != CmdNone)
             {
                     if(TryWriteEffect(nPat, nRow, nNewEffect, nParam, !bIsVolumeEffect, nChn, bAllowMultipleEffects, allowRowChange, false) == true) return true;
             }
@@ -849,13 +849,13 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
 {
     switch (*e)
     {
-    case CMD_NONE:
+    case CmdNone:
             return true;
-    case CMD_VOLUME:
+    case CmdVol:
             *e = VolCmdVol;
             *p = min(*p, 64);
             break;
-    case CMD_PORTAMENTOUP:
+    case CmdPortaUp:
             // if not force, reject when dividing causes loss of data in LSB, or if the final value is too
             // large to fit. (volume column Ex/Fx are four times stronger than effect column)
             if (!bForce && ((*p & 3) || *p > 9 * 4 + 3))
@@ -863,13 +863,13 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             *p = min(*p / 4, 9);
             *e = VolCmdPortamentoUp;
             break;
-    case CMD_PORTAMENTODOWN:
+    case CmdPortaDown:
             if (!bForce && ((*p & 3) || *p > 9 * 4 + 3))
                     return false;
             *p = min(*p / 4, 9);
             *e = VolCmdPortamentoDown;
             break;
-    case CMD_TONEPORTAMENTO:
+    case CmdPorta:
             if (*p >= 0xF0)
             {
                     // hack for people who can't type F twice :)
@@ -889,25 +889,25 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
                     }
             }
             return false;
-    case CMD_VIBRATO:
+    case CmdVibrato:
             if (bForce)
                     *p = min(*p, 9);
             else if (*p > 9)
                     return false;
             *e = VolCmdVibratoDepth;
             break;
-    case CMD_FINEVIBRATO:
+    case CmdFineVibrato:
             if (bForce)
                     *p = 0;
             else if (*p)
                     return false;
             *e = VolCmdVibratoDepth;
             break;
-    case CMD_PANNING8:
+    case CmdPanning8:
             *p = min(64, *p * 64 / 255);
             *e = VolCmdPan;
             break;
-    case CMD_VOLUMESLIDE:
+    case CmdVolumeSlide:
             if (*p == 0)
                     return false;
             if ((*p & 0xF) == 0)        // Dx0 / Cx
@@ -949,7 +949,7 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
                     return false;
             }
             break;
-    case CMD_S3MCMDEX:
+    case CmdS3mCmdEx:
             switch (*p >> 4)
             {
             case 8:

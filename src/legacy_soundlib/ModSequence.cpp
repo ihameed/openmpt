@@ -452,7 +452,7 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
                                             modplug::tracker::modevent_t *m = m_pSndFile->Patterns[copyPat];
                                             for (UINT len = m_pSndFile->Patterns[copyPat].GetNumRows() * m_pSndFile->m_nChannels; len; m++, len--)
                                             {
-                                                    if(m->command == CMD_POSITIONJUMP && m->param >= startOrd)
+                                                    if(m->command == CmdPositionJump && m->param >= startOrd)
                                                     {
                                                             m->param = static_cast<uint8_t>(m->param - startOrd);
                                                     }
@@ -516,7 +516,7 @@ bool ModSequenceSet::MergeSequences()
                     modplug::tracker::modevent_t *m = m_pSndFile->Patterns[nPat];
                     for (UINT len = 0; len < m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels; m++, len++)
                     {
-                            if(m->command == CMD_POSITIONJUMP)
+                            if(m->command == CmdPositionJump)
                             {
                                     if(patternsFixed[nPat] != modplug::tracker::SequenceIndexInvalid && patternsFixed[nPat] != removedSequences)
                                     {

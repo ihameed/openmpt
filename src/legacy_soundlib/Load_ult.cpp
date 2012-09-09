@@ -46,22 +46,22 @@ convert them. */
 
 static const uint8_t ult_efftrans[] =
 {
-    CMD_ARPEGGIO,
-    CMD_PORTAMENTOUP,
-    CMD_PORTAMENTODOWN,
-    CMD_TONEPORTAMENTO,
-    CMD_VIBRATO,
-    CMD_NONE,
-    CMD_NONE,
-    CMD_TREMOLO,
-    CMD_NONE,
-    CMD_OFFSET,
-    CMD_VOLUMESLIDE,
-    CMD_PANNING8,
-    CMD_VOLUME,
-    CMD_PATTERNBREAK,
-    CMD_NONE, // extended effects, processed separately
-    CMD_SPEED,
+    CmdArpeggio,
+    CmdPortaUp,
+    CmdPortaDown,
+    CmdPorta,
+    CmdVibrato,
+    CmdNone,
+    CmdNone,
+    CmdTremolo,
+    CmdNone,
+    CmdOffset,
+    CmdVolumeSlide,
+    CmdPanning8,
+    CmdVol,
+    CmdPatternBreak,
+    CmdNone, // extended effects, processed separately
+    CmdSpeed,
 };
 
 static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
@@ -76,13 +76,13 @@ static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
     {
     case 0x00:
             if (!p)
-                    *pe = CMD_NONE;
+                    *pe = CmdNone;
             break;
     case 0x05:
             // play backwards
             if((p & 0x0F) == 0x02)
             {
-                    *pe = CMD_S3MCMDEX;
+                    *pe = CmdS3mCmdEx;
                     p = 0x9F;
             }
             break;
@@ -104,37 +104,37 @@ static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
             switch (p >> 4)
             {
             case 0x01:
-                    *pe = CMD_PORTAMENTOUP;
+                    *pe = CmdPortaUp;
                     p = 0xF0 | (p & 0x0F);
                     break;
             case 0x02:
-                    *pe = CMD_PORTAMENTODOWN;
+                    *pe = CmdPortaDown;
                     p = 0xF0 | (p & 0x0F);
                     break;
             case 0x08:
-                    *pe = CMD_S3MCMDEX;
+                    *pe = CmdS3mCmdEx;
                     p = 0x60 | (p & 0x0F);
                     break;
             case 0x09:
-                    *pe = CMD_RETRIG;
+                    *pe = CmdRetrig;
                     p &= 0x0F;
                     break;
             case 0x0A:
-                    *pe = CMD_VOLUMESLIDE;
+                    *pe = CmdVolumeSlide;
                     p = ((p & 0x0F) << 4) | 0x0F;
                     break;
             case 0x0B:
-                    *pe = CMD_VOLUMESLIDE;
+                    *pe = CmdVolumeSlide;
                     p = 0xF0 | (p & 0x0F);
                     break;
             case 0x0C: case 0x0D:
-                    *pe = CMD_S3MCMDEX;
+                    *pe = CmdS3mCmdEx;
                     break;
             }
             break;
     case 0x0F:
             if (p > 0x2F)
-                    *pe = CMD_TEMPO;
+                    *pe = CmdTempo;
             break;
     }
 
@@ -171,25 +171,25 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
     TranslateULTCommands(&cmd2, &param2);
 
     // sample offset -- this is even more special than digitrakker's
-    if(cmd1 == CMD_OFFSET && cmd2 == CMD_OFFSET)
+    if(cmd1 == CmdOffset && cmd2 == CmdOffset)
     {
             uint32_t off = ((param1 << 8) | param2) >> 6;
-            cmd1 = CMD_NONE;
+            cmd1 = CmdNone;
             param1 = (uint8_t)min(off, 0xFF);
-    } else if(cmd1 == CMD_OFFSET)
+    } else if(cmd1 == CmdOffset)
     {
             uint32_t off = param1 * 4;
             param1 = (uint8_t)min(off, 0xFF);
-    } else if(cmd2 == CMD_OFFSET)
+    } else if(cmd2 == CmdOffset)
     {
             uint32_t off = param2 * 4;
             param2 = (uint8_t)min(off, 0xFF);
     } else if(cmd1 == cmd2)
     {
             // don't try to figure out how ultratracker does this, it's quite random
-            cmd2 = CMD_NONE;
+            cmd2 = CmdNone;
     }
-    if (cmd2 == CMD_VOLUME || (cmd2 == CMD_NONE && cmd1 != CMD_VOLUME))
+    if (cmd2 == CmdVol || (cmd2 == CmdNone && cmd1 != CmdVol))
     {
             // swap commands
             std::swap(cmd1, cmd2);
@@ -216,7 +216,7 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
                     std::swap(cmd1, cmd2);
                     std::swap(param1, param2);
             }
-            cmd1 = CMD_NONE;
+            cmd1 = CmdNone;
     }
     if (!cmd1)
             param1 = 0;
@@ -253,10 +253,10 @@ struct PostFixUltCommands
             // UltraTracker will slide until the destination note is reached or 300 is encountered.
 
             // Stop porta?
-            if(m.command == CMD_TONEPORTAMENTO && m.param == 0)
+            if(m.command == CmdPorta && m.param == 0)
             {
                     isPortaActive[curChannel] = false;
-                    m.command = CMD_NONE;
+                    m.command = CmdNone;
             }
             if(m.volcmd == VolCmdPortamento && m.vol == 0)
             {
@@ -267,32 +267,32 @@ struct PostFixUltCommands
             // Apply porta?
             if(m.note == NoteNone && isPortaActive[curChannel])
             {
-                    if(m.command == CMD_NONE && m.vol != VolCmdPortamento)
+                    if(m.command == CmdNone && m.vol != VolCmdPortamento)
                     {
-                            m.command = CMD_TONEPORTAMENTO;
+                            m.command = CmdPorta;
                             m.param = 0;
-                    } else if(m.volcmd == VolCmdNone && m.command != CMD_TONEPORTAMENTO)
+                    } else if(m.volcmd == VolCmdNone && m.command != CmdPorta)
                     {
                             m.volcmd = VolCmdPortamento;
                             m.vol = 0;
                     }
             } else        // new note -> stop porta (or initialize again)
             {
-                    isPortaActive[curChannel] = (m.command == CMD_TONEPORTAMENTO || m.volcmd == VolCmdPortamento);
+                    isPortaActive[curChannel] = (m.command == CmdPorta || m.volcmd == VolCmdPortamento);
             }
 
             // attempt to fix F00 (reset to tempo 125, speed 6)
-            if(writeT125 && m.command == CMD_NONE)
+            if(writeT125 && m.command == CmdNone)
             {
-                    m.command = CMD_TEMPO;
+                    m.command = CmdTempo;
                     m.param = 125;
             }
-            if(m.command == CMD_SPEED && m.param == 0)
+            if(m.command == CmdSpeed && m.param == 0)
             {
                     m.param = 6;
                     writeT125 = true;
             }
-            if(m.command == CMD_TEMPO)        // don't try to fix this anymore if the tempo has already changed.
+            if(m.command == CmdTempo)        // don't try to fix this anymore if the tempo has already changed.
             {
                     writeT125 = false;
             }

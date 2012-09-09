@@ -102,38 +102,38 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             switch(command)
             {
             // 0x01: Set Speed
-            case 0x01:	command = CMD_SPEED; break;
+            case 0x01:	command = CmdSpeed; break;
             // 0x02: Volume Slide
             // 0x0A: Tone Porta + Vol Slide
             // 0x0B: Vibrato + Vol Slide
-            case 0x02:	command = CMD_VOLUMESLIDE;
-            case 0x0A:	if (command == 0x0A) command = CMD_TONEPORTAVOL;
-            case 0x0B:	if (command == 0x0B) command = CMD_VIBRATOVOL;
+            case 0x02:	command = CmdVolumeSlide;
+            case 0x0A:	if (command == 0x0A) command = CmdPortamentoVol;
+            case 0x0B:	if (command == 0x0B) command = CmdVibratoVol;
                         if (param & 0x80) param = (-(signed char)param)&0x0F;
                         else param = (param&0x0F)<<4;
                         break;
             // 0x04: Porta Up/Down
-            case 0x04:      if (param & 0x80) { command = CMD_PORTAMENTOUP; param = (-(signed char)param)&0x7F; }
-                            else { command = CMD_PORTAMENTODOWN; }
+            case 0x04:      if (param & 0x80) { command = CmdPortaUp; param = (-(signed char)param)&0x7F; }
+                            else { command = CmdPortaDown; }
                             break;
             // 0x06: Tone Portamento
-            case 0x06:	command = CMD_TONEPORTAMENTO; break;
+            case 0x06:	command = CmdPorta; break;
             // 0x07: Tremor
-            case 0x07:	command = CMD_TREMOR; break;
+            case 0x07:	command = CmdTremor; break;
             // 0x08: Arpeggio
-            case 0x08:	command = CMD_ARPEGGIO; break;
+            case 0x08:	command = CmdArpeggio; break;
             // 0x09: Vibrato
-            case 0x09:	command = CMD_VIBRATO; break;
+            case 0x09:	command = CmdVibrato; break;
             // 0x0C: Pattern Break
-            case 0x0C:	command = CMD_PATTERNBREAK; break;
+            case 0x0C:	command = CmdPatternBreak; break;
             // 0x0D: Position Jump
-            case 0x0D:	command = CMD_POSITIONJUMP; break;
+            case 0x0D:	command = CmdPositionJump; break;
             // 0x0F: Retrig
-            case 0x0F:	command = CMD_RETRIG; break;
+            case 0x0F:	command = CmdRetrig; break;
             // 0x10: Offset
-            case 0x10:	command = CMD_OFFSET; break;
+            case 0x10:	command = CmdOffset; break;
             // 0x11: Fine Volume Slide
-            case 0x11:	if (param) { command = CMD_VOLUMESLIDE;
+            case 0x11:	if (param) { command = CmdVolumeSlide;
                             if (param & 0x80) param = 0xF0|((-(signed char)param)&0x0F);
                             else param = 0x0F|((param&0x0F)<<4);
                         } else command = 0; break;
@@ -141,20 +141,20 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             // 0x16: Extra Fine Portamento
             case 0x12:
             case 0x16:	if (param) { int mask = (command == 0x16) ? 0xE0 : 0xF0;
-                            command = (param & 0x80) ? CMD_PORTAMENTOUP : CMD_PORTAMENTODOWN;
+                            command = (param & 0x80) ? CmdPortaUp : CmdPortaDown;
                             if (param & 0x80) param = mask|((-(signed char)param)&0x0F);
                             else param |= mask;
                         } else command = 0; break;
             // 0x13: Note Delay
-            case 0x13:	command = CMD_S3MCMDEX; param = 0xD0|(param & 0x0F); break;
+            case 0x13:	command = CmdS3mCmdEx; param = 0xD0|(param & 0x0F); break;
             // 0x14: Note Cut
-            case 0x14:	command = CMD_S3MCMDEX; param = 0xC0|(param & 0x0F); break;
+            case 0x14:	command = CmdS3mCmdEx; param = 0xC0|(param & 0x0F); break;
             // 0x15: Set Tempo
-            case 0x15:	command = CMD_TEMPO; break;
+            case 0x15:	command = CmdTempo; break;
             // 0x17: Panning
             case 0x17:	param = (param + 64) & 0x7F;
                         if (m->command) { if (!m->volcmd) { m->volcmd = VolCmdPan;  m->vol = param >> 1; } command = 0; }
-                        else { command = CMD_PANNING8; }
+                        else { command = CmdPanning8; }
                         break;
             // Unknown effects
             default:	command = param = 0;

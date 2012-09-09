@@ -592,151 +592,151 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                     {
                     // Volslides
                     case 0x01: // fine volslide up
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         if (bNewFormat) param = (param << 4) | 0x0F;
                         else param = ((param & 0x1E) << 3) | 0x0F;
                         break;
                     case 0x02: // volslide up
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         if (bNewFormat) param = 0xF0 & (param << 4);
                         else param = 0xF0 & (param << 3);
                         break;
                     case 0x03: // fine volslide down
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         if (bNewFormat) param |= 0xF0;
                         else param = 0xF0 | (param >> 1);
                         break;
                     case 0x04: // volslide down
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         if (bNewFormat) param &= 0x0F;
                         else if(param < 2) param |= 0xF0; else param = (param >> 1) & 0x0F;
                         break;
 
                     // Portamento
                     case 0x0B: // fine portamento up
-                        command = CMD_PORTAMENTOUP;
+                        command = CmdPortaUp;
                         param = 0xF0 | convert_psm_porta(param, bNewFormat);
                         break;
                     case 0x0C: // portamento up
-                        command = CMD_PORTAMENTOUP;
+                        command = CmdPortaUp;
                         param = convert_psm_porta(param, bNewFormat);
                         break;
                     case 0x0D: // fine portamento down
-                        command = CMD_PORTAMENTODOWN;
+                        command = CmdPortaDown;
                         param = 0xF0 | convert_psm_porta(param, bNewFormat);
                         break;
                     case 0x0E: // portamento down
-                        command = CMD_PORTAMENTODOWN;
+                        command = CmdPortaDown;
                         param = convert_psm_porta(param, bNewFormat);
                         break;
                     case 0x0F: // tone portamento
-                        command = CMD_TONEPORTAMENTO;
+                        command = CmdPorta;
                         if(!bNewFormat) param >>= 2;
                         break;
                     case 0x11: // glissando control
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0x10 | (param & 0x01);
                         break;
                     case 0x10: // tone portamento + volslide up
-                        command = CMD_TONEPORTAVOL;
+                        command = CmdPortamentoVol;
                         param = param & 0xF0;
                         break;
                     case 0x12: // tone portamento + volslide down
-                        command = CMD_TONEPORTAVOL;
+                        command = CmdPortamentoVol;
                         param = (param >> 4) & 0x0F;
                         break;
 
                     // Vibrato
                     case 0x15: // vibrato
-                        command = CMD_VIBRATO;
+                        command = CmdVibrato;
                         break;
                     case 0x16: // vibrato waveform
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0x30 | (param & 0x0F);
                         break;
                     case 0x17: // vibrato + volslide up
-                        command = CMD_VIBRATOVOL;
+                        command = CmdVibratoVol;
                         param = 0xF0 | param;
                         break;
                     case 0x18: // vibrato + volslide down
-                        command = CMD_VIBRATOVOL;
+                        command = CmdVibratoVol;
                         break;
 
                     // Tremolo
                     case 0x1F: // tremolo
-                        command = CMD_TREMOLO;
+                        command = CmdTremolo;
                         break;
                     case 0x20: // tremolo waveform
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0x40 | (param & 0x0F);
                         break;
 
                     // Sample commands
                     case 0x29: // 3-byte offset - we only support the middle byte.
                         if(dwRowOffset + 4 > dwMemLength) return false;
-                        command = CMD_OFFSET;
+                        command = CmdOffset;
                         param = lpStream[dwRowOffset + 2];
                         dwRowOffset += 2;
                         break;
                     case 0x2A: // retrigger
-                        command = CMD_RETRIG;
+                        command = CmdRetrig;
                         break;
                     case 0x2B: // note cut
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0xC0 | (param & 0x0F);
                         break;
                     case 0x2C: // note delay
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0xD0 | (param & 0x0F);
                         break;
 
                     // Position change
                     case 0x33: // position jump
-                        command = CMD_POSITIONJUMP;
+                        command = CmdPositionJump;
                         param >>= 1;
                         dwRowOffset += 1;
                         break;
                     case 0x34: // pattern break
-                        command = CMD_PATTERNBREAK;
+                        command = CmdPatternBreak;
                         param >>= 1;
                         break;
                     case 0x35: // loop pattern
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0xB0 | (param & 0x0F);
                         break;
                     case 0x36: // pattern delay
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0xE0 | (param & 0x0F);
                         break;
 
                     // speed change
                     case 0x3D: // set speed
-                        command = CMD_SPEED;
+                        command = CmdSpeed;
                         break;
                     case 0x3E: // set tempo
-                        command = CMD_TEMPO;
+                        command = CmdTempo;
                         break;
 
                     // misc commands
                     case 0x47: // arpeggio
-                        command = CMD_ARPEGGIO;
+                        command = CmdArpeggio;
                         break;
                     case 0x48: // set finetune
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0x20 | (param & 0x0F);
                         break;
                     case 0x49: // set balance
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param = 0x80 | (param & 0x0F);
                         break;
 
-                    case CMD_MODCMDEX:
+                    case CmdModCmdEx:
                         // for some strange home-made tunes
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         break;
 
                     default:
-                        command = CMD_NONE;
+                        command = CmdNone;
                         break;
 
                     }
@@ -774,14 +774,14 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 for(modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; nChn++)
                 {
                     if(subsongs[i].channelSurround[nChn] == true)
-                        TryWriteEffect(startPattern, 0, CMD_S3MCMDEX, 0x91, false, nChn, false, weTryNextRow);
+                        TryWriteEffect(startPattern, 0, CmdS3mCmdEx, 0x91, false, nChn, false, weTryNextRow);
                     else
-                        TryWriteEffect(startPattern, 0, CMD_PANNING8, subsongs[i].channelPanning[nChn], false, nChn, false, weTryNextRow);
+                        TryWriteEffect(startPattern, 0, CmdPanning8, subsongs[i].channelPanning[nChn], false, nChn, false, weTryNextRow);
                 }
             }
             // write default tempo/speed to pattern
-            TryWriteEffect(startPattern, 0, CMD_SPEED, subsongs[i].defaultSpeed, false, ChannelIndexInvalid, false, weTryNextRow);
-            TryWriteEffect(startPattern, 0, CMD_TEMPO, subsongs[i].defaultTempo, false, ChannelIndexInvalid, false, weTryNextRow);
+            TryWriteEffect(startPattern, 0, CmdSpeed, subsongs[i].defaultSpeed, false, ChannelIndexInvalid, false, weTryNextRow);
+            TryWriteEffect(startPattern, 0, CmdTempo, subsongs[i].defaultTempo, false, ChannelIndexInvalid, false, weTryNextRow);
 
             // don't write channel volume for now, as it's always set to 100% anyway
 
@@ -793,13 +793,13 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 row_data = Patterns[endPattern];
                 for(uint32_t nCell = 0; nCell < m_nChannels * Patterns[endPattern].GetNumRows(); nCell++, row_data++)
                 {
-                    if(row_data->command == CMD_PATTERNBREAK || row_data->command == CMD_POSITIONJUMP)
+                    if(row_data->command == CmdPatternBreak || row_data->command == CmdPositionJump)
                     {
                         lastRow = nCell / m_nChannels;
                         break;
                     }
                 }
-                TryWriteEffect(endPattern, lastRow, CMD_POSITIONJUMP, (uint8_t)subsongs[i].restartPos, false, ChannelIndexInvalid, false, weTryNextRow);
+                TryWriteEffect(endPattern, lastRow, CmdPositionJump, (uint8_t)subsongs[i].restartPos, false, ChannelIndexInvalid, false, weTryNextRow);
             }
         }
     }
@@ -1040,98 +1040,98 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                     {
                     // Volslides
                     case 0x01: // fine volslide up
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         param = (param << 4) | 0x0F;
                         break;
                     case 0x02: // volslide up
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         param = (param << 4) & 0xF0;
                         break;
                     case 0x03: // fine voslide down
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         param = 0xF0 | param;
                         break;
                     case 0x04: // volslide down
-                        command = CMD_VOLUMESLIDE;
+                        command = CmdVolumeSlide;
                         param = param & 0x0F;
                         break;
 
                     // Portamento
                     case 0x0A: // fine portamento up
-                        command = CMD_PORTAMENTOUP;
+                        command = CmdPortaUp;
                         param |= 0xF0;
                         break;
                     case 0x0B: // portamento down
-                        command = CMD_PORTAMENTOUP;
+                        command = CmdPortaUp;
                         break;
                     case 0x0C: // fine portamento down
-                        command = CMD_PORTAMENTODOWN;
+                        command = CmdPortaDown;
                         param |= 0xF0;
                         break;
                     case 0x0D: // portamento down
-                        command = CMD_PORTAMENTODOWN;
+                        command = CmdPortaDown;
                         break;
                     case 0x0E: // tone portamento
-                        command = CMD_TONEPORTAMENTO;
+                        command = CmdPorta;
                         break;
                     case 0x0F: // glissando control
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0x10;
                         break;
                     case 0x10: // tone portamento + volslide up
-                        command = CMD_TONEPORTAVOL;
+                        command = CmdPortamentoVol;
                         param <<= 4;
                         break;
                     case 0x11: // tone portamento + volslide down
-                        command = CMD_TONEPORTAVOL;
+                        command = CmdPortamentoVol;
                         param &= 0x0F;
                         break;
 
                     // Vibrato
                     case 0x14: // vibrato
-                        command = CMD_VIBRATO;
+                        command = CmdVibrato;
                         break;
                     case 0x15: // vibrato waveform
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0x30;
                         break;
                     case 0x16: // vibrato + volslide up
-                        command = CMD_VIBRATOVOL;
+                        command = CmdVibratoVol;
                         param <<= 4;
                         break;
                     case 0x17: // vibrato + volslide down
-                        command = CMD_VIBRATOVOL;
+                        command = CmdVibratoVol;
                         param &= 0x0F;
                         break;
 
                     // Tremolo
                     case 0x1E: // tremolo
-                        command = CMD_TREMOLO;
+                        command = CmdTremolo;
                         break;
                     case 0x1F: // tremolo waveform
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0x40;
                         break;
 
                     // Sample commands
                     case 0x28: // 3-byte offset - we only support the middle byte.
                         ASSERT_CAN_READ(2);
-                        command = CMD_OFFSET;
+                        command = CmdOffset;
                         param = lpStream[dwMemPos++];
                         dwMemPos++;
                         break;
                     case 0x29: // retrigger
-                        command = CMD_RETRIG;
+                        command = CmdRetrig;
                         param &= 0x0F;
                         break;
                     case 0x2A: // note cut
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         if(param == 0)    // in S3M mode, SC0 is ignored, so we convert it to a note cut.
                         {
                             if(row_data->note == NoteNone)
                             {
                                 row_data->note = NoteNoteCut;
-                                command = CMD_NONE;
+                                command = CmdNone;
                             } else
                             {
                                 param = 1;
@@ -1140,49 +1140,49 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                         param |= 0xC0;
                         break;
                     case 0x2B: // note delay
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0xD0;
                         break;
 
                     // Position change
                     case 0x32: // position jump
-                        command = CMD_POSITIONJUMP;
+                        command = CmdPositionJump;
                         break;
                     case 0x33: // pattern break
-                        command = CMD_PATTERNBREAK;
+                        command = CmdPatternBreak;
                         break;
                     case 0x34: // loop pattern
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0xB0;
                         break;
                     case 0x35: // pattern delay
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0xE0;
                         break;
 
                     // speed change
                     case 0x3C: // set speed
-                        command = CMD_SPEED;
+                        command = CmdSpeed;
                         break;
                     case 0x3D: // set tempo
-                        command = CMD_TEMPO;
+                        command = CmdTempo;
                         break;
 
                     // misc commands
                     case 0x46: // arpeggio
-                        command = CMD_ARPEGGIO;
+                        command = CmdArpeggio;
                         break;
                     case 0x47: // set finetune
-                        command = CMD_S3MCMDEX;
+                        command = CmdS3mCmdEx;
                         param |= 0x20;
                         break;
                     case 0x48: // set balance (panning?)
-                        command = CMD_PANNING8;
+                        command = CmdPanning8;
                         param = (param << 4) + 8;
                         break;
 
                     default:
-                        command = CMD_NONE;
+                        command = CmdNone;
                         break;
                     }
 
@@ -1192,7 +1192,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
             }
             // Pattern break for short patterns (so saving the modules as S3M won't break it)
             if(phdr->numRows != 64)
-                TryWriteEffect(nPat, phdr->numRows - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weTryNextRow);
+                TryWriteEffect(nPat, phdr->numRows - 1, CmdPatternBreak, 0, false, ChannelIndexInvalid, false, weTryNextRow);
 
             dwMemPos = dwNextPattern;
             if(dwMemPos > dwPatEndPos) break;

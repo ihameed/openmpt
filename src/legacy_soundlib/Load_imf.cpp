@@ -97,40 +97,40 @@ struct IMFSAMPLE
 
 static uint8_t imf_efftrans[] =
 {
-    CMD_NONE,
-    CMD_SPEED,                    // 0x01 1xx Set Tempo
-    CMD_TEMPO,                    // 0x02 2xx Set BPM
-    CMD_TONEPORTAMENTO, // 0x03 3xx Tone Portamento
-    CMD_TONEPORTAVOL,    // 0x04 4xy Tone Portamento + Volume Slide
-    CMD_VIBRATO,            // 0x05 5xy Vibrato
-    CMD_VIBRATOVOL,            // 0x06 6xy Vibrato + Volume Slide
-    CMD_FINEVIBRATO,    // 0x07 7xy Fine Vibrato
-    CMD_TREMOLO,            // 0x08 8xy Tremolo
-    CMD_ARPEGGIO,            // 0x09 9xy Arpeggio
-    CMD_PANNING8,            // 0x0A Axx Set Pan Position
-    CMD_PANNINGSLIDE,    // 0x0B Bxy Pan Slide
-    CMD_VOLUME,                    // 0x0C Cxx Set Volume
-    CMD_VOLUMESLIDE,    // 0x0D Dxy Volume Slide
-    CMD_VOLUMESLIDE,    // 0x0E Exy Fine Volume Slide
-    CMD_S3MCMDEX,            // 0x0F Fxx Set Finetune
-    CMD_NOTESLIDEUP,    // 0x10 Gxy Note Slide Up
-    CMD_NOTESLIDEDOWN,    // 0x11 Hxy Note Slide Down
-    CMD_PORTAMENTOUP,    // 0x12 Ixx Slide Up
-    CMD_PORTAMENTODOWN,    // 0x13 Jxx Slide Down
-    CMD_PORTAMENTOUP,    // 0x14 Kxx Fine Slide Up
-    CMD_PORTAMENTODOWN,    // 0x15 Lxx Fine Slide Down
-    CMD_MIDI,                    // 0x16 Mxx Set Filter Cutoff - XXX
-    CMD_NONE,                    // 0x17 Nxy Filter Slide + Resonance - XXX
-    CMD_OFFSET,                    // 0x18 Oxx Set Sample Offset
-    CMD_NONE,                    // 0x19 Pxx Set Fine Sample Offset - XXX
-    CMD_KEYOFF,                    // 0x1A Qxx Key Off
-    CMD_RETRIG,                    // 0x1B Rxy Retrig
-    CMD_TREMOR,                    // 0x1C Sxy Tremor
-    CMD_POSITIONJUMP,    // 0x1D Txx Position Jump
-    CMD_PATTERNBREAK,    // 0x1E Uxx Pattern Break
-    CMD_GLOBALVOLUME,    // 0x1F Vxx Set Mastervolume
-    CMD_GLOBALVOLSLIDE,    // 0x20 Wxy Mastervolume Slide
-    CMD_S3MCMDEX,            // 0x21 Xxx Extended Effect
+    CmdNone,
+    CmdSpeed,                    // 0x01 1xx Set Tempo
+    CmdTempo,                    // 0x02 2xx Set BPM
+    CmdPorta, // 0x03 3xx Tone Portamento
+    CmdPortamentoVol,    // 0x04 4xy Tone Portamento + Volume Slide
+    CmdVibrato,            // 0x05 5xy Vibrato
+    CmdVibratoVol,            // 0x06 6xy Vibrato + Volume Slide
+    CmdFineVibrato,    // 0x07 7xy Fine Vibrato
+    CmdTremolo,            // 0x08 8xy Tremolo
+    CmdArpeggio,            // 0x09 9xy Arpeggio
+    CmdPanning8,            // 0x0A Axx Set Pan Position
+    CmdPanningSlide,    // 0x0B Bxy Pan Slide
+    CmdVol,                    // 0x0C Cxx Set Volume
+    CmdVolumeSlide,    // 0x0D Dxy Volume Slide
+    CmdVolumeSlide,    // 0x0E Exy Fine Volume Slide
+    CmdS3mCmdEx,            // 0x0F Fxx Set Finetune
+    CmdNoteSlideUp,    // 0x10 Gxy Note Slide Up
+    CmdNoteSlideDown,    // 0x11 Hxy Note Slide Down
+    CmdPortaUp,    // 0x12 Ixx Slide Up
+    CmdPortaDown,    // 0x13 Jxx Slide Down
+    CmdPortaUp,    // 0x14 Kxx Fine Slide Up
+    CmdPortaDown,    // 0x15 Lxx Fine Slide Down
+    CmdMidi,                    // 0x16 Mxx Set Filter Cutoff - XXX
+    CmdNone,                    // 0x17 Nxy Filter Slide + Resonance - XXX
+    CmdOffset,                    // 0x18 Oxx Set Sample Offset
+    CmdNone,                    // 0x19 Pxx Set Fine Sample Offset - XXX
+    CmdKeyOff,                    // 0x1A Qxx Key Off
+    CmdRetrig,                    // 0x1B Rxy Retrig
+    CmdTremor,                    // 0x1C Sxy Tremor
+    CmdPositionJump,    // 0x1D Txx Position Jump
+    CmdPatternBreak,    // 0x1E Uxx Pattern Break
+    CmdGlobalVol,    // 0x1F Vxx Set Mastervolume
+    CmdGlobalVolSlide,    // 0x20 Wxy Mastervolume Slide
+    CmdS3mCmdEx,            // 0x21 Xxx Extended Effect
                             // X1x Set Filter
                             // X3x Glissando
                             // X5x Vibrato Waveform
@@ -141,8 +141,8 @@ static uint8_t imf_efftrans[] =
                             // XDx Note Delay
                             // XEx Ignore Envelope
                             // XFx Invert Loop
-    CMD_NONE,                    // 0x22 Yxx Chorus - XXX
-    CMD_NONE,                    // 0x23 Zxx Reverb - XXX
+    CmdNone,                    // 0x22 Yxx Chorus - XXX
+    CmdNone,                    // 0x23 Zxx Reverb - XXX
 };
 
 static void import_imf_effect(modplug::tracker::modevent_t *note)
@@ -195,7 +195,7 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
         default: // undefined
         case 0x1: // set filter
         case 0xf: // invert loop
-            note->command = CMD_NONE;
+            note->command = CmdNone;
             break;
         case 0x3: // glissando
             n = 0x20;
@@ -225,19 +225,19 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
         case 0x18: // sample offset
             // O00 doesn't pick up the previous value
             if (!note->param)
-                note->command = CMD_NONE;
+                note->command = CmdNone;
             break;
         }
         if (n)
             note->param = n | (note->param & 0xf);
         break;
     }
-    note->command = (note->command < 0x24) ? imf_efftrans[note->command] : CMD_NONE;
-    if (note->command == CMD_VOLUME && note->volcmd == VolCmdNone)
+    note->command = (note->command < 0x24) ? imf_efftrans[note->command] : CmdNone;
+    if (note->command == CmdVol && note->volcmd == VolCmdNone)
     {
         note->volcmd = VolCmdVol;
         note->vol = note->param;
-        note->command = CMD_NONE;
+        note->command = CmdNone;
         note->param = 0;
     }
 }

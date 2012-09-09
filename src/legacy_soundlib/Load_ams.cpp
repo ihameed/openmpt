@@ -235,21 +235,21 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
                         {
                             if (!m[ch].command)
                             {
-                                UINT command = CMD_S3MCMDEX;
+                                UINT command = CmdS3mCmdEx;
                                 UINT param = b2;
                                 switch(param & 0xF0)
                                 {
                                 case 0x00:    if (param & 0x08) { param &= 0x07; param |= 0x90; } else {command=param=0;} break;
-                                case 0x10:    command = CMD_PORTAMENTOUP; param |= 0xF0; break;
-                                case 0x20:    command = CMD_PORTAMENTODOWN; param |= 0xF0; break;
+                                case 0x10:    command = CmdPortaUp; param |= 0xF0; break;
+                                case 0x20:    command = CmdPortaDown; param |= 0xF0; break;
                                 case 0x30:    param = (param & 0x0F) | 0x10; break;
                                 case 0x40:    param = (param & 0x0F) | 0x30; break;
                                 case 0x50:    param = (param & 0x0F) | 0x20; break;
                                 case 0x60:    param = (param & 0x0F) | 0xB0; break;
                                 case 0x70:    param = (param & 0x0F) | 0x40; break;
-                                case 0x90:    command = CMD_RETRIG; param &= 0x0F; break;
-                                case 0xA0:    if (param & 0x0F) { command = CMD_VOLUMESLIDE; param = (param << 4) | 0x0F; } else command=param=0; break;
-                                case 0xB0:    if (param & 0x0F) { command = CMD_VOLUMESLIDE; param |= 0xF0; } else command=param=0; break;
+                                case 0x90:    command = CmdRetrig; param &= 0x0F; break;
+                                case 0xA0:    if (param & 0x0F) { command = CmdVolumeSlide; param = (param << 4) | 0x0F; } else command=param=0; break;
+                                case 0xB0:    if (param & 0x0F) { command = CmdVolumeSlide; param |= 0xF0; } else command=param=0; break;
                                 }
                                 m[ch].command = command;
                                 m[ch].param = param;

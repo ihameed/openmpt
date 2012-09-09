@@ -25,40 +25,40 @@ void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
 
     switch(command)
     {
-    case 0x00:    if (param) command = CMD_ARPEGGIO; break;
-    case 0x01:    command = CMD_PORTAMENTOUP; break;
-    case 0x02:    command = CMD_PORTAMENTODOWN; break;
-    case 0x03:    command = CMD_TONEPORTAMENTO; break;
-    case 0x04:    command = CMD_VIBRATO; break;
-    case 0x05:    command = CMD_TONEPORTAVOL; if (param & 0xF0) param &= 0xF0; break;
-    case 0x06:    command = CMD_VIBRATOVOL; if (param & 0xF0) param &= 0xF0; break;
-    case 0x07:    command = CMD_TREMOLO; break;
-    case 0x08:    command = CMD_PANNING8; break;
-    case 0x09:    command = CMD_OFFSET; break;
-    case 0x0A:    command = CMD_VOLUMESLIDE; if (param & 0xF0) param &= 0xF0; break;
-    case 0x0B:    command = CMD_POSITIONJUMP; break;
-    case 0x0C:    command = CMD_VOLUME; break;
-    case 0x0D:    command = CMD_PATTERNBREAK; param = ((param >> 4) * 10) + (param & 0x0F); break;
-    case 0x0E:    command = CMD_MODCMDEX; break;
-    case 0x0F:    command = (param <= ((m_nType & (MOD_TYPE_MOD)) ? 0x20 : 0x1F)) ? CMD_SPEED : CMD_TEMPO;
+    case 0x00:    if (param) command = CmdArpeggio; break;
+    case 0x01:    command = CmdPortaUp; break;
+    case 0x02:    command = CmdPortaDown; break;
+    case 0x03:    command = CmdPorta; break;
+    case 0x04:    command = CmdVibrato; break;
+    case 0x05:    command = CmdPortamentoVol; if (param & 0xF0) param &= 0xF0; break;
+    case 0x06:    command = CmdVibratoVol; if (param & 0xF0) param &= 0xF0; break;
+    case 0x07:    command = CmdTremolo; break;
+    case 0x08:    command = CmdPanning8; break;
+    case 0x09:    command = CmdOffset; break;
+    case 0x0A:    command = CmdVolumeSlide; if (param & 0xF0) param &= 0xF0; break;
+    case 0x0B:    command = CmdPositionJump; break;
+    case 0x0C:    command = CmdVol; break;
+    case 0x0D:    command = CmdPatternBreak; param = ((param >> 4) * 10) + (param & 0x0F); break;
+    case 0x0E:    command = CmdModCmdEx; break;
+    case 0x0F:    command = (param <= ((m_nType & (MOD_TYPE_MOD)) ? 0x20 : 0x1F)) ? CmdSpeed : CmdTempo;
                 if ((param == 0xFF) && (m_nSamples == 15) && (m_nType & MOD_TYPE_MOD)) command = 0; break; //<rewbs> what the hell is this?! :) //<jojo> it's the "stop tune" command! :-P
     // Extension for XM extended effects
-    case 'G' - 55:    command = CMD_GLOBALVOLUME; break;                //16
-    case 'H' - 55:    command = CMD_GLOBALVOLSLIDE; if (param & 0xF0) param &= 0xF0; break;
-    case 'K' - 55:    command = CMD_KEYOFF; break;
-    case 'L' - 55:    command = CMD_SETENVPOSITION; break;
-    case 'M' - 55:    command = CMD_CHANNELVOLUME; break;
-    case 'N' - 55:    command = CMD_CHANNELVOLSLIDE; break;
-    case 'P' - 55:    command = CMD_PANNINGSLIDE; if (param & 0xF0) param &= 0xF0; break;
-    case 'R' - 55:    command = CMD_RETRIG; break;
-    case 'T' - 55:    command = CMD_TREMOR; break;
-    case 'X' - 55:    command = CMD_XFINEPORTAUPDOWN;        break;
-    case 'Y' - 55:    command = CMD_PANBRELLO; break;                        //34
-    case 'Z' - 55:    command = CMD_MIDI;        break;                                //35
-    case '\\' - 56:    command = CMD_SMOOTHMIDI;        break;                //rewbs.smoothVST: 36 - note: this is actually displayed as "-" in FT2, but seems to be doing nothing.
+    case 'G' - 55:    command = CmdGlobalVol; break;                //16
+    case 'H' - 55:    command = CmdGlobalVolSlide; if (param & 0xF0) param &= 0xF0; break;
+    case 'K' - 55:    command = CmdKeyOff; break;
+    case 'L' - 55:    command = CmdSetEnvelopePosition; break;
+    case 'M' - 55:    command = CmdChannelVol; break;
+    case 'N' - 55:    command = CmdChannelVolSlide; break;
+    case 'P' - 55:    command = CmdPanningSlide; if (param & 0xF0) param &= 0xF0; break;
+    case 'R' - 55:    command = CmdRetrig; break;
+    case 'T' - 55:    command = CmdTremor; break;
+    case 'X' - 55:    command = CmdExtraFinePortaUpDown;        break;
+    case 'Y' - 55:    command = CmdPanbrello; break;                        //34
+    case 'Z' - 55:    command = CmdMidi;        break;                                //35
+    case '\\' - 56:    command = CmdSmoothMidi;        break;                //rewbs.smoothVST: 36 - note: this is actually displayed as "-" in FT2, but seems to be doing nothing.
     //case ':' - 21:    command = CMD_DELAYCUT;        break;                //37
-    case '#' + 3:    command = CMD_XPARAM;        break;                        //rewbs.XMfixes - XParam is 38
-    default:            command = CMD_NONE;
+    case '#' + 3:    command = CmdExtendedParameter;        break;                        //rewbs.XMfixes - XParam is 38
+    default:            command = CmdNone;
     }
     m->command = command;
     m->param = param;
@@ -72,9 +72,9 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
 
     switch(command)
     {
-    case CMD_NONE:                            command = param = 0; break;
-    case CMD_ARPEGGIO:                    command = 0; break;
-    case CMD_PORTAMENTOUP:
+    case CmdNone:                            command = param = 0; break;
+    case CmdArpeggio:                    command = 0; break;
+    case CmdPortaUp:
         if (m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_STM|MOD_TYPE_MPT))
         {
             if ((param & 0xF0) == 0xE0) { command = 0x0E; param = ((param & 0x0F) >> 2) | 0x10; break; }
@@ -82,7 +82,7 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
         }
         command = 0x01;
         break;
-    case CMD_PORTAMENTODOWN:
+    case CmdPortaDown:
         if (m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_STM|MOD_TYPE_MPT))
         {
             if ((param & 0xF0) == 0xE0) { command = 0x0E; param= ((param & 0x0F) >> 2) | 0x20; break; }
@@ -90,12 +90,12 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
         }
         command = 0x02;
         break;
-    case CMD_TONEPORTAMENTO:    command = 0x03; break;
-    case CMD_VIBRATO:                    command = 0x04; break;
-    case CMD_TONEPORTAVOL:            command = 0x05; break;
-    case CMD_VIBRATOVOL:            command = 0x06; break;
-    case CMD_TREMOLO:                    command = 0x07; break;
-    case CMD_PANNING8:
+    case CmdPorta:    command = 0x03; break;
+    case CmdVibrato:                    command = 0x04; break;
+    case CmdPortamentoVol:            command = 0x05; break;
+    case CmdVibratoVol:            command = 0x06; break;
+    case CmdTremolo:                    command = 0x07; break;
+    case CmdPanning8:
         command = 0x08;
         if(m_nType & MOD_TYPE_S3M)
         {
@@ -117,54 +117,54 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
             }
         }
         break;
-    case CMD_OFFSET:                    command = 0x09; break;
-    case CMD_VOLUMESLIDE:            command = 0x0A; break;
-    case CMD_POSITIONJUMP:            command = 0x0B; break;
-    case CMD_VOLUME:                    command = 0x0C; break;
-    case CMD_PATTERNBREAK:            command = 0x0D; param = ((param / 10) << 4) | (param % 10); break;
-    case CMD_MODCMDEX:                    command = 0x0E; break;
-    case CMD_SPEED:                            command = 0x0F; param = min(param, (bXM) ? 0x1F : 0x20); break;
-    case CMD_TEMPO:                            command = 0x0F; param = max(param, (bXM) ? 0x20 : 0x21); break;
-    case CMD_GLOBALVOLUME:            command = 'G' - 55; break;
-    case CMD_GLOBALVOLSLIDE:    command = 'H' - 55; break;
-    case CMD_KEYOFF:                    command = 'K' - 55; break;
-    case CMD_SETENVPOSITION:    command = 'L' - 55; break;
-    case CMD_CHANNELVOLUME:            command = 'M' - 55; break;
-    case CMD_CHANNELVOLSLIDE:    command = 'N' - 55; break;
-    case CMD_PANNINGSLIDE:            command = 'P' - 55; break;
-    case CMD_RETRIG:                    command = 'R' - 55; break;
-    case CMD_TREMOR:                    command = 'T' - 55; break;
-    case CMD_XFINEPORTAUPDOWN:
+    case CmdOffset:                    command = 0x09; break;
+    case CmdVolumeSlide:            command = 0x0A; break;
+    case CmdPositionJump:            command = 0x0B; break;
+    case CmdVol:                    command = 0x0C; break;
+    case CmdPatternBreak:            command = 0x0D; param = ((param / 10) << 4) | (param % 10); break;
+    case CmdModCmdEx:                    command = 0x0E; break;
+    case CmdSpeed:                            command = 0x0F; param = min(param, (bXM) ? 0x1F : 0x20); break;
+    case CmdTempo:                            command = 0x0F; param = max(param, (bXM) ? 0x20 : 0x21); break;
+    case CmdGlobalVol:            command = 'G' - 55; break;
+    case CmdGlobalVolSlide:    command = 'H' - 55; break;
+    case CmdKeyOff:                    command = 'K' - 55; break;
+    case CmdSetEnvelopePosition:    command = 'L' - 55; break;
+    case CmdChannelVol:            command = 'M' - 55; break;
+    case CmdChannelVolSlide:    command = 'N' - 55; break;
+    case CmdPanningSlide:            command = 'P' - 55; break;
+    case CmdRetrig:                    command = 'R' - 55; break;
+    case CmdTremor:                    command = 'T' - 55; break;
+    case CmdExtraFinePortaUpDown:
         if(bCompatibilityExport && (param & 0xF0) > 2)    // X1x and X2x are legit, everything above are MPT extensions, which don't belong here.
             command = param = 0;
         else
             command = 'X' - 55;
         break;
-    case CMD_PANBRELLO:
+    case CmdPanbrello:
         if(bCompatibilityExport)
             command = param = 0;
         else
             command = 'Y' - 55;
         break;
-    case CMD_MIDI:
+    case CmdMidi:
         if(bCompatibilityExport)
             command = param = 0;
         else
             command = 'Z' - 55;
         break;
-    case CMD_SMOOTHMIDI: //rewbs.smoothVST: 36
+    case CmdSmoothMidi: //rewbs.smoothVST: 36
         if(bCompatibilityExport)
             command = param = 0;
         else
             command = '\\' - 56;
         break;
-    case CMD_XPARAM: //rewbs.XMfixes - XParam is 38
+    case CmdExtendedParameter: //rewbs.XMfixes - XParam is 38
         if(bCompatibilityExport)
             command = param = 0;
         else
             command = '#' + 3;
         break;
-    case CMD_S3MCMDEX:
+    case CmdS3mCmdEx:
         switch(param & 0xF0)
         {
         case 0x10:    command = 0x0E; param = (param & 0x0F) | 0x30; break;
@@ -237,16 +237,16 @@ struct FixMODPatterns
     void operator()(modplug::tracker::modevent_t& m)
     {
         // Fix VBlank MODs
-        if(m.command == CMD_TEMPO && this->bVBlank)
+        if(m.command == CmdTempo && this->bVBlank)
         {
-            m.command = CMD_SPEED;
+            m.command = CmdSpeed;
         }
         // Fix MODs with 7-bit + surround panning
-        if(m.command == CMD_PANNING8 && this->bPanning)
+        if(m.command == CmdPanning8 && this->bPanning)
         {
             if(m.param == 0xA4)
             {
-                m.command = CMD_S3MCMDEX;
+                m.command = CmdS3mCmdEx;
                 m.param = 0x91;
             } else
             {
@@ -469,11 +469,11 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
                     m->param = A3;
                     if ((m->command) || (m->param)) ConvertModCommand(m);
 
-                    if (m->command == CMD_TEMPO && m->param < 100)
+                    if (m->command == CmdTempo && m->param < 100)
                         bHasTempoCommands = true;
-                    if (m->command == CMD_PANNING8 && m->param < 0x80)
+                    if (m->command == CmdPanning8 && m->param < 0x80)
                         bLeftPanning = true;
-                    if (m->command == CMD_PANNING8 && m->param > 0x80 && m->param != 0xA4)
+                    if (m->command == CmdPanning8 && m->param > 0x80 && m->param != 0xA4)
                         bExtendedPanning = true;
                     if (m->note == NoteNone && m->instr > 0 && !bFLT8)
                     {

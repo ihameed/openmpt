@@ -360,7 +360,7 @@ LPCTSTR GetNoteStr(const modplug::tracker::note_t);
 ///////////////////////////////////////////////////
 // Tables
 
-extern const uint8_t gEffectColors[MAX_EFFECTS];
+extern const uint8_t gEffectColors[CmdMax];
 extern const uint8_t gVolEffectColors[modplug::tracker::VolCmdMax];
 extern const LPCSTR szNoteNames[12];
 extern const LPCTSTR szDefaultNoteNames[NOTE_COUNT];

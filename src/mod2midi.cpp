@@ -493,7 +493,7 @@ BOOL CModToMidi::DoConvert()
                                             }
                                             if ((nsmp) && (nsmp < MAX_SAMPLES)) vol = m_pSndFile->Samples[nsmp].default_volume;
                                             if (m->volcmd == modplug::tracker::VolCmdVol) vol = m->vol*4;
-                                            if (m->command == CMD_VOLUME) vol = m->param*4;
+                                            if (m->command == CmdVol) vol = m->param*4;
                                             vol = LinearToDLSMidiVolume(vol<<8);
                                             if (vol > 0x7f) vol = 0x7f;
                                             tmp[len+2] = (uint8_t)vol;
@@ -508,8 +508,8 @@ BOOL CModToMidi::DoConvert()
                             UINT param = m->param;
                             switch(m->command)
                             {
-                            case CMD_SPEED:        if ((param) && (param < 32)) nSpeed = param; break;
-                            case CMD_PATTERNBREAK: pattern_break = param; break;
+                            case CmdSpeed:        if ((param) && (param < 32)) nSpeed = param; break;
+                            case CmdPatternBreak: pattern_break = param; break;
                             }
                     }
                     if (len > 1)

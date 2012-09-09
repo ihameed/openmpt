@@ -144,31 +144,31 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                     switch(cmd)
                     {
                     // Axx set speed to xx
-                    case 1:        m->command = CMD_SPEED; m->param >>= 4; break;
+                    case 1:        m->command = CmdSpeed; m->param >>= 4; break;
                     // Bxx position jump
-                    case 2:        m->command = CMD_POSITIONJUMP; break;
+                    case 2:        m->command = CmdPositionJump; break;
                     // Cxx patternbreak to row xx
-                    case 3:        m->command = CMD_PATTERNBREAK; m->param = (m->param & 0xF0) * 10 + (m->param & 0x0F);        break;
+                    case 3:        m->command = CmdPatternBreak; m->param = (m->param & 0xF0) * 10 + (m->param & 0x0F);        break;
                     // Dxy volumeslide
-                    case 4:        m->command = CMD_VOLUMESLIDE; break;
+                    case 4:        m->command = CmdVolumeSlide; break;
                     // Exy toneslide down
-                    case 5:        m->command = CMD_PORTAMENTODOWN; break;
+                    case 5:        m->command = CmdPortaDown; break;
                     // Fxy toneslide up
-                    case 6:        m->command = CMD_PORTAMENTOUP; break;
+                    case 6:        m->command = CmdPortaUp; break;
                     // Gxx Tone portamento,speed xx
-                    case 7:        m->command = CMD_TONEPORTAMENTO; break;
+                    case 7:        m->command = CmdPorta; break;
                     // Hxy vibrato
-                    case 8:        m->command = CMD_VIBRATO; break;
+                    case 8:        m->command = CmdVibrato; break;
                     // Ixy tremor, ontime x, offtime y
-                    case 9:        m->command = CMD_TREMOR; break;
+                    case 9:        m->command = CmdTremor; break;
                     // Jxy arpeggio
-                    case 10: m->command = CMD_ARPEGGIO; break;
+                    case 10: m->command = CmdArpeggio; break;
                     // Kxy Dual command H00 & Dxy
-                    case 11: m->command = CMD_VIBRATOVOL; break;
+                    case 11: m->command = CmdVibratoVol; break;
                     // Lxy Dual command G00 & Dxy
-                    case 12: m->command = CMD_TONEPORTAVOL; break;
+                    case 12: m->command = CmdPortamentoVol; break;
                     // Xxx amiga command 8xx
-                    case 0x18:        m->command = CMD_PANNING8; break;
+                    case 0x18:        m->command = CmdPanning8; break;
                     default:
                             m->command = m->param = 0;
                     }

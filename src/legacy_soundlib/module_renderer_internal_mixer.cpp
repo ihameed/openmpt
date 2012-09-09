@@ -862,7 +862,7 @@ BOOL module_renderer::ReadNote()
             }
 
             // Tremor
-            if(current_vchan->nCommand == CMD_TREMOR)
+            if(current_vchan->nCommand == CmdTremor)
             {
                 // IT compatibility 12. / 13.: Tremor
                 if(IsCompatibleMode(TRK_IMPULSETRACKER))
@@ -1044,7 +1044,7 @@ BOOL module_renderer::ReadNote()
             }
 
             // Arpeggio ?
-            if (current_vchan->nCommand == CMD_ARPEGGIO)
+            if (current_vchan->nCommand == CmdArpeggio)
             {
                 if(m_nType == MOD_TYPE_MPT && current_vchan->instrument && current_vchan->instrument->pTuning)
                 {

@@ -214,7 +214,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
             if (command) switch (command)
             {
             // Position Jump
-            case CMD_POSITIONJUMP:
+            case CmdPositionJump:
                 positionJumpOnThisRow = true;
                 nNextPattern = (modplug::tracker::orderindex_t)param;
                 nNextPatStartRow = 0;  // FT2 E60 bug
@@ -229,7 +229,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 }
                 break;
             // Pattern Break
-            case CMD_PATTERNBREAK:
+            case CmdPatternBreak:
                 if(param >= 64 && (GetType() & MOD_TYPE_S3M))
                 {
                     // ST3 ignores invalid pattern breaks.
@@ -243,7 +243,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 {
                     nextRow = Patterns[nPattern] + (nRow + 1) * m_nChannels + nChn;
                 }
-                if (nextRow && nextRow->command == CMD_XPARAM)
+                if (nextRow && nextRow->command == CmdExtendedParameter)
                 {
                     nNextRow = (param << 8) + nextRow->param;
                 } else
@@ -262,7 +262,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 }
                 break;
             // Set Speed
-            case CMD_SPEED:
+            case CmdSpeed:
                 if (!param) break;
                 // Allow high speed values here for VBlank MODs. (Maybe it would be better to have a "VBlank MOD" flag somewhere? Is it worth the effort?)
                 if ((param <= GetModSpecifications().speedMax) || (m_nType & MOD_TYPE_MOD))
@@ -271,7 +271,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 }
                 break;
             // Set Tempo
-            case CMD_TEMPO:
+            case CmdTempo:
                 if ((adjustMode & eAdjust) && (m_nType & (MOD_TYPE_S3M | MOD_TYPE_IT | MOD_TYPE_MPT)))
                 {
                     if (param) pChn->nOldTempo = (uint8_t)param; else param = pChn->nOldTempo;
@@ -294,11 +294,11 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
 // -! NEW_FEATURE#0010
                 break;
             // Pattern Delay
-            case CMD_S3MCMDEX:
+            case CmdS3mCmdEx:
                 if ((param & 0xF0) == 0x60) { nSpeedCount = param & 0x0F; break; } else
                 if ((param & 0xF0) == 0xA0) { pChn->nOldHiOffset = param & 0x0F; break; } else
                 if ((param & 0xF0) == 0xB0) { param &= 0x0F; param |= 0x60; }
-            case CMD_MODCMDEX:
+            case CmdModCmdEx:
                 if ((param & 0xF0) == 0xE0) nSpeedCount = (param & 0x0F) * nMusicSpeed; else
                 if ((param & 0xF0) == 0x60)
                 {
@@ -313,7 +313,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                     }
                 }
                 break;
-            case CMD_XFINEPORTAUPDOWN:
+            case CmdExtraFinePortaUpDown:
                 // ignore high offset in compatible mode
                 if (((param & 0xF0) == 0xA0) && !IsCompatibleMode(TRK_FASTTRACKER2)) pChn->nOldHiOffset = param & 0x0F;
                 break;
@@ -322,30 +322,30 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
             switch(command)
             {
             // Portamento Up/Down
-            case CMD_PORTAMENTOUP:
-            case CMD_PORTAMENTODOWN:
+            case CmdPortaUp:
+            case CmdPortaDown:
                 if (param) pChn->nOldPortaUpDown = param;
                 break;
             // Tone-Portamento
-            case CMD_TONEPORTAMENTO:
+            case CmdPorta:
                 if (param) pChn->nPortamentoSlide = param << 2;
                 break;
             // Offset
-            case CMD_OFFSET:
+            case CmdOffset:
                 if (param) pChn->nOldOffset = param;
                 break;
             // Volume Slide
-            case CMD_VOLUMESLIDE:
-            case CMD_TONEPORTAVOL:
-            case CMD_VIBRATOVOL:
+            case CmdVolumeSlide:
+            case CmdPortamentoVol:
+            case CmdVibratoVol:
                 if (param) pChn->nOldVolumeSlide = param;
                 break;
             // Set Volume
-            case CMD_VOLUME:
+            case CmdVol:
                 vols[nChn] = param;
                 break;
             // Global Volume
-            case CMD_GLOBALVOLUME:
+            case CmdGlobalVol:
                 // ST3 applies global volume on tick 1 and does other weird things, but we won't emulate this for now.
 //                             if((GetType() & MOD_TYPE_S3M) && nMusicSpeed <= 1)
 //                             {
@@ -366,7 +366,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 }
                 break;
             // Global Volume Slide
-            case CMD_GLOBALVOLSLIDE:
+            case CmdGlobalVolSlide:
                 if(IsCompatibleMode(TRK_IMPULSETRACKER | TRK_FASTTRACKER2))
                 {
                     //IT compatibility 16. Global volume slide params are stored per channel (FT2/IT)
@@ -403,10 +403,10 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 }
                 nGlbVol = CLAMP(nGlbVol, 0, 256);
                 break;
-            case CMD_CHANNELVOLUME:
+            case CmdChannelVol:
                 if (param <= 64) chnvols[nChn] = param;
                 break;
-            case CMD_CHANNELVOLSLIDE:
+            case CmdChannelVolSlide:
                 if (param) oldparam[nChn] = param; else param = oldparam[nChn];
                 pChn->nOldChnVolSlide = param;
                 if (((param & 0x0F) == 0x0F) && (param & 0xF0))
@@ -1315,7 +1315,7 @@ BOOL module_renderer::ProcessEffects()
         UINT vol = pChn->nRowVolume;
         UINT cmd = pChn->nRowCommand;
         UINT param = pChn->nRowParam;
-        bool bPorta = ((cmd != CMD_TONEPORTAMENTO) && (cmd != CMD_TONEPORTAVOL) && (volcmd != VolCmdPortamento)) ? false : true;
+        bool bPorta = ((cmd != CmdPorta) && (cmd != CmdPortamentoVol) && (volcmd != VolCmdPortamento)) ? false : true;
 
         UINT nStartTick = 0;
 
@@ -1385,14 +1385,14 @@ BOOL module_renderer::ProcessEffects()
         if((m_dwSongFlags & SONG_FIRSTTICK) == 0) InvertLoop(&Chn[nChn]);
 
         // Process special effects (note delay, pattern delay, pattern loop)
-        if (cmd == CMD_DELAYCUT)
+        if (cmd == CmdDelayCut)
         {
             //:xy --> note delay until tick x, note cut at tick x+y
             nStartTick = (param & 0xF0) >> 4;
             const UINT cutAtTick = nStartTick + (param & 0x0F);
             NoteCut(nChn, cutAtTick);
         } else
-        if ((cmd == CMD_MODCMDEX) || (cmd == CMD_S3MCMDEX))
+        if ((cmd == CmdModCmdEx) || (cmd == CmdS3mCmdEx))
         {
             if ((!param) && (m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))) param = pChn->nOldCmdEx; else pChn->nOldCmdEx = param;
             // Note Delay ?
@@ -1430,8 +1430,8 @@ BOOL module_renderer::ProcessEffects()
             if(m_dwSongFlags & SONG_FIRSTTICK)
             {
                 // Pattern Loop ?
-                if ((((param & 0xF0) == 0x60) && (cmd == CMD_MODCMDEX))
-                 || (((param & 0xF0) == 0xB0) && (cmd == CMD_S3MCMDEX)))
+                if ((((param & 0xF0) == 0x60) && (cmd == CmdModCmdEx))
+                 || (((param & 0xF0) == 0xB0) && (cmd == CmdS3mCmdEx)))
                 {
                     int nloop = PatternLoop(pChn, param & 0x0F);
                     if (nloop >= 0) nPatLoopRow = nloop;
@@ -1455,14 +1455,14 @@ BOOL module_renderer::ProcessEffects()
             if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
             {
                 // XM: FT2 ignores a note next to a K00 effect, and a fade-out seems to be done when no volume envelope is present (not exactly the Kxx behaviour)
-                if(cmd == CMD_KEYOFF && param == 0 && IsCompatibleMode(TRK_FASTTRACKER2))
+                if(cmd == CmdKeyOff && param == 0 && IsCompatibleMode(TRK_FASTTRACKER2))
                 {
                     note = instr = 0;
                     retrigEnv = false;
                 }
 
                 // XM: Key-Off + Sample == Note Cut (BUT: Only if no instr number or volume effect is present!)
-                if ((note == NoteKeyOff) && ((!instr && !vol && cmd != CMD_VOLUME) || !IsCompatibleMode(TRK_FASTTRACKER2)) && ((!pChn->instrument) || (!(pChn->instrument->volume_envelope.flags & ENV_ENABLED))))
+                if ((note == NoteKeyOff) && ((!instr && !vol && cmd != CmdVol) || !IsCompatibleMode(TRK_FASTTRACKER2)) && ((!pChn->instrument) || (!(pChn->instrument->volume_envelope.flags & ENV_ENABLED))))
                 {
                     pChn->flags |= CHN_FASTVOLRAMP;
                     pChn->nVolume = 0;
@@ -1753,11 +1753,11 @@ BOOL module_renderer::ProcessEffects()
         {
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
-        case CMD_XPARAM:
+        case CmdExtendedParameter:
             break;
 // -> NEW_FEATURE#0010
         // Set Volume
-        case CMD_VOLUME:
+        case CmdVol:
             if(m_dwSongFlags & SONG_FIRSTTICK)
             {
                 pChn->nVolume = (param < 64) ? param*4 : 256;
@@ -1766,59 +1766,59 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Portamento Up
-        case CMD_PORTAMENTOUP:
+        case CmdPortaUp:
             if ((!param) && (m_nType & MOD_TYPE_MOD)) break;
             PortamentoUp(pChn, param);
             break;
 
         // Portamento Down
-        case CMD_PORTAMENTODOWN:
+        case CmdPortaDown:
             if ((!param) && (m_nType & MOD_TYPE_MOD)) break;
             PortamentoDown(pChn, param);
             break;
 
         // Volume Slide
-        case CMD_VOLUMESLIDE:
+        case CmdVolumeSlide:
             if ((param) || (m_nType != MOD_TYPE_MOD)) VolumeSlide(pChn, param);
             break;
 
         // Tone-Portamento
-        case CMD_TONEPORTAMENTO:
+        case CmdPorta:
             TonePortamento(pChn, param);
             break;
 
         // Tone-Portamento + Volume Slide
-        case CMD_TONEPORTAVOL:
+        case CmdPortamentoVol:
             if ((param) || (m_nType != MOD_TYPE_MOD)) VolumeSlide(pChn, param);
             TonePortamento(pChn, 0);
             break;
 
         // Vibrato
-        case CMD_VIBRATO:
+        case CmdVibrato:
             Vibrato(pChn, param);
             break;
 
         // Vibrato + Volume Slide
-        case CMD_VIBRATOVOL:
+        case CmdVibratoVol:
             if ((param) || (m_nType != MOD_TYPE_MOD)) VolumeSlide(pChn, param);
             Vibrato(pChn, 0);
             break;
 
         // Set Speed
-        case CMD_SPEED:
+        case CmdSpeed:
             if(m_dwSongFlags & SONG_FIRSTTICK)
                 SetSpeed(param);
             break;
 
         // Set Tempo
-        case CMD_TEMPO:
+        case CmdTempo:
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
                 m = NULL;
                 if (m_nRow < Patterns[m_nPattern].GetNumRows()-1) {
                     m = Patterns[m_nPattern] + (m_nRow+1) * m_nChannels + nChn;
                 }
-                if (m && m->command == CMD_XPARAM) {
+                if (m && m->command == CmdExtendedParameter) {
                     if (m_nType & MOD_TYPE_XM) {
                         param -= 0x20; //with XM, 0x20 is the lowest tempo. Anything below changes ticks per row.
                     }
@@ -1834,23 +1834,23 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Set Offset
-        case CMD_OFFSET:
+        case CmdOffset:
             if (m_nTickCount) break;
             //rewbs.volOffset: moved sample offset code to own method
             SampleOffset(nChn, param, bPorta);
             break;
 
         // Arpeggio
-        case CMD_ARPEGGIO:
+        case CmdArpeggio:
             // IT compatibility 01. Don't ignore Arpeggio if no note is playing (also valid for ST3)
             if ((m_nTickCount) || (((!pChn->nPeriod) || !pChn->nNote) && !IsCompatibleMode(TRK_IMPULSETRACKER | TRK_SCREAMTRACKER))) break;
             if ((!param) && (!(m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT)))) break;
-            pChn->nCommand = CMD_ARPEGGIO;
+            pChn->nCommand = CmdArpeggio;
             if (param) pChn->nArpeggio = param;
             break;
 
         // Retrig
-        case CMD_RETRIG:
+        case CmdRetrig:
             if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
             {
                 if (!(param & 0xF0)) param |= pChn->nRetrigParam & 0xF0;
@@ -1881,7 +1881,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Tremor
-        case CMD_TREMOR:
+        case CmdTremor:
             if (!(m_dwSongFlags & SONG_FIRSTTICK)) break;
 
             // IT compatibility 12. / 13. Tremor (using modified DUMB's Tremor logic here because of old effects - http://dumb.sf.net/)
@@ -1900,13 +1900,13 @@ BOOL module_renderer::ProcessEffects()
                 // XM Tremor. Logic is being processed in sndmix.cpp
             }
 
-            pChn->nCommand = CMD_TREMOR;
+            pChn->nCommand = CmdTremor;
             if (param) pChn->nTremorParam = param;
 
             break;
 
         // Set Global Volume
-        case CMD_GLOBALVOLUME:
+        case CmdGlobalVol:
             // ST3 applies global volume on tick 1 and does other weird things, but we won't emulate this for now.
 //                     if(((GetType() & MOD_TYPE_S3M) && m_nTickCount != 1)
 //                             || (!(GetType() & MOD_TYPE_S3M) && !(m_dwSongFlags & SONG_FIRSTTICK)))
@@ -1929,7 +1929,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Global Volume Slide
-        case CMD_GLOBALVOLSLIDE:
+        case CmdGlobalVolSlide:
             //IT compatibility 16. Saving last global volume slide param per channel (FT2/IT)
             if(IsCompatibleMode(TRK_IMPULSETRACKER | TRK_FASTTRACKER2))
                 GlobalVolSlide(param, &pChn->nOldGlobalVolSlide);
@@ -1938,7 +1938,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Set 8-bit Panning
-        case CMD_PANNING8:
+        case CmdPanning8:
             if (!(m_dwSongFlags & SONG_FIRSTTICK)) break;
             if ((m_dwSongFlags & SONG_PT1XMODE)) break;
             if (!(m_dwSongFlags & SONG_SURROUNDPAN)) pChn->flags &= ~CHN_SURROUND;
@@ -1963,32 +1963,32 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Panning Slide
-        case CMD_PANNINGSLIDE:
+        case CmdPanningSlide:
             PanningSlide(pChn, param);
             break;
 
         // Tremolo
-        case CMD_TREMOLO:
+        case CmdTremolo:
             Tremolo(pChn, param);
             break;
 
         // Fine Vibrato
-        case CMD_FINEVIBRATO:
+        case CmdFineVibrato:
             FineVibrato(pChn, param);
             break;
 
         // MOD/XM Exx Extended Commands
-        case CMD_MODCMDEX:
+        case CmdModCmdEx:
             ExtendedMODCommands(nChn, param);
             break;
 
         // S3M/IT Sxx Extended Commands
-        case CMD_S3MCMDEX:
+        case CmdS3mCmdEx:
             ExtendedS3MCommands(nChn, param);
             break;
 
         // Key Off
-        case CMD_KEYOFF:
+        case CmdKeyOff:
             // This is how Key Off is supposed to sound... (in FT2 at least)
             if(IsCompatibleMode(TRK_FASTTRACKER2))
             {
@@ -2019,7 +2019,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Extra-fine porta up/down
-        case CMD_XFINEPORTAUPDOWN:
+        case CmdExtraFinePortaUpDown:
             switch(param & 0xF0)
             {
             case 0x10: ExtraFinePortamentoUp(pChn, param & 0x0F); break;
@@ -2036,7 +2036,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Set Channel Global Volume
-        case CMD_CHANNELVOLUME:
+        case CmdChannelVol:
             if ((m_dwSongFlags & SONG_FIRSTTICK) == 0) break;
             if (param <= 64)
             {
@@ -2046,17 +2046,17 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Channel volume slide
-        case CMD_CHANNELVOLSLIDE:
+        case CmdChannelVolSlide:
             ChannelVolSlide(pChn, param);
             break;
 
         // Panbrello (IT)
-        case CMD_PANBRELLO:
+        case CmdPanbrello:
             Panbrello(pChn, param);
             break;
 
         // Set Envelope Position
-        case CMD_SETENVPOSITION:
+        case CmdSetEnvelopePosition:
             if(m_dwSongFlags & SONG_FIRSTTICK)
             {
                 pChn->volume_envelope.position = param;
@@ -2080,7 +2080,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Position Jump
-        case CMD_POSITIONJUMP:
+        case CmdPositionJump:
             m_nNextPatStartRow = 0; // FT2 E60 bug
             nPosJump = param;
             if((m_dwSongFlags & SONG_PATTERNLOOP) && m_nSeqOverride == 0)
@@ -2098,7 +2098,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Pattern Break
-        case CMD_PATTERNBREAK:
+        case CmdPatternBreak:
             if(param >= 64 && (GetType() & MOD_TYPE_S3M))
             {
                 // ST3 ignores invalid pattern breaks.
@@ -2110,7 +2110,7 @@ BOOL module_renderer::ProcessEffects()
             {
               m = Patterns[m_nPattern] + (m_nRow+1) * m_nChannels + nChn;
             }
-            if (m && m->command == CMD_XPARAM)
+            if (m && m->command == CmdExtendedParameter)
             {
                 nBreakRow = (param << 8) + m->param;
             } else
@@ -2128,21 +2128,21 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Midi Controller
-        case CMD_MIDI:                    // Midi Controller (on first tick only)
-        case CMD_SMOOTHMIDI:    // Midi Controller (smooth, i.e. on every tick)
+        case CmdMidi:                    // Midi Controller (on first tick only)
+        case CmdSmoothMidi:    // Midi Controller (smooth, i.e. on every tick)
 
-            if((cmd == CMD_MIDI) && !(m_dwSongFlags & SONG_FIRSTTICK)) break;
+            if((cmd == CmdMidi) && !(m_dwSongFlags & SONG_FIRSTTICK)) break;
             if (param < 0x80)
-                ProcessMidiMacro(nChn, (cmd == CMD_SMOOTHMIDI), m_MidiCfg.szMidiSFXExt[pChn->nActiveMacro], param);
+                ProcessMidiMacro(nChn, (cmd == CmdSmoothMidi), m_MidiCfg.szMidiSFXExt[pChn->nActiveMacro], param);
             else
-                ProcessMidiMacro(nChn, (cmd == CMD_SMOOTHMIDI), m_MidiCfg.szMidiZXXExt[(param & 0x7F)], 0);
+                ProcessMidiMacro(nChn, (cmd == CmdSmoothMidi), m_MidiCfg.szMidiZXXExt[(param & 0x7F)], 0);
             break;
 
         // IMF Commands
-        case CMD_NOTESLIDEUP:
+        case CmdNoteSlideUp:
             NoteSlide(pChn, param, 1);
             break;
-        case CMD_NOTESLIDEDOWN:
+        case CmdNoteSlideDown:
             NoteSlide(pChn, param, -1);
             break;
         }
@@ -3308,12 +3308,12 @@ void module_renderer::SampleOffset(UINT nChn, UINT param, bool bPorta)
 
             if(m_nRow < Patterns[m_nPattern].GetNumRows()-1) m = Patterns[m_nPattern] + (m_nRow+1) * m_nChannels + nChn;
 
-            if(m && m->command == CMD_XPARAM){
+            if(m && m->command == CmdExtendedParameter){
                 UINT tmp = m->param;
                 m = NULL;
                 if(m_nRow < Patterns[m_nPattern].GetNumRows()-2) m = Patterns[m_nPattern] + (m_nRow+2) * m_nChannels  + nChn;
 
-                if(m && m->command == CMD_XPARAM) param = (param<<16) + (tmp<<8) + m->param;
+                if(m && m->command == CmdExtendedParameter) param = (param<<16) + (tmp<<8) + m->param;
                 else param = (param<<8) + tmp;
             }
             else{
@@ -3801,12 +3801,12 @@ uint32_t module_renderer::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
                     UINT cmd;
                     if ((p[pos].note) || (p[pos].volcmd)) return 0;
                     cmd = p[pos].command;
-                    if (cmd == CMD_MODCMDEX)
+                    if (cmd == CmdModCmdEx)
                     {
                         UINT cmdex = p[pos].param & 0xF0;
                         if ((!cmdex) || (cmdex == 0x60) || (cmdex == 0xE0) || (cmdex == 0xF0)) cmd = 0;
                     }
-                    if ((cmd) && (cmd != CMD_SPEED) && (cmd != CMD_TEMPO)) return 0;
+                    if ((cmd) && (cmd != CmdSpeed) && (cmd != CmdTempo)) return 0;
                     pos++;
                 }
             }

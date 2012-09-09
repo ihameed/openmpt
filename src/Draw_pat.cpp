@@ -882,7 +882,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
                 uint16_t val = m->GetValueEffectCol();
                 if(val > modplug::tracker::modevent_t::MaxColumnValue) val = modplug::tracker::modevent_t::MaxColumnValue;
                 fx_col = row_col;
-                if (!isPCnote && (m->command) && (m->command < MAX_EFFECTS) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
+                if (!isPCnote && (m->command) && (m->command < CmdMax) && (CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT))
                 {
                     if(gEffectColors[m->command] != 0)
                         fx_col = gEffectColors[m->command];

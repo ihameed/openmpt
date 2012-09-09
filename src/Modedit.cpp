@@ -1092,15 +1092,15 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                             if (s[8] != '.')
                                                             {
                                                                     LPCSTR psc = (bS3MCommands) ? s3m_command_glyphs : mod_command_glyphs;
-                                                                    for (UINT i=1; i<MAX_EFFECTS; i++)
+                                                                    for (UINT i=1; i<CmdMax; i++)
                                                                     {
                                                                             if ((s[8] == psc[i]) && (psc[i] != '?')) m[col].command = i;
                                                                     }
                                                             }
                                                     }
                                                     // Effect value
-                                                    if (s[9] > ' ' && (!doMixPaste || ((!doITStyleMix && (origModCmd.command == CMD_NONE || origModCmd.param == 0)) ||
-                                                                                                            (doITStyleMix && origModCmd.command == CMD_NONE && origModCmd.param == 0))))
+                                                    if (s[9] > ' ' && (!doMixPaste || ((!doITStyleMix && (origModCmd.command == CmdNone || origModCmd.param == 0)) ||
+                                                                                                            (doITStyleMix && origModCmd.command == CmdNone && origModCmd.param == 0))))
                                                     {
                                                             m[col].param = 0;
                                                             if (s[9] != '.')
@@ -1117,13 +1117,13 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                     {
                                                             switch (m[col].command)
                                                             {
-                                                            case CMD_SPEED:
-                                                            case CMD_TEMPO:
-                                                                    if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CMD_SPEED : CMD_TEMPO;
+                                                            case CmdSpeed:
+                                                            case CmdTempo:
+                                                                    if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CmdSpeed : CmdTempo;
                                                                     else
                                                                     {
-                                                                            if ((m[col].command == CMD_SPEED) && (m[col].param > spdmax)) m[col].param = CMD_TEMPO; else
-                                                                            if ((m[col].command == CMD_TEMPO) && (m[col].param <= spdmax)) m[col].param = CMD_SPEED;
+                                                                            if ((m[col].command == CmdSpeed) && (m[col].param > spdmax)) m[col].param = CmdTempo; else
+                                                                            if ((m[col].command == CmdTempo) && (m[col].param <= spdmax)) m[col].param = CmdSpeed;
                                                                     }
                                                                     break;
                                                             }
@@ -1131,9 +1131,9 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                     {
                                                             switch (m[col].command)
                                                             {
-                                                            case CMD_SPEED:
-                                                            case CMD_TEMPO:
-                                                                    if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CMD_SPEED : CMD_TEMPO;
+                                                            case CmdSpeed:
+                                                            case CmdTempo:
+                                                                    if (!bS3MCommands) m[col].command = (m[col].param <= spdmax) ? CmdSpeed : CmdTempo;
                                                                     break;
                                                             }
                                                     }
@@ -1398,7 +1398,7 @@ bool CModDoc::RestartPosToPattern()
     GetLengthType length = m_SndFile.GetLength(eNoAdjust);
     if(length.endOrder != modplug::tracker::OrderIndexInvalid && length.endRow != RowIndexInvalid)
     {
-            result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CMD_POSITIONJUMP, m_SndFile.m_nRestartPos, false, ChannelIndexInvalid, false, weTryNextRow);
+            result = m_SndFile.TryWriteEffect(m_SndFile.Order[length.endOrder], length.endRow, CmdPositionJump, m_SndFile.m_nRestartPos, false, ChannelIndexInvalid, false, weTryNextRow);
     }
     m_SndFile.m_nRestartPos = 0;
     return result;

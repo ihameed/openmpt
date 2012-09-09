@@ -296,7 +296,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                 {
                     // effect(s) follow
 
-                    m->command = CMD_NONE;
+                    m->command = CmdNone;
                     m->volcmd = VolCmdNone;
 
                     while(true)
@@ -306,39 +306,39 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                         uint8_t bEffectData = lpStream[iPatternPos++];
 
                         uint8_t command = bEffect & 0x1F, param = bEffectData;
-                        uint8_t volcommand = CMD_NONE, volparam = param;
+                        uint8_t volcommand = CmdNone, volparam = param;
 
                         switch(command)
                         {
-                        case 0x01: command = CMD_PORTAMENTOUP; if(param >= 0xE0) param = 0xDF; break;
-                        case 0x02: command = CMD_PORTAMENTODOWN; if(param >= 0xE0) param = 0xDF; break;
-                        case 0x03: command = CMD_TONEPORTAMENTO; break;
-                        case 0x04: command = CMD_VIBRATO; break;
-                        case 0x05: command = CMD_TONEPORTAVOL; if (param & 0xF0) param &= 0xF0; break;
-                        case 0x06: command = CMD_VIBRATOVOL; if (param & 0xF0) param &= 0xF0; break;
-                        case 0x07: command = CMD_TREMOLO; break;
-                        case 0x08: command = CMD_TREMOR; break;
-                        case 0x09: command = CMD_OFFSET; break;
-                        case 0x0A: command = CMD_VOLUMESLIDE; break;
-                        case 0x0B: command = CMD_POSITIONJUMP; break;
+                        case 0x01: command = CmdPortaUp; if(param >= 0xE0) param = 0xDF; break;
+                        case 0x02: command = CmdPortaDown; if(param >= 0xE0) param = 0xDF; break;
+                        case 0x03: command = CmdPorta; break;
+                        case 0x04: command = CmdVibrato; break;
+                        case 0x05: command = CmdPortamentoVol; if (param & 0xF0) param &= 0xF0; break;
+                        case 0x06: command = CmdVibratoVol; if (param & 0xF0) param &= 0xF0; break;
+                        case 0x07: command = CmdTremolo; break;
+                        case 0x08: command = CmdTremor; break;
+                        case 0x09: command = CmdOffset; break;
+                        case 0x0A: command = CmdVolumeSlide; break;
+                        case 0x0B: command = CmdPositionJump; break;
                         case 0x0C:
                             if(bS3MCommandSet)
                             {
-                                command = CMD_NONE;
+                                command = CmdNone;
                                 volcommand = VolCmdVol;
                                 volparam = min(param, 64);
                             }
                             else
                             {
-                                command = CMD_VOLUME;
+                                command = CmdVol;
                                 param = min(param, 64);
                             }
                             break;
-                        case 0x0D: command = CMD_PATTERNBREAK; break;
+                        case 0x0D: command = CmdPatternBreak; break;
                         case 0x0E:
                             if(bS3MCommandSet)
                             {
-                                command = CMD_S3MCMDEX;
+                                command = CmdS3mCmdEx;
                                 // need to do some remapping
                                 switch(param >> 4)
                                 {
@@ -347,12 +347,12 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                                     break;
                                 case 0x1:
                                     // fine porta up
-                                    command = CMD_PORTAMENTOUP;
+                                    command = CmdPortaUp;
                                     param = 0xF0 | (param & 0x0F);
                                     break;
                                 case 0x2:
                                     // fine porta down
-                                    command = CMD_PORTAMENTODOWN;
+                                    command = CmdPortaDown;
                                     param = 0xF0 | (param & 0x0F);
                                     break;
                                 case 0x3:
@@ -377,22 +377,22 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                                     break;
                                 case 0x8:
                                     // extra fine porta up
-                                    command = CMD_PORTAMENTOUP;
+                                    command = CmdPortaUp;
                                     param = 0xE0 | (param & 0x0F);
                                     break;
                                 case 0x9:
                                     // extra fine porta down
-                                    command = CMD_PORTAMENTODOWN;
+                                    command = CmdPortaDown;
                                     param = 0xE0 | (param & 0x0F);
                                     break;
                                 case 0xA:
                                     // fine volume up
-                                    command = CMD_VOLUMESLIDE;
+                                    command = CmdVolumeSlide;
                                     param = ((param & 0x0F) << 4) | 0x0F;
                                     break;
                                 case 0xB:
                                     // fine volume down
-                                    command = CMD_VOLUMESLIDE;
+                                    command = CmdVolumeSlide;
                                     param = 0xF0 | (param & 0x0F);
                                     break;
                                 case 0xC:
@@ -405,71 +405,71 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                                     // pattern delay
                                     break;
                                 case 0xF:
-                                    command = CMD_MODCMDEX;
+                                    command = CmdModCmdEx;
                                     // invert loop / funk repeat
                                     break;
                                 }
                             }
                             else
                             {
-                                command = CMD_MODCMDEX;
+                                command = CmdModCmdEx;
                             }
                             break;
-                        case 0x0F: command = CMD_SPEED; break;
-                        case 0x10: command = CMD_ARPEGGIO; break;
-                        case 0x11: command = CMD_NONE /* set internal flag */; break;
+                        case 0x0F: command = CmdSpeed; break;
+                        case 0x10: command = CmdArpeggio; break;
+                        case 0x11: command = CmdNone /* set internal flag */; break;
                         case 0x12:
                             if((!bS3MCommandSet) && ((param & 0xF0) == 0))
                             {
                                 // retrig in "mod style"
-                                command = CMD_MODCMDEX;
+                                command = CmdModCmdEx;
                                 param = 0x90 | (param & 0x0F);
                             }
                             else
                             {
                                 // either "s3m style" is required or this format is like s3m anyway
-                                command = CMD_RETRIG;
+                                command = CmdRetrig;
                             }
                             break;
-                        case 0x13: command = CMD_GLOBALVOLUME; break;
-                        case 0x14: command = CMD_FINEVIBRATO; break;
+                        case 0x13: command = CmdGlobalVol; break;
+                        case 0x14: command = CmdFineVibrato; break;
                         case 0x1E:
                             switch(param >> 4)
                             {
                             case 0x0:
                                 switch(param & 0x0F)
                                 {
-                                case 0x0: command = CMD_S3MCMDEX; param = 0x90; break;
-                                case 0x1: command = CMD_PANNING8; param = 0xA4; break;
-                                case 0x2: command = CMD_NONE /* set normal loop - not implemented in 2GDM */; break;
-                                case 0x3: command = CMD_NONE /* set bidi loop - dito */; break;
-                                case 0x4: command = CMD_S3MCMDEX; param = 0x9E; break;
-                                case 0x5: command = CMD_S3MCMDEX; param = 0x9F; break;
-                                case 0x6: command = CMD_NONE /* monaural sample - dito */; break;
-                                case 0x7: command = CMD_NONE /* stereo sample - dito */; break;
-                                case 0x8: command = CMD_NONE /* stop sample on end - dito */; break;
-                                case 0x9: command = CMD_NONE /* loop sample on end - dito */; break;
-                                default: command = CMD_NONE; break;
+                                case 0x0: command = CmdS3mCmdEx; param = 0x90; break;
+                                case 0x1: command = CmdPanning8; param = 0xA4; break;
+                                case 0x2: command = CmdNone /* set normal loop - not implemented in 2GDM */; break;
+                                case 0x3: command = CmdNone /* set bidi loop - dito */; break;
+                                case 0x4: command = CmdS3mCmdEx; param = 0x9E; break;
+                                case 0x5: command = CmdS3mCmdEx; param = 0x9F; break;
+                                case 0x6: command = CmdNone /* monaural sample - dito */; break;
+                                case 0x7: command = CmdNone /* stereo sample - dito */; break;
+                                case 0x8: command = CmdNone /* stop sample on end - dito */; break;
+                                case 0x9: command = CmdNone /* loop sample on end - dito */; break;
+                                default: command = CmdNone; break;
                                 }
                                 break;
                             case 0x8:
-                                command = (bS3MCommandSet) ? CMD_S3MCMDEX : CMD_MODCMDEX;
+                                command = (bS3MCommandSet) ? CmdS3mCmdEx : CmdModCmdEx;
                                 break;
                             case 0xD:
                                 // adjust frequency (increment in hz) - not implemented in 2GDM
-                                command = CMD_NONE;
+                                command = CmdNone;
                                 break;
-                            default: command = CMD_NONE; break;
+                            default: command = CmdNone; break;
                             }
                             break;
-                        case 0x1F: command = CMD_TEMPO; break;
-                        default: command = CMD_NONE; break;
+                        case 0x1F: command = CmdTempo; break;
+                        default: command = CmdNone; break;
                         }
 
-                        if(command != CMD_NONE)
+                        if(command != CmdNone)
                         {
                             // move pannings to volume column - should never happen
-                            if(m->command == CMD_S3MCMDEX && ((m->param >> 4) == 0x8) && volcommand == CMD_NONE)
+                            if(m->command == CmdS3mCmdEx && ((m->param >> 4) == 0x8) && volcommand == CmdNone)
                             {
                                 volcommand = VolCmdPan;
                                 volparam = ((param & 0x0F) << 2) + 2;
@@ -478,7 +478,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                             m->command = command;
                             m->param = param;
                         }
-                        if(volcommand != CMD_NONE)
+                        if(volcommand != CmdNone)
                         {
                             //XXXih: gross!
                             m->volcmd = (modplug::tracker::volcmd_t) volcommand;

@@ -2328,8 +2328,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                     case VolCmdFineUp:            vol = 65 + ConvertVolParam(m->vol); break;
                     case VolCmdFineDown:    vol = 75 + ConvertVolParam(m->vol); break;
                     case VolCmdVibratoDepth:    vol = 203 + ConvertVolParam(m->vol); break;
-                    case VolCmdVibratoSpeed:    if(command == CMD_NONE) { // illegal command -> move if possible
-                                                    command = CMD_VIBRATO; param = ConvertVolParam(m->vol) << 4; vol = 0xFF;
+                    case VolCmdVibratoSpeed:    if(command == CmdNone) { // illegal command -> move if possible
+                                                    command = CmdVibrato; param = ConvertVolParam(m->vol) << 4; vol = 0xFF;
                                                 } else { vol = 203;}
                                                 break;
                     case VolCmdPortamento:    vol = 193 + ConvertVolParam(m->vol); break;

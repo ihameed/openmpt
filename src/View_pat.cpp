@@ -766,7 +766,7 @@ void CViewPattern::OnGrowSelection()
                 case VOL_COLUMN:    dest->vol     = src->vol;     blank->vol = 0;
                                     dest->volcmd  = src->volcmd;  blank->volcmd = VolCmdNone;    break;
                 case EFFECT_COLUMN:    dest->command = src->command; blank->command = 0;                        break;
-                case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CMD_NONE;                break;
+                case PARAM_COLUMN:    dest->param   = src->param;   blank->param = CmdNone;                break;
             }
         }
     }
@@ -821,7 +821,7 @@ void CViewPattern::OnShrinkSelection()
                     src->volcmd = srcNext->volcmd;
                     src->vol = srcNext->vol;
                 }
-                if(src->command == CMD_NONE)
+                if(src->command == CmdNone)
                 {
                     src->command = srcNext->command;
                     src->param = srcNext->param;
@@ -853,7 +853,7 @@ void CViewPattern::OnShrinkSelection()
                 case INST_COLUMN:    dest->instr   = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = 0;
                                     dest->volcmd  = VolCmdNone;    break;
-                case EFFECT_COLUMN:    dest->command = CMD_NONE;                break;
+                case EFFECT_COLUMN:    dest->command = CmdNone;                break;
                 case PARAM_COLUMN:    dest->param   = 0;                                break;
             }
         }
@@ -2258,11 +2258,11 @@ void CViewPattern::Interpolate(PatternColumns type)
                     vsrc = srcCmd.param;
                     vdest = destCmd.param;
                     vcmd = srcCmd.command;
-                    if(srcCmd.command == CMD_NONE)
+                    if(srcCmd.command == CmdNone)
                     {
                         vsrc = vdest;
                         vcmd = destCmd.command;
-                    } else if(destCmd.command == CMD_NONE)
+                    } else if(destCmd.command == CmdNone)
                     {
                         vdest = vsrc;
                     }
@@ -2729,7 +2729,7 @@ void CViewPattern::OnPatternAmplify()
                 modplug::tracker::modevent_t *m = p + nRow * pSndFile->m_nChannels + firstChannel;
                 for (modplug::tracker::chnindex_t nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
                 {
-                    if ((m->command == CMD_VOLUME) && (m->param <= 64))
+                    if ((m->command == CmdVol) && (m->param <= 64))
                     {
                         chvol[nChn] = m->param;
                         break;
@@ -2766,7 +2766,7 @@ void CViewPattern::OnPatternAmplify()
                                 m->vol = 64;
                             } else
                             {
-                                m->command = CMD_VOLUME;
+                                m->command = CmdVol;
                                 m->param = 64;
                             }
                             chvol[nChn] = 64;
@@ -2782,7 +2782,7 @@ void CViewPattern::OnPatternAmplify()
                 const int cy = lastRow - firstRow + 1; // total rows (for fading)
                 for (modplug::tracker::chnindex_t nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
                 {
-                    if ((!m->volcmd) && (m->command != CMD_VOLUME)
+                    if ((!m->volcmd) && (m->command != CmdVol)
                      && (m->note) && (m->note <= NOTE_MAX) && (m->instr))
                     {
                         UINT nSmp = m->instr;
@@ -2811,13 +2811,13 @@ void CViewPattern::OnPatternAmplify()
                                 m->vol = (overrideSampleVol) ? 64 : pSndFile->Samples[nSmp].default_volume >> 2;
                             } else
                             {
-                                m->command = CMD_VOLUME;
+                                m->command = CmdVol;
                                 m->param = (overrideSampleVol) ? 64 : pSndFile->Samples[nSmp].default_volume >> 2;
                             }
                         }
                     }
                     if (m->volcmd == VolCmdVol) chvol[nChn] = (uint8_t)m->vol;
-                    if (((dlg.m_bFadeIn) || (dlg.m_bFadeOut)) && (m->command != CMD_VOLUME) && (!m->volcmd))
+                    if (((dlg.m_bFadeIn) || (dlg.m_bFadeOut)) && (m->command != CmdVol) && (!m->volcmd))
                     {
                         if(useVolCol)
                         {
@@ -2825,7 +2825,7 @@ void CViewPattern::OnPatternAmplify()
                             m->vol = chvol[nChn];
                         } else
                         {
-                            m->command = CMD_VOLUME;
+                            m->command = CmdVol;
                             m->param = chvol[nChn];
                         }
                     }
@@ -2840,7 +2840,7 @@ void CViewPattern::OnPatternAmplify()
                     }
                     if ((((nChn << 3) | 3) >= (m_dwBeginSel & 0xFFFF)) && (((nChn << 3) | 3) <= (m_dwEndSel & 0xFFFF)))
                     {
-                        if ((m->command == CMD_VOLUME) && (m->param <= 64))
+                        if ((m->command == CmdVol) && (m->param <= 64))
                         {
                             int vol = m->param * dlg.m_nFactor;
                             if (dlg.m_bFadeIn) vol = (vol * (nRow + 1 - firstRow)) / cy;
@@ -2984,7 +2984,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
             pRow->Set(NOTE_PCS, plugSlot + 1, paramIndex, static_cast<uint16_t>(pPlug->GetParameter(paramIndex) * modplug::tracker::modevent_t::MaxColumnValue));
             InvalidateRow(nRow);
         }
-    } else if(pSndFile->GetModSpecifications().HasCommand(CMD_SMOOTHMIDI))
+    } else if(pSndFile->GetModSpecifications().HasCommand(CmdSmoothMidi))
     {
         // Other formats: Use MIDI macros
 
@@ -3004,11 +3004,11 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
             if (foundMacro >= 0)
             {
                 pSndFile->Chn[nChn].nActiveMacro = foundMacro;
-                if (pRow->command == CMD_NONE || pRow->command == CMD_SMOOTHMIDI || pRow->command == CMD_MIDI) //we overwrite existing Zxx and \xx only.
+                if (pRow->command == CmdNone || pRow->command == CmdSmoothMidi || pRow->command == CmdMidi) //we overwrite existing Zxx and \xx only.
                 {
                     pModDoc->GetPatternUndo()->PrepareUndo(nPattern, nChn, nRow, 1, 1);
 
-                    pRow->command = (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) ? CMD_S3MCMDEX : CMD_MODCMDEX;;
+                    pRow->command = (pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT)) ? CmdS3mCmdEx : CmdModCmdEx;;
                     pRow->param = 0xF0 + (foundMacro&0x0F);
                     InvalidateRow(nRow);
                 }
@@ -3017,11 +3017,11 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
         }
 
         //Write the data, but we only overwrite if the command is a macro anyway.
-        if (pRow->command == CMD_NONE || pRow->command == CMD_SMOOTHMIDI || pRow->command == CMD_MIDI)
+        if (pRow->command == CmdNone || pRow->command == CmdSmoothMidi || pRow->command == CmdMidi)
         {
             pModDoc->GetPatternUndo()->PrepareUndo(nPattern, nChn, nRow, 1, 1);
 
-            pRow->command = CMD_SMOOTHMIDI;
+            pRow->command = CmdSmoothMidi;
             pRow->param = pPlug->GetZxxParameter(paramIndex);
             InvalidateRow(nRow);
         }
@@ -3158,9 +3158,9 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
                 const bool bLiveRecord = IsLiveRecord(*pModDoc, *pSndFile);
                 ModCommandPos editpos = GetEditPos(*pSndFile, bLiveRecord);
                 modplug::tracker::modevent_t* p = GetModCommand(*pSndFile, editpos);
-                if(p->command == 0 || p->command == CMD_SMOOTHMIDI || p->command == CMD_MIDI)
+                if(p->command == 0 || p->command == CmdSmoothMidi || p->command == CmdMidi)
                 {   // Write command only if there's no existing command or already a midi macro command.
-                    p->command = CMD_SMOOTHMIDI;
+                    p->command = CmdSmoothMidi;
                     p->param = nByte2;
                     pMainFrm->ThreadSafeSetModified(pModDoc);
 
@@ -3848,9 +3848,9 @@ void CViewPattern::TempEnterFX(int c, int v)
 
             // Check for MOD/XM Speed/Tempo command
             if ((pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-            && ((p->command == CMD_SPEED) || (p->command == CMD_TEMPO)))
+            && ((p->command == CmdSpeed) || (p->command == CmdTempo)))
             {
-                p->command = (p->param <= pSndFile->GetModSpecifications().speedMax) ? CMD_SPEED : CMD_TEMPO;
+                p->command = (p->param <= pSndFile->GetModSpecifications().speedMax) ? CmdSpeed : CmdTempo;
             }
         }
 
@@ -3895,9 +3895,9 @@ void CViewPattern::TempEnterFXparam(int v)
 
             // Check for MOD/XM Speed/Tempo command
             if ((pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-             && ((p->command == CMD_SPEED) || (p->command == CMD_TEMPO)))
+             && ((p->command == CmdSpeed) || (p->command == CmdTempo)))
             {
-                p->command = (p->param <= pSndFile->GetModSpecifications().speedMax) ? CMD_SPEED : CMD_TEMPO;
+                p->command = (p->param <= pSndFile->GetModSpecifications().speedMax) ? CmdSpeed : CmdTempo;
             }
         }
 
@@ -4008,7 +4008,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     // -- write sdx if playing live
     if (usePlaybackPosition && nTick) {    // avoid SD0 which will be mis-interpreted
         if (p->command == 0) {    //make sure we don't overwrite any existing commands.
-            p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CMD_S3MCMDEX : CMD_MODCMDEX;
+            p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CmdS3mCmdEx : CmdModCmdEx;
             p->param   = 0xD0 | min(0xF, nTick);
         }
     }
@@ -4021,12 +4021,12 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     else { // we don't have anything to cut (MOD format) - use volume or ECx
         if(usePlaybackPosition && nTick) // ECx
         {
-            p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CMD_S3MCMDEX : CMD_MODCMDEX;
+            p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CmdS3mCmdEx : CmdModCmdEx;
             p->param   = 0xC0 | min(0xF, nTick);
         } else // C00
         {
             p->note = NoteNone;
-            p->command = CMD_VOLUME;
+            p->command = CmdVol;
             p->param = 0;
         }
     }
@@ -4161,7 +4161,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         // Special case: Convert note off commands to C00 for MOD files
         if((pSndFile->GetType() == MOD_TYPE_MOD) && (note == NoteNoteCut || note == NoteFade || note == NoteKeyOff))
         {
-            TempEnterFX(CMD_VOLUME, 0);
+            TempEnterFX(CmdVol, 0);
             return;
         }
 
@@ -4251,7 +4251,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                 newcmd.vol = (modplug::tracker::vol_t)volWrite;
             } else
             {
-                newcmd.command = CMD_VOLUME;
+                newcmd.command = CmdVol;
                 newcmd.param = (modplug::tracker::param_t)volWrite;
             }
         }
@@ -4259,9 +4259,9 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         // -- write sdx if playing live
         if (usePlaybackPosition && nTick)    // avoid SD0 which will be mis-interpreted
         {
-            if (newcmd.command == CMD_NONE)    //make sure we don't overwrite any existing commands.
+            if (newcmd.command == CmdNone)    //make sure we don't overwrite any existing commands.
             {
-                newcmd.command = (pSndFile->TypeIsS3M_IT_MPT()) ? CMD_S3MCMDEX : CMD_MODCMDEX;
+                newcmd.command = (pSndFile->TypeIsS3M_IT_MPT()) ? CmdS3mCmdEx : CmdModCmdEx;
                 UINT maxSpeed = 0x0F;
                 if(pSndFile->m_nMusicSpeed > 0) maxSpeed = min(0x0F, pSndFile->m_nMusicSpeed - 1);
                 newcmd.param = 0xD0 + min(maxSpeed, nTick);
@@ -5284,7 +5284,7 @@ bool CViewPattern::IsInterpolationPossible(modplug::tracker::rowindex_t startRow
         case EFFECT_COLUMN:
             startRowCmd = startRowMC.command;
             endRowCmd = endRowMC.command;
-            result = (startRowCmd == endRowCmd && startRowCmd != CMD_NONE) || (startRowCmd != CMD_NONE && endRowCmd == CMD_NONE) || (startRowCmd == CMD_NONE && endRowCmd != CMD_NONE);
+            result = (startRowCmd == endRowCmd && startRowCmd != CmdNone) || (startRowCmd != CmdNone && endRowCmd == CmdNone) || (startRowCmd == CmdNone && endRowCmd != CmdNone);
             break;
         case VOL_COLUMN:
             startRowCmd = startRowMC.volcmd;

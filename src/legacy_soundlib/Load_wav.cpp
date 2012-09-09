@@ -85,7 +85,7 @@ bool module_renderer::ReadWav(const uint8_t *lpStream, const uint32_t dwMemLengt
     }
     // Setting up speed command
     modplug::tracker::modevent_t *pcmd = Patterns[0];
-    pcmd[0].command = CMD_SPEED;
+    pcmd[0].command = CmdSpeed;
     pcmd[0].param = (uint8_t)m_nDefaultSpeed;
     pcmd[0].note = 5*12+1;
     pcmd[0].instr = 1;
@@ -111,8 +111,8 @@ bool module_renderer::ReadWav(const uint8_t *lpStream, const uint32_t dwMemLengt
                     {
                     case 0:        pSmp->default_pan = 0; break;
                     case 1:        pSmp->default_pan = 256; break;
-                    case 2: pSmp->default_pan = (uint16_t)((m_nSamples == 3) ? 128 : 64); pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
-                    case 3: pSmp->default_pan = 192; pcmd[nChn].command = CMD_S3MCMDEX; pcmd[nChn].param = 0x91; break;
+                    case 2: pSmp->default_pan = (uint16_t)((m_nSamples == 3) ? 128 : 64); pcmd[nChn].command = CmdS3mCmdEx; pcmd[nChn].param = 0x91; break;
+                    case 3: pSmp->default_pan = 192; pcmd[nChn].command = CmdS3mCmdEx; pcmd[nChn].param = 0x91; break;
                     default: pSmp->default_pan = 128; break;
                     }
             }

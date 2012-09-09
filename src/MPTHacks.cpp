@@ -52,7 +52,7 @@ struct FixHackedPatterns
             {
                     *foundHacks = true;
                     if(autofix)
-                            m.command = CMD_NONE;
+                            m.command = CmdNone;
             }
 
             if(!originalSpecs->HasVolCommand(m.volcmd))
@@ -64,19 +64,19 @@ struct FixHackedPatterns
 
             if(type == MOD_TYPE_XM)                // ModPlug XM extensions
             {
-                    if(m.command == CMD_XFINEPORTAUPDOWN && m.param >= 0x30)
+                    if(m.command == CmdExtraFinePortaUpDown && m.param >= 0x30)
                     {
                             *foundHacks = true;
                             if(autofix)
-                                    m.command = CMD_NONE;
+                                    m.command = CmdNone;
                     }
             } else if(type == MOD_TYPE_IT)                // ModPlug IT extensions
             {
-                    if((m.command == CMD_S3MCMDEX) && ((m.param >> 4) == 0x09) && (m.param != 0x91))
+                    if((m.command == CmdS3mCmdEx) && ((m.param >> 4) == 0x09) && (m.param != 0x91))
                     {
                             *foundHacks = true;
                             if(autofix)
-                                    m.command = CMD_NONE;
+                                    m.command = CmdNone;
                     }
 
             }
@@ -181,7 +181,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
                             if(autofix)
                             {
                                     m_SndFile.Patterns[i].Resize(originalSpecs->patternRowsMin);
-                                    m_SndFile.TryWriteEffect(i, patSize - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weTryNextRow);
+                                    m_SndFile.TryWriteEffect(i, patSize - 1, CmdPatternBreak, 0, false, ChannelIndexInvalid, false, weTryNextRow);
                             } else
                             {
                                     break;

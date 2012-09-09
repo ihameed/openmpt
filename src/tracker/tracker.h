@@ -243,7 +243,7 @@ __declspec(align(32)) struct modchannel_t {
     void ClearRowCmd() {
         nRowNote = NoteNone; nRowInstr = 0;
         nRowVolCmd = VolCmdNone; nRowVolume = 0;
-        nRowCommand = CMD_NONE; nRowParam = 0;
+        nRowCommand = CmdNone; nRowParam = 0;
     }
 
     typedef uint32_t VOLUME;

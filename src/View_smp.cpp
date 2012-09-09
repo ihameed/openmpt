@@ -1291,9 +1291,9 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
                             const uint32_t xLow = (x / 0x100) % 0x100;
                             const uint32_t xHigh = x / 0x10000;
 
-                            const char cOffsetChar = pSndFile->GetModSpecifications().GetEffectLetter(CMD_OFFSET);
+                            const char cOffsetChar = pSndFile->GetModSpecifications().GetEffectLetter(CmdOffset);
                             const bool bHasHighOffset = (pSndFile->TypeIsS3M_IT_MPT() || (pSndFile->GetType() == MOD_TYPE_XM));
-                            const char cHighOffsetChar = (pSndFile->TypeIsS3M_IT_MPT()) ? s3m_command_glyphs[CMD_S3MCMDEX] : mod_command_glyphs[CMD_XFINEPORTAUPDOWN];
+                            const char cHighOffsetChar = (pSndFile->TypeIsS3M_IT_MPT()) ? s3m_command_glyphs[CmdS3mCmdEx] : mod_command_glyphs[CmdExtraFinePortaUpDown];
 
                             if(xHigh == 0)
                                     wsprintf(s, "Offset: %c%02X", cOffsetChar, xLow);

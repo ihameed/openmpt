@@ -81,36 +81,36 @@ void module_renderer::S3MConvert(modplug::tracker::modevent_t *m, bool bIT) cons
     UINT param = m->param;
     switch (command | 0x40)
     {
-    case 'A':    command = CMD_SPEED; break;
-    case 'B':    command = CMD_POSITIONJUMP; break;
-    case 'C':    command = CMD_PATTERNBREAK; if (!bIT) param = (param >> 4) * 10 + (param & 0x0F); break;
-    case 'D':    command = CMD_VOLUMESLIDE; break;
-    case 'E':    command = CMD_PORTAMENTODOWN; break;
-    case 'F':    command = CMD_PORTAMENTOUP; break;
-    case 'G':    command = CMD_TONEPORTAMENTO; break;
-    case 'H':    command = CMD_VIBRATO; break;
-    case 'I':    command = CMD_TREMOR; break;
-    case 'J':    command = CMD_ARPEGGIO; break;
-    case 'K':    command = CMD_VIBRATOVOL; break;
-    case 'L':    command = CMD_TONEPORTAVOL; break;
-    case 'M':    command = CMD_CHANNELVOLUME; break;
-    case 'N':    command = CMD_CHANNELVOLSLIDE; break;
-    case 'O':    command = CMD_OFFSET; break;
-    case 'P':    command = CMD_PANNINGSLIDE; break;
-    case 'Q':    command = CMD_RETRIG; break;
-    case 'R':    command = CMD_TREMOLO; break;
-    case 'S':    command = CMD_S3MCMDEX; break;
-    case 'T':    command = CMD_TEMPO; break;
-    case 'U':    command = CMD_FINEVIBRATO; break;
-    case 'V':    command = CMD_GLOBALVOLUME; break;
-    case 'W':    command = CMD_GLOBALVOLSLIDE; break;
-    case 'X':    command = CMD_PANNING8; break;
-    case 'Y':    command = CMD_PANBRELLO; break;
-    case 'Z':    command = CMD_MIDI; break;
-    case '\\':    command = CMD_SMOOTHMIDI; break; //rewbs.smoothVST
+    case 'A':    command = CmdSpeed; break;
+    case 'B':    command = CmdPositionJump; break;
+    case 'C':    command = CmdPatternBreak; if (!bIT) param = (param >> 4) * 10 + (param & 0x0F); break;
+    case 'D':    command = CmdVolumeSlide; break;
+    case 'E':    command = CmdPortaDown; break;
+    case 'F':    command = CmdPortaUp; break;
+    case 'G':    command = CmdPorta; break;
+    case 'H':    command = CmdVibrato; break;
+    case 'I':    command = CmdTremor; break;
+    case 'J':    command = CmdArpeggio; break;
+    case 'K':    command = CmdVibratoVol; break;
+    case 'L':    command = CmdPortamentoVol; break;
+    case 'M':    command = CmdChannelVol; break;
+    case 'N':    command = CmdChannelVolSlide; break;
+    case 'O':    command = CmdOffset; break;
+    case 'P':    command = CmdPanningSlide; break;
+    case 'Q':    command = CmdRetrig; break;
+    case 'R':    command = CmdTremolo; break;
+    case 'S':    command = CmdS3mCmdEx; break;
+    case 'T':    command = CmdTempo; break;
+    case 'U':    command = CmdFineVibrato; break;
+    case 'V':    command = CmdGlobalVol; break;
+    case 'W':    command = CmdGlobalVolSlide; break;
+    case 'X':    command = CmdPanning8; break;
+    case 'Y':    command = CmdPanbrello; break;
+    case 'Z':    command = CmdMidi; break;
+    case '\\':    command = CmdSmoothMidi; break; //rewbs.smoothVST
     // Chars under 0x40 don't save properly, so map : to ] and # to [.
-    case ']':    command = CMD_DELAYCUT; break;
-    case '[':    command = CMD_XPARAM; break;
+    case ']':    command = CmdDelayCut; break;
+    case '[':    command = CmdExtendedParameter; break;
     default:    command = 0;
     }
     m->command = command;
@@ -125,30 +125,30 @@ void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCom
     UINT param = *pprm;
     switch(command)
     {
-    case CMD_SPEED:                            command = 'A'; break;
-    case CMD_POSITIONJUMP:            command = 'B'; break;
-    case CMD_PATTERNBREAK:            command = 'C'; if (!bIT) param = ((param / 10) << 4) + (param % 10); break;
-    case CMD_VOLUMESLIDE:            command = 'D'; break;
-    case CMD_PORTAMENTODOWN:    command = 'E'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
-    case CMD_PORTAMENTOUP:            command = 'F'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
-    case CMD_TONEPORTAMENTO:    command = 'G'; break;
-    case CMD_VIBRATO:                    command = 'H'; break;
-    case CMD_TREMOR:                    command = 'I'; break;
-    case CMD_ARPEGGIO:                    command = 'J'; break;
-    case CMD_VIBRATOVOL:            command = 'K'; break;
-    case CMD_TONEPORTAVOL:            command = 'L'; break;
-    case CMD_CHANNELVOLUME:            command = 'M'; break;
-    case CMD_CHANNELVOLSLIDE:    command = 'N'; break;
-    case CMD_OFFSET:                    command = 'O'; break;
-    case CMD_PANNINGSLIDE:            command = 'P'; break;
-    case CMD_RETRIG:                    command = 'Q'; break;
-    case CMD_TREMOLO:                    command = 'R'; break;
-    case CMD_S3MCMDEX:                    command = 'S'; break;
-    case CMD_TEMPO:                            command = 'T'; break;
-    case CMD_FINEVIBRATO:            command = 'U'; break;
-    case CMD_GLOBALVOLUME:            command = 'V'; break;
-    case CMD_GLOBALVOLSLIDE:    command = 'W'; break;
-    case CMD_PANNING8:
+    case CmdSpeed:                            command = 'A'; break;
+    case CmdPositionJump:            command = 'B'; break;
+    case CmdPatternBreak:            command = 'C'; if (!bIT) param = ((param / 10) << 4) + (param % 10); break;
+    case CmdVolumeSlide:            command = 'D'; break;
+    case CmdPortaDown:    command = 'E'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
+    case CmdPortaUp:            command = 'F'; if ((param >= 0xE0) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) param = 0xDF; break;
+    case CmdPorta:    command = 'G'; break;
+    case CmdVibrato:                    command = 'H'; break;
+    case CmdTremor:                    command = 'I'; break;
+    case CmdArpeggio:                    command = 'J'; break;
+    case CmdVibratoVol:            command = 'K'; break;
+    case CmdPortamentoVol:            command = 'L'; break;
+    case CmdChannelVol:            command = 'M'; break;
+    case CmdChannelVolSlide:    command = 'N'; break;
+    case CmdOffset:                    command = 'O'; break;
+    case CmdPanningSlide:            command = 'P'; break;
+    case CmdRetrig:                    command = 'Q'; break;
+    case CmdTremolo:                    command = 'R'; break;
+    case CmdS3mCmdEx:                    command = 'S'; break;
+    case CmdTempo:                            command = 'T'; break;
+    case CmdFineVibrato:            command = 'U'; break;
+    case CmdGlobalVol:            command = 'V'; break;
+    case CmdGlobalVolSlide:    command = 'W'; break;
+    case CmdPanning8:
         command = 'X';
         if (bIT && !(m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT | MOD_TYPE_XM)))
         {
@@ -161,15 +161,15 @@ void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCom
             param >>= 1;
         }
         break;
-    case CMD_PANBRELLO:                    command = 'Y'; break;
-    case CMD_MIDI:                            command = 'Z'; break;
-    case CMD_SMOOTHMIDI:  //rewbs.smoothVST
+    case CmdPanbrello:                    command = 'Y'; break;
+    case CmdMidi:                            command = 'Z'; break;
+    case CmdSmoothMidi:  //rewbs.smoothVST
         if(bCompatibilityExport)
             command = 'Z';
         else
             command = '\\';
         break;
-    case CMD_XFINEPORTAUPDOWN:
+    case CmdExtraFinePortaUpDown:
         if (param & 0x0F) switch(param & 0xF0)
         {
         case 0x10:    command = 'F'; param = (param & 0x0F) | 0xE0; break;
@@ -178,7 +178,7 @@ void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCom
         default:    command = param = 0;
         } else command = param = 0;
         break;
-    case CMD_MODCMDEX:
+    case CmdModCmdEx:
         command = 'S';
         switch(param & 0xF0)
         {
@@ -196,13 +196,13 @@ void module_renderer::S3MSaveConvert(UINT *pcmd, UINT *pprm, bool bIT, bool bCom
         }
         break;
     // Chars under 0x40 don't save properly, so map : to ] and # to [.
-    case CMD_DELAYCUT:
+    case CmdDelayCut:
         if(bCompatibilityExport || !bIT)
             command = param = 0;
         else
             command = ']';
         break;
-    case CMD_XPARAM:
+    case CmdExtendedParameter:
         if(bCompatibilityExport || !bIT)
             command = param = 0;
         else
@@ -464,7 +464,7 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
                         m->command = src[j++];
                         m->param = src[j++];
                         if (m->command) S3MConvert(m, false);
-                        if(m->command == CMD_MIDI)
+                        if(m->command == CmdMidi)
                         {
                             if(m->param > 0x0F)
                             {
@@ -496,9 +496,9 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
             modplug::tracker::modevent_t *m = Patterns[nPat];
             for(UINT len = Patterns[nPat].GetNumRows() * m_nChannels; len; m++, len--)
             {
-                if(m->command == CMD_MIDI)
+                if(m->command == CmdMidi)
                 {
-                    m->command = CMD_S3MCMDEX;
+                    m->command = CmdS3mCmdEx;
                     m->param |= 0x80;
                 }
             }
@@ -674,7 +674,7 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
                     else note -= 13;
 
                     if (note < 0xFE) note = (note % 12) + ((note / 12) << 4);
-                    if (command == CMD_VOLUME)
+                    if (command == CmdVol)
                     {
                         command = 0;
                         volcmd = VolCmdVol;

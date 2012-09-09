@@ -26,7 +26,7 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
     int nCmdRow = (int)nRow;
 
     // If the current command is a parameter extension command
-    if(command == CMD_XPARAM){
+    if(command == CmdExtendedParameter){
 
             nCmdRow--;
 
@@ -34,9 +34,9 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
             while(nCmdRow >= 0){
                     i = nCmdRow * pSndFile->m_nChannels + nChannel;
                     mca = pSndFile->Patterns[nPat][i];
-                    if(mca.command == CMD_OFFSET || mca.command == CMD_PATTERNBREAK || mca.command == CMD_PATTERNBREAK)
+                    if(mca.command == CmdOffset || mca.command == CmdPatternBreak || mca.command == CmdPatternBreak)
                             break;
-                    if(mca.command != CMD_XPARAM){
+                    if(mca.command != CmdExtendedParameter){
                             nCmdRow = -1;
                             break;
                     }
@@ -44,7 +44,7 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
             }
     }
     // Else if current row do not own any satisfying command parameter to extend, set return state
-    else if(command != CMD_OFFSET && command != CMD_PATTERNBREAK && command != CMD_TEMPO) nCmdRow = -1;
+    else if(command != CmdOffset && command != CmdPatternBreak && command != CmdTempo) nCmdRow = -1;
 
     // If an 'extendable' command parameter has been found,
     if(nCmdRow >= 0){
@@ -55,14 +55,14 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
             UINT n = 1;
             while(n < 4 && nCmdRow+n < pSndFile->Patterns[nPat].GetNumRows()){
                     i = (nCmdRow+n) * pSndFile->m_nChannels + nChannel;
-                    if(pSndFile->Patterns[nPat][i].command != CMD_XPARAM) break;
+                    if(pSndFile->Patterns[nPat][i].command != CmdExtendedParameter) break;
                     n++;
             }
 
             // Parameter extension found (above 8 bits non-standard parameters)
             if(n > 1){
                     // Limit offset command to 24 bits, other commands to 16 bits
-                    n = mca.command == CMD_OFFSET ? n : (n > 2 ? 2 : n);
+                    n = mca.command == CmdOffset ? n : (n > 2 ? 2 : n);
 
                     // Compute extended value WITHOUT current row parameter value : this parameter
                     // is being currently edited (this is why this function is being called) so we
@@ -79,7 +79,7 @@ void getXParam(uint8_t command, UINT nPat, UINT nRow, UINT nChannel, module_rend
             }
             // No parameter extension to perform (8 bits standard parameter),
             // just care about offset command special case (16 bits, fake)
-            else if(mca.command == CMD_OFFSET) ml <<= 8;
+            else if(mca.command == CmdOffset) ml <<= 8;
     }
 
     // Return x-parameter
@@ -725,7 +725,7 @@ void CEditCommand::UpdateEffect(UINT command, UINT param)
 
     // -> CODE#0010
     // -> DESC="add extended parameter mechanism to pattern effects"
-    if(command == CMD_OFFSET || command == CMD_PATTERNBREAK || command == CMD_TEMPO || command == CMD_XPARAM){
+    if(command == CmdOffset || command == CmdPatternBreak || command == CmdTempo || command == CmdExtendedParameter){
             UINT xp = 0, ml = 1;
             getXParam(command,m_nPattern,m_nRow,m_nChannel,pSndFile,&xp,&ml);
             m_pageEffect->XInit(xp,ml);

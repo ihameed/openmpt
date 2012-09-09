@@ -275,17 +275,17 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
     UINT param = p->param;
     switch(command)
     {
-    case 0x00:    if (param) command = CMD_ARPEGGIO; else command = 0; break;
-    case 0x01:    command = CMD_PORTAMENTOUP; break;
-    case 0x02:    command = CMD_PORTAMENTODOWN; break;
-    case 0x03:    command = CMD_TONEPORTAMENTO; break;
-    case 0x04:    command = CMD_VIBRATO; break;
-    case 0x05:    command = CMD_TONEPORTAVOL; break;
-    case 0x06:    command = CMD_VIBRATOVOL; break;
-    case 0x07:    command = CMD_TREMOLO; break;
-    case 0x0A:    if (param & 0xF0) param &= 0xF0; command = CMD_VOLUMESLIDE; if (!param) command = 0; break;
-    case 0x0B:    command = CMD_POSITIONJUMP; break;
-    case 0x0C:    command = CMD_VOLUME;
+    case 0x00:    if (param) command = CmdArpeggio; else command = 0; break;
+    case 0x01:    command = CmdPortaUp; break;
+    case 0x02:    command = CmdPortaDown; break;
+    case 0x03:    command = CmdPorta; break;
+    case 0x04:    command = CmdVibrato; break;
+    case 0x05:    command = CmdPortamentoVol; break;
+    case 0x06:    command = CmdVibratoVol; break;
+    case 0x07:    command = CmdTremolo; break;
+    case 0x0A:    if (param & 0xF0) param &= 0xF0; command = CmdVolumeSlide; if (!param) command = 0; break;
+    case 0x0B:    command = CmdPositionJump; break;
+    case 0x0C:    command = CmdVol;
                 if (pmsh->flags & MMD_FLAG_VOLHEX)
                 {
                     if (param < 0x80)
@@ -301,11 +301,11 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
                     } else command = 0;
                 }
                 break;
-    case 0x09:    command = (param < 0x20) ? CMD_SPEED : CMD_TEMPO; break;
-    case 0x0D:    if (param & 0xF0) param &= 0xF0; command = CMD_VOLUMESLIDE; if (!param) command = 0; break;
+    case 0x09:    command = (param < 0x20) ? CmdSpeed : CmdTempo; break;
+    case 0x0D:    if (param & 0xF0) param &= 0xF0; command = CmdVolumeSlide; if (!param) command = 0; break;
     case 0x0F:    // Set Tempo / Special
         // F.00 = Pattern Break
-        if (!param)    command = CMD_PATTERNBREAK;        else
+        if (!param)    command = CmdPatternBreak;        else
         // F.01 - F.F0: Set tempo/speed
         if (param <= 0xF0)
         {
@@ -316,7 +316,7 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
             // F.01 - F.0A: Set Speed
             if (param <= 0x0A)
             {
-                command = CMD_SPEED;
+                command = CmdSpeed;
             } else
             // Old tempo
             if (!(pmsh->flags2 & MMD_FLAG2_BPM))
@@ -326,7 +326,7 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
             // F.0B - F.F0: Set Tempo (assumes LPB=4)
             if (param > 0x0A)
             {
-                command = CMD_TEMPO;
+                command = CmdTempo;
                 if (param < 0x21) param = 0x21;
                 if (param > 240) param = 240;
             }
@@ -335,52 +335,52 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
         {
         // F.F1: Retrig 2x
         case 0xF1:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0x93;
             break;
         // F.F2: Note Delay 2x
         case 0xF2:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0xD3;
             break;
         // F.F3: Retrig 3x
         case 0xF3:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0x92;
             break;
         // F.F4: Note Delay 1/3
         case 0xF4:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0xD2;
             break;
         // F.F5: Note Delay 2/3
         case 0xF5:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0xD4;
             break;
         // F.F8: Filter Off
         case 0xF8:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0x00;
             break;
         // F.F9: Filter On
         case 0xF9:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0x01;
             break;
         // F.FD: Very fast tone-portamento
         case 0xFD:
-            command = CMD_TONEPORTAMENTO;
+            command = CmdPorta;
             param = 0xFF;
             break;
         // F.FE: End Song
         case 0xFE:
-            command = CMD_SPEED;
+            command = CmdSpeed;
             param = 0;
             break;
         // F.FF: Note Cut
         case 0xFF:
-            command = CMD_MODCMDEX;
+            command = CmdModCmdEx;
             param = 0xC0;
             break;
         default:
@@ -392,72 +392,72 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
         break;
     // 11.0x: Fine Slide Up
     case 0x11:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0x10;
         break;
     // 12.0x: Fine Slide Down
     case 0x12:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0x20;
         break;
     // 14.xx: Vibrato
     case 0x14:
-        command = CMD_VIBRATO;
+        command = CmdVibrato;
         break;
     // 15.xx: FineTune
     case 0x15:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         param &= 0x0F;
         param |= 0x50;
         break;
     // 16.xx: Pattern Loop
     case 0x16:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0x60;
         break;
     // 18.xx: Note Cut
     case 0x18:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0xC0;
         break;
     // 19.xx: Sample Offset
     case 0x19:
-        command = CMD_OFFSET;
+        command = CmdOffset;
         break;
     // 1A.0x: Fine Volume Up
     case 0x1A:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0xA0;
         break;
     // 1B.0x: Fine Volume Down
     case 0x1B:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0xB0;
         break;
     // 1D.xx: Pattern Break
     case 0x1D:
-        command = CMD_PATTERNBREAK;
+        command = CmdPatternBreak;
         break;
     // 1E.0x: Pattern Delay
     case 0x1E:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         if (param > 0x0F) param = 0x0F;
         param |= 0xE0;
         break;
     // 1F.xy: Retrig
     case 0x1F:
-        command = CMD_RETRIG;
+        command = CmdRetrig;
         param &= 0x0F;
         break;
     // 2E.xx: set panning
     case 0x2E:
-        command = CMD_MODCMDEX;
+        command = CmdModCmdEx;
         param = ((param + 0x10) & 0xFF) >> 1;
         if (param > 0x0F) param = 0x0F;
         param |= 0x80;

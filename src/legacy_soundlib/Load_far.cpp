@@ -170,42 +170,42 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
             {
             // 1.x: Portamento Up
             case 0x10:
-                m->command = CMD_PORTAMENTOUP;
+                m->command = CmdPortaUp;
                 m->param = eff & 0x0F;
                 break;
             // 2.x: Portamento Down
             case 0x20:
-                m->command = CMD_PORTAMENTODOWN;
+                m->command = CmdPortaDown;
                 m->param = eff & 0x0F;
                 break;
             // 3.x: Tone-Portamento
             case 0x30:
-                m->command = CMD_TONEPORTAMENTO;
+                m->command = CmdPorta;
                 m->param = (eff & 0x0F) << 2;
                 break;
             // 4.x: Retrigger
             case 0x40:
-                m->command = CMD_RETRIG;
+                m->command = CmdRetrig;
                 m->param = 6 / (1+(eff&0x0F)) + 1;
                 break;
             // 5.x: Set Vibrato Depth
             case 0x50:
-                m->command = CMD_VIBRATO;
+                m->command = CmdVibrato;
                 m->param = (eff & 0x0F);
                 break;
             // 6.x: Set Vibrato Speed
             case 0x60:
-                m->command = CMD_VIBRATO;
+                m->command = CmdVibrato;
                 m->param = (eff & 0x0F) << 4;
                 break;
             // 7.x: Vol Slide Up
             case 0x70:
-                m->command = CMD_VOLUMESLIDE;
+                m->command = CmdVolumeSlide;
                 m->param = (eff & 0x0F) << 4;
                 break;
             // 8.x: Vol Slide Down
             case 0x80:
-                m->command = CMD_VOLUMESLIDE;
+                m->command = CmdVolumeSlide;
                 m->param = (eff & 0x0F);
                 break;
             // A.x: Port to vol
@@ -215,18 +215,18 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
                 break;
             // B.x: Set Balance
             case 0xB0:
-                m->command = CMD_PANNING8;
+                m->command = CmdPanning8;
                 m->param = (eff & 0x0F) << 4;
                 break;
             // F.x: Set Speed
             case 0xF0:
-                m->command = CMD_SPEED;
+                m->command = CmdSpeed;
                 m->param = eff & 0x0F;
                 break;
             default:
                 if ((patbrk) &&    (patbrk+1 == (len >> 6)) && (patbrk+1 != rows-1))
                 {
-                    m->command = CMD_PATTERNBREAK;
+                    m->command = CmdPatternBreak;
                     patbrk = 0;
                 }
             }

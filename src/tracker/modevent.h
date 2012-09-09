@@ -180,41 +180,41 @@ struct modevent_t {
 
 
 // Effect column commands
-#define CMD_NONE             0
-#define CMD_ARPEGGIO         1
-#define CMD_PORTAMENTOUP     2
-#define CMD_PORTAMENTODOWN   3
-#define CMD_TONEPORTAMENTO   4
-#define CMD_VIBRATO          5
-#define CMD_TONEPORTAVOL     6
-#define CMD_VIBRATOVOL       7
-#define CMD_TREMOLO          8
-#define CMD_PANNING8         9
-#define CMD_OFFSET           10
-#define CMD_VOLUMESLIDE      11
-#define CMD_POSITIONJUMP     12
-#define CMD_VOLUME           13
-#define CMD_PATTERNBREAK     14
-#define CMD_RETRIG           15
-#define CMD_SPEED            16
-#define CMD_TEMPO            17
-#define CMD_TREMOR           18
-#define CMD_MODCMDEX         19
-#define CMD_S3MCMDEX         20
-#define CMD_CHANNELVOLUME    21
-#define CMD_CHANNELVOLSLIDE  22
-#define CMD_GLOBALVOLUME     23
-#define CMD_GLOBALVOLSLIDE   24
-#define CMD_KEYOFF           25
-#define CMD_FINEVIBRATO      26
-#define CMD_PANBRELLO        27
-#define CMD_XFINEPORTAUPDOWN 28
-#define CMD_PANNINGSLIDE     29
-#define CMD_SETENVPOSITION   30
-#define CMD_MIDI             31
-#define CMD_SMOOTHMIDI       32 //rewbs.smoothVST
-#define CMD_DELAYCUT         33
-#define CMD_XPARAM           34 // extended pattern effect parameter mechanism
-#define CMD_NOTESLIDEUP      35 // IMF Gxy
-#define CMD_NOTESLIDEDOWN    36 // IMF Hxy
-#define MAX_EFFECTS          37
+#define CmdNone             0
+#define CmdArpeggio         1
+#define CmdPortaUp     2
+#define CmdPortaDown   3
+#define CmdPorta   4
+#define CmdVibrato          5
+#define CmdPortamentoVol     6
+#define CmdVibratoVol       7
+#define CmdTremolo          8
+#define CmdPanning8         9
+#define CmdOffset           10
+#define CmdVolumeSlide      11
+#define CmdPositionJump     12
+#define CmdVol           13
+#define CmdPatternBreak     14
+#define CmdRetrig           15
+#define CmdSpeed            16
+#define CmdTempo            17
+#define CmdTremor           18
+#define CmdModCmdEx         19
+#define CmdS3mCmdEx         20
+#define CmdChannelVol    21
+#define CmdChannelVolSlide  22
+#define CmdGlobalVol     23
+#define CmdGlobalVolSlide   24
+#define CmdKeyOff           25
+#define CmdFineVibrato      26
+#define CmdPanbrello        27
+#define CmdExtraFinePortaUpDown 28
+#define CmdPanningSlide     29
+#define CmdSetEnvelopePosition   30
+#define CmdMidi             31
+#define CmdSmoothMidi       32 //rewbs.smoothVST
+#define CmdDelayCut         33
+#define CmdExtendedParameter           34 // extended pattern effect parameter mechanism
+#define CmdNoteSlideUp      35 // IMF Gxy
+#define CmdNoteSlideDown    36 // IMF Hxy
+#define CmdMax          37

@@ -192,13 +192,13 @@ struct AMCHUNK_SAMPLE
 
 static uint8_t riffam_efftrans[] =
 {
-    CMD_ARPEGGIO, CMD_PORTAMENTOUP, CMD_PORTAMENTODOWN, CMD_TONEPORTAMENTO,
-    CMD_VIBRATO, CMD_TONEPORTAVOL, CMD_VIBRATOVOL, CMD_TREMOLO,
-    CMD_PANNING8, CMD_OFFSET, CMD_VOLUMESLIDE, CMD_POSITIONJUMP,
-    CMD_VOLUME, CMD_PATTERNBREAK, CMD_MODCMDEX, CMD_TEMPO,
-    CMD_GLOBALVOLUME, CMD_GLOBALVOLSLIDE, CMD_KEYOFF, CMD_SETENVPOSITION,
-    CMD_CHANNELVOLUME, CMD_CHANNELVOLSLIDE, CMD_PANNINGSLIDE, CMD_RETRIG,
-    CMD_TREMOR, CMD_XFINEPORTAUPDOWN,
+    CmdArpeggio, CmdPortaUp, CmdPortaDown, CmdPorta,
+    CmdVibrato, CmdPortamentoVol, CmdVibratoVol, CmdTremolo,
+    CmdPanning8, CmdOffset, CmdVolumeSlide, CmdPositionJump,
+    CmdVol, CmdPatternBreak, CmdModCmdEx, CmdTempo,
+    CmdGlobalVol, CmdGlobalVolSlide, CmdKeyOff, CmdSetEnvelopePosition,
+    CmdChannelVol, CmdChannelVolSlide, CmdPanningSlide, CmdRetrig,
+    CmdTremor, CmdExtraFinePortaUpDown,
 };
 
 
@@ -264,46 +264,46 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                     // handling special commands
                     switch(m->command)
                     {
-                    case CMD_ARPEGGIO:
-                        if(m->param == 0) m->command = CMD_NONE;
+                    case CmdArpeggio:
+                        if(m->param == 0) m->command = CmdNone;
                         break;
-                    case CMD_VOLUME:
+                    case CmdVol:
                         if(m->volcmd == VolCmdNone)
                         {
                             m->volcmd = VolCmdVol;
                             m->vol = CLAMP(m->param, 0, 64);
-                            m->command = CMD_NONE;
+                            m->command = CmdNone;
                             m->param = 0;
                         }
                         break;
-                    case CMD_TONEPORTAVOL:
-                    case CMD_VIBRATOVOL:
-                    case CMD_VOLUMESLIDE:
-                    case CMD_GLOBALVOLSLIDE:
-                    case CMD_PANNINGSLIDE:
+                    case CmdPortamentoVol:
+                    case CmdVibratoVol:
+                    case CmdVolumeSlide:
+                    case CmdGlobalVolSlide:
+                    case CmdPanningSlide:
                         if (m->param & 0xF0) m->param &= 0xF0;
                         break;
-                    case CMD_PANNING8:
+                    case CmdPanning8:
                         if(m->param <= 0x80) m->param = min(m->param << 1, 0xFF);
-                        else if(m->param == 0xA4) {m->command = CMD_S3MCMDEX; m->param = 0x91;}
+                        else if(m->param == 0xA4) {m->command = CmdS3mCmdEx; m->param = 0x91;}
                         break;
-                    case CMD_PATTERNBREAK:
+                    case CmdPatternBreak:
                         m->param = ((m->param >> 4) * 10) + (m->param & 0x0F);
                         break;
-                    case CMD_MODCMDEX:
+                    case CmdModCmdEx:
                         module_renderer::MODExx2S3MSxx(m);
                         break;
-                    case CMD_TEMPO:
-                        if(m->param <= 0x1F) m->command = CMD_SPEED;
+                    case CmdTempo:
+                        if(m->param <= 0x1F) m->command = CmdSpeed;
                         break;
-                    case CMD_XFINEPORTAUPDOWN:
+                    case CmdExtraFinePortaUpDown:
                         switch(m->param & 0xF0)
                         {
                         case 0x10:
-                            m->command = CMD_PORTAMENTOUP;
+                            m->command = CmdPortaUp;
                             break;
                         case 0x20:
-                            m->command = CMD_PORTAMENTODOWN;
+                            m->command = CmdPortaDown;
                             break;
                         }
                         m->param = (m->param & 0x0F) | 0xE0;
@@ -318,7 +318,7 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                         Log(s);
                     }
 #endif // DEBUG
-                    m->command = CMD_NONE;
+                    m->command = CmdNone;
                 }
             }
 

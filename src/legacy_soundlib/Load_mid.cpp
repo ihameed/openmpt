@@ -892,7 +892,7 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                                 {
                                     chnstate[nchn].pan = pmidich->pan;
                                     m[nchn].param = pmidich->pan;
-                                    m[nchn].command = CMD_PANNING8;
+                                    m[nchn].command = CmdPanning8;
                                 }
                             }
                         } else
@@ -1133,7 +1133,7 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                                 if (param > 0)
                                 {
                                     m[ichn].param = (uint8_t)param;
-                                    m[ichn].command = CMD_PORTAMENTODOWN;
+                                    m[ichn].command = CmdPortaDown;
                                 }
                             } else
                             {
@@ -1142,7 +1142,7 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                                 if (param > 0)
                                 {
                                     m[ichn].param = (uint8_t)param;
-                                    m[ichn].command = CMD_PORTAMENTOUP;
+                                    m[ichn].command = CmdPortaUp;
                                 }
                             }
                         }
@@ -1154,13 +1154,13 @@ bool module_renderer::ReadMID(const uint8_t *lpStream, uint32_t dwMemLength)
                     } else
                     if (dwGlobalFlags & MIDIGLOBAL_UPDATETEMPO)
                     {
-                        m[ichn].command = CMD_TEMPO;
+                        m[ichn].command = CmdTempo;
                         m[ichn].param = (uint8_t)tempo;
                         dwGlobalFlags &= ~MIDIGLOBAL_UPDATETEMPO;
                     } else
                     if (dwGlobalFlags & MIDIGLOBAL_UPDATEMASTERVOL)
                     {
-                        m[ichn].command = CMD_GLOBALVOLUME;
+                        m[ichn].command = CmdGlobalVol;
                         m[ichn].param = midimastervol >> 1; // 0-128
                         dwGlobalFlags &= ~MIDIGLOBAL_UPDATEMASTERVOL;
                     }

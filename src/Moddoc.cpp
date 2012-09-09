@@ -2095,83 +2095,83 @@ typedef struct MPTEFFECTINFO
 
 const MPTEFFECTINFO gFXInfo[MAX_FXINFO] =
 {
-    {CMD_ARPEGGIO,            0,0,                0,        MOD_TYPE_ALL,        "Arpeggio"},
-    {CMD_PORTAMENTOUP,    0,0,                0,        MOD_TYPE_ALL,        "Portamento Up"},
-    {CMD_PORTAMENTODOWN,0,0,            0,        MOD_TYPE_ALL,        "Portamento Down"},
-    {CMD_TONEPORTAMENTO,0,0,            0,        MOD_TYPE_ALL,        "Tone portamento"},
-    {CMD_VIBRATO,            0,0,                0,        MOD_TYPE_ALL,        "Vibrato"},
-    {CMD_TONEPORTAVOL,    0,0,                0,        MOD_TYPE_ALL,        "Volslide+Toneporta"},
-    {CMD_VIBRATOVOL,    0,0,                0,        MOD_TYPE_ALL,        "VolSlide+Vibrato"},
-    {CMD_TREMOLO,            0,0,                0,        MOD_TYPE_ALL,        "Tremolo"},
-    {CMD_PANNING8,            0,0,                0,        MOD_TYPE_ALL,        "Set Panning"},
-    {CMD_OFFSET,            0,0,                0,        MOD_TYPE_ALL,        "Set Offset"},
-    {CMD_VOLUMESLIDE,    0,0,                0,        MOD_TYPE_ALL,        "Volume Slide"},
-    {CMD_POSITIONJUMP,    0,0,                0,        MOD_TYPE_ALL,        "Position Jump"},
-    {CMD_VOLUME,            0,0,                0,        MOD_TYPE_MODXM,        "Set Volume"},
-    {CMD_PATTERNBREAK,    0,0,                0,        MOD_TYPE_ALL,        "Pattern Break"},
-    {CMD_RETRIG,            0,0,                0,        MOD_TYPE_NOMOD,        "Retrigger Note"},
-    {CMD_SPEED,                    0,0,                0,        MOD_TYPE_ALL,        "Set Speed"},
-    {CMD_TEMPO,                    0,0,                0,        MOD_TYPE_ALL,        "Set Tempo"},
-    {CMD_TREMOR,            0,0,                0,        MOD_TYPE_NOMOD,        "Tremor"},
-    {CMD_CHANNELVOLUME,    0,0,                0,        MOD_TYPE_S3MITMPT,        "Set channel volume"},
-    {CMD_CHANNELVOLSLIDE,0,0,            0,        MOD_TYPE_S3MITMPT,        "Channel volslide"},
-    {CMD_GLOBALVOLUME,    0,0,                0,        MOD_TYPE_NOMOD,        "Set global volume"},
-    {CMD_GLOBALVOLSLIDE,0,0,            0,        MOD_TYPE_NOMOD,        "Global volume slide"},
-    {CMD_KEYOFF,            0,0,                0,        MOD_TYPE_XM,        "Key off"},
-    {CMD_FINEVIBRATO,    0,0,                0,        MOD_TYPE_S3MITMPT,        "Fine vibrato"},
-    {CMD_PANBRELLO,            0,0,                0,        MOD_TYPE_NOMOD,        "Panbrello"},
-    {CMD_PANNINGSLIDE,    0,0,                0,        MOD_TYPE_NOMOD,        "Panning slide"},
-    {CMD_SETENVPOSITION,0,0,            0,        MOD_TYPE_XM,        "Envelope position"},
-    {CMD_MIDI,                    0,0,                0x7F,        MOD_TYPE_NOMOD,        "Midi macro"},
-    {CMD_SMOOTHMIDI,    0,0,                0x7F,        MOD_TYPE_NOMOD,        "Smooth Midi macro"},        //rewbs.smoothVST
+    {CmdArpeggio,            0,0,                0,        MOD_TYPE_ALL,        "Arpeggio"},
+    {CmdPortaUp,    0,0,                0,        MOD_TYPE_ALL,        "Portamento Up"},
+    {CmdPortaDown,0,0,            0,        MOD_TYPE_ALL,        "Portamento Down"},
+    {CmdPorta,0,0,            0,        MOD_TYPE_ALL,        "Tone portamento"},
+    {CmdVibrato,            0,0,                0,        MOD_TYPE_ALL,        "Vibrato"},
+    {CmdPortamentoVol,    0,0,                0,        MOD_TYPE_ALL,        "Volslide+Toneporta"},
+    {CmdVibratoVol,    0,0,                0,        MOD_TYPE_ALL,        "VolSlide+Vibrato"},
+    {CmdTremolo,            0,0,                0,        MOD_TYPE_ALL,        "Tremolo"},
+    {CmdPanning8,            0,0,                0,        MOD_TYPE_ALL,        "Set Panning"},
+    {CmdOffset,            0,0,                0,        MOD_TYPE_ALL,        "Set Offset"},
+    {CmdVolumeSlide,    0,0,                0,        MOD_TYPE_ALL,        "Volume Slide"},
+    {CmdPositionJump,    0,0,                0,        MOD_TYPE_ALL,        "Position Jump"},
+    {CmdVol,            0,0,                0,        MOD_TYPE_MODXM,        "Set Volume"},
+    {CmdPatternBreak,    0,0,                0,        MOD_TYPE_ALL,        "Pattern Break"},
+    {CmdRetrig,            0,0,                0,        MOD_TYPE_NOMOD,        "Retrigger Note"},
+    {CmdSpeed,                    0,0,                0,        MOD_TYPE_ALL,        "Set Speed"},
+    {CmdTempo,                    0,0,                0,        MOD_TYPE_ALL,        "Set Tempo"},
+    {CmdTremor,            0,0,                0,        MOD_TYPE_NOMOD,        "Tremor"},
+    {CmdChannelVol,    0,0,                0,        MOD_TYPE_S3MITMPT,        "Set channel volume"},
+    {CmdChannelVolSlide,0,0,            0,        MOD_TYPE_S3MITMPT,        "Channel volslide"},
+    {CmdGlobalVol,    0,0,                0,        MOD_TYPE_NOMOD,        "Set global volume"},
+    {CmdGlobalVolSlide,0,0,            0,        MOD_TYPE_NOMOD,        "Global volume slide"},
+    {CmdKeyOff,            0,0,                0,        MOD_TYPE_XM,        "Key off"},
+    {CmdFineVibrato,    0,0,                0,        MOD_TYPE_S3MITMPT,        "Fine vibrato"},
+    {CmdPanbrello,            0,0,                0,        MOD_TYPE_NOMOD,        "Panbrello"},
+    {CmdPanningSlide,    0,0,                0,        MOD_TYPE_NOMOD,        "Panning slide"},
+    {CmdSetEnvelopePosition,0,0,            0,        MOD_TYPE_XM,        "Envelope position"},
+    {CmdMidi,                    0,0,                0x7F,        MOD_TYPE_NOMOD,        "Midi macro"},
+    {CmdSmoothMidi,    0,0,                0x7F,        MOD_TYPE_NOMOD,        "Smooth Midi macro"},        //rewbs.smoothVST
     // Extended MOD/XM effects
-    {CMD_MODCMDEX,            0xF0,0x10,        0,        MOD_TYPE_MODXM,        "Fine porta up"},
-    {CMD_MODCMDEX,            0xF0,0x20,        0,        MOD_TYPE_MODXM,        "Fine porta down"},
-    {CMD_MODCMDEX,            0xF0,0x30,        0,        MOD_TYPE_MODXM,        "Glissando Control"},
-    {CMD_MODCMDEX,            0xF0,0x40,        0,        MOD_TYPE_MODXM,        "Vibrato waveform"},
-    {CMD_MODCMDEX,            0xF0,0x50,        0,        MOD_TYPE_MODXM,        "Set finetune"},
-    {CMD_MODCMDEX,            0xF0,0x60,        0,        MOD_TYPE_MODXM,        "Pattern loop"},
-    {CMD_MODCMDEX,            0xF0,0x70,        0,        MOD_TYPE_MODXM,        "Tremolo waveform"},
-    {CMD_MODCMDEX,            0xF0,0x80,        0,        MOD_TYPE_MODXM,        "Set panning"},
-    {CMD_MODCMDEX,            0xF0,0x90,        0,        MOD_TYPE_MODXM,        "Retrigger note"},
-    {CMD_MODCMDEX,            0xF0,0xA0,        0,        MOD_TYPE_MODXM,        "Fine volslide up"},
-    {CMD_MODCMDEX,            0xF0,0xB0,        0,        MOD_TYPE_MODXM,        "Fine volslide down"},
-    {CMD_MODCMDEX,            0xF0,0xC0,        0,        MOD_TYPE_MODXM,        "Note cut"},
-    {CMD_MODCMDEX,            0xF0,0xD0,        0,        MOD_TYPE_MODXM,        "Note delay"},
-    {CMD_MODCMDEX,            0xF0,0xE0,        0,        MOD_TYPE_MODXM,        "Pattern delay"},
-    {CMD_MODCMDEX,            0xF0,0xF0,        0,        MOD_TYPE_XM,        "Set active macro"},
-    {CMD_MODCMDEX,            0xF0,0xF0,        0,        MOD_TYPE_MOD,        "Invert Loop"},
+    {CmdModCmdEx,            0xF0,0x10,        0,        MOD_TYPE_MODXM,        "Fine porta up"},
+    {CmdModCmdEx,            0xF0,0x20,        0,        MOD_TYPE_MODXM,        "Fine porta down"},
+    {CmdModCmdEx,            0xF0,0x30,        0,        MOD_TYPE_MODXM,        "Glissando Control"},
+    {CmdModCmdEx,            0xF0,0x40,        0,        MOD_TYPE_MODXM,        "Vibrato waveform"},
+    {CmdModCmdEx,            0xF0,0x50,        0,        MOD_TYPE_MODXM,        "Set finetune"},
+    {CmdModCmdEx,            0xF0,0x60,        0,        MOD_TYPE_MODXM,        "Pattern loop"},
+    {CmdModCmdEx,            0xF0,0x70,        0,        MOD_TYPE_MODXM,        "Tremolo waveform"},
+    {CmdModCmdEx,            0xF0,0x80,        0,        MOD_TYPE_MODXM,        "Set panning"},
+    {CmdModCmdEx,            0xF0,0x90,        0,        MOD_TYPE_MODXM,        "Retrigger note"},
+    {CmdModCmdEx,            0xF0,0xA0,        0,        MOD_TYPE_MODXM,        "Fine volslide up"},
+    {CmdModCmdEx,            0xF0,0xB0,        0,        MOD_TYPE_MODXM,        "Fine volslide down"},
+    {CmdModCmdEx,            0xF0,0xC0,        0,        MOD_TYPE_MODXM,        "Note cut"},
+    {CmdModCmdEx,            0xF0,0xD0,        0,        MOD_TYPE_MODXM,        "Note delay"},
+    {CmdModCmdEx,            0xF0,0xE0,        0,        MOD_TYPE_MODXM,        "Pattern delay"},
+    {CmdModCmdEx,            0xF0,0xF0,        0,        MOD_TYPE_XM,        "Set active macro"},
+    {CmdModCmdEx,            0xF0,0xF0,        0,        MOD_TYPE_MOD,        "Invert Loop"},
     // Extended S3M/IT effects
-    {CMD_S3MCMDEX,            0xF0,0x10,        0,        MOD_TYPE_S3MITMPT,        "Glissando control"},
-    {CMD_S3MCMDEX,            0xF0,0x20,        0,        MOD_TYPE_S3M,        "Set finetune"},
-    {CMD_S3MCMDEX,            0xF0,0x30,        0,        MOD_TYPE_S3MITMPT,        "Vibrato waveform"},
-    {CMD_S3MCMDEX,            0xF0,0x40,        0,        MOD_TYPE_S3MITMPT,        "Tremolo waveform"},
-    {CMD_S3MCMDEX,            0xF0,0x50,        0,        MOD_TYPE_S3MITMPT,        "Panbrello waveform"},
-    {CMD_S3MCMDEX,            0xF0,0x60,        0,        MOD_TYPE_S3MITMPT,        "Fine pattern delay"},
-    {CMD_S3MCMDEX,            0xF0,0x80,        0,        MOD_TYPE_S3MITMPT,        "Set panning"},
-    {CMD_S3MCMDEX,            0xF0,0xA0,        0,        MOD_TYPE_S3MITMPT,        "Set high offset"},
-    {CMD_S3MCMDEX,            0xF0,0xB0,        0,        MOD_TYPE_S3MITMPT,        "Pattern loop"},
-    {CMD_S3MCMDEX,            0xF0,0xC0,        0,        MOD_TYPE_S3MITMPT,        "Note cut"},
-    {CMD_S3MCMDEX,            0xF0,0xD0,        0,        MOD_TYPE_S3MITMPT,        "Note delay"},
-    {CMD_S3MCMDEX,            0xF0,0xE0,        0,        MOD_TYPE_S3MITMPT,        "Pattern delay"},
-    {CMD_S3MCMDEX,            0xF0,0xF0,        0,        MOD_TYPE_ITMPT,        "Set active macro"},
+    {CmdS3mCmdEx,            0xF0,0x10,        0,        MOD_TYPE_S3MITMPT,        "Glissando control"},
+    {CmdS3mCmdEx,            0xF0,0x20,        0,        MOD_TYPE_S3M,        "Set finetune"},
+    {CmdS3mCmdEx,            0xF0,0x30,        0,        MOD_TYPE_S3MITMPT,        "Vibrato waveform"},
+    {CmdS3mCmdEx,            0xF0,0x40,        0,        MOD_TYPE_S3MITMPT,        "Tremolo waveform"},
+    {CmdS3mCmdEx,            0xF0,0x50,        0,        MOD_TYPE_S3MITMPT,        "Panbrello waveform"},
+    {CmdS3mCmdEx,            0xF0,0x60,        0,        MOD_TYPE_S3MITMPT,        "Fine pattern delay"},
+    {CmdS3mCmdEx,            0xF0,0x80,        0,        MOD_TYPE_S3MITMPT,        "Set panning"},
+    {CmdS3mCmdEx,            0xF0,0xA0,        0,        MOD_TYPE_S3MITMPT,        "Set high offset"},
+    {CmdS3mCmdEx,            0xF0,0xB0,        0,        MOD_TYPE_S3MITMPT,        "Pattern loop"},
+    {CmdS3mCmdEx,            0xF0,0xC0,        0,        MOD_TYPE_S3MITMPT,        "Note cut"},
+    {CmdS3mCmdEx,            0xF0,0xD0,        0,        MOD_TYPE_S3MITMPT,        "Note delay"},
+    {CmdS3mCmdEx,            0xF0,0xE0,        0,        MOD_TYPE_S3MITMPT,        "Pattern delay"},
+    {CmdS3mCmdEx,            0xF0,0xF0,        0,        MOD_TYPE_ITMPT,        "Set active macro"},
     // MPT XM extensions and special effects
-    {CMD_XFINEPORTAUPDOWN,0xF0,0x10,0,    MOD_TYPE_XM,        "Extra fine porta up"},
-    {CMD_XFINEPORTAUPDOWN,0xF0,0x20,0,    MOD_TYPE_XM,        "Extra fine porta down"},
-    {CMD_XFINEPORTAUPDOWN,0xF0,0x50,0,    MOD_TYPE_XM,        "Panbrello waveform"},
-    {CMD_XFINEPORTAUPDOWN,0xF0,0x60,0,    MOD_TYPE_XM,        "Fine pattern delay"},
-    {CMD_XFINEPORTAUPDOWN,0xF0,0x90,0,    MOD_TYPE_XM,        "Sound control"},
-    {CMD_XFINEPORTAUPDOWN,0xF0,0xA0,0,    MOD_TYPE_XM,        "Set high offset"},
+    {CmdExtraFinePortaUpDown,0xF0,0x10,0,    MOD_TYPE_XM,        "Extra fine porta up"},
+    {CmdExtraFinePortaUpDown,0xF0,0x20,0,    MOD_TYPE_XM,        "Extra fine porta down"},
+    {CmdExtraFinePortaUpDown,0xF0,0x50,0,    MOD_TYPE_XM,        "Panbrello waveform"},
+    {CmdExtraFinePortaUpDown,0xF0,0x60,0,    MOD_TYPE_XM,        "Fine pattern delay"},
+    {CmdExtraFinePortaUpDown,0xF0,0x90,0,    MOD_TYPE_XM,        "Sound control"},
+    {CmdExtraFinePortaUpDown,0xF0,0xA0,0,    MOD_TYPE_XM,        "Set high offset"},
     // MPT IT extensions and special effects
-    {CMD_S3MCMDEX,            0xF0,0x90,        0,        MOD_TYPE_S3MITMPT,        "Sound control"},
-    {CMD_S3MCMDEX,            0xF0,0x70,        0,        MOD_TYPE_ITMPT,        "Instr. control"},
-    {CMD_DELAYCUT,            0x00,0x00,        0,        MOD_TYPE_MPT,        "Note delay and cut"},
+    {CmdS3mCmdEx,            0xF0,0x90,        0,        MOD_TYPE_S3MITMPT,        "Sound control"},
+    {CmdS3mCmdEx,            0xF0,0x70,        0,        MOD_TYPE_ITMPT,        "Instr. control"},
+    {CmdDelayCut,            0x00,0x00,        0,        MOD_TYPE_MPT,        "Note delay and cut"},
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
-    {CMD_XPARAM,            0x00,0x00,        0,        MOD_TYPE_XMITMPT,        "X param"},
+    {CmdExtendedParameter,            0x00,0x00,        0,        MOD_TYPE_XMITMPT,        "X param"},
 // -! NEW_FEATURE#0010
-    {CMD_NOTESLIDEUP,    0x00,0x00,        0,        MOD_TYPE_NONE,        "Note Slide Up"}, // .IMF effect
-    {CMD_NOTESLIDEDOWN,    0x00,0x00,        0,        MOD_TYPE_NONE,        "Note Slide Down"}, // .IMF effect
+    {CmdNoteSlideUp,    0x00,0x00,        0,        MOD_TYPE_NONE,        "Note Slide Up"}, // .IMF effect
+    {CmdNoteSlideDown,    0x00,0x00,        0,        MOD_TYPE_NONE,        "Note Slide Down"}, // .IMF effect
 };
 
 
@@ -2229,16 +2229,16 @@ bool CModDoc::GetEffectName(LPSTR pszDescription, UINT command, UINT param, bool
             CString macroText= "_no macro_";
             switch (command)
             {
-            case CMD_MODCMDEX:
-            case CMD_S3MCMDEX:
+            case CmdModCmdEx:
+            case CmdS3mCmdEx:
                 if ((param & 0xF0) == 0xF0 && !(m_SndFile.m_nType & MOD_TYPE_MOD))    //Set Macro
                 {
                     macroText = m_SndFile.m_MidiCfg.szMidiSFXExt[(param & 0x0F)];
                     chanSpec.Format(" to %d: ", param & 0x0F);
                 }
                 break;
-            case CMD_MIDI:
-            case CMD_SMOOTHMIDI:
+            case CmdMidi:
+            case CmdSmoothMidi:
                 if (param < 0x80 && nChn != ChannelIndexInvalid)
                 {
                     macroText = m_SndFile.m_MidiCfg.szMidiSFXExt[m_SndFile.Chn[nChn].nActiveMacro];
@@ -2381,20 +2381,20 @@ bool CModDoc::GetEffectInfo(UINT ndx, LPSTR s, bool bXX, uint32_t *prangeMin, ui
         }
         switch(gFXInfo[ndx].dwEffect)
         {
-        case CMD_ARPEGGIO:
+        case CmdArpeggio:
             if (nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) nmin = 1;
             break;
-        case CMD_VOLUME:
-        case CMD_CHANNELVOLUME:
+        case CmdVol:
+        case CmdChannelVol:
             nmax = 0x40;
             break;
-        case CMD_SPEED:
+        case CmdSpeed:
             nmin = 1;
             nmax = 0xFF;
             if (nType & MOD_TYPE_MOD) nmax = 0x20; else
             if (nType & MOD_TYPE_XM) nmax = 0x1F;
             break;
-        case CMD_TEMPO:
+        case CmdTempo:
             nmin = 0x20;
             if (nType & MOD_TYPE_MOD) nmin = 0x21; else
 // -> CODE#0010
@@ -2403,31 +2403,31 @@ bool CModDoc::GetEffectInfo(UINT ndx, LPSTR s, bool bXX, uint32_t *prangeMin, ui
             if (nType & MOD_TYPE_S3MITMPT) nmin = 0;
 // -! NEW_FEATURE#0010
             break;
-        case CMD_VOLUMESLIDE:
-        case CMD_TONEPORTAVOL:
-        case CMD_VIBRATOVOL:
-        case CMD_GLOBALVOLSLIDE:
-        case CMD_CHANNELVOLSLIDE:
-        case CMD_PANNINGSLIDE:
+        case CmdVolumeSlide:
+        case CmdPortamentoVol:
+        case CmdVibratoVol:
+        case CmdGlobalVolSlide:
+        case CmdChannelVolSlide:
+        case CmdPanningSlide:
             nmax = (nType & MOD_TYPE_S3MITMPT) ? 58 : 30;
             break;
-        case CMD_PANNING8:
+        case CmdPanning8:
             if (nType & (MOD_TYPE_S3M)) nmax = 0x81;
             else nmax = 0xFF;
             break;
-        case CMD_GLOBALVOLUME:
+        case CmdGlobalVol:
             nmax = (nType & (MOD_TYPE_IT|MOD_TYPE_MPT)) ? 128 : 64;
             break;
 
-        case CMD_MODCMDEX:
+        case CmdModCmdEx:
             // adjust waveform types for XM/MOD
             if(gFXInfo[ndx].dwParamValue == 0x40 || gFXInfo[ndx].dwParamValue == 0x70) nmax = gFXInfo[ndx].dwParamValue | 0x07;
             break;
-        case CMD_S3MCMDEX:
+        case CmdS3mCmdEx:
             // adjust waveform types for IT/S3M
             if(gFXInfo[ndx].dwParamValue >= 0x30 && gFXInfo[ndx].dwParamValue <= 0x50) nmax = gFXInfo[ndx].dwParamValue | (m_SndFile.IsCompatibleMode(TRK_IMPULSETRACKER | TRK_SCREAMTRACKER) ? 0x03 : 0x07);
             break;
-        case CMD_PATTERNBREAK:
+        case CmdPatternBreak:
             // no big patterns in MOD/S3M files
             if(nType & (MOD_TYPE_MOD|MOD_TYPE_S3M))
                 nmax = 63;
@@ -2454,12 +2454,12 @@ UINT CModDoc::MapValueToPos(UINT ndx, UINT param)
     }
     switch(gFXInfo[ndx].dwEffect)
     {
-    case CMD_VOLUMESLIDE:
-    case CMD_TONEPORTAVOL:
-    case CMD_VIBRATOVOL:
-    case CMD_GLOBALVOLSLIDE:
-    case CMD_CHANNELVOLSLIDE:
-    case CMD_PANNINGSLIDE:
+    case CmdVolumeSlide:
+    case CmdPortamentoVol:
+    case CmdVibratoVol:
+    case CmdGlobalVolSlide:
+    case CmdChannelVolSlide:
+    case CmdPanningSlide:
         if (m_SndFile.GetType() & MOD_TYPE_S3MITMPT)
         {
             if (!param) pos = 29; else
@@ -2477,7 +2477,7 @@ UINT CModDoc::MapValueToPos(UINT ndx, UINT param)
             else pos = (param >> 4) + 15;
         }
         break;
-    case CMD_PANNING8:
+    case CmdPanning8:
         if(m_SndFile.GetType() == MOD_TYPE_S3M)
         {
             pos = CLAMP(param, 0, 0x80);
@@ -2500,12 +2500,12 @@ UINT CModDoc::MapPosToValue(UINT ndx, UINT pos)
     if (gFXInfo[ndx].dwParamMask == 0xF0) param |= gFXInfo[ndx].dwParamValue;
     switch(gFXInfo[ndx].dwEffect)
     {
-    case CMD_VOLUMESLIDE:
-    case CMD_TONEPORTAVOL:
-    case CMD_VIBRATOVOL:
-    case CMD_GLOBALVOLSLIDE:
-    case CMD_CHANNELVOLSLIDE:
-    case CMD_PANNINGSLIDE:
+    case CmdVolumeSlide:
+    case CmdPortamentoVol:
+    case CmdVibratoVol:
+    case CmdGlobalVolSlide:
+    case CmdChannelVolSlide:
+    case CmdPanningSlide:
         if (m_SndFile.GetType() & MOD_TYPE_S3MITMPT)
         {
             if (pos < 15) param = 15-pos; else
@@ -2519,7 +2519,7 @@ UINT CModDoc::MapPosToValue(UINT ndx, UINT pos)
             param = (pos - 15) << 4;
         }
         break;
-    case CMD_PANNING8:
+    case CmdPanning8:
         if(m_SndFile.GetType() == MOD_TYPE_S3M)
             param = (pos <= 0x80) ? pos : 0xA4;
         break;
@@ -2549,7 +2549,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
 
     switch(gFXInfo[ndx].dwEffect)
     {
-    case CMD_ARPEGGIO:
+    case CmdArpeggio:
         if(m_SndFile.GetType() == MOD_TYPE_XM)    // XM also ignores this!
             strcpy(szContinueOrIgnore, "ignore");
 
@@ -2559,12 +2559,12 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
             strcpy(s, szContinueOrIgnore);
         break;
 
-    case CMD_PORTAMENTOUP:
-    case CMD_PORTAMENTODOWN:
+    case CmdPortaUp:
+    case CmdPortaDown:
         if(param)
         {
             char sign[2];
-            strcpy(sign, (gFXInfo[ndx].dwEffect == CMD_PORTAMENTOUP) ? "+" : "-");
+            strcpy(sign, (gFXInfo[ndx].dwEffect == CmdPortaUp) ? "+" : "-");
             if((m_SndFile.GetType() & MOD_TYPE_S3MITMPT) && ((param & 0xF0) == 0xF0))
                 wsprintf(s, "fine %s%d", sign, (param & 0x0F));
             else if((m_SndFile.GetType() & MOD_TYPE_S3MITMPT) && ((param & 0xF0) == 0xE0))
@@ -2578,28 +2578,28 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         }
         break;
 
-    case CMD_TONEPORTAMENTO:
+    case CmdPorta:
         if (param)
             wsprintf(s, "speed %d", param);
         else
             strcpy(s, "continue");
         break;
 
-    case CMD_VIBRATO:
-    case CMD_TREMOLO:
-    case CMD_PANBRELLO:
-    case CMD_FINEVIBRATO:
+    case CmdVibrato:
+    case CmdTremolo:
+    case CmdPanbrello:
+    case CmdFineVibrato:
         if (param)
             wsprintf(s, "speed=%d depth=%d", param >> 4, param & 0x0F);
         else
             strcpy(s, "continue");
         break;
 
-    case CMD_SPEED:
+    case CmdSpeed:
         wsprintf(s, "%d frames/row", param);
         break;
 
-    case CMD_TEMPO:
+    case CmdTempo:
         if (param < 0x10)
             wsprintf(s, "-%d bpm (slower)", param & 0x0F);
         else if (param < 0x20)
@@ -2608,7 +2608,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
             wsprintf(s, "%d bpm", param);
         break;
 
-    case CMD_PANNING8:
+    case CmdPanning8:
         wsprintf(s, "%d", param);
         if(m_SndFile.GetType() == MOD_TYPE_S3M)
         {
@@ -2617,7 +2617,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         }
         break;
 
-    case CMD_RETRIG:
+    case CmdRetrig:
         switch(param >> 4)
         {
             case  0:
@@ -2647,13 +2647,13 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         strcat(s, spd);
         break;
 
-    case CMD_VOLUMESLIDE:
-    case CMD_TONEPORTAVOL:
-    case CMD_VIBRATOVOL:
-    case CMD_GLOBALVOLSLIDE:
-    case CMD_CHANNELVOLSLIDE:
-    case CMD_PANNINGSLIDE:
-        if(gFXInfo[ndx].dwEffect == CMD_PANNINGSLIDE)
+    case CmdVolumeSlide:
+    case CmdPortamentoVol:
+    case CmdVibratoVol:
+    case CmdGlobalVolSlide:
+    case CmdChannelVolSlide:
+    case CmdPanningSlide:
+        if(gFXInfo[ndx].dwEffect == CmdPanningSlide)
         {
             if(m_SndFile.GetType() == MOD_TYPE_XM)
             {
@@ -2692,15 +2692,15 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         }
         break;
 
-    case CMD_PATTERNBREAK:
+    case CmdPatternBreak:
         wsprintf(pszName, "Break to row %d", param);
         break;
 
-    case CMD_POSITIONJUMP:
+    case CmdPositionJump:
         wsprintf(pszName, "Jump to position %d", param);
         break;
 
-    case CMD_OFFSET:
+    case CmdOffset:
         if (param)
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
@@ -2711,7 +2711,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
             strcpy(s, "continue");
         break;
 
-    case CMD_TREMOR:
+    case CmdTremor:
         if(param)
         {
             uint8_t ontime = (uint8_t)(param >> 4), offtime = (uint8_t)(param & 0x0F);
@@ -2733,11 +2733,11 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         }
         break;
 
-    case CMD_SETENVPOSITION:
+    case CmdSetEnvelopePosition:
         wsprintf(s, "Tick %d", param);
         break;
 
-    case CMD_MIDI:
+    case CmdMidi:
         if (param < 0x80)
         {
             wsprintf(pszName, "SFx macro: z=%02X (%d)", param, param);
@@ -2748,7 +2748,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         break;
 
     //rewbs.smoothVST
-    case CMD_SMOOTHMIDI:
+    case CmdSmoothMidi:
         if (param < 0x80)
         {
             wsprintf(pszName, "SFx macro: z=%02X (%d)", param, param);
@@ -2759,7 +2759,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         break;
     //end rewbs.smoothVST
 
-    case CMD_DELAYCUT:
+    case CmdDelayCut:
         wsprintf(pszName, "Note delay: %d, cut after %d ticks", (param >> 4), (param & 0x0F));
         break;
 
@@ -2767,7 +2767,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         if (gFXInfo[ndx].dwParamMask == 0xF0)
         {
             // Sound control names
-            if (((gFXInfo[ndx].dwEffect == CMD_XFINEPORTAUPDOWN) || (gFXInfo[ndx].dwEffect == CMD_S3MCMDEX))
+            if (((gFXInfo[ndx].dwEffect == CmdExtraFinePortaUpDown) || (gFXInfo[ndx].dwEffect == CmdS3mCmdEx))
              && ((gFXInfo[ndx].dwParamValue & 0xF0) == 0x90) && ((param & 0xF0) == 0x90))
             {
                 switch(param & 0x0F)
@@ -2785,7 +2785,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
                 default:    wsprintf(s, "%02X: undefined", param);
                 }
             } else
-            if (((gFXInfo[ndx].dwEffect == CMD_XFINEPORTAUPDOWN) || (gFXInfo[ndx].dwEffect == CMD_S3MCMDEX))
+            if (((gFXInfo[ndx].dwEffect == CmdExtraFinePortaUpDown) || (gFXInfo[ndx].dwEffect == CmdS3mCmdEx))
              && ((gFXInfo[ndx].dwParamValue & 0xF0) == 0x70) && ((param & 0xF0) == 0x70))
             {
                 switch(param & 0x0F)
@@ -2811,7 +2811,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
             } else
             {
                 wsprintf(s, "%d", param & 0x0F);
-                if(gFXInfo[ndx].dwEffect == CMD_S3MCMDEX)
+                if(gFXInfo[ndx].dwEffect == CmdS3mCmdEx)
                 {
                     switch(param & 0xF0)
                     {
@@ -2879,7 +2879,7 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
                         break;
                     }
                 }
-                if(gFXInfo[ndx].dwEffect == CMD_MODCMDEX)
+                if(gFXInfo[ndx].dwEffect == CmdModCmdEx)
                 {
                     switch(param & 0xF0)
                     {

@@ -122,7 +122,7 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
             {
                 for (UINT i=0; i<8; i++)
                 {
-                    m[i].command = CMD_PATTERNBREAK;
+                    m[i].command = CmdPatternBreak;
                     m[i].param = 0;
                 }
             }
@@ -147,21 +147,21 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
                     UINT param = p[2] & 0x0F;
                     switch(command)
                     {
-                    case 0x00:    command = CMD_PORTAMENTOUP; break;
-                    case 0x01:    command = CMD_PORTAMENTODOWN; break;
-                    case 0x02:    command = CMD_TONEPORTAMENTO; break;
-                    case 0x03:    command = CMD_MODCMDEX; param |= 0x50; break;
-                    case 0x04:    command = CMD_VIBRATO; param |= 0x40; break;
-                    case 0x05:    if (param) command = CMD_SPEED; else command = 0; param += 2; break;
-                    case 0x06:    if (param == 0) { command = CMD_PANNINGSLIDE; param = 0xFE; } else
-                                if (param == 1) { command = CMD_PANNINGSLIDE; param = 0xEF; } else
+                    case 0x00:    command = CmdPortaUp; break;
+                    case 0x01:    command = CmdPortaDown; break;
+                    case 0x02:    command = CmdPorta; break;
+                    case 0x03:    command = CmdModCmdEx; param |= 0x50; break;
+                    case 0x04:    command = CmdVibrato; param |= 0x40; break;
+                    case 0x05:    if (param) command = CmdSpeed; else command = 0; param += 2; break;
+                    case 0x06:    if (param == 0) { command = CmdPanningSlide; param = 0xFE; } else
+                                if (param == 1) { command = CmdPanningSlide; param = 0xEF; } else
                                 command = 0;
                                 break;
                     default:    command = 0;
                     }
                     if (command)
                     {
-                        if (command == CMD_SPEED) mspeed = NULL;
+                        if (command == CmdSpeed) mspeed = NULL;
                         m->command = command;
                         m->param = param;
                     }
@@ -171,7 +171,7 @@ bool module_renderer::Read669(const uint8_t *lpStream, const uint32_t dwMemLengt
             {
                 for (UINT i=0; i<8; i++) if (!mspeed[i].command)
                 {
-                    mspeed[i].command = CMD_SPEED;
+                    mspeed[i].command = CmdSpeed;
                     mspeed[i].param = pfh->tempolist[npat] + 2;
                     break;
                 }

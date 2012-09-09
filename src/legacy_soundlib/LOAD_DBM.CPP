@@ -97,12 +97,12 @@ typedef struct DBMSAMPLE
 
 static modplug::tracker::cmd_t dbm_efftrans[23] =
 {
-    CMD_ARPEGGIO, CMD_PORTAMENTOUP, CMD_PORTAMENTODOWN, CMD_TONEPORTAMENTO,
-    CMD_VIBRATO, CMD_TONEPORTAVOL, CMD_VIBRATOVOL, CMD_TREMOLO,
-    CMD_PANNING8, CMD_OFFSET, CMD_VOLUMESLIDE, CMD_POSITIONJUMP,
-    CMD_VOLUME, CMD_PATTERNBREAK, CMD_MODCMDEX, CMD_TEMPO,
-    CMD_GLOBALVOLUME, CMD_GLOBALVOLSLIDE, CMD_KEYOFF, CMD_SETENVPOSITION,
-    CMD_CHANNELVOLUME, CMD_CHANNELVOLSLIDE, CMD_PANNINGSLIDE,
+    CmdArpeggio, CmdPortaUp, CmdPortaDown, CmdPorta,
+    CmdVibrato, CmdPortamentoVol, CmdVibratoVol, CmdTremolo,
+    CmdPanning8, CmdOffset, CmdVolumeSlide, CmdPositionJump,
+    CmdVol, CmdPatternBreak, CmdModCmdEx, CmdTempo,
+    CmdGlobalVol, CmdGlobalVolSlide, CmdKeyOff, CmdSetEnvelopePosition,
+    CmdChannelVol, CmdChannelVolSlide, CmdPanningSlide,
 };
 
 
@@ -112,31 +112,31 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
     if(command < CountOf(dbm_efftrans))
         command = dbm_efftrans[command];
     else
-        command = CMD_NONE;
+        command = CmdNone;
 
     switch (command)
     {
-    case CMD_ARPEGGIO:
+    case CmdArpeggio:
         if(param == 0)
-            command = CMD_NONE;
+            command = CmdNone;
         break;
-    case CMD_VOLUMESLIDE:
+    case CmdVolumeSlide:
         if(param & 0xF0)
             param &= 0xF0;
         break;
-    case CMD_GLOBALVOLUME:
+    case CmdGlobalVol:
         if(param <= 64)
             param *= 2;
         else
             param = 128;
-    case CMD_MODCMDEX:
+    case CmdModCmdEx:
         switch(param & 0xF0)
         {
         case 0x00:	// set filter
-            command = CMD_NONE;
+            command = CmdNone;
             break;
         case 0x30:	// play backwards
-            command = CMD_S3MCMDEX;
+            command = CmdS3mCmdEx;
             param = 0x9F;
             break;
         case 0x40:	// turn off sound in channel
@@ -146,7 +146,7 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
             // TODO is this correct?
             if((param & 0x0F) <= 0x01)
             {
-                command = CMD_CHANNELVOLUME;
+                command = CmdChannelVol;
                 param = (param == 0x50) ? 0x00 : 0x40;
             }
             break;
@@ -164,18 +164,18 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
             break;
         }
         break;
-    case CMD_TEMPO:
-        if(param <= 0x1F) command = CMD_SPEED;
+    case CmdTempo:
+        if(param <= 0x1F) command = CmdSpeed;
         break;
-    case CMD_KEYOFF:
+    case CmdKeyOff:
         if (param == 0)
         {
             // TODO key of at tick 0
         }
         break;
-    case CMD_OFFSET:
+    case CmdOffset:
         // TODO Sample offset slide
-        command = CMD_NONE;
+        command = CmdNone;
         break;
     }
 }
@@ -368,7 +368,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                                     if (b & 0x02) m[ch].instr = pkdata[i++];
                                     if (b & 0x3C)
                                     {
-                                        uint8_t cmd1 = CMD_NONE, cmd2 = CMD_NONE;
+                                        uint8_t cmd1 = CmdNone, cmd2 = CmdNone;
                                         uint8_t param1 = 0, param2 = 0;
                                         if (b & 0x04) cmd2 = pkdata[i++];
                                         if (b & 0x08) param2 = pkdata[i++];
@@ -378,7 +378,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                                         ConvertDBMEffect(cmd2, param2);
 
                                         // this is the same conversion algorithm as in the ULT loader. maybe this should be merged at some point...
-                                        if (cmd2 == CMD_VOLUME || (cmd2 == CMD_NONE && cmd1 != CMD_VOLUME))
+                                        if (cmd2 == CmdVol || (cmd2 == CmdNone && cmd1 != CmdVol))
                                         {
                                             std::swap(cmd1, cmd2);
                                             std::swap(param1, param2);
@@ -402,7 +402,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                                                 std::swap(cmd1, cmd2);
                                                 std::swap(param1, param2);
                                             }
-                                            cmd1 = CMD_NONE;
+                                            cmd1 = CmdNone;
                                         }
                                         if (!cmd1)
                                             param1 = 0;

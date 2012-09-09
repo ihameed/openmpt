@@ -140,11 +140,11 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                             break;
 
                     case 1: // 1 Portamento Down (Period)
-                            m->command = CMD_PORTAMENTODOWN;
+                            m->command = CmdPortaDown;
                             m->param &= 0x0F;
                             break;
                     case 2: // 2 Portamento Up (Period)
-                            m->command = CMD_PORTAMENTOUP;
+                            m->command = CmdPortaUp;
                             m->param &= 0x0F;
                             break;
 
@@ -160,20 +160,20 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                     // This one is close enough to "standard" arpeggio -- I think!
                     case 12: // C Arpeggio 3 (up, up, orig)
                             if (m->param)
-                                    m->command = CMD_ARPEGGIO;
+                                    m->command = CmdArpeggio;
                             break;
 
                     case 13: // D Slide Down (Notes)
                             if (m->param)
                             {
-                                    m->command = CMD_NOTESLIDEDOWN;
+                                    m->command = CmdNoteSlideDown;
                                     m->param = 0x10 | min(0x0F, m->param);
                             }
                             break;
                     case 30: // U Slide Up (Notes)
                             if (m->param)
                             {
-                                    m->command = CMD_NOTESLIDEUP;
+                                    m->command = CmdNoteSlideUp;
                                     m->param = 0x10 | min(0x0F, m->param);
                             }
                             break;
@@ -183,26 +183,26 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                     case 21: // L Slide Down Once (Notes)
                             if (m->param)
                             {
-                                    m->command = CMD_NOTESLIDEDOWN;
+                                    m->command = CmdNoteSlideDown;
                                     m->param = 0x50 | min(0x0F, m->param);
                             }
                             break;
                     case 17: // H Slide Up Once (Notes)
                             if (m->param)
                             {
-                                    m->command = CMD_NOTESLIDEUP;
+                                    m->command = CmdNoteSlideUp;
                                     m->param = 0x50 | min(0x0F, m->param);
                             }
                             break;
 
                     case 15: // F Set Filter <>00:ON
                             // Not implemented, but let's import it anyway...
-                            m->command = CMD_MODCMDEX;
+                            m->command = CmdModCmdEx;
                             m->param = !!m->param;
                             break;
 
                     case 25: // P Pos Jump
-                            m->command = CMD_POSITIONJUMP;
+                            m->command = CmdPositionJump;
                             break;
 
                     case 27: // R Release sample (apparently not listed in the help!)
@@ -211,11 +211,11 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                             break;
 
                     case 28: // S Speed
-                            m->command = CMD_SPEED; // or tempo?
+                            m->command = CmdSpeed; // or tempo?
                             break;
 
                     case 31: // V Volume
-                            m->command = CMD_VOLUMESLIDE;
+                            m->command = CmdVolumeSlide;
                             switch (m->param >> 4)
                             {
                             case 4:
@@ -228,7 +228,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                             case 0: case 1: case 2: case 3:
                                     m->volcmd = VolCmdVol;
                                     m->vol = m->param;
-                                    m->command = CMD_NONE;
+                                    m->command = CmdNone;
                                     m->param = 0;
                                     break;
                             case 5:

@@ -32,7 +32,7 @@ bool CModSpecifications::HasVolCommand(volcmd_t volcmd) const {
 }
 
 bool CModSpecifications::HasCommand(cmd_t cmd) const {
-    if (cmd >= MAX_EFFECTS) {
+    if (cmd >= CmdMax) {
         return false;
     }
     if (commands[cmd] == '?') {
@@ -49,7 +49,7 @@ char CModSpecifications::GetVolEffectLetter(volcmd_t volcmd) const {
 }
 
 char CModSpecifications::GetEffectLetter(cmd_t cmd) const {
-    if(cmd >= MAX_EFFECTS) {
+    if(cmd >= CmdMax) {
         return '?';
     }
     return commands[cmd];

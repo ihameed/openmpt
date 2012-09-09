@@ -52,37 +52,37 @@ void ConvertMDLCommand(modplug::tracker::modevent_t *m, UINT eff, UINT data)
     UINT command = 0, param = data;
     switch(eff)
     {
-    case 0x01:    command = CMD_PORTAMENTOUP; break;
-    case 0x02:    command = CMD_PORTAMENTODOWN; break;
-    case 0x03:    command = CMD_TONEPORTAMENTO; break;
-    case 0x04:    command = CMD_VIBRATO; break;
-    case 0x05:    command = CMD_ARPEGGIO; break;
-    case 0x07:    command = (param < 0x20) ? CMD_SPEED : CMD_TEMPO; break;
-    case 0x08:    command = CMD_PANNING8; param <<= 1; break;
-    case 0x0B:    command = CMD_POSITIONJUMP; break;
-    case 0x0C:    command = CMD_GLOBALVOLUME; break;
-    case 0x0D:    command = CMD_PATTERNBREAK; param = (data & 0x0F) + (data>>4)*10; break;
+    case 0x01:    command = CmdPortaUp; break;
+    case 0x02:    command = CmdPortaDown; break;
+    case 0x03:    command = CmdPorta; break;
+    case 0x04:    command = CmdVibrato; break;
+    case 0x05:    command = CmdArpeggio; break;
+    case 0x07:    command = (param < 0x20) ? CmdSpeed : CmdTempo; break;
+    case 0x08:    command = CmdPanning8; param <<= 1; break;
+    case 0x0B:    command = CmdPositionJump; break;
+    case 0x0C:    command = CmdGlobalVol; break;
+    case 0x0D:    command = CmdPatternBreak; param = (data & 0x0F) + (data>>4)*10; break;
     case 0x0E:
-        command = CMD_S3MCMDEX;
+        command = CmdS3mCmdEx;
         switch(data & 0xF0)
         {
         case 0x00:    command = 0; break; // What is E0x in MDL (there is a bunch) ?
-        case 0x10:    if (param & 0x0F) { param |= 0xF0; command = CMD_PANNINGSLIDE; } else command = 0; break;
-        case 0x20:    if (param & 0x0F) { param = (param << 4) | 0x0F; command = CMD_PANNINGSLIDE; } else command = 0; break;
+        case 0x10:    if (param & 0x0F) { param |= 0xF0; command = CmdPanningSlide; } else command = 0; break;
+        case 0x20:    if (param & 0x0F) { param = (param << 4) | 0x0F; command = CmdPanningSlide; } else command = 0; break;
         case 0x30:    param = (data & 0x0F) | 0x10; break; // glissando
         case 0x40:    param = (data & 0x0F) | 0x30; break; // vibrato waveform
         case 0x60:    param = (data & 0x0F) | 0xB0; break;
         case 0x70:    param = (data & 0x0F) | 0x40; break; // tremolo waveform
-        case 0x90:    command = CMD_RETRIG; param &= 0x0F; break;
-        case 0xA0:    param = (data & 0x0F) << 4; command = CMD_GLOBALVOLSLIDE; break;
-        case 0xB0:    param = data & 0x0F; command = CMD_GLOBALVOLSLIDE; break;
+        case 0x90:    command = CmdRetrig; param &= 0x0F; break;
+        case 0xA0:    param = (data & 0x0F) << 4; command = CmdGlobalVolSlide; break;
+        case 0xB0:    param = data & 0x0F; command = CmdGlobalVolSlide; break;
         case 0xF0:    param = ((data >> 8) & 0x0F) | 0xA0; break;
         }
         break;
-    case 0x0F:    command = CMD_SPEED; break;
+    case 0x0F:    command = CmdSpeed; break;
     case 0x10:
         if ((param & 0xF0) != 0xE0) {
-            command = CMD_VOLUMESLIDE;
+            command = CmdVolumeSlide;
             if ((param & 0xF0) == 0xF0) {
                 param = ((param << 4) | 0x0F);
             } else {
@@ -95,7 +95,7 @@ void ConvertMDLCommand(modplug::tracker::modevent_t *m, UINT eff, UINT data)
         break;
     case 0x20:
         if ((param & 0xF0) != 0xE0) {
-            command = CMD_VOLUMESLIDE;
+            command = CmdVolumeSlide;
             if ((param & 0xF0) != 0xF0) {
                 param >>= 2;
                 if (param > 0xF)
@@ -104,10 +104,10 @@ void ConvertMDLCommand(modplug::tracker::modevent_t *m, UINT eff, UINT data)
         }
         break;
 
-    case 0x30:    command = CMD_RETRIG; break;
-    case 0x40:    command = CMD_TREMOLO; break;
-    case 0x50:    command = CMD_TREMOR; break;
-    case 0xEF:    if (param > 0xFF) param = 0xFF; command = CMD_OFFSET; break;
+    case 0x30:    command = CmdRetrig; break;
+    case 0x40:    command = CmdTremolo; break;
+    case 0x50:    command = CmdTremor; break;
+    case 0xEF:    if (param > 0xFF) param = 0xFF; command = CmdOffset; break;
     }
     if (command)
     {
@@ -207,9 +207,9 @@ void UnpackMDLTrack(modplug::tracker::modevent_t *pat, UINT nChannels, UINT nRow
                     cmd.vol = (volume+1) >> 2;
                 }
                 ConvertMDLCommand(&cmd, command1, param1);
-                if ((cmd.command != CMD_SPEED)
-                 && (cmd.command != CMD_TEMPO)
-                 && (cmd.command != CMD_PATTERNBREAK))
+                if ((cmd.command != CmdSpeed)
+                 && (cmd.command != CmdTempo)
+                 && (cmd.command != CmdPatternBreak))
                     ConvertMDLCommand(&cmd, command2, param2);
                 *m = cmd;
                 m += nChannels;

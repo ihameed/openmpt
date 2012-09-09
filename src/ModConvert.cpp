@@ -144,7 +144,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             // try to save short patterns by inserting a pattern break.
             if(m_SndFile.Patterns[nPat].GetNumRows() < 64)
             {
-                m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weTryNextRow);
+                m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CmdPatternBreak, 0, false, ChannelIndexInvalid, false, weTryNextRow);
             }
             m_SndFile.Patterns[nPat].Resize(64, false);
             CHANGEMODTYPE_WARNING(wResizedPatterns);
@@ -180,7 +180,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         cEffectMemory.resize(m_SndFile.GetNumChannels());
         for(size_t i = 0; i < m_SndFile.GetNumChannels(); i++)
         {
-            cEffectMemory[i].resize(MAX_EFFECTS, 0);
+            cEffectMemory[i].resize(CmdMax, 0);
         }
 
         bool addBreak = false;    // When converting to XM, avoid the E60 bug.
@@ -197,9 +197,9 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             {
                 switch(m->command)
                 {
-                case CMD_ARPEGGIO:
-                case CMD_S3MCMDEX:
-                case CMD_MODCMDEX:
+                case CmdArpeggio:
+                case CmdS3mCmdEx:
+                case CmdModCmdEx:
                     // No effect memory in XM / MOD
                     if(m->param == 0)
                         m->param = cEffectMemory[nChannel][m->command];
@@ -214,11 +214,11 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             {
                 switch(m->command)
                 {
-                case CMD_PORTAMENTOUP:
-                case CMD_PORTAMENTODOWN:
-                case CMD_TONEPORTAVOL:
-                case CMD_VIBRATOVOL:
-                case CMD_VOLUMESLIDE:
+                case CmdPortaUp:
+                case CmdPortaDown:
+                case CmdPortamentoVol:
+                case CmdVibratoVol:
+                case CmdVolumeSlide:
                     // ProTracker doesn't have effect memory for these commands, so let's try to fix them
                     if(m->param == 0)
                         m->param = cEffectMemory[nChannel][m->command];
@@ -234,14 +234,14 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             {
                 switch(m->command)
                 {
-                case CMD_MODCMDEX:
+                case CmdModCmdEx:
                     if((m->param & 0xF0) == 0x60)
                     {
                         addBreak = true;
                     }
                     break;
-                case CMD_POSITIONJUMP:
-                case CMD_PATTERNBREAK:
+                case CmdPositionJump:
+                case CmdPatternBreak:
                     addBreak = false;
                     break;
                 }
@@ -249,7 +249,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         }
         if(addBreak)
         {
-            m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CMD_PATTERNBREAK, 0, false, ChannelIndexInvalid, false, weIgnore);
+            m_SndFile.TryWriteEffect(nPat, m_SndFile.Patterns[nPat].GetNumRows() - 1, CmdPatternBreak, 0, false, ChannelIndexInvalid, false, weIgnore);
         }
     }
 

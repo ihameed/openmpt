@@ -201,7 +201,7 @@ const LPCTSTR szDefaultNoteNames[NOTE_MAX] = {
     TEXT("C-9"), TEXT("C#9"), TEXT("D-9"), TEXT("D#9"), TEXT("E-9"), TEXT("F-9"), TEXT("F#9"), TEXT("G-9"), TEXT("G#9"), TEXT("A-9"), TEXT("A#9"), TEXT("B-9"),
 };
 
-const uint8_t gEffectColors[MAX_EFFECTS] =
+const uint8_t gEffectColors[CmdMax] =
 {
     0,                                    0,                                        MODCOLOR_PITCH,                MODCOLOR_PITCH,
     MODCOLOR_PITCH,            MODCOLOR_PITCH,                MODCOLOR_VOLUME,        MODCOLOR_VOLUME,
