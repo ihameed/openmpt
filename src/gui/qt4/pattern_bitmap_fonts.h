@@ -49,7 +49,7 @@ struct pattern_font_metrics_t {
     int32_t  note_width;             // NoteWidth
     int32_t  octave_width;           // Octave Width
 
-    int32_t  nVolX,      nVolY;      // Volume Column Effects
+    int32_t  volcmd_x,   volcmd_y;   // Volume Column Effects
     int32_t  vol_width;              // Width of volume effect
     int32_t  vol_firstchar_width;    // Width of first character in volume parameter
 
@@ -86,7 +86,7 @@ static const pattern_font_metrics_t medium_pattern_font = {
     8,                   // Width of first character in volume parameter
 
     -1,
-    8,                         // 8+7 = 15
+    8,                   // 8+7 = 15
 
     -3,                  // instr_offset
     -1,                  // instr_10_offset

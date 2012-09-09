@@ -288,9 +288,8 @@ void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
                               .GetpModCommand(pos.row, pos.column);
     modevent_t newcmd = *evt;
     newcmd.note = 1 + tone_number + 12 * (octave + editor.base_octave);
-    *evt = newcmd;
 
-    DEBUG_FUNC("8ve = %d, tone = %d", octave, tone_number);
+    *evt = newcmd;
 
     editor.update();
 }
@@ -307,9 +306,19 @@ void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
                               .GetpModCommand(pos.row, pos.column);
     modevent_t newcmd = *evt;
 
+    if (newcmd.volcmd == VolCmdNone) {
+        newcmd.volcmd = VolCmdVol;
+    }
+
+    auto vol = (newcmd.vol % 10) * 10 + digit;
+    if (vol > 64) {
+        vol = digit;
+    }
+    newcmd.vol = vol;
+
     *evt = newcmd;
 
-    DEBUG_FUNC("digit = %d", digit);
+    editor.update();
 }
 
 

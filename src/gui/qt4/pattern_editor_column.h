@@ -344,7 +344,7 @@ struct note_column {
             foreground = colors_t::Volume;
 
             draw_glyph(state, x, y,
-                metrics.nVolX, metrics.nVolY + volcmd * grid_height,
+                metrics.volcmd_x, metrics.volcmd_y + volcmd * grid_height,
                 metrics.vol_width
             );
 
@@ -356,7 +356,7 @@ struct note_column {
             auto extrawidth = metrics.vol_width + metrics.vol_firstchar_width;
             draw_glyph(state,
                 x + extrawidth, y,
-                metrics.num_x, metrics.num_y + (vol / 10) * grid_height,
+                metrics.num_x, metrics.num_y + (vol % 10) * grid_height,
                 metrics.element_widths[ElemVol] - extrawidth
             );
         } else {

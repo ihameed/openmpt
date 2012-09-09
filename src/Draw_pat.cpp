@@ -361,7 +361,7 @@ void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modev
             const int volcmd = (mc.volcmd & 0x0F);
             const int vol  = (mc.vol & 0x7F);
             m_Dib.TextBlt(x, y, pfnt->vol_width, COLUMN_HEIGHT,
-                            pfnt->nVolX, pfnt->nVolY+volcmd*COLUMN_HEIGHT);
+                            pfnt->volcmd_x, pfnt->volcmd_y+volcmd*COLUMN_HEIGHT);
             m_Dib.TextBlt(x+pfnt->vol_width, y, pfnt->vol_firstchar_width, COLUMN_HEIGHT,
                             pfnt->num_x, pfnt->num_y+(vol / 10)*COLUMN_HEIGHT);
             m_Dib.TextBlt(x+pfnt->vol_width+pfnt->vol_firstchar_width, y, pfnt->element_widths[2]-(pfnt->vol_width+pfnt->vol_firstchar_width), COLUMN_HEIGHT,
