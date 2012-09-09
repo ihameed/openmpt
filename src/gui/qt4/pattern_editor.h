@@ -6,6 +6,7 @@
 #include "colors.h"
 #include "pattern_bitmap_fonts.h"
 
+#include "keymap.h"
 #include "../../legacy_soundlib/Snd_defs.h"
 #include "../../tracker/types.h"
 
@@ -35,6 +36,42 @@ struct editor_position_t {
     elem_t   subcolumn;
 
     editor_position_t() : row(0), column(0), subcolumn(ElemNote) { };
+
+    editor_position_t prev_row() const {
+        auto newpos = *this;
+        if (newpos.row > 0) {
+            newpos.row--;
+        }
+        return newpos;
+    }
+
+    editor_position_t next_row() const {
+        auto newpos = *this;
+        if (newpos.row > 0) {
+            newpos.row++;
+        }
+        return newpos;
+    }
+
+    editor_position_t prev_subcol() const {
+        auto newpos = *this;
+        if (newpos.subcolumn == ElemNote) {
+            --newpos.column;
+            newpos.subcolumn = ElemMax;
+        }
+        --newpos.subcolumn;
+        return newpos;
+    }
+
+    editor_position_t next_subcol() const {
+        auto newpos = *this;
+        ++newpos.subcolumn;
+        if (newpos.subcolumn >= ElemMax) {
+            ++newpos.column;
+            newpos.subcolumn = ElemNote;
+        }
+        return newpos;
+    }
 };
 
 inline bool in_selection(const editor_position_t &start,
@@ -71,7 +108,11 @@ inline bool in_selection(const editor_position_t &start,
 class pattern_editor : public QGLWidget {
     Q_OBJECT
 public:
-    pattern_editor(module_renderer &renderer, const colors_t &colors);
+    pattern_editor(
+        module_renderer &renderer,
+        const pattern_keymap_t &keymap,
+        const colors_t &colors
+    );
 
     void update_colors(const colors_t &colors);
     void update_playback_position(const player_position_t &);
@@ -84,6 +125,8 @@ public:
 
     void move_to(const editor_position_t &target);
     const editor_position_t &pos() const;
+
+    keycontext_t keycontext() const;
 
 protected:
     virtual void initializeGL() override;
@@ -106,6 +149,8 @@ private:
     player_position_t active_pos;
     bool follow_playback;
 
+    const pattern_keymap_t &keymap;
+
     module_renderer &renderer;
 
     const pattern_font_metrics_t &font_metrics;
@@ -121,8 +166,15 @@ private:
 public:
     static void move_up(pattern_editor &);
     static void move_down(pattern_editor &);
-    static void move_right(pattern_editor &);
     static void move_left(pattern_editor &);
+    static void move_right(pattern_editor &);
+
+    static void select_up(pattern_editor &);
+    static void select_down(pattern_editor &);
+    static void select_left(pattern_editor &);
+    static void select_right(pattern_editor &);
+
+    static void insert_note(pattern_editor &, int, int);
 };
 
 

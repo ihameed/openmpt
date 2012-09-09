@@ -35,9 +35,13 @@ QImage load_font() {
     return font_bitmap;
 };
 
-pattern_editor::pattern_editor(module_renderer &renderer,
-                               const colors_t &colors) :
+pattern_editor::pattern_editor(
+    module_renderer &renderer,
+    const pattern_keymap_t &keymap,
+    const colors_t &colors
+) :
     renderer(renderer),
+    keymap(keymap),
     font_metrics(small_pattern_font),
     follow_playback(true)
 {
@@ -152,10 +156,12 @@ void pattern_editor::set_selection(const QPoint &point, editor_position_t &pos) 
 
 void pattern_editor::set_selection_start(const QPoint &point) {
     set_selection(point, selection_start);
+    update();
 }
 
 void pattern_editor::set_selection_end(const QPoint &point) {
     set_selection(point, selection_end);
+    update();
 }
 
 void pattern_editor::mousePressEvent(QMouseEvent *event) {
@@ -163,14 +169,12 @@ void pattern_editor::mousePressEvent(QMouseEvent *event) {
         is_dragging = true;
         set_selection_start(event->pos());
         set_selection_end(event->pos());
-        repaint();
     }
 }
 
 void pattern_editor::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton && is_dragging) {
         set_selection_end(event->pos());
-        repaint();
     }
 }
 
@@ -178,59 +182,112 @@ void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton) {
         is_dragging = false;
         set_selection_end(event->pos());
-        repaint();
     }
 }
 
 void pattern_editor::keyPressEvent(QKeyEvent *event) {
-    init_action_maps();
-    pattern_keymap_t map = default_pattern_keymap();
-    auto key = key_t(event->modifiers(), event->key());
-    invoke(map, key, *this);
+    auto invoke = [&] (key_t key) -> bool {
+        auto action = action_of_key(keymap, pattern_actionmap, key);
+        if (action) {
+            action(*this);
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    if (!invoke(key_t(event->modifiers(), event->key(), keycontext()))) {
+        if (!invoke(key_t(event->modifiers(), event->key()))) {
+            QGLWidget::keyPressEvent(event);
+        }
+    }
 }
 
 void pattern_editor::move_to(const editor_position_t &target) {
     selection_start = target;
     selection_end   = target;
-    repaint();
+    update();
 }
 
 const editor_position_t &pattern_editor::pos() const {
     return selection_end;
 }
 
+keycontext_t pattern_editor::keycontext() const{
+    switch (pos().subcolumn) {
+    case ElemNote:  return ContextNoteCol;
+    case ElemInstr: return ContextInstrCol;
+    case ElemVol:   return ContextVolCol;
+    case ElemCmd:   return ContextFxCol;
+    case ElemParam: return ContextParamCol;
+    default:        return ContextGlobal;
+    }
+}
+
+
+
+
+
 
 
 void pattern_editor::move_up(pattern_editor &editor) {
-    auto pos = editor.pos();
-    --pos.row;
+    auto pos = editor.pos().prev_row();
     editor.move_to(pos);
 }
 
 void pattern_editor::move_down(pattern_editor &editor) {
-    auto pos = editor.pos();
-    ++pos.row;
-    editor.move_to(pos);
-}
-
-void pattern_editor::move_right(pattern_editor &editor) {
-    auto pos = editor.pos();
-    ++pos.subcolumn;
-    if (pos.subcolumn >= ElemMax) {
-        ++pos.column;
-        pos.subcolumn = ElemNote;
-    }
+    auto pos = editor.pos().next_row();
     editor.move_to(pos);
 }
 
 void pattern_editor::move_left(pattern_editor &editor) {
-    auto pos = editor.pos();
-    if (pos.subcolumn == ElemNote) {
-        --pos.column;
-        pos.subcolumn = ElemMax;
-    }
-    --pos.subcolumn;
+    auto pos = editor.pos().prev_subcol();
     editor.move_to(pos);
+}
+
+void pattern_editor::move_right(pattern_editor &editor) {
+    auto pos = editor.pos().next_subcol();
+    editor.move_to(pos);
+}
+
+void pattern_editor::select_up(pattern_editor &editor) {
+    editor.selection_end = editor.selection_end.prev_row();
+    editor.update();
+}
+
+void pattern_editor::select_down(pattern_editor &editor) {
+    editor.selection_end = editor.selection_end.next_row();
+    editor.update();
+}
+
+void pattern_editor::select_left(pattern_editor &editor) {
+    editor.selection_end = editor.selection_end.prev_subcol();
+    editor.update();
+}
+
+void pattern_editor::select_right(pattern_editor &editor) {
+    editor.selection_end = editor.selection_end.next_subcol();
+    editor.update();
+}
+
+void pattern_editor::insert_note(pattern_editor &editor, int octave,
+    int tone_number)
+{
+    auto &renderer = editor.renderer;
+    auto &modspec = renderer.GetModSpecifications();
+
+    auto patternidx = editor.active_pos.pattern;
+    auto &pos = editor.pos();
+
+    modevent_t *evt = renderer.Patterns[patternidx]
+                              .GetpModCommand(pos.row, pos.column);
+    modevent_t newcmd = *evt;
+    newcmd.note = tone_number + ((octave - 1) * 12);
+    *evt = newcmd;
+
+    DEBUG_FUNC("8ve = %d, tone = %d", octave, tone_number);
+
+    editor.update();
 }
 
 

@@ -4,6 +4,7 @@
 
 #include "../../audioio/paudio.h"
 #include "colors.h"
+
 #include "app_config.h"
 
 using namespace modplug::pervasives;
@@ -16,6 +17,9 @@ namespace qt4 {
 struct private_configs {
     paudio_settings_t audio;
     colors_t colors;
+
+    global_keymap_t global_keymap;
+    pattern_keymap_t pattern_keymap;
 };
 
 class misc_globals {
@@ -29,6 +33,9 @@ app_config::app_config(portaudio::System &system) :
     globals(new misc_globals(system))
 {
     store->colors = default_colors();
+    init_action_maps();
+    store->global_keymap = default_global_keymap();
+    store->pattern_keymap = default_pattern_keymap();
 }
 
 app_config::~app_config()
@@ -44,6 +51,7 @@ Json::Value app_config::export_json() const {
 void app_config::import_json(Json::Value &root) {
     store->audio = paudio_settings_of_json(root["audio"], globals->pa_system);
 }
+
 
 const paudio_settings_t & app_config::audio_settings() const {
     return store->audio;
@@ -64,6 +72,7 @@ portaudio::System & app_config::audio_handle() {
     return globals->pa_system;
 }
 
+
 const colors_t &app_config::colors() const {
     return store->colors;
 }
@@ -73,6 +82,10 @@ void app_config::change_colors(const colors_t &colors) {
     emit colors_changed();
 }
 
+
+pattern_keymap_t &app_config::pattern_keymap() {
+    return store->pattern_keymap;
+}
 
 
 

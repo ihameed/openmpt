@@ -2,6 +2,7 @@
 #include <QtGui>
 
 #include "config_dialog.h"
+#include "keymap.h"
 #include "../../pervasives/pervasives.h"
 #include "colors.h"
 
@@ -36,6 +37,8 @@ private:
     QPushButton preset_xm;
     QPushButton preset_mpt;
     QPushButton preset_buzz;
+
+    pattern_keymap_t emptymap;
 
     pattern_editor *demo;
     std::unique_ptr<module_renderer> demo_dummy;

@@ -4,6 +4,7 @@
 #include <json/json.h>
 
 #include "../../pervasives/pervasives.h"
+#include "keymap.h"
 
 namespace portaudio { class System; }
 
@@ -13,6 +14,10 @@ namespace modplug { namespace audioio { struct paudio_settings_t; } }
 public: \
     const type & name () const; \
     void change_##name (const type &);
+
+#define MUTABLE_CONFIG_KNOB(type, name) \
+public: \
+    type & name ();
 
 namespace modplug {
 namespace gui {
@@ -37,6 +42,9 @@ public:
 
     CONFIG_KNOB(paudio_settings_t, audio_settings)
     CONFIG_KNOB(colors_t,          colors)
+
+    MUTABLE_CONFIG_KNOB(global_keymap_t,  global_keymap)
+    MUTABLE_CONFIG_KNOB(pattern_keymap_t, pattern_keymap)
 
 signals:
     void audio_settings_changed();

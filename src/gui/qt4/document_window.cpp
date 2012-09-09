@@ -18,7 +18,11 @@ document_window::document_window(module_renderer *renderer,
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setMargin(0);
-    editor = new pattern_editor(*renderer, global_config.colors());
+    editor = new pattern_editor(
+        *renderer,
+        global_config.pattern_keymap(),
+        global_config.colors()
+    );
 
     layout->addWidget(editor);
 
