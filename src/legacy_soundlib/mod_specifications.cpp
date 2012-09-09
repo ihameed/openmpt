@@ -9,13 +9,13 @@ bool CModSpecifications::HasNote(note_t note) const {
         return true;
     } else if(note >= NOTE_MIN_SPECIAL && note <= NOTE_MAX_SPECIAL) {
         switch (note) {
-        case NOTE_NOTECUT: return hasNoteCut;
-        case NOTE_KEYOFF:  return hasNoteOff;
+        case NoteNoteCut: return hasNoteCut;
+        case NoteKeyOff:  return hasNoteOff;
         case NOTE_FADE:    return hasNoteFade;
         default:
             return (memcmp(fileExtension, ModSpecs::mptm.fileExtension, 4) == 0);
         }
-    } else if (note == NOTE_NONE) {
+    } else if (note == NoteNone) {
         return true;
     }
     return false;

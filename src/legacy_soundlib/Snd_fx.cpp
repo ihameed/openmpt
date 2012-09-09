@@ -497,7 +497,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
     modplug::tracker::modsample_t *pSmp = &Samples[instr];
     UINT note = pChn->nNewNote;
 
-    if(note == NOTE_NONE && IsCompatibleMode(TRK_IMPULSETRACKER)) return;
+    if(note == NoteNone && IsCompatibleMode(TRK_IMPULSETRACKER)) return;
 
     if ((pIns) && (note) && (note <= 128))
     {
@@ -771,7 +771,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
     if (note > NOTE_MAX)
     {
         // Key Off (+ Invalid Note for XM - TODO is this correct?)
-        if (note == NOTE_KEYOFF || !(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT)))
+        if (note == NoteKeyOff || !(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT)))
             KeyOff(nChn);
         else // Invalid Note -> Note Fade
         //if (note == NOTE_FADE)
@@ -779,7 +779,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
                 pChn->flags |= CHN_NOTEFADE;
 
         // Note Cut
-        if (note == NOTE_NOTECUT)
+        if (note == NoteNoteCut)
         {
             pChn->flags |= (CHN_NOTEFADE|CHN_FASTVOLRAMP);
             if ((!(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT))) || (m_nInstruments)) pChn->nVolume = 0;
@@ -789,14 +789,14 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
         //IT compatibility tentative fix: Clear channel note memory.
         if(IsCompatibleMode(TRK_IMPULSETRACKER))
         {
-            pChn->nNote = pChn->nNewNote = NOTE_NONE;
+            pChn->nNote = pChn->nNewNote = NoteNone;
         }
         return;
     }
 
     if(bNewTuning)
     {
-        if(!bPorta || pChn->nNote == NOTE_NONE)
+        if(!bPorta || pChn->nNote == NoteNone)
             pChn->nPortamentoDest = 0;
         else
         {
@@ -1080,7 +1080,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
     modplug::tracker::modchannel_t *pChn = &Chn[nChn];
     modplug::tracker::modinstrument_t* pHeader = 0;
     LPSTR pSample;
-    if (note > 0x80) note = NOTE_NONE;
+    if (note > 0x80) note = NoteNone;
     if (note < 1) return;
     // Always NNA cut - using
     if ((!(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT|MOD_TYPE_MT2))) || (!m_nInstruments) || (bForceCut))
@@ -1177,7 +1177,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
                         //switch off duplicated note played on this plugin
                         IMixPlugin *pPlugin =  m_MixPlugins[pHeader->nMixPlug-1].pMixPlugin;
                         if (pPlugin && p->nNote)
-                            pPlugin->MidiCommand(p->instrument->midi_channel, p->instrument->midi_program, p->instrument->midi_bank, p->nNote + NOTE_KEYOFF, 0, i);
+                            pPlugin->MidiCommand(p->instrument->midi_channel, p->instrument->midi_program, p->instrument->midi_bank, p->nNote + NoteKeyOff, 0, i);
                         break;
                     }
                 }
@@ -1271,7 +1271,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
                 case NNA_NOTEFADE:
                     //switch off note played on this plugin, on this tracker channel and midi channel
                     //pPlugin->MidiCommand(pChn->instrument->midi_channel, pChn->instrument->midi_program, pChn->nNote+0xFF, 0, n);
-                    pPlugin->MidiCommand(pChn->instrument->midi_channel, pChn->instrument->midi_program, pChn->instrument->midi_bank, /*pChn->nNote+*/NOTE_KEYOFF, 0, nChn);
+                    pPlugin->MidiCommand(pChn->instrument->midi_channel, pChn->instrument->midi_program, pChn->instrument->midi_bank, /*pChn->nNote+*/NoteKeyOff, 0, nChn);
                     break;
                 }
             }
@@ -1462,7 +1462,7 @@ BOOL module_renderer::ProcessEffects()
                 }
 
                 // XM: Key-Off + Sample == Note Cut (BUT: Only if no instr number or volume effect is present!)
-                if ((note == NOTE_KEYOFF) && ((!instr && !vol && cmd != CMD_VOLUME) || !IsCompatibleMode(TRK_FASTTRACKER2)) && ((!pChn->instrument) || (!(pChn->instrument->volume_envelope.flags & ENV_ENABLED))))
+                if ((note == NoteKeyOff) && ((!instr && !vol && cmd != CMD_VOLUME) || !IsCompatibleMode(TRK_FASTTRACKER2)) && ((!pChn->instrument) || (!(pChn->instrument->volume_envelope.flags & ENV_ENABLED))))
                 {
                     pChn->flags |= CHN_FASTVOLRAMP;
                     pChn->nVolume = 0;
@@ -1474,7 +1474,7 @@ BOOL module_renderer::ProcessEffects()
                     // Apparently anything that is next to a note delay behaves totally unpredictable in FT2. Swedish tracker logic. :)
 
                     // If there's a note delay but no note, retrig the last note.
-                    if(note == NOTE_NONE)
+                    if(note == NoteNone)
                     {
                         note = pChn->nNote - pChn->nTranspose;
                     } else if(note >= NOTE_MIN_SPECIAL)
@@ -3407,12 +3407,12 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
         {
             // here are some really stupid things FT2 does
             if(pChn->nRowVolCmd == VOLCMD_VOLUME) return;
-            if(pChn->nRowInstr > 0 && pChn->nRowNote == NOTE_NONE) nRetrigCount = 1;
-            if(pChn->nRowNote != NOTE_NONE && pChn->nRowNote <= GetModSpecifications().noteMax) nRetrigCount++;
+            if(pChn->nRowInstr > 0 && pChn->nRowNote == NoteNone) nRetrigCount = 1;
+            if(pChn->nRowNote != NoteNone && pChn->nRowNote <= GetModSpecifications().noteMax) nRetrigCount++;
         }
         if (nRetrigCount >= nRetrigSpeed)
         {
-            if (!(m_dwSongFlags & SONG_FIRSTTICK) || (pChn->nRowNote == NOTE_NONE))
+            if (!(m_dwSongFlags & SONG_FIRSTTICK) || (pChn->nRowNote == NoteNone))
             {
                 bDoRetrig = true;
                 nRetrigCount = 0;
@@ -3584,7 +3584,7 @@ void module_renderer::NoteCut(UINT nChn, UINT nTick)
                 IMixPlugin *pPlug = (IMixPlugin*)m_MixPlugins[nPlug-1].pMixPlugin;
                 if (pPlug)
                 {
-                    pPlug->MidiCommand(pHeader->midi_channel, pHeader->midi_program, pHeader->midi_bank, /*pChn->nNote+*/NOTE_KEYOFF, 0, nChn);
+                    pPlug->MidiCommand(pHeader->midi_channel, pHeader->midi_program, pHeader->midi_bank, /*pChn->nNote+*/NoteKeyOff, 0, nChn);
                 }
             }
         }

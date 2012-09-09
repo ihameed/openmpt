@@ -265,10 +265,10 @@ struct note_column {
         case 0:
             draw_spacer(state, x, y, ElemNote);
             break;
-        case NOTE_NOTECUT:
+        case NoteNoteCut:
             draw_glyph(state, x, y, srcx, srcy + 13 * grid_height, width);
             break;
-        case NOTE_KEYOFF:
+        case NoteKeyOff:
             draw_glyph(state, x, y, srcx, srcy + 14 * grid_height, width);
             break;
         case NOTE_FADE:

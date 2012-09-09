@@ -3,11 +3,6 @@
 #include <algorithm>
 #include <cstdint>
 
-// Note definitions
-#define NOTE_NONE    (::modplug::tracker::note_t(0))
-#define NOTE_MIDDLEC (::modplug::tracker::note_t(5*12+1))
-#define NOTE_KEYOFF  (::modplug::tracker::note_t(0xFF))
-#define NOTE_NOTECUT (::modplug::tracker::note_t(0xFE))
 
 // 253, IT's action for illegal notes
 // DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
@@ -23,13 +18,13 @@
 #define NOTE_MAX     (::modplug::tracker::note_t(120))
 #define NOTE_COUNT   120
 
-#define NOTE_MAX_SPECIAL NOTE_KEYOFF
+#define NOTE_MAX_SPECIAL NoteKeyOff
 #define NOTE_MIN_SPECIAL NOTE_PCS
 
 // Checks whether a number represents a valid note
 // (a "normal" note or no note, but not something like note off)
 #define NOTE_IS_VALID(n) \
-    ((n) == NOTE_NONE || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
+    ((n) == NoteNone || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
 
 
 namespace modplug {
@@ -43,6 +38,17 @@ typedef uint8_t vol_t;
 typedef uint8_t volcmd_t;
 typedef uint8_t cmd_t;
 typedef uint8_t param_t;
+
+}
+}
+
+const modplug::tracker::note_t NoteNone    = 0;
+const modplug::tracker::note_t NoteMiddleC = 5 * 12 + 1;
+const modplug::tracker::note_t NoteKeyOff  = 0xff;
+const modplug::tracker::note_t NoteNoteCut = 0xfe;
+
+namespace modplug {
+namespace tracker {
 
 struct modevent_t {
     note_t note;

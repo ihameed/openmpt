@@ -440,7 +440,7 @@ bool module_renderer::ReadS3M(const uint8_t *lpStream, const uint32_t dwMemLengt
                         if(j + nInd + 2 >= dwMemLength) break;
                         m->note = src[j++];
                         if (m->note < 0xF0) m->note = (m->note & 0x0F) + 12*(m->note >> 4) + 13;
-                        else if (m->note == 0xFF) m->note = NOTE_NONE;
+                        else if (m->note == 0xFF) m->note = NoteNone;
                         m->instr = src[j++];
                     }
                     if (b & 0x40)
@@ -670,7 +670,7 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
 
                     if (!note) note = 0xFF; // no note
                     else if (note >= NOTE_MIN_SPECIAL) note = 0xFE; // special notes (notecut, noteoff etc)
-                    else if (note < 13) note = NOTE_NONE; // too low
+                    else if (note < 13) note = NoteNone; // too low
                     else note -= 13;
 
                     if (note < 0xFE) note = (note % 12) + ((note / 12) << 4);

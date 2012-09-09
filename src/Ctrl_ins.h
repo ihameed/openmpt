@@ -27,7 +27,7 @@ public:
     CNoteMapWnd()
     {
             m_nPlayingNote = -1;
-            m_nNote = NOTE_MIDDLEC - 1;
+            m_nNote = NoteMiddleC - 1;
             m_pModDoc = nullptr;
             m_nInstrument = 0;
             m_bIns = false;

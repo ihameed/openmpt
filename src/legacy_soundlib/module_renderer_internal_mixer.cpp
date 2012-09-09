@@ -1501,7 +1501,7 @@ BOOL module_renderer::ReadNote()
             {
                 if(current_vchan->m_CalculateFreq || (current_vchan->m_ReCalculateFreqOnFirstTick && m_nTickCount == 0))
                 {
-                    current_vchan->m_Freq = current_vchan->nC5Speed * vibratoFactor * pIns->pTuning->GetRatio(current_vchan->nNote - NOTE_MIDDLEC + arpeggioSteps, current_vchan->nFineTune+current_vchan->m_PortamentoFineSteps);
+                    current_vchan->m_Freq = current_vchan->nC5Speed * vibratoFactor * pIns->pTuning->GetRatio(current_vchan->nNote - NoteMiddleC + arpeggioSteps, current_vchan->nFineTune+current_vchan->m_PortamentoFineSteps);
                     if(!current_vchan->m_CalculateFreq)
                         current_vchan->m_ReCalculateFreqOnFirstTick = false;
                     else

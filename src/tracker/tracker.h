@@ -241,7 +241,7 @@ __declspec(align(32)) struct modchannel_t {
     uint32_t muted() { return flags & CHN_MUTE; }
 
     void ClearRowCmd() {
-        nRowNote = NOTE_NONE; nRowInstr = 0;
+        nRowNote = NoteNone; nRowInstr = 0;
         nRowVolCmd = VOLCMD_NONE; nRowVolume = 0;
         nRowCommand = CMD_NONE; nRowParam = 0;
     }

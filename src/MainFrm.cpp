@@ -1629,7 +1629,7 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
     m_WaveFile.Patterns.Insert(1,64);
     if (m_WaveFile.Patterns[0])
     {
-        if (!nNote) nNote = NOTE_MIDDLEC;
+        if (!nNote) nNote = NoteMiddleC;
         modplug::tracker::modevent_t *m = m_WaveFile.Patterns[0];
         m[0].note = (uint8_t)nNote;
         m[0].instr = 1;
@@ -1652,10 +1652,10 @@ BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
                 if ((m_WaveFile.m_nSamples > 1) || (m_WaveFile.Samples[1].flags & CHN_LOOP))
                 {
                     modplug::tracker::modevent_t *m = m_WaveFile.Patterns[0];
-                    m[32*4].note = NOTE_KEYOFF;
-                    m[32*4+1].note = NOTE_KEYOFF;
-                    m[63*4].note = NOTE_NOTECUT;
-                    m[63*4+1].note = NOTE_NOTECUT;
+                    m[32*4].note = NoteKeyOff;
+                    m[32*4+1].note = NoteKeyOff;
+                    m[63*4].note = NoteNoteCut;
+                    m[63*4+1].note = NoteNoteCut;
                 } else
                 {
                     modplug::tracker::modevent_t *m = m_WaveFile.Patterns[1];
@@ -1712,8 +1712,8 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nS
         m = m_WaveFile.Patterns[1];
         m[32*4].note = NOTE_FADE;
         m[32*4+1].note = NOTE_FADE;
-        m[63*4].note = NOTE_KEYOFF;
-        m[63*4+1].note = NOTE_KEYOFF;
+        m[63*4].note = NoteKeyOff;
+        m[63*4+1].note = NoteKeyOff;
     }
     if ((nInstrument) && (nInstrument <= pSong->m_nInstruments))
     {

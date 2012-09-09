@@ -405,10 +405,10 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
 
                 if (note->note == 160)
                 {
-                    note->note = NOTE_KEYOFF; /* ??? */
+                    note->note = NoteKeyOff; /* ??? */
                 } else if (note->note == 255)
                 {
-                    note->note = NOTE_NONE; /* ??? */
+                    note->note = NoteNone; /* ??? */
                 } else
                 {
                     note->note = (note->note >> 4) * 12 + (note->note & 0xf) + 12 + 1;
@@ -416,7 +416,7 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
                     {
                         /*printf("%d.%d.%d: funny note 0x%02x\n",
                             nPat, row, channel, fp->data[fp->pos - 1]);*/
-                        note->note = NOTE_NONE;
+                        note->note = NoteNone;
                     }
                 }
             }

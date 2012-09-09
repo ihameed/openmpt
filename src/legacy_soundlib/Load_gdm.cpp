@@ -286,7 +286,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
 
                     bNote = (bNote & 0x7F) - 1; // this format doesn't have note cuts
                     if(bNote < 0xF0) bNote = (bNote & 0x0F) + 12 * (bNote >> 4) + 13;
-                    if(bNote == 0xFF) bNote = NOTE_NONE;
+                    if(bNote == 0xFF) bNote = NoteNone;
                     m->note = bNote;
                     m->instr = bSample;
 

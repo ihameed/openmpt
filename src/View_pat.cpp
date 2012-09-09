@@ -789,7 +789,7 @@ void CViewPattern::OnGrowSelection()
             //Log("dst: %d; src: %d; blk: %d\n", row, (row-offset/2), (row-1));
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:    dest->note    = src->note;    blank->note = NOTE_NONE;                break;
+                case NOTE_COLUMN:    dest->note    = src->note;    blank->note = NoteNone;                break;
                 case INST_COLUMN:    dest->instr   = src->instr;   blank->instr = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = src->vol;     blank->vol = 0;
                                     dest->volcmd  = src->volcmd;  blank->volcmd = VOLCMD_NONE;    break;
@@ -842,7 +842,7 @@ void CViewPattern::OnShrinkSelection()
             if(srcRow < pSndFile->Patterns[m_nPattern].GetNumRows() - 1)
             {
                 const modplug::tracker::modevent_t *srcNext = pSndFile->Patterns[m_nPattern].GetpModCommand(srcRow + 1, chn);
-                if(src->note == NOTE_NONE) src->note = srcNext->note;
+                if(src->note == NoteNone) src->note = srcNext->note;
                 if(src->instr == 0) src->instr = srcNext->instr;
                 if(src->volcmd == VOLCMD_NONE)
                 {
@@ -877,7 +877,7 @@ void CViewPattern::OnShrinkSelection()
             modplug::tracker::modevent_t *dest = pSndFile->Patterns[m_nPattern].GetpModCommand(row, chn);
             switch(GetColTypeFromCursor(i))
             {
-                case NOTE_COLUMN:    dest->note    = NOTE_NONE;                break;
+                case NOTE_COLUMN:    dest->note    = NoteNone;                break;
                 case INST_COLUMN:    dest->instr   = 0;                                break;
                 case VOL_COLUMN:    dest->vol     = 0;
                                     dest->volcmd  = VOLCMD_NONE;    break;
@@ -940,7 +940,7 @@ void CViewPattern::OnClearSelection(bool ITStyle, RowMask rm) //Default RowMask:
                     }
                     else
                     {
-                        m->note = NOTE_NONE;
+                        m->note = NoteNone;
                         if (ITStyle) m->instr = 0;
                     }
                 }
@@ -3757,10 +3757,10 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
                                 return wParam;
         case kcPatternGoto:            OnEditGoto(); return wParam;
 
-        case kcNoteCut:                    TempEnterNote(NOTE_NOTECUT, false); return wParam;
-        case kcNoteCutOld:            TempEnterNote(NOTE_NOTECUT, true);  return wParam;
-        case kcNoteOff:                    TempEnterNote(NOTE_KEYOFF, false); return wParam;
-        case kcNoteOffOld:            TempEnterNote(NOTE_KEYOFF, true);  return wParam;
+        case kcNoteCut:                    TempEnterNote(NoteNoteCut, false); return wParam;
+        case kcNoteCutOld:            TempEnterNote(NoteNoteCut, true);  return wParam;
+        case kcNoteOff:                    TempEnterNote(NoteKeyOff, false); return wParam;
+        case kcNoteOffOld:            TempEnterNote(NoteKeyOff, true);  return wParam;
         case kcNoteFade:            TempEnterNote(NOTE_FADE, false); return wParam;
         case kcNoteFadeOld:            TempEnterNote(NOTE_FADE, true);  return wParam;
         case kcNotePC:                    TempEnterNote(NOTE_PC); return wParam;
@@ -4174,9 +4174,9 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
 
     //Enter note off
     if(pModDoc->GetSoundFile()->GetModSpecifications().hasNoteOff) // ===
-        p->note = NOTE_KEYOFF;
+        p->note = NoteKeyOff;
     else if(pModDoc->GetSoundFile()->GetModSpecifications().hasNoteCut) // ^^^
-        p->note = NOTE_NOTECUT;
+        p->note = NoteNoteCut;
     else { // we don't have anything to cut (MOD format) - use volume or ECx
         if(usePlaybackPosition && nTick) // ECx
         {
@@ -4184,7 +4184,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
             p->param   = 0xC0 | min(0xF, nTick);
         } else // C00
         {
-            p->note = NOTE_NONE;
+            p->note = NoteNone;
             p->command = CMD_VOLUME;
             p->param = 0;
         }
@@ -4318,7 +4318,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
             note = pSndFile->GetModSpecifications().noteMin;
 
         // Special case: Convert note off commands to C00 for MOD files
-        if((pSndFile->GetType() == MOD_TYPE_MOD) && (note == NOTE_NOTECUT || note == NOTE_FADE || note == NOTE_KEYOFF))
+        if((pSndFile->GetType() == MOD_TYPE_MOD) && (note == NoteNoteCut || note == NOTE_FADE || note == NoteKeyOff))
         {
             TempEnterFX(CMD_VOLUME, 0);
             return;
@@ -4756,7 +4756,7 @@ void CViewPattern::OnClearField(int field, bool step, bool ITStyle)
 
         switch(field)
         {
-            case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NOTE_NONE; if (ITStyle) p->instr = 0;}  break;                //Note
+            case NOTE_COLUMN:    if(p->IsPcNote()) p->Clear(); else {p->note = NoteNone; if (ITStyle) p->instr = 0;}  break;                //Note
             case INST_COLUMN:    p->instr = 0; break;                                //instr
             case VOL_COLUMN:    p->vol = 0; p->volcmd = 0; break;        //Vol
             case EFFECT_COLUMN:    p->command = 0;        break;                                //Effect

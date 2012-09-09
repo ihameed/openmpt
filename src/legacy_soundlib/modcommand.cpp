@@ -35,7 +35,7 @@ void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
     case 0x90: m->command = CMD_RETRIG; m->param = (m->param & 0x0F); break;
     case 0xA0: if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param = (m->param << 4) | 0x0F; } else m->command = 0; break;
     case 0xB0: if (m->param & 0x0F) { m->command = CMD_VOLUMESLIDE; m->param |= 0xF0; } else m->command = 0; break;
-    case 0xC0: if (m->param == 0xC0) { m->command = CMD_NONE; m->note = NOTE_NOTECUT; }        // this does different things in IT and ST3
+    case 0xC0: if (m->param == 0xC0) { m->command = CMD_NONE; m->note = NoteNoteCut; }        // this does different things in IT and ST3
     case 0xD0: if (m->param == 0xD0) { m->command = CMD_NONE; }        // dito
                             // rest are the same
     }
@@ -130,7 +130,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                     m->param = (uint8_t)(min(modplug::tracker::modevent_t::MaxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::MaxColumnValue);
                     m->command = newcommand; // might be removed later
                     m->volcmd = VOLCMD_NONE;
-                    m->note = NOTE_NONE;
+                    m->note = NoteNone;
                     m->instr = 0;
             }
 
@@ -195,7 +195,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             case CMD_KEYOFF:
                     if(m->note == 0)
                     {
-                            m->note = (newTypeIsS3M) ? NOTE_NOTECUT : NOTE_KEYOFF;
+                            m->note = (newTypeIsS3M) ? NoteNoteCut : NoteKeyOff;
                             m->command = CMD_S3MCMDEX;
                             if(m->param == 0)
                                     m->instr = 0;
@@ -215,16 +215,16 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     // Convert S3M / IT / MPTM to MOD / XM
     else if(oldTypeIsS3M_IT_MPT && newTypeIsMOD_XM)
     {
-            if(m->note == NOTE_NOTECUT)
+            if(m->note == NoteNoteCut)
             {
                     // convert note cut to EC0
-                    m->note = NOTE_NONE;
+                    m->note = NoteNone;
                     m->command = CMD_MODCMDEX;
                     m->param = 0xC0;
             } else if(m->note == NOTE_FADE)
             {
                     // convert note fade to note off
-                    m->note = NOTE_KEYOFF;
+                    m->note = NoteKeyOff;
             }
 
             switch(m->command)
@@ -313,8 +313,8 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     // Convert IT to S3M
     else if(oldTypeIsIT_MPT && newTypeIsS3M)
     {
-            if(m->note == NOTE_KEYOFF || m->note == NOTE_FADE)
-                    m->note = NOTE_NOTECUT;
+            if(m->note == NoteKeyOff || m->note == NOTE_FADE)
+                    m->note = NoteNoteCut;
 
             switch(m->command)
             {
@@ -392,7 +392,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             // convert note off events
             if(m->note >= NOTE_MIN_SPECIAL)
             {
-                    m->note = NOTE_NONE;
+                    m->note = NoteNone;
                     // no effect present, so just convert note off to volume 0
                     if(m->command == CMD_NONE)
                     {
@@ -550,7 +550,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     if (newTypeIsXM)
     {
             // remove EDx if no note is next to it, or it will retrigger the note in FT2 mode
-            if(m->command == CMD_MODCMDEX && (m->param & 0xF0) == 0xD0 && m->note == NOTE_NONE)
+            if(m->command == CMD_MODCMDEX && (m->param & 0xF0) == 0xD0 && m->note == NoteNone)
             {
                     m->command = m->param = 0;
             }
@@ -617,7 +617,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     } // End if (newTypeIsIT)
 
     if(!module_renderer::GetModSpecifications(nNewType).HasNote(m->note))
-            m->note = NOTE_NONE;
+            m->note = NoteNone;
 
     // ensure the commands really exist in this format
     if(module_renderer::GetModSpecifications(nNewType).HasCommand(m->command) == false)

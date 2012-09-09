@@ -1900,7 +1900,7 @@ void CViewInstrument::PlayNote(UINT note)
             const size_t sizeofS = sizeof(s) / sizeof(s[0]);
             if (note >= 0xFE)
             {
-                    pModDoc->NoteOff(0, (note == NOTE_NOTECUT) ? TRUE : FALSE, m_nInstrument);
+                    pModDoc->NoteOff(0, (note == NoteNoteCut) ? TRUE : FALSE, m_nInstrument);
                     pMainFrm->SetInfoText("");
             } else
             if (m_nInstrument && !m_baPlayingNote[note])
@@ -2207,9 +2207,9 @@ LRESULT CViewInstrument::OnCustomKeyMsg(WPARAM wParam, LPARAM)
             case kcEditCopy:                OnEditCopy(); return wParam;
             case kcEditPaste:                OnEditPaste(); return wParam;
             case kcNoteOffOld:
-            case kcNoteOff:                        PlayNote(NOTE_KEYOFF); return wParam;
+            case kcNoteOff:                        PlayNote(NoteKeyOff); return wParam;
             case kcNoteCutOld:
-            case kcNoteCut:                        PlayNote(NOTE_NOTECUT); return wParam;
+            case kcNoteCut:                        PlayNote(NoteNoteCut); return wParam;
             case kcInstrumentLoad:        SendCtrlMessage(IDC_INSTRUMENT_OPEN); return wParam;
             case kcInstrumentSave:        SendCtrlMessage(IDC_INSTRUMENT_SAVEAS); return wParam;
             case kcInstrumentNew:        SendCtrlMessage(IDC_INSTRUMENT_NEW); return wParam;

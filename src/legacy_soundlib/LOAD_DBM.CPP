@@ -358,7 +358,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                                     {
                                         uint8_t note = pkdata[i++];
 
-                                        if (note == 0x1F) note = NOTE_KEYOFF; else
+                                        if (note == 0x1F) note = NoteKeyOff; else
                                         if ((note) && (note < 0xFE))
                                         {
                                             note = ((note >> 4) * 12) + (note & 0x0F) + 13;

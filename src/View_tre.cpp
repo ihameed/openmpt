@@ -1236,7 +1236,7 @@ BOOL CModTree::PlayItem(HTREEITEM hItem, UINT nParam)
             case MODITEM_SAMPLE:
                     if (pModDoc)
                     {
-                            if (!nParam) nParam = NOTE_MIDDLEC;
+                            if (!nParam) nParam = NoteMiddleC;
                             if (nParam & 0x80)
                             {
                                     pModDoc->NoteOff(nParam & 0x7F, TRUE);
@@ -1251,7 +1251,7 @@ BOOL CModTree::PlayItem(HTREEITEM hItem, UINT nParam)
             case MODITEM_INSTRUMENT:
                     if (pModDoc)
                     {
-                            if (!nParam) nParam = NOTE_MIDDLEC;
+                            if (!nParam) nParam = NoteMiddleC;
                             if (nParam & 0x80)
                             {
                                     pModDoc->NoteOff(nParam, TRUE);
@@ -1337,7 +1337,7 @@ BOOL CModTree::PlayItem(HTREEITEM hItem, UINT nParam)
                                     // Melodic
                                     if (modItem & 0x40000000)
                                     {
-                                            if ((!nParam) || (nParam > NOTE_MAX)) nParam = NOTE_MIDDLEC;
+                                            if ((!nParam) || (nParam > NOTE_MAX)) nParam = NoteMiddleC;
                                             rgn = pDLSBank->GetRegionFromKey(instr, nParam-1);
                                     }
                                     pMainFrm->PlayDLSInstrument(bank, instr, rgn);

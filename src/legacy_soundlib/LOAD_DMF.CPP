@@ -220,7 +220,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
     // all voices in the now unused channels are killed:
     for(modplug::tracker::chnindex_t nChn = numChannels + 1; nChn < pSndFile->GetNumChannels(); nChn++)
     {
-        m[nChn].note = NOTE_NOTECUT;
+        m[nChn].note = NoteNoteCut;
     }
 
     // Initialize tempo stuff
@@ -406,21 +406,21 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         // "Buffer notes" for portamento (and other effects?) that are actually not played, but just "queued"...
                         m->note = CLAMP((m->note & 0x7F) + 24, NOTE_MIN, NOTE_MAX);
                         settings.noteBuffer[nChn] = m->note;
-                        m->note = NOTE_NONE;
+                        m->note = NoteNone;
                     } else if(m->note == 255)
                     {
-                        m->note = NOTE_NOTECUT;
+                        m->note = NoteNoteCut;
                     }
                 }
 
                 // If there's just an instrument number, but no note, retrigger sample.
-                if(m->note == NOTE_NONE && NOTE_IS_VALID(m->note) && m->instr > 0)
+                if(m->note == NoteNone && NOTE_IS_VALID(m->note) && m->instr > 0)
                 {
                     m->note = settings.lastNote[nChn];
                     m->instr = 0;
                 }
 
-                if(m->note != NOTE_NONE && NOTE_IS_VALID(m->note))
+                if(m->note != NoteNone && NOTE_IS_VALID(m->note))
                 {
                     settings.playDir[nChn] = false;
                 }
@@ -448,11 +448,11 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     switch(effect1)
                     {
                     case 1:		// Stop Sample
-                        m->note = NOTE_NOTECUT;
+                        m->note = NoteNoteCut;
                         effect1 = CMD_NONE;
                         break;
                     case 2:		// Stop Sample Loop
-                        m->note = NOTE_KEYOFF;
+                        m->note = NoteKeyOff;
                         effect1 = CMD_NONE;
                         break;
                     case 3:		// Instrument Volume Override (aka "Restart")
@@ -470,7 +470,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         {
                             effect1 = CMD_NONE;
                         }
-                        if(m->note == NOTE_NONE)
+                        if(m->note == NoteNone)
                         {
                             m->note = settings.lastNote[nChn];
                             settings.playDir[nChn] = false;
@@ -542,7 +542,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         effect2 = (effect2 == 4) ? CMD_PORTAMENTOUP : CMD_PORTAMENTODOWN;
                         break;
                     case 6:		// Portamento to Note
-                        if(m->note == NOTE_NONE)
+                        if(m->note == NoteNone)
                         {
                             m->note = settings.noteBuffer[nChn];
                         }
@@ -578,7 +578,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         } else
                         {
                             effect2 = CMD_NONE;
-                            m->note = NOTE_NOTECUT;
+                            m->note = NoteNoteCut;
                         }
                         break;
                     default:
@@ -636,7 +636,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 }
 
                 // I guess this is close enough to "not retriggering the note"
-                if(slideNote && m->note != NOTE_NONE && NOTE_IS_VALID(m->note))
+                if(slideNote && m->note != NoteNone && NOTE_IS_VALID(m->note))
                 {
                     if(effect2 == CMD_NONE)
                     {
@@ -992,8 +992,8 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
         settings.realBPMmode = false;
         settings.internalTicks = 6;
         settings.playDir.assign(GetNumChannels(), false);
-        settings.noteBuffer.assign(GetNumChannels(), NOTE_NONE);
-        settings.lastNote.assign(GetNumChannels(), NOTE_NONE);
+        settings.noteBuffer.assign(GetNumChannels(), NoteNone);
+        settings.lastNote.assign(GetNumChannels(), NoteNone);
 
         for(modplug::tracker::orderindex_t nOrd = 0; nOrd < Order.GetLength(); nOrd++)
         {

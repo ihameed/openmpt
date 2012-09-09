@@ -28,7 +28,7 @@ int ApplyVolumeRelatedMidiSettings(const uint32_t& dwParam1, const uint8_t midiv
                     nVol = static_cast<int>((midivolume / 127.0) * nVol);
     }
     else //Case: No velocity record.
-    {        
+    {
             if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDIVOL_TO_NOTEVOL)
                     nVol = 4*((midivolume+1)/2);
             else //Use default volume
@@ -51,7 +51,7 @@ void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, uint32_t& dwParam1)
                     if (note < 0x80)
                     {
                             note += nTranspose*12;
-                            if (note < 0) note = NOTE_NONE;
+                            if (note < 0) note = NoteNone;
                             if (note > NOTE_MAX - 1) note = NOTE_MAX - 1;
 
                             // -> CODE#0011
@@ -98,7 +98,7 @@ void CALLBACK MidiInCallBack(HMIDIIN, UINT wMsg, uint32_t, uint32_t dwParam1, ui
                                     uint32_t dwTime = timeGetTime();
                                     const uint32_t timediff = dwTime - gdwLastMidiEvtTime;
                                     if (timediff < 20*3) break;
-                                    
+
                                     gdwLastMidiEvtTime = dwTime; // continue
                             }
                             else break;
@@ -212,7 +212,7 @@ void CMIDIMapper::Serialize(FILE* f) const
             uint8_t temp8 = citer->IsActive(); //bit 0
             if(citer->GetCaptureMIDI()) temp8 |= (1 << 1); //bit 1
             //bits 2-4: Mapping type: 0 for plug param control.
-        //bit 5: 
+        //bit 5:
             if(citer->GetAllowPatternEdit()) temp8 |= (1 << 5);
             //bits 6-7: Size: 5, 6, 8, 12
 
@@ -223,8 +223,8 @@ void CMIDIMapper::Serialize(FILE* f) const
                     else {parambytes = 2; temp8 |= (1 << 6);}
             }
             else temp8 |= (2 << 6);
-            
-            fwrite(&temp8, 1, sizeof(temp8), f);        
+
+            fwrite(&temp8, 1, sizeof(temp8), f);
             fwrite(&temp16, 1, sizeof(temp16), f);
             temp8 = citer->GetPlugIndex();
             fwrite(&temp8, 1, sizeof(temp8), f);
@@ -264,7 +264,7 @@ bool CMIDIMapper::Deserialize(const uint8_t* ptr, const size_t size)
             memcpy(&i8, ptr, 1); ptr++;                //Plugindex
             const uint8_t remainingbytes = psize - 4;
             memcpy(&i32, ptr, min(4, remainingbytes)); ptr += remainingbytes;
-               
+
             s.SetChannel(((i16 & 1) != 0) ? 0 : 1 + ((i16 >> 1) & 0xF));
             s.SetEvent(static_cast<uint8_t>((i16 >> 5) & 0xF));
             s.SetController(i16 >> 9);
@@ -289,7 +289,7 @@ bool CMIDIMapper::OnMIDImsg(const uint32_t midimsg, uint8_t& mappedIndex, uint32
 
     const uint8_t controller = GetFromMIDIMsg_DataByte1(midimsg);
 
-    const_iterator citer = std::lower_bound(Begin(), End(), controller); 
+    const_iterator citer = std::lower_bound(Begin(), End(), controller);
 
     const uint8_t channel = GetFromMIDIMsg_Channel(midimsg);
 
@@ -337,5 +337,3 @@ bool CMIDIMapper::Swap(const size_t a, const size_t b)
     }
     else return true;
 }
-
-

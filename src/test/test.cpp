@@ -293,7 +293,7 @@ void TestLoadFile(const CModDoc *pModDoc)
     VERIFY_EQUAL_NONCONT(pIns->flags, INS_SETPANNING);
 
     VERIFY_EQUAL_NONCONT(pIns->pitch_pan_separation, 16);
-    VERIFY_EQUAL_NONCONT(pIns->pitch_pan_center, (NOTE_MIDDLEC - 1) + 6);        // F#5
+    VERIFY_EQUAL_NONCONT(pIns->pitch_pan_center, (NoteMiddleC - 1) + 6);        // F#5
 
     VERIFY_EQUAL_NONCONT(pIns->volume_ramp_up, 1200);
     VERIFY_EQUAL_NONCONT(pIns->resampling_mode, SRCMODE_POLYPHASE);
@@ -325,7 +325,7 @@ void TestLoadFile(const CModDoc *pModDoc)
 
     for(size_t i = 0; i < NOTE_MAX; i++)
     {
-            if(i == NOTE_MIDDLEC - 1)
+            if(i == NoteMiddleC - 1)
             {
                     VERIFY_EQUAL_NONCONT(pIns->Keyboard[i], 99);
                     VERIFY_EQUAL_NONCONT(pIns->NoteMap[i], i + 13);

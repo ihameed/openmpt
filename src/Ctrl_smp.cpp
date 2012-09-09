@@ -1092,7 +1092,7 @@ void CCtrlSamples::OnSamplePlay()
             m_pModDoc->NoteOff(0, TRUE);
         } else
         {
-            m_pModDoc->PlayNote(NOTE_MIDDLEC, 0, m_nSample, FALSE);
+            m_pModDoc->PlayNote(NoteMiddleC, 0, m_nSample, FALSE);
         }
     }
     SwitchToView();
@@ -2765,7 +2765,7 @@ void CCtrlSamples::OnBaseNoteChanged()
 //-------------------------------------
 {
     if (IsLocked()) return;
-    int n = (NOTE_MIDDLEC - 1) - (m_CbnBaseNote.GetCurSel() + BASENOTE_MIN);
+    int n = (NoteMiddleC - 1) - (m_CbnBaseNote.GetCurSel() + BASENOTE_MIN);
     if (m_pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_S3M|MOD_TYPE_MPT))
     {
         LONG ft = module_renderer::FrequencyToTranspose(m_pSndFile->Samples[m_nSample].c5_samplerate) & 0x7f;

@@ -1143,7 +1143,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                     if(!(m_nType & MOD_TYPE_MPT))
                     {
                         if(note > NOTE_MAX && note < 0xFD) note = NOTE_FADE;
-                        else if(note == 0xFD) note = NOTE_NONE;
+                        else if(note == 0xFD) note = NoteNone;
                     }
                     m[ch].note = note;
                     lastvalue[ch].note = note;
@@ -2307,7 +2307,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                 UINT param = m->param;
                 UINT vol = 0xFF;
                 UINT note = m->note;
-                if(note == NOTE_PC || note == NOTE_PCS) note = NOTE_NONE;
+                if(note == NOTE_PC || note == NOTE_PCS) note = NoteNone;
                 if (note) b |= 1;
                 if ((note) && (note < NOTE_MIN_SPECIAL)) note--;
                 if (note == NOTE_FADE) note = 0xF6;

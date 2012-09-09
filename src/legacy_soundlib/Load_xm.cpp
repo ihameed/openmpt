@@ -175,7 +175,7 @@ uint32_t ReadXMPatterns(const uint8_t *lpStream, uint32_t dwMemLength, uint32_t 
                         p->command = src[j++];
                         p->param = src[j++];
                     }
-                    if (p->note == 97) p->note = NOTE_KEYOFF; else
+                    if (p->note == 97) p->note = NoteKeyOff; else
                     if ((p->note) && (p->note < 97)) p->note += 12;
                     if (p->command | p->param) pSndFile->ConvertModCommand(p);
                     if (p->instr == 0xff) p->instr = 0;

@@ -45,7 +45,7 @@ struct FixHackedPatterns
             {
                     *foundHacks = true;
                     if(autofix)
-                            m.note = NOTE_NONE;
+                            m.note = NoteNone;
             }
 
             if(!originalSpecs->HasCommand(m.command))

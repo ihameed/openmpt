@@ -1769,12 +1769,12 @@ void CCtrlInstruments::OnInstrumentPlay()
 {
     if ((m_pModDoc) && (m_pSndFile))
     {
-            if (m_pModDoc->IsNotePlaying(NOTE_MIDDLEC, 0, m_nInstrument))
+            if (m_pModDoc->IsNotePlaying(NoteMiddleC, 0, m_nInstrument))
             {
-                    m_pModDoc->NoteOff(NOTE_MIDDLEC, TRUE, m_nInstrument);
+                    m_pModDoc->NoteOff(NoteMiddleC, TRUE, m_nInstrument);
             } else
             {
-                    m_pModDoc->PlayNote(NOTE_MIDDLEC, m_nInstrument, 0, FALSE);
+                    m_pModDoc->PlayNote(NoteMiddleC, m_nInstrument, 0, FALSE);
             }
     }
     SwitchToView();

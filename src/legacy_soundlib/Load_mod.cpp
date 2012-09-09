@@ -475,7 +475,7 @@ bool module_renderer::ReadMod(const uint8_t *lpStream, uint32_t dwMemLength)
                         bLeftPanning = true;
                     if (m->command == CMD_PANNING8 && m->param > 0x80 && m->param != 0xA4)
                         bExtendedPanning = true;
-                    if (m->note == NOTE_NONE && m->instr > 0 && !bFLT8)
+                    if (m->note == NoteNone && m->instr > 0 && !bFLT8)
                     {
                         if(lastInstrument[nChn] > 0 && lastInstrument[nChn] != m->instr)
                         {

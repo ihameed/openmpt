@@ -207,7 +207,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
 
                     case 27: // R Release sample (apparently not listed in the help!)
                             m->Clear();
-                            m->note = NOTE_KEYOFF;
+                            m->note = NoteKeyOff;
                             break;
 
                     case 28: // S Speed

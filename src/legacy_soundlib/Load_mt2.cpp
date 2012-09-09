@@ -128,7 +128,7 @@ static void ConvertMT2Command(module_renderer *that, modplug::tracker::modevent_
 //---------------------------------------------------------------------------
 {
     // Note
-    m->note = NOTE_NONE;
+    m->note = NoteNone;
     if (p->note) m->note = (p->note > 96) ? 0xFF : p->note+12;
     // Instrument
     m->instr = p->instr;

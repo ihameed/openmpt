@@ -554,7 +554,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                     if(!bNewFormat)
                     {
                         if(bNote == 0xFF)
-                            bNote = NOTE_NOTECUT;
+                            bNote = NoteNoteCut;
                         else
                             if(bNote < 129) bNote = (bNote & 0x0F) + 12 * (bNote >> 4) + 13;
                     } else
@@ -1128,9 +1128,9 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                         command = CMD_S3MCMDEX;
                         if(param == 0)    // in S3M mode, SC0 is ignored, so we convert it to a note cut.
                         {
-                            if(row_data->note == NOTE_NONE)
+                            if(row_data->note == NoteNone)
                             {
-                                row_data->note = NOTE_NOTECUT;
+                                row_data->note = NoteNoteCut;
                                 command = CMD_NONE;
                             } else
                             {

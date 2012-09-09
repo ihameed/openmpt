@@ -1142,7 +1142,7 @@ void module_renderer::SetCurrentOrder(modplug::tracker::orderindex_t nOrder)
     for (modplug::tracker::chnindex_t j = 0; j < MAX_VIRTUAL_CHANNELS; j++)
     {
         Chn[j].nPeriod = 0;
-        Chn[j].nNote = NOTE_NONE;
+        Chn[j].nNote = NoteNone;
         Chn[j].nPortamentoDest = 0;
         Chn[j].nCommand = 0;
         Chn[j].nPatternLoopCount = 0;
@@ -2787,7 +2787,7 @@ string module_renderer::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const mo
 
     // For MPTM instruments with custom tuning, find the appropriate note name. Else, use default note names.
     if(inst != modplug::tracker::InstrumentIndexInvalid && m_nType == MOD_TYPE_MPT && Instruments[inst] && Instruments[inst]->pTuning)
-        return Instruments[inst]->pTuning->GetNoteName(note - NOTE_MIDDLEC);
+        return Instruments[inst]->pTuning->GetNoteName(note - NoteMiddleC);
     else
         return szDefaultNoteNames[note - 1];
 }

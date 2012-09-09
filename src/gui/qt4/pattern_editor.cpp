@@ -231,23 +231,19 @@ keycontext_t pattern_editor::keycontext() const{
 
 
 void pattern_editor::move_up(pattern_editor &editor) {
-    auto pos = editor.pos().prev_row();
-    editor.move_to(pos);
+    editor.move_to(editor.pos().prev_row());
 }
 
 void pattern_editor::move_down(pattern_editor &editor) {
-    auto pos = editor.pos().next_row();
-    editor.move_to(pos);
+    editor.move_to(editor.pos().next_row());
 }
 
 void pattern_editor::move_left(pattern_editor &editor) {
-    auto pos = editor.pos().prev_subcol();
-    editor.move_to(pos);
+    editor.move_to(editor.pos().prev_subcol());
 }
 
 void pattern_editor::move_right(pattern_editor &editor) {
-    auto pos = editor.pos().next_subcol();
-    editor.move_to(pos);
+    editor.move_to(editor.pos().next_subcol());
 }
 
 void pattern_editor::select_up(pattern_editor &editor) {
@@ -282,7 +278,7 @@ void pattern_editor::insert_note(pattern_editor &editor, int octave,
     modevent_t *evt = renderer.Patterns[patternidx]
                               .GetpModCommand(pos.row, pos.column);
     modevent_t newcmd = *evt;
-    newcmd.note = tone_number + ((octave - 1) * 12);
+    newcmd.note = tone_number + (octave * 12) + 1;
     *evt = newcmd;
 
     DEBUG_FUNC("8ve = %d, tone = %d", octave, tone_number);

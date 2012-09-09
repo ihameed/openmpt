@@ -260,11 +260,11 @@ void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc);
     } else
-    if (note == NOTE_NOTECUT)
+    if (note == NoteNoteCut)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 13*COLUMN_HEIGHT);
     } else
-    if (note == NOTE_KEYOFF)
+    if (note == NoteKeyOff)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 14*COLUMN_HEIGHT);
     } else
@@ -283,7 +283,7 @@ void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
     {
         if(pTuning)
         {   // Drawing custom note names
-            string noteStr = pTuning->GetNoteName(note-NOTE_MIDDLEC);
+            string noteStr = pTuning->GetNoteName(note-NoteMiddleC);
             if(noteStr.size() < 3)
                 noteStr.resize(3, ' ');
 
@@ -820,7 +820,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
                 {
                     tx_col = MODCOLOR_NOTE;
                     // Highlight notes that are not supported by the Amiga (for S3M this is not always correct)
-                    if((pSndFile->m_dwSongFlags & (SONG_PT1XMODE|SONG_AMIGALIMITS)) && (m->note < NOTE_MIDDLEC - 12 || m->note >= NOTE_MIDDLEC + 2 * 12))
+                    if((pSndFile->m_dwSongFlags & (SONG_PT1XMODE|SONG_AMIGALIMITS)) && (m->note < NoteMiddleC - 12 || m->note >= NoteMiddleC + 2 * 12))
                         tx_col = MODCOLOR_DODGY_COMMANDS;
                 }
                 if (col_sel & 0x01)

@@ -313,7 +313,7 @@ struct ConvertInstrumentsToSamplesInPatterns
                     if((note >= NOTE_MIN) && (note <= NOTE_MAX))
                             note--;
                     else
-                            note = NOTE_MIDDLEC - 1;
+                            note = NoteMiddleC - 1;
 
                     if((instr < MAX_INSTRUMENTS) && (pSndFile->Instruments[instr]))
                     {
@@ -591,7 +591,7 @@ void CModDoc::InitializeInstrument(modplug::tracker::modinstrument_t *pIns, UINT
     pIns->fadeout = 256;
     pIns->global_volume = 64;
     pIns->default_pan = 128;
-    pIns->pitch_pan_center = NOTE_MIDDLEC - 1;
+    pIns->pitch_pan_center = NoteMiddleC - 1;
     m_SndFile.SetDefaultInstrumentValues(pIns);
     for (UINT n=0; n<128; n++)
     {
@@ -794,9 +794,9 @@ bool CModDoc::CopyPattern(modplug::tracker::patternindex_t nPattern, uint32_t dw
                                             UINT note = m->note;
                                             switch(note)
                                             {
-                                            case NOTE_NONE:                p[1] = p[2] = p[3] = '.'; break;
-                                            case NOTE_KEYOFF:        p[1] = p[2] = p[3] = '='; break;
-                                            case NOTE_NOTECUT:        p[1] = p[2] = p[3] = '^'; break;
+                                            case NoteNone:                p[1] = p[2] = p[3] = '.'; break;
+                                            case NoteKeyOff:        p[1] = p[2] = p[3] = '='; break;
+                                            case NoteNoteCut:        p[1] = p[2] = p[3] = '^'; break;
                                             case NOTE_FADE:        p[1] = p[2] = p[3] = '~'; break;
                                             case NOTE_PC: p[1] = 'P'; p[2] = 'C'; p[3] = ' '; break;
                                             case NOTE_PCS: p[1] = 'P'; p[2] = 'C'; p[3] = 'S'; break;
@@ -1009,9 +1009,9 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                             if (s[0] > ' ' && (!doMixPaste || ((!doITStyleMix && origModCmd.note==0) ||
                                                                                                  (doITStyleMix && origModCmd.note==0 && origModCmd.instr==0 && origModCmd.volcmd==0))))
                                             {
-                                                    m[col].note = NOTE_NONE;
-                                                    if (s[0] == '=') m[col].note = NOTE_KEYOFF; else
-                                                    if (s[0] == '^') m[col].note = NOTE_NOTECUT; else
+                                                    m[col].note = NoteNone;
+                                                    if (s[0] == '=') m[col].note = NoteKeyOff; else
+                                                    if (s[0] == '^') m[col].note = NoteNoteCut; else
                                                     if (s[0] == '~') m[col].note = NOTE_FADE; else
                                                     if (s[0] == 'P')
                                                     {

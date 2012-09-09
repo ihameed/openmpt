@@ -1208,10 +1208,10 @@ LRESULT CChordEditor::OnKeyboardNotify(WPARAM wParam, LPARAM nKey)
     chord = m_CbnShortcut.GetCurSel();
     if (chord >= 0) chord = m_CbnShortcut.GetItemData(chord);
     if ((chord < 0) || (chord >= 3*12)) chord = 0;
-    UINT cnote = NOTE_NONE;
-    pChords[chord].notes[0] = NOTE_NONE;
-    pChords[chord].notes[1] = NOTE_NONE;
-    pChords[chord].notes[2] = NOTE_NONE;
+    UINT cnote = NoteNone;
+    pChords[chord].notes[0] = NoteNone;
+    pChords[chord].notes[1] = NoteNone;
+    pChords[chord].notes[2] = NoteNone;
     for (UINT i=0; i<2*12; i++) if (i != (UINT)(pChords[chord].key % 12))
     {
             UINT n = m_Keyboard.GetFlags(i);

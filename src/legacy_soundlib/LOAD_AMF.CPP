@@ -229,7 +229,7 @@ bool module_renderer::ReadAMF(const uint8_t * const lpStream, const uint32_t dwM
             const UCHAR *pin = lpStream + dwMemPos;
             for (UINT i=0; i<8*64; i++)
             {
-                p->note = NOTE_NONE;
+                p->note = NoteNone;
                 if (pin[0])
                 {
                     p->note = pin[0] + 13;

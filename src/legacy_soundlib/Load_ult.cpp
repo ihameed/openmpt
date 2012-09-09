@@ -160,7 +160,7 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
             b = lpStream[dwMemPos++];
     }
     ASSERT_CAN_READ_ULTENV(4)
-    note->note = (b > 0 && b < 61) ? b + 36 : NOTE_NONE;
+    note->note = (b > 0 && b < 61) ? b + 36 : NoteNone;
     note->instr = lpStream[dwMemPos++];
     b = lpStream[dwMemPos++];
     cmd1 = b & 0x0F;
@@ -264,7 +264,7 @@ struct PostFixUltCommands
             }
 
             // Apply porta?
-            if(m.note == NOTE_NONE && isPortaActive[curChannel])
+            if(m.note == NoteNone && isPortaActive[curChannel])
             {
                     if(m.command == CMD_NONE && m.vol != VOLCMD_TONEPORTAMENTO)
                     {

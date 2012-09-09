@@ -434,7 +434,7 @@ UINT module_renderer::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, U
         int mapnote = j+1;
         if (nChannel == MIDI_DRUMCHANNEL)
         {
-            mapnote = NOTE_MIDDLEC;
+            mapnote = NoteMiddleC;
             /*mapnote = 61 + j - nNote;
             if (mapnote < 1) mapnote = 1;
             if (mapnote > 120) mapnote = 120;*/

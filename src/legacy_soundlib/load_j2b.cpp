@@ -327,7 +327,7 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                 ASSERT_CAN_READ(2);
                 m->instr = lpStream[dwMemPos];
                 m->note = lpStream[dwMemPos + 1];
-                if(m->note == 0x80) m->note = NOTE_KEYOFF;
+                if(m->note == 0x80) m->note = NoteKeyOff;
                 else if(m->note > 0x80) m->note = NOTE_FADE;    // I guess the support for IT "note fade" notes was not intended in mod2j2b, but hey, it works! :-D
                 dwMemPos += 2;
             }
@@ -571,7 +571,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 pIns->global_volume = 64;
                 pIns->default_pan = 128;
                 pIns->fadeout = LittleEndianW(instheader->fadeout) << 5;
-                pIns->pitch_pan_center = NOTE_MIDDLEC - 1;
+                pIns->pitch_pan_center = NoteMiddleC - 1;
 
                 // interleaved envelope data... meh. gotta split it up here and decode it separately.
                 // note: mod2j2b is BUGGY and always writes ($original_num_points & 0x0F) in the header,
@@ -682,7 +682,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 pIns->global_volume = 64;
                 pIns->default_pan = 128;
                 pIns->fadeout = LittleEndianW(instheader->volenv.fadeout) << 5;
-                pIns->pitch_pan_center = NOTE_MIDDLEC - 1;
+                pIns->pitch_pan_center = NoteMiddleC - 1;
 
                 Convert_RIFF_AM_Envelope(&instheader->volenv, &pIns->volume_envelope, ENV_VOLUME);
                 Convert_RIFF_AM_Envelope(&instheader->pitchenv, &pIns->pitch_envelope, ENV_PITCH);

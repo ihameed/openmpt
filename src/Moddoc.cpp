@@ -114,7 +114,7 @@ CModDoc::CModDoc()
     m_SampleUndo.SetParent(this);
 
     m_SplitKeyboardSettings.splitInstrument = 0;
-    m_SplitKeyboardSettings.splitNote = NOTE_MIDDLEC - 1;
+    m_SplitKeyboardSettings.splitNote = NoteMiddleC - 1;
     m_SplitKeyboardSettings.splitVolume = 0;
     m_SplitKeyboardSettings.octaveModifier = 0;
     m_SplitKeyboardSettings.octaveLink = false;
@@ -1047,7 +1047,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
             if ((nPlugin) && (nPlugin <= MAX_MIXPLUGINS))
             {
                 IMixPlugin *pPlugin =  m_SndFile.m_MixPlugins[nPlugin-1].pMixPlugin;
-                if (pPlugin) pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, pIns->NoteMap[note - 1] + NOTE_KEYOFF, 0, MAX_BASECHANNELS);
+                if (pPlugin) pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, pIns->NoteMap[note - 1] + NoteKeyOff, 0, MAX_BASECHANNELS);
 
             }
         }
@@ -1116,7 +1116,7 @@ bool CModDoc::MuteChannel(modplug::tracker::chnindex_t nChn, bool doMute)
             CVstPlugin *pPlug = (CVstPlugin*)m_SndFile.m_MixPlugins[nPlug-1].pMixPlugin;
             modplug::tracker::modinstrument_t* pIns = m_SndFile.Chn[nChn].instrument;
             if (pPlug && pIns) {
-                pPlug->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, NOTE_KEYOFF, 0, nChn);
+                pPlug->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, NoteKeyOff, 0, nChn);
             }
         }
     } else {
@@ -3763,7 +3763,7 @@ CString CModDoc::GetPatternViewInstrumentName(UINT nInstr,
     // If instrument name is empty, use name of the sample mapped to C-5.
     if (instrumentName.IsEmpty())
     {
-        const modplug::tracker::sampleindex_t nSmp = m_SndFile.Instruments[nInstr]->Keyboard[NOTE_MIDDLEC - 1];
+        const modplug::tracker::sampleindex_t nSmp = m_SndFile.Instruments[nInstr]->Keyboard[NoteMiddleC - 1];
         if (nSmp < CountOf(m_SndFile.Samples) && m_SndFile.Samples[nSmp].sample_data)
             instrumentName.Format(TEXT("s: %s"), m_SndFile.GetSampleName(nSmp)); //60 is C-5
     }

@@ -1426,7 +1426,7 @@ void CViewSample::OnLButtonDown(UINT, CPoint point)
     {
             // ctrl + click = play from cursor pos
             if(CMainFrame::GetInputHandler()->CtrlPressed())
-                    PlayNote(NOTE_MIDDLEC, ScreenToSample(point.x));
+                    PlayNote(NoteMiddleC, ScreenToSample(point.x));
     }
 }
 
@@ -2125,7 +2125,7 @@ void CViewSample::PlayNote(UINT note, const uint32_t nStartPos)
     {
             if (note >= NOTE_MIN_SPECIAL)
             {
-                    pModDoc->NoteOff(0, (note == NOTE_NOTECUT) ? TRUE : FALSE);
+                    pModDoc->NoteOff(0, (note == NoteNoteCut) ? TRUE : FALSE);
             }
             else
             {
@@ -2638,8 +2638,8 @@ LRESULT CViewSample::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
             case kcSampleQuickFade:                        PostCtrlMessage(IDC_SAMPLE_QUICKFADE); return wParam;
 
             // Those don't seem to work.
-            case kcNoteOff:                        PlayNote(NOTE_KEYOFF); return wParam;
-            case kcNoteCut:                        PlayNote(NOTE_NOTECUT); return wParam;
+            case kcNoteOff:                        PlayNote(NoteKeyOff); return wParam;
+            case kcNoteCut:                        PlayNote(NoteNoteCut); return wParam;
 
     }
     if (wParam >= kcSampStartNotes && wParam <= kcSampEndNotes)
