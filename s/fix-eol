@@ -1,0 +1,3 @@
+#!/bin/sh
+ROOT=$(cd $(dirname $0)/..; pwd -P)
+find $ROOT/src -iname \*.cpp -or -iname \*.h -exec dos2unix {} \;

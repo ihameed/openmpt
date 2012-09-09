@@ -41,9 +41,15 @@ struct draw_state {
     const bool selection_active;
 };
 
+const size_t MaxVertices = 32768;
+
+static const int vertex_homies[MaxVertices];
+static const float texture_homies[MaxVertices];
+
 struct note_column {
     const int left;
     const int column;
+
     const pattern_font_metrics_t &font_metrics;
 
     selection_position_t pos;
@@ -119,8 +125,9 @@ struct note_column {
 
         int top = column_header_height + 1;
 
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_COORD_ARRAY);
         pos.column = column;
-
         for (size_t row = 0;
              row < nrows && top + height <= clip_bottom;
              ++row)
@@ -128,6 +135,17 @@ struct note_column {
             pos.row = row;
             draw_background(state, left, top,
                             background_color(state, pattern, row));
+            top += height;
+        }
+
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_COORD_ARRAY);
+        top = column_header_height + 1;
+        for (size_t row = 0;
+             row < nrows && top + height <= clip_bottom;
+             ++row)
+        {
+            pos.row = row;
             draw_row(state, pattern,
                      row, column,
                      left, top);
@@ -165,34 +183,45 @@ struct note_column {
         }
     }
 
-    void draw_rect(int x, int y, int width, int height, const QColor &color) {
+    void draw_rect(int x, int y, int width, int height, const QColor *color) {
         const float left   = x;
         const float top    = y;
         const float right  = x + width;
         const float bottom = y + height;
 
-        GLint vertices[] = {
-            left,  top,
-            right, top,
-            right, bottom,
-            left,  bottom
-        };
+        glColor3f(color->redF(), color->greenF(), color->blueF());
 
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_TEXTURE_COORD_ARRAY);
-        glColor3f(color.redF(), color.greenF(), color.blueF());
-        glVertexPointer(2, GL_INT, 0, vertices);
-        glDrawArrays(GL_QUADS, 0, 4);
+        //TODO: vertex batching
+        glBegin(GL_QUADS);
+            glVertex2i(left, top);
+            glVertex2i(right, top);
+            glVertex2i(right, bottom);
+            glVertex2i(left, bottom);
+        glEnd();
     }
 
     void draw_background(draw_state &state, int x, int y,
         colors_t::colortype_t color)
     {
-        draw_rect(
-            x, y,
-            font_metrics.width, font_metrics.height,
-            state.colors[color].background
-        );
+        auto widths = font_metrics.element_widths;
+
+
+        const QColor *bgcolor = &state.colors[color].background;
+        int left = x;
+
+        for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
+            pos.subcolumn = elem;
+            const QColor *cellcolor =
+                in_selection(state.selection_start, state.selection_end, pos)
+                ? &state.colors[colors_t::Selected].background
+                : bgcolor;
+            draw_rect(
+                x, y,
+                widths[elem], font_metrics.height,
+                cellcolor
+            );
+            x += widths[elem];
+        }
     }
 
     void draw_row(draw_state &state, const CPattern &pattern,
@@ -473,29 +502,28 @@ struct note_column {
         const float right  = x + glyph_width;
         const float bottom = y + font_metrics.height;
 
-        GLint vertices[] = {
-            left,  top,
-            right, top,
-            right, bottom,
-            left,  bottom
-        };
-
         const QColor *color = &state.colors[foreground].foreground;
 
         if (in_selection(state.selection_start, state.selection_end, pos)) {
-            auto &selected_color = state.colors[colors_t::Selected];
-            color = &selected_color.foreground;
-            draw_rect(left, top, glyph_width, font_metrics.height,
-                      selected_color.background);
+            color = &state.colors[colors_t::Selected].foreground;
         }
 
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_TEXTURE_COORD_ARRAY);
         glColor3f(color->redF(), color->greenF(), color->blueF());
 
-        glVertexPointer(2, GL_INT, 0, vertices);
-        glTexCoordPointer(2, GL_FLOAT, 0, font_vertices);
-        glDrawArrays(GL_QUADS, 0, 4);
+        //TODO: vertex batching
+        glBegin(GL_QUADS);
+            glTexCoord2f(font_vertices[0], font_vertices[1]);
+            glVertex2i(left, top);
+
+            glTexCoord2f(font_vertices[2], font_vertices[3]);
+            glVertex2i(right, top);
+
+            glTexCoord2f(font_vertices[4], font_vertices[5]);
+            glVertex2i(right, bottom);
+
+            glTexCoord2f(font_vertices[6], font_vertices[7]);
+            glVertex2i(left, bottom);
+        glEnd();
     }
 };
 
