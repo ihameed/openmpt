@@ -592,8 +592,10 @@ bool CMainFrame::LoadRegistrySettings()
 
 
 VOID CMainFrame::Initialize() {
-    ui_root = std::unique_ptr<modplug::gui::qt4::mfc_root>(new modplug::gui::qt4::mfc_root(global_config, *this));
-    config_dialog = new modplug::gui::qt4::config_dialog(global_config, ui_root.get());
+    ui_root = std::unique_ptr<modplug::gui::qt4::mfc_root>(
+        new modplug::gui::qt4::mfc_root(global_config, *this));
+    config_dialog = new modplug::gui::qt4::config_dialog(
+        global_config, ui_root.get());
 
     //Adding version number to the frame title
     CString title = GetTitle();
@@ -1116,6 +1118,7 @@ DWORD WINAPI CMainFrame::NotifyThread(LPVOID)
             if (pnotify)
             {
                 pMainFrm->m_dwStatus |= MODSTATUS_BUSY;
+                //XXXih: JUICY FRUITS
                 pMainFrm->PostMessage(WM_MOD_UPDATEPOSITION, 0, (LPARAM)pnotify);
             }
         }
@@ -2187,7 +2190,15 @@ LRESULT CMainFrame::OnUpdatePosition(WPARAM, LPARAM lParam)
         if ((m_pModPlaying) && (renderer))
         {
             m_wndTree.UpdatePlayPos(m_pModPlaying, pnotify);
-            if (m_hFollowSong) ::SendMessage(m_hFollowSong, WM_MOD_UPDATEPOSITION, 0, lParam);
+            if (m_hFollowSong) {
+                ::SendMessage(m_hFollowSong, WM_MOD_UPDATEPOSITION, 0, lParam);
+            }
+            //XXXih: JUICY FRUITS
+            //XXXih: not correct
+            auto child = MDIGetActive();
+            if (child) {
+                ::SendMessage(child->m_hWnd, WM_MOD_UPDATEPOSITION, 0, lParam);
+            }
         }
         pnotify->dwType = 0;
     }

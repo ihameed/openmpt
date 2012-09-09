@@ -128,6 +128,9 @@ public:
 
     keycontext_t keycontext() const;
 
+
+    void set_base_octave(uint8_t octave);
+
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
@@ -150,6 +153,8 @@ private:
     bool follow_playback;
 
     const pattern_keymap_t &keymap;
+
+    uint8_t base_octave;
 
     module_renderer &renderer;
 
@@ -174,7 +179,8 @@ public:
     static void select_left(pattern_editor &);
     static void select_right(pattern_editor &);
 
-    static void insert_note(pattern_editor &, int, int);
+    static void insert_note(pattern_editor &, uint8_t, int);
+    static void insert_volparam(pattern_editor &, uint8_t);
 };
 
 

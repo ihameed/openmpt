@@ -11,6 +11,8 @@
 #include "view_gen.h"
 #include "childfrm.h"
 
+#include "qwinwidget.h"
+#include "gui/qt4/document_window.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,10 +50,12 @@ IMPLEMENT_DYNCREATE(CChildFrame, CMDIChildWnd)
 
 BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWnd)
     //{{AFX_MSG_MAP(CChildFrame)
+    //ON_WM_CREATE()
     ON_WM_CLOSE()
     ON_WM_NCACTIVATE()
     ON_MESSAGE(WM_MOD_CHANGEVIEWCLASS,        OnChangeViewClass)
     ON_MESSAGE(WM_MOD_INSTRSELECTED,        OnInstrumentSelected)
+    ON_MESSAGE(WM_MOD_UPDATEPOSITION,    OnUpdatePosition)
     // toolbar "tooltip" notification
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnToolTipText)
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipText)
@@ -156,6 +160,19 @@ void CChildFrame::ActivateFrame(int nCmdShow)
                     m_ViewPatterns.nRow=0;   //just in case
                     m_bInitialActivation=false;
             }
+        if (!qwinwidget) {
+            DEBUG_FUNC("creating my homie");
+            DEBUG_FUNC("pModDoc = %p", pModDoc);
+            auto pSndFile = pModDoc->GetSoundFile();
+            qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this->m_hWnd));
+            pattern_test = new modplug::gui::qt4::document_window(
+                pSndFile,
+                CMainFrame::GetMainFrame()->global_config,
+                qwinwidget.get()
+            );
+            pattern_test->resize(400, 400);
+            pattern_test->show();
+        }
     }
     //end rewbs.fix3185
 }
@@ -167,22 +184,25 @@ void CChildFrame::OnUpdateFrameTitle(BOOL bAddToTitle)
     // update our parent window first
     GetMDIFrame()->OnUpdateFrameTitle(bAddToTitle);
 
-    if ((GetStyle() & FWS_ADDTOTITLE) == 0)        return;     // leave child window alone!
+    if ((GetStyle() & FWS_ADDTOTITLE) == 0) {
+        return;     // leave child window alone!
+    }
 
     CDocument* pDocument = GetActiveDocument();
-    if (bAddToTitle)
-    {
-            TCHAR szText[256+_MAX_PATH];
-            if (pDocument == NULL)
-                    lstrcpy(szText, m_strTitle);
-            else
-                    lstrcpy(szText, pDocument->GetTitle());
+    if (bAddToTitle) {
+        TCHAR szText[256+_MAX_PATH];
+        if (pDocument == NULL) {
+            lstrcpy(szText, m_strTitle);
+        } else {
+            lstrcpy(szText, pDocument->GetTitle());
             if (pDocument->IsModified()) lstrcat(szText, "*");
-            if (m_nWindow > 0)
-                    wsprintf(szText + lstrlen(szText), _T(":%d"), m_nWindow);
+        }
+        if (m_nWindow > 0) {
+            wsprintf(szText + lstrlen(szText), _T(":%d"), m_nWindow);
+        }
 
-            // set title if changed, but don't remove completely
-            AfxSetWindowText(m_hWnd, szText);
+        // set title if changed, but don't remove completely
+        AfxSetWindowText(m_hWnd, szText);
     }
 }
 
@@ -439,4 +459,13 @@ void CChildFrame::OnSetFocus(CWnd* pOldWnd)
             pMainFrm->UpdateEffectKeys();
     }
 }
+
+LRESULT CChildFrame::OnUpdatePosition(WPARAM, LPARAM lparam) {
+    MPTNOTIFICATION *pnotify = (MPTNOTIFICATION *) lparam;
+    if (this->qwinwidget && pnotify) {
+        this->pattern_test->test_notification(pnotify);
+    }
+    return 0;
+}
+
 //end rewbs.customKeysAutoEffects

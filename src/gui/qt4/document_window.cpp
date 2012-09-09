@@ -2,6 +2,7 @@
 
 #include "app_config.h"
 #include "document_window.h"
+#include "comment_view.h"
 #include "pattern_editor.h"
 #include "..\MainFrm.h"
 
@@ -18,13 +19,19 @@ document_window::document_window(module_renderer *renderer,
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setMargin(0);
+
+    layout->addWidget(&tab_bar);
+
     editor = new pattern_editor(
         *renderer,
         global_config.pattern_keymap(),
         global_config.colors()
     );
 
-    layout->addWidget(editor);
+    comments = new comment_view(renderer);
+
+    tab_bar.addTab(editor, "Patterns");
+    tab_bar.addTab(comments, "Comments");
 
     QObject::connect(
         &global_config, SIGNAL(colors_changed()),

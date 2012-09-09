@@ -36,10 +36,6 @@ protected:
     afx_msg void OnCommentsChanged();
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
-
-private:
-    std::shared_ptr<QWinWidget> qwinwidget;
-    modplug::gui::qt4::comment_view *commentbox;
 };
 
 #endif

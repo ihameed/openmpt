@@ -51,10 +51,6 @@ void CCtrlComments::OnDeactivatePage()
 BOOL CCtrlComments::OnInitDialog()
 //--------------------------------
 {
-    qwinwidget = std::make_shared<QWinWidget>(this);
-    qwinwidget->setLayout(new QVBoxLayout);
-    commentbox = new modplug::gui::qt4::comment_view(m_pSndFile);
-    qwinwidget->layout()->addWidget(commentbox);
     CModControlDlg::OnInitDialog();
     // Initialize comments
     m_hFont = NULL;
@@ -63,7 +59,6 @@ BOOL CCtrlComments::OnInitDialog()
     m_EditComments.SetFocus();
     m_EditComments.ShowWindow(0);
     m_bInitialized = TRUE;
-    qwinwidget->show();
     return FALSE;
 }
 
@@ -74,8 +69,6 @@ void CCtrlComments::RecalcLayout()
     if ((!m_hWnd) || (!m_EditComments.m_hWnd)) return;
     CRect rcClient, rect;
     GetClientRect(&rcClient);
-    qwinwidget->move(0, 0);
-    qwinwidget->resize(rcClient.Width(), rcClient.Height());
 }
 
 
@@ -83,13 +76,15 @@ void CCtrlComments::UpdateView(uint32_t dwHint, CObject *pHint) {
     DEBUG_FUNC("dwHint = %x", dwHint);
     if ((pHint == this) || (!m_pSndFile) || (!(dwHint & (HINT_MODCOMMENTS|HINT_MPTOPTIONS|HINT_MODTYPE)))) return;
 
-    commentbox->legacy_set_comments_from_module(dwHint & HINT_MODCOMMENTS);
+    //XXXih
+    //commentbox->legacy_set_comments_from_module(dwHint & HINT_MODCOMMENTS);
 }
 
 void CCtrlComments::OnCommentsChanged() {
     DEBUG_FUNC("");
 
-    commentbox->legacy_update_module_comment();
+    //XXXih
+    //commentbox->legacy_update_module_comment();
 }
 
 LRESULT CCtrlComments::OnCustomKeyMsg(WPARAM wParam, LPARAM) {

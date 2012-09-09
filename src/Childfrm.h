@@ -61,13 +61,8 @@ typedef struct COMMENTVIEWSTATE
 
 
 
-//========================================
-class CViewExSplitWnd: public CSplitterWnd
-//========================================
-{
+class CViewExSplitWnd: public CSplitterWnd {
     DECLARE_DYNAMIC(CViewExSplitWnd)
-
-// Implementation
 public:
     CViewExSplitWnd() {}
     ~CViewExSplitWnd() {}
@@ -75,14 +70,15 @@ public:
 };
 
 
-//====================================
-class CChildFrame: public CMDIChildWnd
-//====================================
-{
+namespace modplug { namespace gui { namespace qt4 { class document_window; } } }
+
+class CChildFrame: public CMDIChildWnd {
     friend class CModControlDlg;
     DECLARE_DYNCREATE(CChildFrame)
 public:
     CChildFrame();
+    std::unique_ptr<QWinWidget> qwinwidget;
+    modplug::gui::qt4::document_window *pattern_test;
 
 protected:
     static LONG glMdiOpenCount;
@@ -127,6 +123,7 @@ public:
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
     virtual void ActivateFrame(int nCmdShow);
     virtual void OnUpdateFrameTitle(BOOL bAddToTitle);
+    LRESULT OnUpdatePosition(WPARAM, LPARAM);
     //}}AFX_VIRTUAL
 
 // Implementation

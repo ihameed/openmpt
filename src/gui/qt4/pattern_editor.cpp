@@ -48,6 +48,7 @@ pattern_editor::pattern_editor(
     setFocusPolicy(Qt::ClickFocus);
     font_bitmap = load_font();
     update_colors(colors);
+    set_base_octave(4);
 }
 
 void pattern_editor::update_colors(const colors_t &newcolors) {
@@ -224,6 +225,9 @@ keycontext_t pattern_editor::keycontext() const{
     }
 }
 
+void pattern_editor::set_base_octave(uint8_t octave) {
+    base_octave = octave;
+}
 
 
 
@@ -270,9 +274,11 @@ void pattern_editor::select_right(pattern_editor &editor) {
     editor.update();
 }
 
-void pattern_editor::insert_note(pattern_editor &editor, int octave,
+void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
     int tone_number)
 {
+    editor.selection_start = editor.selection_end = editor.pos();
+
     auto &renderer = editor.renderer;
     auto &modspec = renderer.GetModSpecifications();
 
@@ -282,13 +288,20 @@ void pattern_editor::insert_note(pattern_editor &editor, int octave,
     modevent_t *evt = renderer.Patterns[patternidx]
                               .GetpModCommand(pos.row, pos.column);
     modevent_t newcmd = *evt;
-    newcmd.note = tone_number + (octave * 12) + 1;
+    newcmd.note = 1 + tone_number + 12 * (octave + editor.base_octave);
     *evt = newcmd;
 
     DEBUG_FUNC("8ve = %d, tone = %d", octave, tone_number);
 
     editor.update();
 }
+
+void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
+    DEBUG_FUNC("digit = %d", digit);
+}
+
+
+
 
 
 }
