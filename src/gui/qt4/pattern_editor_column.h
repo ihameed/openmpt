@@ -31,13 +31,13 @@ struct draw_state {
 
     const QRect &clip;
 
-    const editor_position_t &playback_pos;
-    const editor_position_t &active_pos;
+    const player_position_t &playback_pos;
+    const player_position_t &active_pos;
 
     const colors_t &colors;
 
-    const selection_position_t &selection_start;
-    const selection_position_t &selection_end;
+    const editor_position_t &selection_start;
+    const editor_position_t &selection_end;
     const bool selection_active;
 };
 
@@ -52,7 +52,7 @@ struct note_column {
 
     const pattern_font_metrics_t &font_metrics;
 
-    selection_position_t pos;
+    editor_position_t pos;
 
     colors_t::colortype_t foreground;
 
@@ -68,7 +68,7 @@ struct note_column {
         return font_metrics.width;
     }
 
-    bool position_from_point(const QPoint &point, selection_position_t &pos) {
+    bool position_from_point(const QPoint &point, editor_position_t &pos) {
         int top = column_header_height + 1;
 
         if (point.x() < left) {
@@ -82,7 +82,6 @@ struct note_column {
         int localy = point.y() - top;
 
         int row = localy / font_metrics.height;
-        DEBUG_FUNC("row = %d, localy = %d, height = %d", row, localy, font_metrics.height);
         int elemright = 0;
 
         for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
@@ -189,7 +188,7 @@ struct note_column {
         const float right  = x + width;
         const float bottom = y + height;
 
-        glColor3f(color->redF(), color->greenF(), color->blueF());
+        glColor3ub(color->red(), color->green(), color->blue());
 
         //TODO: vertex batching
         glBegin(GL_QUADS);
@@ -508,7 +507,7 @@ struct note_column {
             color = &state.colors[colors_t::Selected].foreground;
         }
 
-        glColor3f(color->redF(), color->greenF(), color->blueF());
+        glColor3ub(color->red(), color->green(), color->blue());
 
         //TODO: vertex batching
         glBegin(GL_QUADS);

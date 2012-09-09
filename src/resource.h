@@ -106,7 +106,6 @@
 #define IDD_PITCHSHIFT                  442
 #define IDD_EDIT_GOTO                   444
 #define IDD_DIALOG1                     501
-#define IDD_MOVEFXSLOT                  501
 #define IDD_PATTERNRANDOMIZER           502
 #define IDD_PATTERNRANDOMIZER_NOTE      503
 #define IDD_PATTERNRANDOMIZER_INSTRUMENT 504

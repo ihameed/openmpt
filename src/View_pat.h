@@ -214,7 +214,6 @@ public:
     void DrawInstrument(int x, int y, UINT instr);
     void DrawVolumeCommand(int x, int y, const modplug::tracker::modevent_t mc);
     void DrawChannelVUMeter(HDC hdc, int x, int y, UINT nChn);
-    void UpdateAllVUMeters(MPTNOTIFICATION *pnotify);
     void DrawDragSel(HDC hdc);
     void OnDrawDragSel();
 

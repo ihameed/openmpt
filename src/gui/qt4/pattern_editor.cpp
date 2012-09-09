@@ -10,6 +10,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "keymap.h"
+
 using namespace modplug::pervasives;
 using namespace modplug::tracker;
 
@@ -39,6 +41,7 @@ pattern_editor::pattern_editor(module_renderer &renderer,
     font_metrics(small_pattern_font),
     follow_playback(true)
 {
+    setFocusPolicy(Qt::ClickFocus);
     font_bitmap = load_font();
     update_colors(colors);
 }
@@ -49,7 +52,7 @@ void pattern_editor::update_colors(const colors_t &newcolors) {
 }
 
 void pattern_editor::update_playback_position(
-    const editor_position_t &position)
+    const player_position_t &position)
 {
     playback_pos = position;
     if (follow_playback) {
@@ -120,7 +123,7 @@ void pattern_editor::paintGL() {
 }
 
 bool pattern_editor::position_from_point(const QPoint &point,
-                                         selection_position_t &pos)
+                                         editor_position_t &pos)
 {
     chnindex_t channel_count = renderer.GetNumChannels();
 
@@ -140,8 +143,8 @@ bool pattern_editor::position_from_point(const QPoint &point,
     return success;
 }
 
-void pattern_editor::set_selection(const QPoint &point, selection_position_t &pos) {
-    selection_position_t newpos;
+void pattern_editor::set_selection(const QPoint &point, editor_position_t &pos) {
+    editor_position_t newpos;
     if (position_from_point(point, newpos)) {
         pos = newpos;
     }
@@ -177,6 +180,57 @@ void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
         set_selection_end(event->pos());
         repaint();
     }
+}
+
+void pattern_editor::keyPressEvent(QKeyEvent *event) {
+    init_action_maps();
+    pattern_keymap_t map = default_pattern_keymap();
+    auto key = key_t(event->modifiers(), event->key());
+    invoke(map, key, *this);
+}
+
+void pattern_editor::move_to(const editor_position_t &target) {
+    selection_start = target;
+    selection_end   = target;
+    repaint();
+}
+
+const editor_position_t &pattern_editor::pos() const {
+    return selection_end;
+}
+
+
+
+void pattern_editor::move_up(pattern_editor &editor) {
+    auto pos = editor.pos();
+    --pos.row;
+    editor.move_to(pos);
+}
+
+void pattern_editor::move_down(pattern_editor &editor) {
+    auto pos = editor.pos();
+    ++pos.row;
+    editor.move_to(pos);
+}
+
+void pattern_editor::move_right(pattern_editor &editor) {
+    auto pos = editor.pos();
+    ++pos.subcolumn;
+    if (pos.subcolumn >= ElemMax) {
+        ++pos.column;
+        pos.subcolumn = ElemNote;
+    }
+    editor.move_to(pos);
+}
+
+void pattern_editor::move_left(pattern_editor &editor) {
+    auto pos = editor.pos();
+    if (pos.subcolumn == ElemNote) {
+        --pos.column;
+        pos.subcolumn = ElemMax;
+    }
+    --pos.subcolumn;
+    editor.move_to(pos);
 }
 
 

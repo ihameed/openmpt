@@ -38,7 +38,7 @@ void document_window::test_notification(MPTNOTIFICATION * pnotify) {
         pnotify->nRow
     );
     */
-    const editor_position_t position(
+    const player_position_t position(
         pnotify->nOrder,
         pnotify->nPattern,
         pnotify->nRow

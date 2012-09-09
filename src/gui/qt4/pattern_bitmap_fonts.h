@@ -7,7 +7,8 @@ namespace gui {
 namespace qt4 {
 
 enum elem_t {
-    ElemNote  = 0,
+    ElemMin = 0,
+    ElemNote = 0,
     ElemInstr = 1,
     ElemVol   = 2,
     ElemCmd   = 3,
@@ -19,6 +20,13 @@ enum elem_t {
 inline elem_t operator ++ (elem_t &elem) {
     elem = elem < ElemMax
         ? (elem_t) ((int) elem + 1)
+        : elem;
+    return elem;
+}
+
+inline elem_t operator -- (elem_t &elem) {
+    elem = elem > ElemMin
+        ? (elem_t) ((int) elem - 1)
         : elem;
     return elem;
 }

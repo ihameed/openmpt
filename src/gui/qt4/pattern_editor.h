@@ -15,29 +15,31 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-struct editor_position_t {
+struct player_position_t {
     modplug::tracker::orderindex_t   order;
     modplug::tracker::patternindex_t pattern;
     modplug::tracker::rowindex_t     row;
 
-    editor_position_t() : order(0), pattern(0),
+    player_position_t() : order(0), pattern(0),
                           row(modplug::tracker::RowIndexInvalid) { }
 
-    editor_position_t(modplug::tracker::orderindex_t order,
+    player_position_t(modplug::tracker::orderindex_t order,
                       modplug::tracker::patternindex_t pattern,
                       modplug::tracker::rowindex_t row)
                       : order(order), pattern(pattern), row(row) { }
 };
 
-struct selection_position_t {
+struct editor_position_t {
     uint32_t row;
     uint32_t column;
     elem_t   subcolumn;
+
+    editor_position_t() : row(0), column(0), subcolumn(ElemNote) { };
 };
 
-inline bool in_selection(const selection_position_t &start,
-                         const selection_position_t &end,
-                         const selection_position_t &pos)
+inline bool in_selection(const editor_position_t &start,
+                         const editor_position_t &end,
+                         const editor_position_t &pos)
 {
     auto minrow = min(start.row, end.row);
     auto maxrow = max(start.row, end.row);
@@ -72,13 +74,16 @@ public:
     pattern_editor(module_renderer &renderer, const colors_t &colors);
 
     void update_colors(const colors_t &colors);
-    void update_playback_position(const editor_position_t &);
+    void update_playback_position(const player_position_t &);
 
-    bool position_from_point(const QPoint &, selection_position_t &);
+    bool position_from_point(const QPoint &, editor_position_t &);
 
     void set_selection_start(const QPoint &);
     void set_selection_end(const QPoint &);
-    void set_selection(const QPoint &, selection_position_t &);
+    void set_selection(const QPoint &, editor_position_t &);
+
+    void move_to(const editor_position_t &target);
+    const editor_position_t &pos() const;
 
 protected:
     virtual void initializeGL() override;
@@ -89,14 +94,16 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *) override;
     virtual void mouseReleaseEvent(QMouseEvent *) override;
 
+    virtual void keyPressEvent(QKeyEvent *) override;
+
 private:
     bool selection_active;
     bool is_dragging;
-    selection_position_t selection_start;
-    selection_position_t selection_end;
+    editor_position_t selection_start;
+    editor_position_t selection_end;
 
-    editor_position_t playback_pos;
-    editor_position_t active_pos;
+    player_position_t playback_pos;
+    player_position_t active_pos;
     bool follow_playback;
 
     module_renderer &renderer;
@@ -110,6 +117,12 @@ private:
 
     GLuint font_texture;
     QRect clipping_rect;
+
+public:
+    static void move_up(pattern_editor &);
+    static void move_down(pattern_editor &);
+    static void move_right(pattern_editor &);
+    static void move_left(pattern_editor &);
 };
 
 

@@ -1556,36 +1556,3 @@ void CViewPattern::UpdateXInfoText()
     return;
 }
 //end rewbs.xinfo
-
-
-void CViewPattern::UpdateAllVUMeters(MPTNOTIFICATION *pnotify)
-//------------------------------------------------------------
-{
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    CModDoc *pModDoc = GetDocument();
-    module_renderer *pSndFile;
-    CRect rcClient;
-    HDC hdc;
-    BOOL bPlaying;
-    UINT nChn;
-    int x, xofs;
-
-    if ((!pModDoc) || (!pMainFrm)) return;
-    memset(ChnVUMeters, 0, sizeof(ChnVUMeters));
-    GetClientRect(&rcClient);
-    xofs = GetXScrollPos();
-    pSndFile = pModDoc->GetSoundFile();
-    hdc = ::GetDC(m_hWnd);
-    bPlaying = (pMainFrm->GetFollowSong(pModDoc) == m_hWnd) ? TRUE : FALSE;
-    x = m_szHeader.cx;
-    nChn = xofs;
-    while ((nChn < pSndFile->m_nChannels) && (x < rcClient.right))
-    {
-        ChnVUMeters[nChn] = (uint16_t)pnotify->dwPos[nChn];
-        if ((!bPlaying) || (pnotify->dwType & MPTNOTIFY_STOP)) ChnVUMeters[nChn] = 0;
-        DrawChannelVUMeter(hdc, x + 1, rcClient.top + COLHDR_HEIGHT, nChn);
-        nChn++;
-        x += m_szCell.cx;
-    }
-    ::ReleaseDC(m_hWnd, hdc);
-}

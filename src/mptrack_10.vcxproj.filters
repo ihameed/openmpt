@@ -31,7 +31,6 @@
     <ClCompile Include="Moddoc.cpp" />
     <ClCompile Include="Modedit.cpp" />
     <ClCompile Include="Moptions.cpp" />
-    <ClCompile Include="MoveFXSlotDialog.cpp" />
     <ClCompile Include="Mpdlgs.cpp" />
     <ClCompile Include="mpt_midi.cpp" />
     <ClCompile Include="MPTHacks.cpp" />
@@ -245,6 +244,9 @@
     <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="gui\qt4\keymap.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -274,7 +276,6 @@
     <ClInclude Include="ModConvert.h" />
     <ClInclude Include="moddoc.h" />
     <ClInclude Include="Moptions.h" />
-    <ClInclude Include="MoveFXSlotDialog.h" />
     <ClInclude Include="Mpdlgs.h" />
     <ClInclude Include="mptrack.h" />
     <ClInclude Include="PatternEditorDialogs.h" />
@@ -378,6 +379,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tracker\types.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt4\keymap.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

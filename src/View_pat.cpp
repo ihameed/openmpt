@@ -3092,11 +3092,6 @@ LRESULT CViewPattern::OnPlayerNotify(MPTNOTIFICATION *pnotify)
 
     } //Ends condition "if(pnotify->dwType & MPTNOTIFY_POSITION)"
 
-    if ((pnotify->dwType & (MPTNOTIFY_VUMETERS|MPTNOTIFY_STOP)) && (m_dwStatus & PATSTATUS_VUMETERS))
-    {
-        UpdateAllVUMeters(pnotify);
-    }
-
     UpdateIndicator();
 
     return 0;

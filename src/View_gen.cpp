@@ -8,7 +8,6 @@
 #include "view_gen.h"
 #include "vstplug.h"
 #include "EffectVis.h"
-#include "movefxslotdialog.h"
 #include "ChannelManagerDlg.h"
 #include ".\view_gen.h"
 
@@ -1322,34 +1321,7 @@ LRESULT CViewGlobals::OnModViewMsg(WPARAM wParam, LPARAM /*lParam*/)
 void CViewGlobals::OnMovePlugToSlot()
 //-----------------------------------
 {
-    CMoveFXSlotDialog dlg((CWnd*)this);
-    CArray<UINT, UINT> emptySlots;
-    BuildEmptySlotList(emptySlots);
-
-    // If any plugin routes its output to the current plugin, we shouldn't try to move it before that plugin...
-    PLUGINDEX defaultIndex = 0;
-    const module_renderer *pSndFile = GetDocument() ? (GetDocument()->GetSoundFile()) : nullptr;
-    if(pSndFile)
-    {
-            for(PLUGINDEX i = 0; i < m_nCurrentPlugin; i++)
-            {
-                    const uint32_t toPlug = pSndFile->m_MixPlugins[i].Info.dwOutputRouting;
-                    if((toPlug & 0x80) && (toPlug & 0x7F) == m_nCurrentPlugin)
-                    {
-                            defaultIndex = i + 1;
-                    }
-            }
-    }
-
-    dlg.SetupMove(m_nCurrentPlugin, emptySlots, defaultIndex);
-
-    if (dlg.DoModal() == IDOK)
-    {
-            MovePlug(m_nCurrentPlugin, dlg.m_nToSlot);
-            m_CbnPlugin.SetCurSel(dlg.m_nToSlot);
-            OnPluginChanged();
-    }
-
+    //XXXih
 }
 
 
