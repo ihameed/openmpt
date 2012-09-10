@@ -26,6 +26,8 @@ document_window::document_window(module_renderer *renderer,
     editor = new pattern_editor(
         *renderer,
         global_config.pattern_keymap(),
+        global_config.it_pattern_keymap(),
+        global_config.xm_pattern_keymap(),
         global_config.colors()
     );
 

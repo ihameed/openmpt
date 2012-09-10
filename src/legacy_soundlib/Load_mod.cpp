@@ -31,12 +31,12 @@ void module_renderer::ConvertModCommand(modplug::tracker::modevent_t *m) const
     case 0x02:    command = CmdPortaDown; break;
     case 0x03:    command = CmdPorta; break;
     case 0x04:    command = CmdVibrato; break;
-    case 0x05:    command = CmdPortamentoVol; if (param & 0xF0) param &= 0xF0; break;
-    case 0x06:    command = CmdVibratoVol; if (param & 0xF0) param &= 0xF0; break;
+    case 0x05:    command = CmdPortaVolSlide; if (param & 0xF0) param &= 0xF0; break;
+    case 0x06:    command = CmdVibratoVolSlide; if (param & 0xF0) param &= 0xF0; break;
     case 0x07:    command = CmdTremolo; break;
     case 0x08:    command = CmdPanning8; break;
     case 0x09:    command = CmdOffset; break;
-    case 0x0A:    command = CmdVolumeSlide; if (param & 0xF0) param &= 0xF0; break;
+    case 0x0A:    command = CmdVolSlide; if (param & 0xF0) param &= 0xF0; break;
     case 0x0B:    command = CmdPositionJump; break;
     case 0x0C:    command = CmdVol; break;
     case 0x0D:    command = CmdPatternBreak; param = ((param >> 4) * 10) + (param & 0x0F); break;
@@ -93,8 +93,8 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
         break;
     case CmdPorta:    command = 0x03; break;
     case CmdVibrato:                    command = 0x04; break;
-    case CmdPortamentoVol:            command = 0x05; break;
-    case CmdVibratoVol:            command = 0x06; break;
+    case CmdPortaVolSlide:            command = 0x05; break;
+    case CmdVibratoVolSlide:            command = 0x06; break;
     case CmdTremolo:                    command = 0x07; break;
     case CmdPanning8:
         command = 0x08;
@@ -119,7 +119,7 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
         }
         break;
     case CmdOffset:                    command = 0x09; break;
-    case CmdVolumeSlide:            command = 0x0A; break;
+    case CmdVolSlide:            command = 0x0A; break;
     case CmdPositionJump:            command = 0x0B; break;
     case CmdVol:                    command = 0x0C; break;
     case CmdPatternBreak:            command = 0x0D; param = ((param / 10) << 4) | (param % 10); break;

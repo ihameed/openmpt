@@ -56,7 +56,7 @@ static const uint8_t ult_efftrans[] =
     CmdTremolo,
     CmdNone,
     CmdOffset,
-    CmdVolumeSlide,
+    CmdVolSlide,
     CmdPanning8,
     CmdVol,
     CmdPatternBreak,
@@ -120,11 +120,11 @@ static void TranslateULTCommands(uint8_t *pe, uint8_t *pp)
                     p &= 0x0F;
                     break;
             case 0x0A:
-                    *pe = CmdVolumeSlide;
+                    *pe = CmdVolSlide;
                     p = ((p & 0x0F) << 4) | 0x0F;
                     break;
             case 0x0B:
-                    *pe = CmdVolumeSlide;
+                    *pe = CmdVolSlide;
                     p = 0xF0 | (p & 0x0F);
                     break;
             case 0x0C: case 0x0D:

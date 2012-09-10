@@ -18,20 +18,27 @@ namespace qt4 {
 global_actionmap_t global_actionmap;
 pattern_actionmap_t pattern_actionmap;
 
+pattern_keymap_t pattern_it_fxmap;
+pattern_keymap_t pattern_xm_fxmap;
+
 template <typename f_t>
 struct actionmap_assoc {
     const char *name;
     f_t action;
 };
 
+template <typename amap_t, typename f_t, size_t size>
+void init_actions(amap_t &actionmap, const actionmap_assoc<f_t> (&assocs)[size]) {
+    for (size_t idx = 0; idx < size; ++idx) {
+        actionmap[assocs[idx].name] = assocs[idx].action;
+    }
+}
 
 void maptest() {
     DEBUG_FUNC("waoaoao!");
 }
 
-
-
-static actionmap_assoc<global_action_t> global_actions[] = {
+const static actionmap_assoc<global_action_t> global_actions[] = {
     { "maptest", &maptest },
     { "new", &maptest },
     { "open", &maptest },
@@ -63,7 +70,7 @@ static actionmap_assoc<global_action_t> global_actions[] = {
     { "view_comments", &maptest },
 };
 
-static actionmap_assoc<pattern_action_t> pattern_actions[] = {
+const static actionmap_assoc<pattern_action_t> pattern_actions[] = {
     { "move_up",    &pattern_editor::move_up },
     { "move_down",  &pattern_editor::move_down },
     { "move_left",  &pattern_editor::move_left },
@@ -75,12 +82,13 @@ static actionmap_assoc<pattern_action_t> pattern_actions[] = {
     { "select_right", &pattern_editor::select_right },
 };
 
-struct volcmd_assoc {
+template <typename ty>
+struct cmd_assoc {
     const char *key;
-    volcmd_t val;
+    ty val;
 };
 
-static volcmd_assoc volcmds[] = {
+const static cmd_assoc<volcmd_t> volcmds[] = {
     { "vol_vol",             VolCmdVol },
     { "vol_pan",             VolCmdPan },
     { "vol_slide_up",        VolCmdSlideUp },
@@ -97,18 +105,140 @@ static volcmd_assoc volcmds[] = {
     { "vol_offset",          VolCmdOffset },
 };
 
-template <typename amap_t, typename f_t, size_t size>
-void init_actions(amap_t &actionmap, const actionmap_assoc<f_t> (&assocs)[size]) {
-    for (size_t idx = 0; idx < size; ++idx) {
-        actionmap[assocs[idx].name] = assocs[idx].action;
-    }
-}
+const static cmd_assoc<cmd_t> cmds[] = {
+    { "cmd_arpeggio",                CmdArpeggio },
+    { "cmd_porta_up",                CmdPortaUp },
+    { "cmd_porta_down",              CmdPortaDown },
+    { "cmd_porta",                   CmdPorta },
+    { "cmd_vibrato",                 CmdVibrato },
+    { "cmd_porta_vol_slide",         CmdPortaVolSlide },
+    { "cmd_vibrato_vol_slide",       CmdVibratoVolSlide },
+    { "cmd_tremolo",                 CmdTremolo },
+    { "cmd_panning",                 CmdPanning8 },
+    { "cmd_offset",                  CmdOffset },
+    { "cmd_vol_slide",               CmdVolSlide },
+    { "cmd_position_jump",           CmdPositionJump },
+    { "cmd_vol",                     CmdVol },
+    { "cmd_pattern_break",           CmdPatternBreak },
+    { "cmd_retrig",                  CmdRetrig },
+    { "cmd_speed",                   CmdSpeed },
+    { "cmd_tempo",                   CmdTempo },
+    { "cmd_tremor",                  CmdTremor },
+    { "cmd_mod_cmd_ex",              CmdModCmdEx },
+    { "cmd_s3m_cmd_ex",              CmdS3mCmdEx },
+    { "cmd_channel_vol",             CmdChannelVol },
+    { "cmd_channel_vol_slide",       CmdChannelVolSlide },
+    { "cmd_global_vol",              CmdGlobalVol },
+    { "cmd_global_vol_slide",        CmdGlobalVolSlide },
+    { "cmd_keyoff",                  CmdKeyOff },
+    { "cmd_fine_vibrato",            CmdFineVibrato },
+    { "cmd_panbrello",               CmdPanbrello },
+    { "cmd_extra_fine_porta_updown", CmdExtraFinePortaUpDown },
+    { "cmd_panning_slide",           CmdPanningSlide },
+    { "cmd_set_envelope_position",   CmdSetEnvelopePosition },
+    { "cmd_midi_macro",              CmdMidi },
+    { "cmd_smooth_ midi_macro",      CmdSmoothMidi },
+    { "cmd_delay_cut",               CmdDelayCut },
+    { "cmd_extended_parameter",      CmdExtendedParameter },
+    { "cmd_note_slide_up",           CmdNoteSlideUp },
+    { "cmd_note_slide_down",         CmdNoteSlideDown },
+};
+
+struct itxm_default_assoc {
+    int itkey;
+    int xmkey;
+    const char *val;
+};
+
+const static itxm_default_assoc defaultcmds[] = {
+    { Qt::Key_J,       Qt::Key_0,       "cmd_arpeggio" },
+    { Qt::Key_F,       Qt::Key_1,       "cmd_porta_up" },
+    { Qt::Key_E,       Qt::Key_2,       "cmd_porta_down" },
+    { Qt::Key_G,       Qt::Key_3,       "cmd_porta" },
+    { Qt::Key_H,       Qt::Key_4,       "cmd_vibrato" },
+    { Qt::Key_L,       Qt::Key_5,       "cmd_porta_vol_slide" },
+    { Qt::Key_K,       Qt::Key_6,       "cmd_vibrato_vol_slide" },
+    { Qt::Key_R,       Qt::Key_7,       "cmd_tremolo" },
+    { Qt::Key_X,       Qt::Key_8,       "cmd_panning" },
+    { Qt::Key_O,       Qt::Key_9,       "cmd_offset" },
+    { Qt::Key_D,       Qt::Key_A,       "cmd_vol_slide" },
+    { Qt::Key_B,       Qt::Key_B,       "cmd_position_jump" },
+    { Qt::Key_unknown, Qt::Key_C,       "cmd_vol" },
+    { Qt::Key_C,       Qt::Key_D,       "cmd_pattern_break" },
+    { Qt::Key_Q,       Qt::Key_E,       "cmd_retrig" },
+    { Qt::Key_A,       Qt::Key_unknown, "cmd_speed" },
+    { Qt::Key_T,       Qt::Key_F,       "cmd_tempo" },
+    { Qt::Key_I,       Qt::Key_T,       "cmd_tremor" },
+    { Qt::Key_unknown, Qt::Key_E,       "cmd_mod_cmd_ex" },
+    { Qt::Key_S,       Qt::Key_unknown, "cmd_s3m_cmd_ex" },
+    { Qt::Key_M,       Qt::Key_unknown, "cmd_channel_vol" },
+    { Qt::Key_N,       Qt::Key_unknown, "cmd_channel_vol_slide" },
+    { Qt::Key_V,       Qt::Key_G,       "cmd_global_vol" },
+    { Qt::Key_W,       Qt::Key_H,       "cmd_global_vol_slide" },
+    { Qt::Key_unknown, Qt::Key_K,       "cmd_keyoff" },
+    { Qt::Key_U,       Qt::Key_unknown, "cmd_fine_vibrato" },
+    { Qt::Key_Y,       Qt::Key_Y,       "cmd_panbrello" },
+    { Qt::Key_unknown, Qt::Key_X,       "cmd_extra_fine_porta_updown" },
+    { Qt::Key_P,       Qt::Key_P,       "cmd_panning_slide" },
+    { Qt::Key_unknown, Qt::Key_L,       "cmd_set_envelope_position" },
+    { Qt::Key_Z,       Qt::Key_Z,       "cmd_midi_macro" },
+};
 
 const size_t MaxTones = 12;
 
 const char *note_names[MaxTones] = {
     "c", "cs", "d", "ds", "e", "f", "fs", "g", "gs", "a", "as", "b"
 };
+
+template <typename ty, size_t size, typename fun_ty>
+void init_cmd_actions(const cmd_assoc<ty> (&assocs)[size], fun_ty func) {
+    auto &m = pattern_actionmap;
+
+    for_each(assocs, [&m, &func] (const cmd_assoc<ty> &assoc) {
+        fun_ty derf = func;
+        ty val = assoc.val;
+        m[assoc.key] = [val, derf] (pattern_editor &editor) {
+            derf(editor, val);
+        };
+    });
+}
+
+void init_vol_maps() {
+    auto &m = pattern_actionmap;
+
+    std::string vol_prefix("vol_");
+    for (char i = '0'; i <= '9'; ++i) {
+        auto fname = vol_prefix + i;
+        uint8_t digit = i - '0';
+        m[fname] = [digit] (pattern_editor &editor) {
+            pattern_editor::insert_volparam(editor, digit);
+        };
+    }
+}
+
+void init_default_cmd_maps() {
+    auto &it = pattern_it_fxmap;
+    auto &xm = pattern_xm_fxmap;
+
+    for_each(defaultcmds, [&it, &xm] (const itxm_default_assoc &assoc) {
+        it[key_t(Qt::NoModifier, assoc.itkey, ContextCmdCol)] = assoc.val;
+        xm[key_t(Qt::NoModifier, assoc.xmkey, ContextCmdCol)] = assoc.val;
+    });
+}
+
+void init_cmd_maps() {
+    auto &m = pattern_actionmap;
+
+    std::string param_prefix("param_");
+    for (int i = 0; i <= 0xf; ++i) {
+        char suffix = i >= 10 ? i - 10 + 'a' : i + '0';
+        auto fname = param_prefix + suffix;
+        uint8_t digit = i;
+        m[fname] = [digit] (pattern_editor &editor) {
+            pattern_editor::insert_cmdparam(editor, digit);
+        };
+    }
+}
 
 void init_note_maps() {
     auto &m = pattern_actionmap;
@@ -127,30 +257,19 @@ void init_note_maps() {
             };
         }
     }
-
-    std::string vol_prefix("vol_");
-    for (char i = '0'; i <= '9'; ++i) {
-        auto fname = vol_prefix + i;
-        uint8_t digit = i - '0';
-        m[fname] = [digit] (pattern_editor &editor) {
-            pattern_editor::insert_volparam(editor, digit);
-        };
-    }
-
-    for_each(volcmds, [&m] (volcmd_assoc &assoc) {
-        volcmd_t val = assoc.val;
-        m[assoc.key] = [val] (pattern_editor &editor) {
-            pattern_editor::insert_volcmd(editor, val);
-        };
-    });
 }
 
 void init_action_maps() {
-    init_actions(global_actionmap, global_actions);
-
+    init_actions(global_actionmap,  global_actions);
     init_actions(pattern_actionmap, pattern_actions);
 
+    init_cmd_actions(volcmds, &pattern_editor::insert_volcmd);
+    init_cmd_actions(cmds,    &pattern_editor::insert_cmd);
+
+    init_default_cmd_maps();
     init_note_maps();
+    init_vol_maps();
+    init_cmd_maps();
 }
 
 global_keymap_t default_global_keymap() {
@@ -254,6 +373,31 @@ pattern_keymap_t default_pattern_keymap() {
     volkey(Qt::Key_E, "vol_portamento_down");
     volkey(Qt::Key_O, "vol_offset");
 
+    auto cmdkey = [&m] (int key, const char *act) {
+        return m[key_t(Qt::NoModifier, key, ContextCmdCol)] = act;
+    };
+    auto paramkey = [&m] (int key, const char *act) {
+        return m[key_t(Qt::NoModifier, key, ContextParamCol)] = act;
+    };
+
+    cmdkey(Qt::Key_Backslash, "cmd_smooth_midi_macro");
+
+    paramkey(Qt::Key_0, "param_0");
+    paramkey(Qt::Key_1, "param_1");
+    paramkey(Qt::Key_2, "param_2");
+    paramkey(Qt::Key_3, "param_3");
+    paramkey(Qt::Key_4, "param_4");
+    paramkey(Qt::Key_5, "param_5");
+    paramkey(Qt::Key_6, "param_6");
+    paramkey(Qt::Key_7, "param_7");
+    paramkey(Qt::Key_8, "param_8");
+    paramkey(Qt::Key_9, "param_9");
+    paramkey(Qt::Key_A, "param_a");
+    paramkey(Qt::Key_B, "param_b");
+    paramkey(Qt::Key_C, "param_c");
+    paramkey(Qt::Key_D, "param_d");
+    paramkey(Qt::Key_E, "param_e");
+    paramkey(Qt::Key_F, "param_f");
 
     return m;
 }

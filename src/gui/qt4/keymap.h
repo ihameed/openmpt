@@ -16,7 +16,7 @@ enum keycontext_t {
     ContextNoteCol,
     ContextVolCol,
     ContextInstrCol,
-    ContextFxCol,
+    ContextCmdCol,
     ContextParamCol,
 
     ContextInvalid
@@ -28,7 +28,7 @@ inline std::string string_of_keycontext(keycontext_t ctx) {
     case ContextNoteCol:  return "ContextNoteCol";
     case ContextVolCol:   return "ContextVolCol";
     case ContextInstrCol: return "ContextInstrCol";
-    case ContextFxCol:    return "ContextFxCol";
+    case ContextCmdCol:   return "ContextFxCol";
     case ContextParamCol: return "ContextParamCol";
     default:              return "ContextInvalid";
     }
@@ -105,6 +105,8 @@ extern template pattern_keymap_t;
 
 extern global_actionmap_t global_actionmap;
 extern pattern_actionmap_t pattern_actionmap;
+extern pattern_keymap_t pattern_it_fxmap;
+extern pattern_keymap_t pattern_xm_fxmap;
 
 void init_action_maps();
 global_keymap_t default_global_keymap();

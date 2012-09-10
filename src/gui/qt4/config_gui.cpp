@@ -29,7 +29,13 @@ config_gui_main::config_gui_main(app_config &context) :
     demo_dummy->InitChannel(3);
     demo_dummy->Patterns.Insert(64);
 
-    demo = new pattern_editor(*demo_dummy.get(), emptymap, context.colors());
+    demo = new pattern_editor(
+        *demo_dummy.get(),
+        emptymap,
+        emptymap,
+        emptymap,
+        context.colors()
+    );
     demo->setMinimumHeight(100);
     demo->setMinimumWidth(100);
 

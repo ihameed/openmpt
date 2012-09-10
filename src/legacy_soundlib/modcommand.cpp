@@ -33,8 +33,8 @@ void module_renderer::MODExx2S3MSxx(modplug::tracker::modevent_t *m)
     case 0x60: m->param = (m->param & 0x0F) | 0xB0; break;
     case 0x70: m->param = (m->param & 0x03) | 0x40; break;
     case 0x90: m->command = CmdRetrig; m->param = (m->param & 0x0F); break;
-    case 0xA0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param = (m->param << 4) | 0x0F; } else m->command = CmdNone; break;
-    case 0xB0: if (m->param & 0x0F) { m->command = CmdVolumeSlide; m->param |= 0xF0; } else m->command = CmdNone; break;
+    case 0xA0: if (m->param & 0x0F) { m->command = CmdVolSlide; m->param = (m->param << 4) | 0x0F; } else m->command = CmdNone; break;
+    case 0xB0: if (m->param & 0x0F) { m->command = CmdVolSlide; m->param |= 0xF0; } else m->command = CmdNone; break;
     case 0xC0: if (m->param == 0xC0) { m->command = CmdNone; m->note = NoteNoteCut; }        // this does different things in IT and ST3
     case 0xD0: if (m->param == 0xD0) { m->command = CmdNone; }        // dito
                             // rest are the same
@@ -233,7 +233,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             case CmdS3mCmdEx:
                     S3MSxx2MODExx(m);
                     break;
-            case CmdVolumeSlide:
+            case CmdVolSlide:
                     if ((m->param & 0xF0) && ((m->param & 0x0F) == 0x0F))
                     {
                             m->command = CmdModCmdEx;
@@ -372,10 +372,10 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             switch(m->command)
             {
-            case CmdPortamentoVol: // lacks memory -> 500 is the same as 300
+            case CmdPortaVolSlide: // lacks memory -> 500 is the same as 300
                     if(m->param == 0x00) m->command = CmdPorta;
                     break;
-            case CmdVibratoVol: // lacks memory -> 600 is the same as 400
+            case CmdVibratoVolSlide: // lacks memory -> 600 is the same as 400
                     if(m->param == 0x00) m->command = CmdVibrato;
                     break;
 
@@ -428,11 +428,11 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                             m->param = CLAMP(m->vol << 2, 0, 0xFF);
                             break;
                     case VolCmdSlideDown:
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             m->param = m->vol;
                             break;
                     case VolCmdSlideUp:
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             m->param = m->vol << 4;
                             break;
                     case VolCmdFineDown:
@@ -481,22 +481,22 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             if(!m->command) switch(m->volcmd)
             {
                     case VolCmdSlideDown:
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             m->param = m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdSlideUp:
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             m->param = m->vol << 4;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdFineDown:
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             m->param = 0xF0 | m->vol;
                             m->volcmd = VolCmdNone;
                             break;
                     case VolCmdFineUp:
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             m->param = (m->vol << 4) | 0x0F;
                             m->volcmd = VolCmdNone;
                             break;
@@ -645,15 +645,15 @@ uint16_t module_renderer::GetEffectWeight(modplug::tracker::cmd_t cmd)
     case CmdGlobalVolSlide  : return 248;
     case CmdChannelVol   : return 240;
     case CmdChannelVolSlide : return 232;
-    case CmdPortamentoVol    : return 224;
+    case CmdPortaVolSlide    : return 224;
     case CmdPorta  : return 216;
     case CmdArpeggio        : return 208;
     case CmdRetrig          : return 200;
     case CmdTremor          : return 192;
     case CmdOffset          : return 184;
     case CmdVol          : return 176;
-    case CmdVibratoVol      : return 168;
-    case CmdVolumeSlide     : return 160;
+    case CmdVibratoVolSlide      : return 168;
+    case CmdVolSlide     : return 160;
     case CmdPortaDown  : return 152;
     case CmdPortaUp    : return 133;
     case CmdNoteSlideDown   : return 136;
@@ -906,7 +906,7 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             *p = min(64, *p * 64 / 255);
             *e = VolCmdPan;
             break;
-    case CmdVolumeSlide:
+    case CmdVolSlide:
             if (*p == 0)
                     return false;
             if ((*p & 0xF) == 0)        // Dx0 / Cx

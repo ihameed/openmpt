@@ -215,7 +215,7 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                             break;
 
                     case 31: // V Volume
-                            m->command = CmdVolumeSlide;
+                            m->command = CmdVolSlide;
                             switch (m->param >> 4)
                             {
                             case 4:

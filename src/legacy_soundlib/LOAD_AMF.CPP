@@ -106,9 +106,9 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             // 0x02: Volume Slide
             // 0x0A: Tone Porta + Vol Slide
             // 0x0B: Vibrato + Vol Slide
-            case 0x02:	command = CmdVolumeSlide;
-            case 0x0A:	if (command == 0x0A) command = CmdPortamentoVol;
-            case 0x0B:	if (command == 0x0B) command = CmdVibratoVol;
+            case 0x02:	command = CmdVolSlide;
+            case 0x0A:	if (command == 0x0A) command = CmdPortaVolSlide;
+            case 0x0B:	if (command == 0x0B) command = CmdVibratoVolSlide;
                         if (param & 0x80) param = (-(signed char)param)&0x0F;
                         else param = (param&0x0F)<<4;
                         break;
@@ -133,7 +133,7 @@ void AMF_Unpack(modplug::tracker::modevent_t *pPat, const uint8_t *pTrack, UINT 
             // 0x10: Offset
             case 0x10:	command = CmdOffset; break;
             // 0x11: Fine Volume Slide
-            case 0x11:	if (param) { command = CmdVolumeSlide;
+            case 0x11:	if (param) { command = CmdVolSlide;
                             if (param & 0x80) param = 0xF0|((-(signed char)param)&0x0F);
                             else param = 0x0F|((param&0x0F)<<4);
                         } else command = 0; break;

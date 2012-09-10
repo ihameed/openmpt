@@ -2100,12 +2100,12 @@ const MPTEFFECTINFO gFXInfo[MAX_FXINFO] =
     {CmdPortaDown,0,0,            0,        MOD_TYPE_ALL,        "Portamento Down"},
     {CmdPorta,0,0,            0,        MOD_TYPE_ALL,        "Tone portamento"},
     {CmdVibrato,            0,0,                0,        MOD_TYPE_ALL,        "Vibrato"},
-    {CmdPortamentoVol,    0,0,                0,        MOD_TYPE_ALL,        "Volslide+Toneporta"},
-    {CmdVibratoVol,    0,0,                0,        MOD_TYPE_ALL,        "VolSlide+Vibrato"},
+    {CmdPortaVolSlide,    0,0,                0,        MOD_TYPE_ALL,        "Volslide+Toneporta"},
+    {CmdVibratoVolSlide,    0,0,                0,        MOD_TYPE_ALL,        "VolSlide+Vibrato"},
     {CmdTremolo,            0,0,                0,        MOD_TYPE_ALL,        "Tremolo"},
     {CmdPanning8,            0,0,                0,        MOD_TYPE_ALL,        "Set Panning"},
     {CmdOffset,            0,0,                0,        MOD_TYPE_ALL,        "Set Offset"},
-    {CmdVolumeSlide,    0,0,                0,        MOD_TYPE_ALL,        "Volume Slide"},
+    {CmdVolSlide,    0,0,                0,        MOD_TYPE_ALL,        "Volume Slide"},
     {CmdPositionJump,    0,0,                0,        MOD_TYPE_ALL,        "Position Jump"},
     {CmdVol,            0,0,                0,        MOD_TYPE_MODXM,        "Set Volume"},
     {CmdPatternBreak,    0,0,                0,        MOD_TYPE_ALL,        "Pattern Break"},
@@ -2403,9 +2403,9 @@ bool CModDoc::GetEffectInfo(UINT ndx, LPSTR s, bool bXX, uint32_t *prangeMin, ui
             if (nType & MOD_TYPE_S3MITMPT) nmin = 0;
 // -! NEW_FEATURE#0010
             break;
-        case CmdVolumeSlide:
-        case CmdPortamentoVol:
-        case CmdVibratoVol:
+        case CmdVolSlide:
+        case CmdPortaVolSlide:
+        case CmdVibratoVolSlide:
         case CmdGlobalVolSlide:
         case CmdChannelVolSlide:
         case CmdPanningSlide:
@@ -2454,9 +2454,9 @@ UINT CModDoc::MapValueToPos(UINT ndx, UINT param)
     }
     switch(gFXInfo[ndx].dwEffect)
     {
-    case CmdVolumeSlide:
-    case CmdPortamentoVol:
-    case CmdVibratoVol:
+    case CmdVolSlide:
+    case CmdPortaVolSlide:
+    case CmdVibratoVolSlide:
     case CmdGlobalVolSlide:
     case CmdChannelVolSlide:
     case CmdPanningSlide:
@@ -2500,9 +2500,9 @@ UINT CModDoc::MapPosToValue(UINT ndx, UINT pos)
     if (gFXInfo[ndx].dwParamMask == 0xF0) param |= gFXInfo[ndx].dwParamValue;
     switch(gFXInfo[ndx].dwEffect)
     {
-    case CmdVolumeSlide:
-    case CmdPortamentoVol:
-    case CmdVibratoVol:
+    case CmdVolSlide:
+    case CmdPortaVolSlide:
+    case CmdVibratoVolSlide:
     case CmdGlobalVolSlide:
     case CmdChannelVolSlide:
     case CmdPanningSlide:
@@ -2647,9 +2647,9 @@ bool CModDoc::GetEffectNameEx(LPSTR pszName, UINT ndx, UINT param)
         strcat(s, spd);
         break;
 
-    case CmdVolumeSlide:
-    case CmdPortamentoVol:
-    case CmdVibratoVol:
+    case CmdVolSlide:
+    case CmdPortaVolSlide:
+    case CmdVibratoVolSlide:
     case CmdGlobalVolSlide:
     case CmdChannelVolSlide:
     case CmdPanningSlide:

@@ -38,10 +38,14 @@ QImage load_font() {
 pattern_editor::pattern_editor(
     module_renderer &renderer,
     const pattern_keymap_t &keymap,
+    const pattern_keymap_t &it_keymap,
+    const pattern_keymap_t &xm_keymap,
     const colors_t &colors
 ) :
     renderer(renderer),
     keymap(keymap),
+    it_keymap(it_keymap),
+    xm_keymap(xm_keymap),
     font_metrics(small_pattern_font),
     follow_playback(true)
 {
@@ -186,22 +190,28 @@ void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void pattern_editor::keyPressEvent(QKeyEvent *event) {
-    auto invoke = [&] (key_t key) -> bool {
-        auto action = action_of_key(keymap, pattern_actionmap, key);
-        if (action) {
-            action(*this);
-            return true;
-        } else {
-            return false;
-        }
-    };
-
-    if (!invoke(key_t(event->modifiers(), event->key(), keycontext()))) {
-        if (!invoke(key_t(event->modifiers(), event->key()))) {
-            QGLWidget::keyPressEvent(event);
-        }
+bool pattern_editor::invoke_key(const pattern_keymap_t &km, key_t key) {
+    auto action = action_of_key(km, pattern_actionmap, key);
+    if (action) {
+        action(*this);
+        return true;
+    } else {
+        return false;
     }
+}
+
+void pattern_editor::keyPressEvent(QKeyEvent *event) {
+    Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
+    auto context_key = key_t(modifiers, event->key(), keycontext());
+    auto pattern_key = key_t(modifiers, event->key());
+
+    DEBUG_FUNC("context = %d", keycontext());
+
+    if (invoke_key(keymap,    context_key)) return;
+    if (invoke_key(it_keymap, context_key)) return;
+    if (invoke_key(keymap,    pattern_key)) return;
+
+    QGLWidget::keyPressEvent(event);
 }
 
 void pattern_editor::move_to(const editor_position_t &target) {
@@ -219,7 +229,7 @@ keycontext_t pattern_editor::keycontext() const{
     case ElemNote:  return ContextNoteCol;
     case ElemInstr: return ContextInstrCol;
     case ElemVol:   return ContextVolCol;
-    case ElemCmd:   return ContextFxCol;
+    case ElemCmd:   return ContextCmdCol;
     case ElemParam: return ContextParamCol;
     default:        return ContextGlobal;
     }
@@ -297,7 +307,6 @@ void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
     newcmd.note = 1 + tone_number + 12 * (octave + editor.base_octave);
 
     *evt = newcmd;
-
     editor.update();
 }
 
@@ -310,14 +319,13 @@ void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
         newcmd.volcmd = VolCmdVol;
     }
 
-    auto vol = (newcmd.vol % 10) * 10 + digit;
+    vol_t vol = (newcmd.vol % 10) * 10 + digit;
     if (vol > 64) {
         vol = digit;
     }
     newcmd.vol = vol;
 
     *evt = newcmd;
-
     editor.update();
 }
 
@@ -329,9 +337,34 @@ void pattern_editor::insert_volcmd(pattern_editor &editor, volcmd_t cmd) {
     newcmd.volcmd = cmd;
 
     *evt = newcmd;
-
     editor.update();
 }
+
+void pattern_editor::insert_cmd(pattern_editor &editor, cmd_t cmd) {
+    editor.collapse_selection();
+    auto evt = editor.active_event();
+    auto newcmd = *evt;
+
+    newcmd.command = cmd;
+
+    *evt = newcmd;
+    editor.update();
+}
+
+void pattern_editor::insert_cmdparam(pattern_editor &editor, uint8_t digit) {
+    editor.collapse_selection();
+    auto evt = editor.active_event();
+    auto newcmd = *evt;
+
+    param_t param = (newcmd.param % 0x10) * 0x10 + digit;
+    newcmd.param = param;
+
+    *evt = newcmd;
+    editor.update();
+}
+
+
+
 
 
 

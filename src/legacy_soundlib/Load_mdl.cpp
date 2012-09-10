@@ -82,7 +82,7 @@ void ConvertMDLCommand(modplug::tracker::modevent_t *m, UINT eff, UINT data)
     case 0x0F:    command = CmdSpeed; break;
     case 0x10:
         if ((param & 0xF0) != 0xE0) {
-            command = CmdVolumeSlide;
+            command = CmdVolSlide;
             if ((param & 0xF0) == 0xF0) {
                 param = ((param << 4) | 0x0F);
             } else {
@@ -95,7 +95,7 @@ void ConvertMDLCommand(modplug::tracker::modevent_t *m, UINT eff, UINT data)
         break;
     case 0x20:
         if ((param & 0xF0) != 0xE0) {
-            command = CmdVolumeSlide;
+            command = CmdVolSlide;
             if ((param & 0xF0) != 0xF0) {
                 param >>= 2;
                 if (param > 0xF)

@@ -86,6 +86,14 @@ void app_config::change_colors(const colors_t &colors) {
 pattern_keymap_t &app_config::pattern_keymap() {
     return store->pattern_keymap;
 }
+const pattern_keymap_t & app_config::it_pattern_keymap() const {
+    return pattern_it_fxmap;
+}
+
+const pattern_keymap_t & app_config::xm_pattern_keymap() const {
+    return pattern_xm_fxmap;
+}
+
 
 
 

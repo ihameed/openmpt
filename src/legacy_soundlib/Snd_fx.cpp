@@ -335,9 +335,9 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 if (param) pChn->nOldOffset = param;
                 break;
             // Volume Slide
-            case CmdVolumeSlide:
-            case CmdPortamentoVol:
-            case CmdVibratoVol:
+            case CmdVolSlide:
+            case CmdPortaVolSlide:
+            case CmdVibratoVolSlide:
                 if (param) pChn->nOldVolumeSlide = param;
                 break;
             // Set Volume
@@ -1315,7 +1315,7 @@ BOOL module_renderer::ProcessEffects()
         UINT vol = pChn->nRowVolume;
         UINT cmd = pChn->nRowCommand;
         UINT param = pChn->nRowParam;
-        bool bPorta = ((cmd != CmdPorta) && (cmd != CmdPortamentoVol) && (volcmd != VolCmdPortamento)) ? false : true;
+        bool bPorta = ((cmd != CmdPorta) && (cmd != CmdPortaVolSlide) && (volcmd != VolCmdPortamento)) ? false : true;
 
         UINT nStartTick = 0;
 
@@ -1778,7 +1778,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Volume Slide
-        case CmdVolumeSlide:
+        case CmdVolSlide:
             if ((param) || (m_nType != MOD_TYPE_MOD)) VolumeSlide(pChn, param);
             break;
 
@@ -1788,7 +1788,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Tone-Portamento + Volume Slide
-        case CmdPortamentoVol:
+        case CmdPortaVolSlide:
             if ((param) || (m_nType != MOD_TYPE_MOD)) VolumeSlide(pChn, param);
             TonePortamento(pChn, 0);
             break;
@@ -1799,7 +1799,7 @@ BOOL module_renderer::ProcessEffects()
             break;
 
         // Vibrato + Volume Slide
-        case CmdVibratoVol:
+        case CmdVibratoVolSlide:
             if ((param) || (m_nType != MOD_TYPE_MOD)) VolumeSlide(pChn, param);
             Vibrato(pChn, 0);
             break;

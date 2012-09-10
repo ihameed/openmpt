@@ -200,12 +200,12 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
                 break;
             // 7.x: Vol Slide Up
             case 0x70:
-                m->command = CmdVolumeSlide;
+                m->command = CmdVolSlide;
                 m->param = (eff & 0x0F) << 4;
                 break;
             // 8.x: Vol Slide Down
             case 0x80:
-                m->command = CmdVolumeSlide;
+                m->command = CmdVolSlide;
                 m->param = (eff & 0x0F);
                 break;
             // A.x: Port to vol

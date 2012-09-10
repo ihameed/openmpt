@@ -193,8 +193,8 @@ struct AMCHUNK_SAMPLE
 static uint8_t riffam_efftrans[] =
 {
     CmdArpeggio, CmdPortaUp, CmdPortaDown, CmdPorta,
-    CmdVibrato, CmdPortamentoVol, CmdVibratoVol, CmdTremolo,
-    CmdPanning8, CmdOffset, CmdVolumeSlide, CmdPositionJump,
+    CmdVibrato, CmdPortaVolSlide, CmdVibratoVolSlide, CmdTremolo,
+    CmdPanning8, CmdOffset, CmdVolSlide, CmdPositionJump,
     CmdVol, CmdPatternBreak, CmdModCmdEx, CmdTempo,
     CmdGlobalVol, CmdGlobalVolSlide, CmdKeyOff, CmdSetEnvelopePosition,
     CmdChannelVol, CmdChannelVolSlide, CmdPanningSlide, CmdRetrig,
@@ -278,9 +278,9 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                             m->param = 0;
                         }
                         break;
-                    case CmdPortamentoVol:
-                    case CmdVibratoVol:
-                    case CmdVolumeSlide:
+                    case CmdPortaVolSlide:
+                    case CmdVibratoVolSlide:
+                    case CmdVolSlide:
                     case CmdGlobalVolSlide:
                     case CmdPanningSlide:
                         if (m->param & 0xF0) m->param &= 0xF0;

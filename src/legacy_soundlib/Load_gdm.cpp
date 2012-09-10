@@ -314,12 +314,12 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                         case 0x02: command = CmdPortaDown; if(param >= 0xE0) param = 0xDF; break;
                         case 0x03: command = CmdPorta; break;
                         case 0x04: command = CmdVibrato; break;
-                        case 0x05: command = CmdPortamentoVol; if (param & 0xF0) param &= 0xF0; break;
-                        case 0x06: command = CmdVibratoVol; if (param & 0xF0) param &= 0xF0; break;
+                        case 0x05: command = CmdPortaVolSlide; if (param & 0xF0) param &= 0xF0; break;
+                        case 0x06: command = CmdVibratoVolSlide; if (param & 0xF0) param &= 0xF0; break;
                         case 0x07: command = CmdTremolo; break;
                         case 0x08: command = CmdTremor; break;
                         case 0x09: command = CmdOffset; break;
-                        case 0x0A: command = CmdVolumeSlide; break;
+                        case 0x0A: command = CmdVolSlide; break;
                         case 0x0B: command = CmdPositionJump; break;
                         case 0x0C:
                             if(bS3MCommandSet)
@@ -387,12 +387,12 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                                     break;
                                 case 0xA:
                                     // fine volume up
-                                    command = CmdVolumeSlide;
+                                    command = CmdVolSlide;
                                     param = ((param & 0x0F) << 4) | 0x0F;
                                     break;
                                 case 0xB:
                                     // fine volume down
-                                    command = CmdVolumeSlide;
+                                    command = CmdVolSlide;
                                     param = 0xF0 | (param & 0x0F);
                                     break;
                                 case 0xC:

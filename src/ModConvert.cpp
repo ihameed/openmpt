@@ -216,9 +216,9 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
                 {
                 case CmdPortaUp:
                 case CmdPortaDown:
-                case CmdPortamentoVol:
-                case CmdVibratoVol:
-                case CmdVolumeSlide:
+                case CmdPortaVolSlide:
+                case CmdVibratoVolSlide:
+                case CmdVolSlide:
                     // ProTracker doesn't have effect memory for these commands, so let's try to fix them
                     if(m->param == 0)
                         m->param = cEffectMemory[nChannel][m->command];

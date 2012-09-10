@@ -592,22 +592,22 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                     {
                     // Volslides
                     case 0x01: // fine volslide up
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         if (bNewFormat) param = (param << 4) | 0x0F;
                         else param = ((param & 0x1E) << 3) | 0x0F;
                         break;
                     case 0x02: // volslide up
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         if (bNewFormat) param = 0xF0 & (param << 4);
                         else param = 0xF0 & (param << 3);
                         break;
                     case 0x03: // fine volslide down
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         if (bNewFormat) param |= 0xF0;
                         else param = 0xF0 | (param >> 1);
                         break;
                     case 0x04: // volslide down
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         if (bNewFormat) param &= 0x0F;
                         else if(param < 2) param |= 0xF0; else param = (param >> 1) & 0x0F;
                         break;
@@ -638,11 +638,11 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                         param = 0x10 | (param & 0x01);
                         break;
                     case 0x10: // tone portamento + volslide up
-                        command = CmdPortamentoVol;
+                        command = CmdPortaVolSlide;
                         param = param & 0xF0;
                         break;
                     case 0x12: // tone portamento + volslide down
-                        command = CmdPortamentoVol;
+                        command = CmdPortaVolSlide;
                         param = (param >> 4) & 0x0F;
                         break;
 
@@ -655,11 +655,11 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                         param = 0x30 | (param & 0x0F);
                         break;
                     case 0x17: // vibrato + volslide up
-                        command = CmdVibratoVol;
+                        command = CmdVibratoVolSlide;
                         param = 0xF0 | param;
                         break;
                     case 0x18: // vibrato + volslide down
-                        command = CmdVibratoVol;
+                        command = CmdVibratoVolSlide;
                         break;
 
                     // Tremolo
@@ -1041,19 +1041,19 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                     {
                     // Volslides
                     case 0x01: // fine volslide up
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         param = (param << 4) | 0x0F;
                         break;
                     case 0x02: // volslide up
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         param = (param << 4) & 0xF0;
                         break;
                     case 0x03: // fine voslide down
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         param = 0xF0 | param;
                         break;
                     case 0x04: // volslide down
-                        command = CmdVolumeSlide;
+                        command = CmdVolSlide;
                         param = param & 0x0F;
                         break;
 
@@ -1080,11 +1080,11 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                         param |= 0x10;
                         break;
                     case 0x10: // tone portamento + volslide up
-                        command = CmdPortamentoVol;
+                        command = CmdPortaVolSlide;
                         param <<= 4;
                         break;
                     case 0x11: // tone portamento + volslide down
-                        command = CmdPortamentoVol;
+                        command = CmdPortaVolSlide;
                         param &= 0x0F;
                         break;
 
@@ -1097,11 +1097,11 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                         param |= 0x30;
                         break;
                     case 0x16: // vibrato + volslide up
-                        command = CmdVibratoVol;
+                        command = CmdVibratoVolSlide;
                         param <<= 4;
                         break;
                     case 0x17: // vibrato + volslide down
-                        command = CmdVibratoVol;
+                        command = CmdVibratoVolSlide;
                         param &= 0x0F;
                         break;
 

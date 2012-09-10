@@ -101,17 +101,17 @@ static uint8_t imf_efftrans[] =
     CmdSpeed,                    // 0x01 1xx Set Tempo
     CmdTempo,                    // 0x02 2xx Set BPM
     CmdPorta, // 0x03 3xx Tone Portamento
-    CmdPortamentoVol,    // 0x04 4xy Tone Portamento + Volume Slide
+    CmdPortaVolSlide,    // 0x04 4xy Tone Portamento + Volume Slide
     CmdVibrato,            // 0x05 5xy Vibrato
-    CmdVibratoVol,            // 0x06 6xy Vibrato + Volume Slide
+    CmdVibratoVolSlide,            // 0x06 6xy Vibrato + Volume Slide
     CmdFineVibrato,    // 0x07 7xy Fine Vibrato
     CmdTremolo,            // 0x08 8xy Tremolo
     CmdArpeggio,            // 0x09 9xy Arpeggio
     CmdPanning8,            // 0x0A Axx Set Pan Position
     CmdPanningSlide,    // 0x0B Bxy Pan Slide
     CmdVol,                    // 0x0C Cxx Set Volume
-    CmdVolumeSlide,    // 0x0D Dxy Volume Slide
-    CmdVolumeSlide,    // 0x0E Exy Fine Volume Slide
+    CmdVolSlide,    // 0x0D Dxy Volume Slide
+    CmdVolSlide,    // 0x0E Exy Fine Volume Slide
     CmdS3mCmdEx,            // 0x0F Fxx Set Finetune
     CmdNoteSlideUp,    // 0x10 Gxy Note Slide Up
     CmdNoteSlideDown,    // 0x11 Hxy Note Slide Down

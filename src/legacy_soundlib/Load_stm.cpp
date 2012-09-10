@@ -150,7 +150,7 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                     // Cxx patternbreak to row xx
                     case 3:        m->command = CmdPatternBreak; m->param = (m->param & 0xF0) * 10 + (m->param & 0x0F);        break;
                     // Dxy volumeslide
-                    case 4:        m->command = CmdVolumeSlide; break;
+                    case 4:        m->command = CmdVolSlide; break;
                     // Exy toneslide down
                     case 5:        m->command = CmdPortaDown; break;
                     // Fxy toneslide up
@@ -164,9 +164,9 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
                     // Jxy arpeggio
                     case 10: m->command = CmdArpeggio; break;
                     // Kxy Dual command H00 & Dxy
-                    case 11: m->command = CmdVibratoVol; break;
+                    case 11: m->command = CmdVibratoVolSlide; break;
                     // Lxy Dual command G00 & Dxy
-                    case 12: m->command = CmdPortamentoVol; break;
+                    case 12: m->command = CmdPortaVolSlide; break;
                     // Xxx amiga command 8xx
                     case 0x18:        m->command = CmdPanning8; break;
                     default:

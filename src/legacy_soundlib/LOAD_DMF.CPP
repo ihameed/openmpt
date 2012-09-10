@@ -600,7 +600,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     case 1:		// Volume Slide Up
                     case 2:		// Volume Slide Down
                         effectParam3 = DMFslide2MPT(effectParam3, settings.internalTicks, (effect3 == 1));
-                        effect3 = CmdVolumeSlide;
+                        effect3 = CmdVolSlide;
                         break;
                     case 3:		// Volume Tremolo (actually this is Tremor)
                         effectParam3 = DMFtremor2MPT(effectParam3, settings.internalTicks);

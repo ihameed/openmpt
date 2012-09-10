@@ -280,10 +280,10 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
     case 0x02:    command = CmdPortaDown; break;
     case 0x03:    command = CmdPorta; break;
     case 0x04:    command = CmdVibrato; break;
-    case 0x05:    command = CmdPortamentoVol; break;
-    case 0x06:    command = CmdVibratoVol; break;
+    case 0x05:    command = CmdPortaVolSlide; break;
+    case 0x06:    command = CmdVibratoVolSlide; break;
     case 0x07:    command = CmdTremolo; break;
-    case 0x0A:    if (param & 0xF0) param &= 0xF0; command = CmdVolumeSlide; if (!param) command = 0; break;
+    case 0x0A:    if (param & 0xF0) param &= 0xF0; command = CmdVolSlide; if (!param) command = 0; break;
     case 0x0B:    command = CmdPositionJump; break;
     case 0x0C:    command = CmdVol;
                 if (pmsh->flags & MMD_FLAG_VOLHEX)
@@ -302,7 +302,7 @@ static void MedConvert(modplug::tracker::modevent_t *p, const MMD0SONGHEADER *pm
                 }
                 break;
     case 0x09:    command = (param < 0x20) ? CmdSpeed : CmdTempo; break;
-    case 0x0D:    if (param & 0xF0) param &= 0xF0; command = CmdVolumeSlide; if (!param) command = 0; break;
+    case 0x0D:    if (param & 0xF0) param &= 0xF0; command = CmdVolSlide; if (!param) command = 0; break;
     case 0x0F:    // Set Tempo / Special
         // F.00 = Pattern Break
         if (!param)    command = CmdPatternBreak;        else

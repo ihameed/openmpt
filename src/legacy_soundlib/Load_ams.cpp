@@ -248,8 +248,8 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
                                 case 0x60:    param = (param & 0x0F) | 0xB0; break;
                                 case 0x70:    param = (param & 0x0F) | 0x40; break;
                                 case 0x90:    command = CmdRetrig; param &= 0x0F; break;
-                                case 0xA0:    if (param & 0x0F) { command = CmdVolumeSlide; param = (param << 4) | 0x0F; } else command=param=0; break;
-                                case 0xB0:    if (param & 0x0F) { command = CmdVolumeSlide; param |= 0xF0; } else command=param=0; break;
+                                case 0xA0:    if (param & 0x0F) { command = CmdVolSlide; param = (param << 4) | 0x0F; } else command=param=0; break;
+                                case 0xB0:    if (param & 0x0F) { command = CmdVolSlide; param |= 0xF0; } else command=param=0; break;
                                 }
                                 //XXXih: gross
                                 m[ch].command = (modplug::tracker::cmd_t) command;

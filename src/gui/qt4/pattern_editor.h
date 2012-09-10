@@ -110,6 +110,8 @@ public:
     pattern_editor(
         module_renderer &renderer,
         const pattern_keymap_t &keymap,
+        const pattern_keymap_t &it_keymap,
+        const pattern_keymap_t &xm_keymap,
         const colors_t &colors
     );
 
@@ -125,6 +127,7 @@ public:
     void move_to(const editor_position_t &target);
     const editor_position_t &pos() const;
 
+    bool invoke_key(const pattern_keymap_t &, key_t);
     keycontext_t keycontext() const;
 
 
@@ -155,6 +158,8 @@ private:
     bool follow_playback;
 
     const pattern_keymap_t &keymap;
+    const pattern_keymap_t &it_keymap;
+    const pattern_keymap_t &xm_keymap;
 
     uint8_t base_octave;
 
@@ -182,8 +187,12 @@ public:
     static void select_right(pattern_editor &);
 
     static void insert_note(pattern_editor &, uint8_t, int);
-    static void insert_volparam(pattern_editor &, uint8_t);
+
     static void insert_volcmd(pattern_editor &, modplug::tracker::volcmd_t);
+    static void insert_volparam(pattern_editor &, uint8_t);
+
+    static void insert_cmd(pattern_editor &, modplug::tracker::cmd_t);
+    static void insert_cmdparam(pattern_editor &, uint8_t);
 };
 
 

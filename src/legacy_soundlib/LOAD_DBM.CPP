@@ -98,8 +98,8 @@ typedef struct DBMSAMPLE
 static modplug::tracker::cmd_t dbm_efftrans[23] =
 {
     CmdArpeggio, CmdPortaUp, CmdPortaDown, CmdPorta,
-    CmdVibrato, CmdPortamentoVol, CmdVibratoVol, CmdTremolo,
-    CmdPanning8, CmdOffset, CmdVolumeSlide, CmdPositionJump,
+    CmdVibrato, CmdPortaVolSlide, CmdVibratoVolSlide, CmdTremolo,
+    CmdPanning8, CmdOffset, CmdVolSlide, CmdPositionJump,
     CmdVol, CmdPatternBreak, CmdModCmdEx, CmdTempo,
     CmdGlobalVol, CmdGlobalVolSlide, CmdKeyOff, CmdSetEnvelopePosition,
     CmdChannelVol, CmdChannelVolSlide, CmdPanningSlide,
@@ -120,7 +120,7 @@ void ConvertDBMEffect(uint8_t &command, uint8_t &param)
         if(param == 0)
             command = CmdNone;
         break;
-    case CmdVolumeSlide:
+    case CmdVolSlide:
         if(param & 0xF0)
             param &= 0xF0;
         break;
