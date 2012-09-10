@@ -14,13 +14,13 @@
 #define NOTE_MAX     (::modplug::tracker::note_t(120))
 #define NOTE_COUNT   120
 
-#define NOTE_MAX_SPECIAL NoteKeyOff
+#define NOTE_MAX_SPECIAL modplug::tracker::NoteKeyOff
 #define NOTE_MIN_SPECIAL NOTE_PCS
 
 // Checks whether a number represents a valid note
 // (a "normal" note or no note, but not something like note off)
 #define NOTE_IS_VALID(n) \
-    ((n) == NoteNone || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
+    ((n) == modplug::tracker::NoteNone || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
 
 namespace modplug {
 namespace tracker {
@@ -99,17 +99,18 @@ enum cmd_t {
     CmdMax
 };
 
-}
-}
-
-const modplug::tracker::note_t NoteNone    = 0;
-const modplug::tracker::note_t NoteMiddleC = 5 * 12 + 1;
-const modplug::tracker::note_t NoteKeyOff  = 255;
-const modplug::tracker::note_t NoteNoteCut = 254;
+const note_t NoteNone    = 0;
+const note_t NoteMiddleC = 5 * 12 + 1;
+const note_t NoteKeyOff  = 255;
+const note_t NoteNoteCut = 254;
 
 // 253, IT's action for illegal notes
 // DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
-const modplug::tracker::note_t NoteFade = 253;
+const note_t NoteFade = 253;
+
+}
+}
+
 
 namespace modplug {
 namespace tracker {

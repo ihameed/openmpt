@@ -68,6 +68,8 @@ LPCSTR glpszModExtensions = "mod|s3m|xm|it|stm|nst|ult|669|wow|mtm|med|far|mdl|a
 extern BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, uint32_t *pdwMemLength);
 #endif
 
+using namespace modplug::tracker;
+
 // External decompressors
 extern void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char packcharacter);
 extern uint16_t MDLReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);

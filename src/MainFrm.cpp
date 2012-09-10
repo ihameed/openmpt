@@ -27,6 +27,7 @@
 
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
+using namespace modplug::tracker;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

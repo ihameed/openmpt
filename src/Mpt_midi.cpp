@@ -9,6 +9,7 @@
 
 //#define MPTMIDI_RECORDLOG
 
+using namespace modplug::tracker;
 // Midi Input globals
 HMIDIIN CMainFrame::shMidiIn = NULL;
 
