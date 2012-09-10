@@ -3,6 +3,8 @@
 #include <QtGui>
 #include <json/json.h>
 
+#include "../../tracker/modevent.h"
+
 namespace modplug {
 namespace gui {
 namespace qt4 {
@@ -40,6 +42,85 @@ struct colors_t {
         return colors[type];
     };
 };
+
+inline colors_t::colortype_t cmd_color(modplug::tracker::cmd_t cmd) {
+    switch (cmd) {
+    case modplug::tracker::CmdNone:                 return colors_t::Normal;
+    case modplug::tracker::CmdArpeggio:             return colors_t::Normal;
+    case modplug::tracker::CmdPortaUp:              return colors_t::Normal;
+    case modplug::tracker::CmdPortaDown:            return colors_t::Pitch;
+
+    case modplug::tracker::CmdPorta:                return colors_t::Pitch;
+    case modplug::tracker::CmdVibrato:              return colors_t::Pitch;
+    case modplug::tracker::CmdPortaVolSlide:        return colors_t::Pitch;
+    case modplug::tracker::CmdVibratoVolSlide:      return colors_t::Volume;
+
+    case modplug::tracker::CmdTremolo:              return colors_t::Volume;
+    case modplug::tracker::CmdPanning8:             return colors_t::Panning;
+    case modplug::tracker::CmdOffset:               return colors_t::Normal;
+    case modplug::tracker::CmdVolSlide:             return colors_t::Volume;
+
+    case modplug::tracker::CmdPositionJump:         return colors_t::Globals;
+    case modplug::tracker::CmdVol:                  return colors_t::Volume;
+    case modplug::tracker::CmdPatternBreak:         return colors_t::Globals;
+    case modplug::tracker::CmdRetrig:               return colors_t::Normal;
+
+    case modplug::tracker::CmdSpeed:                return colors_t::Globals;
+    case modplug::tracker::CmdTempo:                return colors_t::Globals;
+    case modplug::tracker::CmdTremor:               return colors_t::Normal;
+    case modplug::tracker::CmdModCmdEx:             return colors_t::Normal;
+
+    case modplug::tracker::CmdS3mCmdEx:             return colors_t::Normal;
+    case modplug::tracker::CmdChannelVol:           return colors_t::Volume;
+    case modplug::tracker::CmdChannelVolSlide:      return colors_t::Volume;
+    case modplug::tracker::CmdGlobalVol:            return colors_t::Globals;
+
+    case modplug::tracker::CmdGlobalVolSlide:       return colors_t::Globals;
+    case modplug::tracker::CmdKeyOff:               return colors_t::Normal;
+    case modplug::tracker::CmdFineVibrato:          return colors_t::Pitch;
+    case modplug::tracker::CmdPanbrello:            return colors_t::Panning;
+
+    case modplug::tracker::CmdExtraFinePortaUpDown: return colors_t::Pitch;
+    case modplug::tracker::CmdPanningSlide:         return colors_t::Panning;
+    case modplug::tracker::CmdSetEnvelopePosition:  return colors_t::Normal;
+
+    case modplug::tracker::CmdMidi:                 return colors_t::Normal;
+    case modplug::tracker::CmdSmoothMidi:           return colors_t::Normal;
+    case modplug::tracker::CmdDelayCut:             return colors_t::Normal;
+    case modplug::tracker::CmdExtendedParameter:    return colors_t::Normal;
+
+    case modplug::tracker::CmdNoteSlideUp:          return colors_t::Pitch;
+    case modplug::tracker::CmdNoteSlideDown:        return colors_t::Pitch;
+
+    default:                                        return colors_t::Normal;
+    }
+}
+
+inline colors_t::colortype_t volcmd_colors(modplug::tracker::volcmd_t cmd) {
+    switch (cmd) {
+    case modplug::tracker::VolCmdNone:           return colors_t::Normal;
+    case modplug::tracker::VolCmdVol:            return colors_t::Volume;
+    case modplug::tracker::VolCmdPan:            return colors_t::Panning;
+    case modplug::tracker::VolCmdSlideUp:        return colors_t::Volume;
+
+    case modplug::tracker::VolCmdSlideDown:      return colors_t::Volume;
+    case modplug::tracker::VolCmdFineUp:         return colors_t::Volume;
+    case modplug::tracker::VolCmdFineDown:       return colors_t::Volume;
+    case modplug::tracker::VolCmdVibratoSpeed:   return colors_t::Volume;
+
+    case modplug::tracker::VolCmdVibratoDepth:   return colors_t::Pitch;
+    case modplug::tracker::VolCmdPanSlideLeft:   return colors_t::Panning;
+    case modplug::tracker::VolCmdPanSlideRight:  return colors_t::Panning;
+    case modplug::tracker::VolCmdPortamento:     return colors_t::Pitch;
+
+    case modplug::tracker::VolCmdPortamentoUp:   return colors_t::Pitch;
+    case modplug::tracker::VolCmdPortamentoDown: return colors_t::Pitch;
+    case modplug::tracker::VolCmdDelayCut:       return colors_t::Normal;
+    case modplug::tracker::VolCmdOffset:         return colors_t::Normal;
+
+    default:                                     return colors_t::Normal;
+    }
+}
 
 struct color_name_assoc_t {
     colors_t::colortype_t key;

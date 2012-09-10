@@ -341,7 +341,7 @@ struct note_column {
             auto volcmd = evt.volcmd & 0x0f;
             auto vol    = evt.vol & 0x7f;
 
-            foreground = colors_t::Volume;
+            foreground = volcmd_colors(evt.volcmd);
 
             draw_glyph(state, x, y,
                 metrics.volcmd_x, metrics.volcmd_y + volcmd * grid_height,
@@ -370,7 +370,8 @@ struct note_column {
         auto &metrics = font_metrics;
 
         if (evt.command) {
-            foreground = colors_t::Pitch;
+            foreground = cmd_color(evt.command);
+
             auto rawcommand = evt.command & 0x3f;
             char command = state.renderer.m_nType & (MOD_TYPE_MOD | MOD_TYPE_XM)
                 ? mod_command_glyphs[rawcommand]
@@ -390,7 +391,7 @@ struct note_column {
         auto &metrics = font_metrics;
 
         if (evt.command) {
-            foreground = colors_t::Panning;
+            foreground = cmd_color(evt.command);
             draw_glyph(state, x, y,
                 metrics.num_x,
                 metrics.num_y + (evt.param >> 4) * grid_height,
