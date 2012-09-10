@@ -298,13 +298,25 @@ modevent_t *pattern_editor::active_event() {
 }
 
 void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
-    int tone_number)
+    uint8_t tone_number)
 {
     editor.collapse_selection();
     auto evt = editor.active_event();
     auto newcmd = *evt;
 
     newcmd.note = 1 + tone_number + 12 * (octave + editor.base_octave);
+
+    *evt = newcmd;
+    editor.update();
+}
+
+void pattern_editor::insert_instr(pattern_editor &editor, uint8_t digit) {
+    editor.collapse_selection();
+    auto evt = editor.active_event();
+    auto newcmd = *evt;
+
+    instr_t instr = (newcmd.instr % 10) * 10 + digit;
+    newcmd.instr = instr;
 
     *evt = newcmd;
     editor.update();
@@ -362,6 +374,7 @@ void pattern_editor::insert_cmdparam(pattern_editor &editor, uint8_t digit) {
     *evt = newcmd;
     editor.update();
 }
+
 
 
 

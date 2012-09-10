@@ -186,7 +186,9 @@ public:
     static void select_left(pattern_editor &);
     static void select_right(pattern_editor &);
 
-    static void insert_note(pattern_editor &, uint8_t, int);
+    static void insert_note(pattern_editor &, uint8_t, uint8_t);
+
+    static void insert_instr(pattern_editor &, uint8_t);
 
     static void insert_volcmd(pattern_editor &, modplug::tracker::volcmd_t);
     static void insert_volparam(pattern_editor &, uint8_t);

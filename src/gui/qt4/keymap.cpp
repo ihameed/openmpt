@@ -203,15 +203,16 @@ void init_cmd_actions(const cmd_assoc<ty> (&assocs)[size], fun_ty func) {
     });
 }
 
-void init_vol_maps() {
+template <typename fun_ty>
+void init_base10_actions(const std::string &prefix, fun_ty func) {
     auto &m = pattern_actionmap;
 
     std::string vol_prefix("vol_");
     for (char i = '0'; i <= '9'; ++i) {
-        auto fname = vol_prefix + i;
+        auto fname = prefix + i;
         uint8_t digit = i - '0';
-        m[fname] = [digit] (pattern_editor &editor) {
-            pattern_editor::insert_volparam(editor, digit);
+        m[fname] = [digit, func] (pattern_editor &editor) {
+            func(editor, digit);
         };
     }
 }
@@ -226,7 +227,7 @@ void init_default_cmd_maps() {
     });
 }
 
-void init_cmd_maps() {
+void init_param_actions() {
     auto &m = pattern_actionmap;
 
     std::string param_prefix("param_");
@@ -240,7 +241,7 @@ void init_cmd_maps() {
     }
 }
 
-void init_note_maps() {
+void init_note_actions() {
     auto &m = pattern_actionmap;
 
     for (char i = '0'; i < '3'; ++i) {
@@ -266,10 +267,13 @@ void init_action_maps() {
     init_cmd_actions(volcmds, &pattern_editor::insert_volcmd);
     init_cmd_actions(cmds,    &pattern_editor::insert_cmd);
 
+    init_base10_actions("instr_", &pattern_editor::insert_instr);
+    init_base10_actions("vol_",   &pattern_editor::insert_volparam);
+
+    init_param_actions();
+    init_note_actions();
+
     init_default_cmd_maps();
-    init_note_maps();
-    init_vol_maps();
-    init_cmd_maps();
 }
 
 global_keymap_t default_global_keymap() {
@@ -341,6 +345,20 @@ pattern_keymap_t default_pattern_keymap() {
     notekey(Qt::Key_Comma,  "note_oct2_g");
     notekey(Qt::Key_Period, "note_oct2_gs");
     notekey(Qt::Key_Slash,  "note_oct2_a");
+
+    auto instrkey = [&m] (int key, const char *act) {
+        return m[key_t(Qt::NoModifier, key, ContextInstrCol)] = act;
+    };
+    instrkey(Qt::Key_0, "instr_0");
+    instrkey(Qt::Key_1, "instr_1");
+    instrkey(Qt::Key_2, "instr_2");
+    instrkey(Qt::Key_3, "instr_3");
+    instrkey(Qt::Key_4, "instr_4");
+    instrkey(Qt::Key_5, "instr_5");
+    instrkey(Qt::Key_6, "instr_6");
+    instrkey(Qt::Key_7, "instr_7");
+    instrkey(Qt::Key_8, "instr_8");
+    instrkey(Qt::Key_9, "instr_9");
 
     auto volkey = [&m] (int key, const char *act) {
         return m[key_t(Qt::NoModifier, key, ContextVolCol)] = act;
