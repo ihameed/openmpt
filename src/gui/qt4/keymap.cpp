@@ -80,6 +80,10 @@ const static actionmap_assoc<pattern_action_t> pattern_actions[] = {
     { "select_down",  &pattern_editor::select_down },
     { "select_left",  &pattern_editor::select_left },
     { "select_right", &pattern_editor::select_right },
+
+    { "clear_selected_cells", &pattern_editor::clear_selected_cells },
+    { "delete_row",           &pattern_editor::delete_row },
+    { "insert_row",           &pattern_editor::insert_row },
 };
 
 template <typename ty>
@@ -303,6 +307,8 @@ pattern_keymap_t default_pattern_keymap() {
     m[key_t(Qt::ShiftModifier, Qt::Key_Down)]  = "select_down";
     m[key_t(Qt::ShiftModifier, Qt::Key_Left)]  = "select_left";
     m[key_t(Qt::ShiftModifier, Qt::Key_Right)] = "select_right";
+
+    m[key_t(Qt::NoModifier, Qt::Key_Delete)] = "clear_selected_cells";
 
     auto notekey = [&m] (int key, const char *act) {
         return m[key_t(Qt::NoModifier, key, ContextNoteCol)] = act;

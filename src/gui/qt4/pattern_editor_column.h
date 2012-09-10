@@ -208,10 +208,12 @@ struct note_column {
         const QColor *bgcolor = &state.colors[color].background;
         int left = x;
 
+        auto corners = selection_corners(state.selection_start,
+                                         state.selection_end);
+
         for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
             pos.subcolumn = elem;
-            const QColor *cellcolor =
-                in_selection(state.selection_start, state.selection_end, pos)
+            const QColor *cellcolor = pos_in_rect(corners, pos)
                 ? &state.colors[colors_t::Selected].background
                 : bgcolor;
             draw_rect(
@@ -503,7 +505,9 @@ struct note_column {
 
         const QColor *color = &state.colors[foreground].foreground;
 
-        if (in_selection(state.selection_start, state.selection_end, pos)) {
+        auto corners = selection_corners(state.selection_start,
+                                         state.selection_end);
+        if (pos_in_rect(corners, pos)) {
             color = &state.colors[colors_t::Selected].foreground;
         }
 

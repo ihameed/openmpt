@@ -239,6 +239,19 @@ void pattern_editor::set_base_octave(uint8_t octave) {
     base_octave = octave;
 }
 
+void pattern_editor::collapse_selection() {
+    auto &newpos = selection_start = selection_end = pos();
+    move_to(newpos);
+}
+
+modevent_t *pattern_editor::active_event() {
+    auto &modspec = renderer.GetModSpecifications();
+    auto patternidx = active_pos.pattern;
+    modevent_t *evt = renderer.Patterns[patternidx]
+                              .GetpModCommand(pos().row, pos().column);
+    return evt;
+}
+
 
 
 
@@ -284,17 +297,49 @@ void pattern_editor::select_right(pattern_editor &editor) {
     editor.update();
 }
 
-void pattern_editor::collapse_selection() {
-    auto &newpos = selection_start = selection_end = pos();
-    move_to(newpos);
+void clear_at(modevent_t *evt, elem_t elem) {
+    switch (elem) {
+    case ElemNote:  evt->note = 0; break;
+    case ElemInstr: evt->instr = 0; break;
+    case ElemVol:   evt->vol = 0; evt->volcmd = VolCmdNone; break;
+    case ElemCmd:   evt->command = CmdNone; break;
+    case ElemParam: evt->param = 0; break;
+    }
 }
 
-modevent_t *pattern_editor::active_event() {
-    auto &modspec = renderer.GetModSpecifications();
-    auto patternidx = active_pos.pattern;
-    modevent_t *evt = renderer.Patterns[patternidx]
-                              .GetpModCommand(pos().row, pos().column);
-    return evt;
+void pattern_editor::clear_selected_cells(pattern_editor &editor) {
+    auto corners = selection_corners(editor.selection_start,
+                                     editor.selection_end);
+    auto &upper_left   = corners.first;
+    auto &bottom_right = corners.second;
+    auto pos = upper_left;
+
+    auto &pattern = editor.renderer.Patterns[editor.active_pos.pattern];
+
+    for (; pos.row <= bottom_right.row; ++pos.row) {
+        for (pos.column = upper_left.column;
+             pos.column <= bottom_right.column; ++pos.column)
+        {
+            for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
+                pos.subcolumn = elem;
+                if (pos_in_rect(corners, pos)) {
+                    modevent_t *evt = pattern.GetpModCommand(pos.row,
+                                                             pos.column);
+                    clear_at(evt, elem);
+                }
+            }
+        }
+    }
+
+    editor.update();
+}
+
+void pattern_editor::delete_row(pattern_editor &editor) {
+    //TODO
+}
+
+void pattern_editor::insert_row(pattern_editor &editor) {
+    //TODO
 }
 
 void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,

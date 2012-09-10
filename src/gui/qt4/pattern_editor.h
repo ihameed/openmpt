@@ -37,6 +37,9 @@ struct editor_position_t {
     elem_t   subcolumn;
 
     editor_position_t() : row(0), column(0), subcolumn(ElemNote) { };
+    editor_position_t(uint32_t row, uint32_t column, elem_t subcolumn)
+        : row(row), column(column), subcolumn(subcolumn)
+    { };
 
     editor_position_t prev_row() const {
         auto newpos = *this;
@@ -73,9 +76,9 @@ struct editor_position_t {
     }
 };
 
-inline bool in_selection(const editor_position_t &start,
-                         const editor_position_t &end,
-                         const editor_position_t &pos)
+inline std::pair<const editor_position_t, const editor_position_t>
+selection_corners(const editor_position_t &start,
+                  const editor_position_t &end)
 {
     auto minrow = min(start.row, end.row);
     auto maxrow = max(start.row, end.row);
@@ -86,19 +89,27 @@ inline bool in_selection(const editor_position_t &start,
     elem_t minsub = start.column == mincol ? start.subcolumn : end.subcolumn;
     elem_t maxsub = start.column == mincol ? end.subcolumn : start.subcolumn;
 
-    if (minrow <= pos.row && pos.row <= maxrow) {
-        if (mincol < pos.column && pos.column < maxcol) {
-            return true;
-        }
-        if (mincol == pos.column && maxcol == pos.column) {
-            return minsub <= pos.subcolumn && pos.subcolumn <= maxsub;
-        }
-        if (mincol == pos.column) {
-            return minsub <= pos.subcolumn;
-        }
-        if (maxcol == pos.column) {
-            return pos.subcolumn <= maxsub;
-        }
+    return std::make_pair(editor_position_t(minrow, mincol, minsub),
+                          editor_position_t(maxrow, maxcol, maxsub));
+}
+
+inline bool pos_in_rect(
+    const std::pair<const editor_position_t, const editor_position_t> &corners,
+    const editor_position_t &pos)
+{
+    auto &upper_left   = corners.first;
+    auto &bottom_right = corners.second;
+
+    if (upper_left.row <= pos.row && pos.row <= bottom_right.row) {
+        bool in_left = (pos.column == upper_left.column &&
+                        pos.subcolumn >= upper_left.subcolumn
+                       ) || pos.column > upper_left.column;
+
+        bool in_right = (pos.column == bottom_right.column &&
+                         pos.subcolumn <= bottom_right.subcolumn
+                        ) || pos.column < bottom_right.column;
+
+        return in_left && in_right;
     }
 
     return false;
@@ -185,6 +196,10 @@ public:
     static void select_down(pattern_editor &);
     static void select_left(pattern_editor &);
     static void select_right(pattern_editor &);
+
+    static void clear_selected_cells(pattern_editor &);
+    static void delete_row(pattern_editor &);
+    static void insert_row(pattern_editor &);
 
     static void insert_note(pattern_editor &, uint8_t, uint8_t);
 
