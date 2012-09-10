@@ -267,33 +267,6 @@ public:
 };
 
 
-/////////////////////////////////////////////////////////////////////////
-// Chord Editor
-
-//================================
-class CChordEditor: public CDialog
-//================================
-{
-protected:
-    CKeyboardControl m_Keyboard;
-    CComboBox m_CbnShortcut, m_CbnBaseNote, m_CbnNote1, m_CbnNote2, m_CbnNote3;
-
-public:
-    CChordEditor(CWnd *parent=NULL):CDialog(IDD_CHORDEDIT, parent) {}
-
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    virtual BOOL OnInitDialog();
-    void UpdateKeyboard();
-    afx_msg LRESULT OnKeyboardNotify(WPARAM, LPARAM);
-    afx_msg void OnChordChanged();
-    afx_msg void OnBaseNoteChanged();
-    afx_msg void OnNote1Changed();
-    afx_msg void OnNote2Changed();
-    afx_msg void OnNote3Changed();
-    DECLARE_MESSAGE_MAP()
-};
-
 
 /////////////////////////////////////////////////////////////////////////
 // Keyboard Split Settings (pattern editor)

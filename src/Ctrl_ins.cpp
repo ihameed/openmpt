@@ -2431,25 +2431,7 @@ void CCtrlInstruments::OnHScroll(UINT nCode, UINT nPos, CScrollBar *pSB)
 }
 
 
-void CCtrlInstruments::OnEditSampleMap()
-//--------------------------------------
-{
-    if ((m_nInstrument) && (m_pModDoc))
-    {
-            module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-            modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
-            if (pIns)
-            {
-                    CSampleMapDlg dlg(pSndFile, m_nInstrument, this);
-                    if (dlg.DoModal() == IDOK)
-                    {
-                            m_pModDoc->SetModified();
-                            m_pModDoc->UpdateAllViews(NULL, (m_nInstrument << HINT_SHIFT_INS) | HINT_INSTRUMENT, this);
-                            m_NoteMap.InvalidateRect(NULL, FALSE);
-                    }
-            }
-    }
-}
+void CCtrlInstruments::OnEditSampleMap() { }
 
 //rewbs.instroVSTi
 void CCtrlInstruments::TogglePluginEditor()

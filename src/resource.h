@@ -81,11 +81,9 @@
 #define IDD_OPTIONS_GENERAL             402
 #define IDD_MIDIMACRO                   404
 #define IDD_WAVECOMPRESSION             405
-#define IDD_CHORDEDIT                   406
 #define IDD_TREEVIEW                    409
 #define IDD_MOD2MIDI                    420
 #define IDD_SAVEPRESET                  421
-#define IDD_EDITSAMPLEMAP               422
 #define IDD_SELECTMIXPLUGIN             423
 #define IDD_PLUGINEDITOR                424
 #define IDD_SETUP_REVERB                425
@@ -614,7 +612,6 @@
 #define IDC_TOOLBAR1                    2074
 #define IDC_TOOLBAR2                    2075
 #define IDC_TOOLBAR_DETAILS             2076
-#define IDC_KEYBOARD1                   2078
 #define IDC_TREEVIEW                    2081
 #define IDC_COMMANDKEY                  2081
 #define IDC_VUMETER_LEFT                2082

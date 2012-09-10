@@ -1135,13 +1135,7 @@ void CCtrlPatterns::OnSetupZxxMacros()
 }
 
 
-void CCtrlPatterns::OnChordEditor()
-//---------------------------------
-{
-    CChordEditor dlg(this);
-    dlg.DoModal();
-    SwitchToView();
-}
+void CCtrlPatterns::OnChordEditor() { }
 
 
 void CCtrlPatterns::OnDetailLo()

@@ -218,37 +218,6 @@ public:
 };
 
 
-/////////////////////////////////////////////////////////////////////////
-// Sample Map
-
-//=================================
-class CSampleMapDlg: public CDialog
-//=================================
-{
-protected:
-    CKeyboardControl m_Keyboard;
-    CComboBox m_CbnSample;
-    CSliderCtrl m_SbOctave;
-    module_renderer *m_pSndFile;
-    UINT m_nInstrument;
-    uint16_t KeyboardMap[modplug::tracker::NoteMax];
-
-public:
-    CSampleMapDlg(module_renderer *pSndFile, UINT nInstr, CWnd *parent=NULL):CDialog(IDD_EDITSAMPLEMAP, parent)
-            { m_pSndFile = pSndFile; m_nInstrument = nInstr; }
-
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    virtual BOOL OnInitDialog();
-    virtual VOID OnOK();
-    afx_msg void OnUpdateSamples();
-    afx_msg void OnUpdateKeyboard();
-    afx_msg void OnUpdateOctave();
-    afx_msg void OnHScroll(UINT, UINT, CScrollBar *);
-    afx_msg LRESULT OnKeyboardNotify(WPARAM, LPARAM);
-    DECLARE_MESSAGE_MAP()
-};
-
 
 /////////////////////////////////////////////////////////////////////////
 // Messagebox with 'don't show again'-option.
