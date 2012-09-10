@@ -19,6 +19,8 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
+const int hugeor = 999999;
+
 QImage load_font() {
     auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
     auto instance = GetModuleHandle(nullptr);
@@ -113,10 +115,8 @@ void pattern_editor::paintGL() {
         active_pos,
 
         colors,
-
-        selection_start,
-        selection_end,
-        false
+        corners,
+        pos()
     };
 
     int painted_width = 0;
@@ -129,6 +129,71 @@ void pattern_editor::paintGL() {
         notehomie.draw_column(state);
         painted_width += notehomie.width();
     }
+}
+
+editor_position_t pattern_editor::pos_move_by_row(
+    const editor_position_t &in, int amount) const
+{
+    auto newpos = in;
+    bool down = amount < 0;
+    uint32_t absamount = down ? -amount : amount;
+
+    if (down) {
+        newpos.row = absamount > newpos.row
+            ? 0
+            : newpos.row - absamount;
+    } else {
+        //XXXih: :[
+        newpos.row += absamount;
+        auto numrows = renderer.Patterns[active_pos.pattern].GetNumRows();
+        if (newpos.row >= numrows) {
+            newpos.row = numrows - 1; //XXXih: :[[[
+        }
+    }
+
+    return newpos;
+}
+
+editor_position_t pattern_editor::pos_move_by_subcol(
+    const editor_position_t &in, int amount) const
+{
+    auto newpos = in;
+
+    bool left = amount < 0;
+    uint32_t absamount = left ? -amount : amount;
+
+    //TODO: multiple column types
+    if (left) {
+        for (size_t i = 0; i < absamount; ++i) {
+            if (newpos.subcolumn == ElemMin) {
+                if (newpos.column > 0) {
+                    newpos.subcolumn = (elem_t) (ElemMax - 1);
+                    newpos.column -= 1;
+                } else {
+                    break;
+                }
+            } else {
+                --newpos.subcolumn;
+            }
+        }
+    } else {
+        uint32_t max = renderer.GetNumChannels();
+        for (size_t i = 0; i < absamount; ++i) {
+            if (newpos.subcolumn == ElemMax - 1) {
+                if (newpos.column < max - 1) {
+                    newpos.subcolumn = ElemMin;
+                    newpos.column += 1;
+                } else {
+                    break;
+                }
+            } else {
+                ++newpos.subcolumn;
+            }
+        }
+    }
+
+    return newpos;
+
 }
 
 bool pattern_editor::position_from_point(const QPoint &point,
@@ -152,21 +217,41 @@ bool pattern_editor::position_from_point(const QPoint &point,
     return success;
 }
 
-void pattern_editor::set_selection(const QPoint &point, editor_position_t &pos) {
+void pattern_editor::recalc_corners() {
+    corners = normalize_selection(selection);
+}
+
+bool pattern_editor::set_pos_from_point(const QPoint &point,
+                                        editor_position_t &pos)
+{
     editor_position_t newpos;
     if (position_from_point(point, newpos)) {
         pos = newpos;
+        return true;
     }
+    return false;
 }
 
 void pattern_editor::set_selection_start(const QPoint &point) {
-    set_selection(point, selection_start);
-    update();
+    if (set_pos_from_point(point, selection.start)) {
+        recalc_corners();
+    }
+}
+
+void pattern_editor::set_selection_start(const editor_position_t &pos) {
+    selection.start = pos;
+    recalc_corners();
 }
 
 void pattern_editor::set_selection_end(const QPoint &point) {
-    set_selection(point, selection_end);
-    update();
+    if (set_pos_from_point(point, selection.end)) {
+        recalc_corners();
+    }
+}
+
+void pattern_editor::set_selection_end(const editor_position_t &pos) {
+    selection.end = pos;
+    recalc_corners();
 }
 
 void pattern_editor::mousePressEvent(QMouseEvent *event) {
@@ -174,12 +259,14 @@ void pattern_editor::mousePressEvent(QMouseEvent *event) {
         is_dragging = true;
         set_selection_start(event->pos());
         set_selection_end(event->pos());
+        update();
     }
 }
 
 void pattern_editor::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton && is_dragging) {
         set_selection_end(event->pos());
+        update();
     }
 }
 
@@ -187,6 +274,7 @@ void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton) {
         is_dragging = false;
         set_selection_end(event->pos());
+        update();
     }
 }
 
@@ -205,8 +293,6 @@ void pattern_editor::keyPressEvent(QKeyEvent *event) {
     auto context_key = key_t(modifiers, event->key(), keycontext());
     auto pattern_key = key_t(modifiers, event->key());
 
-    DEBUG_FUNC("context = %d", keycontext());
-
     if (invoke_key(keymap,    context_key)) return;
     if (invoke_key(it_keymap, context_key)) return;
     if (invoke_key(keymap,    pattern_key)) return;
@@ -215,13 +301,14 @@ void pattern_editor::keyPressEvent(QKeyEvent *event) {
 }
 
 void pattern_editor::move_to(const editor_position_t &target) {
-    selection_start = target;
-    selection_end   = target;
+    selection.start = target;
+    selection.end   = target;
+    recalc_corners();
     update();
 }
 
 const editor_position_t &pattern_editor::pos() const {
-    return selection_end;
+    return selection.end;
 }
 
 keycontext_t pattern_editor::keycontext() const{
@@ -240,7 +327,8 @@ void pattern_editor::set_base_octave(uint8_t octave) {
 }
 
 void pattern_editor::collapse_selection() {
-    auto &newpos = selection_start = selection_end = pos();
+    auto &newpos = selection.start = selection.end = pos();
+    recalc_corners();
     move_to(newpos);
 }
 
@@ -258,60 +346,115 @@ modevent_t *pattern_editor::active_event() {
 
 
 void pattern_editor::move_up(pattern_editor &editor) {
-    auto pos = editor.pos().prev_row();
-    editor.move_to(pos);
+    auto newpos = editor.pos_move_by_row(editor.pos(), -1);
+    editor.move_to(newpos);
 }
 
 void pattern_editor::move_down(pattern_editor &editor) {
-    auto pos = editor.pos().next_row();
-    editor.move_to(pos);
+    auto newpos = editor.pos_move_by_row(editor.pos(), 1);
+    editor.move_to(newpos);
 }
 
 void pattern_editor::move_left(pattern_editor &editor) {
-    auto pos = editor.pos().prev_subcol();
-    editor.move_to(pos);
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), -1);
+    editor.move_to(newpos);
 }
 
 void pattern_editor::move_right(pattern_editor &editor) {
-    auto pos = editor.pos().next_subcol();
-    editor.move_to(pos);
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), 1);
+    editor.move_to(newpos);
 }
 
+
+void pattern_editor::move_first_row(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_row(editor.pos(), -hugeor);
+    editor.move_to(newpos);
+}
+
+void pattern_editor::move_last_row(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_row(editor.pos(), hugeor);
+    editor.move_to(newpos);
+}
+
+void pattern_editor::move_first_col(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), -hugeor);
+    editor.move_to(newpos);
+}
+
+void pattern_editor::move_last_col(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), hugeor);
+    editor.move_to(newpos);
+}
+
+
+
 void pattern_editor::select_up(pattern_editor &editor) {
-    editor.selection_end = editor.selection_end.prev_row();
+    auto newpos = editor.pos_move_by_row(editor.pos(), -1);
+    editor.set_selection_end(newpos);
     editor.update();
 }
 
 void pattern_editor::select_down(pattern_editor &editor) {
-    editor.selection_end = editor.selection_end.next_row();
+    auto newpos = editor.pos_move_by_row(editor.pos(), 1);
+    editor.set_selection_end(newpos);
     editor.update();
 }
 
 void pattern_editor::select_left(pattern_editor &editor) {
-    editor.selection_end = editor.selection_end.prev_subcol();
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), -1);
+    editor.set_selection_end(newpos);
     editor.update();
 }
 
 void pattern_editor::select_right(pattern_editor &editor) {
-    editor.selection_end = editor.selection_end.next_subcol();
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), 1);
+    editor.set_selection_end(newpos);
     editor.update();
 }
 
+
+void pattern_editor::select_first_row(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_row(editor.pos(), -hugeor);
+    editor.set_selection_end(newpos);
+    editor.update();
+}
+
+void pattern_editor::select_last_row(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_row(editor.pos(), hugeor);
+    editor.set_selection_end(newpos);
+    editor.update();
+}
+
+void pattern_editor::select_first_col(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), -hugeor);
+    editor.set_selection_end(newpos);
+    editor.update();
+}
+
+void pattern_editor::select_last_col(pattern_editor &editor) {
+    auto newpos = editor.pos_move_by_subcol(editor.pos(), hugeor);
+    editor.set_selection_end(newpos);
+    editor.update();
+}
+
+
+
+
 void clear_at(modevent_t *evt, elem_t elem) {
     switch (elem) {
-    case ElemNote:  evt->note = 0; break;
-    case ElemInstr: evt->instr = 0; break;
-    case ElemVol:   evt->vol = 0; evt->volcmd = VolCmdNone; break;
+    case ElemNote:  evt->note    = 0; break;
+    case ElemInstr: evt->instr   = 0; break;
+    case ElemVol:   evt->vol     = 0;
+                    evt->volcmd  = VolCmdNone; break;
     case ElemCmd:   evt->command = CmdNone; break;
-    case ElemParam: evt->param = 0; break;
+    case ElemParam: evt->param   = 0; break;
     }
 }
 
 void pattern_editor::clear_selected_cells(pattern_editor &editor) {
-    auto corners = selection_corners(editor.selection_start,
-                                     editor.selection_end);
-    auto &upper_left   = corners.first;
-    auto &bottom_right = corners.second;
+    auto &corners = editor.corners;
+    auto &upper_left   = corners.topleft;
+    auto &bottom_right = corners.bottomright;
     auto pos = upper_left;
 
     auto &pattern = editor.renderer.Patterns[editor.active_pos.pattern];
@@ -419,6 +562,8 @@ void pattern_editor::insert_cmdparam(pattern_editor &editor, uint8_t digit) {
     *evt = newcmd;
     editor.update();
 }
+
+
 
 
 

@@ -76,10 +76,20 @@ const static actionmap_assoc<pattern_action_t> pattern_actions[] = {
     { "move_left",  &pattern_editor::move_left },
     { "move_right", &pattern_editor::move_right },
 
+    { "move_first_row", &pattern_editor::move_first_row },
+    { "move_last_row",  &pattern_editor::move_last_row },
+    { "move_first_col", &pattern_editor::move_first_col },
+    { "move_last_col",  &pattern_editor::move_last_col },
+
     { "select_up",    &pattern_editor::select_up },
     { "select_down",  &pattern_editor::select_down },
     { "select_left",  &pattern_editor::select_left },
     { "select_right", &pattern_editor::select_right },
+
+    { "select_first_row", &pattern_editor::select_first_row },
+    { "select_last_row",  &pattern_editor::select_last_row },
+    { "select_first_col", &pattern_editor::select_first_col },
+    { "select_last_col",  &pattern_editor::select_last_col },
 
     { "clear_selected_cells", &pattern_editor::clear_selected_cells },
     { "delete_row",           &pattern_editor::delete_row },
@@ -303,10 +313,20 @@ pattern_keymap_t default_pattern_keymap() {
     m[key_t(Qt::NoModifier, Qt::Key_Left)]  = "move_left";
     m[key_t(Qt::NoModifier, Qt::Key_Right)] = "move_right";
 
+    m[key_t(Qt::ControlModifier, Qt::Key_Home)] = "move_first_row";
+    m[key_t(Qt::ControlModifier, Qt::Key_End)]  = "move_last_row";
+    m[key_t(Qt::NoModifier, Qt::Key_Home)] = "move_first_col";
+    m[key_t(Qt::NoModifier, Qt::Key_End)]  = "move_last_col";
+
     m[key_t(Qt::ShiftModifier, Qt::Key_Up)]    = "select_up";
     m[key_t(Qt::ShiftModifier, Qt::Key_Down)]  = "select_down";
     m[key_t(Qt::ShiftModifier, Qt::Key_Left)]  = "select_left";
     m[key_t(Qt::ShiftModifier, Qt::Key_Right)] = "select_right";
+
+    m[key_t(Qt::ShiftModifier | Qt::ControlModifier, Qt::Key_Home)] = "select_first_row";
+    m[key_t(Qt::ShiftModifier | Qt::ControlModifier, Qt::Key_End)]  = "select_last_row";
+    m[key_t(Qt::ShiftModifier, Qt::Key_Home)] = "select_first_col";
+    m[key_t(Qt::ShiftModifier, Qt::Key_End)]  = "select_last_col";
 
     m[key_t(Qt::NoModifier, Qt::Key_Delete)] = "clear_selected_cells";
 

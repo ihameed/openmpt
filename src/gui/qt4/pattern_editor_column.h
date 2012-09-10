@@ -35,16 +35,17 @@ struct draw_state {
     const player_position_t &active_pos;
 
     const colors_t &colors;
-
-    const editor_position_t &selection_start;
-    const editor_position_t &selection_end;
-    const bool selection_active;
+    const normalized_selection_t &corners;
+    const editor_position_t &pos;
 };
 
+//TODO: vertex batching
+/*
 const size_t MaxVertices = 32768;
 
 static const int vertex_homies[MaxVertices];
 static const float texture_homies[MaxVertices];
+*/
 
 struct note_column {
     const int left;
@@ -61,7 +62,7 @@ struct note_column {
         const int column,
         const pattern_font_metrics_t &font_metrics
     )
-        : font_metrics(font_metrics), column(column), left(left)
+    : font_metrics(font_metrics), column(column), left(left)
     { }
 
     int32_t width() {
@@ -161,7 +162,7 @@ struct note_column {
             state.active_pos.pattern == state.playback_pos.pattern)
         {
             return colors_t::PlayCursor;
-        } else if (row == state.selection_end.row) {
+        } else if (row == state.pos.row) {
             return colors_t::CurrentRow;
         }
 
@@ -208,12 +209,9 @@ struct note_column {
         const QColor *bgcolor = &state.colors[color].background;
         int left = x;
 
-        auto corners = selection_corners(state.selection_start,
-                                         state.selection_end);
-
         for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
             pos.subcolumn = elem;
-            const QColor *cellcolor = pos_in_rect(corners, pos)
+            const QColor *cellcolor = pos_in_rect(state.corners, pos)
                 ? &state.colors[colors_t::Selected].background
                 : bgcolor;
             draw_rect(
@@ -505,9 +503,7 @@ struct note_column {
 
         const QColor *color = &state.colors[foreground].foreground;
 
-        auto corners = selection_corners(state.selection_start,
-                                         state.selection_end);
-        if (pos_in_rect(corners, pos)) {
+        if (pos_in_rect(state.corners, pos)) {
             color = &state.colors[colors_t::Selected].foreground;
         }
 

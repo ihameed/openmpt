@@ -40,46 +40,23 @@ struct editor_position_t {
     editor_position_t(uint32_t row, uint32_t column, elem_t subcolumn)
         : row(row), column(column), subcolumn(subcolumn)
     { };
-
-    editor_position_t prev_row() const {
-        auto newpos = *this;
-        if (newpos.row > 0) {
-            newpos.row--;
-        }
-        return newpos;
-    }
-
-    editor_position_t next_row() const {
-        auto newpos = *this;
-        newpos.row++;
-        return newpos;
-    }
-
-    editor_position_t prev_subcol() const {
-        auto newpos = *this;
-        if (newpos.subcolumn == ElemNote) {
-            --newpos.column;
-            newpos.subcolumn = ElemMax;
-        }
-        --newpos.subcolumn;
-        return newpos;
-    }
-
-    editor_position_t next_subcol() const {
-        auto newpos = *this;
-        ++newpos.subcolumn;
-        if (newpos.subcolumn >= ElemMax) {
-            ++newpos.column;
-            newpos.subcolumn = ElemNote;
-        }
-        return newpos;
-    }
 };
 
-inline std::pair<const editor_position_t, const editor_position_t>
-selection_corners(const editor_position_t &start,
-                  const editor_position_t &end)
-{
+struct selection_t {
+    editor_position_t start;
+    editor_position_t end;
+};
+
+struct normalized_selection_t {
+    editor_position_t topleft;
+    editor_position_t bottomright;
+};
+
+inline normalized_selection_t
+normalize_selection(const selection_t selection) {
+    auto &start = selection.start;
+    auto &end   = selection.end;
+
     auto minrow = min(start.row, end.row);
     auto maxrow = max(start.row, end.row);
 
@@ -89,25 +66,22 @@ selection_corners(const editor_position_t &start,
     elem_t minsub = start.column == mincol ? start.subcolumn : end.subcolumn;
     elem_t maxsub = start.column == mincol ? end.subcolumn : start.subcolumn;
 
-    return std::make_pair(editor_position_t(minrow, mincol, minsub),
-                          editor_position_t(maxrow, maxcol, maxsub));
+    normalized_selection_t ret = { editor_position_t(minrow, mincol, minsub),
+                                   editor_position_t(maxrow, maxcol, maxsub) };
+    return ret;
 }
 
-inline bool pos_in_rect(
-    const std::pair<const editor_position_t, const editor_position_t> &corners,
-    const editor_position_t &pos)
+inline bool pos_in_rect(const normalized_selection_t &corners,
+                        const editor_position_t &pos)
 {
-    auto &upper_left   = corners.first;
-    auto &bottom_right = corners.second;
+    if (corners.topleft.row <= pos.row && pos.row <= corners.bottomright.row) {
+        bool in_left = (pos.column == corners.topleft.column &&
+                        pos.subcolumn >= corners.topleft.subcolumn
+                       ) || pos.column > corners.topleft.column;
 
-    if (upper_left.row <= pos.row && pos.row <= bottom_right.row) {
-        bool in_left = (pos.column == upper_left.column &&
-                        pos.subcolumn >= upper_left.subcolumn
-                       ) || pos.column > upper_left.column;
-
-        bool in_right = (pos.column == bottom_right.column &&
-                         pos.subcolumn <= bottom_right.subcolumn
-                        ) || pos.column < bottom_right.column;
+        bool in_right = (pos.column == corners.bottomright.column &&
+                         pos.subcolumn <= corners.bottomright.subcolumn
+                        ) || pos.column < corners.bottomright.column;
 
         return in_left && in_right;
     }
@@ -132,15 +106,20 @@ public:
     bool position_from_point(const QPoint &, editor_position_t &);
 
     void set_selection_start(const QPoint &);
+    void set_selection_start(const editor_position_t &);
     void set_selection_end(const QPoint &);
-    void set_selection(const QPoint &, editor_position_t &);
+    void set_selection_end(const editor_position_t &);
+    bool set_pos_from_point(const QPoint &, editor_position_t &);
+    void recalc_corners();
+
+    editor_position_t pos_move_by_row(const editor_position_t &, int) const;
+    editor_position_t pos_move_by_subcol(const editor_position_t &, int) const;
 
     void move_to(const editor_position_t &target);
     const editor_position_t &pos() const;
 
     bool invoke_key(const pattern_keymap_t &, key_t);
     keycontext_t keycontext() const;
-
 
     void set_base_octave(uint8_t octave);
 
@@ -161,8 +140,9 @@ protected:
 private:
     bool selection_active;
     bool is_dragging;
-    editor_position_t selection_start;
-    editor_position_t selection_end;
+
+    selection_t selection;
+    normalized_selection_t corners;
 
     player_position_t playback_pos;
     player_position_t active_pos;
@@ -192,22 +172,29 @@ public:
     static void move_left(pattern_editor &);
     static void move_right(pattern_editor &);
 
+    static void move_first_row(pattern_editor &);
+    static void move_last_row(pattern_editor &);
+    static void move_first_col(pattern_editor &);
+    static void move_last_col(pattern_editor &);
+
     static void select_up(pattern_editor &);
     static void select_down(pattern_editor &);
     static void select_left(pattern_editor &);
     static void select_right(pattern_editor &);
+
+    static void select_first_row(pattern_editor &);
+    static void select_last_row(pattern_editor &);
+    static void select_first_col(pattern_editor &);
+    static void select_last_col(pattern_editor &);
 
     static void clear_selected_cells(pattern_editor &);
     static void delete_row(pattern_editor &);
     static void insert_row(pattern_editor &);
 
     static void insert_note(pattern_editor &, uint8_t, uint8_t);
-
     static void insert_instr(pattern_editor &, uint8_t);
-
     static void insert_volcmd(pattern_editor &, modplug::tracker::volcmd_t);
     static void insert_volparam(pattern_editor &, uint8_t);
-
     static void insert_cmd(pattern_editor &, modplug::tracker::cmd_t);
     static void insert_cmdparam(pattern_editor &, uint8_t);
 };
