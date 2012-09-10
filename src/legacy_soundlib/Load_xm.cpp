@@ -839,7 +839,7 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
             UINT param = ModSaveCommand(p, true, bCompatibilityExport);
             UINT command = param >> 8;
             param &= 0xFF;
-            if (note >= NOTE_MIN_SPECIAL) note = 97; else
+            if (note >= NoteMinSpecial) note = 97; else
             if ((note <= 12) || (note > 96+12)) note = 0; else
             note -= 12;
             UINT vol = 0;

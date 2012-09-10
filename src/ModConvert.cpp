@@ -339,7 +339,7 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
             if (pIns)
             {
-                for (UINT k = 0; k < NOTE_MAX; k++)
+                for (UINT k = 0; k < NoteMax; k++)
                 {
                     if ((pIns->NoteMap[k]) && (pIns->NoteMap[k] != (uint8_t)(k+1)))
                     {

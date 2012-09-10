@@ -120,7 +120,7 @@ CViewInstrument::CViewInstrument()
     memset(m_dwNotifyPos, 0, sizeof(m_dwNotifyPos));
     memset(m_NcButtonState, 0, sizeof(m_NcButtonState));
     m_bmpEnvBar.Create(IDB_ENVTOOLBAR, 20, 0, RGB(192,192,192));
-    memset(m_baPlayingNote, 0, sizeof(bool)*NOTE_MAX);        //rewbs.customKeys
+    memset(m_baPlayingNote, 0, sizeof(bool)*NoteMax);        //rewbs.customKeys
     m_nPlayingChannel = ChannelIndexInvalid;                        //rewbs.customKeys
     //rewbs.envRowGrid
     m_bGrid=true;
@@ -1143,7 +1143,7 @@ LRESULT CViewInstrument::OnPlayerNotify(MPTNOTIFICATION *pnotify)
                             InvalidateEnvelope();
                             break;
                     }
-                    memset(m_baPlayingNote, 0, sizeof(bool)*NOTE_MAX);         //rewbs.instViewNNA
+                    memset(m_baPlayingNote, 0, sizeof(bool)*NoteMax);         //rewbs.instViewNNA
                     m_nPlayingChannel = ChannelIndexInvalid;                        //rewbs.instViewNNA
             }
     } else
@@ -1924,7 +1924,7 @@ void CViewInstrument::PlayNote(UINT note)
                     m_baPlayingNote[note] = true;                                                                                        //rewbs.instViewNNA
                     m_nPlayingChannel = pModDoc->PlayNote(note, m_nInstrument, 0, FALSE); //rewbs.instViewNNA
                     s[0] = 0;
-                    if ((note) && (note <= NOTE_MAX))
+                    if ((note) && (note <= NoteMax))
                     {
                             const std::string temp = pModDoc->GetSoundFile()->GetNoteName(static_cast<int16_t>(note), m_nInstrument);
                             if(temp.size() >= sizeofS)

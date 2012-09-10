@@ -255,7 +255,7 @@ bool module_renderer::ReadDBM(const uint8_t *lpStream, const uint32_t dwMemLengt
                     pIns->default_pan = 128;
                 pIns->pitch_pan_center = 5 * 12;
 
-                for (uint8_t i = 0; i < NOTE_MAX; i++)
+                for (uint8_t i = 0; i < NoteMax; i++)
                 {
                     pIns->Keyboard[i] = nsmp;
                     pIns->NoteMap[i] = i + 1;

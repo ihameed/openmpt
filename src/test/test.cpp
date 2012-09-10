@@ -203,9 +203,9 @@ void TestMisc()
     VERIFY_EQUAL(ConvertStrTo<double>("-0.5e-6"), -0.5e-6);
     VERIFY_EQUAL(ConvertStrTo<double>("58.65403492763"), 58.65403492763);
 
-    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NOTE_MAX), false);
-    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NOTE_PC), true);
-    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NOTE_PCS), true);
+    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NoteMax), false);
+    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NotePc), true);
+    VERIFY_EQUAL(modplug::tracker::modevent_t::IsPcNote(NotePcSmooth), true);
 }
 
 
@@ -323,7 +323,7 @@ void TestLoadFile(const CModDoc *pModDoc)
     VERIFY_EQUAL_NONCONT(pIns->nPluginVelocityHandling, PLUGIN_VELOCITYHANDLING_VOLUME);
     VERIFY_EQUAL_NONCONT(pIns->nPluginVolumeHandling, PLUGIN_VOLUMEHANDLING_MIDI);
 
-    for(size_t i = 0; i < NOTE_MAX; i++)
+    for(size_t i = 0; i < NoteMax; i++)
     {
             if(i == NoteMiddleC - 1)
             {
@@ -468,9 +468,9 @@ void GenerateCommands(CPattern& pat, const double dProbPcs, const double dProbPc
             if(rand < dPcxProb)
             {
                     if(rand < dProbPcs)
-                            i->note = NOTE_PCS;
+                            i->note = NotePcSmooth;
                     else
-                            i->note = NOTE_PC;
+                            i->note = NotePc;
 
                     i->instr = Rand<uint8_t>(0, MAX_MIXPLUGINS);
                     i->SetValueVolCol(Rand<uint16_t>(0, modplug::tracker::modevent_t::MaxColumnValue));

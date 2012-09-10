@@ -2542,7 +2542,7 @@ modplug::tracker::sampleindex_t module_renderer::DetectUnusedSamples(vector<bool
         UINT jmax = Patterns[nPat].GetNumRows() * GetNumChannels();
         for (UINT j=0; j<jmax; j++, p++)
         {
-            if ((p->note) && (p->note <= NOTE_MAX) && (!p->IsPcNote()))
+            if ((p->note) && (p->note <= NoteMax) && (!p->IsPcNote()))
             {
                 if ((p->instr) && (p->instr < MAX_INSTRUMENTS))
                 {
@@ -2785,7 +2785,7 @@ long module_renderer::GetSampleOffset()
 string module_renderer::GetNoteName(const CTuning::NOTEINDEXTYPE& note, const modplug::tracker::instrumentindex_t inst) const
 //--------------------------------------------------------------------------------------------------
 {
-    if((inst >= MAX_INSTRUMENTS && inst != modplug::tracker::InstrumentIndexInvalid) || note < 1 || note > NOTE_MAX) return "BUG";
+    if((inst >= MAX_INSTRUMENTS && inst != modplug::tracker::InstrumentIndexInvalid) || note < 1 || note > NoteMax) return "BUG";
 
     // For MPTM instruments with custom tuning, find the appropriate note name. Else, use default note names.
     if(inst != modplug::tracker::InstrumentIndexInvalid && m_nType == MOD_TYPE_MPT && Instruments[inst] && Instruments[inst]->pTuning)

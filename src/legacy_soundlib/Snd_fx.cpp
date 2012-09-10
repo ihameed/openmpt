@@ -209,7 +209,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
             UINT param = p->param;
             UINT note = p->note;
             if (p->instr) { instr[nChn] = p->instr; notes[nChn] = 0; vols[nChn] = 0xFF; }
-            if ((note) && (note <= NOTE_MAX)) notes[nChn] = note;
+            if ((note) && (note <= NoteMax)) notes[nChn] = note;
             if (p->volcmd == VolCmdVol)    { vols[nChn] = p->vol; }
             if (command) switch (command)
             {
@@ -506,7 +506,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
 #ifdef DEBUG
             {
                 // Check if original behaviour would have been used here
-                if (pIns->NoteMap[note-1] >= NOTE_MIN_SPECIAL)
+                if (pIns->NoteMap[note-1] >= NoteMinSpecial)
                 {
                     ASSERT(false);
                     return;
@@ -529,14 +529,14 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
         } else
         {
             // Original behaviour
-            if(pIns->NoteMap[note-1] > NOTE_MAX) return;
+            if(pIns->NoteMap[note-1] > NoteMax) return;
             UINT n = pIns->Keyboard[note-1];
             pSmp = ((n) && (n < MAX_SAMPLES)) ? &Samples[n] : nullptr;
         }
     } else
     if (m_nInstruments)
     {
-        if (note >= NOTE_MIN_SPECIAL) return;
+        if (note >= NoteMinSpecial) return;
         pSmp = NULL;
     }
 
@@ -752,7 +752,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
 void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEnv, bool bManual)
 //-----------------------------------------------------------------------------------------
 {
-    if (note < NOTE_MIN) return;
+    if (note < NoteMin) return;
     modplug::tracker::modchannel_t * const pChn = &Chn[nChn];
     modplug::tracker::modsample_t *pSmp = pChn->sample;
     modplug::tracker::modinstrument_t *pIns = pChn->instrument;
@@ -768,7 +768,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
         note = pIns->NoteMap[note-1];
     }
     // Key Off
-    if (note > NOTE_MAX)
+    if (note > NoteMax)
     {
         // Key Off (+ Invalid Note for XM - TODO is this correct?)
         if (note == NoteKeyOff || !(m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT)))
@@ -827,15 +827,15 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2|MOD_TYPE_MED))
     {
         note += pChn->nTranspose;
-        note = CLAMP(note, NOTE_MIN, 131);    // why 131? 120+11, how does this make sense?
+        note = CLAMP(note, NoteMin, 131);    // why 131? 120+11, how does this make sense?
     } else
     {
-        note = CLAMP(note, NOTE_MIN, NOTE_MAX);
+        note = CLAMP(note, NoteMin, NoteMax);
     }
     if(IsCompatibleMode(TRK_IMPULSETRACKER))
     {
         // need to memorize the original note for various effects (f.e. PPS)
-        pChn->nNote = CLAMP(realnote, NOTE_MIN, NOTE_MAX);
+        pChn->nNote = CLAMP(realnote, NoteMin, NoteMax);
     } else
     {
         pChn->nNote = note;
@@ -1322,7 +1322,7 @@ BOOL module_renderer::ProcessEffects()
         pChn->flags &= ~CHN_FASTVOLRAMP;
 
         // Process parameter control note.
-        if(pChn->nRowNote == NOTE_PC)
+        if(pChn->nRowNote == NotePc)
         {
             const PLUGINDEX plug = pChn->nRowInstr;
             const PlugParamIndex plugparam = modplug::tracker::modevent_t::GetValueVolCol(pChn->nRowVolCmd, pChn->nRowVolume);
@@ -1338,7 +1338,7 @@ BOOL module_renderer::ProcessEffects()
         // the need for parameter control. The condition cmd == 0
         // is to make sure that m_nPlugParamValueStep != 0 because
         // of NOTE_PCS, not because of macro.
-        if(pChn->nRowNote == NOTE_PCS || (cmd == 0 && pChn->m_nPlugParamValueStep != 0))
+        if(pChn->nRowNote == NotePcSmooth || (cmd == 0 && pChn->m_nPlugParamValueStep != 0))
         {
             const bool isFirstTick = (m_dwSongFlags & SONG_FIRSTTICK) != 0;
             if(isFirstTick)
@@ -1477,14 +1477,14 @@ BOOL module_renderer::ProcessEffects()
                     if(note == NoteNone)
                     {
                         note = pChn->nNote - pChn->nTranspose;
-                    } else if(note >= NOTE_MIN_SPECIAL)
+                    } else if(note >= NoteMinSpecial)
                     {
                         // Gah! Note Off + Note Delay will cause envelopes to *retrigger*! How stupid is that?
                         retrigEnv = true;
                     }
                     // Stupid HACK to retrieve the last used instrument *number* for rouge note delays in XM
                     // This is only applied if the instrument column is empty and if there is either no note or a "normal" note (e.g. no note off)
-                    if(instr == 0 && note <= NOTE_MAX)
+                    if(instr == 0 && note <= NoteMax)
                     {
                         for(modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_nInstruments; nIns++)
                         {
@@ -1540,12 +1540,12 @@ BOOL module_renderer::ProcessEffects()
             if (instr >= MAX_INSTRUMENTS) instr = 0;
 
             // Note Cut/Off/Fade => ignore instrument
-            if (note >= NOTE_MIN_SPECIAL) instr = 0;
+            if (note >= NoteMinSpecial) instr = 0;
 
-            if ((note) && (note <= NOTE_MAX)) pChn->nNewNote = note;
+            if ((note) && (note <= NoteMax)) pChn->nNewNote = note;
 
             // New Note Action ?
-            if ((note) && (note <= NOTE_MAX) && (!bPorta))
+            if ((note) && (note <= NoteMax) && (!bPorta))
             {
                 CheckNNA(nChn, instr, note, FALSE);
             }
@@ -3323,7 +3323,7 @@ void module_renderer::SampleOffset(UINT nChn, UINT param, bool bPorta)
             }
 // -! NEW_FEATURE#0010
 
-    if ((pChn->nRowNote >= NOTE_MIN) && (pChn->nRowNote <= NOTE_MAX))
+    if ((pChn->nRowNote >= NoteMin) && (pChn->nRowNote <= NoteMax))
     {
         /* if (bPorta)
             pChn->sample_position = param;
@@ -3468,7 +3468,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
         }
         UINT nNote = pChn->nNewNote;
         LONG nOldPeriod = pChn->nPeriod;
-        if ((nNote) && (nNote <= NOTE_MAX) && (pChn->length)) CheckNNA(nChn, 0, nNote, TRUE);
+        if ((nNote) && (nNote <= NoteMax) && (pChn->length)) CheckNNA(nChn, 0, nNote, TRUE);
         bool bResetEnv = false;
         if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
         {
@@ -3842,12 +3842,12 @@ UINT module_renderer::GetNoteFromPeriod(UINT period) const
         return 6*12+36;
     } else
     {
-        for (UINT i=1; i<NOTE_MAX; i++)
+        for (UINT i=1; i<NoteMax; i++)
         {
             LONG n = GetPeriodFromNote(i, 0, 0);
             if ((n > 0) && (n <= (LONG)period)) return i;
         }
-        return NOTE_MAX;
+        return NoteMax;
     }
 }
 
@@ -3856,7 +3856,7 @@ UINT module_renderer::GetNoteFromPeriod(UINT period) const
 UINT module_renderer::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const
 //-------------------------------------------------------------------------------
 {
-    if ((!note) || (note >= NOTE_MIN_SPECIAL)) return 0;
+    if ((!note) || (note >= NoteMinSpecial)) return 0;
     if (m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT|MOD_TYPE_S3M|MOD_TYPE_STM|MOD_TYPE_MDL|MOD_TYPE_ULT|MOD_TYPE_WAV
                 |MOD_TYPE_FAR|MOD_TYPE_DMF|MOD_TYPE_PTM|MOD_TYPE_AMS|MOD_TYPE_DBM|MOD_TYPE_AMF|MOD_TYPE_PSM|MOD_TYPE_J2B|MOD_TYPE_IMF))
     {
@@ -3878,7 +3878,7 @@ UINT module_renderer::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed)
         note -= 13;
         if (m_dwSongFlags & SONG_LINEARSLIDES)
         {
-            LONG l = ((NOTE_MAX - note) << 6) - (nFineTune / 2);
+            LONG l = ((NoteMax - note) << 6) - (nFineTune / 2);
             if (l < 1) l = 1;
             return (UINT)l;
         } else

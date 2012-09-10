@@ -478,7 +478,7 @@ BOOL CModToMidi::DoConvert()
                                                     pTrk->NoteOn[i] = 0;
                                             }
                                     }
-                                    if (m->note <= NOTE_MAX)
+                                    if (m->note <= NoteMax)
                                     {
                                             pTrk->NoteOn[note] = pTrk->nMidiChannel+1;
                                             tmp[len] = 0x90|pTrk->nMidiChannel;

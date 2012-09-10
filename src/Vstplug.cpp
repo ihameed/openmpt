@@ -18,6 +18,7 @@
 
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
+using namespace modplug::tracker;
 
 #ifdef VST_USE_ALTERNATIVE_MAGIC    //Pelya's plugin ID fix. Breaks fx presets, so let's avoid it for now.
 #define ZLIB_WINAPI

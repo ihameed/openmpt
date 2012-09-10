@@ -117,7 +117,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     {
             if(m->IsPcNote())
             {
-                    modplug::tracker::cmd_t newcommand = (m->note == NOTE_PC) ? CmdMidi : CmdSmoothMidi;
+                    modplug::tracker::cmd_t newcommand = (m->note == NotePc) ? CmdMidi : CmdSmoothMidi;
                     if(!GetModSpecifications(nNewType).HasCommand(newcommand))
                     {
                             newcommand = CmdMidi;        // assuming that this was CMD_SMOOTHMIDI
@@ -391,7 +391,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
     if (newTypeIsMOD)
     {
             // convert note off events
-            if(m->note >= NOTE_MIN_SPECIAL)
+            if(m->note >= NoteMinSpecial)
             {
                     m->note = NoteNone;
                     // no effect present, so just convert note off to volume 0

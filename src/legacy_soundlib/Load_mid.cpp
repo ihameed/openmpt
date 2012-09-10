@@ -395,7 +395,7 @@ UINT module_renderer::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, U
     UINT nBank = dwBankProgram >> 7;
 
     nNote &= 0x7F;
-    if (nNote >= NOTE_MAX) return 0;
+    if (nNote >= NoteMax) return 0;
     for (UINT i=1; i<=m_nInstruments; i++) if (Instruments[i])
     {
         modinstrument_t *p = Instruments[i];
@@ -429,7 +429,7 @@ UINT module_renderer::MapMidiInstrument(uint32_t dwBankProgram, UINT nChannel, U
     pIns->duplicate_check_type = (nChannel == MIDI_DRUMCHANNEL) ? DCT_SAMPLE : DCT_NOTE;
     pIns->duplicate_note_action = DNA_NOTEFADE;
     SetDefaultInstrumentValues(pIns);
-    for (UINT j=0; j<NOTE_MAX; j++)
+    for (UINT j=0; j<NoteMax; j++)
     {
         int mapnote = j+1;
         if (nChannel == MIDI_DRUMCHANNEL)

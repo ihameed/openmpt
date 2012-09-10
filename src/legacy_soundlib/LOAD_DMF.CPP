@@ -399,12 +399,12 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     m->note = lpStream[dwMemPos++];
                     if(m->note >= 1 && m->note <= 108)
                     {
-                        m->note = CLAMP(m->note + 24, NOTE_MIN, NOTE_MAX);
+                        m->note = CLAMP(m->note + 24, NoteMin, NoteMax);
                         settings.lastNote[nChn] = m->note;
                     } else if(m->note >= 129 && m->note <= 236)
                     {
                         // "Buffer notes" for portamento (and other effects?) that are actually not played, but just "queued"...
-                        m->note = CLAMP((m->note & 0x7F) + 24, NOTE_MIN, NOTE_MAX);
+                        m->note = CLAMP((m->note & 0x7F) + 24, NoteMin, NoteMax);
                         settings.noteBuffer[nChn] = m->note;
                         m->note = NoteNone;
                     } else if(m->note == 255)
@@ -414,13 +414,13 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 }
 
                 // If there's just an instrument number, but no note, retrigger sample.
-                if(m->note == NoteNone && NOTE_IS_VALID(m->note) && m->instr > 0)
+                if(m->note == NoteNone && note_is_valid(m->note) && m->instr > 0)
                 {
                     m->note = settings.lastNote[nChn];
                     m->instr = 0;
                 }
 
-                if(m->note != NoteNone && NOTE_IS_VALID(m->note))
+                if(m->note != NoteNone && note_is_valid(m->note))
                 {
                     settings.playDir[nChn] = false;
                 }
@@ -550,7 +550,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         effect2 = CmdPorta;
                         break;
                     case 7:		// Scratch to Note (neat! but we don't have such an effect...)
-                        m->note = CLAMP(effectParam2 + 25, NOTE_MIN, NOTE_MAX);
+                        m->note = CLAMP(effectParam2 + 25, NoteMin, NoteMax);
                         effect2 = CmdPorta;
                         effectParam2 = 0xFF;
                         break;
@@ -636,7 +636,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 }
 
                 // I guess this is close enough to "not retriggering the note"
-                if(slideNote && m->note != NoteNone && NOTE_IS_VALID(m->note))
+                if(slideNote && m->note != NoteNone && note_is_valid(m->note))
                 {
                     if(effect2 == CmdNone)
                     {

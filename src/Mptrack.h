@@ -363,17 +363,17 @@ LPCTSTR GetNoteStr(const modplug::tracker::note_t);
 extern const uint8_t gEffectColors[modplug::tracker::CmdMax];
 extern const uint8_t gVolEffectColors[modplug::tracker::VolCmdMax];
 extern const LPCSTR szNoteNames[12];
-extern const LPCTSTR szDefaultNoteNames[NOTE_COUNT];
+extern const LPCTSTR szDefaultNoteNames[modplug::tracker::NoteCount];
 //const LPCTSTR szSpecialNoteNames[NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1] = {TEXT("PCs"), TEXT("PC"), TEXT("~~"), TEXT("^^"), TEXT("==")};
 
-const LPCTSTR szSpecialNoteNames[(size_t)(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL) + 1] = {
+const LPCTSTR szSpecialNoteNames[(size_t)(modplug::tracker::NoteMaxSpecial - modplug::tracker::NoteMinSpecial) + 1] = {
     TEXT("PCs"),
     TEXT("PC"),
     TEXT("Note Fade"),
     TEXT("Note Cut"),
     TEXT("Note Off")
 };
-const LPCTSTR szSpecialNoteShortDesc[(size_t)(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL) + 1] = {
+const LPCTSTR szSpecialNoteShortDesc[(size_t)(modplug::tracker::NoteMaxSpecial - modplug::tracker::NoteMinSpecial) + 1] = {
     TEXT("Param Control (Smooth)"),
     TEXT("Param Control"),
     TEXT("Note Fade"),
@@ -382,7 +382,7 @@ const LPCTSTR szSpecialNoteShortDesc[(size_t)(NOTE_MAX_SPECIAL - NOTE_MIN_SPECIA
 };
 
 static_assert(
-    NOTE_MAX_SPECIAL - NOTE_MIN_SPECIAL + 1 == CountOf(szSpecialNoteNames),
+    modplug::tracker::NoteMaxSpecial - modplug::tracker::NoteMinSpecial + 1 == CountOf(szSpecialNoteNames),
     "special note arrays must include a descriptive string for every note");
 static_assert(
     CountOf(szSpecialNoteShortDesc) == CountOf(szSpecialNoteNames),

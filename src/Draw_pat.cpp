@@ -271,11 +271,11 @@ void CViewPattern::DrawNote(int x, int y, UINT note, CTuning* pTuning)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 17*COLUMN_HEIGHT);
     } else
-    if(note == NOTE_PC)
+    if(note == NotePc)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 15*COLUMN_HEIGHT);
     } else
-    if(note == NOTE_PCS)
+    if(note == NotePcSmooth)
     {
         m_Dib.TextBlt(x, y, dx, COLUMN_HEIGHT, xsrc, ysrc + 16*COLUMN_HEIGHT);
     } else
@@ -811,7 +811,7 @@ void CViewPattern::DrawPatternData(HDC hdc,    module_renderer *pSndFile, UINT n
             {
                 tx_col = row_col;
                 bk_col = row_bkcol;
-                if ((CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT) && (m->note) && (m->note <= NOTE_MAX))
+                if ((CMainFrame::m_dwPatternSetup & PATTERN_EFFECTHILIGHT) && (m->note) && (m->note <= NoteMax))
                 {
                     tx_col = MODCOLOR_NOTE;
                     // Highlight notes that are not supported by the Amiga (for S3M this is not always correct)
@@ -1431,8 +1431,8 @@ void CViewPattern::UpdateIndicator()
                 {
                 case NOTE_COLUMN:
                     // display note
-                    if(m->note >= NOTE_MIN_SPECIAL)
-                        strcpy(s, szSpecialNoteShortDesc[m->note - NOTE_MIN_SPECIAL]);
+                    if(m->note >= NoteMinSpecial)
+                        strcpy(s, szSpecialNoteShortDesc[m->note - NoteMinSpecial]);
                     break;
                 case INST_COLUMN:
                     // display instrument
@@ -1457,7 +1457,7 @@ void CViewPattern::UpdateIndicator()
                                     modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m->instr];
                                     memcpy(sztmp, pIns->name, 32);
                                     sztmp[32] = 0;
-                                    if ((m->note) && (m->note <= NOTE_MAX))
+                                    if ((m->note) && (m->note <= NoteMax))
                                     {
                                         UINT nsmp = pIns->Keyboard[m->note-1];
                                         if ((nsmp) && (nsmp <= pSndFile->GetNumSamples()))

@@ -66,8 +66,8 @@ const CModSpecifications mptm =
                     -savefile format and GUI methods can handle new values(might not be a small task :).
      */
     "mptm",                                                                // File extension
-    NOTE_MIN,                                                        // Minimum note index
-    NOTE_MAX,                                                        // Maximum note index
+    modplug::tracker::NoteMin,                                                        // Minimum note index
+    modplug::tracker::NoteMax,                                                        // Maximum note index
     true,                                                                // Has notecut.
     true,                                                                // Has noteoff.
     true,                                                                // Has notefade.

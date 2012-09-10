@@ -859,7 +859,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
 
     if ((!pMainFrm) || (!note)) return FALSE;
     if (nVol > 256) nVol = 256;
-    if (NOTE_IS_VALID(note))
+    if (note_is_valid(note))
     {
 
         BEGIN_CRITICAL();
@@ -1031,7 +1031,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
     BEGIN_CRITICAL();
 
     //rewbs.vstiLive
-    if((nins > 0) && (nins <= m_SndFile.m_nInstruments) && (note >= NOTE_MIN) && (note <= NOTE_MAX))
+    if((nins > 0) && (nins <= m_SndFile.m_nInstruments) && (note >= NoteMin) && (note <= NoteMax))
     {
 
         modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nins];
@@ -1387,7 +1387,7 @@ BOOL CModDoc::IsChildSample(UINT nIns, UINT nSmp) const
     pIns = m_SndFile.Instruments[nIns];
     if (pIns)
     {
-        for (UINT i=0; i<NOTE_MAX; i++)
+        for (UINT i=0; i<NoteMax; i++)
         {
             if (pIns->Keyboard[i] == nSmp) return TRUE;
         }
@@ -1405,7 +1405,7 @@ UINT CModDoc::FindSampleParent(UINT nSmp) const
         modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[i];
         if (pIns)
         {
-            for (UINT j=0; j<NOTE_MAX; j++)
+            for (UINT j=0; j<NoteMax; j++)
             {
                 if (pIns->Keyboard[j] == nSmp) return i;
             }
@@ -1423,7 +1423,7 @@ UINT CModDoc::FindInstrumentChild(UINT nIns) const
     pIns = m_SndFile.Instruments[nIns];
     if (pIns)
     {
-        for (UINT i=0; i<NOTE_MAX; i++)
+        for (UINT i=0; i<NoteMax; i++)
         {
             UINT n = pIns->Keyboard[i];
             if ((n) && (n <= m_SndFile.m_nSamples)) return n;

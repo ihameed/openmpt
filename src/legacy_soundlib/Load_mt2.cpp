@@ -410,7 +410,7 @@ bool module_renderer::ReadMT2(const uint8_t * lpStream, uint32_t dwMemLength)
                 SpaceToNullStringFixed<31>(pIns->name);
                 pIns->global_volume = 64;
                 pIns->default_pan = 128;
-                for (uint8_t i = 0; i < NOTE_MAX; i++)
+                for (uint8_t i = 0; i < NoteMax; i++)
                 {
                     pIns->NoteMap[i] = i+1;
                 }

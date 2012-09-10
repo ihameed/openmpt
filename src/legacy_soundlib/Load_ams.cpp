@@ -321,7 +321,7 @@ typedef struct AMS2SONGHEADER
 typedef struct AMS2INSTRUMENT
 {
     uint8_t samples;
-    uint8_t notemap[NOTE_MAX];
+    uint8_t notemap[NoteMax];
 } AMS2INSTRUMENT;
 
 typedef struct AMS2ENVELOPE

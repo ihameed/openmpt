@@ -23,6 +23,7 @@
 #include <math.h>
 #endif
 
+using namespace modplug::tracker;
 #define FLOAT_ERROR 1.0e-20f
 
 // Float point comparison

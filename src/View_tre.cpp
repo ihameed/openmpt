@@ -11,6 +11,7 @@
 #define TVS_SINGLEEXPAND    0x400
 #endif
 
+using namespace modplug::tracker;
 
 /////////////////////////////////////////////////////////////////////////////
 // CModTreeDropTarget
@@ -1333,7 +1334,7 @@ BOOL CModTree::PlayItem(HTREEITEM hItem, UINT nParam)
                                     // Melodic
                                     if (modItem & 0x40000000)
                                     {
-                                            if ((!nParam) || (nParam > NOTE_MAX)) nParam = NoteMiddleC;
+                                            if ((!nParam) || (nParam > NoteMax)) nParam = NoteMiddleC;
                                             rgn = pDLSBank->GetRegionFromKey(instr, nParam-1);
                                     }
                                     pMainFrm->PlayDLSInstrument(bank, instr, rgn);

@@ -310,7 +310,7 @@ struct ConvertInstrumentsToSamplesInPatterns
             {
                     modplug::tracker::instr_t instr = m.instr, newinstr = 0;
                     modplug::tracker::note_t note = m.note, newnote = note;
-                    if((note >= NOTE_MIN) && (note <= NOTE_MAX))
+                    if((note >= NoteMin) && (note <= NoteMax))
                             note--;
                     else
                             note = NoteMiddleC - 1;
@@ -798,8 +798,8 @@ bool CModDoc::CopyPattern(modplug::tracker::patternindex_t nPattern, uint32_t dw
                                             case NoteKeyOff:        p[1] = p[2] = p[3] = '='; break;
                                             case NoteNoteCut:        p[1] = p[2] = p[3] = '^'; break;
                                             case NoteFade:        p[1] = p[2] = p[3] = '~'; break;
-                                            case NOTE_PC: p[1] = 'P'; p[2] = 'C'; p[3] = ' '; break;
-                                            case NOTE_PCS: p[1] = 'P'; p[2] = 'C'; p[3] = 'S'; break;
+                                            case NotePc: p[1] = 'P'; p[2] = 'C'; p[3] = ' '; break;
+                                            case NotePcSmooth: p[1] = 'P'; p[2] = 'C'; p[3] = 'S'; break;
                                             default:
                                                     p[1] = szNoteNames[(note-1) % 12][0];
                                                     p[2] = szNoteNames[(note-1) % 12][1];
@@ -1016,9 +1016,9 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                                     if (s[0] == 'P')
                                                     {
                                                             if(s[2] == 'S')
-                                                                    m[col].note = NOTE_PCS;
+                                                                    m[col].note = NotePcSmooth;
                                                             else
-                                                                    m[col].note = NOTE_PC;
+                                                                    m[col].note = NotePc;
                                                     } else
                                                     if (s[0] != '.')
                                                     {

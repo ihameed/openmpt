@@ -1932,7 +1932,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
         if(note)
         {
             modplug::tracker::note_t realNote = note;
-            if((note >= NOTE_MIN) && (note <= NOTE_MAX))
+            if((note >= NoteMin) && (note <= NoteMax))
                 realNote = pIns->NoteMap[note - 1];
             pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, pChn->nVolume, nChn);
         } else if (volcmd == modplug::tracker::VolCmdVol)
@@ -1959,7 +1959,7 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
         }
 
         modplug::tracker::note_t realNote = note;
-        if((note >= NOTE_MIN) && (note <= NOTE_MAX))
+        if((note >= NoteMin) && (note <= NoteMax))
             realNote = pIns->NoteMap[note - 1];
         pPlugin->MidiCommand(pIns->midi_channel, pIns->midi_program, pIns->midi_bank, realNote, velocity, nChn);
     }

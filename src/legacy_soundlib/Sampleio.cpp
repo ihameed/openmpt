@@ -16,6 +16,8 @@
 #endif //MODPLUG_TRACKER
 #include "Wav.h"
 
+using namespace modplug::tracker;
+
 #pragma warning(disable:4244)
 
 bool module_renderer::ReadSampleFromFile(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength)
@@ -205,7 +207,7 @@ bool module_renderer::ReadInstrumentFromSong(modplug::tracker::instrumentindex_t
         for (UINT i=0; i<128; i++)
         {
             UINT n = pIns->Keyboard[i];
-            if ((n) && (n <= pSrcSong->m_nSamples) && (i < NOTE_MAX))
+            if ((n) && (n <= pSrcSong->m_nSamples) && (i < NoteMax))
             {
                 UINT j = 0;
                 for (j=0; j<nSamples; j++)
@@ -907,11 +909,11 @@ bool module_renderer::ReadPATInstrument(modplug::tracker::instrumentindex_t nIns
         GF1SAMPLEHEADER *psh = (GF1SAMPLEHEADER *)(lpStream+dwMemPos);
         PatchToSample(this, nFreeSmp, lpStream+dwMemPos, dwMemLength-dwMemPos);
         LONG nMinNote = (psh->low_freq > 100) ? PatchFreqToNote(psh->low_freq) : 0;
-        LONG nMaxNote = (psh->high_freq > 100) ? PatchFreqToNote(psh->high_freq) : NOTE_MAX;
+        LONG nMaxNote = (psh->high_freq > 100) ? PatchFreqToNote(psh->high_freq) : NoteMax;
         LONG nBaseNote = (psh->root_freq > 100) ? PatchFreqToNote(psh->root_freq) : -1;
-        if ((!psh->scale_factor) && (nSamples == 1)) { nMinNote = 0; nMaxNote = NOTE_MAX; }
+        if ((!psh->scale_factor) && (nSamples == 1)) { nMinNote = 0; nMaxNote = NoteMax; }
         // Fill Note Map
-        for (UINT k=0; k<NOTE_MAX; k++)
+        for (UINT k=0; k<NoteMax; k++)
         {
             if (((LONG)k == nBaseNote)
              || ((!pIns->Keyboard[k])
@@ -954,7 +956,7 @@ bool module_renderer::ReadPATInstrument(modplug::tracker::instrumentindex_t nIns
     if (nMinSmp)
     {
         // Fill note map and missing samples
-        for (UINT k=0; k<NOTE_MAX; k++)
+        for (UINT k=0; k<NoteMax; k++)
         {
             if (!pIns->NoteMap[k]) pIns->NoteMap[k] = (uint8_t)(k+1);
             if (!pIns->Keyboard[k])
@@ -1695,7 +1697,7 @@ bool module_renderer::ReadITIInstrument(modplug::tracker::instrumentindex_t nIns
 //----------------------------------------------------------------------------------------------
 {
     ITINSTRUMENT *pinstr = (ITINSTRUMENT *)lpMemFile;
-    uint16_t samplemap[NOTE_MAX];    //rewbs.noSamplePerInstroLimit (120 was 64)
+    uint16_t samplemap[NoteMax];    //rewbs.noSamplePerInstroLimit (120 was 64)
     uint32_t dwMemPos;
     UINT nsmp, nsamples;
 
@@ -1818,7 +1820,7 @@ bool module_renderer::SaveITIInstrument(modplug::tracker::instrumentindex_t nIns
     //iti->trkvers = 0x202;
     iti->trkvers =    0x220;         //rewbs.ITVersion (was 0x202)
     iti->nos = 0;
-    for (UINT i=0; i<NOTE_MAX; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
+    for (UINT i=0; i<NoteMax; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
     {
         const UINT smp = pIns->Keyboard[i];
         if (smp && smp <= GetNumSamples() && !smpcount[smp - 1])

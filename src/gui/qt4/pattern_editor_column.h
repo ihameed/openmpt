@@ -274,10 +274,10 @@ struct note_column {
         case NoteFade:
             draw_glyph(state, x, y, srcx, srcy + 17 * grid_height, width);
             break;
-        case NOTE_PC:
+        case NotePc:
             draw_glyph(state, x, y, srcx, srcy + 15 * grid_height, width);
             break;
-        case NOTE_PCS:
+        case NotePcSmooth:
             draw_glyph(state, x, y, srcx, srcy + 16 * grid_height, width);
             break;
         default:

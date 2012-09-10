@@ -128,7 +128,7 @@ BOOL CNoteMapWnd::SetCurrentNote(UINT nNote)
 //------------------------------------------
 {
     if (nNote == m_nNote) return TRUE;
-    if (!NOTE_IS_VALID(nNote + 1)) return FALSE;
+    if (!note_is_valid(nNote + 1)) return FALSE;
     m_nNote = nNote;
     InvalidateRect(NULL, FALSE);
     return TRUE;
@@ -181,7 +181,7 @@ void CNoteMapWnd::OnPaint()
 
                     string temp = pSndFile->GetNoteName(nPos+1, m_nInstrument);
                     temp.resize(4);
-                    if ((nPos >= 0) && (nPos < NOTE_MAX)) wsprintf(s, "%s", temp.c_str());
+                    if ((nPos >= 0) && (nPos < NoteMax)) wsprintf(s, "%s", temp.c_str());
                     rect.SetRect(0, ypaint, m_cxFont, ypaint+m_cyFont);
                     DrawButtonRect(hdc, &rect, s, FALSE, FALSE);
                     // Mapped Note
@@ -189,10 +189,10 @@ void CNoteMapWnd::OnPaint()
                     rect.left = rect.right;
                     rect.right = m_cxFont*2-1;
                     strcpy(s, "...");
-                    if ((pIns) && (nPos >= 0) && (nPos < NOTE_MAX) && (pIns->NoteMap[nPos]))
+                    if ((pIns) && (nPos >= 0) && (nPos < NoteMax) && (pIns->NoteMap[nPos]))
                     {
                             UINT n = pIns->NoteMap[nPos];
-                            if(NOTE_IS_VALID(n))
+                            if(note_is_valid(n))
                             {
                                     string temp = pSndFile->GetNoteName(n, m_nInstrument);
                                     temp.resize(4);
@@ -216,7 +216,7 @@ void CNoteMapWnd::OnPaint()
                     rect.left = rcClient.left + m_cxFont*2+3;
                     rect.right = rcClient.right;
                     strcpy(s, " ..");
-                    if ((pIns) && (nPos >= 0) && (nPos < NOTE_MAX) && (pIns->Keyboard[nPos]))
+                    if ((pIns) && (nPos >= 0) && (nPos < NoteMax) && (pIns->Keyboard[nPos]))
                     {
                             wsprintf(s, "%3d", pIns->Keyboard[nPos]);
                     }
@@ -321,7 +321,7 @@ void CNoteMapWnd::OnRButtonDown(UINT, CPoint pt)
                             {
                                     const modplug::tracker::sampleindex_t numSamps = pSndFile->GetNumSamples();
                                     vector<bool> smpused(numSamps + 1, false);
-                                    for (UINT i=1; i<NOTE_MAX; i++)
+                                    for (UINT i=1; i<NoteMax; i++)
                                     {
                                             modplug::tracker::sampleindex_t nsmp = pIns->Keyboard[i];
                                             if (nsmp <= numSamps) smpused[nsmp] = true;
@@ -345,7 +345,7 @@ void CNoteMapWnd::OnRButtonDown(UINT, CPoint pt)
 
                             if(pSndFile->GetType() != MOD_TYPE_XM)
                             {
-                                    if(NOTE_IS_VALID(pIns->NoteMap[m_nNote]))
+                                    if(note_is_valid(pIns->NoteMap[m_nNote]))
                                     {
                                             wsprintf(s, "Map all &notes to %s\t" + ih->GetKeyTextFromCommand(kcInsNoteMapCopyCurrentNote), pSndFile->GetNoteName(pIns->NoteMap[m_nNote], m_nInstrument).c_str());
                                             AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_COPY_NOTE, s);
@@ -379,7 +379,7 @@ void CNoteMapWnd::OnMapCopyNote()
     {
             bool bModified = false;
             uint8_t n = pIns->NoteMap[m_nNote];
-            for (NOTEINDEXTYPE i = 0; i < NOTE_MAX; i++) if (pIns->NoteMap[i] != n)
+            for (NOTEINDEXTYPE i = 0; i < NoteMax; i++) if (pIns->NoteMap[i] != n)
             {
                     pIns->NoteMap[i] = n;
                     bModified = true;
@@ -405,7 +405,7 @@ void CNoteMapWnd::OnMapCopySample()
     {
             bool bModified = false;
             uint16_t n = pIns->Keyboard[m_nNote];
-            for (NOTEINDEXTYPE i = 0; i < NOTE_MAX; i++) if (pIns->Keyboard[i] != n)
+            for (NOTEINDEXTYPE i = 0; i < NoteMax; i++) if (pIns->Keyboard[i] != n)
             {
                     pIns->Keyboard[i] = n;
                     bModified = true;
@@ -432,7 +432,7 @@ void CNoteMapWnd::OnMapReset()
     if (pIns)
     {
             bool bModified = false;
-            for (NOTEINDEXTYPE i = 0; i < NOTE_MAX; i++) if (pIns->NoteMap[i] != i + 1)
+            for (NOTEINDEXTYPE i = 0; i < NoteMax; i++) if (pIns->NoteMap[i] != i + 1)
             {
                     pIns->NoteMap[i] = i + 1;
                     bModified = true;
@@ -472,12 +472,12 @@ void CNoteMapWnd::MapTranspose(int nAmount)
     if (pIns)
     {
             bool bModified = false;
-            for(NOTEINDEXTYPE i = 0; i < NOTE_MAX; i++)
+            for(NOTEINDEXTYPE i = 0; i < NoteMax; i++)
             {
                     int n = pIns->NoteMap[i];
-                    if ((n > NOTE_MIN && nAmount < 0) || (n < NOTE_MAX && nAmount > 0))
+                    if ((n > NoteMin && nAmount < 0) || (n < NoteMax && nAmount > 0))
                     {
-                            n = CLAMP(n + nAmount, NOTE_MIN, NOTE_MAX);
+                            n = CLAMP(n + nAmount, NoteMin, NoteMax);
                             pIns->NoteMap[i] = (uint8_t)n;
                             bModified = true;
                     }
@@ -574,13 +574,13 @@ void CNoteMapWnd::EnterNote(UINT note)
 {
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
-    if ((pIns) && (m_nNote < NOTE_MAX))
+    if ((pIns) && (m_nNote < NoteMax))
     {
             if (!m_bIns && (pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_MPT)))
             {
                     UINT n = pIns->NoteMap[m_nNote];
                     bool bOk = false;
-                    if ((note > 0) && (note <= NOTE_MAX))
+                    if ((note > 0) && (note <= NoteMax))
                     {
                             n = note;
                             bOk = true;
@@ -606,7 +606,7 @@ bool CNoteMapWnd::HandleChar(WPARAM c)
 {
     module_renderer *pSndFile = m_pModDoc->GetSoundFile();
     modplug::tracker::modinstrument_t *pIns = pSndFile->Instruments[m_nInstrument];
-    if ((pIns) && (m_nNote < NOTE_MAX))
+    if ((pIns) && (m_nNote < NoteMax))
     {
 
             if ((m_bIns) && (((c >= '0') && (c <= '9')) || (c == ' ')))        //in sample # column
@@ -630,7 +630,7 @@ bool CNoteMapWnd::HandleChar(WPARAM c)
 
                     if (c == ' ')
                     {
-                            if (m_nNote < NOTE_MAX - 1) m_nNote++;
+                            if (m_nNote < NoteMax - 1) m_nNote++;
                             InvalidateRect(NULL, FALSE);
                             PlayNote(m_nNote);
                     }
@@ -684,7 +684,7 @@ bool CNoteMapWnd::HandleNav(WPARAM k)
     {
     case VK_RIGHT:
             if (!m_bIns) { m_bIns = true; bRedraw = true; } else
-            if (m_nNote < NOTE_MAX - 1) { m_nNote++; m_bIns = false; bRedraw = true; }
+            if (m_nNote < NoteMax - 1) { m_nNote++; m_bIns = false; bRedraw = true; }
             break;
     case VK_LEFT:
             if (m_bIns) { m_bIns = false; bRedraw = true; } else
@@ -694,15 +694,15 @@ bool CNoteMapWnd::HandleNav(WPARAM k)
             if (m_nNote > 0) { m_nNote--; bRedraw = true; }
             break;
     case VK_DOWN:
-            if (m_nNote < NOTE_MAX - 1) { m_nNote++; bRedraw = true; }
+            if (m_nNote < NoteMax - 1) { m_nNote++; bRedraw = true; }
             break;
     case VK_PRIOR:
             if (m_nNote > 3) { m_nNote -= 3; bRedraw = true; } else
             if (m_nNote > 0) { m_nNote = 0; bRedraw = true; }
             break;
     case VK_NEXT:
-            if (m_nNote+3 < NOTE_MAX) { m_nNote += 3; bRedraw = true; } else
-            if (m_nNote < NOTE_MAX - 1) { m_nNote = NOTE_MAX - 1; bRedraw = true; }
+            if (m_nNote+3 < NoteMax) { m_nNote += 3; bRedraw = true; } else
+            if (m_nNote < NoteMax - 1) { m_nNote = NoteMax - 1; bRedraw = true; }
             break;
     case VK_TAB:
             return true;
@@ -965,7 +965,7 @@ BOOL CCtrlInstruments::OnInitDialog()
     // Pitch/Pan Separation
     m_SpinPPS.SetRange(-32, +32);
     // Pitch/Pan Center
-    AppendNotesToControl(m_ComboPPC, 0, NOTE_MAX-1);
+    AppendNotesToControl(m_ComboPPC, 0, NoteMax-1);
 
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
@@ -2182,7 +2182,7 @@ void CCtrlInstruments::OnPPCChanged()
     if ((!IsLocked()) && (pIns))
     {
             int n = m_ComboPPC.GetCurSel();
-            if ((n >= 0) && (n <= NOTE_MAX - 1))
+            if ((n >= 0) && (n <= NoteMax - 1))
             {
                     if (pIns->pitch_pan_center != n)
                     {

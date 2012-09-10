@@ -12,6 +12,7 @@
 
 #pragma warning(disable:4244) //"conversion from 'type1' to 'type2', possible loss of data"
 
+using namespace modplug::tracker;
 
 ///////////////////////////////////////////////////////////////////////
 // CModTypeDlg
@@ -1185,7 +1186,7 @@ void CKeyboardControl::OnPaint()
             if (val == m_nSelection) ::SelectObject(hdc, CMainFrame::brushGray);
             dc.Rectangle(&rect);
             if (val == m_nSelection) ::SelectObject(hdc, CMainFrame::brushWhite);
-            if ((val < NOTE_MAX) && (KeyFlags[val]))
+            if ((val < NoteMax) && (KeyFlags[val]))
             {
                     ::SelectObject(hdc, brushRed);
                     dc.Ellipse(rect.left+2, rect.bottom - (rect.right-rect.left) + 2, rect.right-2, rect.bottom-2);
@@ -1216,7 +1217,7 @@ void CKeyboardControl::OnPaint()
                             if (val == m_nSelection) ::SelectObject(hdc, CMainFrame::brushGray);
                             dc.Rectangle(&rect);
                             if (val == m_nSelection) ::SelectObject(hdc, CMainFrame::brushBlack);
-                            if ((val < NOTE_MAX) && (KeyFlags[val]))
+                            if ((val < NoteMax) && (KeyFlags[val]))
                             {
                                     ::SelectObject(hdc, brushRed);
                                     dc.Ellipse(rect.left, rect.bottom - (rect.right-rect.left), rect.right, rect.bottom);
@@ -1376,7 +1377,7 @@ BOOL CSampleMapDlg::OnInitDialog()
             modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
             if (pIns)
             {
-                    for (UINT i=0; i<NOTE_MAX; i++)
+                    for (UINT i=0; i<NoteMax; i++)
                     {
                             KeyboardMap[i] = pIns->Keyboard[i];
                     }
@@ -1422,7 +1423,7 @@ VOID CSampleMapDlg::OnUpdateSamples()
             BOOL bUsed = bAll;
 
             if (!bUsed)        {
-                    for (UINT j=0; j<NOTE_MAX; j++)        {
+                    for (UINT j=0; j<NoteMax; j++)        {
                             if (KeyboardMap[j] == i) {
                                     bUsed = TRUE;
                                     break;
@@ -1534,7 +1535,7 @@ VOID CSampleMapDlg::OnOK()
             if (pIns)
             {
                     BOOL bModified = FALSE;
-                    for (UINT i=0; i<NOTE_MAX; i++)
+                    for (UINT i=0; i<NoteMax; i++)
                     {
                             if (KeyboardMap[i] != pIns->Keyboard[i])
                             {
@@ -1654,13 +1655,13 @@ LPCTSTR GetNoteStr(const modplug::tracker::note_t nNote)
     if(nNote == 0)
             return szNullNote;
 
-    if(nNote >= 1 && nNote <= NOTE_MAX)
+    if(nNote >= 1 && nNote <= NoteMax)
     {
             return szDefaultNoteNames[nNote-1];
     }
-    else if(nNote >= NOTE_MIN_SPECIAL && nNote <= NOTE_MAX_SPECIAL)
+    else if(nNote >= NoteMinSpecial && nNote <= NoteMaxSpecial)
     {
-            return szSpecialNoteNames[nNote - NOTE_MIN_SPECIAL];
+            return szSpecialNoteNames[nNote - NoteMinSpecial];
     }
     else
             return szUnknownNote;
@@ -1680,7 +1681,7 @@ void AppendNotesToControlEx(CComboBox& combobox, const module_renderer* const pS
 //----------------------------------------------------------------------------------------------------------------------------------
 {
     const modplug::tracker::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
-    const modplug::tracker::note_t noteEnd = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMax : NOTE_MAX;
+    const modplug::tracker::note_t noteEnd = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMax : NoteMax;
     for(modplug::tracker::note_t nNote = noteStart; nNote <= noteEnd; nNote++)
     {
             if(pSndFile != nullptr && nInstr != MAX_INSTRUMENTS)
@@ -1688,9 +1689,9 @@ void AppendNotesToControlEx(CComboBox& combobox, const module_renderer* const pS
             else
                     combobox.SetItemData(combobox.AddString(szDefaultNoteNames[nNote-1]), nNote);
     }
-    for(modplug::tracker::note_t nNote = NOTE_MIN_SPECIAL-1; nNote++ < NOTE_MAX_SPECIAL;)
+    for(modplug::tracker::note_t nNote = NoteMinSpecial-1; nNote++ < NoteMaxSpecial;)
     {
             if(pSndFile == nullptr || pSndFile->GetModSpecifications().HasNote(nNote) == true)
-                    combobox.SetItemData(combobox.AddString(szSpecialNoteNames[nNote-NOTE_MIN_SPECIAL]), nNote);
+                    combobox.SetItemData(combobox.AddString(szSpecialNoteNames[nNote-NoteMinSpecial]), nNote);
     }
 }

@@ -1906,7 +1906,7 @@ void CViewPattern::OnEditFindNext()
                         // +1 octave
                         if (m_findReplace.cmdReplace.note == CFindReplaceTab::replaceNotePlusOctave)
                         {
-                            if (m->note <= NOTE_MAX - 12) m->note += 12;
+                            if (m->note <= NoteMax - 12) m->note += 12;
                         } else
                         // Note--
                         if (m_findReplace.cmdReplace.note == CFindReplaceTab::replaceNoteMinusOne)
@@ -1916,7 +1916,7 @@ void CViewPattern::OnEditFindNext()
                         // Note++
                         if (m_findReplace.cmdReplace.note == CFindReplaceTab::replaceNotePlusOne)
                         {
-                            if (m->note < NOTE_MAX) m->note++;
+                            if (m->note < NoteMax) m->note++;
                         } else
                         // Replace with another note
                         {
@@ -2223,7 +2223,7 @@ void CViewPattern::Interpolate(PatternColumns type)
                 vsrc = srcCmd.note;
                 vdest = destCmd.note;
                 vcmd = srcCmd.instr;
-                verr = (distance * 59) / NOTE_MAX;
+                verr = (distance * 59) / NoteMax;
                 break;
             case VOL_COLUMN:
                 vsrc = srcCmd.vol;
@@ -2358,7 +2358,7 @@ BOOL CViewPattern::TransposeSelection(int transp)
             for (UINT col=col0; col<=col1; col++)
             {
                 int note = m[col].note;
-                if ((note >= NOTE_MIN) && (note <= NOTE_MAX))
+                if ((note >= NoteMin) && (note <= NoteMax))
                 {
                     note += transp;
                     if (note < noteMin) note = noteMin;
@@ -2740,7 +2740,7 @@ void CViewPattern::OnPatternAmplify()
                         chvol[nChn] = m->vol;
                         break;
                     }
-                    if ((m->note) && (m->note <= NOTE_MAX) && (m->instr))
+                    if ((m->note) && (m->note <= NoteMax) && (m->instr))
                     {
                         UINT nSmp = m->instr;
                         if (pSndFile->m_nInstruments)
@@ -2784,7 +2784,7 @@ void CViewPattern::OnPatternAmplify()
                 for (modplug::tracker::chnindex_t nChn = firstChannel; nChn <= lastChannel; nChn++, m++)
                 {
                     if ((!m->volcmd) && (m->command != CmdVol)
-                     && (m->note) && (m->note <= NOTE_MAX) && (m->instr))
+                     && (m->note) && (m->note <= NoteMax) && (m->instr))
                     {
                         UINT nSmp = m->instr;
                         bool overrideSampleVol = false;
@@ -2982,7 +2982,7 @@ LRESULT CViewPattern::OnRecordPlugParamChange(WPARAM plugSlot, LPARAM paramIndex
         {
             pModDoc->GetPatternUndo()->PrepareUndo(nPattern, nChn, nRow, 1, 1);
 
-            pRow->Set(NOTE_PCS, plugSlot + 1, paramIndex, static_cast<uint16_t>(pPlug->GetParameter(paramIndex) * modplug::tracker::modevent_t::MaxColumnValue));
+            pRow->Set(NotePcSmooth, plugSlot + 1, paramIndex, static_cast<uint16_t>(pPlug->GetParameter(paramIndex) * modplug::tracker::modevent_t::MaxColumnValue));
             InvalidateRow(nRow);
         }
     } else if(pSndFile->GetModSpecifications().HasCommand(CmdSmoothMidi))
@@ -3113,7 +3113,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
         ModCommandPos editpos = GetEditPos(*pSndFile, bLiveRecord);
         modplug::tracker::modevent_t* p = GetModCommand(*pSndFile, editpos);
         pModDoc->GetPatternUndo()->PrepareUndo(editpos.nPat, editpos.nChn, editpos.nRow, editpos.nChn, editpos.nRow);
-        p->Set(NOTE_PCS, mappedIndex, static_cast<uint16_t>(paramIndex), static_cast<uint16_t>((paramValue * modplug::tracker::modevent_t::MaxColumnValue)/127));
+        p->Set(NotePcSmooth, mappedIndex, static_cast<uint16_t>(paramIndex), static_cast<uint16_t>((paramValue * modplug::tracker::modevent_t::MaxColumnValue)/127));
         if(bLiveRecord == false)
             InvalidateRow(editpos.nRow);
         pMainFrm->ThreadSafeSetModified(pModDoc);
@@ -3605,8 +3605,8 @@ LRESULT CViewPattern::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
         case kcNoteOffOld:            TempEnterNote(NoteKeyOff, true);  return wParam;
         case kcNoteFade:            TempEnterNote(NoteFade, false); return wParam;
         case kcNoteFadeOld:            TempEnterNote(NoteFade, true);  return wParam;
-        case kcNotePC:                    TempEnterNote(NOTE_PC); return wParam;
-        case kcNotePCS:                    TempEnterNote(NOTE_PCS); return wParam;
+        case kcNotePC:                    TempEnterNote(NotePc); return wParam;
+        case kcNotePCS:                    TempEnterNote(NotePcSmooth); return wParam;
 
         case kcEditUndo:            OnEditUndo(); return wParam;
         case kcEditFind:            OnEditFind(); return wParam;
@@ -3939,7 +3939,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
         {
             ins = pModDoc->GetSplitKeyboardSettings()->splitInstrument;
             if (pModDoc->GetSplitKeyboardSettings()->octaveLink) note += 12 *pModDoc->GetSplitKeyboardSettings()->octaveModifier;
-            if (note > NOTE_MAX && note < NOTE_MIN_SPECIAL) note = NOTE_MAX;
+            if (note > NoteMax && note < NoteMinSpecial) note = NoteMax;
             if (note < 0) note = 1;
         }
         if (!ins)    ins = GetCurrentInstrument();
@@ -3956,7 +3956,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     }
 
     //Enter note off in pattern?
-    if ((note < NOTE_MIN) || (note > NOTE_MAX))
+    if ((note < NoteMin) || (note > NoteMax))
         return;
     if (GetColTypeFromCursor(m_dwCursor) > INST_COLUMN && (bChordMode || !fromMidi))
         return;
@@ -4157,7 +4157,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         const bool bRecordEnabled = IsEditingEnabled();
         const UINT nChn = GetChanFromCursor(m_dwCursor);
 
-        if(note > pSndFile->GetModSpecifications().noteMax && note < NOTE_MIN_SPECIAL)
+        if(note > pSndFile->GetModSpecifications().noteMax && note < NoteMinSpecial)
             note = pSndFile->GetModSpecifications().noteMax;
         else if( note < pSndFile->GetModSpecifications().noteMin)
             note = pSndFile->GetModSpecifications().noteMin;
@@ -4273,7 +4273,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
         }
 
         // -- old style note cut/off/fade: erase instrument number
-        if (oldStyle && newcmd.note >= NOTE_MIN_SPECIAL)
+        if (oldStyle && newcmd.note >= NoteMinSpecial)
             newcmd.instr = 0;
 
 
@@ -4302,7 +4302,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
 
                 // just play the newly inserted note using the already specified instrument...
                 UINT nPlayIns = newcmd.instr;
-                if(!nPlayIns && (note <= NOTE_MAX))
+                if(!nPlayIns && (note <= NoteMax))
                 {
                     // ...or one that can be found on a previous row of this pattern.
                     modplug::tracker::modevent_t *search = pTarget;
@@ -4365,7 +4365,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
             }
 
             uint8_t* activeNoteMap = isSplit ? splitActiveNoteChannel : activeNoteChannel;
-            if (newcmd.note <= NOTE_MAX)
+            if (newcmd.note <= NoteMax)
                 activeNoteMap[newcmd.note] = nChn;
 
             //Move to next channel if required
@@ -4379,7 +4379,7 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
                     if (++n >= pSndFile->m_nChannels) n = 0; //loop around
 
                     channelLocked = false;
-                    for (int k=0; k<NOTE_MAX; k++)
+                    for (int k=0; k<NoteMax; k++)
                     {
                         if (activeNoteChannel[k]==n  || splitActiveNoteChannel[k]==n)
                         {
@@ -4450,7 +4450,7 @@ void CViewPattern::TempEnterChord(int note)
             //    nchordnote = pChords[nchord].key + baseoctave*(p->note%12) + 1;
             //else
             //    nchordnote = pChords[nchord].key + baseoctave*12 + 1;
-            if (nchordnote <= NOTE_MAX)
+            if (nchordnote <= NoteMax)
             {
                 UINT nchordch = nChn, nchno = 0;
                 nNote = nchordnote;
@@ -4471,7 +4471,7 @@ void CViewPattern::TempEnterChord(int note)
                     UINT n = ((nchordnote-1)/12) * 12 + pChords[nchord].notes[nchno];
                     if(bRecordEnabled)
                     {
-                        if ((nchordch != nChn) && recordGroup && (currentRecordGroup == recordGroup) && (n <= NOTE_MAX))
+                        if ((nchordch != nChn) && recordGroup && (currentRecordGroup == recordGroup) && (n <= NoteMax))
                         {
                             newrow[nchordch].note = n;
                             if (p->instr) newrow[nchordch].instr = p->instr;
@@ -4483,13 +4483,13 @@ void CViewPattern::TempEnterChord(int note)
                             nchno++;
                             if (CMainFrame::m_dwPatternSetup & PATTERN_PLAYNEWNOTE)
                             {
-                                if ((n) && (n <= NOTE_MAX)) chordplaylist[nPlayChord++] = n;
+                                if ((n) && (n <= NoteMax)) chordplaylist[nPlayChord++] = n;
                             }
                         }
                     } else
                     {
                         nchno++;
-                        if ((n) && (n <= NOTE_MAX)) chordplaylist[nPlayChord++] = n;
+                        if ((n) && (n <= NoteMax)) chordplaylist[nPlayChord++] = n;
                     }
                 }
             }
@@ -4535,7 +4535,7 @@ void CViewPattern::TempEnterChord(int note)
                 {
                     // ...using the already specified instrument
                     nPlayIns = p->instr;
-                } else if ((!p->instr) && (p->note <= NOTE_MAX))
+                } else if ((!p->instr) && (p->note <= NoteMax))
                 {
                     // ...or one that can be found on a previous row of this pattern.
                     modplug::tracker::modevent_t *search = pTarget;
@@ -4744,10 +4744,10 @@ bool CViewPattern::HandleSplit(modplug::tracker::modevent_t* p, int note)
         {
             isSplit = true;
 
-            if (pModDoc->GetSplitKeyboardSettings()->octaveLink && note <= NOTE_MAX)
+            if (pModDoc->GetSplitKeyboardSettings()->octaveLink && note <= NoteMax)
             {
                 note += 12 * pModDoc->GetSplitKeyboardSettings()->octaveModifier;
-                note = CLAMP(note, NOTE_MIN, NOTE_MAX);
+                note = CLAMP(note, NoteMin, NoteMax);
             }
             if (pModDoc->GetSplitKeyboardSettings()->splitInstrument)
             {
@@ -5283,7 +5283,7 @@ bool CViewPattern::IsInterpolationPossible(modplug::tracker::rowindex_t startRow
         case NOTE_COLUMN:
             startRowCmd = startRowMC.note;
             endRowCmd = endRowMC.note;
-            result = (startRowCmd >= NOTE_MIN && endRowCmd >= NOTE_MIN);
+            result = (startRowCmd >= NoteMin && endRowCmd >= NoteMin);
             break;
         case EFFECT_COLUMN:
             startRowCmd = startRowMC.command;
@@ -5540,7 +5540,7 @@ void CViewPattern::SetSelectionInstrument(const modplug::tracker::instrumentinde
             // If a note or an instr is present on the row, do the change, if required.
             // Do not set instr if note and instr are both blank.
             // Do set instr if note is a PC note and instr is blank.
-            if ( ((p->note > 0 && p->note < NOTE_MIN_SPECIAL) || p->IsPcNote() || p->instr) && (p->instr!=nIns) )
+            if ( ((p->note > 0 && p->note < NoteMinSpecial) || p->IsPcNote() || p->instr) && (p->instr!=nIns) )
             {
                 p->instr = nIns;
                 bModified = true;

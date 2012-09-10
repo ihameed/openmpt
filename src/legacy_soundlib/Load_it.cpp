@@ -1142,7 +1142,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                     if (note < 0x80) note++;
                     if(!(m_nType & MOD_TYPE_MPT))
                     {
-                        if(note > NOTE_MAX && note < 0xFD) note = NoteFade;
+                        if(note > NoteMax && note < 0xFD) note = NoteFade;
                         else if(note == 0xFD) note = NoteNone;
                     }
                     m[ch].note = note;
@@ -1553,7 +1553,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     for (UINT nins=1; nins<=header.insnum; nins++)
     {
         bool bKbdEx = false;    // extended sample map (for samples > 255)
-        uint8_t keyboardex[NOTE_MAX];
+        uint8_t keyboardex[NoteMax];
 
         memset(&iti, 0, sizeof(iti));
         iti.id = LittleEndian(IT_IMPI);    // "IMPI"
@@ -1590,7 +1590,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
             iti.ifc = pIns->default_filter_cutoff;
             iti.ifr = pIns->default_filter_resonance;
             iti.nos = 0;
-            for (UINT i=0; i<NOTE_MAX; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
+            for (UINT i=0; i<NoteMax; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
             {
                 const UINT smp = pIns->Keyboard[i];
                 if (smp && smp <= GetNumSamples() && !smpcount[smp - 1])
@@ -1598,7 +1598,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                     smpcount[smp - 1] = true;
                     iti.nos++;
                 }
-                iti.keyboard[i*2] = (pIns->NoteMap[i] >= NOTE_MIN && pIns->NoteMap[i] <= NOTE_MAX) ? (pIns->NoteMap[i] - 1) : i;
+                iti.keyboard[i*2] = (pIns->NoteMap[i] >= NoteMin && pIns->NoteMap[i] <= NoteMax) ? (pIns->NoteMap[i] - 1) : i;
                 iti.keyboard[i*2+1] = smp;
                 if (smp > 0xff) bKbdEx = true;
                 keyboardex[i] = (smp>>8);
@@ -1613,7 +1613,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         } else
         // Save Empty Instrument
         {
-            for (UINT i=0; i<NOTE_MAX; i++) iti.keyboard[i*2] = i;
+            for (UINT i=0; i<NoteMax; i++) iti.keyboard[i*2] = i;
             iti.ppc = 5*12;
             iti.gbv = 128;
             iti.dfp = 0x20;
@@ -1627,8 +1627,8 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         fwrite(&iti, 1, sizeof(ITINSTRUMENT), f);
         if (bKbdEx)
         {
-            dwPos += NOTE_MAX;
-            fwrite(keyboardex, 1, NOTE_MAX, f);
+            dwPos += NoteMax;
+            fwrite(keyboardex, 1, NoteMax, f);
         }
 
         //------------ rewbs.modularInstData
@@ -1721,7 +1721,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                 UINT vol = 0xFF;
                 UINT note = m->note;
                 if (note) b |= 1;
-                if ((note) && (note < NOTE_MIN_SPECIAL)) note--;
+                if ((note) && (note < NoteMinSpecial)) note--;
                 if (note == NoteFade && GetType() != MOD_TYPE_MPT) note = 0xF6;
                 if (m->instr) b |= 2;
                 if (m->volcmd)
@@ -2161,7 +2161,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
     for (UINT nins=1; nins<=header.insnum; nins++)
     {
         bool bKbdEx = false;    // extended sample map (for samples > 255)
-        uint8_t keyboardex[NOTE_MAX];
+        uint8_t keyboardex[NoteMax];
 
         memset(&iti, 0, sizeof(iti));
         iti.id = LittleEndian(IT_IMPI);    // "IMPI"
@@ -2189,7 +2189,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
             iti.ifc = pIns->default_filter_cutoff;
             iti.ifr = pIns->default_filter_resonance;
             iti.nos = 0;
-            for (UINT i=0; i<NOTE_MAX; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
+            for (UINT i=0; i<NoteMax; i++) if (pIns->Keyboard[i] < MAX_SAMPLES)
             {
                 const UINT smp = pIns->Keyboard[i];
                 if (smp && smp <= GetNumSamples() && !smpcount[smp - 1])
@@ -2197,7 +2197,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                     smpcount[smp - 1] = true;
                     iti.nos++;
                 }
-                iti.keyboard[i*2] = (pIns->NoteMap[i] >= NOTE_MIN && pIns->NoteMap[i] <= NOTE_MAX) ? (pIns->NoteMap[i] - 1) : i;
+                iti.keyboard[i*2] = (pIns->NoteMap[i] >= NoteMin && pIns->NoteMap[i] <= NoteMax) ? (pIns->NoteMap[i] - 1) : i;
                 iti.keyboard[i*2+1] = smp;
                 //if (smp > 0xFF) bKbdEx = true;    // no extended sample map in compat mode
                 keyboardex[i] = (smp>>8);
@@ -2212,7 +2212,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         } else
         // Save Empty Instrument
         {
-            for (UINT i=0; i<NOTE_MAX; i++) iti.keyboard[i*2] = i;
+            for (UINT i=0; i<NoteMax; i++) iti.keyboard[i*2] = i;
             iti.ppc = 5*12;
             iti.gbv = 128;
             iti.dfp = 0x20;
@@ -2226,8 +2226,8 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         fwrite(&iti, 1, sizeof(ITINSTRUMENT), f);
         if (bKbdEx)
         {
-            dwPos += NOTE_MAX;
-            fwrite(keyboardex, 1, NOTE_MAX, f);
+            dwPos += NoteMax;
+            fwrite(keyboardex, 1, NoteMax, f);
         }
 
         //------------ rewbs.modularInstData
@@ -2313,9 +2313,9 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                 UINT param = m->param;
                 UINT vol = 0xFF;
                 UINT note = m->note;
-                if(note == NOTE_PC || note == NOTE_PCS) note = NoteNone;
+                if(note == NotePc || note == NotePcSmooth) note = NoteNone;
                 if (note) b |= 1;
-                if ((note) && (note < NOTE_MIN_SPECIAL)) note--;
+                if ((note) && (note < NoteMinSpecial)) note--;
                 if (note == NoteFade) note = 0xF6;
                 if (m->instr) b |= 2;
                 if (m->volcmd)

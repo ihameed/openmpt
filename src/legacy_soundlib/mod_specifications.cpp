@@ -7,7 +7,7 @@ using namespace modplug::tracker;
 bool CModSpecifications::HasNote(note_t note) const {
     if (note >= noteMin && note <= noteMax) {
         return true;
-    } else if(note >= NOTE_MIN_SPECIAL && note <= NOTE_MAX_SPECIAL) {
+    } else if(note >= NoteMinSpecial && note <= NoteMaxSpecial) {
         switch (note) {
         case NoteNoteCut: return hasNoteCut;
         case NoteKeyOff:  return hasNoteOff;

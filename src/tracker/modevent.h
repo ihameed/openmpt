@@ -4,29 +4,9 @@
 #include <cstdint>
 
 
-// 252, Param Control 'note'. Changes param value on first tick.
-#define NOTE_PC      (::modplug::tracker::note_t(0xFC))
-
-// 251, Param Control(Smooth) 'note'. Changes param value during the whole row.
-#define NOTE_PCS     (::modplug::tracker::note_t(0xFB))
-
-#define NOTE_MIN     (::modplug::tracker::note_t(1))
-#define NOTE_MAX     (::modplug::tracker::note_t(120))
-#define NOTE_COUNT   120
-
-#define NOTE_MAX_SPECIAL modplug::tracker::NoteKeyOff
-#define NOTE_MIN_SPECIAL NOTE_PCS
-
-// Checks whether a number represents a valid note
-// (a "normal" note or no note, but not something like note off)
-#define NOTE_IS_VALID(n) \
-    ((n) == modplug::tracker::NoteNone || ((n) >= NOTE_MIN && (n) <= NOTE_MAX))
-
 namespace modplug {
 namespace tracker {
 
-//#include <boost/strong_typedef.hpp>
-//BOOST_STRONG_TYPEDEF(uint8_t, note_t)
 typedef uint8_t note_t;
 typedef uint8_t instr_t;
 typedef uint8_t vol_t;
@@ -108,12 +88,25 @@ const note_t NoteNoteCut = 254;
 // DO NOT SAVE AS 253 as this is IT's internal representation of "no note"!
 const note_t NoteFade = 253;
 
-}
+// 252, Param Control 'note'. Changes param value on first tick.
+const note_t NotePc = 252;
+
+// 251, Param Control(Smooth) 'note'. Changes param value during the whole row.
+const note_t NotePcSmooth = 251;
+
+const note_t NoteMin = 1;
+const note_t NoteMax = 120;
+const size_t NoteCount = 120;
+
+const note_t NoteMaxSpecial = NoteKeyOff;
+const note_t NoteMinSpecial = NotePcSmooth;
+
+// Checks whether a number represents a valid note
+// (a "normal" note or no note, but not something like note off)
+inline bool note_is_valid(note_t note) {
+    return note == NoteNone || (note >= NoteMin && note <= NoteMax);
 }
 
-
-namespace modplug {
-namespace tracker {
 
 struct modevent_t {
     note_t note;
@@ -201,11 +194,11 @@ struct modevent_t {
 
     // Returns true if and only if note is NOTE_PC or NOTE_PCS.
     bool IsPcNote() const {
-        return note == NOTE_PC || note == NOTE_PCS;
+        return note == NotePc || note == NotePcSmooth;
     }
 
     static bool IsPcNote(const note_t note_id) {
-        return note_id == NOTE_PC || note_id == NOTE_PCS;
+        return note_id == NotePc || note_id == NotePcSmooth;
     }
 
     // Swap volume and effect column (doesn't do any conversion as it's mainly for importing formats with multiple effect columns, so beware!)

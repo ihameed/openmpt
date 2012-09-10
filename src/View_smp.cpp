@@ -2123,7 +2123,7 @@ void CViewSample::PlayNote(UINT note, const uint32_t nStartPos)
     CModDoc *pModDoc = GetDocument();
     if ((pModDoc) && (pMainFrm))
     {
-            if (note >= NOTE_MIN_SPECIAL)
+            if (note >= NoteMinSpecial)
             {
                     pModDoc->NoteOff(0, (note == NoteNoteCut) ? TRUE : FALSE);
             }
@@ -2147,7 +2147,7 @@ void CViewSample::PlayNote(UINT note, const uint32_t nStartPos)
 
                     m_dwStatus |= SMPSTATUS_KEYDOWN;
                     s[0] = 0;
-                    if ((note) && (note <= NOTE_MAX)) wsprintf(s, "%s%d", szNoteNames[(note-1)%12], (note-1)/12);
+                    if ((note) && (note <= NoteMax)) wsprintf(s, "%s%d", szNoteNames[(note-1)%12], (note-1)/12);
                     pMainFrm->SetInfoText(s);
             }
     }

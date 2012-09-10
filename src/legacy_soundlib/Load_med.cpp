@@ -897,7 +897,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
                     {
                         int rnote = note + playtransp;
                         if (rnote < 1) rnote = 1;
-                        if (rnote > NOTE_MAX) rnote = NOTE_MAX;
+                        if (rnote > NoteMax) rnote = NoteMax;
                         p->note = (uint8_t)rnote;
                     }
                     p->instr = s[1];

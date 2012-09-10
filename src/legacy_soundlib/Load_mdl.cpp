@@ -191,7 +191,7 @@ void UnpackMDLTrack(modplug::tracker::modevent_t *pat, UINT nChannels, UINT nRow
                 cmd.vol = 0;
                 cmd.command = CmdNone;
                 cmd.param = 0;
-                if ((cmd.note < NOTE_MAX-12) && (cmd.note)) cmd.note += 12;
+                if ((cmd.note < NoteMax-12) && (cmd.note)) cmd.note += 12;
                 UINT volume = (xx & 0x04) ? lpTracks[pos++] : 0;
                 UINT commands = (xx & 0x08) ? lpTracks[pos++] : 0;
                 UINT command1 = commands & 0x0F;
@@ -388,7 +388,7 @@ bool module_renderer::ReadMDL(const uint8_t *lpStream, const uint32_t dwMemLengt
                     for (j=0; j<lpStream[dwPos+1]; j++)
                     {
                         const uint8_t *ps = lpStream+dwPos+34+14*j;
-                        while ((note < (UINT)(ps[1]+12)) && (note < NOTE_MAX))
+                        while ((note < (UINT)(ps[1]+12)) && (note < NoteMax))
                         {
                             pIns->NoteMap[note] = note+1;
                             if (ps[0] < MAX_SAMPLES)

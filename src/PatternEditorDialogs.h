@@ -47,22 +47,22 @@ public:
 
     enum findItem
     {
-            findAny = NOTE_MIN_SPECIAL - 1
+            findAny = modplug::tracker::NoteMinSpecial - 1
     };
 
 
     enum replaceItem
     {
-            replaceNotePlusOne = NOTE_MAX + 1,
-            replaceNoteMinusOne = NOTE_MAX + 2,
-            replaceNotePlusOctave = NOTE_MAX + 3,
-            replaceNoteMinusOctave = NOTE_MAX + 4,
+            replaceNotePlusOne = modplug::tracker::NoteMax + 1,
+            replaceNoteMinusOne = modplug::tracker::NoteMax + 2,
+            replaceNotePlusOctave = modplug::tracker::NoteMax + 3,
+            replaceNoteMinusOctave = modplug::tracker::NoteMax + 4,
 
             replaceInstrumentPlusOne = MAX_INSTRUMENTS + 1,
             replaceInstrumentMinusOne = MAX_INSTRUMENTS + 2,
     };
 
-    static_assert(NOTE_MIN_SPECIAL - 4 > NOTE_MAX,
+    static_assert(modplug::tracker::NoteMinSpecial - 4 > modplug::tracker::NoteMax,
         "there must be unused notes between NOTE_MAX and NOTE_MIN_SPECIAL");
 
 protected:

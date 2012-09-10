@@ -53,7 +53,7 @@ void ApplyTransposeKeyboardSetting(CMainFrame& rMainFrm, uint32_t& dwParam1)
                     {
                             note += nTranspose*12;
                             if (note < 0) note = NoteNone;
-                            if (note > NOTE_MAX - 1) note = NOTE_MAX - 1;
+                            if (note > NoteMax - 1) note = NoteMax - 1;
 
                             // -> CODE#0011
                             // -> DESC="bug fix about transpose midi keyboard option"

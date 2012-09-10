@@ -27,6 +27,8 @@
 #include <math.h>
 #endif
 
+using namespace modplug::tracker;
+
 #define F_RGN_OPTION_SELFNONEXCLUSIVE    0x0001
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1677,7 +1679,7 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
             SetNullTerminator(pIns->name);
     }
     int nTranspose = 0;
-    for (UINT iNoteMap=0; iNoteMap<NOTE_MAX; iNoteMap++)
+    for (UINT iNoteMap=0; iNoteMap<NoteMax; iNoteMap++)
     {
             pIns->NoteMap[iNoteMap] = (uint8_t)(iNoteMap+1);
             if (pDlsIns->ulBank & F_INSTRUMENT_DRUMS)
@@ -1755,7 +1757,7 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
             // Map all notes to the right sample
             if (nSmp)
             {
-                    for (UINT iKey=0; iKey<NOTE_MAX; iKey++)
+                    for (UINT iKey=0; iKey<NoteMax; iKey++)
                     {
                             if ((nRgn == nRgnMin) || ((iKey >= pRgn->uKeyMin) && (iKey <= pRgn->uKeyMax)))
                             {

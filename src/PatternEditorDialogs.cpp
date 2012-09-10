@@ -803,7 +803,7 @@ void CPageEditNote::UpdateDialog()
             combo->SetItemData(combo->AddString("No note"), 0);
             AppendNotesToControlEx(*combo, pSndFile, m_nInstr);
 
-            if (NOTE_IS_VALID(m_nNote))
+            if (note_is_valid(m_nNote))
             {
                     // Normal note / no note
                     const modplug::tracker::note_t noteStart = (pSndFile != nullptr) ? pSndFile->GetModSpecifications().noteMin : 1;
@@ -1397,7 +1397,7 @@ BOOL CSplitKeyboadSettings::OnInitDialog()
     CHAR s[64];
 
     // Split Notes
-    AppendNotesToControl(m_CbnSplitNote, 0, NOTE_MAX - 1);
+    AppendNotesToControl(m_CbnSplitNote, 0, NoteMax - 1);
     m_CbnSplitNote.SetCurSel(m_pOptions->splitNote);
 
     // Octave modifier

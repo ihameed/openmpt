@@ -671,7 +671,7 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
                     if ((note) || (m->instr)) b |= 0x20;
 
                     if (!note) note = 0xFF; // no note
-                    else if (note >= NOTE_MIN_SPECIAL) note = 0xFE; // special notes (notecut, noteoff etc)
+                    else if (note >= NoteMinSpecial) note = 0xFE; // special notes (notecut, noteoff etc)
                     else if (note < 13) note = NoteNone; // too low
                     else note -= 13;
 
