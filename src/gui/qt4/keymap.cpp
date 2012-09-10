@@ -207,7 +207,6 @@ template <typename fun_ty>
 void init_base10_actions(const std::string &prefix, fun_ty func) {
     auto &m = pattern_actionmap;
 
-    std::string vol_prefix("vol_");
     for (char i = '0'; i <= '9'; ++i) {
         auto fname = prefix + i;
         uint8_t digit = i - '0';
