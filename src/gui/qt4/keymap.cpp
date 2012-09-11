@@ -328,7 +328,9 @@ pattern_keymap_t default_pattern_keymap() {
     m[key_t(Qt::ShiftModifier, Qt::Key_Home)] = "select_first_col";
     m[key_t(Qt::ShiftModifier, Qt::Key_End)]  = "select_last_col";
 
-    m[key_t(Qt::NoModifier, Qt::Key_Delete)] = "clear_selected_cells";
+    m[key_t(Qt::NoModifier, Qt::Key_Delete)]    = "clear_selected_cells";
+    m[key_t(Qt::NoModifier, Qt::Key_Backspace)] = "delete_row";
+    m[key_t(Qt::NoModifier, Qt::Key_Insert)]    = "insert_row";
 
     auto notekey = [&m] (int key, const char *act) {
         return m[key_t(Qt::NoModifier, key, ContextNoteCol)] = act;

@@ -109,12 +109,12 @@ inline bool note_is_valid(note_t note) {
 
 
 struct modevent_t {
-    note_t note;
-    instr_t instr;
+    note_t   note;
+    instr_t  instr;
     volcmd_t volcmd;
-    cmd_t command;
-    vol_t vol;
-    param_t param;
+    cmd_t    command;
+    vol_t    vol;
+    param_t  param;
 
     // Defines the maximum value for column data when interpreted as 2-byte
     // value (for example volcmd and vol). The valid value range is
@@ -180,8 +180,8 @@ struct modevent_t {
         if (ignoreEffectValues) {
             return this->note == 0
                 && this->instr == 0
-                && this->volcmd == 0
-                && this->command == 0;
+                && this->volcmd == VolCmdNone
+                && this->command == CmdNone;
         } else {
             return *this == empty();
         }

@@ -59,6 +59,11 @@ pattern_editor::pattern_editor(
 
 void pattern_editor::update_colors(const colors_t &newcolors) {
     colors = newcolors;
+    /*
+    auto &bgc = colors[colors_t::Normal].background;
+    makeCurrent();
+    glClearColor(bgc.redF() * 0.75, bgc.greenF() * 0.75, bgc.blueF() * 0.75, 0.5);
+    */
     updateGL();
 }
 
@@ -118,6 +123,13 @@ void pattern_editor::paintGL() {
         corners,
         pos()
     };
+
+    /*
+    glClear(GL_COLOR_BUFFER_BIT |
+            GL_DEPTH_BUFFER_BIT |
+            GL_ACCUM_BUFFER_BIT |
+            GL_STENCIL_BUFFER_BIT);
+            */
 
     int painted_width = 0;
 
@@ -478,7 +490,21 @@ void pattern_editor::clear_selected_cells(pattern_editor &editor) {
 }
 
 void pattern_editor::delete_row(pattern_editor &editor) {
-    //TODO
+    auto &pattern = editor.renderer.Patterns[editor.active_pos.pattern];
+    auto &pos     = editor.pos();
+    auto numrows  = pattern.GetNumRows();
+
+    if (numrows > 2) {
+        for (size_t row = pos.row; row <= numrows - 2; ++row) {
+            auto evt = pattern.GetpModCommand(row, pos.column);
+            auto nextevt = pattern.GetpModCommand(row + 1, pos.column);
+        }
+    }
+    if (numrows > 1) {
+        pattern.GetpModCommand(numrows - 1, pos.column)->Clear();
+    }
+
+    editor.update();
 }
 
 void pattern_editor::insert_row(pattern_editor &editor) {
