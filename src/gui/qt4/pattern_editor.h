@@ -20,7 +20,6 @@ namespace gui {
 namespace qt4 {
 
 class pattern_editor;
-class pattern_editor_actions;
 
 class pattern_editor_draw : public QGLWidget {
     Q_OBJECT
@@ -32,45 +31,12 @@ public:
         const colors_t &colors
     );
 
-    bool position_from_point(const QPoint &, editor_position_t &);
-
-    void set_selection_start(const QPoint &);
-    void set_selection_start(const editor_position_t &);
-    void set_selection_end(const QPoint &);
-    void set_selection_end(const editor_position_t &);
-    bool set_pos_from_point(const QPoint &, editor_position_t &);
-
-    const normalized_selection_t &selection_corners();
-    void recalc_corners();
-
-    editor_position_t pos_move_by_row(const editor_position_t &, int) const;
-    editor_position_t pos_move_by_subcol(const editor_position_t &, int) const;
-
-    void move_to(const editor_position_t &target);
-    const editor_position_t &pos() const;
-
-    keycontext_t keycontext() const;
-
-    void collapse_selection();
-
-    CPattern *active_pattern();
-    modplug::tracker::modevent_t *active_event();
-
-    QSize pattern_size();
-
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeGL(int, int) override;
 
-    virtual void mousePressEvent(QMouseEvent *) override;
-    virtual void mouseMoveEvent(QMouseEvent *) override;
-    virtual void mouseReleaseEvent(QMouseEvent *) override;
-
 private:
-    bool selection_active;
-    bool is_dragging;
-
     selection_t selection;
     normalized_selection_t corners;
 
@@ -93,8 +59,6 @@ private:
 class pattern_editor: public QAbstractScrollArea {
     Q_OBJECT
 public:
-    friend class pattern_editor_actions;
-
     pattern_editor(
         module_renderer &renderer,
         const pattern_keymap_t &keymap,
@@ -106,23 +70,56 @@ public:
     void update_colors(const colors_t &colors);
     void update_playback_position(const player_position_t &);
 
+    void set_base_octave(uint8_t octave);
+    uint8_t base_octave();
+
+    bool position_from_point(const QPoint &, editor_position_t &);
+
+    void collapse_selection();
+    void set_selection_start(const QPoint &);
+    void set_selection_start(const editor_position_t &);
+    void set_selection_end(const QPoint &);
+    void set_selection_end(const editor_position_t &);
+    bool set_pos_from_point(const QPoint &, editor_position_t &);
+    void move_to(const editor_position_t &target);
+
+    const normalized_selection_t &selection_corners();
+    void recalc_corners();
+
+    editor_position_t pos_move_by_row(const editor_position_t &, int) const;
+    editor_position_t pos_move_by_subcol(const editor_position_t &, int) const;
+
+    const editor_position_t &pos() const;
+
+    keycontext_t keycontext() const;
     bool invoke_key(const pattern_keymap_t &, key_t);
 
-    void set_base_octave(uint8_t octave);
+    const CPattern *active_pattern() const;
+    CPattern *active_pattern();
 
+    modplug::tracker::modevent_t *active_event();
+
+    QSize pattern_size();
 
 protected:
-    virtual void keyPressEvent(QKeyEvent *) override;
+    virtual void paintEvent(QPaintEvent *) override;
     virtual void resizeEvent(QResizeEvent *) override;
+
+    virtual void keyPressEvent(QKeyEvent *) override;
+
+    virtual void mousePressEvent(QMouseEvent *) override;
+    virtual void mouseMoveEvent(QMouseEvent *) override;
+    virtual void mouseReleaseEvent(QMouseEvent *) override;
 
 private:
     pattern_editor_draw draw;
+    bool is_dragging;
 
     const pattern_keymap_t &keymap;
     const pattern_keymap_t &it_keymap;
     const pattern_keymap_t &xm_keymap;
 
-    uint8_t base_octave;
+    uint8_t _base_octave;
     bool follow_playback;
 };
 

@@ -93,7 +93,7 @@ void pattern_editor_draw::paintGL() {
 
         colors,
         corners,
-        pos()
+        selection.start
     };
 
     /*
@@ -115,219 +115,9 @@ void pattern_editor_draw::paintGL() {
     }
 }
 
-editor_position_t pattern_editor_draw::pos_move_by_row(
-    const editor_position_t &in, int amount) const
-{
-    auto newpos = in;
-    bool down = amount < 0;
-    uint32_t absamount = down ? -amount : amount;
-
-    if (down) {
-        newpos.row = absamount > newpos.row
-            ? 0
-            : newpos.row - absamount;
-    } else {
-        //XXXih: :[
-        newpos.row += absamount;
-        auto numrows = renderer.Patterns[active_pos.pattern].GetNumRows();
-        if (newpos.row >= numrows) {
-            newpos.row = numrows - 1; //XXXih: :[[[
-        }
-    }
-
-    return newpos;
-}
-
-editor_position_t pattern_editor_draw::pos_move_by_subcol(
-    const editor_position_t &in, int amount) const
-{
-    auto newpos = in;
-
-    bool left = amount < 0;
-    uint32_t absamount = left ? -amount : amount;
-
-    //TODO: multiple column types
-    if (left) {
-        for (size_t i = 0; i < absamount; ++i) {
-            if (newpos.subcolumn == ElemMin) {
-                if (newpos.column > 0) {
-                    newpos.subcolumn = (elem_t) (ElemMax - 1);
-                    newpos.column -= 1;
-                } else {
-                    break;
-                }
-            } else {
-                --newpos.subcolumn;
-            }
-        }
-    } else {
-        uint32_t max = renderer.GetNumChannels();
-        for (size_t i = 0; i < absamount; ++i) {
-            if (newpos.subcolumn == ElemMax - 1) {
-                if (newpos.column < max - 1) {
-                    newpos.subcolumn = ElemMin;
-                    newpos.column += 1;
-                } else {
-                    break;
-                }
-            } else {
-                ++newpos.subcolumn;
-            }
-        }
-    }
-
-    return newpos;
-}
-
-bool pattern_editor_draw::position_from_point(const QPoint &point,
-                                         editor_position_t &pos)
-{
-    chnindex_t channel_count = renderer.GetNumChannels();
-
-    int left = 0;
-
-    bool success = false;
-
-    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
-        note_column notehomie(left, idx, font_metrics);
-        success = notehomie.position_from_point(point, pos);
-        if (success) {
-            break;
-        }
-        left += notehomie.width();
-    }
-
-    return success;
-}
-
-void pattern_editor_draw::recalc_corners() {
-    corners = normalize_selection(selection);
-}
-
-bool pattern_editor_draw::set_pos_from_point(const QPoint &point,
-                                        editor_position_t &pos)
-{
-    editor_position_t newpos;
-    if (position_from_point(point, newpos)) {
-        pos = newpos;
-        return true;
-    }
-    return false;
-}
-
-void pattern_editor_draw::set_selection_start(const QPoint &point) {
-    if (set_pos_from_point(point, selection.start)) {
-        recalc_corners();
-    }
-}
-
-void pattern_editor_draw::set_selection_start(const editor_position_t &pos) {
-    selection.start = pos;
-    recalc_corners();
-}
-
-void pattern_editor_draw::set_selection_end(const QPoint &point) {
-    if (set_pos_from_point(point, selection.end)) {
-        recalc_corners();
-    }
-}
-
-void pattern_editor_draw::set_selection_end(const editor_position_t &pos) {
-    selection.end = pos;
-    recalc_corners();
-}
-
-void pattern_editor_draw::mousePressEvent(QMouseEvent *event) {
-    if (event->buttons() == Qt::LeftButton) {
-        is_dragging = true;
-        set_selection_start(event->pos());
-        set_selection_end(event->pos());
-        update();
-    }
-}
-
-void pattern_editor_draw::mouseMoveEvent(QMouseEvent *event) {
-    if (event->buttons() == Qt::LeftButton && is_dragging) {
-        set_selection_end(event->pos());
-        update();
-    }
-}
-
-void pattern_editor_draw::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->buttons() == Qt::LeftButton) {
-        is_dragging = false;
-        set_selection_end(event->pos());
-        update();
-    }
-}
-
-void pattern_editor_draw::move_to(const editor_position_t &target) {
-    selection.start = target;
-    selection.end   = target;
-    recalc_corners();
-    update();
-}
-
-const editor_position_t &pattern_editor_draw::pos() const {
-    return selection.end;
-}
-
-keycontext_t pattern_editor_draw::keycontext() const{
-    switch (pos().subcolumn) {
-    case ElemNote:  return ContextNoteCol;
-    case ElemInstr: return ContextInstrCol;
-    case ElemVol:   return ContextVolCol;
-    case ElemCmd:   return ContextCmdCol;
-    case ElemParam: return ContextParamCol;
-    default:        return ContextGlobal;
-    }
-}
-
-void pattern_editor_draw::collapse_selection() {
-    auto &newpos = selection.start = selection.end = pos();
-    recalc_corners();
-    move_to(newpos);
-}
-
-CPattern *pattern_editor_draw::active_pattern() {
-    auto patternidx = active_pos.pattern;
-    return &renderer.Patterns[patternidx];
-}
-
-modevent_t *pattern_editor_draw::active_event() {
-    return active_pattern()->GetpModCommand(pos().row, pos().column);
-}
 
 
 
-
-
-
-
-
-
-
-QSize pattern_editor_draw::pattern_size() {
-    chnindex_t channel_count = renderer.GetNumChannels();
-
-    int left = 0;
-
-    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
-        note_column notehomie(left, idx, font_metrics);
-        left += notehomie.width();
-    }
-
-    auto pattern = active_pattern();
-    auto height = font_metrics.height * pattern->GetNumRows()
-                + column_header_height + 1;
-
-    QSize ret(left, height);
-    return ret;
-}
-
-const normalized_selection_t & pattern_editor_draw::selection_corners() {
-    return corners;
-}
 
 
 
@@ -354,6 +144,7 @@ pattern_editor::pattern_editor(
     it_keymap(it_keymap),
     xm_keymap(xm_keymap),
     follow_playback(true),
+    is_dragging(false),
     draw(renderer, colors)
 {
     draw.setParent(this->viewport());
@@ -387,8 +178,231 @@ void pattern_editor::update_playback_position(
 }
 
 void pattern_editor::set_base_octave(uint8_t octave) {
-    base_octave = octave;
+    _base_octave = octave;
 }
+
+uint8_t pattern_editor::base_octave() {
+    return _base_octave;
+}
+
+void pattern_editor::move_to(const editor_position_t &target) {
+    draw.selection.start = target;
+    draw.selection.end   = target;
+    recalc_corners();
+    draw.update();
+}
+
+void pattern_editor::collapse_selection() {
+    auto &newpos = draw.selection.start = draw.selection.end = pos();
+    recalc_corners();
+    move_to(newpos);
+}
+
+editor_position_t pattern_editor::pos_move_by_row(
+    const editor_position_t &in, int amount) const
+{
+    auto newpos = in;
+    bool down = amount < 0;
+    uint32_t absamount = down ? -amount : amount;
+
+    if (down) {
+        newpos.row = absamount > newpos.row
+            ? 0
+            : newpos.row - absamount;
+    } else {
+        //XXXih: :[
+        newpos.row += absamount;
+        auto numrows = active_pattern()->GetNumRows();
+        if (newpos.row >= numrows) {
+            newpos.row = numrows - 1; //XXXih: :[[[
+        }
+    }
+
+    return newpos;
+}
+
+editor_position_t pattern_editor::pos_move_by_subcol(
+    const editor_position_t &in, int amount) const
+{
+    auto newpos = in;
+
+    bool left = amount < 0;
+    uint32_t absamount = left ? -amount : amount;
+
+    //TODO: multiple column types
+    if (left) {
+        for (size_t i = 0; i < absamount; ++i) {
+            if (newpos.subcolumn == ElemMin) {
+                if (newpos.column > 0) {
+                    newpos.subcolumn = (elem_t) (ElemMax - 1);
+                    newpos.column -= 1;
+                } else {
+                    break;
+                }
+            } else {
+                --newpos.subcolumn;
+            }
+        }
+    } else {
+        uint32_t max = draw.renderer.GetNumChannels();
+        for (size_t i = 0; i < absamount; ++i) {
+            if (newpos.subcolumn == ElemMax - 1) {
+                if (newpos.column < max - 1) {
+                    newpos.subcolumn = ElemMin;
+                    newpos.column += 1;
+                } else {
+                    break;
+                }
+            } else {
+                ++newpos.subcolumn;
+            }
+        }
+    }
+
+    return newpos;
+}
+
+bool pattern_editor::position_from_point(const QPoint &point,
+                                         editor_position_t &pos)
+{
+    chnindex_t channel_count = draw.renderer.GetNumChannels();
+
+    int left = 0;
+
+    bool success = false;
+
+    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
+        note_column notehomie(left, idx, draw.font_metrics);
+        success = notehomie.position_from_point(point, pos);
+        if (success) {
+            break;
+        }
+        left += notehomie.width();
+    }
+
+    return success;
+}
+
+void pattern_editor::recalc_corners() {
+    draw.corners = normalize_selection(draw.selection);
+}
+
+bool pattern_editor::set_pos_from_point(const QPoint &point,
+                                        editor_position_t &pos)
+{
+    editor_position_t newpos;
+    if (position_from_point(point, newpos)) {
+        pos = newpos;
+        return true;
+    }
+    return false;
+}
+
+void pattern_editor::set_selection_start(const QPoint &point) {
+    if (set_pos_from_point(point, draw.selection.start)) {
+        recalc_corners();
+    }
+}
+
+void pattern_editor::set_selection_start(const editor_position_t &pos) {
+    draw.selection.start = pos;
+    recalc_corners();
+}
+
+void pattern_editor::set_selection_end(const QPoint &point) {
+    if (set_pos_from_point(point, draw.selection.end)) {
+        recalc_corners();
+    }
+}
+
+void pattern_editor::set_selection_end(const editor_position_t &pos) {
+    draw.selection.end = pos;
+    recalc_corners();
+}
+
+void pattern_editor::mousePressEvent(QMouseEvent *event) {
+    if (event->buttons() == Qt::LeftButton) {
+        is_dragging = true;
+        set_selection_start(event->pos());
+        set_selection_end(event->pos());
+        draw.updateGL();
+    }
+}
+
+void pattern_editor::mouseMoveEvent(QMouseEvent *event) {
+    if (event->buttons() == Qt::LeftButton && is_dragging) {
+        set_selection_end(event->pos());
+        draw.updateGL();
+    }
+}
+
+void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->buttons() == Qt::LeftButton) {
+        is_dragging = false;
+        set_selection_end(event->pos());
+        draw.updateGL();
+    }
+}
+
+const editor_position_t &pattern_editor::pos() const {
+    return draw.selection.end;
+}
+
+keycontext_t pattern_editor::keycontext() const{
+    switch (pos().subcolumn) {
+    case ElemNote:  return ContextNoteCol;
+    case ElemInstr: return ContextInstrCol;
+    case ElemVol:   return ContextVolCol;
+    case ElemCmd:   return ContextCmdCol;
+    case ElemParam: return ContextParamCol;
+    default:        return ContextGlobal;
+    }
+}
+
+CPattern *pattern_editor::active_pattern() {
+    auto patternidx = draw.active_pos.pattern;
+    CPattern *ret = &draw.renderer.Patterns[patternidx];
+    return ret;
+}
+
+const CPattern *pattern_editor::active_pattern() const {
+    auto patternidx = draw.active_pos.pattern;
+    CPattern *ret = &draw.renderer.Patterns[patternidx];
+    return ret;
+}
+
+
+modevent_t *pattern_editor::active_event() {
+    return active_pattern()->GetpModCommand(pos().row, pos().column);
+}
+
+
+
+
+QSize pattern_editor::pattern_size() {
+    chnindex_t channel_count = draw.renderer.GetNumChannels();
+
+    int left = 0;
+
+    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
+        note_column notehomie(left, idx, draw.font_metrics);
+        left += notehomie.width();
+    }
+
+    auto pattern = active_pattern();
+    auto height = draw.font_metrics.height * pattern->GetNumRows()
+                + column_header_height + 1;
+
+    QSize ret(left, height);
+    return ret;
+}
+
+const normalized_selection_t & pattern_editor::selection_corners() {
+    return draw.corners;
+}
+
+
+
 
 bool pattern_editor::invoke_key(const pattern_keymap_t &km, key_t key) {
     auto action = action_of_key(km, pattern_actionmap, key);
@@ -402,7 +416,7 @@ bool pattern_editor::invoke_key(const pattern_keymap_t &km, key_t key) {
 
 void pattern_editor::keyPressEvent(QKeyEvent *event) {
     Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
-    auto context_key = key_t(modifiers, event->key(), draw.keycontext());
+    auto context_key = key_t(modifiers, event->key(), keycontext());
     auto pattern_key = key_t(modifiers, event->key());
 
     if (invoke_key(keymap,    context_key)) return;
@@ -414,9 +428,9 @@ void pattern_editor::keyPressEvent(QKeyEvent *event) {
 
 void pattern_editor::resizeEvent(QResizeEvent *event) {
     draw.resize(event->size());
-    auto sz = draw.pattern_size();
+    auto sz = pattern_size();
 
-    const auto pattern = draw.active_pattern();
+    const auto pattern = active_pattern();
 
     auto slider_height = sz.height() - draw.size().height();
     auto slider_width  = sz.width()  - draw.size().width();
@@ -437,6 +451,11 @@ void pattern_editor::resizeEvent(QResizeEvent *event) {
         horizontalScrollBar()->setPageStep(draw.size().width());
     }
 }
+
+void pattern_editor::paintEvent(QPaintEvent *event) {
+    draw.updateGL();
+}
+
 
 
 }

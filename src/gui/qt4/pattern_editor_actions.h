@@ -5,6 +5,7 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
+
 class pattern_editor;
 
 struct pattern_editor_actions {
