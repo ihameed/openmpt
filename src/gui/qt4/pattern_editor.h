@@ -5,11 +5,13 @@
 #include <cstdint>
 #include "colors.h"
 #include "pattern_bitmap_fonts.h"
+#include "pattern_editor_types.h"
 
 #include "keymap.h"
 #include "../../legacy_soundlib/Snd_defs.h"
 #include "../../tracker/types.h"
 #include "../../tracker/modevent.h"
+#include "../../legacy_soundlib/patternContainer.h"
 
 class module_renderer;
 
@@ -17,91 +19,18 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-struct player_position_t {
-    modplug::tracker::orderindex_t   order;
-    modplug::tracker::patternindex_t pattern;
-    modplug::tracker::rowindex_t     row;
+class pattern_editor;
+class pattern_editor_actions;
 
-    player_position_t() : order(0), pattern(0),
-                          row(modplug::tracker::RowIndexInvalid) { }
-
-    player_position_t(modplug::tracker::orderindex_t order,
-                      modplug::tracker::patternindex_t pattern,
-                      modplug::tracker::rowindex_t row)
-                      : order(order), pattern(pattern), row(row) { }
-};
-
-struct editor_position_t {
-    uint32_t row;
-    uint32_t column;
-    elem_t   subcolumn;
-
-    editor_position_t() : row(0), column(0), subcolumn(ElemNote) { };
-    editor_position_t(uint32_t row, uint32_t column, elem_t subcolumn)
-        : row(row), column(column), subcolumn(subcolumn)
-    { };
-};
-
-struct selection_t {
-    editor_position_t start;
-    editor_position_t end;
-};
-
-struct normalized_selection_t {
-    editor_position_t topleft;
-    editor_position_t bottomright;
-};
-
-inline normalized_selection_t
-normalize_selection(const selection_t selection) {
-    auto &start = selection.start;
-    auto &end   = selection.end;
-
-    auto minrow = min(start.row, end.row);
-    auto maxrow = max(start.row, end.row);
-
-    auto mincol = min(start.column, end.column);
-    auto maxcol = max(start.column, end.column);
-
-    elem_t minsub = start.column == mincol ? start.subcolumn : end.subcolumn;
-    elem_t maxsub = start.column == mincol ? end.subcolumn : start.subcolumn;
-
-    normalized_selection_t ret = { editor_position_t(minrow, mincol, minsub),
-                                   editor_position_t(maxrow, maxcol, maxsub) };
-    return ret;
-}
-
-inline bool pos_in_rect(const normalized_selection_t &corners,
-                        const editor_position_t &pos)
-{
-    if (corners.topleft.row <= pos.row && pos.row <= corners.bottomright.row) {
-        bool in_left = (pos.column == corners.topleft.column &&
-                        pos.subcolumn >= corners.topleft.subcolumn
-                       ) || pos.column > corners.topleft.column;
-
-        bool in_right = (pos.column == corners.bottomright.column &&
-                         pos.subcolumn <= corners.bottomright.subcolumn
-                        ) || pos.column < corners.bottomright.column;
-
-        return in_left && in_right;
-    }
-
-    return false;
-}
-
-class pattern_editor : public QGLWidget {
+class pattern_editor_draw : public QGLWidget {
     Q_OBJECT
 public:
-    pattern_editor(
+    friend class pattern_editor;
+
+    pattern_editor_draw(
         module_renderer &renderer,
-        const pattern_keymap_t &keymap,
-        const pattern_keymap_t &it_keymap,
-        const pattern_keymap_t &xm_keymap,
         const colors_t &colors
     );
-
-    void update_colors(const colors_t &colors);
-    void update_playback_position(const player_position_t &);
 
     bool position_from_point(const QPoint &, editor_position_t &);
 
@@ -110,6 +39,8 @@ public:
     void set_selection_end(const QPoint &);
     void set_selection_end(const editor_position_t &);
     bool set_pos_from_point(const QPoint &, editor_position_t &);
+
+    const normalized_selection_t &selection_corners();
     void recalc_corners();
 
     editor_position_t pos_move_by_row(const editor_position_t &, int) const;
@@ -118,13 +49,14 @@ public:
     void move_to(const editor_position_t &target);
     const editor_position_t &pos() const;
 
-    bool invoke_key(const pattern_keymap_t &, key_t);
     keycontext_t keycontext() const;
 
-    void set_base_octave(uint8_t octave);
-
     void collapse_selection();
+
+    CPattern *active_pattern();
     modplug::tracker::modevent_t *active_event();
+
+    QSize pattern_size();
 
 protected:
     virtual void initializeGL() override;
@@ -135,8 +67,6 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *) override;
     virtual void mouseReleaseEvent(QMouseEvent *) override;
 
-    virtual void keyPressEvent(QKeyEvent *) override;
-
 private:
     bool selection_active;
     bool is_dragging;
@@ -146,13 +76,6 @@ private:
 
     player_position_t playback_pos;
     player_position_t active_pos;
-    bool follow_playback;
-
-    const pattern_keymap_t &keymap;
-    const pattern_keymap_t &it_keymap;
-    const pattern_keymap_t &xm_keymap;
-
-    uint8_t base_octave;
 
     module_renderer &renderer;
 
@@ -165,38 +88,42 @@ private:
 
     GLuint font_texture;
     QRect clipping_rect;
+};
 
+class pattern_editor: public QAbstractScrollArea {
+    Q_OBJECT
 public:
-    static void move_up(pattern_editor &);
-    static void move_down(pattern_editor &);
-    static void move_left(pattern_editor &);
-    static void move_right(pattern_editor &);
+    friend class pattern_editor_actions;
 
-    static void move_first_row(pattern_editor &);
-    static void move_last_row(pattern_editor &);
-    static void move_first_col(pattern_editor &);
-    static void move_last_col(pattern_editor &);
+    pattern_editor(
+        module_renderer &renderer,
+        const pattern_keymap_t &keymap,
+        const pattern_keymap_t &it_keymap,
+        const pattern_keymap_t &xm_keymap,
+        const colors_t &colors
+    );
 
-    static void select_up(pattern_editor &);
-    static void select_down(pattern_editor &);
-    static void select_left(pattern_editor &);
-    static void select_right(pattern_editor &);
+    void update_colors(const colors_t &colors);
+    void update_playback_position(const player_position_t &);
 
-    static void select_first_row(pattern_editor &);
-    static void select_last_row(pattern_editor &);
-    static void select_first_col(pattern_editor &);
-    static void select_last_col(pattern_editor &);
+    bool invoke_key(const pattern_keymap_t &, key_t);
 
-    static void clear_selected_cells(pattern_editor &);
-    static void delete_row(pattern_editor &);
-    static void insert_row(pattern_editor &);
+    void set_base_octave(uint8_t octave);
 
-    static void insert_note(pattern_editor &, uint8_t, uint8_t);
-    static void insert_instr(pattern_editor &, uint8_t);
-    static void insert_volcmd(pattern_editor &, modplug::tracker::volcmd_t);
-    static void insert_volparam(pattern_editor &, uint8_t);
-    static void insert_cmd(pattern_editor &, modplug::tracker::cmd_t);
-    static void insert_cmdparam(pattern_editor &, uint8_t);
+
+protected:
+    virtual void keyPressEvent(QKeyEvent *) override;
+    virtual void resizeEvent(QResizeEvent *) override;
+
+private:
+    pattern_editor_draw draw;
+
+    const pattern_keymap_t &keymap;
+    const pattern_keymap_t &it_keymap;
+    const pattern_keymap_t &xm_keymap;
+
+    uint8_t base_octave;
+    bool follow_playback;
 };
 
 

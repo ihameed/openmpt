@@ -254,6 +254,9 @@
     <ClCompile Include="GeneratedFiles\Template\moc_song_overview.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="gui\qt4\pattern_editor_actions.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -383,6 +386,12 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\qt4\keymap.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt4\pattern_editor_types.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt4\pattern_editor_actions.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

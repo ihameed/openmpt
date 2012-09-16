@@ -19,7 +19,6 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-const int hugeor = 999999;
 
 QImage load_font() {
     auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
@@ -37,47 +36,19 @@ QImage load_font() {
     return font_bitmap;
 };
 
-pattern_editor::pattern_editor(
+pattern_editor_draw::pattern_editor_draw(
     module_renderer &renderer,
-    const pattern_keymap_t &keymap,
-    const pattern_keymap_t &it_keymap,
-    const pattern_keymap_t &xm_keymap,
     const colors_t &colors
 ) :
     renderer(renderer),
-    keymap(keymap),
-    it_keymap(it_keymap),
-    xm_keymap(xm_keymap),
-    font_metrics(small_pattern_font),
-    follow_playback(true)
+    font_metrics(small_pattern_font)
 {
     setFocusPolicy(Qt::ClickFocus);
     font_bitmap = load_font();
-    update_colors(colors);
-    set_base_octave(4);
 }
 
-void pattern_editor::update_colors(const colors_t &newcolors) {
-    colors = newcolors;
-    /*
-    auto &bgc = colors[colors_t::Normal].background;
-    makeCurrent();
-    glClearColor(bgc.redF() * 0.75, bgc.greenF() * 0.75, bgc.blueF() * 0.75, 0.5);
-    */
-    updateGL();
-}
-
-void pattern_editor::update_playback_position(
-    const player_position_t &position)
-{
-    playback_pos = position;
-    if (follow_playback) {
-        active_pos = playback_pos;
-    }
-    repaint();
-}
-
-void pattern_editor::initializeGL() {
+void pattern_editor_draw::initializeGL() {
+    //DEBUG_FUNC("");
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
 
@@ -91,7 +62,8 @@ void pattern_editor::initializeGL() {
     glBindTexture(GL_TEXTURE_2D, font_texture);
 }
 
-void pattern_editor::resizeGL(int width, int height) {
+void pattern_editor_draw::resizeGL(int width, int height) {
+    //DEBUG_FUNC("width = %d, height = %d", width, height);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -105,7 +77,7 @@ void pattern_editor::resizeGL(int width, int height) {
     this->height = height;
 }
 
-void pattern_editor::paintGL() {
+void pattern_editor_draw::paintGL() {
     ghettotimer homesled(__FUNCTION__);
 
     chnindex_t channel_count = renderer.GetNumChannels();
@@ -143,7 +115,7 @@ void pattern_editor::paintGL() {
     }
 }
 
-editor_position_t pattern_editor::pos_move_by_row(
+editor_position_t pattern_editor_draw::pos_move_by_row(
     const editor_position_t &in, int amount) const
 {
     auto newpos = in;
@@ -166,7 +138,7 @@ editor_position_t pattern_editor::pos_move_by_row(
     return newpos;
 }
 
-editor_position_t pattern_editor::pos_move_by_subcol(
+editor_position_t pattern_editor_draw::pos_move_by_subcol(
     const editor_position_t &in, int amount) const
 {
     auto newpos = in;
@@ -205,10 +177,9 @@ editor_position_t pattern_editor::pos_move_by_subcol(
     }
 
     return newpos;
-
 }
 
-bool pattern_editor::position_from_point(const QPoint &point,
+bool pattern_editor_draw::position_from_point(const QPoint &point,
                                          editor_position_t &pos)
 {
     chnindex_t channel_count = renderer.GetNumChannels();
@@ -229,11 +200,11 @@ bool pattern_editor::position_from_point(const QPoint &point,
     return success;
 }
 
-void pattern_editor::recalc_corners() {
+void pattern_editor_draw::recalc_corners() {
     corners = normalize_selection(selection);
 }
 
-bool pattern_editor::set_pos_from_point(const QPoint &point,
+bool pattern_editor_draw::set_pos_from_point(const QPoint &point,
                                         editor_position_t &pos)
 {
     editor_position_t newpos;
@@ -244,29 +215,29 @@ bool pattern_editor::set_pos_from_point(const QPoint &point,
     return false;
 }
 
-void pattern_editor::set_selection_start(const QPoint &point) {
+void pattern_editor_draw::set_selection_start(const QPoint &point) {
     if (set_pos_from_point(point, selection.start)) {
         recalc_corners();
     }
 }
 
-void pattern_editor::set_selection_start(const editor_position_t &pos) {
+void pattern_editor_draw::set_selection_start(const editor_position_t &pos) {
     selection.start = pos;
     recalc_corners();
 }
 
-void pattern_editor::set_selection_end(const QPoint &point) {
+void pattern_editor_draw::set_selection_end(const QPoint &point) {
     if (set_pos_from_point(point, selection.end)) {
         recalc_corners();
     }
 }
 
-void pattern_editor::set_selection_end(const editor_position_t &pos) {
+void pattern_editor_draw::set_selection_end(const editor_position_t &pos) {
     selection.end = pos;
     recalc_corners();
 }
 
-void pattern_editor::mousePressEvent(QMouseEvent *event) {
+void pattern_editor_draw::mousePressEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton) {
         is_dragging = true;
         set_selection_start(event->pos());
@@ -275,19 +246,148 @@ void pattern_editor::mousePressEvent(QMouseEvent *event) {
     }
 }
 
-void pattern_editor::mouseMoveEvent(QMouseEvent *event) {
+void pattern_editor_draw::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton && is_dragging) {
         set_selection_end(event->pos());
         update();
     }
 }
 
-void pattern_editor::mouseReleaseEvent(QMouseEvent *event) {
+void pattern_editor_draw::mouseReleaseEvent(QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton) {
         is_dragging = false;
         set_selection_end(event->pos());
         update();
     }
+}
+
+void pattern_editor_draw::move_to(const editor_position_t &target) {
+    selection.start = target;
+    selection.end   = target;
+    recalc_corners();
+    update();
+}
+
+const editor_position_t &pattern_editor_draw::pos() const {
+    return selection.end;
+}
+
+keycontext_t pattern_editor_draw::keycontext() const{
+    switch (pos().subcolumn) {
+    case ElemNote:  return ContextNoteCol;
+    case ElemInstr: return ContextInstrCol;
+    case ElemVol:   return ContextVolCol;
+    case ElemCmd:   return ContextCmdCol;
+    case ElemParam: return ContextParamCol;
+    default:        return ContextGlobal;
+    }
+}
+
+void pattern_editor_draw::collapse_selection() {
+    auto &newpos = selection.start = selection.end = pos();
+    recalc_corners();
+    move_to(newpos);
+}
+
+CPattern *pattern_editor_draw::active_pattern() {
+    auto patternidx = active_pos.pattern;
+    return &renderer.Patterns[patternidx];
+}
+
+modevent_t *pattern_editor_draw::active_event() {
+    return active_pattern()->GetpModCommand(pos().row, pos().column);
+}
+
+
+
+
+
+
+
+
+
+
+QSize pattern_editor_draw::pattern_size() {
+    chnindex_t channel_count = renderer.GetNumChannels();
+
+    int left = 0;
+
+    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
+        note_column notehomie(left, idx, font_metrics);
+        left += notehomie.width();
+    }
+
+    auto pattern = active_pattern();
+    auto height = font_metrics.height * pattern->GetNumRows()
+                + column_header_height + 1;
+
+    QSize ret(left, height);
+    return ret;
+}
+
+const normalized_selection_t & pattern_editor_draw::selection_corners() {
+    return corners;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pattern_editor::pattern_editor(
+    module_renderer &renderer,
+    const pattern_keymap_t &keymap,
+    const pattern_keymap_t &it_keymap,
+    const pattern_keymap_t &xm_keymap,
+    const colors_t &colors
+) :
+    keymap(keymap),
+    it_keymap(it_keymap),
+    xm_keymap(xm_keymap),
+    follow_playback(true),
+    draw(renderer, colors)
+{
+    draw.setParent(this->viewport());
+    draw.move(0, 0);
+
+    verticalScrollBar()->setSingleStep(1);
+    horizontalScrollBar()->setSingleStep(1);
+
+    set_base_octave(4);
+    update_colors(colors);
+}
+
+void pattern_editor::update_colors(const colors_t &newcolors) {
+    draw.colors = newcolors;
+    /*
+    auto &bgc = colors[colors_t::Normal].background;
+    makeCurrent();
+    glClearColor(bgc.redF() * 0.75, bgc.greenF() * 0.75, bgc.blueF() * 0.75, 0.5);
+    */
+    draw.updateGL();
+}
+
+void pattern_editor::update_playback_position(
+    const player_position_t &position)
+{
+    draw.playback_pos = position;
+    if (follow_playback) {
+        draw.active_pos = draw.playback_pos;
+    }
+    draw.updateGL();
+}
+
+void pattern_editor::set_base_octave(uint8_t octave) {
+    base_octave = octave;
 }
 
 bool pattern_editor::invoke_key(const pattern_keymap_t &km, key_t key) {
@@ -302,302 +402,41 @@ bool pattern_editor::invoke_key(const pattern_keymap_t &km, key_t key) {
 
 void pattern_editor::keyPressEvent(QKeyEvent *event) {
     Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
-    auto context_key = key_t(modifiers, event->key(), keycontext());
+    auto context_key = key_t(modifiers, event->key(), draw.keycontext());
     auto pattern_key = key_t(modifiers, event->key());
 
     if (invoke_key(keymap,    context_key)) return;
     if (invoke_key(it_keymap, context_key)) return;
     if (invoke_key(keymap,    pattern_key)) return;
 
-    QGLWidget::keyPressEvent(event);
+    QAbstractScrollArea::keyPressEvent(event);
 }
 
-void pattern_editor::move_to(const editor_position_t &target) {
-    selection.start = target;
-    selection.end   = target;
-    recalc_corners();
-    update();
-}
+void pattern_editor::resizeEvent(QResizeEvent *event) {
+    draw.resize(event->size());
+    auto sz = draw.pattern_size();
 
-const editor_position_t &pattern_editor::pos() const {
-    return selection.end;
-}
+    const auto pattern = draw.active_pattern();
 
-keycontext_t pattern_editor::keycontext() const{
-    switch (pos().subcolumn) {
-    case ElemNote:  return ContextNoteCol;
-    case ElemInstr: return ContextInstrCol;
-    case ElemVol:   return ContextVolCol;
-    case ElemCmd:   return ContextCmdCol;
-    case ElemParam: return ContextParamCol;
-    default:        return ContextGlobal;
+    auto slider_height = sz.height() - draw.size().height();
+    auto slider_width  = sz.width()  - draw.size().width();
+    if (slider_height > 0) {
+        verticalScrollBar()->setRange(0, slider_height);
+        verticalScrollBar()->setPageStep(draw.size().height());
+        verticalScrollBar()->show();
+    } else {
+        verticalScrollBar()->setRange(0, 0);
+        verticalScrollBar()->setPageStep(draw.size().height());
+    }
+    if (slider_width > 0) {
+        horizontalScrollBar()->setRange(0, slider_width);
+        horizontalScrollBar()->setPageStep(draw.size().width());
+        horizontalScrollBar()->show();
+    } else {
+        horizontalScrollBar()->setRange(0, 0);
+        horizontalScrollBar()->setPageStep(draw.size().width());
     }
 }
-
-void pattern_editor::set_base_octave(uint8_t octave) {
-    base_octave = octave;
-}
-
-void pattern_editor::collapse_selection() {
-    auto &newpos = selection.start = selection.end = pos();
-    recalc_corners();
-    move_to(newpos);
-}
-
-modevent_t *pattern_editor::active_event() {
-    auto &modspec = renderer.GetModSpecifications();
-    auto patternidx = active_pos.pattern;
-    modevent_t *evt = renderer.Patterns[patternidx]
-                              .GetpModCommand(pos().row, pos().column);
-    return evt;
-}
-
-
-
-
-
-
-void pattern_editor::move_up(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), -1);
-    editor.move_to(newpos);
-}
-
-void pattern_editor::move_down(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), 1);
-    editor.move_to(newpos);
-}
-
-void pattern_editor::move_left(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), -1);
-    editor.move_to(newpos);
-}
-
-void pattern_editor::move_right(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), 1);
-    editor.move_to(newpos);
-}
-
-
-void pattern_editor::move_first_row(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), -hugeor);
-    editor.move_to(newpos);
-}
-
-void pattern_editor::move_last_row(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), hugeor);
-    editor.move_to(newpos);
-}
-
-void pattern_editor::move_first_col(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), -hugeor);
-    editor.move_to(newpos);
-}
-
-void pattern_editor::move_last_col(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), hugeor);
-    editor.move_to(newpos);
-}
-
-
-
-void pattern_editor::select_up(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), -1);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-void pattern_editor::select_down(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), 1);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-void pattern_editor::select_left(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), -1);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-void pattern_editor::select_right(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), 1);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-
-void pattern_editor::select_first_row(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), -hugeor);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-void pattern_editor::select_last_row(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_row(editor.pos(), hugeor);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-void pattern_editor::select_first_col(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), -hugeor);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-void pattern_editor::select_last_col(pattern_editor &editor) {
-    auto newpos = editor.pos_move_by_subcol(editor.pos(), hugeor);
-    editor.set_selection_end(newpos);
-    editor.update();
-}
-
-
-
-
-void clear_at(modevent_t *evt, elem_t elem) {
-    switch (elem) {
-    case ElemNote:  evt->note    = 0; break;
-    case ElemInstr: evt->instr   = 0; break;
-    case ElemVol:   evt->vol     = 0;
-                    evt->volcmd  = VolCmdNone; break;
-    case ElemCmd:   evt->command = CmdNone; break;
-    case ElemParam: evt->param   = 0; break;
-    }
-}
-
-void pattern_editor::clear_selected_cells(pattern_editor &editor) {
-    auto &corners = editor.corners;
-    auto &upper_left   = corners.topleft;
-    auto &bottom_right = corners.bottomright;
-    auto pos = upper_left;
-
-    auto &pattern = editor.renderer.Patterns[editor.active_pos.pattern];
-
-    for (; pos.row <= bottom_right.row; ++pos.row) {
-        for (pos.column = upper_left.column;
-             pos.column <= bottom_right.column; ++pos.column)
-        {
-            for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
-                pos.subcolumn = elem;
-                if (pos_in_rect(corners, pos)) {
-                    modevent_t *evt = pattern.GetpModCommand(pos.row,
-                                                             pos.column);
-                    clear_at(evt, elem);
-                }
-            }
-        }
-    }
-
-    editor.update();
-}
-
-void pattern_editor::delete_row(pattern_editor &editor) {
-    auto &pattern = editor.renderer.Patterns[editor.active_pos.pattern];
-    auto &pos     = editor.pos();
-    auto numrows  = pattern.GetNumRows();
-
-    if (numrows > 2) {
-        for (size_t row = pos.row; row <= numrows - 2; ++row) {
-            auto evt = pattern.GetpModCommand(row, pos.column);
-            auto nextevt = pattern.GetpModCommand(row + 1, pos.column);
-        }
-    }
-    if (numrows > 1) {
-        pattern.GetpModCommand(numrows - 1, pos.column)->Clear();
-    }
-
-    editor.update();
-}
-
-void pattern_editor::insert_row(pattern_editor &editor) {
-    //TODO
-}
-
-void pattern_editor::insert_note(pattern_editor &editor, uint8_t octave,
-    uint8_t tone_number)
-{
-    editor.collapse_selection();
-    auto evt = editor.active_event();
-    auto newcmd = *evt;
-
-    newcmd.note = 1 + tone_number + 12 * (octave + editor.base_octave);
-
-    *evt = newcmd;
-    editor.update();
-}
-
-void pattern_editor::insert_instr(pattern_editor &editor, uint8_t digit) {
-    editor.collapse_selection();
-    auto evt = editor.active_event();
-    auto newcmd = *evt;
-
-    instr_t instr = (newcmd.instr % 10) * 10 + digit;
-    newcmd.instr = instr;
-
-    *evt = newcmd;
-    editor.update();
-}
-
-void pattern_editor::insert_volparam(pattern_editor &editor, uint8_t digit) {
-    editor.collapse_selection();
-    auto evt = editor.active_event();
-    auto newcmd = *evt;
-
-    if (newcmd.volcmd == VolCmdNone) {
-        newcmd.volcmd = VolCmdVol;
-    }
-
-    vol_t vol = (newcmd.vol % 10) * 10 + digit;
-    if (vol > 64) {
-        vol = digit;
-    }
-    newcmd.vol = vol;
-
-    *evt = newcmd;
-    editor.update();
-}
-
-void pattern_editor::insert_volcmd(pattern_editor &editor, volcmd_t cmd) {
-    editor.collapse_selection();
-    auto evt = editor.active_event();
-    auto newcmd = *evt;
-
-    newcmd.volcmd = cmd;
-
-    *evt = newcmd;
-    editor.update();
-}
-
-void pattern_editor::insert_cmd(pattern_editor &editor, cmd_t cmd) {
-    editor.collapse_selection();
-    auto evt = editor.active_event();
-    auto newcmd = *evt;
-
-    newcmd.command = cmd;
-
-    *evt = newcmd;
-    editor.update();
-}
-
-void pattern_editor::insert_cmdparam(pattern_editor &editor, uint8_t digit) {
-    editor.collapse_selection();
-    auto evt = editor.active_event();
-    auto newcmd = *evt;
-
-    param_t param = (newcmd.param % 0x10) * 0x10 + digit;
-    newcmd.param = param;
-
-    *evt = newcmd;
-    editor.update();
-}
-
-
-
-
-
-
-
-
-
-
 
 
 }

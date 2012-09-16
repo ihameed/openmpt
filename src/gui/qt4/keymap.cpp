@@ -5,7 +5,7 @@
 #include "keymap.h"
 #include "../pervasives/pervasives.h"
 
-#include "pattern_editor.h"
+#include "pattern_editor_actions.h"
 #include "../../tracker/modevent.h"
 
 using namespace modplug::pervasives;
@@ -71,29 +71,29 @@ const static actionmap_assoc<global_action_t> global_actions[] = {
 };
 
 const static actionmap_assoc<pattern_action_t> pattern_actions[] = {
-    { "move_up",    &pattern_editor::move_up },
-    { "move_down",  &pattern_editor::move_down },
-    { "move_left",  &pattern_editor::move_left },
-    { "move_right", &pattern_editor::move_right },
+    { "move_up",    &pattern_editor_actions::move_up },
+    { "move_down",  &pattern_editor_actions::move_down },
+    { "move_left",  &pattern_editor_actions::move_left },
+    { "move_right", &pattern_editor_actions::move_right },
 
-    { "move_first_row", &pattern_editor::move_first_row },
-    { "move_last_row",  &pattern_editor::move_last_row },
-    { "move_first_col", &pattern_editor::move_first_col },
-    { "move_last_col",  &pattern_editor::move_last_col },
+    { "move_first_row", &pattern_editor_actions::move_first_row },
+    { "move_last_row",  &pattern_editor_actions::move_last_row },
+    { "move_first_col", &pattern_editor_actions::move_first_col },
+    { "move_last_col",  &pattern_editor_actions::move_last_col },
 
-    { "select_up",    &pattern_editor::select_up },
-    { "select_down",  &pattern_editor::select_down },
-    { "select_left",  &pattern_editor::select_left },
-    { "select_right", &pattern_editor::select_right },
+    { "select_up",    &pattern_editor_actions::select_up },
+    { "select_down",  &pattern_editor_actions::select_down },
+    { "select_left",  &pattern_editor_actions::select_left },
+    { "select_right", &pattern_editor_actions::select_right },
 
-    { "select_first_row", &pattern_editor::select_first_row },
-    { "select_last_row",  &pattern_editor::select_last_row },
-    { "select_first_col", &pattern_editor::select_first_col },
-    { "select_last_col",  &pattern_editor::select_last_col },
+    { "select_first_row", &pattern_editor_actions::select_first_row },
+    { "select_last_row",  &pattern_editor_actions::select_last_row },
+    { "select_first_col", &pattern_editor_actions::select_first_col },
+    { "select_last_col",  &pattern_editor_actions::select_last_col },
 
-    { "clear_selected_cells", &pattern_editor::clear_selected_cells },
-    { "delete_row",           &pattern_editor::delete_row },
-    { "insert_row",           &pattern_editor::insert_row },
+    { "clear_selected_cells", &pattern_editor_actions::clear_selected_cells },
+    { "delete_row",           &pattern_editor_actions::delete_row },
+    { "insert_row",           &pattern_editor_actions::insert_row },
 };
 
 template <typename ty>
@@ -249,7 +249,7 @@ void init_param_actions() {
         auto fname = param_prefix + suffix;
         uint8_t digit = i;
         m[fname] = [digit] (pattern_editor &editor) {
-            pattern_editor::insert_cmdparam(editor, digit);
+            pattern_editor_actions::insert_cmdparam(editor, digit);
         };
     }
 }
@@ -267,7 +267,7 @@ void init_note_actions() {
         for (size_t tone = 0; tone < MaxTones; ++tone) {
             auto fname = prefix + note_names[tone];
             m[fname] = [octave, tone] (pattern_editor &editor) {
-                pattern_editor::insert_note(editor, octave, tone);
+                pattern_editor_actions::insert_note(editor, octave, tone);
             };
         }
     }
@@ -277,11 +277,11 @@ void init_action_maps() {
     init_actions(global_actionmap,  global_actions);
     init_actions(pattern_actionmap, pattern_actions);
 
-    init_cmd_actions(volcmds, &pattern_editor::insert_volcmd);
-    init_cmd_actions(cmds,    &pattern_editor::insert_cmd);
+    init_cmd_actions(volcmds, &pattern_editor_actions::insert_volcmd);
+    init_cmd_actions(cmds,    &pattern_editor_actions::insert_cmd);
 
-    init_base10_actions("instr_", &pattern_editor::insert_instr);
-    init_base10_actions("vol_",   &pattern_editor::insert_volparam);
+    init_base10_actions("instr_", &pattern_editor_actions::insert_instr);
+    init_base10_actions("vol_",   &pattern_editor_actions::insert_volparam);
 
     init_param_actions();
     init_note_actions();

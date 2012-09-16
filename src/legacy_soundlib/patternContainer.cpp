@@ -10,7 +10,7 @@ void CPatternContainer::ClearPatterns()
 //-------------------------------------
 {
     DestroyPatterns();
-    m_Patterns.assign(m_Patterns.size(), MODPATTERN(*this));
+    m_Patterns.assign(m_Patterns.size(), CPattern(*this));
 }
 
 
@@ -49,7 +49,7 @@ bool CPatternContainer::Insert(const modplug::tracker::patternindex_t index, con
     if(index == m_Patterns.size())
     {
             if(index < specs.patternsMax)
-                    m_Patterns.push_back(MODPATTERN(*this));
+                    m_Patterns.push_back(CPattern(*this));
             else
             {
                     ErrorBox(IDS_ERR_TOOMANYPAT, CMainFrame::GetMainFrame());
@@ -98,7 +98,7 @@ bool CPatternContainer::IsPatternEmpty(const modplug::tracker::patternindex_t nP
 }
 
 
-modplug::tracker::patternindex_t CPatternContainer::GetIndex(const MODPATTERN* const pPat) const
+modplug::tracker::patternindex_t CPatternContainer::GetIndex(const CPattern* const pPat) const
 //--------------------------------------------------------------------------
 {
     const modplug::tracker::patternindex_t endI = static_cast<modplug::tracker::patternindex_t>(m_Patterns.size());
@@ -113,11 +113,11 @@ void CPatternContainer::ResizeArray(const modplug::tracker::patternindex_t newSi
 //-------------------------------------------------------------
 {
     if(Size() <= newSize)
-            m_Patterns.resize(newSize, MODPATTERN(*this));
+            m_Patterns.resize(newSize, CPattern(*this));
     else
     {
             for(modplug::tracker::patternindex_t i = Size(); i > newSize; i--) Remove(i-1);
-            m_Patterns.resize(newSize, MODPATTERN(*this));
+            m_Patterns.resize(newSize, CPattern(*this));
     }
 }
 

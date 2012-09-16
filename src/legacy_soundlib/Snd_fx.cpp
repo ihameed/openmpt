@@ -3790,7 +3790,7 @@ uint32_t module_renderer::IsSongFinished(UINT nStartOrder, UINT nStartRow) const
         if (nPat != Order.GetIgnoreIndex())
         {
             if (nPat >= Patterns.Size()) break;
-            const MODPATTERN& p = Patterns[nPat];
+            const CPattern& p = Patterns[nPat];
             if (p)
             {
                 UINT len = Patterns[nPat].GetNumRows() * m_nChannels;

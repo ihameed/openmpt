@@ -5,7 +5,6 @@
 #include "Snd_defs.h"
 
 class module_renderer;
-typedef CPattern MODPATTERN;
 
 //=====================
 class CPatternContainer
@@ -13,20 +12,20 @@ class CPatternContainer
 {
 //BEGIN: TYPEDEFS
 public:
-    typedef vector<MODPATTERN> PATTERNVECTOR;
+    typedef vector<CPattern> PATTERNVECTOR;
 //END: TYPEDEFS
 
 
 //BEGIN: OPERATORS
 public:
     //To mimic old pattern == modplug::tracker::modcommand_t* behavior.
-    MODPATTERN& operator[](const int pat) {return m_Patterns[pat];}
-    const MODPATTERN& operator[](const int pat) const {return m_Patterns[pat];}
+    CPattern& operator[](const int pat) {return m_Patterns[pat];}
+    const CPattern& operator[](const int pat) const {return m_Patterns[pat];}
 //END: OPERATORS
 
 //BEGIN: INTERFACE METHODS
 public:
-    CPatternContainer(module_renderer& sndFile) : m_rSndFile(sndFile) {m_Patterns.assign(MAX_PATTERNS, MODPATTERN(*this));}
+    CPatternContainer(module_renderer& sndFile) : m_rSndFile(sndFile) {m_Patterns.assign(MAX_PATTERNS, CPattern(*this));}
 
     // Clears existing patterns and resizes array to default size.
     void Init();
@@ -61,7 +60,7 @@ public:
     const module_renderer& GetSoundFile() const {return m_rSndFile;}
 
     //Returns the index of given pattern, Size() if not found.
-    modplug::tracker::patternindex_t GetIndex(const MODPATTERN* const pPat) const;
+    modplug::tracker::patternindex_t GetIndex(const CPattern* const pPat) const;
 
     // Return true if pattern can be accessed with operator[](iPat), false otherwise.
     bool IsValidIndex(const modplug::tracker::patternindex_t iPat) const {return (iPat < Size());}

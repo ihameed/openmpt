@@ -343,6 +343,7 @@
     <ClCompile Include="gui\qt4\keymap.cpp" />
     <ClCompile Include="gui\qt4\mfc_root.cpp" />
     <ClCompile Include="gui\qt4\pattern_editor.cpp" />
+    <ClCompile Include="gui\qt4\pattern_editor_actions.cpp" />
     <ClCompile Include="gui\qt4\song_overview.cpp" />
     <ClCompile Include="gui\qt4\util.cpp" />
     <ClCompile Include="legacy_soundlib\Dlsbank.cpp" />
@@ -566,6 +567,7 @@
     </CustomBuild>
     <ClInclude Include="gui\qt4\keymap.h" />
     <ClInclude Include="gui\qt4\pattern_bitmap_fonts.h" />
+    <ClInclude Include="gui\qt4\pattern_editor_actions.h" />
     <ClInclude Include="gui\qt4\pattern_editor_column.h" />
     <CustomBuild Include="gui\qt4\song_overview.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -581,6 +583,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DQT_OPENGL_LIB -D_AFXDLL "-I.\..\include" "-I.\..\extlib\boost_1_50_0" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\zlib-1.2.5" "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\WDL\include" "-I.\..\extlib\unlha" "-I.\..\extlib\unzip" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unrar" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I.\tracker" "-I$(QTDIR)\include\QtOpenGL"</Command>
     </CustomBuild>
+    <ClInclude Include="gui\qt4\pattern_editor_types.h" />
     <ClInclude Include="gui\qt4\util.h" />
     <ClInclude Include="gui\widget.h" />
     <ClInclude Include="legacy_soundlib\Dlsbank.h" />

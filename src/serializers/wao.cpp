@@ -109,7 +109,7 @@ bool _wao_write_sample(Json::Value &out, const modplug::tracker::modsample_t &sa
     return true;
 }
 
-bool _wao_write_pattern(Json::Value &out, const MODPATTERN &pattern) {
+bool _wao_write_pattern(Json::Value &out, const CPattern &pattern) {
     size_t num_rows     = pattern.GetNumRows();
     size_t num_channels = pattern.GetNumChannels();
 
@@ -154,7 +154,7 @@ bool write_wao(CPatternContainer &pattern_list, module_renderer &kitchen_sink) {
     auto &pluginstate = root["pluginstate"];
 
     for (size_t patternidx = 0; patternidx < pattern_list.Size(); ++patternidx) {
-        MODPATTERN &pattern = pattern_list[patternidx];
+        CPattern &pattern = pattern_list[patternidx];
         auto &pattern_json = patterns.append(Json::Value());
         _wao_write_pattern(pattern_json, pattern);
     }
