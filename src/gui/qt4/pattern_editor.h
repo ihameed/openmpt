@@ -21,20 +21,51 @@ namespace qt4 {
 
 class pattern_editor;
 
+class pattern_editor_row_header : public QWidget {
+    Q_OBJECT
+public:
+    pattern_editor_row_header(pattern_editor &);
+    virtual QSize sizeHint() const override;
+protected:
+    virtual void paintEvent(QPaintEvent *event) override;
+private:
+    pattern_editor &parent;
+};
+
+class pattern_editor_column_header : public QWidget {
+    Q_OBJECT
+public:
+    pattern_editor_column_header(pattern_editor &);
+    virtual QSize sizeHint() const override;
+protected:
+    virtual void paintEvent(QPaintEvent *) override;
+private:
+    pattern_editor &parent;
+};
+
 class pattern_editor_draw : public QGLWidget {
     Q_OBJECT
 public:
     friend class pattern_editor;
+    friend class pattern_editor_row_header;
+    friend class pattern_editor_column_header;
 
     pattern_editor_draw(
         module_renderer &renderer,
-        const colors_t &colors
+        const colors_t &colors,
+        pattern_editor &parent
     );
+
+    bool position_from_point(const QPoint &, editor_position_t &);
 
 protected:
     virtual void initializeGL() override;
     virtual void paintGL() override;
     virtual void resizeGL(int, int) override;
+
+    virtual void mousePressEvent(QMouseEvent *) override;
+    virtual void mouseMoveEvent(QMouseEvent *) override;
+    virtual void mouseReleaseEvent(QMouseEvent *) override;
 
 private:
     selection_t selection;
@@ -54,11 +85,17 @@ private:
 
     GLuint font_texture;
     QRect clipping_rect;
+
+    bool is_dragging;
+    pattern_editor &parent;
 };
 
-class pattern_editor: public QAbstractScrollArea {
+class pattern_editor : public QAbstractScrollArea {
     Q_OBJECT
 public:
+    friend class pattern_editor_row_header;
+    friend class pattern_editor_column_header;
+
     pattern_editor(
         module_renderer &renderer,
         const pattern_keymap_t &keymap,
@@ -75,6 +112,7 @@ public:
 
     bool position_from_point(const QPoint &, editor_position_t &);
 
+    void ensure_selection_end_visible();
     void collapse_selection();
     void set_selection_start(const QPoint &);
     void set_selection_start(const editor_position_t &);
@@ -107,9 +145,7 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent *) override;
 
-    virtual void mousePressEvent(QMouseEvent *) override;
-    virtual void mouseMoveEvent(QMouseEvent *) override;
-    virtual void mouseReleaseEvent(QMouseEvent *) override;
+    virtual void scrollContentsBy(int, int) override;
 
 private:
     pattern_editor_draw draw;

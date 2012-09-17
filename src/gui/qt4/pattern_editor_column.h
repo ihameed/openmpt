@@ -22,8 +22,6 @@ namespace modplug {
 namespace gui {
 namespace qt4 {
 
-static const int column_header_height = 20;
-
 struct draw_state {
     const module_renderer &renderer;
 
@@ -70,8 +68,6 @@ struct note_column {
     }
 
     bool position_from_point(const QPoint &point, editor_position_t &pos) {
-        int top = column_header_height + 1;
-
         if (point.x() < left) {
             return false;
         }
@@ -80,7 +76,7 @@ struct note_column {
         }
 
         int localx = point.x() - left;
-        int localy = point.y() - top;
+        int localy = point.y();
 
         int row = localy / font_metrics.height;
         int elemright = 0;
@@ -99,8 +95,10 @@ struct note_column {
     }
 
     void draw_header(draw_state &state) {
+        /*
         QRect rect(left, 0,
                    font_metrics.width, column_header_height);
+                   */
         //state.painter.drawRect(rect);
         const char *fmt = state.renderer.m_bChannelMuteTogglePending[column]
             ? "[Channel %1]"
@@ -123,7 +121,7 @@ struct note_column {
         const int left = column * font_metrics.width;
         const int height = font_metrics.height;
 
-        int top = column_header_height + 1;
+        int top = 0;
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_TEXTURE_COORD_ARRAY);
@@ -140,7 +138,7 @@ struct note_column {
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_TEXTURE_COORD_ARRAY);
-        top = column_header_height + 1;
+        top = 0;
         for (size_t row = 0;
              row < nrows && top + height <= clip_bottom;
              ++row)
