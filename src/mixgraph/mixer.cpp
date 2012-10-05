@@ -19,8 +19,8 @@ double downsample_sinc_table[SINC_SIZE];
 // [(x / 2)^2k / k!^2] / [(x / 2)^2(k - 1) / (k - 1)!^2] = x^2 / (2k)^2
 double izero(double x) {
     static const double tolerance = 1e-21; // lifted from jos
-    double i_0 = 1;
-    double term = 1;
+    double i_0   = 1;
+    double term  = 1;
     double denom = 0;
     do {
         denom += 2;
@@ -48,23 +48,22 @@ static void prefill_sinc_fir(sample_t *sinc_table,
                              const int taps)
 {
     const double izero_beta = izero(kaiser_beta);
-    const double kPi = 4.0 * atan(1.0) * lowpass_factor;
-    const int midpoint = (taps / 2) * phases_per_tap;
+    const int midpoint = ((taps / 2) * phases_per_tap) - 1;
     for (int isrc = 0; isrc < taps * phases_per_tap; isrc++) {
         double fsinc;
-        int ix = (taps - 1) - (isrc & (taps - 1));
-        ix = (ix * phases_per_tap) + (isrc / taps);
+        int idx = (taps - 1) - (isrc & (taps - 1));
+        idx = (idx * phases_per_tap) + (isrc / taps);
 
-        if (ix == midpoint) {
+        if (idx == midpoint) {
             fsinc = 1.0;
         } else {
-            double x = (double)(ix - midpoint) * (double)(1.0 / phases_per_tap);
+            double x = (double)(idx - midpoint) * (double)(1.0 / phases_per_tap);
             int det = (taps * taps) / 4;
-            fsinc = sin(x * kPi)
+            fsinc = normalized_sinc(x * lowpass_factor)
                   * izero(kaiser_beta * sqrt(1 - x * x * (1.0 / det)))
-                  / (izero_beta * x * kPi); // Kaiser window
+                  / (izero_beta); // Kaiser window
         }
-        *sinc_table++ = static_cast<sample_t>(fsinc * lowpass_factor);
+        sinc_table[isrc] = static_cast<sample_t>(fsinc * lowpass_factor);
     }
 }
 

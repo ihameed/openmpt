@@ -97,15 +97,11 @@ void pattern_editor_draw::paintGL() {
 
         colors,
         corners,
-        selection.start
+        selection.end
     };
 
-    /*
-    glClear(GL_COLOR_BUFFER_BIT |
-            GL_DEPTH_BUFFER_BIT |
-            GL_ACCUM_BUFFER_BIT |
-            GL_STENCIL_BUFFER_BIT);
-            */
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
+            GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     int painted_width = 0;
 
@@ -254,8 +250,7 @@ pattern_editor::pattern_editor(
     const pattern_keymap_t &it_keymap,
     const pattern_keymap_t &xm_keymap,
     const colors_t &colors
-) :
-    keymap(keymap),
+) : keymap(keymap),
     it_keymap(it_keymap),
     xm_keymap(xm_keymap),
     follow_playback(true),

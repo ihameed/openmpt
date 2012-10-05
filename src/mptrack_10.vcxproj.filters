@@ -257,6 +257,18 @@
     <ClCompile Include="gui\qt4\pattern_editor_actions.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="gui\qt4\pattern_editor_aux.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor_aux.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor_aux.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor_aux.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -502,6 +514,9 @@
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="gui\qt4\song_overview.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt4\pattern_editor_aux.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

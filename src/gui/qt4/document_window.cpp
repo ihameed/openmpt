@@ -4,8 +4,9 @@
 #include "document_window.h"
 #include "comment_editor.h"
 #include "pattern_editor.h"
+#include "pattern_editor_aux.h"
 #include "song_overview.h"
-#include "..\MainFrm.h"
+#include "../MainFrm.h"
 
 namespace modplug {
 namespace gui {
@@ -31,19 +32,20 @@ document_window::document_window(module_renderer *renderer,
         global_config.colors()
     );
 
-    auto splitter = new QSplitter;
-    splitter->setOrientation(Qt::Vertical);
+    auto commentsplitter = new QSplitter;
+    commentsplitter->setOrientation(Qt::Vertical);
 
     comments = new comment_editor(*renderer);
     comments->legacy_set_comments_from_module(true);
 
     overview = new song_overview(*renderer);
 
-    splitter->addWidget(comments);
-    splitter->addWidget(overview);
+    commentsplitter->addWidget(comments);
+    commentsplitter->addWidget(overview);
 
     tab_bar.addTab(editor, "Patterns");
-    tab_bar.addTab(splitter, "Comments");
+    tab_bar.addTab(commentsplitter, "Comments");
+    tab_bar.addTab(new pattern_editor_tab(*renderer, config), "derp");
 
     QObject::connect(
         &global_config, SIGNAL(colors_changed()),

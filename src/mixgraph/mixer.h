@@ -10,7 +10,7 @@ namespace mixgraph {
 
 
 static const double PI = 3.14159265358979323846;
-static const size_t FIR_TAPS = 8;
+static const size_t FIR_TAPS = 16;
 static const size_t FIR_CENTER = (FIR_TAPS / 2) - 1;
 static const size_t TAP_PHASES = 4096;
 static const size_t SINC_SIZE = FIR_TAPS * TAP_PHASES;
@@ -49,17 +49,24 @@ inline void save_filterstate(filterstate_t &butt_abs, modplug::tracker::modchann
 }
 
 inline sample_t convert_sample(const int16_t *derp, int idx) {
-    //if (idx < 0) return 0;
+    if (idx < 0) return 0;
     return derp[idx] * NORM_INT16;
 }
 
 inline sample_t convert_sample(const int8_t *derp, int idx) {
-    //if (idx < 0) return 0;
+    if (idx < 0) return 0;
     return derp[idx] * NORM_INT8;
 }
 
 template <typename buf_t>
-inline void resample_and_mix_no_interpolation(sample_t &left, sample_t &right, modplug::tracker::modchannel_t *source, buf_t in_sample, int smp_pos, int fixedpt_pos) {
+inline void resample_and_mix_no_interpolation(
+    sample_t &left,
+    sample_t &right,
+    modplug::tracker::modchannel_t *source,
+    buf_t in_sample,
+    int smp_pos,
+    int fixedpt_pos)
+{
     int pos = smp_pos;
     if (source->flags & CHN_STEREO) {
         pos += (fixedpt_pos >> 16) * 2;
@@ -73,29 +80,36 @@ inline void resample_and_mix_no_interpolation(sample_t &left, sample_t &right, m
 }
 
 template <typename buf_t>
-inline void resample_and_mix_windowed_sinc(sample_t &left, sample_t &right, modplug::tracker::modchannel_t *source, buf_t in_sample, int smp_pos, int fixedpt_pos) {
+inline void resample_and_mix_windowed_sinc(
+    sample_t &left,
+    sample_t &right,
+    modplug::tracker::modchannel_t *source,
+    buf_t in_sample,
+    int smp_pos,
+    int fixedpt_pos)
+{
     int pos = smp_pos;
-    int fir_idx = (fixedpt_pos & 0xfff0) >> 1;
-    //fir_idx = fir_idx << 3;
-    //fir_idx = fir_idx << 1; //log_2(FIR_TAPS / 8);
+    int fir_idx = ((fixedpt_pos & 0xfff0) >> 4) * FIR_TAPS;
 
     const double *fir_table =
         ((source->position_delta > 0x13000 || source->position_delta < -0x13000) ?
             (downsample_sinc_table) :
             (upsample_sinc_table))
         + fir_idx;
-    //const double *fir_table = downsample_sinc_table + fir_idx;
 
     if (source->flags & CHN_STEREO) {
         pos += (fixedpt_pos >> 16) * 2;
         for (size_t tap = 0; tap < FIR_TAPS; ++tap) {
-            left  += fir_table[tap] * convert_sample(in_sample, tap - FIR_CENTER + pos);
-            right += fir_table[tap] * convert_sample(in_sample, tap - FIR_CENTER + pos + 1);
+            left  += fir_table[tap] *
+                     convert_sample(in_sample, tap - FIR_CENTER + pos);
+            right += fir_table[tap] *
+                     convert_sample(in_sample, tap - FIR_CENTER + pos + 1);
         }
     } else {
         pos += (fixedpt_pos >> 16);
         for (size_t tap = 0; tap < FIR_TAPS; ++tap) {
-            left += fir_table[tap] * convert_sample(in_sample, tap - FIR_CENTER + pos);
+            left += fir_table[tap] *
+                    convert_sample(in_sample, tap - FIR_CENTER + pos);
         }
         right = left;
     }
