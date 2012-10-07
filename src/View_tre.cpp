@@ -746,7 +746,7 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
             // Adjust caption of the "Sequence" node (if only one sequence exists, it should be labeled with the sequence name)
             if(((hintFlagPart == HINT_SEQNAMES) && pSndFile->Order.GetNumSequences() == 1) || adjustParentNode)
             {
-                    CString sSeqName = pSndFile->Order.GetSequence(0).m_sName;
+                    CString sSeqName = pSndFile->Order.GetSequence(0).m_sName.c_str();
                     if(sSeqName.IsEmpty() || pSndFile->Order.GetNumSequences() > 1)
                             sSeqName = "Sequence";
                     else
@@ -761,10 +761,10 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
                     {
                             // more than one sequence -> add folder
                             CString sSeqName;
-                            if(pSndFile->Order.GetSequence(nSeq).m_sName.IsEmpty())
+                            if(pSndFile->Order.GetSequence(nSeq).m_sName.empty())
                                     sSeqName.Format("Sequence %d", nSeq);
                             else
-                                    sSeqName.Format("%d: %s", nSeq, (LPCTSTR)pSndFile->Order.GetSequence(nSeq).m_sName);
+                                    sSeqName.Format("%d: %s", nSeq, (LPCTSTR)pSndFile->Order.GetSequence(nSeq).m_sName.c_str());
 
                             UINT state = (nSeq == pSndFile->Order.GetCurrentSequenceIndex()) ? TVIS_BOLD : 0;
 
