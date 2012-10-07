@@ -659,7 +659,7 @@ void COrderList::OnEditCopy()
             LPSTR p = (LPSTR)GlobalLock(hCpy);
             if (p)
             {
-                    const ModSequence& seq = m_pModDoc->GetSoundFile()->Order;
+                    const modplug::tracker::orderlist& seq = m_pModDoc->GetSoundFile()->Order;
                     wsprintf(p, szClipboardOrdersHdr, pszFormatName);
                     p += strlen(p);
                     wsprintf(p, szClipboardOrdCountFieldHdr, ordsel.GetSelCount());

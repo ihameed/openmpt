@@ -2070,7 +2070,7 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
                             module_renderer *pDragSndFile = pDragDoc->GetSoundFile();
                             if(pDragSndFile == nullptr) return false;
                             const modplug::tracker::sequenceindex_t nOrigSeq = (modplug::tracker::sequenceindex_t)modItemDragID;
-                            const ModSequence *pOrigSeq = &(pDragSndFile->Order.GetSequence(nOrigSeq));
+                            const orderlist *pOrigSeq = &(pDragSndFile->Order.GetSequence(nOrigSeq));
                             if(pOrigSeq == nullptr) return false;
 
                             if(pSndFile->GetType() == MOD_TYPE_MPT)

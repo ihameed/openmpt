@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "orderlist.h"
+#include "modevent.h"
 #include "../moddoc.h"
 #include "../version.h"
 #include "../serialization_utils.h"
@@ -13,9 +14,10 @@
 
 #define new DEBUG_NEW
 
-using namespace modplug::tracker;
+namespace modplug {
+namespace tracker {
 
-ModSequence::ModSequence(module_renderer& rSf,
+orderlist::orderlist(module_renderer& rSf,
                                              modplug::tracker::patternindex_t* pArray,
                                              modplug::tracker::orderindex_t nSize,
                                              modplug::tracker::orderindex_t nCapacity,
@@ -31,7 +33,7 @@ ModSequence::ModSequence(module_renderer& rSf,
 {}
 
 
-ModSequence::ModSequence(module_renderer& rSf, modplug::tracker::orderindex_t nSize) :
+orderlist::orderlist(module_renderer& rSf, modplug::tracker::orderindex_t nSize) :
     m_pSndFile(&rSf),
     m_bDeletableArray(true),
     m_nInvalidIndex(GetInvalidPatIndex(MOD_TYPE_MPT)),
@@ -45,7 +47,7 @@ ModSequence::ModSequence(module_renderer& rSf, modplug::tracker::orderindex_t nS
 }
 
 
-ModSequence::ModSequence(const ModSequence& seq) :
+orderlist::orderlist(const orderlist& seq) :
     m_pSndFile(seq.m_pSndFile),
     m_bDeletableArray(false),
     m_nInvalidIndex(0xFF),
@@ -59,7 +61,7 @@ ModSequence::ModSequence(const ModSequence& seq) :
 }
 
 
-bool ModSequence::NeedsExtraDatafield() const
+bool orderlist::NeedsExtraDatafield() const
 //-------------------------------------------
 {
     if(m_pSndFile->GetType() == MOD_TYPE_MPT && m_pSndFile->Patterns.Size() > 0xFD)
@@ -80,7 +82,7 @@ namespace
 }
 
 
-void ModSequence::AdjustToNewModType(const MODTYPE oldtype)
+void orderlist::AdjustToNewModType(const MODTYPE oldtype)
 //---------------------------------------------------------
 {
     const CModSpecifications specs = m_pSndFile->GetModSpecifications();
@@ -123,7 +125,7 @@ void ModSequence::AdjustToNewModType(const MODTYPE oldtype)
 }
 
 
-modplug::tracker::orderindex_t ModSequence::GetLengthTailTrimmed() const
+modplug::tracker::orderindex_t orderlist::GetLengthTailTrimmed() const
 //--------------------------------------------------
 {
     modplug::tracker::orderindex_t nEnd = GetLength();
@@ -136,14 +138,14 @@ modplug::tracker::orderindex_t ModSequence::GetLengthTailTrimmed() const
 }
 
 
-modplug::tracker::orderindex_t ModSequence::GetLengthFirstEmpty() const
+modplug::tracker::orderindex_t orderlist::GetLengthFirstEmpty() const
 //-------------------------------------------------
 {
     return static_cast<modplug::tracker::orderindex_t>(std::find(begin(), end(), GetInvalidPatIndex()) - begin());
 }
 
 
-modplug::tracker::orderindex_t ModSequence::GetNextOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const
+modplug::tracker::orderindex_t orderlist::GetNextOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const
 //-----------------------------------------------------------------------------
 {
     const modplug::tracker::orderindex_t nLength = GetLength();
@@ -154,7 +156,7 @@ modplug::tracker::orderindex_t ModSequence::GetNextOrderIgnoringSkips(const modp
 }
 
 
-modplug::tracker::orderindex_t ModSequence::GetPreviousOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const
+modplug::tracker::orderindex_t orderlist::GetPreviousOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const
 //---------------------------------------------------------------------------------
 {
     const modplug::tracker::orderindex_t nLength = GetLength();
@@ -165,7 +167,7 @@ modplug::tracker::orderindex_t ModSequence::GetPreviousOrderIgnoringSkips(const 
 }
 
 
-void ModSequence::Init()
+void orderlist::Init()
 //----------------------
 {
     resize(MAX_ORDERS);
@@ -173,7 +175,7 @@ void ModSequence::Init()
 }
 
 
-void ModSequence::Remove(modplug::tracker::orderindex_t nPosBegin, modplug::tracker::orderindex_t nPosEnd)
+void orderlist::Remove(modplug::tracker::orderindex_t nPosBegin, modplug::tracker::orderindex_t nPosEnd)
 //----------------------------------------------------------------
 {
     const modplug::tracker::orderindex_t nLengthTt = GetLengthTailTrimmed();
@@ -188,7 +190,7 @@ void ModSequence::Remove(modplug::tracker::orderindex_t nPosBegin, modplug::trac
 }
 
 
-modplug::tracker::orderindex_t ModSequence::Insert(modplug::tracker::orderindex_t nPos, modplug::tracker::orderindex_t nCount, modplug::tracker::patternindex_t nFill)
+modplug::tracker::orderindex_t orderlist::Insert(modplug::tracker::orderindex_t nPos, modplug::tracker::orderindex_t nCount, modplug::tracker::patternindex_t nFill)
 //------------------------------------------------------------------------------------
 {
     if (nPos >= m_pSndFile->GetModSpecifications().ordersMax || nCount == 0)
@@ -214,14 +216,14 @@ modplug::tracker::orderindex_t ModSequence::Insert(modplug::tracker::orderindex_
 }
 
 
-void ModSequence::Append(modplug::tracker::patternindex_t nPat)
+void orderlist::Append(modplug::tracker::patternindex_t nPat)
 //-----------------------------------------
 {
     resize(m_nSize + 1, nPat);
 }
 
 
-void ModSequence::resize(modplug::tracker::orderindex_t nNewSize, modplug::tracker::patternindex_t nFill)
+void orderlist::resize(modplug::tracker::orderindex_t nNewSize, modplug::tracker::patternindex_t nFill)
 //---------------------------------------------------------------
 {
     if (nNewSize == m_nSize) return;
@@ -248,14 +250,14 @@ void ModSequence::resize(modplug::tracker::orderindex_t nNewSize, modplug::track
 }
 
 
-void ModSequence::clear()
+void orderlist::clear()
 //-----------------------
 {
     m_nSize = 0;
 }
 
 
-ModSequence& ModSequence::operator=(const ModSequence& seq)
+orderlist& orderlist::operator=(const orderlist& seq)
 //---------------------------------------------------------
 {
     if (&seq == this)
@@ -268,6 +270,126 @@ ModSequence& ModSequence::operator=(const ModSequence& seq)
     return *this;
 }
 
+/////////////////////////////////////
+// Read/Write
+/////////////////////////////////////
+
+
+uint32_t orderlist::Deserialize(const uint8_t* const src, const uint32_t memLength)
+//--------------------------------------------------------------------------
+{
+    if(memLength < 2 + 4) return 0;
+    uint16_t version = 0;
+    uint16_t s = 0;
+    uint32_t memPos = 0;
+    memcpy(&version, src, sizeof(version));
+    memPos += sizeof(version);
+    if(version != 0) return memPos;
+    memcpy(&s, src+memPos, sizeof(s));
+    memPos += 4;
+    if(s > 65000) return true;
+    if(memLength < memPos+s*4) return memPos;
+
+    const uint16_t nOriginalSize = s;
+    LimitMax(s, ModSpecs::mptm.ordersMax);
+
+    resize(max(s, MAX_ORDERS));
+    for(size_t i = 0; i<s; i++, memPos +=4 )
+    {
+            uint32_t temp;
+            memcpy(&temp, src+memPos, 4);
+            (*this)[i] = static_cast<modplug::tracker::patternindex_t>(temp);
+    }
+    memPos += 4*(nOriginalSize - s);
+    return memPos;
+}
+
+
+size_t orderlist::WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize)
+//-----------------------------------------------------------------------------
+{
+    if(numOfBytes > destSize || numOfBytes > MAX_ORDERS) return true;
+    if(GetLength() < numOfBytes) resize(modplug::tracker::orderindex_t(numOfBytes), 0xFF);
+    UINT i = 0;
+    for(i = 0; i<numOfBytes; i++)
+    {
+            dest[i] = static_cast<uint8_t>((*this)[i]);
+    }
+    return i; //Returns the number of bytes written.
+}
+
+
+size_t orderlist::WriteAsByte(FILE* f, const uint16_t count)
+//----------------------------------------------------------
+{
+    if(GetLength() < count) resize(count);
+
+    size_t i = 0;
+
+    for(i = 0; i<count; i++)
+    {
+            const modplug::tracker::patternindex_t pat = (*this)[i];
+            uint8_t temp = static_cast<uint8_t>((*this)[i]);
+
+            if(pat > 0xFD)
+            {
+                    if(pat == GetInvalidPatIndex()) temp = 0xFF;
+                    else temp = 0xFE;
+            }
+            fwrite(&temp, 1, 1, f);
+    }
+    return i; //Returns the number of bytes written.
+}
+
+
+bool orderlist::ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength)
+//-------------------------------------------------------------------------------------
+{
+    if(howMany < 0 || howMany > memLength) return true;
+    if(m_pSndFile->GetType() != MOD_TYPE_MPT && howMany > MAX_ORDERS) return true;
+
+    if(GetLength() < static_cast<size_t>(howMany))
+            resize(modplug::tracker::orderindex_t(howMany));
+
+    for(int i = 0; i<howMany; i++, pFrom++)
+            (*this)[i] = *pFrom;
+    return false;
+}
+
+
+void ReadModSequence(std::istream& iStrm, orderlist& seq, const size_t)
+//-----------------------------------------------------------------------
+{
+    srlztn::Ssb ssb(iStrm);
+    ssb.BeginRead(FileIdSequence, MptVersion::num);
+    if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
+            return;
+    std::string str;
+    ssb.ReadItem(str, "n");
+    seq.m_sName = str.c_str();
+    uint16_t nSize = MAX_ORDERS;
+    ssb.ReadItem<uint16_t>(nSize, "l");
+    LimitMax(nSize, ModSpecs::mptm.ordersMax);
+    seq.resize(max(nSize, ModSequenceSet::s_nCacheSize));
+    ssb.ReadItem(seq.m_pArray, "a", 1, srlztn::ArrayReader<uint16_t>(nSize));
+}
+
+void WriteModSequence(std::ostream& oStrm, const orderlist& seq)
+//----------------------------------------------------------------
+{
+    srlztn::Ssb ssb(oStrm);
+    ssb.BeginWrite(FileIdSequence, MptVersion::num);
+    ssb.WriteItem((LPCSTR)seq.m_sName, "n");
+    const uint16_t nLength = seq.GetLengthTailTrimmed();
+    ssb.WriteItem<uint16_t>(nLength, "l");
+    ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16_t>(nLength));
+    ssb.FinishWrite();
+}
+
+
+
+}
+}
 
 
 /////////////////////////////////////
@@ -276,15 +398,15 @@ ModSequence& ModSequence::operator=(const ModSequence& seq)
 
 
 ModSequenceSet::ModSequenceSet(module_renderer& sndFile)
-    : ModSequence(sndFile, m_Cache, s_nCacheSize, s_nCacheSize, NoArrayDelete),
+    : orderlist(sndFile, m_Cache, s_nCacheSize, s_nCacheSize, NoArrayDelete),
       m_nCurrentSeq(0)
 //-------------------------------------------------------------------
 {
-    m_Sequences.push_back(ModSequence(sndFile, s_nCacheSize));
+    m_Sequences.push_back(orderlist(sndFile, s_nCacheSize));
 }
 
 
-const ModSequence& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq) const
+const modplug::tracker::orderlist& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq) const
 //----------------------------------------------------------------------
 {
     if (nSeq == GetCurrentSequenceIndex())
@@ -294,7 +416,7 @@ const ModSequence& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t
 }
 
 
-ModSequence& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq)
+modplug::tracker::orderlist& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq)
 //----------------------------------------------------------
 {
     if (nSeq == GetCurrentSequenceIndex())
@@ -314,7 +436,7 @@ void ModSequenceSet::CopyCacheToStorage()
 void ModSequenceSet::CopyStorageToCache()
 //---------------------------------------
 {
-    const ModSequence& rSeq = m_Sequences[m_nCurrentSeq];
+    const orderlist& rSeq = m_Sequences[m_nCurrentSeq];
     if (rSeq.GetLength() <= s_nCacheSize)
     {
             modplug::tracker::patternindex_t* pOld = m_pArray;
@@ -328,7 +450,7 @@ void ModSequenceSet::CopyStorageToCache()
             m_bDeletableArray = false;
     }
     else
-            ModSequence::operator=(rSeq);
+            orderlist::operator=(rSeq);
 }
 
 
@@ -346,7 +468,7 @@ modplug::tracker::sequenceindex_t ModSequenceSet::AddSequence(bool bDuplicate)
 {
     if(GetNumSequences() == MAX_SEQUENCES)
             return modplug::tracker::SequenceIndexInvalid;
-    m_Sequences.push_back(ModSequence(*m_pSndFile, s_nCacheSize));
+    m_Sequences.push_back(orderlist(*m_pSndFile, s_nCacheSize));
     if (bDuplicate)
     {
             m_Sequences.back() = *this;
@@ -456,7 +578,7 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
                                             modplug::tracker::modevent_t *m = m_pSndFile->Patterns[copyPat];
                                             for (UINT len = m_pSndFile->Patterns[copyPat].GetNumRows() * m_pSndFile->m_nChannels; len; m++, len--)
                                             {
-                                                    if(m->command == CmdPositionJump && m->param >= startOrd)
+                                                    if(m->command == modplug::tracker::CmdPositionJump && m->param >= startOrd)
                                                     {
                                                             m->param = static_cast<uint8_t>(m->param - startOrd);
                                                     }
@@ -520,7 +642,7 @@ bool ModSequenceSet::MergeSequences()
                     modplug::tracker::modevent_t *m = m_pSndFile->Patterns[nPat];
                     for (UINT len = 0; len < m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels; m++, len++)
                     {
-                            if(m->command == CmdPositionJump)
+                            if(m->command == modplug::tracker::CmdPositionJump)
                             {
                                     if(patternsFixed[nPat] != modplug::tracker::SequenceIndexInvalid && patternsFixed[nPat] != removedSequences)
                                     {
@@ -561,92 +683,6 @@ bool ModSequenceSet::MergeSequences()
 }
 
 
-/////////////////////////////////////
-// Read/Write
-/////////////////////////////////////
-
-
-uint32_t ModSequence::Deserialize(const uint8_t* const src, const uint32_t memLength)
-//--------------------------------------------------------------------------
-{
-    if(memLength < 2 + 4) return 0;
-    uint16_t version = 0;
-    uint16_t s = 0;
-    uint32_t memPos = 0;
-    memcpy(&version, src, sizeof(version));
-    memPos += sizeof(version);
-    if(version != 0) return memPos;
-    memcpy(&s, src+memPos, sizeof(s));
-    memPos += 4;
-    if(s > 65000) return true;
-    if(memLength < memPos+s*4) return memPos;
-
-    const uint16_t nOriginalSize = s;
-    LimitMax(s, ModSpecs::mptm.ordersMax);
-
-    resize(max(s, MAX_ORDERS));
-    for(size_t i = 0; i<s; i++, memPos +=4 )
-    {
-            uint32_t temp;
-            memcpy(&temp, src+memPos, 4);
-            (*this)[i] = static_cast<modplug::tracker::patternindex_t>(temp);
-    }
-    memPos += 4*(nOriginalSize - s);
-    return memPos;
-}
-
-
-size_t ModSequence::WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize)
-//-----------------------------------------------------------------------------
-{
-    if(numOfBytes > destSize || numOfBytes > MAX_ORDERS) return true;
-    if(GetLength() < numOfBytes) resize(modplug::tracker::orderindex_t(numOfBytes), 0xFF);
-    UINT i = 0;
-    for(i = 0; i<numOfBytes; i++)
-    {
-            dest[i] = static_cast<uint8_t>((*this)[i]);
-    }
-    return i; //Returns the number of bytes written.
-}
-
-
-size_t ModSequence::WriteAsByte(FILE* f, const uint16_t count)
-//----------------------------------------------------------
-{
-    if(GetLength() < count) resize(count);
-
-    size_t i = 0;
-
-    for(i = 0; i<count; i++)
-    {
-            const modplug::tracker::patternindex_t pat = (*this)[i];
-            uint8_t temp = static_cast<uint8_t>((*this)[i]);
-
-            if(pat > 0xFD)
-            {
-                    if(pat == GetInvalidPatIndex()) temp = 0xFF;
-                    else temp = 0xFE;
-            }
-            fwrite(&temp, 1, 1, f);
-    }
-    return i; //Returns the number of bytes written.
-}
-
-
-bool ModSequence::ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength)
-//-------------------------------------------------------------------------------------
-{
-    if(howMany < 0 || howMany > memLength) return true;
-    if(m_pSndFile->GetType() != MOD_TYPE_MPT && howMany > MAX_ORDERS) return true;
-
-    if(GetLength() < static_cast<size_t>(howMany))
-            resize(modplug::tracker::orderindex_t(howMany));
-
-    for(int i = 0; i<howMany; i++, pFrom++)
-            (*this)[i] = *pFrom;
-    return false;
-}
-
 
 void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 //-----------------------------------------------------------------------------
@@ -686,58 +722,6 @@ void WriteModSequenceOld(std::ostream& oStrm, const ModSequenceSet& seq)
     }
 }
 
-
-void WriteModSequence(std::ostream& oStrm, const ModSequence& seq)
-//----------------------------------------------------------------
-{
-    srlztn::Ssb ssb(oStrm);
-    ssb.BeginWrite(FileIdSequence, MptVersion::num);
-    ssb.WriteItem((LPCSTR)seq.m_sName, "n");
-    const uint16_t nLength = seq.GetLengthTailTrimmed();
-    ssb.WriteItem<uint16_t>(nLength, "l");
-    ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16_t>(nLength));
-    ssb.FinishWrite();
-}
-
-
-void ReadModSequence(std::istream& iStrm, ModSequence& seq, const size_t)
-//-----------------------------------------------------------------------
-{
-    srlztn::Ssb ssb(iStrm);
-    ssb.BeginRead(FileIdSequence, MptVersion::num);
-    if ((ssb.m_Status & srlztn::SNT_FAILURE) != 0)
-            return;
-    std::string str;
-    ssb.ReadItem(str, "n");
-    seq.m_sName = str.c_str();
-    uint16_t nSize = MAX_ORDERS;
-    ssb.ReadItem<uint16_t>(nSize, "l");
-    LimitMax(nSize, ModSpecs::mptm.ordersMax);
-    seq.resize(max(nSize, ModSequenceSet::s_nCacheSize));
-    ssb.ReadItem(seq.m_pArray, "a", 1, srlztn::ArrayReader<uint16_t>(nSize));
-}
-
-
-void WriteModSequences(std::ostream& oStrm, const ModSequenceSet& seq)
-//--------------------------------------------------------------------
-{
-    srlztn::Ssb ssb(oStrm);
-    ssb.BeginWrite(FileIdSequences, MptVersion::num);
-    const uint8_t nSeqs = seq.GetNumSequences();
-    const uint8_t nCurrent = seq.GetCurrentSequenceIndex();
-    ssb.WriteItem(nSeqs, "n");
-    ssb.WriteItem(nCurrent, "c");
-    for(uint8_t i = 0; i < nSeqs; i++)
-    {
-            if (i == seq.GetCurrentSequenceIndex())
-                    ssb.WriteItem(seq, &i, sizeof(i), &WriteModSequence);
-            else
-                    ssb.WriteItem(seq.m_Sequences[i], &i, sizeof(i), &WriteModSequence);
-    }
-    ssb.FinishWrite();
-}
-
-
 void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 //---------------------------------------------------------------------------
 {
@@ -753,10 +737,29 @@ void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
     LimitMax(nSeqs, MAX_SEQUENCES);
     ssb.ReadItem(nCurrent, "c");
     if (seq.GetNumSequences() < nSeqs)
-            seq.m_Sequences.resize(nSeqs, ModSequence(*seq.m_pSndFile, seq.s_nCacheSize));
+            seq.m_Sequences.resize(nSeqs, modplug::tracker::orderlist(*seq.m_pSndFile, seq.s_nCacheSize));
 
     for(uint8_t i = 0; i < nSeqs; i++)
-            ssb.ReadItem(seq.m_Sequences[i], &i, sizeof(i), &ReadModSequence);
+            ssb.ReadItem(seq.m_Sequences[i], &i, sizeof(i), &modplug::tracker::ReadModSequence);
     seq.m_nCurrentSeq = (nCurrent < seq.GetNumSequences()) ? nCurrent : 0;
     seq.CopyStorageToCache();
+}
+
+void WriteModSequences(std::ostream& oStrm, const ModSequenceSet& seq)
+//--------------------------------------------------------------------
+{
+    srlztn::Ssb ssb(oStrm);
+    ssb.BeginWrite(FileIdSequences, MptVersion::num);
+    const uint8_t nSeqs = seq.GetNumSequences();
+    const uint8_t nCurrent = seq.GetCurrentSequenceIndex();
+    ssb.WriteItem(nSeqs, "n");
+    ssb.WriteItem(nCurrent, "c");
+    for(uint8_t i = 0; i < nSeqs; i++)
+    {
+            if (i == seq.GetCurrentSequenceIndex())
+                    ssb.WriteItem(seq, &i, sizeof(i), &modplug::tracker::WriteModSequence);
+            else
+                    ssb.WriteItem(seq.m_Sequences[i], &i, sizeof(i), &modplug::tracker::WriteModSequence);
+    }
+    ssb.FinishWrite();
 }
