@@ -268,7 +268,7 @@
     <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor_aux.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
-    <ClCompile Include="tracker\orderlist.cpp">
+    <ClCompile Include="tracker\modsequence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -407,7 +407,7 @@
     <ClInclude Include="gui\qt4\pattern_editor_actions.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="tracker\orderlist.h">
+    <ClInclude Include="tracker\modsequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

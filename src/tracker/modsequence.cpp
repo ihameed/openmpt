@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include "orderlist.h"
+#include "modsequence.h"
 #include "modevent.h"
 #include "../moddoc.h"
 #include "../version.h"
@@ -17,37 +17,36 @@
 namespace modplug {
 namespace tracker {
 
-orderlist::orderlist(module_renderer& rSf,
-                                             modplug::tracker::patternindex_t* pArray,
-                                             modplug::tracker::orderindex_t nSize,
-                                             modplug::tracker::orderindex_t nCapacity,
-                                             const bool bDeletableArray) :
-            m_pSndFile(&rSf),
-            m_pArray(pArray),
-            m_nSize(nSize),
-            m_nCapacity(nCapacity),
-            m_bDeletableArray(bDeletableArray),
-            m_nInvalidIndex(0xFF),
-            m_nIgnoreIndex(0xFE)
-//-------------------------------------------------------
+modsequence_t::modsequence_t(
+    module_renderer& rSf,
+    patternindex_t* pArray,
+    orderindex_t nSize,
+    orderindex_t nCapacity,
+    const bool bDeletableArray
+) : m_pSndFile(&rSf),
+    m_pArray(pArray),
+    m_nSize(nSize),
+    m_nCapacity(nCapacity),
+    m_bDeletableArray(bDeletableArray),
+    m_nInvalidIndex(0xFF),
+    m_nIgnoreIndex(0xFE)
 {}
 
 
-orderlist::orderlist(module_renderer& rSf, modplug::tracker::orderindex_t nSize) :
+modsequence_t::modsequence_t(module_renderer& rSf, orderindex_t nSize) :
     m_pSndFile(&rSf),
     m_bDeletableArray(true),
-    m_nInvalidIndex(GetInvalidPatIndex(MOD_TYPE_MPT)),
-    m_nIgnoreIndex(GetIgnoreIndex(MOD_TYPE_MPT))
-//-------------------------------------------------------------------
+    m_nInvalidIndex(invalid_index_of_modtype(MOD_TYPE_MPT)),
+    m_nIgnoreIndex(ignore_index_of_modtype(MOD_TYPE_MPT))
 {
     m_nSize = nSize;
     m_nCapacity = m_nSize;
-    m_pArray = new modplug::tracker::patternindex_t[m_nCapacity];
-    std::fill(begin(), end(), GetInvalidPatIndex(MOD_TYPE_MPT));
+    m_pArray = new patternindex_t[m_nCapacity];
+    std::fill(begin(), end(), invalid_index_of_modtype(MOD_TYPE_MPT));
 }
 
 
-orderlist::orderlist(const orderlist& seq) :
+modsequence_t::modsequence_t(const modsequence_t& seq) :
     m_pSndFile(seq.m_pSndFile),
     m_bDeletableArray(false),
     m_nInvalidIndex(0xFF),
@@ -55,19 +54,26 @@ orderlist::orderlist(const orderlist& seq) :
     m_nSize(0),
     m_nCapacity(0),
     m_pArray(nullptr)
-//------------------------------------------
 {
     *this = seq;
 }
 
+modsequence_t::~modsequence_t() {
+    if (m_bDeletableArray) {
+        delete[] m_pArray;
+    }
+}
 
-bool orderlist::NeedsExtraDatafield() const
-//-------------------------------------------
-{
-    if(m_pSndFile->GetType() == MOD_TYPE_MPT && m_pSndFile->Patterns.Size() > 0xFD)
-            return true;
+
+bool modsequence_t::NeedsExtraDatafield() const {
+    if (m_pSndFile->GetType() == MOD_TYPE_MPT && m_pSndFile->Patterns.Size() > 0xFD)
+        return true;
     else
-            return false;
+        return false;
+}
+
+orderindex_t modsequence_t::GetLastIndex() const {
+    return m_nSize - 1;
 }
 
 namespace
@@ -76,32 +82,39 @@ namespace
     struct IsNotValidPat
     {
             IsNotValidPat(module_renderer& sndFile) : rSndFile(sndFile) {}
-            bool operator()(modplug::tracker::patternindex_t i) {return !rSndFile.Patterns.IsValidPat(i);}
+            bool operator()(patternindex_t i) {return !rSndFile.Patterns.IsValidPat(i);}
             module_renderer& rSndFile;
     };
 }
 
 
-void orderlist::AdjustToNewModType(const MODTYPE oldtype)
+void modsequence_t::AdjustToNewModType(const MODTYPE oldtype)
 //---------------------------------------------------------
 {
     const CModSpecifications specs = m_pSndFile->GetModSpecifications();
     const MODTYPE newtype = m_pSndFile->GetType();
 
-    m_nInvalidIndex = GetInvalidPatIndex(newtype);
-    m_nIgnoreIndex = GetIgnoreIndex(newtype);
+    m_nInvalidIndex = invalid_index_of_modtype(newtype);
+    m_nIgnoreIndex = ignore_index_of_modtype(newtype);
 
     // If not supported, remove "+++" separator order items.
     if (specs.hasIgnoreIndex == false)
     {
             if (oldtype != MOD_TYPE_NONE)
             {
-                    iterator i = std::remove_if(begin(), end(), std::bind2nd(std::equal_to<modplug::tracker::patternindex_t>(), GetIgnoreIndex(oldtype)));
+                    iterator i = std::remove_if(
+                        begin(),
+                        end(),
+                        std::bind2nd(
+                            std::equal_to<patternindex_t>(),
+                            ignore_index_of_modtype(oldtype)
+                        )
+                    );
                     std::fill(i, end(), GetInvalidPatIndex());
             }
     }
     else
-            Replace(GetIgnoreIndex(oldtype), GetIgnoreIndex());
+            Replace(ignore_index_of_modtype(oldtype), GetIgnoreIndex());
 
     //Resize orderlist if needed.
     if (specs.ordersMax < GetLength())
@@ -121,53 +134,53 @@ void orderlist::AdjustToNewModType(const MODTYPE oldtype)
     }
 
     // Replace items used to denote end of song order.
-    Replace(GetInvalidPatIndex(oldtype), GetInvalidPatIndex());
+    Replace(invalid_index_of_modtype(oldtype), GetInvalidPatIndex());
 }
 
 
-modplug::tracker::orderindex_t orderlist::GetLengthTailTrimmed() const
+orderindex_t modsequence_t::GetLengthTailTrimmed() const
 //--------------------------------------------------
 {
-    modplug::tracker::orderindex_t nEnd = GetLength();
+    orderindex_t nEnd = GetLength();
     if(nEnd == 0) return 0;
     nEnd--;
-    const modplug::tracker::patternindex_t iInvalid = GetInvalidPatIndex();
+    const patternindex_t iInvalid = GetInvalidPatIndex();
     while(nEnd > 0 && (*this)[nEnd] == iInvalid)
             nEnd--;
     return ((*this)[nEnd] == iInvalid) ? 0 : nEnd+1;
 }
 
 
-modplug::tracker::orderindex_t orderlist::GetLengthFirstEmpty() const
+orderindex_t modsequence_t::GetLengthFirstEmpty() const
 //-------------------------------------------------
 {
-    return static_cast<modplug::tracker::orderindex_t>(std::find(begin(), end(), GetInvalidPatIndex()) - begin());
+    return static_cast<orderindex_t>(std::find(begin(), end(), GetInvalidPatIndex()) - begin());
 }
 
 
-modplug::tracker::orderindex_t orderlist::GetNextOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const
+orderindex_t modsequence_t::GetNextOrderIgnoringSkips(const orderindex_t start) const
 //-----------------------------------------------------------------------------
 {
-    const modplug::tracker::orderindex_t nLength = GetLength();
+    const orderindex_t nLength = GetLength();
     if(nLength == 0) return 0;
-    modplug::tracker::orderindex_t next = min(nLength-1, start+1);
+    orderindex_t next = min(nLength-1, start+1);
     while(next+1 < nLength && (*this)[next] == GetIgnoreIndex()) next++;
     return next;
 }
 
 
-modplug::tracker::orderindex_t orderlist::GetPreviousOrderIgnoringSkips(const modplug::tracker::orderindex_t start) const
+orderindex_t modsequence_t::GetPreviousOrderIgnoringSkips(const orderindex_t start) const
 //---------------------------------------------------------------------------------
 {
-    const modplug::tracker::orderindex_t nLength = GetLength();
+    const orderindex_t nLength = GetLength();
     if(start == 0 || nLength == 0) return 0;
-    modplug::tracker::orderindex_t prev = min(start-1, nLength-1);
+    orderindex_t prev = min(start-1, nLength-1);
     while(prev > 0 && (*this)[prev] == GetIgnoreIndex()) prev--;
     return prev;
 }
 
 
-void orderlist::Init()
+void modsequence_t::Init()
 //----------------------
 {
     resize(MAX_ORDERS);
@@ -175,57 +188,64 @@ void orderlist::Init()
 }
 
 
-void orderlist::Remove(modplug::tracker::orderindex_t nPosBegin, modplug::tracker::orderindex_t nPosEnd)
+void modsequence_t::Remove(orderindex_t nPosBegin, orderindex_t nPosEnd)
 //----------------------------------------------------------------
 {
-    const modplug::tracker::orderindex_t nLengthTt = GetLengthTailTrimmed();
+    const orderindex_t nLengthTt = GetLengthTailTrimmed();
     if (nPosEnd < nPosBegin || nPosEnd >= nLengthTt)
             return;
-    const modplug::tracker::orderindex_t nMoveCount = nLengthTt - (nPosEnd + 1);
+    const orderindex_t nMoveCount = nLengthTt - (nPosEnd + 1);
     // Move orders left.
     if (nMoveCount > 0)
-            memmove(m_pArray + nPosBegin, m_pArray + nPosEnd + 1, sizeof(modplug::tracker::patternindex_t) * nMoveCount);
+            memmove(m_pArray + nPosBegin, m_pArray + nPosEnd + 1, sizeof(patternindex_t) * nMoveCount);
     // Clear tail orders.
     std::fill(m_pArray + nPosBegin + nMoveCount, m_pArray + nLengthTt, GetInvalidPatIndex());
 }
 
 
-modplug::tracker::orderindex_t orderlist::Insert(modplug::tracker::orderindex_t nPos, modplug::tracker::orderindex_t nCount, modplug::tracker::patternindex_t nFill)
-//------------------------------------------------------------------------------------
+orderindex_t modsequence_t::Insert(orderindex_t nPos, orderindex_t nCount) {
+    return Insert(nPos, nCount, GetInvalidPatIndex());
+}
+
+orderindex_t modsequence_t::Insert(orderindex_t nPos, orderindex_t nCount,
+                                   patternindex_t nFill)
 {
     if (nPos >= m_pSndFile->GetModSpecifications().ordersMax || nCount == 0)
             return (nCount = 0);
-    const modplug::tracker::orderindex_t nLengthTt = GetLengthTailTrimmed();
+    const orderindex_t nLengthTt = GetLengthTailTrimmed();
     // Limit number of orders to be inserted.
-    LimitMax(nCount, modplug::tracker::orderindex_t(m_pSndFile->GetModSpecifications().ordersMax - nPos));
+    LimitMax(nCount, orderindex_t(m_pSndFile->GetModSpecifications().ordersMax - nPos));
     // Calculate new length.
-    const modplug::tracker::orderindex_t nNewLength = min(nLengthTt + nCount, m_pSndFile->GetModSpecifications().ordersMax);
+    const orderindex_t nNewLength = min(nLengthTt + nCount, m_pSndFile->GetModSpecifications().ordersMax);
     // Resize if needed.
     if (nNewLength > GetLength())
             resize(nNewLength);
     // Calculate how many orders would need to be moved(nNeededSpace) and how many can actually
     // be moved(nFreeSpace).
-    const modplug::tracker::orderindex_t nNeededSpace = nLengthTt - nPos;
-    const modplug::tracker::orderindex_t nFreeSpace = GetLength() - (nPos + nCount);
+    const orderindex_t nNeededSpace = nLengthTt - nPos;
+    const orderindex_t nFreeSpace = GetLength() - (nPos + nCount);
     // Move orders nCount steps right starting from nPos.
     if (nPos < nLengthTt)
-            memmove(m_pArray + nPos + nCount, m_pArray + nPos, min(nFreeSpace, nNeededSpace) * sizeof(modplug::tracker::patternindex_t));
+            memmove(m_pArray + nPos + nCount, m_pArray + nPos, min(nFreeSpace, nNeededSpace) * sizeof(patternindex_t));
     // Set nFill to new orders.
     std::fill(begin() + nPos, begin() + nPos + nCount, nFill);
     return nCount;
 }
 
 
-void orderlist::Append(modplug::tracker::patternindex_t nPat)
-//-----------------------------------------
-{
+void modsequence_t::Append() {
+    Append(GetInvalidPatIndex());
+}
+
+void modsequence_t::Append(patternindex_t nPat) {
     resize(m_nSize + 1, nPat);
 }
 
+void modsequence_t::resize(orderindex_t nNewSize) {
+    resize(nNewSize, GetInvalidPatIndex());
+}
 
-void orderlist::resize(modplug::tracker::orderindex_t nNewSize, modplug::tracker::patternindex_t nFill)
-//---------------------------------------------------------------
-{
+void modsequence_t::resize(orderindex_t nNewSize, patternindex_t nFill) {
     if (nNewSize == m_nSize) return;
     if (nNewSize <= m_nCapacity)
     {
@@ -235,9 +255,9 @@ void orderlist::resize(modplug::tracker::orderindex_t nNewSize, modplug::tracker
     }
     else
     {
-            const modplug::tracker::patternindex_t* const pOld = m_pArray;
+            const patternindex_t* const pOld = m_pArray;
             m_nCapacity = nNewSize + 100;
-            m_pArray = new modplug::tracker::patternindex_t[m_nCapacity];
+            m_pArray = new patternindex_t[m_nCapacity];
         if (m_nSize) {
             std::copy_n(pOld, m_nSize, m_pArray);
         }
@@ -250,16 +270,12 @@ void orderlist::resize(modplug::tracker::orderindex_t nNewSize, modplug::tracker
 }
 
 
-void orderlist::clear()
-//-----------------------
-{
+void modsequence_t::clear() {
     m_nSize = 0;
 }
 
 
-orderlist& orderlist::operator=(const orderlist& seq)
-//---------------------------------------------------------
-{
+modsequence_t& modsequence_t::operator = (const modsequence_t& seq) {
     if (&seq == this)
             return *this;
     m_nIgnoreIndex = seq.m_nIgnoreIndex;
@@ -275,7 +291,7 @@ orderlist& orderlist::operator=(const orderlist& seq)
 /////////////////////////////////////
 
 
-uint32_t orderlist::Deserialize(const uint8_t* const src, const uint32_t memLength)
+uint32_t modsequence_t::Deserialize(const uint8_t* const src, const uint32_t memLength)
 //--------------------------------------------------------------------------
 {
     if(memLength < 2 + 4) return 0;
@@ -298,18 +314,18 @@ uint32_t orderlist::Deserialize(const uint8_t* const src, const uint32_t memLeng
     {
             uint32_t temp;
             memcpy(&temp, src+memPos, 4);
-            (*this)[i] = static_cast<modplug::tracker::patternindex_t>(temp);
+            (*this)[i] = static_cast<patternindex_t>(temp);
     }
     memPos += 4*(nOriginalSize - s);
     return memPos;
 }
 
 
-size_t orderlist::WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize)
+size_t modsequence_t::WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize)
 //-----------------------------------------------------------------------------
 {
     if(numOfBytes > destSize || numOfBytes > MAX_ORDERS) return true;
-    if(GetLength() < numOfBytes) resize(modplug::tracker::orderindex_t(numOfBytes), 0xFF);
+    if(GetLength() < numOfBytes) resize(orderindex_t(numOfBytes), 0xFF);
     UINT i = 0;
     for(i = 0; i<numOfBytes; i++)
     {
@@ -319,7 +335,7 @@ size_t orderlist::WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const U
 }
 
 
-size_t orderlist::WriteAsByte(FILE* f, const uint16_t count)
+size_t modsequence_t::WriteAsByte(FILE* f, const uint16_t count)
 //----------------------------------------------------------
 {
     if(GetLength() < count) resize(count);
@@ -328,7 +344,7 @@ size_t orderlist::WriteAsByte(FILE* f, const uint16_t count)
 
     for(i = 0; i<count; i++)
     {
-            const modplug::tracker::patternindex_t pat = (*this)[i];
+            const patternindex_t pat = (*this)[i];
             uint8_t temp = static_cast<uint8_t>((*this)[i]);
 
             if(pat > 0xFD)
@@ -342,14 +358,14 @@ size_t orderlist::WriteAsByte(FILE* f, const uint16_t count)
 }
 
 
-bool orderlist::ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength)
+bool modsequence_t::ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength)
 //-------------------------------------------------------------------------------------
 {
     if(howMany < 0 || howMany > memLength) return true;
     if(m_pSndFile->GetType() != MOD_TYPE_MPT && howMany > MAX_ORDERS) return true;
 
     if(GetLength() < static_cast<size_t>(howMany))
-            resize(modplug::tracker::orderindex_t(howMany));
+            resize(orderindex_t(howMany));
 
     for(int i = 0; i<howMany; i++, pFrom++)
             (*this)[i] = *pFrom;
@@ -357,7 +373,7 @@ bool orderlist::ReadAsByte(const uint8_t* pFrom, const int howMany, const int me
 }
 
 
-void ReadModSequence(std::istream& iStrm, orderlist& seq, const size_t)
+void ReadModSequence(std::istream& iStrm, modsequence_t& seq, const size_t)
 //-----------------------------------------------------------------------
 {
     srlztn::Ssb ssb(iStrm);
@@ -370,43 +386,32 @@ void ReadModSequence(std::istream& iStrm, orderlist& seq, const size_t)
     uint16_t nSize = MAX_ORDERS;
     ssb.ReadItem<uint16_t>(nSize, "l");
     LimitMax(nSize, ModSpecs::mptm.ordersMax);
-    seq.resize(max(nSize, ModSequenceSet::s_nCacheSize));
+    seq.resize(max(nSize, deprecated_modsequence_list_t::s_nCacheSize));
     ssb.ReadItem(seq.m_pArray, "a", 1, srlztn::ArrayReader<uint16_t>(nSize));
 }
 
-void WriteModSequence(std::ostream& oStrm, const orderlist& seq)
+void WriteModSequence(std::ostream& oStrm, const modsequence_t& seq)
 //----------------------------------------------------------------
 {
     srlztn::Ssb ssb(oStrm);
     ssb.BeginWrite(FileIdSequence, MptVersion::num);
-    ssb.WriteItem((LPCSTR)seq.m_sName, "n");
+    ssb.WriteItem((LPCSTR)seq.m_sName.c_str(), "n");
     const uint16_t nLength = seq.GetLengthTailTrimmed();
     ssb.WriteItem<uint16_t>(nLength, "l");
     ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16_t>(nLength));
     ssb.FinishWrite();
 }
 
-
-
-}
-}
-
-
-/////////////////////////////////////
-// ModSequenceSet
-/////////////////////////////////////
-
-
-ModSequenceSet::ModSequenceSet(module_renderer& sndFile)
-    : orderlist(sndFile, m_Cache, s_nCacheSize, s_nCacheSize, NoArrayDelete),
+deprecated_modsequence_list_t::deprecated_modsequence_list_t(module_renderer& sndFile)
+    : modsequence_t(sndFile, m_Cache, s_nCacheSize, s_nCacheSize, deprecated_NoArrayDelete),
       m_nCurrentSeq(0)
 //-------------------------------------------------------------------
 {
-    m_Sequences.push_back(orderlist(sndFile, s_nCacheSize));
+    m_Sequences.push_back(modsequence_t(sndFile, s_nCacheSize));
 }
 
 
-const modplug::tracker::orderlist& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq) const
+const modsequence_t& deprecated_modsequence_list_t::GetSequence(sequenceindex_t nSeq) const
 //----------------------------------------------------------------------
 {
     if (nSeq == GetCurrentSequenceIndex())
@@ -416,7 +421,7 @@ const modplug::tracker::orderlist& ModSequenceSet::GetSequence(modplug::tracker:
 }
 
 
-modplug::tracker::orderlist& ModSequenceSet::GetSequence(modplug::tracker::sequenceindex_t nSeq)
+modsequence_t& deprecated_modsequence_list_t::GetSequence(sequenceindex_t nSeq)
 //----------------------------------------------------------
 {
     if (nSeq == GetCurrentSequenceIndex())
@@ -426,20 +431,20 @@ modplug::tracker::orderlist& ModSequenceSet::GetSequence(modplug::tracker::seque
 }
 
 
-void ModSequenceSet::CopyCacheToStorage()
+void deprecated_modsequence_list_t::CopyCacheToStorage()
 //---------------------------------------
 {
     m_Sequences[m_nCurrentSeq] = *this;
 }
 
 
-void ModSequenceSet::CopyStorageToCache()
+void deprecated_modsequence_list_t::CopyStorageToCache()
 //---------------------------------------
 {
-    const orderlist& rSeq = m_Sequences[m_nCurrentSeq];
+    const modsequence_t& rSeq = m_Sequences[m_nCurrentSeq];
     if (rSeq.GetLength() <= s_nCacheSize)
     {
-            modplug::tracker::patternindex_t* pOld = m_pArray;
+            patternindex_t* pOld = m_pArray;
             m_pArray = m_Cache;
             m_nSize = rSeq.GetLength();
             m_nCapacity = s_nCacheSize;
@@ -450,11 +455,11 @@ void ModSequenceSet::CopyStorageToCache()
             m_bDeletableArray = false;
     }
     else
-            orderlist::operator=(rSeq);
+            modsequence_t::operator=(rSeq);
 }
 
 
-void ModSequenceSet::SetSequence(modplug::tracker::sequenceindex_t n)
+void deprecated_modsequence_list_t::SetSequence(sequenceindex_t n)
 //-----------------------------------------------
 {
     CopyCacheToStorage();
@@ -463,12 +468,12 @@ void ModSequenceSet::SetSequence(modplug::tracker::sequenceindex_t n)
 }
 
 
-modplug::tracker::sequenceindex_t ModSequenceSet::AddSequence(bool bDuplicate)
+sequenceindex_t deprecated_modsequence_list_t::AddSequence(bool bDuplicate)
 //--------------------------------------------------------
 {
     if(GetNumSequences() == MAX_SEQUENCES)
-            return modplug::tracker::SequenceIndexInvalid;
-    m_Sequences.push_back(orderlist(*m_pSndFile, s_nCacheSize));
+            return SequenceIndexInvalid;
+    m_Sequences.push_back(modsequence_t(*m_pSndFile, s_nCacheSize));
     if (bDuplicate)
     {
             m_Sequences.back() = *this;
@@ -479,7 +484,7 @@ modplug::tracker::sequenceindex_t ModSequenceSet::AddSequence(bool bDuplicate)
 }
 
 
-void ModSequenceSet::RemoveSequence(modplug::tracker::sequenceindex_t i)
+void deprecated_modsequence_list_t::RemoveSequence(sequenceindex_t i)
 //--------------------------------------------------
 {
     // Do nothing if index is invalid or if there's only one sequence left.
@@ -494,12 +499,12 @@ void ModSequenceSet::RemoveSequence(modplug::tracker::sequenceindex_t i)
 }
 
 
-void ModSequenceSet::OnModTypeChanged(const MODTYPE oldtype)
+void deprecated_modsequence_list_t::OnModTypeChanged(const MODTYPE oldtype)
 //----------------------------------------------------------
 {
     const MODTYPE newtype = m_pSndFile->GetType();
-    const modplug::tracker::sequenceindex_t nSeqs = GetNumSequences();
-    for(modplug::tracker::sequenceindex_t n = 0; n < nSeqs; n++)
+    const sequenceindex_t nSeqs = GetNumSequences();
+    for(sequenceindex_t n = 0; n < nSeqs; n++)
     {
             GetSequence(n).AdjustToNewModType(oldtype);
     }
@@ -513,7 +518,7 @@ void ModSequenceSet::OnModTypeChanged(const MODTYPE oldtype)
 }
 
 
-bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
+bool deprecated_modsequence_list_t::ConvertSubsongsToMultipleSequences()
 //-------------------------------------------------------
 {
     // Allow conversion only if there's only one sequence.
@@ -521,8 +526,8 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
             return false;
 
     bool hasSepPatterns = false;
-    const modplug::tracker::orderindex_t nLengthTt = GetLengthTailTrimmed();
-    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < nLengthTt; nOrd++)
+    const orderindex_t nLengthTt = GetLengthTailTrimmed();
+    for(orderindex_t nOrd = 0; nOrd < nLengthTt; nOrd++)
     {
             if(!m_pSndFile->Patterns.IsValidPat(At(nOrd)) && At(nOrd) != GetIgnoreIndex())
             {
@@ -539,12 +544,12 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
     {
 
             SetSequence(0);
-            for(modplug::tracker::orderindex_t nOrd = 0; nOrd < GetLengthTailTrimmed(); nOrd++)
+            for(orderindex_t nOrd = 0; nOrd < GetLengthTailTrimmed(); nOrd++)
             {
                     // end of subsong?
                     if(!m_pSndFile->Patterns.IsValidPat(At(nOrd)) && At(nOrd) != GetIgnoreIndex())
                     {
-                            modplug::tracker::orderindex_t oldLength = GetLengthTailTrimmed();
+                            orderindex_t oldLength = GetLengthTailTrimmed();
                             // remove all separator patterns between current and next subsong first
                             while(nOrd < oldLength && (!m_pSndFile->Patterns.IsValidIndex(At(nOrd))))
                             {
@@ -553,10 +558,10 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
                                     modified = true;
                             }
                             if(nOrd >= oldLength) break;
-                            modplug::tracker::orderindex_t startOrd = nOrd;
+                            orderindex_t startOrd = nOrd;
                             modified = true;
 
-                            modplug::tracker::sequenceindex_t newSeq = AddSequence(false);
+                            sequenceindex_t newSeq = AddSequence(false);
                             SetSequence(newSeq);
 
                             // resize new seqeuence if necessary
@@ -568,17 +573,17 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
                             // now, move all following orders to the new sequence
                             while(nOrd < oldLength)
                             {
-                                    modplug::tracker::patternindex_t copyPat = GetSequence(newSeq - 1)[nOrd];
+                                    patternindex_t copyPat = GetSequence(newSeq - 1)[nOrd];
                                     At(nOrd - startOrd) = copyPat;
                                     nOrd++;
 
                                     // is this a valid pattern? adjust pattern jump commands, if necessary.
                                     if(m_pSndFile->Patterns.IsValidPat(copyPat))
                                     {
-                                            modplug::tracker::modevent_t *m = m_pSndFile->Patterns[copyPat];
+                                            modevent_t *m = m_pSndFile->Patterns[copyPat];
                                             for (UINT len = m_pSndFile->Patterns[copyPat].GetNumRows() * m_pSndFile->m_nChannels; len; m++, len--)
                                             {
-                                                    if(m->command == modplug::tracker::CmdPositionJump && m->param >= startOrd)
+                                                    if(m->command == CmdPositionJump && m->param >= startOrd)
                                                     {
                                                             m->param = static_cast<uint8_t>(m->param - startOrd);
                                                     }
@@ -598,7 +603,7 @@ bool ModSequenceSet::ConvertSubsongsToMultipleSequences()
     return modified;
 }
 
-bool ModSequenceSet::MergeSequences()
+bool deprecated_modsequence_list_t::MergeSequences()
 //-----------------------------------
 {
     if(GetNumSequences() <= 1)
@@ -607,13 +612,13 @@ bool ModSequenceSet::MergeSequences()
     CHAR s[256];
     SetSequence(0);
     resize(GetLengthTailTrimmed());
-    modplug::tracker::sequenceindex_t removedSequences = 0; // sequence count
-    vector <modplug::tracker::sequenceindex_t> patternsFixed; // pattern fixed by other sequence already?
-    patternsFixed.resize(m_pSndFile->Patterns.Size(), modplug::tracker::SequenceIndexInvalid);
+    sequenceindex_t removedSequences = 0; // sequence count
+    vector <sequenceindex_t> patternsFixed; // pattern fixed by other sequence already?
+    patternsFixed.resize(m_pSndFile->Patterns.Size(), SequenceIndexInvalid);
     // Set up vector
-    for(modplug::tracker::orderindex_t nOrd = 0; nOrd < GetLengthTailTrimmed(); nOrd++)
+    for(orderindex_t nOrd = 0; nOrd < GetLengthTailTrimmed(); nOrd++)
     {
-            modplug::tracker::patternindex_t nPat = At(nOrd);
+            patternindex_t nPat = At(nOrd);
             if(!m_pSndFile->Patterns.IsValidPat(nPat)) continue;
             patternsFixed[nPat] = 0;
     }
@@ -621,7 +626,7 @@ bool ModSequenceSet::MergeSequences()
     while(GetNumSequences() > 1)
     {
             removedSequences++;
-            const modplug::tracker::orderindex_t nFirstOrder = GetLengthTailTrimmed() + 1; // +1 for separator item
+            const orderindex_t nFirstOrder = GetLengthTailTrimmed() + 1; // +1 for separator item
             if(nFirstOrder + GetSequence(1).GetLengthTailTrimmed() > m_pSndFile->GetModSpecifications().ordersMax)
             {
                     wsprintf(s, "WARNING: Cannot merge Sequence %d (too long!)\n", removedSequences);
@@ -631,32 +636,32 @@ bool ModSequenceSet::MergeSequences()
                     continue;
             }
             Append(GetInvalidPatIndex()); // Separator item
-            for(modplug::tracker::orderindex_t nOrd = 0; nOrd < GetSequence(1).GetLengthTailTrimmed(); nOrd++)
+            for(orderindex_t nOrd = 0; nOrd < GetSequence(1).GetLengthTailTrimmed(); nOrd++)
             {
-                    modplug::tracker::patternindex_t nPat = GetSequence(1)[nOrd];
+                    patternindex_t nPat = GetSequence(1)[nOrd];
                     Append(nPat);
 
                     // Try to fix patterns (Bxx commands)
                     if(!m_pSndFile->Patterns.IsValidPat(nPat)) continue;
 
-                    modplug::tracker::modevent_t *m = m_pSndFile->Patterns[nPat];
+                    modevent_t *m = m_pSndFile->Patterns[nPat];
                     for (UINT len = 0; len < m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels; m++, len++)
                     {
-                            if(m->command == modplug::tracker::CmdPositionJump)
+                            if(m->command == CmdPositionJump)
                             {
-                                    if(patternsFixed[nPat] != modplug::tracker::SequenceIndexInvalid && patternsFixed[nPat] != removedSequences)
+                                    if(patternsFixed[nPat] != SequenceIndexInvalid && patternsFixed[nPat] != removedSequences)
                                     {
                                             // Oops, some other sequence uses this pattern already.
-                                            const modplug::tracker::patternindex_t nNewPat = m_pSndFile->Patterns.Insert(m_pSndFile->Patterns[nPat].GetNumRows());
-                                            if(nNewPat != modplug::tracker::SequenceIndexInvalid)
+                                            const patternindex_t nNewPat = m_pSndFile->Patterns.Insert(m_pSndFile->Patterns[nPat].GetNumRows());
+                                            if(nNewPat != SequenceIndexInvalid)
                                             {
                                                     // could create new pattern - copy data over and continue from here.
                                                     At(nFirstOrder + nOrd) = nNewPat;
-                                                    modplug::tracker::modevent_t *pSrc = m_pSndFile->Patterns[nPat];
-                                                    modplug::tracker::modevent_t *pDest = m_pSndFile->Patterns[nNewPat];
-                                                    memcpy(pDest, pSrc, m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels * sizeof(modplug::tracker::modevent_t));
+                                                    modevent_t *pSrc = m_pSndFile->Patterns[nPat];
+                                                    modevent_t *pDest = m_pSndFile->Patterns[nNewPat];
+                                                    memcpy(pDest, pSrc, m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels * sizeof(modevent_t));
                                                     m = pDest + len;
-                                                    patternsFixed.resize(max(nNewPat + 1, (modplug::tracker::patternindex_t)patternsFixed.size()), modplug::tracker::SequenceIndexInvalid);
+                                                    patternsFixed.resize(max(nNewPat + 1, (patternindex_t)patternsFixed.size()), SequenceIndexInvalid);
                                                     nPat = nNewPat;
                                             } else
                                             {
@@ -676,15 +681,13 @@ bool ModSequenceSet::MergeSequences()
     }
     // Remove order name + fill up with empty patterns.
     m_sName = "";
-    const modplug::tracker::orderindex_t nMinLength = (std::min)(ModSequenceSet::s_nCacheSize, m_pSndFile->GetModSpecifications().ordersMax);
+    const orderindex_t nMinLength = (std::min)(deprecated_modsequence_list_t::s_nCacheSize, m_pSndFile->GetModSpecifications().ordersMax);
     if (GetLength() < nMinLength)
             resize(nMinLength);
     return true;
 }
 
-
-
-void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t)
+void ReadModSequenceOld(std::istream& iStrm, deprecated_modsequence_list_t& seq, const size_t)
 //-----------------------------------------------------------------------------
 {
     uint16_t size;
@@ -709,20 +712,20 @@ void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t)
 }
 
 
-void WriteModSequenceOld(std::ostream& oStrm, const ModSequenceSet& seq)
+void WriteModSequenceOld(std::ostream& oStrm, const deprecated_modsequence_list_t& seq)
 //-------------------------------------------------------------------------
 {
     const uint16_t size = seq.GetLength();
     srlztn::Binarywrite<uint16_t>(oStrm, size);
-    const ModSequenceSet::const_iterator endIter = seq.end();
-    for(ModSequenceSet::const_iterator citer = seq.begin(); citer != endIter; citer++)
+    const deprecated_modsequence_list_t::const_iterator endIter = seq.end();
+    for(deprecated_modsequence_list_t::const_iterator citer = seq.begin(); citer != endIter; citer++)
     {
             const uint16_t temp = static_cast<uint16_t>(*citer);
             srlztn::Binarywrite<uint16_t>(oStrm, temp);
     }
 }
 
-void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
+void ReadModSequences(std::istream& iStrm, deprecated_modsequence_list_t& seq, const size_t)
 //---------------------------------------------------------------------------
 {
     srlztn::Ssb ssb(iStrm);
@@ -737,15 +740,15 @@ void ReadModSequences(std::istream& iStrm, ModSequenceSet& seq, const size_t)
     LimitMax(nSeqs, MAX_SEQUENCES);
     ssb.ReadItem(nCurrent, "c");
     if (seq.GetNumSequences() < nSeqs)
-            seq.m_Sequences.resize(nSeqs, modplug::tracker::orderlist(*seq.m_pSndFile, seq.s_nCacheSize));
+            seq.m_Sequences.resize(nSeqs, modsequence_t(*seq.m_pSndFile, seq.s_nCacheSize));
 
     for(uint8_t i = 0; i < nSeqs; i++)
-            ssb.ReadItem(seq.m_Sequences[i], &i, sizeof(i), &modplug::tracker::ReadModSequence);
+            ssb.ReadItem(seq.m_Sequences[i], &i, sizeof(i), &ReadModSequence);
     seq.m_nCurrentSeq = (nCurrent < seq.GetNumSequences()) ? nCurrent : 0;
     seq.CopyStorageToCache();
 }
 
-void WriteModSequences(std::ostream& oStrm, const ModSequenceSet& seq)
+void WriteModSequences(std::ostream& oStrm, const deprecated_modsequence_list_t& seq)
 //--------------------------------------------------------------------
 {
     srlztn::Ssb ssb(oStrm);
@@ -757,9 +760,13 @@ void WriteModSequences(std::ostream& oStrm, const ModSequenceSet& seq)
     for(uint8_t i = 0; i < nSeqs; i++)
     {
             if (i == seq.GetCurrentSequenceIndex())
-                    ssb.WriteItem(seq, &i, sizeof(i), &modplug::tracker::WriteModSequence);
+                    ssb.WriteItem(seq, &i, sizeof(i), &WriteModSequence);
             else
-                    ssb.WriteItem(seq.m_Sequences[i], &i, sizeof(i), &modplug::tracker::WriteModSequence);
+                    ssb.WriteItem(seq.m_Sequences[i], &i, sizeof(i), &WriteModSequence);
     }
     ssb.FinishWrite();
+}
+
+
+}
 }

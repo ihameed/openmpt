@@ -446,7 +446,7 @@
     </ClCompile>
     <ClCompile Include="tagging.cpp" />
     <ClCompile Include="tracker\module_renderer.cpp" />
-    <ClCompile Include="tracker\orderlist.cpp" />
+    <ClCompile Include="tracker\modsequence.cpp" />
     <ClCompile Include="Undo.cpp" />
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_ins.cpp" />
@@ -679,7 +679,7 @@
     <ClInclude Include="tagging.h" />
     <ClInclude Include="tracker\constants.h" />
     <ClInclude Include="tracker\modevent.h" />
-    <ClInclude Include="tracker\orderlist.h" />
+    <ClInclude Include="tracker\modsequence.h" />
     <ClInclude Include="tracker\tracker.h" />
     <ClInclude Include="legacy_soundlib\Snd_defs.h" />
     <ClInclude Include="tracker\types.h" />

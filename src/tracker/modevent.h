@@ -175,7 +175,8 @@ struct modevent_t {
     }
 
     // Returns true if modcommand is empty, false otherwise.
-    // If ignoreEffectValues is true (default), effect values are ignored are ignored if there is no effect command present.
+    // If ignoreEffectValues is true (default), effect values are ignored
+    // if there is no effect command present.
     bool IsEmpty(const bool ignoreEffectValues = true) const {
         if (ignoreEffectValues) {
             return this->note == 0
@@ -201,7 +202,8 @@ struct modevent_t {
         return note_id == NotePc || note_id == NotePcSmooth;
     }
 
-    // Swap volume and effect column (doesn't do any conversion as it's mainly for importing formats with multiple effect columns, so beware!)
+    // Swap volume and effect column (doesn't do any conversion as it's mainly
+    // for importing formats with multiple effect columns, so beware!)
     //XXXih: gross
     void SwapEffects() {
         int tmp = command;

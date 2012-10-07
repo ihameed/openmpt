@@ -182,7 +182,7 @@ BOOL CModDoc::OnNewDocument()
     m_SndFile.m_nMixLevels = m_SndFile.GetModSpecifications().defaultMixLevels;
     m_SndFile.m_pConfig->SetMixLevels(m_SndFile.m_nMixLevels);
     // ...and the order length
-    m_SndFile.Order.resize(min(ModSequenceSet::s_nCacheSize, m_SndFile.GetModSpecifications().ordersMax));
+    m_SndFile.Order.resize(min(modplug::tracker::deprecated_modsequence_list_t::s_nCacheSize, m_SndFile.GetModSpecifications().ordersMax));
 
     ReinitRecordState();
     InitializeMod();

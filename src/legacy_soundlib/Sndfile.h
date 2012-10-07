@@ -22,7 +22,7 @@
 #include "../audioio/paudio.h"
 #include "../tracker/tracker.h"
 #include "../mixgraph/core.h"
-#include "../tracker/orderlist.h"
+#include "../tracker/modsequence.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
@@ -683,7 +683,7 @@ public:    // for Editing
     modplug::tracker::modchannel_t Chn[MAX_VIRTUAL_CHANNELS];                                            // Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
     modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
     CPatternContainer Patterns;                                                    // Patterns
-    ModSequenceSet Order;                                                            // Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
+    modplug::tracker::deprecated_modsequence_list_t Order;                                                            // Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
 
     modplug::tracker::modsample_t Samples[MAX_SAMPLES];                                            // Sample Headers
     modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];            // Instrument Headers

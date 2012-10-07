@@ -847,7 +847,7 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     if (m_nType)
     {
         SetModSpecsPointer(m_pModSpecs, m_nType);
-        const modplug::tracker::orderindex_t nMinLength = (std::min)(ModSequenceSet::s_nCacheSize, GetModSpecifications().ordersMax);
+        const modplug::tracker::orderindex_t nMinLength = (std::min)(modplug::tracker::deprecated_modsequence_list_t::s_nCacheSize, GetModSpecifications().ordersMax);
         if (Order.GetLength() < nMinLength)
             Order.resize(nMinLength);
         return TRUE;

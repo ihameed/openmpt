@@ -178,7 +178,7 @@ BOOL CCtrlPatterns::OnInitDialog()
 
     m_SpinSequence.SetRange(0, m_pSndFile->Order.GetNumSequences() - 1);
     m_SpinSequence.SetPos(m_pSndFile->Order.GetCurrentSequenceIndex());
-    SetDlgItemText(IDC_EDIT_SEQUENCE_NAME, m_pSndFile->Order.m_sName);
+    SetDlgItemText(IDC_EDIT_SEQUENCE_NAME, m_pSndFile->Order.m_sName.c_str());
 
     m_OrderList.SetFocus();
 
@@ -230,7 +230,7 @@ void CCtrlPatterns::UpdateView(uint32_t dwHintMask, CObject *pObj)
 
     if (dwHintMask & HINT_MODSEQUENCE)
     {
-            SetDlgItemText(IDC_EDIT_SEQUENCE_NAME, m_pSndFile->Order.m_sName);
+            SetDlgItemText(IDC_EDIT_SEQUENCE_NAME, m_pSndFile->Order.m_sName.c_str());
     }
     if (dwHintMask & (HINT_MODSEQUENCE|HINT_MODTYPE))
     {
@@ -1092,7 +1092,7 @@ void CCtrlPatterns::OnSequenceNameChanged()
     {
             CString str;
             GetDlgItemText(IDC_EDIT_SEQUENCE_NAME, str);
-            if (str != m_pSndFile->Order.m_sName)
+            if (str != m_pSndFile->Order.m_sName.c_str())
             {
                     m_pSndFile->Order.m_sName = str;
                     m_pModDoc->SetModified();
