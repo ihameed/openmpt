@@ -22,6 +22,7 @@
 #include "../audioio/paudio.h"
 #include "../tracker/tracker.h"
 #include "../mixgraph/core.h"
+#include "../tracker/orderlist.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
@@ -221,7 +222,6 @@ typedef VOID (__cdecl * LPSNDMIXHOOKPROC)(int *, unsigned long, unsigned long); 
 
 #include "pattern.h"
 #include "patternContainer.h"
-#include "ModSequence.h"
 #include "PlaybackEventer.h"
 
 

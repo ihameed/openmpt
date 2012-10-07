@@ -393,7 +393,6 @@
     <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
     <ClCompile Include="legacy_soundlib\Mmx_mix.cpp" />
     <ClCompile Include="legacy_soundlib\modcommand.cpp" />
-    <ClCompile Include="legacy_soundlib\ModSequence.cpp" />
     <ClCompile Include="legacy_soundlib\modsmp_ctrl.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_filters.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_internal_mixer.cpp" />
@@ -447,6 +446,7 @@
     </ClCompile>
     <ClCompile Include="tagging.cpp" />
     <ClCompile Include="tracker\module_renderer.cpp" />
+    <ClCompile Include="tracker\orderlist.cpp" />
     <ClCompile Include="Undo.cpp" />
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_ins.cpp" />
@@ -618,7 +618,6 @@
     <ClInclude Include="legacy_soundlib\IT_DEFS.H" />
     <ClInclude Include="legacy_soundlib\Loaders.h" />
     <ClInclude Include="legacy_soundlib\midi.h" />
-    <ClInclude Include="legacy_soundlib\ModSequence.h" />
     <ClInclude Include="legacy_soundlib\modsmp_ctrl.h" />
     <ClInclude Include="legacy_soundlib\mod_specifications.h" />
     <ClInclude Include="legacy_soundlib\pattern.h" />
@@ -680,6 +679,7 @@
     <ClInclude Include="tagging.h" />
     <ClInclude Include="tracker\constants.h" />
     <ClInclude Include="tracker\modevent.h" />
+    <ClInclude Include="tracker\orderlist.h" />
     <ClInclude Include="tracker\tracker.h" />
     <ClInclude Include="legacy_soundlib\Snd_defs.h" />
     <ClInclude Include="tracker\types.h" />

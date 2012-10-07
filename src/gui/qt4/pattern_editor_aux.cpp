@@ -2,23 +2,44 @@
 
 #include "app_config.h"
 #include "pattern_editor_aux.h"
+#include "../../legacy_soundlib/Sndfile.h"
 
 namespace modplug {
 namespace gui {
 namespace qt4 {
 
+order_editor_hibbety_jibbety::order_editor_hibbety_jibbety(
+    module_renderer &renderer
+) : renderer(renderer)
+{ }
 
-order_editor::order_editor() {
+int order_editor_hibbety_jibbety::rowCount(const QModelIndex &parent) const {
+    //renderer.m_nMaxOrderPosition;
+    return renderer.Order.GetLength();
+}
+
+QVariant order_editor_hibbety_jibbety::data(
+    const QModelIndex &index, int role) const
+{
+    //DEBUG_FUNC("huoaoho (%d, %d); role %d", index.row(), index.column(), role);
+    switch (role) {
+    case Qt::DisplayRole: return QVariant("hooby");
+    case Qt::BackgroundRole: return qApp->palette().base();
+    default: return QVariant();
+    }
+}
+
+order_editor::order_editor(module_renderer &renderer)
+  : renderer(renderer),
+    modelhooty(renderer)
+{
     setLayout(&main_layout);
 
     main_layout.addWidget(&order_list);
     main_layout.setMargin(0);
     main_layout.setSpacing(0);
     order_list.setFlow(QListView::LeftToRight);
-    order_list.addItem("0");
-    order_list.addItem("2");
-    order_list.addItem("1");
-    order_list.addItem("6");
+    order_list.setModel(&modelhooty);
 
 
     order_list.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -28,7 +49,9 @@ order_editor::order_editor() {
 pattern_editor_tab::pattern_editor_tab(
     module_renderer &renderer,
     app_config &config
-) : renderer(renderer), config(config),
+) : renderer(renderer),
+    config(config),
+    orderedit(renderer),
     editor(
         renderer,
         config.pattern_keymap(),

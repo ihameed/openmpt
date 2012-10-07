@@ -1,7 +1,9 @@
-#ifndef MOD_SEQUENCE_H
-#define MOD_SEQUENCE_H
+#pragma once
 
 #include <vector>
+#include "types.h"
+#include "../legacy_soundlib/Snd_defs.h"
+#include <algorithm>
 
 class module_renderer;
 class ModSequenceSet;
@@ -178,6 +180,3 @@ void ReadModSequence(std::istream& iStrm, ModSequence& seq, const size_t);
 
 void WriteModSequenceOld(std::ostream& oStrm, const ModSequenceSet& seq);
 void ReadModSequenceOld(std::istream& iStrm, ModSequenceSet& seq, const size_t);
-
-
-#endif

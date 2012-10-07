@@ -1,10 +1,13 @@
 #include "stdafx.h"
-#include "sndfile.h"
-#include "ModSequence.h"
+
+
+#include <functional>
+
+#include "orderlist.h"
 #include "../moddoc.h"
 #include "../version.h"
 #include "../serialization_utils.h"
-#include <functional>
+#include "../legacy_soundlib/Sndfile.h"
 
 #define str_SequenceTruncationNote (GetStrI18N((_TEXT("Module has sequence of length %u; it will be truncated to maximum supported length, %u."))))
 

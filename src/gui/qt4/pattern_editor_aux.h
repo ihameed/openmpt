@@ -13,14 +13,30 @@ namespace qt4 {
 
 class app_config;
 
+class order_editor_hibbety_jibbety : public QAbstractListModel {
+    Q_OBJECT
+public:
+    order_editor_hibbety_jibbety(module_renderer &renderer);
+
+    int rowCount(const QModelIndex &) const override;
+    QVariant data(const QModelIndex &, int) const override;
+
+private:
+    module_renderer &renderer;
+};
+
 class order_editor : public QWidget {
     Q_OBJECT
 public:
-    order_editor();
+    order_editor(module_renderer &renderer);
 
     QVBoxLayout main_layout;
 
-    QListWidget order_list;
+    QListView order_list;
+
+private:
+    module_renderer &renderer;
+    order_editor_hibbety_jibbety modelhooty;
 };
 
 class pattern_editor_tab : public QWidget {
