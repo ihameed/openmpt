@@ -141,7 +141,7 @@ public:
     QSize pattern_size();
 
 public slots:
-    void set_active_pattern(modplug::tracker::patternindex_t);
+    void set_active_order(modplug::tracker::orderindex_t);
 
 protected:
     virtual void paintEvent(QPaintEvent *) override;

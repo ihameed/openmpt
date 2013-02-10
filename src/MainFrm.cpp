@@ -72,7 +72,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     //ON_COMMAND(ID_HELP,                                    CMDIFrameWnd::OnHelp)
     ON_COMMAND(ID_VIEW_SONGPROPERTIES,            OnSongProperties)
     ON_COMMAND(ID_HELP_FINDER,                            CMDIFrameWnd::OnHelpFinder)
-    ON_COMMAND(ID_REPORT_BUG,                            OnReportBug)        //rewbs.reportBug
     ON_COMMAND(ID_CONTEXT_HELP,                            CMDIFrameWnd::OnContextHelp)
     ON_COMMAND(ID_DEFAULT_HELP,                            CMDIFrameWnd::OnHelpFinder)
     ON_COMMAND(ID_NEXTOCTAVE,                            OnNextOctave)
@@ -83,8 +82,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_COMMAND(ID_PANIC,                                    OnPanic)
     ON_COMMAND(ID_PLAYER_PAUSE,                            OnPlayerPause)
     ON_COMMAND_EX(IDD_TREEVIEW,                            OnBarCheck)
-    ON_COMMAND_EX(ID_NETLINK_MODPLUG,            OnInternetLink)
-    ON_COMMAND_EX(ID_NETLINK_TOP_PICKS,            OnInternetLink)
     ON_CBN_SELCHANGE(IDC_COMBO_BASEOCTAVE,    OnOctaveChanged)
     ON_UPDATE_COMMAND_UI(ID_MIDI_RECORD,    OnUpdateMidiRecord)
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_TIME,    OnUpdateTime)
@@ -2245,40 +2242,6 @@ void CMainFrame::OnOctaveChanged()
 //--------------------------------
 {
     SwitchToActiveView();
-}
-
-//rewbs.reportBug
-void CMainFrame::OnReportBug()
-//----------------------------
-{
-    CTrackApp::OpenURL("http://bugs.openmpt.org/");
-    return;
-}
-//end rewbs.reportBug
-
-BOOL CMainFrame::OnInternetLink(UINT nID)
-//---------------------------------------
-{
-    LPCSTR pszURL = NULL;
-
-    switch(nID)
-    {
-    case ID_NETLINK_MODPLUG:    pszURL = "http://openmpt.org/"; break;
-    case ID_NETLINK_TOP_PICKS:    pszURL = "http://openmpt.org/top_picks"; break;
-    /*
-    case ID_NETLINK_OPENMPTWIKI:pszURL = "http://wiki.openmpt.org/"; break;
-//    case ID_NETLINK_UT:                        pszURL = "http://www.united-trackers.org"; break;
-//    case ID_NETLINK_OSMUSIC:        pszURL = "http://www.osmusic.net/"; break;
-//    case ID_NETLINK_HANDBOOK:        pszURL = "http://www.modplug.com/mods/handbook/handbook.htm"; break;
-    case ID_NETLINK_MPTFR:            pszURL = "http://mpt.new.fr/"; break;
-    case ID_NETLINK_FORUMS:            pszURL = "http://forum.openmpt.org/"; break;
-    case ID_NETLINK_PLUGINS:    pszURL = "http://www.kvraudio.com/"; break;
-    case ID_NETLINK_MODARCHIVE: pszURL = "http://modarchive.org/"; break;
-    case ID_NETLINK_OPENMPTWIKI_GERMAN: pszURL = "http://wikide.openmpt.org/Hauptseite"; break;
-    */
-    }
-    if (pszURL) return CTrackApp::OpenURL(pszURL);
-    return FALSE;
 }
 
 

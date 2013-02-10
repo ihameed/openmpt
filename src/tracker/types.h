@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "../../pervasives/pervasives.h"
 
 namespace modplug {
 namespace tracker {
@@ -13,9 +14,9 @@ typedef uint16_t chnindex_t;
 const chnindex_t ChannelIndexMax     = UINT16_MAX;
 const chnindex_t ChannelIndexInvalid = ChannelIndexMax;
 
-typedef uint16_t orderindex_t;
-const orderindex_t OrderIndexMax     = UINT16_MAX;
-const orderindex_t OrderIndexInvalid = OrderIndexMax;
+NUMERIC_NEWTYPE(orderindex_t, uint16_t);
+const orderindex_t OrderIndexMax     = orderindex_t(UINT16_MAX);
+const orderindex_t OrderIndexInvalid = orderindex_t(OrderIndexMax);
 
 typedef uint16_t patternindex_t;
 const patternindex_t PatternIndexMax     = UINT16_MAX;

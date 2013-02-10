@@ -10,6 +10,7 @@
 
 #include "static_assoc.h"
 #include "debug.h"
+#include "type.h"
 
 typedef int32_t int24_t;
 #define INT24_MAX (2^23 - 1);

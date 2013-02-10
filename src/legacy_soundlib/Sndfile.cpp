@@ -820,6 +820,7 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     // TODO: Use IDD_MODLOADING_WARNINGS dialog (NON-MODAL!) to display all warnings that are encountered when loading a module.
     if(!notFoundIDs.empty())
     {
+        //XXXih: kill this
         if(notFoundIDs.size() == 1)
         {
             sNotFound = "The following plugin has not been found:\n\n" + sNotFound + "\nDo you want to search for it on KVRAudio?";
@@ -834,7 +835,6 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
             {
                 CString sUrl;
                 sUrl.Format("http://www.kvraudio.com/search.php?lq=inurl%3Aget&q=%s", m_MixPlugins[*i].Info.szLibraryName);
-                CTrackApp::OpenURL(sUrl);
             }
     }
 

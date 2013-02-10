@@ -673,8 +673,6 @@ protected:
     afx_msg void OnNextOctave();
     afx_msg void OnOctaveChanged();
     afx_msg void OnPanic();
-    afx_msg void OnReportBug();        //rewbs.customKeys
-    afx_msg BOOL OnInternetLink(UINT nID);
     afx_msg LRESULT OnUpdatePosition(WPARAM, LPARAM lParam);
     afx_msg LRESULT OnInvalidatePatterns(WPARAM, LPARAM);
     afx_msg LRESULT OnSpecialKey(WPARAM, LPARAM);

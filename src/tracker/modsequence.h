@@ -41,18 +41,18 @@ public:
     // Initialize default sized sequence.
     void Init();
 
-    patternindex_t& operator [] (const size_t i) {
+    patternindex_t& operator [] (const orderindex_t i) {
         assert(i < m_nSize);
-        return m_pArray[i];
+        return m_pArray[modplug::pervasives::unwrap(i)];
     }
-    const patternindex_t& operator [] (const size_t i) const {
+    const patternindex_t& operator [] (const orderindex_t i) const {
         assert(i < m_nSize);
-        return m_pArray[i];
+        return m_pArray[modplug::pervasives::unwrap(i)];
     }
-    patternindex_t& At(const size_t i) {
+    patternindex_t& At(const orderindex_t i) {
         return (*this)[i];
     }
-    const patternindex_t& At(const size_t i) const {
+    const patternindex_t& At(const orderindex_t i) const {
         return (*this)[i];
     }
 

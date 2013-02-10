@@ -59,7 +59,7 @@ struct MODTREEDOCINFO
     bool bIsSamplePlaying[MAX_SAMPLES];
     bool bIsInstrPlaying[MAX_INSTRUMENTS];
 
-    MODTREEDOCINFO(const module_renderer* const pSndFile)
+    MODTREEDOCINFO(const module_renderer* const pSndFile) : nOrdSel(0)
     {
             pModDoc = NULL;
             nSeqSel = modplug::tracker::SequenceIndexInvalid;

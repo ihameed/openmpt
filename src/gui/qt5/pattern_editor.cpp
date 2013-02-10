@@ -425,8 +425,8 @@ void pattern_editor::set_selection_end(const editor_position_t &pos) {
     recalc_corners();
 }
 
-void pattern_editor::set_active_pattern(patternindex_t idx) {
-    draw.active_pos.pattern = idx;
+void pattern_editor::set_active_order(modplug::tracker::orderindex_t idx) {
+    draw.active_pos.pattern = draw.renderer.Order[idx];
     draw.update();
 }
 

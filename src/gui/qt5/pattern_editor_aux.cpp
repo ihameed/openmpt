@@ -57,7 +57,7 @@ pattern_editor_tab::pattern_editor_tab(
 
     connect(
         &orderedit, &order_editor::active_pattern_changed,
-        &editor, &pattern_editor::set_active_pattern
+        &editor, &pattern_editor::set_active_order
     );
 }
 

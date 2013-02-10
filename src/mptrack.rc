@@ -1507,12 +1507,7 @@ BEGIN
     BEGIN
         MENUITEM "&Contents",                   ID_HELP_FINDER
         MENUITEM "&Search...",                  ID_HELP_SEARCH
-        MENUITEM "&Report a bug",               ID_REPORT_BUG
         MENUITEM SEPARATOR
-        MENUITEM "&OpenMPT Website",            ID_NETLINK_MODPLUG
-        MENUITEM "&Web Resources",              ID_NETLINK_TOP_PICKS
-        MENUITEM SEPARATOR
-        MENUITEM "Check for &Updates...",       ID_INTERNETUPDATE
         MENUITEM "&About OpenMPT...",           ID_APP_ABOUT
     END
 END

@@ -157,7 +157,6 @@ public:
     static BOOL SaveDefaultDLSBanks();
     static BOOL RemoveDLSBank(UINT nBank);
     static BOOL AddDLSBank(LPCSTR);
-    static BOOL OpenURL(LPCSTR lpszURL);
 
     static FileDlgResult ShowOpenSaveFileDialog(const bool load, const std::string defaultExtension, const std::string defaultFilename, const std::string extFilter, const std::string workingDirectory = "", const bool allowMultiSelect = false, int *filterIndex = nullptr);
 

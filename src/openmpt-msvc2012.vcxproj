@@ -700,6 +700,7 @@
     <ClInclude Include="pervasives\debug.h" />
     <ClInclude Include="pervasives\pervasives.h" />
     <ClInclude Include="pervasives\static_assoc.h" />
+    <ClInclude Include="pervasives\type.h" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SampleEditorDialogs.h" />

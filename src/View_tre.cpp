@@ -788,9 +788,10 @@ VOID CModTree::UpdateView(UINT nDocNdx, uint32_t lHint)
                     }
 
                     // If there are items past the new sequence length, delete them.
-                    for(size_t nOrd = pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd < pInfo->tiOrders[nSeq].size(); nOrd++) if (pInfo->tiOrders[nSeq][nOrd])
-                    {
+                    for(size_t nOrd = pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(); nOrd < pInfo->tiOrders[nSeq].size(); nOrd++) {
+                        if (pInfo->tiOrders[nSeq][nOrd]) {
                             DeleteItem(pInfo->tiOrders[nSeq][nOrd]); pInfo->tiOrders[nSeq][nOrd] = NULL;
+                        }
                     }
                     if (pInfo->tiOrders[nSeq].size() < pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed()) // Resize tiOrders if needed.
                             pInfo->tiOrders[nSeq].resize(pSndFile->Order.GetSequence(nSeq).GetLengthTailTrimmed(), NULL);

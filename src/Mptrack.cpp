@@ -1911,26 +1911,6 @@ BOOL CTrackApp::deprecated_UninitializeDXPlugins()
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-// Internet-related functions
-
-BOOL CTrackApp::OpenURL(LPCSTR lpszURL)
-//-------------------------------------
-{
-    if ((lpszURL) && (lpszURL[0]) && (theApp.m_pMainWnd))
-    {
-        if (((ULONG)ShellExecute(
-                    theApp.m_pMainWnd->m_hWnd,
-                    "open",
-                    lpszURL,
-                    NULL,
-                    NULL,
-                    0)) >= 32) return TRUE;
-    }
-    return FALSE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////
 // Debug
 
 void Log(LPCSTR format, ...) {
