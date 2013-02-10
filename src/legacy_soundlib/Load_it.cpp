@@ -246,7 +246,7 @@ void MPTEnvToIT(const modplug::tracker::modenvelope_t *mptEnv, ITENVELOPE *itEnv
     if(mptEnv->flags & ENV_LOOP)            itEnv->flags |= 2;
     if(mptEnv->flags & ENV_SUSTAIN)    itEnv->flags |= 4;
     if(mptEnv->flags & ENV_CARRY)            itEnv->flags |= 8;
-    itEnv->num = (uint8_t)min(mptEnv->num_nodes, 25);
+    itEnv->num = (uint8_t)bad_min(mptEnv->num_nodes, 25);
     itEnv->lpb = (uint8_t)mptEnv->loop_start;
     itEnv->lpe = (uint8_t)mptEnv->loop_end;
     itEnv->slb = (uint8_t)mptEnv->sustain_start;
@@ -280,7 +280,7 @@ void ITEnvToMPT(const ITENVELOPE *itEnv, modplug::tracker::modenvelope_t *mptEnv
     if(itEnv->flags & 2) mptEnv->flags |= ENV_LOOP;
     if(itEnv->flags & 4) mptEnv->flags |= ENV_SUSTAIN;
     if(itEnv->flags & 8) mptEnv->flags |= ENV_CARRY;
-    mptEnv->num_nodes = min(itEnv->num, iEnvMax);
+    mptEnv->num_nodes = bad_min(itEnv->num, iEnvMax);
     mptEnv->loop_start = itEnv->lpb;
     mptEnv->loop_end = itEnv->lpe;
     mptEnv->sustain_start = itEnv->slb;
@@ -470,9 +470,9 @@ void CopyPatternName(CPattern &pattern, char **patNames, UINT &patNamesLen)
 {
     if(*patNames != nullptr && patNamesLen > 0)
     {
-        pattern.SetName(*patNames, min(MAX_PATTERNNAME, patNamesLen));
+        pattern.SetName(*patNames, bad_min(MAX_PATTERNNAME, patNamesLen));
         *patNames += MAX_PATTERNNAME;
-        patNamesLen -= min(MAX_PATTERNNAME, patNamesLen);
+        patNamesLen -= bad_min(MAX_PATTERNNAME, patNamesLen);
     }
 }
 
@@ -609,8 +609,8 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
     m_nDefaultGlobalVolume = pifh->globalvol << 1;
     if (m_nDefaultGlobalVolume > MAX_GLOBAL_VOLUME) m_nDefaultGlobalVolume = MAX_GLOBAL_VOLUME;
     if (pifh->speed) m_nDefaultSpeed = pifh->speed;
-    m_nDefaultTempo = max(32, pifh->tempo); // tempo 31 is possible. due to conflicts with the rest of the engine, let's just clamp it to 32.
-    m_nSamplePreAmp = min(pifh->mv, 128);
+    m_nDefaultTempo = bad_max(32, pifh->tempo); // tempo 31 is possible. due to conflicts with the rest of the engine, let's just clamp it to 32.
+    m_nSamplePreAmp = bad_min(pifh->mv, 128);
 
     // Reading Channels Pan Positions
     for (int ipan=0; ipan</*MAX_BASECHANNELS*/64; ipan++) if (pifh->chnpan[ipan] != 0xFF) //Header only has room for settings for 64 chans...
@@ -680,7 +680,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
         inspos[n] = insptr;
         if(insptr > 0)
         {
-            minptr = min(minptr, insptr);
+            minptr = bad_min(minptr, insptr);
         }
         dwMemPos += 4;
     }
@@ -695,7 +695,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
         smppos[n] = smpptr;
         if(smpptr > 0)
         {
-            minptr = min(minptr, smpptr);
+            minptr = bad_min(minptr, smpptr);
         }
         dwMemPos += 4;
     }
@@ -710,7 +710,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
         patpos[n] = patptr;
         if(patptr > 0)
         {
-            minptr = min(minptr, patptr);
+            minptr = bad_min(minptr, patptr);
         }
         dwMemPos += 4;
     }
@@ -731,7 +731,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
 
     if(pifh->special & 0x01)
     {
-        minptr = min(minptr, pifh->msgoffset);
+        minptr = bad_min(minptr, pifh->msgoffset);
     }
 
     // Reading IT Edit History Info
@@ -961,7 +961,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
 // -! NEW_FEATURE#0027
 
     // Reading Samples
-    m_nSamples = min(pifh->smpnum, MAX_SAMPLES - 1);
+    m_nSamples = bad_min(pifh->smpnum, MAX_SAMPLES - 1);
     for (UINT nsmp = 0; nsmp < m_nSamples; nsmp++) if ((smppos[nsmp]) && (smppos[nsmp] <= dwMemLength - sizeof(ITSAMPLESTRUCT)))
     {
         ITSAMPLESTRUCT *pis = (ITSAMPLESTRUCT *)(lpStream+smppos[nsmp]);
@@ -1030,7 +1030,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
         memcpy(m_szNames[nsmp + 1], pis->name, 26);
         SpaceToNullStringFixed<26>(m_szNames[nsmp + 1]);
     }
-    m_nSamples = max(1, m_nSamples);
+    m_nSamples = bad_max(1, m_nSamples);
 
     m_nMinPeriod = 8;
     m_nMaxPeriod = 0xF000;
@@ -1056,7 +1056,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
 
 
     // Reading Patterns
-    Patterns.ResizeArray(max(MAX_PATTERNS, npatterns));
+    Patterns.ResizeArray(bad_max(MAX_PATTERNS, npatterns));
     for (UINT npat=0; npat<npatterns; npat++)
     {
         if ((!patpos[npat]) || ((uint32_t)patpos[npat] >= dwMemLength - 4))
@@ -1298,7 +1298,7 @@ uint32_t SaveITEditHistory(const module_renderer *pSndFile, FILE *f)
     const size_t num = 0;
 #endif // MODPLUG_TRACKER
 
-    uint16_t fnum = min(num, UINT16_MAX);    // Number of entries that are actually going to be written
+    uint16_t fnum = bad_min(num, UINT16_MAX);    // Number of entries that are actually going to be written
     const size_t bytes_written = 2 + fnum * 8;    // Number of bytes that are actually going to be written
 
     if(f == nullptr)
@@ -1394,13 +1394,13 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     header.id = LittleEndian(IT_IMPM);
     copy_with_padding(header.songname, 26, this->song_name);
 
-    header.highlight_minor = (uint8_t)min(m_nDefaultRowsPerBeat, 0xFF);
-    header.highlight_major = (uint8_t)min(m_nDefaultRowsPerMeasure, 0xFF);
+    header.highlight_minor = (uint8_t)bad_min(m_nDefaultRowsPerBeat, 0xFF);
+    header.highlight_major = (uint8_t)bad_min(m_nDefaultRowsPerMeasure, 0xFF);
 
     if(GetType() == MOD_TYPE_MPT)
     {
         if(!Order.NeedsExtraDatafield()) header.ordnum = Order.size();
-        else header.ordnum = min(Order.size(), MAX_ORDERS); //Writing MAX_ORDERS at max here, and if there's more, writing them elsewhere.
+        else header.ordnum = bad_min(Order.size(), MAX_ORDERS); //Writing MAX_ORDERS at bad_max here, and if there's more, writing them elsewhere.
 
         //Crop unused orders from the end.
         while(header.ordnum > 1 && Order[header.ordnum - 1] == Order.GetInvalidPatIndex()) header.ordnum--;
@@ -1408,7 +1408,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     {
         // An additional "---" pattern is appended so Impulse Tracker won't ignore the last order item.
         // Interestingly, this can exceed IT's 256 order limit. Also, IT will always save at least two orders.
-        header.ordnum = min(Order.GetLengthTailTrimmed(), ModSpecs::itEx.ordersMax) + 1;
+        header.ordnum = bad_min(Order.GetLengthTailTrimmed(), ModSpecs::itEx.ordersMax) + 1;
         if(header.ordnum < 2) header.ordnum = 2;
     }
 
@@ -1454,7 +1454,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
     header.globalvol = m_nDefaultGlobalVolume >> 1;
     header.mv = CLAMP(m_nSamplePreAmp, 0, 128);
     header.speed = m_nDefaultSpeed;
-    header.tempo = min(m_nDefaultTempo, 255);  //Limit this one to 255, we save the real one as an extension below.
+    header.tempo = bad_min(m_nDefaultTempo, 255);  //Limit this one to 255, we save the real one as an extension below.
     header.sep = 128; // pan separation
     dwHdrPos = sizeof(header) + header.ordnum;
     // Channel Pan and Volume
@@ -1579,7 +1579,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
             //if (pIns->duplicate_check_type<DCT_PLUGIN) iti.dct = pIns->duplicate_check_type; else iti.dct =0;
             iti.dct = pIns->duplicate_check_type; //rewbs.instroVSTi: will other apps barf if they get an unknown DCT?
             iti.dca = pIns->duplicate_note_action;
-            iti.fadeout = min(pIns->fadeout >> 5, 256);
+            iti.fadeout = bad_min(pIns->fadeout >> 5, 256);
             iti.pps = pIns->pitch_pan_separation;
             iti.ppc = pIns->pitch_pan_center;
             iti.gbv = (uint8_t)(pIns->global_volume << 1);
@@ -1912,9 +1912,9 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         itss.vol = psmp->default_volume >> 2;
         itss.dfp = psmp->default_pan >> 2;
         itss.vit = autovibxm2it[psmp->vibrato_type & 7];
-        itss.vis = min(psmp->vibrato_rate, 64);
-        itss.vid = min(psmp->vibrato_depth, 32);
-        itss.vir = min(psmp->vibrato_sweep, 255); //(psmp->vibrato_sweep < 64) ? psmp->vibrato_sweep * 4 : 255;
+        itss.vis = bad_min(psmp->vibrato_rate, 64);
+        itss.vid = bad_min(psmp->vibrato_depth, 32);
+        itss.vir = bad_min(psmp->vibrato_sweep, 255); //(psmp->vibrato_sweep < 64) ? psmp->vibrato_sweep * 4 : 255;
         if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
 
         itss.samplepointer = dwPos;
@@ -2015,7 +2015,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
 // -> DESC="misc quantity changes"
     uint8_t chnmask[IT_MAX_CHANNELS];
     modplug::tracker::modevent_t lastvalue[IT_MAX_CHANNELS];
-    UINT nChannels = min(m_nChannels, IT_MAX_CHANNELS);
+    UINT nChannels = bad_min(m_nChannels, IT_MAX_CHANNELS);
 // -! BEHAVIOUR_CHANGE#0006
     uint8_t buf[512];
     FILE *f;
@@ -2032,12 +2032,12 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
     header.id = LittleEndian(IT_IMPM);
     copy_with_padding(header.songname, 26, this->song_name);
 
-    header.highlight_minor = (uint8_t)min(m_nDefaultRowsPerBeat, 0xFF);
-    header.highlight_major = (uint8_t)min(m_nDefaultRowsPerMeasure, 0xFF);
+    header.highlight_minor = (uint8_t)bad_min(m_nDefaultRowsPerBeat, 0xFF);
+    header.highlight_major = (uint8_t)bad_min(m_nDefaultRowsPerMeasure, 0xFF);
 
     // An additional "---" pattern is appended so Impulse Tracker won't ignore the last order item.
     // Interestingly, this can exceed IT's 256 order limit. Also, IT will always save at least two orders.
-    header.ordnum = min(Order.GetLengthTailTrimmed(), ModSpecs::it.ordersMax) + 1;
+    header.ordnum = bad_min(Order.GetLengthTailTrimmed(), ModSpecs::it.ordersMax) + 1;
     if(header.ordnum < 2) header.ordnum = 2;
 
     header.patnum = MAX_PATTERNS;
@@ -2071,7 +2071,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
     header.globalvol = m_nDefaultGlobalVolume >> 1;
     header.mv = CLAMP(m_nSamplePreAmp, 0, 128);
     header.speed = m_nDefaultSpeed;
-    header.tempo = min(m_nDefaultTempo, 255);  //Limit this one to 255, we save the real one as an extension below.
+    header.tempo = bad_min(m_nDefaultTempo, 255);  //Limit this one to 255, we save the real one as an extension below.
     header.sep = 128; // pan separation
     dwHdrPos = sizeof(header) + header.ordnum;
     // Channel Pan and Volume
@@ -2178,7 +2178,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
             iti.nna = pIns->new_note_action;
             if (pIns->duplicate_check_type<DCT_PLUGIN) iti.dct = pIns->duplicate_check_type; else iti.dct =0;
             iti.dca = pIns->duplicate_note_action;
-            iti.fadeout = min(pIns->fadeout >> 5 , 256);
+            iti.fadeout = bad_min(pIns->fadeout >> 5 , 256);
             iti.pps = pIns->pitch_pan_separation;
             iti.ppc = pIns->pitch_pan_center;
             iti.gbv = (uint8_t)(pIns->global_volume << 1);
@@ -2483,9 +2483,9 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         itss.vol = psmp->default_volume >> 2;
         itss.dfp = psmp->default_pan >> 2;
         itss.vit = autovibxm2it[psmp->vibrato_type & 7];
-        itss.vis = min(psmp->vibrato_rate, 64);
-        itss.vid = min(psmp->vibrato_depth, 32);
-        itss.vir = min(psmp->vibrato_sweep, 255);
+        itss.vis = bad_min(psmp->vibrato_rate, 64);
+        itss.vid = bad_min(psmp->vibrato_depth, 32);
+        itss.vir = bad_min(psmp->vibrato_sweep, 255);
         if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
 
         itss.samplepointer = dwPos;
@@ -2983,9 +2983,9 @@ void module_renderer::SaveExtendedInstrumentProperties(modinstrument_t *instrume
     if (m_nType & MOD_TYPE_MPT) {
         UINT maxNodes = 0;
         for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_nInstruments; nIns++) if(Instruments[nIns] != nullptr) {
-            maxNodes = max(maxNodes, Instruments[nIns]->volume_envelope.num_nodes);
-            maxNodes = max(maxNodes, Instruments[nIns]->panning_envelope.num_nodes);
-            maxNodes = max(maxNodes, Instruments[nIns]->pitch_envelope.num_nodes);
+            maxNodes = bad_max(maxNodes, Instruments[nIns]->volume_envelope.num_nodes);
+            maxNodes = bad_max(maxNodes, Instruments[nIns]->panning_envelope.num_nodes);
+            maxNodes = bad_max(maxNodes, Instruments[nIns]->pitch_envelope.num_nodes);
         }
         // write full envelope information for MPTM files (more env points)
         if (maxNodes > 25) {
@@ -3232,9 +3232,9 @@ void module_renderer::LoadExtendedSongProperties(const MODTYPE modtype,
 
     // Case macros.
     #define CASE(id, data)    \
-        case id: fadr = reinterpret_cast<uint8_t*>(&data); nMaxReadCount = min(size, sizeof(data)); break;
+        case id: fadr = reinterpret_cast<uint8_t*>(&data); nMaxReadCount = bad_min(size, sizeof(data)); break;
     #define CASE_NOTXM(id, data) \
-        case id: if(modtype != MOD_TYPE_XM) {fadr = reinterpret_cast<uint8_t*>(&data); nMaxReadCount = min(size, sizeof(data));} break;
+        case id: if(modtype != MOD_TYPE_XM) {fadr = reinterpret_cast<uint8_t*>(&data); nMaxReadCount = bad_min(size, sizeof(data));} break;
 
     ptr += sizeof(code); // jump extension header code
     while( uintptr_t(ptr - lpStream) <= searchlimit-6 ) //Loop until given limit.
@@ -3271,7 +3271,7 @@ void module_renderer::LoadExtendedSongProperties(const MODTYPE modtype,
                 {
                     const uint8_t* pData = ptr;
                     static_assert(CountOf(ChnSettings) >= 64, "ChnSettings must have more than 64 elements");
-                    const __int16 nLoopLimit = min(size/2, CountOf(ChnSettings) - 64);
+                    const __int16 nLoopLimit = bad_min(size/2, CountOf(ChnSettings) - 64);
                     for(__int16 i = 0; i<nLoopLimit; i++, pData += 2) if(pData[0] != 0xFF)
                     {
                         ChnSettings[i+64].nVolume = pData[1];

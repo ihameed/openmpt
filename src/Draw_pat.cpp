@@ -9,13 +9,13 @@
 #include "legacy_soundlib/tuningbase.h"
 #include <string>
 
-#include "gui/qt4/pattern_bitmap_fonts.h"
+#include "gui/qt5/pattern_bitmap_fonts.h"
 
 using std::string;
 
 using namespace modplug::pervasives;
 using namespace modplug::tracker;
-using namespace modplug::gui::qt4;
+using namespace modplug::gui::qt5;
 
 // Headers
 #define ROWHDR_WIDTH            32        // Row header
@@ -134,7 +134,7 @@ void CViewPattern::UpdateView(uint32_t dwHintMask, CObject *)
     if (dwHintMask & HINT_PATTERNROW)
     {
 // -> CODE#0008
-// -> DESC"#define to set pattern max size (number of rows) limit (now set to 1024 instead of 256)"
+// -> DESC"#define to set pattern bad_max size (number of rows) limit (now set to 1024 instead of 256)"
 //            InvalidateRow(dwHintMask >> 24);
         InvalidateRow(dwHintMask >> HINT_SHIFT_ROW);
 // -! BEHAVIOUR_CHANGE#0008
@@ -344,7 +344,7 @@ void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modev
 
     if(mc.IsPcNote())
     {    //If note is parameter control note, drawing volume command differently.
-        const int val = min(modplug::tracker::modevent_t::MaxColumnValue, mc.GetValueVolCol());
+        const int val = bad_min(modplug::tracker::modevent_t::MaxColumnValue, mc.GetValueVolCol());
 
         m_Dib.TextBlt(x, y, 1, COLUMN_HEIGHT, pfnt->clear_x, pfnt->clear_y);
         m_Dib.TextBlt(x + 1, y, pfnt->vol_width, COLUMN_HEIGHT,
@@ -1276,10 +1276,10 @@ void CViewPattern::SetCurSel(uint32_t dwBegin, uint32_t dwEnd)
         module_renderer *pSndFile = pModDoc->GetSoundFile();
         if (pSndFile)
         {
-            y1 = max(y1, 0);
-            y2 = min(y2, (int)pSndFile->Patterns[m_nPattern].GetNumRows() - 1);
-            x1 = max(x1, 0);
-            x2 = min(x2, pSndFile->GetNumChannels() * 8 - (8 - LAST_COLUMN));
+            y1 = bad_max(y1, 0);
+            y2 = bad_min(y2, (int)pSndFile->Patterns[m_nPattern].GetNumRows() - 1);
+            x1 = bad_max(x1, 0);
+            x2 = bad_min(x2, pSndFile->GetNumChannels() * 8 - (8 - LAST_COLUMN));
         }
     }
     // end rewbs.fix3417

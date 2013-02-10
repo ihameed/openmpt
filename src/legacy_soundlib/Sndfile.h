@@ -165,32 +165,6 @@ struct SNDMIXSONGEQ
 };
 typedef SNDMIXSONGEQ* PSNDMIXSONGEQ;
 
-////////////////////////////////////////////////////////////////////////
-// Reverberation
-
-struct SNDMIX_REVERB_PROPERTIES
-{
-    LONG  lRoom;                   // [-10000, 0]      default: -10000 mB
-    LONG  lRoomHF;                 // [-10000, 0]      default: 0 mB
-    FLOAT flDecayTime;             // [0.1, 20.0]      default: 1.0 s
-    FLOAT flDecayHFRatio;          // [0.1, 2.0]       default: 0.5
-    LONG  lReflections;            // [-10000, 1000]   default: -10000 mB
-    FLOAT flReflectionsDelay;      // [0.0, 0.3]       default: 0.02 s
-    LONG  lReverb;                 // [-10000, 2000]   default: -10000 mB
-    FLOAT flReverbDelay;           // [0.0, 0.1]       default: 0.04 s
-    FLOAT flDiffusion;             // [0.0, 100.0]     default: 100.0 %
-    FLOAT flDensity;               // [0.0, 100.0]     default: 100.0 %
-};
-typedef SNDMIX_REVERB_PROPERTIES* PSNDMIX_REVERB_PROPERTIES;
-
-#ifndef NO_REVERB
-
-#define NUM_REVERBTYPES                    29
-
-LPCSTR GetReverbPresetName(UINT nPreset);
-
-#endif
-
 ////////////////////////////////////////////////////////////////////
 
 // Global MIDI macros
@@ -209,7 +183,7 @@ enum
 
 
 #define NUM_MACROS 16    // number of parametered macros
-#define MACRO_LENGTH 32    // max number of chars per macro
+#define MACRO_LENGTH 32    // bad_max number of chars per macro
 struct MODMIDICFG
 {
     CHAR szMidiGlb[9][MACRO_LENGTH];
@@ -674,7 +648,7 @@ public:    // for Editing
          m_nGlobalVolumeDestination, m_nSamplePreAmp, m_nVSTiVolume;
     long m_lHighResRampingGlobalVolume;
     UINT m_nFreqFactor, m_nTempoFactor, m_nOldGlbVolSlide;
-    LONG m_nMinPeriod, m_nMaxPeriod;    // min period = highest possible frequency, max period = lowest possible frequency
+    LONG m_nMinPeriod, m_nMaxPeriod;    // bad_min period = highest possible frequency, bad_max period = lowest possible frequency
     LONG m_nRepeatCount;    // -1 means repeat infinitely.
     uint32_t m_nGlobalFadeSamples, m_nGlobalFadeMaxSamples;
     UINT m_nMaxOrderPosition;
@@ -840,7 +814,7 @@ public:
     static void ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nOldType, MODTYPE nNewType); // Convert a complete modplug::tracker::modcommand_t item from one format to another
     static void MODExx2S3MSxx(modplug::tracker::modevent_t *m); // Convert Exx to Sxx
     static void S3MSxx2MODExx(modplug::tracker::modevent_t *m); // Convert Sxx to Exx
-    void SetupMODPanning(bool bForceSetup = false); // Setup LRRL panning, max channel volume
+    void SetupMODPanning(bool bForceSetup = false); // Setup LRRL panning, bad_max channel volume
 };
 
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())

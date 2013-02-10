@@ -1327,9 +1327,9 @@ bool module_renderer::SaveXIInstrument(modplug::tracker::instrumentindex_t nInst
             if (!k)
             {
                 xih.vibtype = Samples[n].vibrato_type;
-                xih.vibsweep = min(Samples[n].vibrato_sweep, 255);
-                xih.vibdepth = min(Samples[n].vibrato_depth, 15);
-                xih.vibrate = min(Samples[n].vibrato_rate, 63);
+                xih.vibsweep = bad_min(Samples[n].vibrato_sweep, 255);
+                xih.vibdepth = bad_min(Samples[n].vibrato_depth, 15);
+                xih.vibrate = bad_min(Samples[n].vibrato_rate, 63);
             }
             if (nsamples < 32) smptable[nsamples++] = n;
             k = nsamples - 1;
@@ -1911,9 +1911,9 @@ bool module_renderer::SaveITIInstrument(modplug::tracker::instrumentindex_t nIns
         itss.vol = psmp->default_volume >> 2;
         itss.dfp = psmp->default_pan >> 2;
         itss.vit = autovibxm2it[psmp->vibrato_type & 7];
-        itss.vir = min(psmp->vibrato_sweep, 255);
-        itss.vid = min(psmp->vibrato_depth, 32);
-        itss.vis = min(psmp->vibrato_rate, 64);
+        itss.vir = bad_min(psmp->vibrato_sweep, 255);
+        itss.vid = bad_min(psmp->vibrato_depth, 32);
+        itss.vis = bad_min(psmp->vibrato_rate, 64);
         if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
         itss.cvt = 0x01;
         smpsize = psmp->length;
@@ -2139,13 +2139,13 @@ bool module_renderer::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dw
         uint32_t dwChunkLen = BigEndian(*((LPDWORD)(lpMemFile+dwMemPos+4)));
         LPBYTE pChunkData = (LPBYTE)(lpMemFile+dwMemPos+8);
         // Hack for broken files: Trim claimed length if it's too long
-        dwChunkLen = min(dwChunkLen, dwFileLength - dwMemPos);
+        dwChunkLen = bad_min(dwChunkLen, dwFileLength - dwMemPos);
         //if (dwChunkLen > dwFileLength - dwMemPos) break;
         switch(dwChunkId)
         {
         case IFFID_NAME:
             {
-                const UINT len = min(dwChunkLen, MAX_SAMPLENAME - 1);
+                const UINT len = bad_min(dwChunkLen, MAX_SAMPLENAME - 1);
                 MemsetZero(m_szNames[nSample]);
                 memcpy(m_szNames[nSample], pChunkData, len);
             }

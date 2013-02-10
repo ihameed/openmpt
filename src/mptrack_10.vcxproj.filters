@@ -121,9 +121,6 @@
     <ClCompile Include="legacy_soundlib\tuningCollection.cpp" />
     <ClCompile Include="legacy_soundlib\WindowedFIR.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
-    <ClCompile Include="gui\qt4\config_dialog.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_config_dialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -132,9 +129,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_config_dialog.cpp">
       <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\config_audioio.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="pervasives\debug.cpp">
       <Filter>Generated Files</Filter>
@@ -148,13 +142,7 @@
     <ClCompile Include="GeneratedFiles\Template\moc_config_audioio.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
-    <ClCompile Include="gui\qt4\app_config.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="tracker\module_renderer.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\mfc_root.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_mfc_root.cpp">
@@ -175,15 +163,6 @@
     <ClCompile Include="legacy_soundlib\module_renderer_pcm_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\qt4\pattern_editor.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\util.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\config_gui.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_config_gui.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -193,9 +172,6 @@
     <ClCompile Include="GeneratedFiles\Template\moc_config_gui.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
-    <ClCompile Include="gui\qt4\colors.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_app_config.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -204,9 +180,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_app_config.cpp">
       <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\document_window.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_document_window.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -226,12 +199,6 @@
     <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
-    <ClCompile Include="gui\qt4\keymap.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\comment_editor.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_comment_editor.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -241,9 +208,6 @@
     <ClCompile Include="GeneratedFiles\Template\moc_comment_editor.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
-    <ClCompile Include="gui\qt4\song_overview.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_song_overview.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -252,12 +216,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_song_overview.cpp">
       <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\pattern_editor_actions.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gui\qt4\pattern_editor_aux.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor_aux.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -270,6 +228,60 @@
     </ClCompile>
     <ClCompile Include="tracker\modsequence.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_order_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_order_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_order_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\app_config.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\colors.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\comment_editor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\config_audioio.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\config_dialog.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\config_gui.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\document_window.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\keymap.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\mfc_root.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\order_editor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\pattern_editor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\pattern_editor_actions.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\pattern_editor_aux.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\song_overview.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\util.cpp">
+      <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -380,35 +392,35 @@
     <ClInclude Include="tracker\modevent.h">
       <Filter>tracker</Filter>
     </ClInclude>
-    <ClInclude Include="gui\qt4\pattern_editor_column.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt4\util.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt4\colors.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt4\pattern_bitmap_fonts.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="legacy_soundlib\Snd_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tracker\types.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\qt4\keymap.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt4\pattern_editor_types.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt4\pattern_editor_actions.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="tracker\modsequence.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\colors.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\keymap.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_bitmap_fonts.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_editor_actions.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_editor_column.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_editor_types.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\util.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -493,34 +505,37 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="gui\qt4\config_dialog.h">
+    <CustomBuild Include="gui\qt5\app_config.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\config_audioio.h">
+    <CustomBuild Include="gui\qt5\comment_editor.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\app_config.h">
+    <CustomBuild Include="gui\qt5\config_audioio.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\mfc_root.h">
+    <CustomBuild Include="gui\qt5\config_dialog.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\pattern_editor.h">
+    <CustomBuild Include="gui\qt5\config_gui.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\config_gui.h">
+    <CustomBuild Include="gui\qt5\document_window.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\document_window.h">
+    <CustomBuild Include="gui\qt5\mfc_root.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\comment_editor.h">
+    <CustomBuild Include="gui\qt5\order_editor.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\song_overview.h">
+    <CustomBuild Include="gui\qt5\pattern_editor.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt4\pattern_editor_aux.h">
+    <CustomBuild Include="gui\qt5\pattern_editor_aux.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\song_overview.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

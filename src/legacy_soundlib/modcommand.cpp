@@ -106,7 +106,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                     }
                     else
                     {
-                            m->param = min(m->param << 1, 0xFF);
+                            m->param = bad_min(m->param << 1, 0xFF);
                     }
             }
     } // End if(m->command == CMD_PANNING8)
@@ -127,7 +127,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                             newcommand = CmdNone;
                     }
 
-                    m->param = (uint8_t)(min(modplug::tracker::modevent_t::MaxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::MaxColumnValue);
+                    m->param = (uint8_t)(bad_min(modplug::tracker::modevent_t::MaxColumnValue, m->GetValueEffectCol()) * 0x7F / modplug::tracker::modevent_t::MaxColumnValue);
                     m->command = newcommand; // might be removed later
                     m->volcmd = VolCmdNone;
                     m->note = NoteNone;
@@ -285,7 +285,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                     break;
             case CmdSpeed:
                     {
-                            m->param = min(m->param, (nNewType == MOD_TYPE_XM) ? 0x1F : 0x20);
+                            m->param = bad_min(m->param, (nNewType == MOD_TYPE_XM) ? 0x1F : 0x20);
                     }
                     break;
             case CmdTempo:
@@ -352,7 +352,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             switch(m->command)
             {
             case CmdSpeed:
-                    m->param = min(m->param, 0x1F);
+                    m->param = bad_min(m->param, 0x1F);
                     break;
             }
     } else if(oldTypeIsXM && newTypeIsMOD)
@@ -360,7 +360,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
             switch(m->command)
             {
             case CmdTempo:
-                    m->param = max(m->param, 0x21);
+                    m->param = bad_max(m->param, 0x21);
                     break;
             }
     }
@@ -596,7 +596,7 @@ void module_renderer::ConvertCommand(modplug::tracker::modevent_t *m, MODTYPE nO
                     case VolCmdVibratoDepth:
                             // OpenMPT-specific commands
                     case VolCmdOffset:
-                            m->vol = min(m->vol, 9);
+                            m->vol = bad_min(m->vol, 9);
                             break;
                     case VolCmdPanSlideLeft:
                             m->command = CmdPanningSlide;
@@ -790,7 +790,7 @@ bool module_renderer::TryWriteEffect(modplug::tracker::patternindex_t nPat, modp
                             if(m_nType & MOD_TYPE_S3M)
                                     nParam <<= 1;
                             else
-                                    nParam = min(nParam << 2, 0xFF);
+                                    nParam = bad_min(nParam << 2, 0xFF);
                             break;
                     case VolCmdVol:
                             nNewEffect = CmdVol;
@@ -852,20 +852,20 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             return true;
     case CmdVol:
             *e = VolCmdVol;
-            *p = min(*p, 64);
+            *p = bad_min(*p, 64);
             break;
     case CmdPortaUp:
             // if not force, reject when dividing causes loss of data in LSB, or if the final value is too
             // large to fit. (volume column Ex/Fx are four times stronger than effect column)
             if (!bForce && ((*p & 3) || *p > 9 * 4 + 3))
                     return false;
-            *p = min(*p / 4, 9);
+            *p = bad_min(*p / 4, 9);
             *e = VolCmdPortamentoUp;
             break;
     case CmdPortaDown:
             if (!bForce && ((*p & 3) || *p > 9 * 4 + 3))
                     return false;
-            *p = min(*p / 4, 9);
+            *p = bad_min(*p / 4, 9);
             *e = VolCmdPortamentoDown;
             break;
     case CmdPorta:
@@ -890,7 +890,7 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             return false;
     case CmdVibrato:
             if (bForce)
-                    *p = min(*p, 9);
+                    *p = bad_min(*p, 9);
             else if (*p > 9)
                     return false;
             *e = VolCmdVibratoDepth;
@@ -903,7 +903,7 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             *e = VolCmdVibratoDepth;
             break;
     case CmdPanning8:
-            *p = min(64, *p * 64 / 255);
+            *p = bad_min(64, *p * 64 / 255);
             *e = VolCmdPan;
             break;
     case CmdVolSlide:
@@ -912,7 +912,7 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             if ((*p & 0xF) == 0)        // Dx0 / Cx
             {
                     if (bForce)
-                            *p = min(*p >> 4, 9);
+                            *p = bad_min(*p >> 4, 9);
                     else if ((*p >> 4) > 9)
                             return false;
                     else
@@ -921,14 +921,14 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             } else if ((*p & 0xF0) == 0)        // D0x / Dx
             {
                     if (bForce)
-                            *p = min(*p, 9);
+                            *p = bad_min(*p, 9);
                     else if (*p > 9)
                             return false;
                     *e = VolCmdSlideDown;
             } else if ((*p & 0xF) == 0xF)        // DxF / Ax
             {
                     if (bForce)
-                            *p = min(*p >> 4, 9);
+                            *p = bad_min(*p >> 4, 9);
                     else if ((*p >> 4) > 9)
                             return false;
                     else
@@ -937,7 +937,7 @@ bool module_renderer::ConvertVolEffect(uint8_t *e, uint8_t *p, bool bForce)
             } else if ((*p & 0xf0) == 0xf0)        // DFx / Bx
             {
                     if (bForce)
-                            *p = min(*p, 9);
+                            *p = bad_min(*p, 9);
                     else if ((*p & 0xF) > 9)
                             return false;
                     else

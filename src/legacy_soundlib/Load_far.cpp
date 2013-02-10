@@ -147,9 +147,9 @@ bool module_renderer::ReadFAR(const uint8_t *lpStream, const uint32_t dwMemLengt
         modplug::tracker::modevent_t *m = Patterns[ipat];
         UINT patbrk = lpStream[dwMemPos];
         const uint8_t *p = lpStream + dwMemPos + 2;
-        UINT max = rows*16*4;
-        if (max > patlen-2) max = patlen-2;
-        for (UINT len=0; len<max; len += 4, m++)
+        UINT bad_max = rows*16*4;
+        if (bad_max > patlen-2) bad_max = patlen-2;
+        for (UINT len=0; len<bad_max; len += 4, m++)
         {
             uint8_t note = p[len];
             uint8_t ins = p[len+1];

@@ -423,7 +423,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                     param = (param & 0x0F) * nMusicSpeed;
                     param = (chnvols[nChn] > param) ? chnvols[nChn] - param : 0;
                 } else param = ((param & 0xF0) >> 4) * nMusicSpeed + chnvols[nChn];
-                param = min(param, 64);
+                param = bad_min(param, 64);
                 chnvols[nChn] = param;
                 break;
             }

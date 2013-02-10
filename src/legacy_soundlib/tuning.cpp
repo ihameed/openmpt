@@ -382,7 +382,7 @@ CTuningBase* CTuningRTI::Deserialize(istream& iStrm)
     ssb.ReadItem(pTuning->m_SerHelperRatiotableSize, "RTI4");
 
     // If reader status is ok and m_StepMin is somewhat reasonable, process data.
-    if ((ssb.m_Status & srlztn::SNT_FAILURE) == 0 && pTuning->m_StepMin >= -300 && pTuning->m_StepMin <= 300) 
+    if ((ssb.m_Status & srlztn::SNT_FAILURE) == 0 && pTuning->m_StepMin >= -300 && pTuning->m_StepMin <= 300)
     {
             EDITMASK temp = pTuning->GetEditMask();
             pTuning->m_EditMask = EM_ALLOWALL; //Allowing all while processing data.
@@ -392,7 +392,7 @@ CTuningBase* CTuningRTI::Deserialize(istream& iStrm)
                     delete pTuning; pTuning = nullptr;
             }
             else
-            { 
+            {
                     USTEPINDEXTYPE fsTemp = pTuning->m_FineStepCount;
                     pTuning->m_FineStepCount = 0;
                     pTuning->SetFineStepCount(fsTemp);
@@ -583,7 +583,7 @@ namespace CTuningS11n
 void RatioWriter::operator()(srlztn::OutStream& oStrm, const std::vector<float>& v)
 //---------------------------------------------------------------------------------
 {
-    const size_t nWriteCount = min(v.size(), m_nWriteCount);
+    const size_t nWriteCount = bad_min(v.size(), m_nWriteCount);
     srlztn::WriteAdaptive1248(oStrm, nWriteCount);
     for(size_t i = 0; i < nWriteCount; i++)
             srlztn::Binarywrite(oStrm, v[i]);
@@ -595,7 +595,7 @@ void ReadNoteMap(srlztn::InStream& iStrm, CTuningBase::NOTENAMEMAP& m, const siz
 {
     uint64_t val;
     srlztn::ReadAdaptive1248(iStrm, val);
-    LimitMax(val, 256); // Read 256 at max.
+    LimitMax(val, 256); // Read 256 at bad_max.
     for(size_t i = 0; i < val; i++)
     {
             int16_t key;
@@ -612,7 +612,7 @@ void ReadRatioTable(srlztn::InStream& iStrm, vector<CTuningRTI::RATIOTYPE>& v, c
 {
     uint64_t val;
     srlztn::ReadAdaptive1248(iStrm, val);
-    v.resize( static_cast<size_t>(min(val, 256))); // Read 256 vals at max.
+    v.resize( static_cast<size_t>(bad_min(val, 256))); // Read 256 vals at bad_max.
     for(size_t i = 0; i < v.size(); i++)
             srlztn::Binaryread(iStrm, v[i]);
 }
@@ -623,7 +623,7 @@ void ReadStr(srlztn::InStream& iStrm, std::string& str, const size_t)
 {
     uint64_t val;
     srlztn::ReadAdaptive1248(iStrm, val);
-    size_t nSize = (val > 255) ? 255 : static_cast<size_t>(val); // Read 255 characters at max.
+    size_t nSize = (val > 255) ? 255 : static_cast<size_t>(val); // Read 255 characters at bad_max.
     str.resize(nSize);
     for(size_t i = 0; i < nSize; i++)
             srlztn::Binaryread(iStrm, str[i]);

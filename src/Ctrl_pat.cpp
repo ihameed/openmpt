@@ -874,7 +874,7 @@ void CCtrlPatterns::OnPatternDuplicate()
             {
                     m_OrderList.InvalidateRect(NULL, FALSE);
                     m_OrderList.SetCurSel(nInsertWhere);
-                    SetCurrentPattern(pSndFile->Order[min(nInsertWhere, pSndFile->Order.GetLastIndex())]);
+                    SetCurrentPattern(pSndFile->Order[bad_min(nInsertWhere, pSndFile->Order.GetLastIndex())]);
                     m_pModDoc->SetModified();
                     m_pModDoc->UpdateAllViews(NULL, HINT_MODSEQUENCE|HINT_PATNAMES, this);
                     if(selection.nOrdHi != selection.nOrdLo) m_OrderList.m_nScrollPos2nd = nInsertWhere + nInsertCount;

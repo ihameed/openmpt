@@ -264,7 +264,7 @@ struct vertex_guistate_t {
         size_t output_nubs = vertex->_output_channels;
 
         pos.width  = (2 * layout->nub_width) + layout->main_width;
-        pos.height = max(input_nubs, output_nubs) * (layout->nub_height + layout->vertical_padding) + layout->vertical_padding;
+        pos.height = bad_max(input_nubs, output_nubs) * (layout->nub_height + layout->vertical_padding) + layout->vertical_padding;
     }
 
     point_t _nub_location(int channel, bool input) {
@@ -467,7 +467,7 @@ struct mixgraph_viewstate_t {
         }
 
 
-        /*
+        ///*
         auto &arrows = graph->arrows;
         for (auto iter = arrows.begin(); iter != arrows.end(); ++iter) {
             auto item = *iter;
@@ -484,7 +484,7 @@ struct mixgraph_viewstate_t {
             guiarrow->head->out_arrows.push_back(guiarrow);
             guiarrow->tail->in_arrows.push_back(guiarrow);
         }
-        */
+        //*/
 
         return true;
     }
@@ -635,7 +635,7 @@ struct mixgraph_viewstate_t {
             in_nub_y = draw_nub(ras, x, in_nub_y);
         }
 
-        int height = max(out_nub_y, in_nub_y) - y;
+        int height = bad_max(out_nub_y, in_nub_y) - y;
 
         draw_mainbox(ras, sl, x + layout.nub_width, y, height, width);
 
@@ -699,7 +699,7 @@ struct mixgraph_viewstate_t {
 
         draw_selection_box(primitive_rasterizer, sl, primitive);
 
-        draw_clipping_debug_box(antialiased_rasterizer, sl, antialiased, clipping_rect);
+        //draw_clipping_debug_box(antialiased_rasterizer, sl, antialiased, clipping_rect);
     }
 
     bool hit_test(arrow_guistate_t *arrow) {

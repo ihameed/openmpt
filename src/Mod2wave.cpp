@@ -445,7 +445,7 @@ void CDoWaveConvert::OnButton1()
     }
 
     // calculate maximum samples
-    ULONGLONG max = ullMaxSamples;
+    ULONGLONG bad_max = ullMaxSamples;
     ULONGLONG l = ((ULONGLONG)m_pSndFile->GetSongTime()) * m_pWaveFormat->nSamplesPerSec;
     if (m_nMaxPatterns > 0)
     {
@@ -453,11 +453,11 @@ void CDoWaveConvert::OnButton1()
         if ((m_nMaxPatterns < dwOrds) && (dwOrds > 0)) l = (l*m_nMaxPatterns) / dwOrds;
     }
 
-    if (l < max) max = l;
+    if (l < bad_max) bad_max = l;
 
     if (progress != NULL)
     {
-        ::SendMessage(progress, PBM_SETRANGE, 0, MAKELPARAM(0, (uint32_t)(max >> 14)));
+        ::SendMessage(progress, PBM_SETRANGE, 0, MAKELPARAM(0, (uint32_t)(bad_max >> 14)));
     }
 
     // No pattern cue points yet
@@ -549,9 +549,9 @@ void CDoWaveConvert::OnButton1()
 
             const uint32_t dwCurrentTime = timeGetTime();
             uint32_t timeRemaining = 0; // estimated remainig time
-            if((ullSamples > 0) && (ullSamples < max))
+            if((ullSamples > 0) && (ullSamples < bad_max))
             {
-                timeRemaining = static_cast<uint32_t>(((dwCurrentTime - dwStartTime) * (max - ullSamples) / ullSamples) / 1000);
+                timeRemaining = static_cast<uint32_t>(((dwCurrentTime - dwStartTime) * (bad_max - ullSamples) / ullSamples) / 1000);
             }
 
             wsprintf(s, "Writing file... (%uKB, %umn%02us, %umn%02us remaining)", datahdr.length >> 10, l / 60, l % 60, timeRemaining / 60, timeRemaining % 60);

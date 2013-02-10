@@ -71,10 +71,10 @@ const CModSpecifications mptm =
     true,                                                                // Has notecut.
     true,                                                                // Has noteoff.
     true,                                                                // Has notefade.
-    4000,                                                                // Pattern max.
-    4000,                                                                // Order max.
-    1,                                                                        // Channel min
-    127,                                                                // Channel max
+    4000,                                                                // Pattern bad_max.
+    4000,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    127,                                                                // Channel bad_max
     32,                                                                        // Min tempo
     512,                                                                // Max tempo
     1,                                                                        // Min pattern rows
@@ -113,10 +113,10 @@ const CModSpecifications mod =
     false,                                                                // No notecut.
     false,                                                                // No noteoff.
     false,                                                                // No notefade.
-    128,                                                                // Pattern max.
-    128,                                                                // Order max.
-    4,                                                                        // Channel min
-    32,                                                                        // Channel max
+    128,                                                                // Pattern bad_max.
+    128,                                                                // Order bad_max.
+    4,                                                                        // Channel bad_min
+    32,                                                                        // Channel bad_max
     32,                                                                        // Min tempo
     255,                                                                // Max tempo
     64,                                                                        // Min pattern rows
@@ -153,10 +153,10 @@ const CModSpecifications modEx =
     false,                                                                // No notecut.
     false,                                                                // No noteoff.
     false,                                                                // No notefade.
-    128,                                                                // Pattern max.
-    128,                                                                // Order max.
-    4,                                                                        // Channel min
-    32,                                                                        // Channel max
+    128,                                                                // Pattern bad_max.
+    128,                                                                // Order bad_max.
+    4,                                                                        // Channel bad_min
+    32,                                                                        // Channel bad_max
     32,                                                                        // Min tempo
     255,                                                                // Max tempo
     64,                                                                        // Min pattern rows
@@ -192,10 +192,10 @@ const CModSpecifications xm =
     false,                                                                // No notecut.
     true,                                                                // Has noteoff.
     false,                                                                // No notefade.
-    256,                                                                // Pattern max.
-    255,                                                                // Order max.
-    1,                                                                        // Channel min
-    32,                                                                        // Channel max
+    256,                                                                // Pattern bad_max.
+    255,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    32,                                                                        // Channel bad_max
     32,                                                                        // Min tempo
     255,                                                                // Max tempo
     1,                                                                        // Min pattern rows
@@ -232,10 +232,10 @@ const CModSpecifications xmEx =
     false,                                                                // No notecut.
     true,                                                                // Has noteoff.
     false,                                                                // No notefade.
-    256,                                                                // Pattern max.
-    255,                                                                // Order max.
-    1,                                                                        // Channel min
-    127,                                                                // Channel max
+    256,                                                                // Pattern bad_max.
+    255,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    127,                                                                // Channel bad_max
     32,                                                                        // Min tempo
     512,                                                                // Max tempo
     1,                                                                        // Min pattern rows
@@ -271,10 +271,10 @@ const CModSpecifications s3m =
     true,                                                                // Has notecut.
     false,                                                                // No noteoff.
     false,                                                                // No notefade.
-    100,                                                                // Pattern max.
-    255,                                                                // Order max.
-    1,                                                                        // Channel min
-    32,                                                                        // Channel max
+    100,                                                                // Pattern bad_max.
+    255,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    32,                                                                        // Channel bad_max
     33,                                                                        // Min tempo
     255,                                                                // Max tempo
     64,                                                                        // Min pattern rows
@@ -311,10 +311,10 @@ const CModSpecifications s3mEx =
     true,                                                                // Has notecut.
     false,                                                                // No noteoff.
     false,                                                                // No notefade.
-    100,                                                                // Pattern max.
-    255,                                                                // Order max.
-    1,                                                                        // Channel min
-    32,                                                                        // Channel max
+    100,                                                                // Pattern bad_max.
+    255,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    32,                                                                        // Channel bad_max
     33,                                                                        // Min tempo
     255,                                                                // Max tempo
     64,                                                                        // Min pattern rows
@@ -350,10 +350,10 @@ const CModSpecifications it =
     true,                                                                // Has notecut.
     true,                                                                // Has noteoff.
     true,                                                                // Has notefade.
-    200,                                                                // Pattern max.
-    256,                                                                // Order max.
-    1,                                                                        // Channel min
-    64,                                                                        // Channel max
+    200,                                                                // Pattern bad_max.
+    256,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    64,                                                                        // Channel bad_max
     32,                                                                        // Min tempo
     255,                                                                // Max tempo
     1,                                                                        // Min pattern rows
@@ -389,10 +389,10 @@ const CModSpecifications itEx =
     true,                                                                // Has notecut.
     true,                                                                // Has noteoff.
     true,                                                                // Has notefade.
-    240,                                                                // Pattern max.
-    256,                                                                // Order max.
-    1,                                                                        // Channel min
-    127,                                                                // Channel max
+    240,                                                                // Pattern bad_max.
+    256,                                                                // Order bad_max.
+    1,                                                                        // Channel bad_min
+    127,                                                                // Channel bad_max
     32,                                                                        // Min tempo
     512,                                                                // Max tempo
     1,                                                                        // Min pattern rows

@@ -353,7 +353,7 @@ BOOL CModToMidi::DoConvert()
     UINT nSpeed;
     CFile f;
 
-    const modplug::tracker::chnindex_t chnCount = min(64, m_pSndFile->GetNumChannels());
+    const modplug::tracker::chnindex_t chnCount = bad_min(64, m_pSndFile->GetNumChannels());
     if(chnCount < m_pSndFile->GetNumChannels())
             MessageBox("Note: Only 64 channels will be exported.");
 

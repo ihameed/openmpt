@@ -91,7 +91,7 @@ BOOL CCtrlGeneral::OnInitDialog()
 
 // -> CODE#0016
 // -> DESC="default tempo update"
-//    m_SpinTempo.SetRange(32, 255);        // 255 bpm max
+//    m_SpinTempo.SetRange(32, 255);        // 255 bpm bad_max
 
     if(m_pSndFile->GetType() & MOD_TYPE_S3M)
     {
@@ -172,7 +172,7 @@ void CCtrlGeneral::UpdateView(uint32_t dwHint, CObject *pHint)
     if ((pHint == this) || (!m_pSndFile)) return;
     if (dwHint & HINT_MODSEQUENCE)
     {
-            // Detecting max valid restart position
+            // Detecting bad_max valid restart position
             modplug::tracker::orderindex_t i = 0;
             for (i=0; i<m_pSndFile->Order.size(); i++) if (m_pSndFile->Order[i] == m_pSndFile->Order.GetInvalidPatIndex()) break;
             m_SpinRestartPos.SetRange32(0, i);
@@ -278,9 +278,9 @@ void CCtrlGeneral::OnVScroll(UINT code, UINT pos, CScrollBar *pscroll)
             CSliderCtrl* pSlider = (CSliderCtrl*) pscroll;
 
             if (pSlider==&m_SliderTempo) {
-                    int min, max;
-                    m_SpinTempo.GetRange(min, max);
-                    int tempo = max - m_SliderTempo.GetPos();
+                    int bad_min, bad_max;
+                    m_SpinTempo.GetRange(bad_min, bad_max);
+                    int tempo = bad_max - m_SliderTempo.GetPos();
                     if ((tempo >= m_pSndFile->GetModSpecifications().tempoMin) && (tempo <= m_pSndFile->GetModSpecifications().tempoMax) && (tempo != m_pSndFile->m_nDefaultTempo)) {
                             m_pSndFile->m_nDefaultTempo = tempo;
                             m_pSndFile->m_nMusicTempo = tempo;

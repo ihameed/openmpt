@@ -277,7 +277,7 @@ bool COrderList::SetCurSel(modplug::tracker::orderindex_t sel, bool bEdit, bool 
             if ((*nOrder < m_nXScroll + nMargins) || (!m_cxFont) || (!m_cyFont))
             {   // Must move first shown sequence item to left in order to show
                     // the new active order.
-                    m_nXScroll = max(0, *nOrder - nMargins);
+                    m_nXScroll = bad_max(0, *nOrder - nMargins);
                     SetScrollPos(SB_HORZ, m_nXScroll);
                     InvalidateRect(NULL, FALSE);
             } else
@@ -1213,9 +1213,9 @@ void COrderList::OnInsertOrder()
                        nInsertEnd + i + 1 < pSndFile->Order.GetLength())
                             pSndFile->Order[nInsertEnd + i + 1] = pSndFile->Order[nInsertEnd - nInsertCount + i];
             }
-            m_nScrollPos = min(nInsertEnd + 1, pSndFile->Order.GetLastIndex());
+            m_nScrollPos = bad_min(nInsertEnd + 1, pSndFile->Order.GetLastIndex());
             if(nInsertCount > 0)
-                    m_nScrollPos2nd = min(m_nScrollPos + nInsertCount, pSndFile->Order.GetLastIndex());
+                    m_nScrollPos2nd = bad_min(m_nScrollPos + nInsertCount, pSndFile->Order.GetLastIndex());
             else
                     m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
 
@@ -1413,7 +1413,7 @@ void COrderList::SelectSequence(const modplug::tracker::sequenceindex_t nSeq)
     else if (nSeq < rSf.Order.GetNumSequences())
             rSf.Order.SetSequence(nSeq);
     modplug::tracker::orderindex_t nPosCandidate = rSf.Order.GetLengthTailTrimmed() - 1;
-    SetCurSel(min(m_nScrollPos, nPosCandidate), true, false, true);
+    SetCurSel(bad_min(m_nScrollPos, nPosCandidate), true, false, true);
     if (m_pParent)
             m_pParent->SetCurrentPattern(rSf.Order[m_nScrollPos]);
 

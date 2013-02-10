@@ -153,9 +153,9 @@ void ReadItemString(InStream& iStrm, std::string& str, const DataSize)
     Binaryread(iStrm, id, 1);
     const uint8_t nSizeBytes = (id & 12) >> 2; // 12 == 1100b
     if (nSizeBytes > 0)
-            iStrm.read(reinterpret_cast<char*>(&id) + 1, min(3, nSizeBytes));
+            iStrm.read(reinterpret_cast<char*>(&id) + 1, bad_min(3, nSizeBytes));
     // Limit to 1 MB.
-    str.resize(min(id >> 4, 1000000));
+    str.resize(bad_min(id >> 4, 1000000));
     for(size_t i = 0; i < str.size(); i++)
             iStrm.read(&str[i], 1);
 
@@ -294,7 +294,7 @@ void Ssb::AddReadNote(const ReadEntry* const pRe, const NumType nNum)
                              (pRe && pRe->nSize != invalidDatasize) ? Stringify(pRe->nSize).c_str() : "",
                              "");
             m_fpLogFunc(buffer);
-    }        
+    }
 }
 
 
@@ -324,7 +324,7 @@ void Ssb::ResetReadstatus()
 }
 
 
-void Ssb::WriteMapItem( const void* pId, 
+void Ssb::WriteMapItem( const void* pId,
                                             const size_t nIdSize,
                                             const RposType& rposDataStart,
                                             const DataSize& nDatasize,
@@ -480,7 +480,7 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64_t& nVer
     uint8_t tempU8 = 0;
     Setbit(tempU8, 0, (m_nIdbytes == IdSizeVariable) || (m_nIdbytes == 3) || (m_nIdbytes > 4));
     Setbit(tempU8, 1, m_nFixedEntrySize != 0);
-    
+
     const uint8_t flags = tempU8;
     if(flags != s_DefaultFlagbyte)
     {
@@ -503,7 +503,7 @@ void Ssb::BeginWrite(const void* pId, const size_t nIdSize, const uint64_t& nVer
     if(Testbit(flags, 1)) // Fixedsize entries?
             WriteAdaptive1234(oStrm, m_nFixedEntrySize);
 
-    //Entrycount. Reserve two bytes(max UINT16_MAX / 4 entries), actual value is written after writing data.
+    //Entrycount. Reserve two bytes(bad_max UINT16_MAX / 4 entries), actual value is written after writing data.
     m_posEntrycount = oStrm.tellp();
     Binarywrite<uint16_t>(oStrm, 0);
 
@@ -611,7 +611,7 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64_t& nVers
                     return;
             }
     }
-    
+
     // Compare IDs.
     CompareId(iStrm, pId, nLength);
     if ((m_Status & SNT_FAILURE) != 0)
@@ -623,7 +623,7 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64_t& nVers
 
     if (m_fpLogFunc)
             m_fpLogFunc(strIdMatch);
-    
+
     // Header
     uint8_t tempU8;
     Binaryread<uint8_t>(iStrm, tempU8);
@@ -685,7 +685,7 @@ void Ssb::BeginRead(const void* pId, const size_t nLength, const uint64_t& nVers
     SetFlag(RwfRMapHasId, (m_nIdbytes > 0));
     SetFlag(RwfRMapHasDesc, Testbit(header, 7));
     SetFlag(RwfRwHasMap, GetFlag(RwfRMapHasId) || GetFlag(RwfRMapHasStartpos) || GetFlag(RwfRMapHasSize) || GetFlag(RwfRMapHasDesc));
-    
+
     if (GetFlag(RwfRwHasMap) == false && m_fpLogFunc)
             m_fpLogFunc(strNoMapInFile);
 
@@ -808,7 +808,7 @@ void Ssb::CacheMap()
     m_pIstrm->seekg(m_posDataBegin);
 
     // If there are no positions in the map but there are entry sizes, rposStart will
-    // be relative to data start. Now that posDataBegin is known, make them relative to 
+    // be relative to data start. Now that posDataBegin is known, make them relative to
     // startpos.
     if (GetFlag(RwfRMapHasStartpos) == false && (GetFlag(RwfRMapHasSize) || m_nFixedEntrySize > 0))
     {
@@ -824,7 +824,7 @@ const ReadEntry* Ssb::Find(const void* pId, const size_t nIdLength)
     m_pIstrm->clear();
     if (GetFlag(RwfRMapCached) == false)
             CacheMap();
-    
+
     if (m_nFixedEntrySize > 0 && GetFlag(RwfRMapHasStartpos) == false && GetFlag(RwfRMapHasSize) == false)
             m_pIstrm->seekg(m_posDataBegin + Postype(m_nFixedEntrySize * m_nCounter));
 
@@ -855,7 +855,7 @@ void Ssb::FinishWrite()
     const Postype posDataEnd = oStrm.tellp();
     if (m_posMapStart != Postype(0) && ((uint32_t)m_MapStream.pcount() > m_nMapReserveSize))
             { AddWriteNote(SNW_INSUFFICIENT_MAPSIZE); return; }
-            
+
     if (m_posMapStart < 1)
             m_posMapStart = oStrm.tellp();
     else
@@ -871,7 +871,7 @@ void Ssb::FinishWrite()
     }
 
     const Postype posMapEnd = oStrm.tellp();
-    
+
     // Write entry count.
     oStrm.seekp(m_posEntrycount);
     Binarywrite<size_t>(oStrm, (m_nCounter << 2) | 1, 2);
@@ -884,11 +884,10 @@ void Ssb::FinishWrite()
     }
 
     // Seek to end.
-    oStrm.seekp(max(posMapEnd, posDataEnd)); 
+    oStrm.seekp(bad_max(posMapEnd, posDataEnd));
 
     if (m_fpLogFunc)
             m_fpLogFunc(tstrEndOfStream, uint32_t(oStrm.tellp() - m_posStart));
 }
 
-} // namespace srlztn 
-
+} // namespace srlztn

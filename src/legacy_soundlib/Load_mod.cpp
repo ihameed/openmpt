@@ -102,7 +102,7 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
         {
             if(param <= 0x80)
             {
-                param = min(param << 1, 0xFF);
+                param = bad_min(param << 1, 0xFF);
             }
             else if(param == 0xA4)    // surround
             {
@@ -124,8 +124,8 @@ uint16_t module_renderer::ModSaveCommand(const modplug::tracker::modevent_t *m, 
     case CmdVol:                    command = 0x0C; break;
     case CmdPatternBreak:            command = 0x0D; param = ((param / 10) << 4) | (param % 10); break;
     case CmdModCmdEx:                    command = 0x0E; break;
-    case CmdSpeed:                            command = 0x0F; param = min(param, (bXM) ? 0x1F : 0x20); break;
-    case CmdTempo:                            command = 0x0F; param = max(param, (bXM) ? 0x20 : 0x21); break;
+    case CmdSpeed:                            command = 0x0F; param = bad_min(param, (bXM) ? 0x1F : 0x20); break;
+    case CmdTempo:                            command = 0x0F; param = bad_max(param, (bXM) ? 0x20 : 0x21); break;
     case CmdGlobalVol:            command = 'G' - 55; break;
     case CmdGlobalVolSlide:    command = 'H' - 55; break;
     case CmdKeyOff:                    command = 'K' - 55; break;
@@ -251,7 +251,7 @@ struct FixMODPatterns
                 m.param = 0x91;
             } else
             {
-                m.param = min(m.param * 2, 0xFF);
+                m.param = bad_min(m.param * 2, 0xFF);
             }
         }
     }
@@ -708,7 +708,7 @@ bool module_renderer::SaveMod(LPCSTR lpszFileName, UINT nPacking, const bool bCo
         if(bCompatibilityExport == true) // first two bytes have to be 0 due to PT's one-shot loop ("no loop")
         {
             int iOverwriteLen = 2 * pSmp->GetBytesPerSample();
-            memset(pSmp->sample_data, 0, min(iOverwriteLen, pSmp->GetSampleSizeInBytes()));
+            memset(pSmp->sample_data, 0, bad_min(iOverwriteLen, pSmp->GetSampleSizeInBytes()));
         }
         UINT flags = RS_PCM8S;
 #ifndef NO_PACKING

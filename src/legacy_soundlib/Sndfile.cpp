@@ -1013,28 +1013,28 @@ void module_renderer::SetMasterVolume(UINT nVol, bool adjustAGC)
 modplug::tracker::patternindex_t module_renderer::GetNumPatterns() const
 //---------------------------------------------
 {
-    modplug::tracker::patternindex_t max = 0;
+    modplug::tracker::patternindex_t bad_max = 0;
     for(modplug::tracker::patternindex_t i = 0; i < Patterns.Size(); i++)
     {
         if(Patterns.IsValidPat(i))
-            max = i + 1;
+            bad_max = i + 1;
     }
-    return max;
+    return bad_max;
 }
 
 
 UINT module_renderer::GetMaxPosition() const
 //-------------------------------------
 {
-    UINT max = 0;
+    UINT bad_max = 0;
     UINT i = 0;
 
     while ((i < Order.size()) && (Order[i] != Order.GetInvalidPatIndex()))
     {
-        if (Order[i] < Patterns.Size()) max += Patterns[Order[i]].GetNumRows();
+        if (Order[i] < Patterns.Size()) bad_max += Patterns[Order[i]].GetNumRows();
         i++;
     }
-    return max;
+    return bad_max;
 }
 
 
@@ -1061,7 +1061,7 @@ double  module_renderer::GetCurrentBPM() const
         double ticksPerBeat = m_nMusicSpeed * m_nCurrentRowsPerBeat;    //ticks/beat = ticks/row  * rows/beat
         double samplesPerBeat = m_nSamplesPerTick * ticksPerBeat;            //samps/beat = samps/tick * ticks/beat
         bpm =  deprecated_global_mixing_freq/samplesPerBeat * 60;                                            //beats/sec  = samps/sec  / samps/beat
-    }                                                                                                                                    //beats/min  =  beats/sec * 60
+    }                                                                                                                                    //beats/bad_min  =  beats/sec * 60
 
     return bpm;
 }
@@ -2585,7 +2585,7 @@ modplug::tracker::sampleindex_t module_renderer::RemoveSelectedSamples(const vec
         return 0;
     }
     modplug::tracker::sampleindex_t nRemoved = 0;
-    for(modplug::tracker::sampleindex_t nSmp = (modplug::tracker::sampleindex_t)min(GetNumSamples(), keepSamples.size() - 1); nSmp >= 1; nSmp--)
+    for(modplug::tracker::sampleindex_t nSmp = (modplug::tracker::sampleindex_t)bad_min(GetNumSamples(), keepSamples.size() - 1); nSmp >= 1; nSmp--)
     {
         if(!keepSamples[nSmp])
         {
@@ -2890,7 +2890,7 @@ const CModSpecifications& module_renderer::GetModSpecifications(const MODTYPE ty
 void module_renderer::SetupMODPanning(bool bForceSetup)
 //------------------------------------------------
 {
-    // Setup LRRL panning, max channel volume
+    // Setup LRRL panning, bad_max channel volume
     if((m_nType & MOD_TYPE_MOD) == 0 && bForceSetup == false) return;
 
     for(modplug::tracker::chnindex_t nChn = 0; nChn < MAX_BASECHANNELS; nChn++)

@@ -245,7 +245,7 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
             continue;
         }
 
-        m = mrow + min((flags & 0x1F), nChannels - 1);
+        m = mrow + bad_min((flags & 0x1F), nChannels - 1);
 
         if(flags & 0xE0)
         {
@@ -286,7 +286,7 @@ bool Convert_RIFF_AM_Pattern(const modplug::tracker::patternindex_t nPat, const 
                         if (m->param & 0xF0) m->param &= 0xF0;
                         break;
                     case CmdPanning8:
-                        if(m->param <= 0x80) m->param = min(m->param << 1, 0xFF);
+                        if(m->param <= 0x80) m->param = bad_min(m->param << 1, 0xFF);
                         else if(m->param == 0xA4) {m->command = CmdS3mCmdEx; m->param = 0x91;}
                         break;
                     case CmdPatternBreak:
@@ -364,7 +364,7 @@ void Convert_RIFF_AMFF_Envelope(const uint8_t flags, const uint8_t numpoints, co
     if(flags & AMENV_LOOP) pMPTEnv->flags |= ENV_LOOP;
 
     pMPTEnv->release_node = ENV_RELEASE_NODE_UNSET;
-    pMPTEnv->num_nodes = min(numpoints, 10);    // the buggy mod2j2b converter will actually NOT limit this to 10 points if the envelope is longer.
+    pMPTEnv->num_nodes = bad_min(numpoints, 10);    // the buggy mod2j2b converter will actually NOT limit this to 10 points if the envelope is longer.
 
     pMPTEnv->sustain_start = pMPTEnv->sustain_end = sustainpoint;
     if(pMPTEnv->sustain_start > pMPTEnv->num_nodes)
@@ -405,7 +405,7 @@ void Convert_RIFF_AM_Envelope(const AMINST_ENVELOPE *pAMEnv, modplug::tracker::m
     if(flags & AMENV_LOOP) pMPTEnv->flags |= ENV_LOOP;
 
     pMPTEnv->release_node = ENV_RELEASE_NODE_UNSET;
-    pMPTEnv->num_nodes = min(pAMEnv->numpoints + 1, 10);
+    pMPTEnv->num_nodes = bad_min(pAMEnv->numpoints + 1, 10);
 
     pMPTEnv->sustain_start = pMPTEnv->sustain_end = pAMEnv->suslooppoint;
     if(pMPTEnv->sustain_start > pMPTEnv->num_nodes)
@@ -495,7 +495,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 m_dwSongFlags = SONG_ITOLDEFFECTS | SONG_ITCOMPATGXX;
                 if(!(mainchunk->flags & AMHEAD_LINEAR)) m_dwSongFlags |= SONG_LINEARSLIDES;
                 if(mainchunk->channels < 1) return false;
-                m_nChannels = min(mainchunk->channels, MAX_BASECHANNELS);
+                m_nChannels = bad_min(mainchunk->channels, MAX_BASECHANNELS);
                 m_nDefaultSpeed = mainchunk->speed;
                 m_nDefaultTempo = mainchunk->tempo;
                 m_nDefaultGlobalVolume = mainchunk->globalvolume << 1;
@@ -559,7 +559,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 MemsetZero(*pIns);
                 SetDefaultInstrumentValues(pIns);
 
-                m_nInstruments = max(m_nInstruments, nIns);
+                m_nInstruments = bad_max(m_nInstruments, nIns);
 
                 memcpy(pIns->name, instheader->name, 28);
                 SpaceToNullStringFixed<28>(pIns->name);
@@ -608,7 +608,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                     Samples[nSmp].default_pan = smpchunk->pan << 2;
                     Samples[nSmp].default_volume = smpchunk->volume << 2;
                     Samples[nSmp].global_volume = 64;
-                    Samples[nSmp].length = min(LittleEndian(smpchunk->length), MAX_SAMPLE_LENGTH);
+                    Samples[nSmp].length = bad_min(LittleEndian(smpchunk->length), MAX_SAMPLE_LENGTH);
                     Samples[nSmp].loop_start = LittleEndian(smpchunk->loopstart);
                     Samples[nSmp].loop_end = LittleEndian(smpchunk->loopend);
                     Samples[nSmp].c5_samplerate = LittleEndian(smpchunk->samplerate);
@@ -670,7 +670,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                 MemsetZero(*pIns);
                 SetDefaultInstrumentValues(pIns);
 
-                m_nInstruments = max(m_nInstruments, nIns);
+                m_nInstruments = bad_max(m_nInstruments, nIns);
 
                 memcpy(pIns->name, instheader->name, 32);
                 SpaceToNullStringFixed<31>(pIns->name);
@@ -735,7 +735,7 @@ bool module_renderer::ReadAM(const uint8_t * const lpStream, const uint32_t dwMe
                     Samples[nSmp].default_pan = LittleEndianW(smpchunk->pan) * 256 / 32767;
                     Samples[nSmp].default_volume = LittleEndianW(smpchunk->volume) * 256 / 32767;
                     Samples[nSmp].global_volume = 64;
-                    Samples[nSmp].length = min(LittleEndian(smpchunk->length), MAX_SAMPLE_LENGTH);
+                    Samples[nSmp].length = bad_min(LittleEndian(smpchunk->length), MAX_SAMPLE_LENGTH);
                     Samples[nSmp].loop_start = LittleEndian(smpchunk->loopstart);
                     Samples[nSmp].loop_end = LittleEndian(smpchunk->loopend);
                     Samples[nSmp].c5_samplerate = LittleEndian(smpchunk->samplerate);

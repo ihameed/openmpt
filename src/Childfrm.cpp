@@ -12,7 +12,7 @@
 #include "childfrm.h"
 
 #include "qwinwidget.h"
-#include "gui/qt4/document_window.h"
+#include "gui/qt5/document_window.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -165,7 +165,7 @@ void CChildFrame::ActivateFrame(int nCmdShow)
             DEBUG_FUNC("pModDoc = %p", pModDoc);
             auto pSndFile = pModDoc->GetSoundFile();
             qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this->m_hWnd));
-            pattern_test = new modplug::gui::qt4::document_window(
+            pattern_test = new modplug::gui::qt5::document_window(
                 pSndFile,
                 CMainFrame::GetMainFrame()->global_config,
                 qwinwidget.get()

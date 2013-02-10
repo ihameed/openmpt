@@ -514,8 +514,8 @@ static void mmxex_findminmax16(void *p, int scanlen, int smplsize, int *smin, in
     mov edx, smplsize
     mov esi, smin
     mov edi, smax
-    movd mm0, [esi]        // mm0 = min
-    movd mm1, [edi]        // mm1 = max
+    movd mm0, [esi]        // mm0 = bad_min
+    movd mm1, [edi]        // mm1 = bad_max
     shr ecx, 2
     or ecx, ecx
     punpcklwd mm0, mm0
@@ -576,8 +576,8 @@ static void mmxex_findminmax8(void *p, int scanlen, int smplsize, int *smin, int
     mov edx, smplsize
     mov esi, smin
     mov edi, smax
-    movd mm0, [esi]        // mm0 = min
-    movd mm1, [edi]        // mm1 = max
+    movd mm0, [esi]        // mm0 = bad_min
+    movd mm1, [edi]        // mm1 = bad_max
     shr ecx, 3
     mov eax, 0x80808080
     movd mm7, eax

@@ -614,7 +614,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
         if (value)    //input:
             return (index < 2) ? 0 : 1;            //we only support up to 2 inputs. Remember: 0 means yes.
         else            //output:
-            return (index < 2) ? 0 : 1;            //2 outputs max too
+            return (index < 2) ? 0 : 1;            //2 outputs bad_max too
 
     //---from here VST 2.0 extension opcodes------------------------------------------------------
 
@@ -676,7 +676,7 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
 
                 // Time signature. numerator = rows per beats / rows pear measure (should sound somewhat logical to you).
                 // the denominator is a bit more tricky, since it cannot be set explicitely. so we just assume quarters for now.
-                timeInfo.timeSigNumerator = pSndFile->m_nCurrentRowsPerMeasure / max(pSndFile->m_nCurrentRowsPerBeat, 1);
+                timeInfo.timeSigNumerator = pSndFile->m_nCurrentRowsPerMeasure / bad_max(pSndFile->m_nCurrentRowsPerBeat, 1);
                 timeInfo.timeSigDenominator = 4; //gcd(pSndFile->m_nCurrentRowsPerMeasure, pSndFile->m_nCurrentRowsPerBeat);
             }
         }
@@ -1927,17 +1927,17 @@ VstInt32 CVstPlugin::GetVersion()
     return m_pEffect->version;
 }
 
-bool CVstPlugin::GetParams(float *param, VstInt32 min, VstInt32 max)
+bool CVstPlugin::GetParams(float *param, VstInt32 bad_min, VstInt32 bad_max)
 //------------------------------------------------------------------
 {
     if (!(m_pEffect))
         return false;
 
-    if (max>m_pEffect->numParams)
-        max = m_pEffect->numParams;
+    if (bad_max>m_pEffect->numParams)
+        bad_max = m_pEffect->numParams;
 
-    for (VstInt32 p = min; p < max; p++)
-        param[p-min]=GetParameter(p);
+    for (VstInt32 p = bad_min; p < bad_max; p++)
+        param[p-bad_min]=GetParameter(p);
 
     return true;
 
@@ -2141,8 +2141,8 @@ VOID CVstPlugin::GetParamName(UINT nIndex, LPSTR pszName, UINT cbSize)
         CHAR s[64]; // Increased to 64 bytes since 32 bytes doesn't seem to suffice for all plugs. Kind of ridiculous if you consider that kVstMaxParamStrLen = 8...
         s[0] = 0;
         Dispatch(effGetParamName, nIndex, 0, s, 0);
-        s[min(CountOf(s) - 1, cbSize - 1)] = 0;
-        lstrcpyn(pszName, s, min(cbSize, sizeof(s)));
+        s[bad_min(CountOf(s) - 1, cbSize - 1)] = 0;
+        lstrcpyn(pszName, s, bad_min(cbSize, sizeof(s)));
     }
 }
 
@@ -2269,7 +2269,7 @@ void CVstPlugin::RecalculateGain()
 void CVstPlugin::SetDryRatio(UINT param)
 //--------------------------------------
 {
-    param = min(param, 127);
+    param = bad_min(param, 127);
     m_pMixStruct->fDryRatio = 1.0-(static_cast<float>(param)/127.0f);
 }
 
@@ -2498,7 +2498,7 @@ void CVstPlugin::Process(float *pOutL, float *pOutR, unsigned long nSamples)
 // -! BEHAVIOUR_CHANGE#0028
 
         }
-        //Otherwise we actually only cater for two outputs max.
+        //Otherwise we actually only cater for two outputs bad_max.
         else if (m_pEffect->numOutputs > 1)
         {
             wetRatio = 1-m_pMixStruct->fDryRatio;  //rewbs.dryRatio
@@ -2757,7 +2757,7 @@ void CVstPlugin::MidiPitchBend(UINT nMidiCh, int nParam, UINT /*trackChannel*/)
 
     short increment = nParam * 0x2000/0xFF;
     short newPitchBendPos = m_nMidiPitchBendPos[nMidiCh] + increment;
-    newPitchBendPos = max(MIDI_PitchBend_Min, min(MIDI_PitchBend_Max, newPitchBendPos)); // cap
+    newPitchBendPos = bad_max(MIDI_PitchBend_Min, bad_min(MIDI_PitchBend_Max, newPitchBendPos)); // cap
 
     MidiPitchBend(nMidiCh, newPitchBendPos);
 }
@@ -2782,7 +2782,7 @@ void CVstPlugin::MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, U
     bool progChanged = (pCh->nProgram != --nMidiProg) && (nMidiProg < 0x80);
     //bool chanChanged = nCh != m_nPreviousMidiChan;
     //get vol in [0,128[
-    vol = min(vol/2, 127);
+    vol = bad_min(vol/2, 127);
 
     // Note: Some VSTis update bank/prog on midi channel change, others don't.
     //       For those that don't, we do it for them.
@@ -2876,8 +2876,8 @@ void CVstPlugin::MidiCommand(UINT nMidiCh, UINT nMidiProg, uint16_t wMidiBank, U
         // count instances of active notes.
         // This is to send a note off for each instance of a note, for plugs like Fabfilter.
         // Problem: if a note dies out naturally and we never send a note off, this counter
-        // will block at max until note off. Is this a problem?
-        // Safe to assume we won't need more than 16 note offs max on a given note?
+        // will block at bad_max until note off. Is this a problem?
+        // Safe to assume we won't need more than 16 note offs bad_max on a given note?
         if (pCh->uNoteOnMap[note][trackChannel]<17)
             pCh->uNoteOnMap[note][trackChannel]++;
 

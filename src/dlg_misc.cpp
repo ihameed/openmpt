@@ -484,8 +484,8 @@ BOOL CModTypeDlg::OnToolTipNotify(UINT id, NMHDR* pNMHDR, LRESULT* pResult)
     {
             //strncpy_s(pTTTA->szText, sizeof(pTTTA->szText), strTipText,
             //        strTipText.GetLength() + 1);
-            // 80 chars max?!
-            strncpy(pTTTA->szText, strTipText, min(strTipText.GetLength() + 1, CountOf(pTTTA->szText) - 1));
+            // 80 chars bad_max?!
+            strncpy(pTTTA->szText, strTipText, bad_min(strTipText.GetLength() + 1, CountOf(pTTTA->szText) - 1));
     }
     else
     {
@@ -565,7 +565,7 @@ END_MESSAGE_MAP()
 BOOL CRemoveChannelsDlg::OnInitDialog()
 //-------------------------------------
 {
-    CHAR label[max(100, 20 + MAX_CHANNELNAME)];
+    CHAR label[bad_max(100, 20 + MAX_CHANNELNAME)];
     CDialog::OnInitDialog();
     for (UINT n = 0; n < m_nChannels; n++)
     {
@@ -1462,7 +1462,7 @@ LPCTSTR GetNoteStr(const modplug::tracker::note_t nNote)
 void AppendNotesToControl(CComboBox& combobox, const modplug::tracker::note_t noteStart, const modplug::tracker::note_t noteEnd)
 //------------------------------------------------------------------------------------------------------------------
 {
-    const modplug::tracker::note_t upperLimit = min(CountOf(szDefaultNoteNames)-1, noteEnd);
+    const modplug::tracker::note_t upperLimit = bad_min(CountOf(szDefaultNoteNames)-1, noteEnd);
     for(modplug::tracker::note_t note = noteStart; note <= upperLimit; ++note)
             combobox.SetItemData(combobox.AddString(szDefaultNoteNames[note]), note);
 }

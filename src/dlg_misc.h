@@ -200,7 +200,7 @@ protected:
     UINT m_nOctaves;
     int m_nSelection;
     BOOL m_bCapture, m_bCursorNotify;
-    uint8_t KeyFlags[modplug::tracker::NoteMax]; // 10 octaves max
+    uint8_t KeyFlags[modplug::tracker::NoteMax]; // 10 octaves bad_max
 
 public:
     CKeyboardControl() { m_hParent = NULL; m_nOctaves = 1; m_nSelection = -1; m_bCapture = FALSE; }

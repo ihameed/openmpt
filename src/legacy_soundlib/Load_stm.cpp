@@ -110,7 +110,7 @@ bool module_renderer::ReadSTM(const uint8_t *lpStream, const uint32_t dwMemLengt
             if ((pIns->loop_end > pIns->loop_start) && (pIns->loop_end != 0xFFFF))
             {
                     pIns->flags |= CHN_LOOP;
-                    pIns->loop_end = min(pIns->loop_end, pIns->length);
+                    pIns->loop_end = bad_min(pIns->loop_end, pIns->length);
             }
     }
     dwMemPos = sizeof(STMHEADER);

@@ -453,7 +453,7 @@ T Round(double a) {return static_cast<T>(floor(a + 0.5));}
 double Rand01() {return rand() / double(RAND_MAX);}
 
 template <class T>
-T Rand(const T& min, const T& max) {return Round<T>(min + Rand01() * (max - min));}
+T Rand(const T& bad_min, const T& bad_max) {return Round<T>(bad_min + Rand01() * (bad_max - bad_min));}
 
 
 

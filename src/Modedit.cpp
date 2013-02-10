@@ -680,12 +680,12 @@ bool CModDoc::RemoveInstrument(modplug::tracker::instrumentindex_t nIns)
 bool CModDoc::MoveOrder(modplug::tracker::orderindex_t nSourceNdx, modplug::tracker::orderindex_t nDestNdx, bool bUpdate, bool bCopy, modplug::tracker::sequenceindex_t nSourceSeq, modplug::tracker::sequenceindex_t nDestSeq)
 //---------------------------------------------------------------------------------------------------------------------------------------------
 {
-    if (max(nSourceNdx, nDestNdx) >= m_SndFile.Order.size()) return false;
+    if (bad_max(nSourceNdx, nDestNdx) >= m_SndFile.Order.size()) return false;
     if (nDestNdx >= m_SndFile.GetModSpecifications().ordersMax) return false;
 
     if(nSourceSeq == modplug::tracker::SequenceIndexInvalid) nSourceSeq = m_SndFile.Order.GetCurrentSequenceIndex();
     if(nDestSeq == modplug::tracker::SequenceIndexInvalid) nDestSeq = m_SndFile.Order.GetCurrentSequenceIndex();
-    if (max(nSourceSeq, nDestSeq) >= m_SndFile.Order.GetNumSequences()) return false;
+    if (bad_max(nSourceSeq, nDestSeq) >= m_SndFile.Order.GetNumSequences()) return false;
     modplug::tracker::patternindex_t nSourcePat = m_SndFile.Order.GetSequence(nSourceSeq)[nSourceNdx];
 
     // save current working sequence
@@ -1282,7 +1282,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
                     sscanf(p + dwPos, pszEnvFmt, &nPoints, &susBegin, &susEnd, &loopBegin, &loopEnd, &bSus, &bLoop, &bCarry);
                     while ((dwPos < dwMemSize) && (p[dwPos] != '\r') && (p[dwPos] != '\n')) dwPos++;
 
-                    nPoints = min(nPoints, m_SndFile.GetModSpecifications().envelopePointsMax);
+                    nPoints = bad_min(nPoints, m_SndFile.GetModSpecifications().envelopePointsMax);
                     if (susEnd >= nPoints) susEnd = 0;
                     if (susBegin > susEnd) susBegin = susEnd;
                     if (loopEnd >= nPoints) loopEnd = 0;
@@ -1345,7 +1345,7 @@ bool CModDoc::PasteEnvelope(UINT nIns, enmEnvelopeTypes nEnv)
 }
 
 
-// Check which channels contain note data. maxRemoveCount specified how many empty channels are reported at max.
+// Check which channels contain note data. maxRemoveCount specified how many empty channels are reported at bad_max.
 void CModDoc::CheckUsedChannels(vector<bool> &usedMask, modplug::tracker::chnindex_t maxRemoveCount) const
 //----------------------------------------------------------------------------------------
 {

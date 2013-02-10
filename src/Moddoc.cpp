@@ -18,7 +18,7 @@
 
 #include "gui/mixgraph_view.h"
 #include "pervasives/pervasives.h"
-#include "gui/qt4/config_dialog.h"
+#include "gui/qt5/config_dialog.h"
 
 #include <QtGui>
 #include <qwinwidget.h>
@@ -182,7 +182,7 @@ BOOL CModDoc::OnNewDocument()
     m_SndFile.m_nMixLevels = m_SndFile.GetModSpecifications().defaultMixLevels;
     m_SndFile.m_pConfig->SetMixLevels(m_SndFile.m_nMixLevels);
     // ...and the order length
-    m_SndFile.Order.resize(min(modplug::tracker::deprecated_modsequence_list_t::s_nCacheSize, m_SndFile.GetModSpecifications().ordersMax));
+    m_SndFile.Order.resize(bad_min(modplug::tracker::deprecated_modsequence_list_t::s_nCacheSize, m_SndFile.GetModSpecifications().ordersMax));
 
     ReinitRecordState();
     InitializeMod();
@@ -951,7 +951,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             pChn->fractional_sample_position = 0;
             pChn->loop_start = loopstart;
             pChn->loop_end = loopend;
-            pChn->length = min(UINT(loopend), pChn->sample->length);
+            pChn->length = bad_min(UINT(loopend), pChn->sample->length);
         }
 
         // Handle extra-loud flag
@@ -2334,7 +2334,7 @@ UINT CModDoc::GetEffectFromIndex(UINT ndx, int &refParam)
     }
     if (gFXInfo[ndx].dwFlags) {
         if (refParam > static_cast<int>(gFXInfo[ndx].dwFlags)) {
-            refParam = gFXInfo[ndx].dwFlags;    //used for Zxx macro control: limit to 7F max.
+            refParam = gFXInfo[ndx].dwFlags;    //used for Zxx macro control: limit to 7F bad_max.
         }
     }
 
@@ -3723,7 +3723,7 @@ void CModDoc::SetElapsedTime(modplug::tracker::orderindex_t nOrd, modplug::track
         return;
 
     const double dPatternPlaytime = m_SndFile.GetPlaybackTimeAt(nOrd, nRow, true);
-    pMainFrm->SetElapsedTime((uint32_t) (max(0, dPatternPlaytime) * 1000));
+    pMainFrm->SetElapsedTime((uint32_t) (bad_max(0, dPatternPlaytime) * 1000));
 }
 
 

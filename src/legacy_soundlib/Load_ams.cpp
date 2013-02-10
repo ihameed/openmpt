@@ -149,7 +149,7 @@ bool module_renderer::ReadAMS(const uint8_t * const lpStream, const uint32_t dwM
     {
         if (dwMemPos + 1 >= dwMemLength) return true;
         tmp = lpStream[dwMemPos++];
-        tmp2 = min(tmp, MAX_PATTERNNAME - 1);            // not counting null char
+        tmp2 = bad_min(tmp, MAX_PATTERNNAME - 1);            // not counting null char
         if (dwMemPos + tmp >= dwMemLength) return true;
         Patterns.Insert(pNam, 64);    // Create pattern now, so that the name won't be overwritten later.
         if(tmp2)
@@ -300,7 +300,7 @@ typedef struct AMS2FILEHEADER
     uint32_t dwHdr1;            // AMShdr
     uint16_t wHdr2;
     uint8_t b1A;                    // 0x1A
-    uint8_t titlelen;            // 30-bytes max
+    uint8_t titlelen;            // 30-bytes bad_max
     CHAR szTitle[30];    // [titlelen]
 } AMS2FILEHEADER;
 

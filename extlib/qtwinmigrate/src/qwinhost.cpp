@@ -75,11 +75,11 @@
     passed on to the QWidget constructor. The widget has by default
     no background.
 
-    \warning You cannot change the parent widget of the QWinHost instance 
-    after the native window has been created, i.e. do not call 
+    \warning You cannot change the parent widget of the QWinHost instance
+    after the native window has been created, i.e. do not call
     QWidget::setParent or move the QWinHost into a different layout.
 */
-QWinHost::QWinHost(QWidget *parent, Qt::WFlags f)
+QWinHost::QWinHost(QWidget *parent, Qt::WindowFlags f)
 : QWidget(parent, f), wndproc(0),own_hwnd(false), hwnd(0)
 {
     setAttribute(Qt::WA_NoBackground);
@@ -148,17 +148,17 @@ void QWinHost::fixParent()
         hwnd = 0;
         return;
     }
-    if (::GetParent(hwnd) == winId())
+    if (::GetParent(hwnd) == reinterpret_cast<HWND>(winId()))
         return;
     long style = GetWindowLong(hwnd, GWL_STYLE);
     if (style & WS_OVERLAPPED)
         return;
-    ::SetParent(hwnd, winId());
+    ::SetParent(hwnd, reinterpret_cast<HWND>(winId()));
 }
 
 /*!
-    Sets the native Win32 window to \a window. If \a window is not a child 
-    window of this widget, then it is reparented to become one. If \a window 
+    Sets the native Win32 window to \a window. If \a window is not a child
+    window of this widget, then it is reparented to become one. If \a window
     is not a child window (i.e. WS_OVERLAPPED is set), then this function does nothing.
 
     The lifetime of the window handle will be managed by Windows, QWinHost does not
@@ -196,7 +196,7 @@ void *getWindowProc(QWinHost *host)
 
 LRESULT CALLBACK WinHostProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    QWinHost *widget = qobject_cast<QWinHost*>(QWidget::find(::GetParent(hwnd)));
+    QWinHost *widget = qobject_cast<QWinHost*>(QWidget::find(reinterpret_cast<WId>(::GetParent(hwnd))));
     WNDPROC oldproc = (WNDPROC)getWindowProc(widget);
     if (widget) {
 	switch(msg) {
@@ -209,18 +209,18 @@ LRESULT CALLBACK WinHostProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 	case WM_SYSKEYUP:
 	    QT_WA({
-		SendMessage(widget->winId(), msg, wParam, lParam);
+		SendMessage(reinterpret_cast<HWND>(widget->winId()), msg, wParam, lParam);
 	    }, {
-		SendMessageA(widget->winId(), msg, wParam, lParam);
+		SendMessageA(reinterpret_cast<HWND>(widget->winId()), msg, wParam, lParam);
 	    })
 	    break;
 
 	case WM_KEYDOWN:
 	    if (wParam == VK_TAB) {
 		QT_WA({
-		    SendMessage(widget->winId(), msg, wParam, lParam);
+		    SendMessage(reinterpret_cast<HWND>(widget->winId()), msg, wParam, lParam);
 		}, {
-		    SendMessageA(widget->winId(), msg, wParam, lParam);
+		    SendMessageA(reinterpret_cast<HWND>(widget->winId()), msg, wParam, lParam);
 		})
 	    }
 	    break;
@@ -249,11 +249,11 @@ bool QWinHost::event(QEvent *e)
     switch(e->type()) {
     case QEvent::Polish:
         if (!hwnd) {
-            hwnd = createWindow(winId(), qWinAppInst());
+            hwnd = createWindow(reinterpret_cast<HWND>(winId()), qWinAppInst());
             fixParent();
             own_hwnd = hwnd != 0;
         }
-        if (hwnd && !wndproc && GetParent(hwnd) == winId()) {
+        if (hwnd && !wndproc && GetParent(hwnd) == reinterpret_cast<HWND>(winId())) {
 #if defined(GWLP_WNDPROC)
             QT_WA({
                 wndproc = (void*)GetWindowLongPtr(hwnd, GWLP_WNDPROC);
@@ -330,8 +330,9 @@ void QWinHost::resizeEvent(QResizeEvent *e)
 /*!
     \reimp
 */
-bool QWinHost::winEvent(MSG *msg, long *result)
+bool QWinHost::nativeEvent(const QByteArray &type, void *message, long *result)
 {
+    MSG *msg = reinterpret_cast<MSG *>(message);
     switch (msg->message)
     {
     case WM_SETFOCUS:
@@ -343,5 +344,5 @@ bool QWinHost::winEvent(MSG *msg, long *result)
         break;
     }
 
-    return QWidget::winEvent(msg, result);
+    return QWidget::nativeEvent(type, message, result);
 }

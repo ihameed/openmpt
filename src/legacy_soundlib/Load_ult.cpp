@@ -175,15 +175,15 @@ static int ReadULTEvent(modplug::tracker::modevent_t *note, const uint8_t *lpStr
     {
             uint32_t off = ((param1 << 8) | param2) >> 6;
             cmd1 = CmdNone;
-            param1 = (uint8_t)min(off, 0xFF);
+            param1 = (uint8_t)bad_min(off, 0xFF);
     } else if(cmd1 == CmdOffset)
     {
             uint32_t off = param1 * 4;
-            param1 = (uint8_t)min(off, 0xFF);
+            param1 = (uint8_t)bad_min(off, 0xFF);
     } else if(cmd2 == CmdOffset)
     {
             uint32_t off = param2 * 4;
-            param2 = (uint8_t)min(off, 0xFF);
+            param2 = (uint8_t)bad_min(off, 0xFF);
     } else if(cmd1 == cmd2)
     {
             // don't try to figure out how ultratracker does this, it's quite random
@@ -377,7 +377,7 @@ bool module_renderer::ReadUlt(const uint8_t *lpStream, const uint32_t dwMemLengt
                     continue;
             pSmp->length = ultSmp.size_end - ultSmp.size_start;
             pSmp->loop_start = ultSmp.loop_start;
-            pSmp->loop_end = min(ultSmp.loop_end, pSmp->length);
+            pSmp->loop_end = bad_min(ultSmp.loop_end, pSmp->length);
             pSmp->default_volume = ultSmp.volume;
             pSmp->global_volume = 64;
 

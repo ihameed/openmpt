@@ -70,7 +70,7 @@ public:
 };
 
 
-namespace modplug { namespace gui { namespace qt4 { class document_window; } } }
+namespace modplug { namespace gui { namespace qt5 { class document_window; } } }
 
 class CChildFrame: public CMDIChildWnd {
     friend class CModControlDlg;
@@ -78,7 +78,7 @@ class CChildFrame: public CMDIChildWnd {
 public:
     CChildFrame();
     std::unique_ptr<QWinWidget> qwinwidget;
-    modplug::gui::qt4::document_window *pattern_test;
+    modplug::gui::qt5::document_window *pattern_test;
 
 protected:
     static LONG glMdiOpenCount;

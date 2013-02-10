@@ -10,7 +10,7 @@ namespace mixgraph {
 
 
 static const double PI = 3.14159265358979323846;
-static const size_t FIR_TAPS = 1024;
+static const size_t FIR_TAPS = 64;
 static const size_t FIR_CENTER = (FIR_TAPS / 2) - 1;
 static const size_t TAP_PHASES = 4096;
 static const size_t SINC_SIZE = FIR_TAPS * TAP_PHASES;

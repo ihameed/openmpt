@@ -1898,7 +1898,7 @@ BOOL CDLSBank::ExtractInstrument(module_renderer *pSndFile, UINT nInstr, UINT nI
                     pIns->volume_envelope.Values[1] = ENVELOPE_MAX;
                     pIns->volume_envelope.Ticks[2] = 10;
                     pIns->volume_envelope.Values[2] = ENVELOPE_MID;
-                    pIns->volume_envelope.Ticks[3] = 20;        // 1 second max. for drums
+                    pIns->volume_envelope.Ticks[3] = 20;        // 1 second bad_max. for drums
                     pIns->volume_envelope.Values[3] = ENVELOPE_MIN;
                     pIns->volume_envelope.num_nodes = 4;
             }

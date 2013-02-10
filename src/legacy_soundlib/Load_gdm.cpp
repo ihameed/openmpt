@@ -109,7 +109,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
     {
         if(pHeader->PanMap[i] < 16)
         {
-            ChnSettings[i].nPan = min((pHeader->PanMap[i] << 4) + 8, 256);
+            ChnSettings[i].nPan = bad_min((pHeader->PanMap[i] << 4) + 8, 256);
         }
         else if(pHeader->PanMap[i] == 16)
         {
@@ -123,7 +123,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
         }
     }
 
-    m_nDefaultGlobalVolume = min(pHeader->MastVol << 2, 256);
+    m_nDefaultGlobalVolume = bad_min(pHeader->MastVol << 2, 256);
     m_nDefaultSpeed = pHeader->Tempo;
     m_nDefaultTempo = pHeader->BPM;
     m_nRestartPos = 0; // not supported in this format, so use the default value
@@ -168,9 +168,9 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
 
         Samples[iSmp].c5_samplerate = LittleEndianW(pSample->C4Hertz);
         Samples[iSmp].global_volume = 256; // not supported in this format
-        Samples[iSmp].length = min(LittleEndian(pSample->Length), MAX_SAMPLE_LENGTH); // in bytes
-        Samples[iSmp].loop_start = min(LittleEndian(pSample->LoopBegin), Samples[iSmp].length); // in samples
-        Samples[iSmp].loop_end = min(LittleEndian(pSample->LoopEnd) - 1, Samples[iSmp].length); // dito
+        Samples[iSmp].length = bad_min(LittleEndian(pSample->Length), MAX_SAMPLE_LENGTH); // in bytes
+        Samples[iSmp].loop_start = bad_min(LittleEndian(pSample->LoopBegin), Samples[iSmp].length); // in samples
+        Samples[iSmp].loop_end = bad_min(LittleEndian(pSample->LoopEnd) - 1, Samples[iSmp].length); // dito
         FrequencyToTranspose(&Samples[iSmp]); // set transpose + finetune for mod files
 
         // fix transpose + finetune for some rare cases where transpose is not C-5 (e.g. sample 4 in wander2.gdm)
@@ -195,7 +195,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
 
         if(pSample->Flags & 0x04)
         {
-            Samples[iSmp].default_volume = min(pSample->Volume << 2, 256); // 0...64, 255 = no default volume
+            Samples[iSmp].default_volume = bad_min(pSample->Volume << 2, 256); // 0...64, 255 = no default volume
         }
         else
         {
@@ -205,7 +205,7 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
         if(pSample->Flags & 0x08) // default panning is used
         {
             Samples[iSmp].flags |= CHN_PANNING;
-            Samples[iSmp].default_pan = (pSample->Pan > 15) ? 128 : min((pSample->Pan << 4) + 8, 256); // 0...15, 16 = surround (not supported), 255 = no default panning
+            Samples[iSmp].default_pan = (pSample->Pan > 15) ? 128 : bad_min((pSample->Pan << 4) + 8, 256); // 0...15, 16 = surround (not supported), 255 = no default panning
         }
         else
         {
@@ -237,12 +237,12 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
         // read sample data
         ReadSample(&Samples[iSmp], iSampleFormat, reinterpret_cast<LPCSTR>(lpStream + iSampleOffset), dwMemLength - iSampleOffset);
 
-        iSampleOffset += min(LittleEndian(pSample->Length), dwMemLength - iSampleOffset);
+        iSampleOffset += bad_min(LittleEndian(pSample->Length), dwMemLength - iSampleOffset);
 
     }
 
     // read patterns
-    Patterns.ResizeArray(max(MAX_PATTERNS, pHeader->NOP + 1));
+    Patterns.ResizeArray(bad_max(MAX_PATTERNS, pHeader->NOP + 1));
 
     bool bS3MCommandSet = (GetBestSaveFormat() & (MOD_TYPE_S3M | MOD_TYPE_IT | MOD_TYPE_MPT)) != 0 ? true : false;
 
@@ -326,12 +326,12 @@ bool module_renderer::ReadGDM(const uint8_t * const lpStream, const uint32_t dwM
                             {
                                 command = CmdNone;
                                 volcommand = VolCmdVol;
-                                volparam = min(param, 64);
+                                volparam = bad_min(param, 64);
                             }
                             else
                             {
                                 command = CmdVol;
-                                param = min(param, 64);
+                                param = bad_min(param, 64);
                             }
                             break;
                         case 0x0D: command = CmdPatternBreak; break;

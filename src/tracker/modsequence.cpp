@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include <functional>
 
 #include "modsequence.h"
@@ -11,8 +10,6 @@
 #include "../legacy_soundlib/Sndfile.h"
 
 #define str_SequenceTruncationNote (GetStrI18N((_TEXT("Module has sequence of length %u; it will be truncated to maximum supported length, %u."))))
-
-#define new DEBUG_NEW
 
 namespace modplug {
 namespace tracker {
@@ -163,7 +160,7 @@ orderindex_t modsequence_t::GetNextOrderIgnoringSkips(const orderindex_t start) 
 {
     const orderindex_t nLength = GetLength();
     if(nLength == 0) return 0;
-    orderindex_t next = min(nLength-1, start+1);
+    orderindex_t next = bad_min(nLength-1, start+1);
     while(next+1 < nLength && (*this)[next] == GetIgnoreIndex()) next++;
     return next;
 }
@@ -174,7 +171,7 @@ orderindex_t modsequence_t::GetPreviousOrderIgnoringSkips(const orderindex_t sta
 {
     const orderindex_t nLength = GetLength();
     if(start == 0 || nLength == 0) return 0;
-    orderindex_t prev = min(start-1, nLength-1);
+    orderindex_t prev = bad_min(start-1, nLength-1);
     while(prev > 0 && (*this)[prev] == GetIgnoreIndex()) prev--;
     return prev;
 }
@@ -216,7 +213,7 @@ orderindex_t modsequence_t::Insert(orderindex_t nPos, orderindex_t nCount,
     // Limit number of orders to be inserted.
     LimitMax(nCount, orderindex_t(m_pSndFile->GetModSpecifications().ordersMax - nPos));
     // Calculate new length.
-    const orderindex_t nNewLength = min(nLengthTt + nCount, m_pSndFile->GetModSpecifications().ordersMax);
+    const orderindex_t nNewLength = bad_min(nLengthTt + nCount, m_pSndFile->GetModSpecifications().ordersMax);
     // Resize if needed.
     if (nNewLength > GetLength())
             resize(nNewLength);
@@ -226,7 +223,7 @@ orderindex_t modsequence_t::Insert(orderindex_t nPos, orderindex_t nCount,
     const orderindex_t nFreeSpace = GetLength() - (nPos + nCount);
     // Move orders nCount steps right starting from nPos.
     if (nPos < nLengthTt)
-            memmove(m_pArray + nPos + nCount, m_pArray + nPos, min(nFreeSpace, nNeededSpace) * sizeof(patternindex_t));
+            memmove(m_pArray + nPos + nCount, m_pArray + nPos, bad_min(nFreeSpace, nNeededSpace) * sizeof(patternindex_t));
     // Set nFill to new orders.
     std::fill(begin() + nPos, begin() + nPos + nCount, nFill);
     return nCount;
@@ -309,7 +306,7 @@ uint32_t modsequence_t::Deserialize(const uint8_t* const src, const uint32_t mem
     const uint16_t nOriginalSize = s;
     LimitMax(s, ModSpecs::mptm.ordersMax);
 
-    resize(max(s, MAX_ORDERS));
+    resize(bad_max(s, MAX_ORDERS));
     for(size_t i = 0; i<s; i++, memPos +=4 )
     {
             uint32_t temp;
@@ -386,7 +383,7 @@ void ReadModSequence(std::istream& iStrm, modsequence_t& seq, const size_t)
     uint16_t nSize = MAX_ORDERS;
     ssb.ReadItem<uint16_t>(nSize, "l");
     LimitMax(nSize, ModSpecs::mptm.ordersMax);
-    seq.resize(max(nSize, deprecated_modsequence_list_t::s_nCacheSize));
+    seq.resize(bad_max(nSize, deprecated_modsequence_list_t::s_nCacheSize));
     ssb.ReadItem(seq.m_pArray, "a", 1, srlztn::ArrayReader<uint16_t>(nSize));
 }
 
@@ -661,7 +658,7 @@ bool deprecated_modsequence_list_t::MergeSequences()
                                                     modevent_t *pDest = m_pSndFile->Patterns[nNewPat];
                                                     memcpy(pDest, pSrc, m_pSndFile->Patterns[nPat].GetNumRows() * m_pSndFile->m_nChannels * sizeof(modevent_t));
                                                     m = pDest + len;
-                                                    patternsFixed.resize(max(nNewPat + 1, (patternindex_t)patternsFixed.size()), SequenceIndexInvalid);
+                                                    patternsFixed.resize(bad_max(nNewPat + 1, (patternindex_t)patternsFixed.size()), SequenceIndexInvalid);
                                                     nPat = nNewPat;
                                             } else
                                             {
@@ -699,7 +696,7 @@ void ReadModSequenceOld(std::istream& iStrm, deprecated_modsequence_list_t& seq,
             AfxMessageBox(str, MB_ICONWARNING);
             size = ModSpecs::mptm.ordersMax;
     }
-    seq.resize(max(size, MAX_ORDERS));
+    seq.resize(bad_max(size, MAX_ORDERS));
     if(size == 0)
             { seq.Init(); return; }
 

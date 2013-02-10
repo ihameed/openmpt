@@ -129,7 +129,7 @@ public:
 
     // Read/write.
     size_t WriteAsByte(FILE* f, const uint16_t count);
-    size_t WriteToByteArray(uint8_t* dest, const UINT numOfBytes, const UINT destSize);
+    size_t WriteToByteArray(uint8_t* dest, const uint32_t numOfBytes, const uint32_t destSize);
     bool ReadAsByte(const uint8_t* pFrom, const int howMany, const int memLength);
 
     // Deprecated function used for MPTm's created in 1.17.02.46 - 1.17.02.48.

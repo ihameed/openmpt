@@ -43,7 +43,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
     version = id;
     dwMemPos += sizeof(uint32_t);
 
-    // max supported version
+    // bad_max supported version
     if(version > ITP_VERSION)
     {
         return false;
@@ -401,7 +401,7 @@ bool module_renderer::ReadITProject(const uint8_t * lpStream, const uint32_t dwM
     // Extra info data
 
     __int32 fcode = 0;
-    const uint8_t * ptr = lpStream + min(dwMemPos, dwMemLength);
+    const uint8_t * ptr = lpStream + bad_min(dwMemPos, dwMemLength);
 
     if (dwMemPos <= dwMemLength - 4) {
         fcode = (*((__int32 *)ptr));
@@ -594,7 +594,7 @@ bool module_renderer::SaveITProject(LPCSTR lpszFileName)
 
     // number of pattern name strings
     modplug::tracker::patternindex_t numNamedPats = Patterns.GetNumNamedPatterns();
-    numNamedPats = min(numNamedPats, MAX_PATTERNS);
+    numNamedPats = bad_min(numNamedPats, MAX_PATTERNS);
     id = numNamedPats;
     fwrite(&id, 1, sizeof(id), f);
 
@@ -684,9 +684,9 @@ bool module_renderer::SaveITProject(LPCSTR lpszFileName)
             itss.vol = (uint8_t)(psmp->default_volume >> 2);
             itss.dfp = (uint8_t)(psmp->default_pan >> 2);
             itss.vit = autovibxm2it[psmp->vibrato_type & 7];
-            itss.vis = min(psmp->vibrato_rate, 64);
-            itss.vid = min(psmp->vibrato_depth, 32);
-            itss.vir = min(psmp->vibrato_sweep, 255); //(psmp->vibrato_sweep < 64) ? psmp->vibrato_sweep * 4 : 255;
+            itss.vis = bad_min(psmp->vibrato_rate, 64);
+            itss.vid = bad_min(psmp->vibrato_depth, 32);
+            itss.vir = bad_min(psmp->vibrato_sweep, 255); //(psmp->vibrato_sweep < 64) ? psmp->vibrato_sweep * 4 : 255;
             if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
             if ((psmp->sample_data) && (psmp->length)) itss.cvt = 0x01;
             UINT flags = RS_PCM8S;

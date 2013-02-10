@@ -79,17 +79,23 @@ typedef struct {
 #endif // !defined(WAVE_FORMAT_EXTENSIBLE)
 
 // Define to build without ASIO support; makes build possible without ASIO SDK.
-//#define NO_ASIO 
+//#define NO_ASIO
 
 // (HACK) Define to build without VST support; makes build possible without VST SDK.
 //#define NO_VST
 
 // Define to build without MO3 support.
 //#define NO_MO3_SUPPORT
-                  
+
 // Define to build without DirectSound support.
 //#define NO_DSOUND
+#ifndef bad_max
+#define bad_max(a,b)  (((a) > (b)) ? (a) : (b))
+#endif
 
+#ifndef bad_min
+#define bad_min(a,b)  (((a) < (b)) ? (a) : (b))
+#endif
 
 void Log(LPCSTR format,...);
 
@@ -101,7 +107,7 @@ void Log(LPCSTR format,...);
 #pragma warning(error : 4309) // Treat "truncation of constant value"-warning as error.
 
 // Definitions for MSVC versions to write more understandable conditional-compilation,
-// e.g. #if (_MSC_VER > MSVC_VER_2008) instead of #if (_MSC_VER > 1500) 
+// e.g. #if (_MSC_VER > MSVC_VER_2008) instead of #if (_MSC_VER > 1500)
 #define MSVC_VER_VC71            1310
 #define MSVC_VER_2003            MSVC_VER_VC71
 #define MSVC_VER_VC8            1400

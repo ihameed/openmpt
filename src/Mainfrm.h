@@ -8,14 +8,14 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "gui/qt4/app_config.h"
+#include "gui/qt5/app_config.h"
 
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
 #include "inputhandler.h"
 #include "mptrack.h"
 
-namespace modplug { namespace gui { namespace qt4 {
+namespace modplug { namespace gui { namespace qt5 {
 class mfc_root;
 class config_dialog;
 } } }
@@ -31,7 +31,7 @@ class ISoundSource;
 
 #define NUM_AUDIO_BUFFERS                    3
 #define MIN_AUDIO_BUFFERSIZE            1024
-#define MAX_AUDIO_BUFFERSIZE            32768        // 32K buffers max
+#define MAX_AUDIO_BUFFERSIZE            32768        // 32K buffers bad_max
 #define MAINFRAME_TITLE                            "Open ModPlug Tracker"
 #define INIBUFFERSIZE                            MAX_PATH
 
@@ -447,9 +447,9 @@ public:
     portaudio::AutoSystem pa_auto_system;
     portaudio::System &pa_system;
     std::shared_ptr<modplug::audioio::paudio> stream;
-    modplug::gui::qt4::app_config global_config;
-    modplug::gui::qt4::config_dialog *config_dialog;
-    std::unique_ptr<modplug::gui::qt4::mfc_root> ui_root;
+    modplug::gui::qt5::app_config global_config;
+    modplug::gui::qt5::config_dialog *config_dialog;
+    std::unique_ptr<modplug::gui::qt5::mfc_root> ui_root;
 
     static CRITICAL_SECTION m_csAudio;
     static ISoundDevice *gpSoundDevice;

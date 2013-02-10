@@ -41,7 +41,7 @@ const size_t MAX_INSTRUMENTS = 256;    //200 // -> CODE#0006 -> DESC="misc quant
 // -> CODE#0006
 // -> DESC="misc quantity changes"
 const size_t MAX_VIRTUAL_CHANNELS = 256;    //200 // Note: This is the maximum number of sound channels,
-                                //            see MAX_BASECHANNELS for max pattern channels.
+                                //            see MAX_BASECHANNELS for bad_max pattern channels.
 // -! BEHAVIOUR_CHANGE#0006
 //#endif
 // -> CODE#0006
@@ -151,10 +151,10 @@ const size_t MAX_BASECHANNELS = 127;    // Max pattern channels.
 #define ENV_FILTER                    0x10        // filter env enabled (this has to be combined with ENV_ENABLED in the pitch envelope's flags)
 
 // Envelope value boundaries
-#define ENVELOPE_MIN            0                // vertical min value of a point
+#define ENVELOPE_MIN            0                // vertical bad_min value of a point
 #define ENVELOPE_MID            32                // vertical middle line
-#define ENVELOPE_MAX            64                // vertical max value of a point
-#define ENVELOPE_MAX_LENGTH 0x3FFF    // max envelope length in ticks. note: this value seems to be conservatively low...
+#define ENVELOPE_MAX            64                // vertical bad_max value of a point
+#define ENVELOPE_MAX_LENGTH 0x3FFF    // bad_max envelope length in ticks. note: this value seems to be conservatively low...
 
 
 // Flags of 'dF..' datafield in extended instrument properties.

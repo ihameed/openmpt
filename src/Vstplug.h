@@ -116,7 +116,7 @@ public:
     bool SaveProgram(CString fileName);
     VstInt32 GetUID();                        //rewbs.VSTpresets
     VstInt32 GetVersion();                //rewbs.VSTpresets
-    bool GetParams(float* param, VstInt32 min, VstInt32 max);         //rewbs.VSTpresets
+    bool GetParams(float* param, VstInt32 bad_min, VstInt32 bad_max);         //rewbs.VSTpresets
     bool RandomizeParams(VstInt32 minParam = 0, VstInt32 maxParam = 0);         //rewbs.VSTpresets
     bool isModified() {return m_bModified;}
     inline CModDoc* GetModDoc() {return m_pModDoc;}

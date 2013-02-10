@@ -16,7 +16,7 @@
 
 struct IMFCHANNEL
 {
-    char name[12];    // Channel name (ASCIIZ-String, max 11 chars)
+    char name[12];    // Channel name (ASCIIZ-String, bad_max 11 chars)
     uint8_t chorus;    // Default chorus
     uint8_t reverb;    // Default reverb
     uint8_t panning;    // Pan positions 00-FF
@@ -25,7 +25,7 @@ struct IMFCHANNEL
 
 struct IMFHEADER
 {
-    char title[32];                            // Songname (ASCIIZ-String, max. 31 chars)
+    char title[32];                            // Songname (ASCIIZ-String, bad_max. 31 chars)
     uint16_t ordnum;                            // Number of orders saved
     uint16_t patnum;                            // Number of patterns saved
     uint16_t insnum;                            // Number of instruments saved
@@ -66,7 +66,7 @@ struct IMFENVNODES
 
 struct IMFINSTRUMENT
 {
-    char name[32];            // Inst. name (ASCIIZ-String, max. 31 chars)
+    char name[32];            // Inst. name (ASCIIZ-String, bad_max. 31 chars)
     uint8_t map[120];            // Multisample settings
     uint8_t unused[8];
     IMFENVNODES nodes[3][16];
@@ -167,13 +167,13 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
         break;
     case 0xf: // set finetune
         // we don't implement this, but let's at least import the value
-        note->param = 0x20 | min(note->param >> 4, 0xf);
+        note->param = 0x20 | bad_min(note->param >> 4, 0xf);
         break;
     case 0x14: // fine slide up
     case 0x15: // fine slide down
         // this is about as close as we can do...
         if (note->param >> 4)
-            note->param = 0xf0 | min(note->param >> 4, 0xf);
+            note->param = 0xf0 | bad_min(note->param >> 4, 0xf);
         else
             note->param |= 0xe0;
         break;
@@ -181,7 +181,7 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
         note->param >>= 1;
         break;
     case 0x1f: // set global volume
-        note->param = min(note->param << 1, 0xff);
+        note->param = bad_min(note->param << 1, 0xff);
         break;
     case 0x21:
         n = 0;
@@ -246,7 +246,7 @@ static void import_imf_effect(modplug::tracker::modevent_t *note)
 static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINSTRUMENT *imfins, const int e)
 //----------------------------------------------------------------------------------------------
 {
-    UINT min = 0; // minimum tick value for next node
+    UINT bad_min = 0; // minimum tick value for next node
     const int shift = (e == IMF_ENV_VOL) ? 0 : 2;
 
     env->flags = ((imfins->env[e].flags & 1) ? ENV_ENABLED : 0) | ((imfins->env[e].flags & 2) ? ENV_SUSTAIN : 0) | ((imfins->env[e].flags & 4) ? ENV_LOOP : 0);
@@ -261,9 +261,9 @@ static void load_imf_envelope(modplug::tracker::modenvelope_t *env, const IMFINS
         uint16_t nTick, nValue;
         nTick = LittleEndianW(imfins->nodes[e][n].tick);
         nValue = LittleEndianW(imfins->nodes[e][n].value) >> shift;
-        env->Ticks[n] = (uint16_t)max(min, nTick);
-        env->Values[n] = (uint8_t)min(nValue, ENVELOPE_MAX);
-        min = nTick + 1;
+        env->Ticks[n] = (uint16_t)bad_max(bad_min, nTick);
+        env->Values[n] = (uint8_t)bad_min(nValue, ENVELOPE_MAX);
+        bad_min = nTick + 1;
     }
 }
 
@@ -435,14 +435,14 @@ bool module_renderer::ReadIMF(const uint8_t * const lpStream, const uint32_t dwM
 
                 if (e1c == 0xc)
                 {
-                    note->vol = min(e1d, 0x40);
+                    note->vol = bad_min(e1d, 0x40);
                     note->volcmd = VolCmdVol;
                     //XXXih: gross
                     note->command = (modplug::tracker::cmd_t) e2c;
                     note->param = e2d;
                 } else if (e2c == 0xc)
                 {
-                    note->vol = min(e2d, 0x40);
+                    note->vol = bad_min(e2d, 0x40);
                     note->volcmd = VolCmdVol;
                     //XXXih: gross
                     note->command = (modplug::tracker::cmd_t) e1c;

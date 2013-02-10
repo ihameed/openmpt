@@ -127,7 +127,7 @@ void CPatternContainer::OnModTypeChanged(const MODTYPE /*oldtype*/)
 {
     const CModSpecifications specs = m_rSndFile.GetModSpecifications();
     if(specs.patternsMax < Size())
-            ResizeArray(max(MAX_PATTERNS, specs.patternsMax));
+            ResizeArray(bad_max(MAX_PATTERNS, specs.patternsMax));
     else if(Size() < MAX_PATTERNS)
             ResizeArray(MAX_PATTERNS);
 

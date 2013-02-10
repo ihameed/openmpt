@@ -138,7 +138,7 @@ typedef struct tagMMD0SONGHEADER
     uint8_t tempo2;            // tempo TPL
     uint8_t trkvol[16];    // track volumes
     uint8_t mastervol;            // master volume
-    uint8_t numsamples;    // # of samples (max=63)
+    uint8_t numsamples;    // # of samples (bad_max=63)
 } MMD0SONGHEADER;
 
 
@@ -151,7 +151,7 @@ typedef struct tagMMD2SONGHEADER
     uint32_t playseqtable;    // filepos of play sequence
     uint32_t sectiontable;    // filepos of sections table (uint16_t array)
     uint32_t trackvols;    // filepos of tracks volume (uint8_t array)
-    uint16_t numtracks;            // # of tracks (max 64)
+    uint16_t numtracks;            // # of tracks (bad_max 64)
     uint16_t numpseqs;            // # of play sequences
     uint32_t trackpans;    // filepos of tracks pan values (uint8_t array)
     LONG flags3;            // 0x1:stereo_mix, 0x2:free_panning, 0x4:GM/XG compatibility
@@ -169,7 +169,7 @@ typedef struct tagMMD2SONGHEADER
     uint8_t tempo2;            // tempo TPL
     uint8_t pad1[16];
     uint8_t mastervol;            // master volume
-    uint8_t numsamples;    // # of samples (max 63)
+    uint8_t numsamples;    // # of samples (bad_max 63)
 } MMD2SONGHEADER;
 
 // For MMD0 the note information is held in 3 bytes, byte0, byte1, byte2.  For reference we
@@ -701,7 +701,7 @@ bool module_renderer::ReadMed(const uint8_t *lpStream, const uint32_t dwMemLengt
         // Song Comments (null-terminated)
         UINT annotxt = BigEndian(pmex->annotxt);
         UINT annolen = BigEndian(pmex->annolen);
-        annolen = min(annolen, MED_MAX_COMMENT_LENGTH); //Thanks to Luigi Auriemma for pointing out an overflow risk
+        annolen = bad_min(annolen, MED_MAX_COMMENT_LENGTH); //Thanks to Luigi Auriemma for pointing out an overflow risk
         if ((annotxt) && (annolen) && (annolen <= dwMemLength) && (annotxt <= dwMemLength - annolen) )
         {
             ReadMessage(lpStream + annotxt, annolen - 1, leAutodetect);

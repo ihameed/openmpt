@@ -825,9 +825,9 @@ void CViewInstrument::DrawGrid(CDC *pDC, UINT speed)
                             nPrevTick = nTick;
                             nRow = nTick / speed;
 
-                            if (nRow % max(1, nRowsPerMeasure) == 0)
+                            if (nRow % bad_max(1, nRowsPerMeasure) == 0)
                                     m_dcGrid.SelectObject(CMainFrame::penGray80);
-                            else if (nRow % max(1, nRowsPerBeat) == 0)
+                            else if (nRow % bad_max(1, nRowsPerBeat) == 0)
                                     m_dcGrid.SelectObject(CMainFrame::penGray55);
                             else
                                     m_dcGrid.SelectObject(CMainFrame::penGray33);
@@ -1460,7 +1460,7 @@ void CViewInstrument::OnMouseMove(UINT, CPoint pt)
                             nRelTick = pEnv->Ticks[m_nDragItem - 1] - nRelTick;
                             for(size_t i = m_nDragItem; i < pEnv->num_nodes; i++)
                             {
-                                    pEnv->Ticks[i] = (uint16_t)(max(0, (int)pEnv->Ticks[i] + nRelTick));
+                                    pEnv->Ticks[i] = (uint16_t)(bad_max(0, (int)pEnv->Ticks[i] + nRelTick));
                             }
                     }
             } else

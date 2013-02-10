@@ -16,7 +16,7 @@
 #include "legacy_soundlib/midi.h"
 #include <cmath>
 
-#include "gui/qt4/pattern_editor.h"
+#include "gui/qt5/pattern_editor.h"
 
 using namespace modplug::tracker;
 
@@ -772,7 +772,7 @@ void CViewPattern::OnGrowSelection()
     }
 
     m_dwBeginSel = startSel;
-    m_dwEndSel   = (min(finalDest,pSndFile->Patterns[m_nPattern].GetNumRows()-1)<<16) | (endSel&0xFFFF);
+    m_dwEndSel   = (bad_min(finalDest,pSndFile->Patterns[m_nPattern].GetNumRows()-1)<<16) | (endSel&0xFFFF);
 
     InvalidatePattern(FALSE);
     pModDoc->SetModified();
@@ -859,7 +859,7 @@ void CViewPattern::OnShrinkSelection()
         }
     }
     m_dwBeginSel = startSel;
-    m_dwEndSel   = (min(finalDest,pSndFile->Patterns[m_nPattern].GetNumRows()-1)<<16) | (endSel& 0xFFFF);
+    m_dwEndSel   = (bad_min(finalDest,pSndFile->Patterns[m_nPattern].GetNumRows()-1)<<16) | (endSel& 0xFFFF);
 
     InvalidatePattern(FALSE);
     pModDoc->SetModified();
@@ -1410,8 +1410,8 @@ void CViewPattern::OnMouseMove(UINT nFlags, CPoint point)
         if ((pModDoc) && (m_nPattern < pModDoc->GetSoundFile()->Patterns.Size()))
         {
             UINT row = GetRowFromCursor(dwPos);
-            UINT max = pModDoc->GetSoundFile()->Patterns[m_nPattern].GetNumRows();
-            if ((row) && (row >= max)) row = max-1;
+            UINT bad_max = pModDoc->GetSoundFile()->Patterns[m_nPattern].GetNumRows();
+            if ((row) && (row >= bad_max)) row = bad_max-1;
             dwPos &= 0xFFFF;
             dwPos |= CreateCursor(row);
         }
@@ -2700,7 +2700,7 @@ void CViewPattern::OnPatternAmplify()
             firstRow = CLAMP(firstRow, 0, pSndFile->Patterns[m_nPattern].GetNumRows() - 1);
             lastRow = CLAMP(lastRow, firstRow, pSndFile->Patterns[m_nPattern].GetNumRows() - 1);
 
-            // adjust min/max channel if they're only partly selected (i.e. volume column or effect column (when using .MOD) is not covered)
+            // adjust bad_min/bad_max channel if they're only partly selected (i.e. volume column or effect column (when using .MOD) is not covered)
             if(((firstChannel << 3) | (useVolCol ? 2 : 3)) < (m_dwBeginSel & 0xFFFF))
             {
                 if(firstChannel >= lastChannel)
@@ -3764,13 +3764,13 @@ void CViewPattern::TempEnterVol(int v)
                 }
             //if ((pSndFile->m_nType & MOD_TYPE_MOD) && (volcmd > VolCmdPan)) volcmd = vol = 0;
 
-            UINT max = 64;
+            UINT bad_max = 64;
             if (volcmd > VolCmdPan)
             {
-                max = (pSndFile->m_nType == MOD_TYPE_XM) ? 0x0F : 9;
+                bad_max = (pSndFile->m_nType == MOD_TYPE_XM) ? 0x0F : 9;
             }
 
-            if (vol > max) vol %= 10;
+            if (vol > bad_max) vol %= 10;
             if(pSndFile->GetModSpecifications().HasVolCommand(volcmd))
             {
                 p->volcmd = volcmd;
@@ -4013,7 +4013,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
     if (usePlaybackPosition && nTick) {    // avoid SD0 which will be mis-interpreted
         if (p->command == 0) {    //make sure we don't overwrite any existing commands.
             p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CmdS3mCmdEx : CmdModCmdEx;
-            p->param   = 0xD0 | min(0xF, nTick);
+            p->param   = 0xD0 | bad_min(0xF, nTick);
         }
     }
 
@@ -4026,7 +4026,7 @@ void CViewPattern::TempStopNote(int note, bool fromMidi, const bool bChordMode)
         if(usePlaybackPosition && nTick) // ECx
         {
             p->command = (pSndFile->TypeIsS3M_IT_MPT()) ? CmdS3mCmdEx : CmdModCmdEx;
-            p->param   = 0xC0 | min(0xF, nTick);
+            p->param   = 0xC0 | bad_min(0xF, nTick);
         } else // C00
         {
             p->note = NoteNone;
@@ -4267,8 +4267,8 @@ void CViewPattern::TempEnterNote(int note, bool oldStyle, int vol)
             {
                 newcmd.command = (pSndFile->TypeIsS3M_IT_MPT()) ? CmdS3mCmdEx : CmdModCmdEx;
                 UINT maxSpeed = 0x0F;
-                if(pSndFile->m_nMusicSpeed > 0) maxSpeed = min(0x0F, pSndFile->m_nMusicSpeed - 1);
-                newcmd.param = 0xD0 + min(maxSpeed, nTick);
+                if(pSndFile->m_nMusicSpeed > 0) maxSpeed = bad_min(0x0F, pSndFile->m_nMusicSpeed - 1);
+                newcmd.param = 0xD0 + bad_min(maxSpeed, nTick);
             }
         }
 
@@ -5222,25 +5222,25 @@ bool CViewPattern::BuildPCNoteCtxMenu(HMENU hMenu, CInputHandler* ih, module_ren
 modplug::tracker::rowindex_t CViewPattern::GetSelectionStartRow()
 //-------------------------------------------
 {
-    return min(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
+    return bad_min(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
 }
 
 modplug::tracker::rowindex_t CViewPattern::GetSelectionEndRow()
 //-----------------------------------------
 {
-    return max(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
+    return bad_max(GetRowFromCursor(m_dwBeginSel), GetRowFromCursor(m_dwEndSel));
 }
 
 modplug::tracker::chnindex_t CViewPattern::GetSelectionStartChan()
 //------------------------------------------------
 {
-    return min(GetChanFromCursor(m_dwBeginSel), GetChanFromCursor(m_dwEndSel));
+    return bad_min(GetChanFromCursor(m_dwBeginSel), GetChanFromCursor(m_dwEndSel));
 }
 
 modplug::tracker::chnindex_t CViewPattern::GetSelectionEndChan()
 //----------------------------------------------
 {
-    return max(GetChanFromCursor(m_dwBeginSel), GetChanFromCursor(m_dwEndSel));
+    return bad_max(GetChanFromCursor(m_dwBeginSel), GetChanFromCursor(m_dwEndSel));
 }
 
 UINT CViewPattern::ListChansWhereColSelected(PatternColumns colType, CArray<UINT,UINT> &chans) {

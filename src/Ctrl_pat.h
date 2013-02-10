@@ -68,7 +68,7 @@ public:
     uint8_t GetMargins() {return GetMargins(GetMarginsMax());}
 
     // Returns the effective margin value.
-    uint8_t GetMargins(const uint8_t nMaxMargins) {return min(nMaxMargins, m_nOrderlistMargins);}
+    uint8_t GetMargins(const uint8_t nMaxMargins) {return bad_min(nMaxMargins, m_nOrderlistMargins);}
 
     // Returns maximum margin value given current window width.
     uint8_t GetMarginsMax() {return GetMarginsMax(GetLength());}

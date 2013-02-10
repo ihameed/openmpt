@@ -456,7 +456,7 @@ void CAbstractVstEditor::UpdatePresetMenu()
                             m_pPresetMenuGroup[subMenuIndex]->CreatePopupMenu();
 
                             CString label;
-                            label.Format("Presets %d-%d", subMenuIndex*PRESETS_PER_GROUP, min((subMenuIndex+1)*PRESETS_PER_GROUP-1, numProgs));
+                            label.Format("Presets %d-%d", subMenuIndex*PRESETS_PER_GROUP, bad_min((subMenuIndex+1)*PRESETS_PER_GROUP-1, numProgs));
                             m_pPresetMenu->AppendMenu(MF_POPUP, (UINT) m_pPresetMenuGroup[subMenuIndex]->m_hMenu, label);
                     }
                     m_pPresetMenuGroup[subMenuIndex]->AppendMenu(MF_STRING|(checkedItem?MF_CHECKED:0)|(splitMenu?MF_MENUBARBREAK:0), ID_PRESET_SET+p, (LPCTSTR)s);
@@ -737,13 +737,13 @@ void CAbstractVstEditor::OnSetNextVSTPreset()
 void CAbstractVstEditor::OnVSTPresetBackwardJump()
 //------------------------------------------------
 {
-    OnSetPreset(max(ID_PRESET_SET+m_pVstPlugin->GetCurrentProgram()-10, ID_PRESET_SET));
+    OnSetPreset(bad_max(ID_PRESET_SET+m_pVstPlugin->GetCurrentProgram()-10, ID_PRESET_SET));
 }
 
 void CAbstractVstEditor::OnVSTPresetForwardJump()
 //-----------------------------------------------
 {
-    OnSetPreset(min(10+ID_PRESET_SET+m_pVstPlugin->GetCurrentProgram(), ID_PRESET_SET+m_pVstPlugin->GetNumPrograms()-1));
+    OnSetPreset(bad_min(10+ID_PRESET_SET+m_pVstPlugin->GetCurrentProgram(), ID_PRESET_SET+m_pVstPlugin->GetNumPrograms()-1));
 }
 
 

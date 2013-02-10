@@ -14,8 +14,8 @@ double MaxFinderSignedInt(const char* const buffer, const size_t bs)
 {
     if(INBYTES > 4) return 0;
     if(bs < INBYTES) return 0;
-    
-    uint32_t max = 0;
+
+    uint32_t bad_max = 0;
     for(size_t i = 0; i <= bs-INBYTES; i += INBYTES)
     {
             int32_t temp = 0;
@@ -23,15 +23,15 @@ double MaxFinderSignedInt(const char* const buffer, const size_t bs)
             if(temp < 0) temp = -temp;
             if(temp < 0)
             {
-                    max = static_cast<uint32_t>(INT32_MIN);
-                    max >>= 8*(4-INBYTES);
-                    break; //This is the max possible value so no need to look for bigger one.
+                    bad_max = static_cast<uint32_t>(INT32_MIN);
+                    bad_max >>= 8*(4-INBYTES);
+                    break; //This is the bad_max possible value so no need to look for bigger one.
             }
             temp >>= 8*(4-INBYTES);
-            if(static_cast<uint32_t>(temp) > max)
-                    max = static_cast<uint32_t>(temp);
+            if(static_cast<uint32_t>(temp) > bad_max)
+                    bad_max = static_cast<uint32_t>(temp);
     }
-    return static_cast<double>(max);
+    return static_cast<double>(bad_max);
 }
 
 
@@ -40,19 +40,19 @@ inline double MaxFinderFloat32(const char* const buffer, const size_t bs)
 {
     if(bs < 4) return 0;
 
-    float max = 0;
+    float bad_max = 0;
     for(size_t i = 0; i<=bs-4; i+=4)
     {
             float temp = *reinterpret_cast<const float*>(buffer+i);
             temp = fabs(temp);
-            if(temp > max)
-                    max = temp;
+            if(temp > bad_max)
+                    bad_max = temp;
     }
-    return max;
+    return bad_max;
 }
 
 
-inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const double max)
+inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const double bad_max)
 //--------------------------------------------------------------------------------
 {
     int32_t val = 0;
@@ -66,7 +66,7 @@ inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const d
     absval /= 256;
 
     const double NC = (negative) ? 32768 : 32767; //Normalisation Constant
-    absval = static_cast<int32_t>((absval/max)*NC);
+    absval = static_cast<int32_t>((absval/bad_max)*NC);
 
     ASSERT(absval - 32768 <= 0);
 
@@ -77,22 +77,22 @@ inline void WavSigned24To16(const char* const inBuffer, char* outBuffer, const d
     memcpy(outBuffer, &outVal, 2);
 }
 
-inline void WavFloat32To16(const char* const inBuffer, char* outBuffer, double max)
+inline void WavFloat32To16(const char* const inBuffer, char* outBuffer, double bad_max)
 //----------------------------------------------------------------------
 {
     int16_t* pOut = reinterpret_cast<int16_t*>(outBuffer);
     const float* pIn = reinterpret_cast<const float*>(inBuffer);
     const double NC = (*pIn < 0) ? 32768 : 32767;
-    *pOut = static_cast<int16_t>((*pIn / max) * NC);
+    *pOut = static_cast<int16_t>((*pIn / bad_max) * NC);
 }
 
-inline void WavSigned32To16(const char* const inBuffer, char* outBuffer, double max)
+inline void WavSigned32To16(const char* const inBuffer, char* outBuffer, double bad_max)
 //----------------------------------------------------------------------
 {
     int16_t& out = *reinterpret_cast<int16_t*>(outBuffer);
     double temp = *reinterpret_cast<const int32_t*>(inBuffer);
     const double NC = (temp < 0) ? 32768 : 32767;
-    out = static_cast<int16_t>(temp / max * NC);
+    out = static_cast<int16_t>(temp / bad_max * NC);
 }
 
 
@@ -105,16 +105,16 @@ bool CopyWavBuffer(const char* const readBuffer, const size_t rbSize, char* writ
     size_t rbCounter = 0;
     size_t wbCounter = 0;
 
-    //Finding max value
-    const double max = MaxFinder(readBuffer, rbSize);
+    //Finding bad_max value
+    const double bad_max = MaxFinder(readBuffer, rbSize);
 
-    if(max == 0) return true;
+    if(bad_max == 0) return true;
     //Silence sample won't(?) get loaded because of this.
 
     //Copying buffer.
     while(rbCounter <= rbSize-inBytes && wbCounter <= wbSize-outBytes)
     {
-            CopyAndConvert(readBuffer+rbCounter, writeBuffer+wbCounter, max);
+            CopyAndConvert(readBuffer+rbCounter, writeBuffer+wbCounter, bad_max);
             rbCounter += inBytes;
             wbCounter += outBytes;
     }

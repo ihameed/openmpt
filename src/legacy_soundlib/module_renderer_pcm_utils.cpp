@@ -279,7 +279,7 @@ void __cdecl X86_Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax
     _asm {
     mov esi, pbuffer    // esi = edi = pbuffer
     mov edx, dwSize            // edx = dwSize
-    mov ebx, lmax24            // ebx = max
+    mov ebx, lmax24            // ebx = bad_max
     mov edi, poutput    // edi = output 32-bit buffer
     push ebp
     mov ebp, edx            // ebp = dwSize

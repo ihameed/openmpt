@@ -336,7 +336,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         // Resetting sound buffer
         modplug::mixer::stereo_fill(MixSoundBuffer, num_samples, &gnDryROfsVol, &gnDryLOfsVol);
 
-        // ensure modplug::mixer::MIX_BUFFER_SIZE really is our max buffer size
+        // ensure modplug::mixer::MIX_BUFFER_SIZE really is our bad_max buffer size
         ASSERT (computed_samples <= modplug::mixgraph::MIX_BUFFER_SIZE);
 
         num_samples *= (deprecated_global_channels >= 2) ? 2 : 1;
@@ -345,9 +345,6 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
 
         //XXXih: JUICY FRUITS
         /*
-        #ifndef NO_REVERB
-            ProcessReverb(computed_samples);
-        #endif
         if (last_plugin_idx) {
             ProcessPlugins(computed_samples);
         }
@@ -1339,7 +1336,7 @@ BOOL module_renderer::ReadNote()
                     const int vibpos = current_vchan->nAutoVibPos & 0xFF;
                     int adepth = current_vchan->nAutoVibDepth; // (1)
                     adepth += pSmp->vibrato_sweep & 0xFF; // (2 & 3)
-                    adepth = min(adepth, (int)(pSmp->vibrato_depth << 8));
+                    adepth = bad_min(adepth, (int)(pSmp->vibrato_depth << 8));
                     current_vchan->nAutoVibDepth = adepth; // (5)
                     adepth >>= 8; // (4)
 
@@ -1977,8 +1974,8 @@ VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *
                 break;
 
             case PLUGIN_VOLUMEHANDLING_MIDI:
-                if(hasVolCommand) pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Coarse, min(127, 2*vol), nChn);
-                else pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Coarse, min(127, 2*defaultVolume), nChn);
+                if(hasVolCommand) pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Coarse, bad_min(127, 2*vol), nChn);
+                else pPlugin->MidiCC(pIns->midi_channel, MIDICC_Volume_Coarse, bad_min(127, 2*defaultVolume), nChn);
                 break;
 
         }
@@ -2053,7 +2050,7 @@ VOID module_renderer::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCoun
             step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
 
             //XXXih: divide by zero >:l
-            UINT maxStep = max(50, (10000 / (ramp_length + 1))); //define max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
+            UINT maxStep = bad_max(50, (10000 / (ramp_length + 1))); //define bad_max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
             while (abs(step) > maxStep) {                                     //if step is too big (might cause click), extend ramp length.
                 m_nSamplesToGlobalVolRampDest += ramp_length;
                 step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);

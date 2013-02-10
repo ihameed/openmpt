@@ -22,8 +22,8 @@
 #include "version.h"
 #include "ctrl_pat.h"
 
-#include "gui/qt4/mfc_root.h"
-#include "gui/qt4/config_dialog.h"
+#include "gui/qt5/mfc_root.h"
+#include "gui/qt5/config_dialog.h"
 
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
@@ -453,7 +453,7 @@ void CMainFrame::LoadIniSettings()
     if(module_renderer::s_DefaultPlugVolumeHandling > 2) module_renderer::s_DefaultPlugVolumeHandling = PLUGIN_VOLUMEHANDLING_IGNORE;
 
     m_nSampleUndoMaxBuffer = GetPrivateProfileLong("Sample Editor" , "UndoBufferSize", m_nSampleUndoMaxBuffer >> 20, iniFile);
-    m_nSampleUndoMaxBuffer = max(1, m_nSampleUndoMaxBuffer) << 20;
+    m_nSampleUndoMaxBuffer = bad_max(1, m_nSampleUndoMaxBuffer) << 20;
 
     TCHAR szPath[_MAX_PATH] = "";
     for(size_t i = 0; i < NUM_DIRS; i++)
@@ -593,9 +593,9 @@ bool CMainFrame::LoadRegistrySettings()
 
 
 VOID CMainFrame::Initialize() {
-    ui_root = std::unique_ptr<modplug::gui::qt4::mfc_root>(
-        new modplug::gui::qt4::mfc_root(global_config, *this));
-    config_dialog = new modplug::gui::qt4::config_dialog(
+    ui_root = std::unique_ptr<modplug::gui::qt5::mfc_root>(
+        new modplug::gui::qt5::mfc_root(global_config, *this));
+    config_dialog = new modplug::gui::qt5::config_dialog(
         global_config, ui_root.get());
 
     //Adding version number to the frame title

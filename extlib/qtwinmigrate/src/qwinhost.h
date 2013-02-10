@@ -43,7 +43,7 @@
 #ifndef QWINHOST_H
 #define QWINHOST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #if defined(Q_WS_WIN)
 #  if !defined(QT_QTWINMIGRATE_EXPORT) && !defined(QT_QTWINMIGRATE_IMPORT)
@@ -61,11 +61,18 @@
 #  define QT_QTWINMIGRATE_EXPORT
 #endif
 
+#ifndef QT_WA
+#define QT_WA(unicode, ansi) unicode
+#endif
+#ifndef QT_WA_INLINE
+#define QT_WA_INLINE(unicode, ansi) (unicode)
+#endif
+
 class QT_QTWINMIGRATE_EXPORT QWinHost : public QWidget
 {
     Q_OBJECT
 public:
-    QWinHost(QWidget *parent = 0, Qt::WFlags f = 0);
+    QWinHost(QWidget *parent = 0, Qt::WindowFlags f = 0);
     ~QWinHost();
 
     void setWindow(HWND);
@@ -79,7 +86,7 @@ protected:
     void focusInEvent(QFocusEvent*);
     void resizeEvent(QResizeEvent*);
 
-    bool winEvent(MSG *msg, long *result);
+    bool nativeEvent(const QByteArray &, void *msg, long *result) override;
 
 private:
     void fixParent();

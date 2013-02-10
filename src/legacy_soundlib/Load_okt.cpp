@@ -57,7 +57,7 @@ struct OKT_SAMPLEINFO
 void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vector<bool> &sample7bit, module_renderer *pSndFile)
 //------------------------------------------------------------------------------------------------------------------
 {
-    pSndFile->m_nSamples = min((modplug::tracker::sampleindex_t)(dwMemLength / 32), MAX_SAMPLES - 1);        // typically 36
+    pSndFile->m_nSamples = bad_min((modplug::tracker::sampleindex_t)(dwMemLength / 32), MAX_SAMPLES - 1);        // typically 36
     sample7bit.resize(pSndFile->GetNumSamples());
 
     for(modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
@@ -66,7 +66,7 @@ void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vecto
             OKT_SAMPLE oktsmp;
             memcpy(&oktsmp, lpStream + (nSmp - 1) * 32, sizeof(OKT_SAMPLE));
 
-            oktsmp.length = min(BigEndian(oktsmp.length), MAX_SAMPLE_LENGTH);
+            oktsmp.length = bad_min(BigEndian(oktsmp.length), MAX_SAMPLE_LENGTH);
             oktsmp.loopstart = BigEndianW(oktsmp.loopstart) * 2;
             oktsmp.looplen = BigEndianW(oktsmp.looplen) * 2;
             oktsmp.volume = BigEndianW(oktsmp.volume);
@@ -78,7 +78,7 @@ void Read_OKT_Samples(const uint8_t *lpStream, const uint32_t dwMemLength, vecto
 
             pSmp->c5_samplerate = 8287;
             pSmp->global_volume = 64;
-            pSmp->default_volume = min(oktsmp.volume, 64) * 4;
+            pSmp->default_volume = bad_min(oktsmp.volume, 64) * 4;
             pSmp->length = oktsmp.length & ~1;        // round down
             // parse loops
             if (oktsmp.looplen > 2 && ((UINT)oktsmp.loopstart) + ((UINT)oktsmp.looplen) <= pSmp->length)
@@ -167,14 +167,14 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                             if (m->param)
                             {
                                     m->command = CmdNoteSlideDown;
-                                    m->param = 0x10 | min(0x0F, m->param);
+                                    m->param = 0x10 | bad_min(0x0F, m->param);
                             }
                             break;
                     case 30: // U Slide Up (Notes)
                             if (m->param)
                             {
                                     m->command = CmdNoteSlideUp;
-                                    m->param = 0x10 | min(0x0F, m->param);
+                                    m->param = 0x10 | bad_min(0x0F, m->param);
                             }
                             break;
                     /* We don't have fine note slide, but this is supposed to happen once
@@ -184,14 +184,14 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                             if (m->param)
                             {
                                     m->command = CmdNoteSlideDown;
-                                    m->param = 0x50 | min(0x0F, m->param);
+                                    m->param = 0x50 | bad_min(0x0F, m->param);
                             }
                             break;
                     case 17: // H Slide Up Once (Notes)
                             if (m->param)
                             {
                                     m->command = CmdNoteSlideUp;
-                                    m->param = 0x50 | min(0x0F, m->param);
+                                    m->param = 0x50 | bad_min(0x0F, m->param);
                             }
                             break;
 
@@ -235,10 +235,10 @@ void Read_OKT_Pattern(const uint8_t *lpStream, const uint32_t dwMemLength, const
                                     m->param = (m->param & 0x0F) << 4; // Dx0
                                     break;
                             case 6:
-                                    m->param = 0xF0 | min(m->param & 0x0F, 0x0E); // DFx
+                                    m->param = 0xF0 | bad_min(m->param & 0x0F, 0x0E); // DFx
                                     break;
                             case 7:
-                                    m->param = (min(m->param & 0x0F, 0x0E) << 4) | 0x0F; // DxF
+                                    m->param = (bad_min(m->param & 0x0F, 0x0E) << 4) | 0x0F; // DxF
                                     break;
                             default:
                                     // Junk.
@@ -346,7 +346,7 @@ bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLengt
             case OKTCHUNKID_PATT:
                     // read the orderlist
                     ASSERT_CAN_READ(iffHead.chunksize);
-                    Order.ReadAsByte(lpStream + dwMemPos, min(iffHead.chunksize, MAX_ORDERS), iffHead.chunksize);
+                    Order.ReadAsByte(lpStream + dwMemPos, bad_min(iffHead.chunksize, MAX_ORDERS), iffHead.chunksize);
                     break;
 
             case OKTCHUNKID_PBOD:
@@ -418,7 +418,7 @@ bool module_renderer::ReadOKT(const uint8_t *lpStream, const uint32_t dwMemLengt
             // weird stuff?
             if(pSmp->length != samplePos[nFileSmp].length)
             {
-                    pSmp->length = min(pSmp->length, samplePos[nFileSmp].length);
+                    pSmp->length = bad_min(pSmp->length, samplePos[nFileSmp].length);
             }
 
             ReadSample(pSmp, RS_PCM8S, (LPCSTR)(lpStream + samplePos[nFileSmp].start), dwMemLength - samplePos[nFileSmp].start);

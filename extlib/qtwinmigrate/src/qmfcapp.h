@@ -43,10 +43,12 @@
 #ifndef QMFCAPP_H
 #define QMFCAPP_H
 
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #if defined(_AFXDLL) && defined(_MSC_VER)
+#ifndef QTWINMIGRATE_WITHMFC
 #define QTWINMIGRATE_WITHMFC
+#endif
 class CWinApp;
 #endif
 
@@ -66,6 +68,8 @@ class CWinApp;
 #  define QT_QTWINMIGRATE_EXPORT
 #endif
 
+class OopDoubleSucks;
+
 class QT_QTWINMIGRATE_EXPORT QMfcApp : public QApplication
 {
 public:
@@ -78,12 +82,12 @@ public:
 #endif
     ~QMfcApp();
 
-    bool winEventFilter(MSG *msg, long *result);
-
     static void enterModalLoop();
     static void exitModalLoop();
 
-private:
+    OopDoubleSucks *event_filter;
+
+public:
 #ifdef QTWINMIGRATE_WITHMFC
     static char ** mfc_argv;
     static int mfc_argc;
@@ -93,5 +97,12 @@ private:
     int idleCount;
     bool doIdle;
 };
+
+#ifndef QT_WA
+#define QT_WA(unicode, ansi) unicode
+#endif
+#ifndef QT_WA_INLINE
+#define QT_WA_INLINE(unicode, ansi) (unicode)
+#endif
 
 #endif // QMFCAPP_H

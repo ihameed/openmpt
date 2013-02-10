@@ -83,7 +83,7 @@
     the native Win32 parent. If a \a parent is provided the object is
     owned by that QObject. \a f is passed on to the QWidget constructor.
 */
-QWinWidget::QWinWidget(HWND hParentWnd, QObject *parent, Qt::WFlags f)
+QWinWidget::QWinWidget(HWND hParentWnd, QObject *parent, Qt::WindowFlags f)
 : QWidget(0, f), hParent(hParentWnd), prevFocus(0), reenable_parent(false)
 {
     if (parent)
@@ -100,7 +100,7 @@ QWinWidget::QWinWidget(HWND hParentWnd, QObject *parent, Qt::WFlags f)
     MFC window object. If a \a parent is provided the object is owned
     by that QObject. \a f is passed on to the QWidget constructor.
 */
-QWinWidget::QWinWidget(CWnd *parentWnd, QObject *parent, Qt::WFlags f)
+QWinWidget::QWinWidget(CWnd *parentWnd, QObject *parent, Qt::WindowFlags f)
 : QWidget(0, f), hParent(parentWnd ? parentWnd->m_hWnd : 0), prevFocus(0), reenable_parent(false)
 {
     if (parent)
@@ -111,18 +111,18 @@ QWinWidget::QWinWidget(CWnd *parentWnd, QObject *parent, Qt::WFlags f)
 #endif
 
 
-void QWinWidget::init() 
+void QWinWidget::init()
 {
     Q_ASSERT(hParent);
 
     if (hParent) {
-	// make the widget window style be WS_CHILD so SetParent will work
-	QT_WA({
-	    SetWindowLong(winId(), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-	}, {
-	    SetWindowLongA(winId(), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-	})
-	SetParent(winId(), hParent);
+    // make the widget window style be WS_CHILD so SetParent will work
+    QT_WA({
+        SetWindowLong(reinterpret_cast<HWND>(winId()), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+    }, {
+        SetWindowLongA(reinterpret_cast<HWND>(winId()), GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+    })
+    SetParent(reinterpret_cast<HWND>(winId()), hParent);
 
         QEvent e(QEvent::EmbeddingControl);
         QApplication::sendEvent(this, &e);
@@ -152,12 +152,12 @@ void QWinWidget::childEvent(QChildEvent *e)
     QObject *obj = e->child();
     if (obj->isWidgetType()) {
         if (e->added()) {
-	    if (obj->isWidgetType()) {
-	        obj->installEventFilter(this);
-	    }
+        if (obj->isWidgetType()) {
+            obj->installEventFilter(this);
+        }
         } else if (e->removed() && reenable_parent) {
-	    reenable_parent = false;
-	    EnableWindow(hParent, true);
+        reenable_parent = false;
+        EnableWindow(hParent, true);
             obj->removeEventFilter(this);
         }
     }
@@ -168,14 +168,14 @@ void QWinWidget::childEvent(QChildEvent *e)
 void QWinWidget::saveFocus()
 {
     if (!prevFocus)
-	prevFocus = ::GetFocus();
+    prevFocus = ::GetFocus();
     if (!prevFocus)
-	prevFocus = parentWindow();
+    prevFocus = parentWindow();
 }
 
 /*!
     Shows this widget. Overrides QWidget::show().
-    
+
     \sa showCentered()
 */
 void QWinWidget::show()
@@ -200,7 +200,7 @@ void QWinWidget::show()
 */
 void QWinWidget::center()
 {
-    const QWidget *child = qFindChild<QWidget*>(this);
+    const QWidget *child = this->findChild<QWidget *>();
     if (child && !child->isWindow()) {
         qWarning("QWinWidget::center: Call this function only for QWinWidgets with toplevel children");
     }
@@ -228,9 +228,9 @@ void QWinWidget::showCentered()
 void QWinWidget::resetFocus()
 {
     if (prevFocus)
-	::SetFocus(prevFocus);
+    ::SetFocus(prevFocus);
     else
-	::SetFocus(parentWindow());
+    ::SetFocus(parentWindow());
 }
 
 /*! \reimp
@@ -259,41 +259,41 @@ bool QWinWidget::eventFilter(QObject *o, QEvent *e)
 
     switch (e->type()) {
     case QEvent::WindowDeactivate:
-	if (w->isModal() && w->isHidden())
-	    BringWindowToTop(hParent);
-	break;
+    if (w->isModal() && w->isHidden())
+        BringWindowToTop(hParent);
+    break;
 
     case QEvent::Hide:
-	if (reenable_parent) {
-	    EnableWindow(hParent, true);
-	    reenable_parent = false;
-	}
-	resetFocus();
+    if (reenable_parent) {
+        EnableWindow(hParent, true);
+        reenable_parent = false;
+    }
+    resetFocus();
         if (w->testAttribute(Qt::WA_DeleteOnClose) && w->isWindow())
-	    deleteLater();
-	break;
+        deleteLater();
+    break;
 
     case QEvent::Show:
-	if (w->isWindow()) {
-	    saveFocus();
-	    hide();
-	    if (w->isModal() && !reenable_parent) {
-		EnableWindow(hParent, false);
-		reenable_parent = true;
-	    }
-	}
-	break;
+    if (w->isWindow()) {
+        saveFocus();
+        hide();
+        if (w->isModal() && !reenable_parent) {
+        EnableWindow(hParent, false);
+        reenable_parent = true;
+        }
+    }
+    break;
 
     case QEvent::Close:
-    	::SetActiveWindow(hParent);
-	if (w->testAttribute(Qt::WA_DeleteOnClose))
-	    deleteLater();
-	break;
+        ::SetActiveWindow(hParent);
+    if (w->testAttribute(Qt::WA_DeleteOnClose))
+        deleteLater();
+    break;
 
     default:
-	break;
+    break;
     }
-    
+
     return QWidget::eventFilter(o, e);
 }
 

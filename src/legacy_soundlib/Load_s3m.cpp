@@ -680,7 +680,7 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
                     {
                         command = 0;
                         volcmd = VolCmdVol;
-                        vol = min(param, 64);
+                        vol = bad_min(param, 64);
                     }
                     if (volcmd == VolCmdVol) b |= 0x40; else
                     if (volcmd == VolCmdPan) { vol |= 0x80; b |= 0x40; }
@@ -759,7 +759,7 @@ bool module_renderer::SaveS3M(LPCSTR lpszFileName, UINT nPacking)
             insex[i-1].vol = pSmp->default_volume / 4;
             insex[i-1].flags = (pSmp->flags & CHN_LOOP) ? 1 : 0;
             if (pSmp->c5_samplerate)
-                insex[i-1].finetune = min(pSmp->c5_samplerate, 0xFFFF);
+                insex[i-1].finetune = bad_min(pSmp->c5_samplerate, 0xFFFF);
             else
                 insex[i-1].finetune = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
             UINT flags = RS_PCM8U;

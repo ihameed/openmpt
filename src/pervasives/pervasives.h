@@ -53,8 +53,8 @@ private:
 };
 
 template <typename ty, typename ty1, typename ty2>
-ty clamp(ty val, ty1 min, ty2 max) {
-    return val < min ? min : (val > max ? max : val);
+ty clamp(ty val, ty1 bad_min, ty2 bad_max) {
+    return val < bad_min ? bad_min : (val > bad_max ? bad_max : val);
 }
 
 typedef HKEY hkey_t; // :  -  (

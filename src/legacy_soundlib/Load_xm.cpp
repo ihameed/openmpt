@@ -277,7 +277,7 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
     if (xmheader.channels > 32) bMadeWithModPlug = true;
     m_nRestartPos = xmheader.restartpos;
     m_nChannels = xmheader.channels;
-    m_nInstruments = min(xmheader.instruments, MAX_INSTRUMENTS - 1);
+    m_nInstruments = bad_min(xmheader.instruments, MAX_INSTRUMENTS - 1);
     m_nSamples = 0;
     m_nDefaultSpeed = CLAMP(xmheader.speed, 1, 31);
     m_nDefaultTempo = CLAMP(xmheader.tempo, 32, 512);
@@ -316,7 +316,7 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
         if (dwMemPos + ihsize > dwMemLength) return true;
 
         MemsetZero(pih);
-        memcpy(&pih, lpStream + dwMemPos, min(sizeof(pih), ihsize));
+        memcpy(&pih, lpStream + dwMemPos, bad_min(sizeof(pih), ihsize));
 
         if ((Instruments[iIns] = new modinstrument_t) == nullptr) continue;
         memcpy(Instruments[iIns], &m_defaultInstrument, sizeof(modinstrument_t));
@@ -339,7 +339,7 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
 
             memcpy(&xmsh,
                 lpStream + dwMemPos + sizeof(XMINSTRUMENTHEADER),
-                min(ihsize - sizeof(XMINSTRUMENTHEADER), sizeof(XMSAMPLEHEADER)));
+                bad_min(ihsize - sizeof(XMINSTRUMENTHEADER), sizeof(XMSAMPLEHEADER)));
 
             xmsh.shsize = LittleEndian(xmsh.shsize);
             if(xmsh.shsize == 0 && bProbablyMadeWithModPlug) bMadeWithModPlug = true;
@@ -634,7 +634,7 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
             modplug::tracker::patternindex_t nPat = 0;
             for(pos = 0; pos < len; pos += MAX_PATTERNNAME, nPat++)
             {
-                Patterns[nPat].SetName((char *)(lpStream + dwMemPos + pos), min(MAX_PATTERNNAME, len - pos));
+                Patterns[nPat].SetName((char *)(lpStream + dwMemPos + pos), bad_min(MAX_PATTERNNAME, len - pos));
             }
             dwMemPos += len;
         }
@@ -953,7 +953,7 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
             {
                 memcpy(xmih.name, pIns->name, 22);
                 xmih.type = pIns->midi_program;
-                xmsh.volfade = LittleEndianW(min(pIns->fadeout, 0x7FFF)); // FFF is maximum in the FT2 GUI, but it can also accept other values. MilkyTracker just allows 0...4095 and 32767 ("cut")
+                xmsh.volfade = LittleEndianW(bad_min(pIns->fadeout, 0x7FFF)); // FFF is maximum in the FT2 GUI, but it can also accept other values. MilkyTracker just allows 0...4095 and 32767 ("cut")
                 xmsh.vnum = (uint8_t)pIns->volume_envelope.num_nodes;
                 xmsh.pnum = (uint8_t)pIns->panning_envelope.num_nodes;
                 if (xmsh.vnum > 12) xmsh.vnum = 12;
@@ -1011,9 +1011,9 @@ bool module_renderer::SaveXM(LPCSTR lpszFileName, UINT nPacking, const bool bCom
         {
             modsample_t *pvib = &Samples[smptable[0]];
             xmsh.vibtype = pvib->vibrato_type;
-            xmsh.vibsweep = min(pvib->vibrato_sweep, 0xFF);
-            xmsh.vibdepth = min(pvib->vibrato_depth, 0x0F);
-            xmsh.vibrate = min(pvib->vibrato_rate, 0x3F);
+            xmsh.vibsweep = bad_min(pvib->vibrato_sweep, 0xFF);
+            xmsh.vibdepth = bad_min(pvib->vibrato_depth, 0x0F);
+            xmsh.vibrate = bad_min(pvib->vibrato_rate, 0x3F);
         }
         uint16_t samples = xmih.samples;
         xmih.samples = LittleEndianW(xmih.samples);

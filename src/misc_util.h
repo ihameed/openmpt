@@ -7,6 +7,14 @@
 #include <limits>
 #include <type_traits>
 
+#ifndef bad_max
+#define bad_max(a,b)  (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef bad_min
+#define bad_min(a,b)  (((a) < (b)) ? (a) : (b))
+#endif
+
 //Convert object(typically number) to string
 template<class T>
 inline std::string Stringify(const T& x)
@@ -85,7 +93,7 @@ inline void LimitMax(T& val, const C upperLimit)
 
 // Like Limit, but returns value
 #ifndef CLAMP
-#define CLAMP(number, low, high) min(high, max(low, number))
+#define CLAMP(number, low, high) bad_min(high, bad_max(low, number))
 #endif
 
 
@@ -176,7 +184,7 @@ void FixNullString(char (&buffer)[size])
 
 
 // Convert a space-padded string to a 0-terminated string. STATIC VERSION! (use this if the maximum string length is known)
-// Additional template parameter to specifify the max length of the final string,
+// Additional template parameter to specifify the bad_max length of the final string,
 // not including null char (useful for e.g. mod loaders)
 template <size_t length, size_t size>
 void SpaceToNullStringFixed(char (&buffer)[size])
@@ -195,7 +203,7 @@ void SpaceToNullStringFixed(char (&buffer)[size])
 
 
 // Convert a space-padded string to a 0-terminated string. DYNAMIC VERSION!
-// Additional function parameter to specifify the max length of the final string,
+// Additional function parameter to specifify the bad_max length of the final string,
 // not including null char (useful for e.g. mod loaders)
 template <size_t size>
 void SpaceToNullStringFixed(char (&buffer)[size], size_t length)
@@ -214,7 +222,7 @@ void SpaceToNullStringFixed(char (&buffer)[size], size_t length)
 
 namespace Util
 {
-    // Like std::max, but avoids conflict with max-macro.
+    // Like std::max, but avoids conflict with bad_max-macro.
     template <class T> inline const T& Max(const T& a, const T& b) {return (std::max)(a, b);}
 
     // Returns maximum value of given integer type.

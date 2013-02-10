@@ -140,7 +140,7 @@ uint8_t DMFporta2MPT(uint8_t val, const uint8_t internalTicks, const bool hasFin
     else if((val <= 0x0F || internalTicks < 2) && hasFine)
         return (val | 0xF0);
     else
-        return max(1, (val / (internalTicks - 1)));	// no porta on first tick!
+        return bad_max(1, (val / (internalTicks - 1)));	// no porta on first tick!
 }
 
 
@@ -148,10 +148,10 @@ uint8_t DMFporta2MPT(uint8_t val, const uint8_t internalTicks, const bool hasFin
 uint8_t DMFslide2MPT(uint8_t val, const uint8_t internalTicks, const bool up)
 //---------------------------------------------------------------------
 {
-    val = max(1, val / 4);
+    val = bad_max(1, val / 4);
     const bool isFine = (val < 0x0F) || (internalTicks < 2);
     if(!isFine)
-        val = max(1, (val + internalTicks - 2) / (internalTicks - 1));	// no slides on first tick! "+ internalTicks - 2" for rounding precision
+        val = bad_max(1, (val + internalTicks - 2) / (internalTicks - 1));	// no slides on first tick! "+ internalTicks - 2" for rounding precision
 
     if(up)
         return (isFine ? 0x0F : 0x00) | (val << 4);
@@ -189,9 +189,9 @@ uint8_t DMFvibrato2MPT(uint8_t val, const uint8_t internalTicks)
 {
     // MPT: 1 vibrato period == 64 ticks... we have internalTicks ticks per row.
     // X-Tracker: Period length specified in rows!
-    const int periodInTicks = max(1, (val >> 4)) * internalTicks;
+    const int periodInTicks = bad_max(1, (val >> 4)) * internalTicks;
     const uint8_t matchingPeriod = (uint8_t)CLAMP((128 / periodInTicks), 1, 15);
-    return (matchingPeriod << 4) | max(1, (val & 0x0F));
+    return (matchingPeriod << 4) | bad_max(1, (val & 0x0F));
 }
 
 
@@ -214,7 +214,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
     }
 
     modplug::tracker::modevent_t *m = pSndFile->Patterns[nPat];
-    const modplug::tracker::chnindex_t numChannels = min(pSndFile->GetNumChannels(), patHead->numTracks);
+    const modplug::tracker::chnindex_t numChannels = bad_min(pSndFile->GetNumChannels(), patHead->numTracks);
 
     // When breaking to a pattern with less channels that the previous pattern,
     // all voices in the now unused channels are killed:
@@ -258,7 +258,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
             {
             case 1:		// Set Tick Frame Speed
                 settings.realBPMmode = false;
-                settings.tempoTicks = max(1, globalData);	// Tempo in 1/4 rows per second
+                settings.tempoTicks = bad_max(1, globalData);	// Tempo in 1/4 rows per second
                 settings.tempoBPM = 0;						// Automatically updated by X-Tracker
                 tempoChange = true;
                 break;
@@ -340,8 +340,8 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                 // => Tempo = 60 * Rows per Second * Speed / 24
                 // For some reason, using settings.tempoTicks + 1 gives more accurate results than just settings.tempoTicks... (same problem in the old libmodplug DMF loader)
                 // Original unoptimized formula:
-                //const int tickspeed = (tempoRealBPMmode) ? max(1, (tempoData * beat * 4) / 60) : tempoData;
-                const int tickspeed = (settings.realBPMmode) ? max(1, settings.tempoBPM * settings.beat * 2) : ((settings.tempoTicks + 1) * 30);
+                //const int tickspeed = (tempoRealBPMmode) ? bad_max(1, (tempoData * beat * 4) / 60) : tempoData;
+                const int tickspeed = (settings.realBPMmode) ? bad_max(1, settings.tempoBPM * settings.beat * 2) : ((settings.tempoTicks + 1) * 30);
                 // Try to find matching speed - try higher speeds first, so that effects like arpeggio and tremor work better.
                 for(speed = 255; speed > 1; speed--)
                 {
@@ -477,7 +477,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                         }
                         break;
                     case 5:		// Tremolo Retrig Sample (who invented those stupid effect names?)
-                        effectParam1 = max(1, DMFdelay2MPT(effectParam1, settings.internalTicks));
+                        effectParam1 = bad_max(1, DMFdelay2MPT(effectParam1, settings.internalTicks));
                         effect1 = CmdRetrig;
                         settings.playDir[nChn] = false;
                         break;
@@ -520,7 +520,7 @@ modplug::tracker::patternindex_t ConvertDMFPattern(const uint8_t * const lpStrea
                     case 1:		// Note Finetune
                         effect2 = (effectParam2 < 128) ? CmdPortaUp : CmdPortaDown;
                         if(effectParam2 > 128) effectParam2 = 255 - effectParam2 + 1;
-                        effectParam2 = 0xF0 | min(0x0F, effectParam2);	// Well, this is not too accurate...
+                        effectParam2 = 0xF0 | bad_min(0x0F, effectParam2);	// Well, this is not too accurate...
                         break;
                     case 2:		// Note Delay (wtf is the difference to Sample Delay?)
                         effectParam2 = DMFdelay2MPT(effectParam2, settings.internalTicks);
@@ -752,7 +752,7 @@ uint32_t ConvertDMFSample(const modplug::tracker::sampleindex_t nSmp, const uint
     ASSERT_CAN_READ_SAMPLE(1);
     const size_t lenName = lpStream[dwMemPos++];
     static_assert(MAX_SAMPLENAME > 30, "MAX_SAMPLENAME > 30 failed");
-    const size_t lenNameImport = min(30, lenName);
+    const size_t lenNameImport = bad_min(30, lenName);
     ASSERT_CAN_READ_SAMPLE(lenName);
     memcpy(pSndFile->m_szNames[nSmp], lpStream + dwMemPos, lenNameImport);
     SpaceToNullStringFixed(pSndFile->m_szNames[nSmp], lenNameImport);
@@ -764,9 +764,9 @@ uint32_t ConvertDMFSample(const modplug::tracker::sampleindex_t nSmp, const uint
 
     modsample_t *pSmp = &pSndFile->Samples[nSmp];
     MemsetZero(*pSmp);
-    pSmp->length = min(MAX_SAMPLE_LENGTH, LittleEndian(smpHead->length));
-    pSmp->sustain_end = min(pSmp->length, LittleEndian(smpHead->loopEnd));
-    pSmp->sustain_start = min(pSmp->sustain_end, LittleEndian(smpHead->loopStart));
+    pSmp->length = bad_min(MAX_SAMPLE_LENGTH, LittleEndian(smpHead->length));
+    pSmp->sustain_end = bad_min(pSmp->length, LittleEndian(smpHead->loopEnd));
+    pSmp->sustain_start = bad_min(pSmp->sustain_end, LittleEndian(smpHead->loopStart));
     if(pSmp->sustain_end > 0)
     {
         pSmp->sustain_end--;
@@ -888,7 +888,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
 
                 loopStart = LittleEndianW(seqHead->loopStart);
                 loopEnd = LittleEndianW(seqHead->loopEnd);
-                const modplug::tracker::orderindex_t numOrders = (modplug::tracker::orderindex_t)min(MAX_ORDERS, (chunkheader.chunksize - sizeof(DMFCHUNK_SEQUENCE)) / 2);
+                const modplug::tracker::orderindex_t numOrders = (modplug::tracker::orderindex_t)bad_min(MAX_ORDERS, (chunkheader.chunksize - sizeof(DMFCHUNK_SEQUENCE)) / 2);
                 Order.resize(numOrders, Order.GetInvalidPatIndex());
 
                 for(modplug::tracker::orderindex_t i = 0; i < numOrders; i++, dwMemPos += 2)
@@ -907,7 +907,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
                 dwMemPos += sizeof(DMFCHUNK_PATTERNS);
                 m_nChannels = CLAMP(patInfo->numTracks, 1, 32) + 1;	// + 1 for global track (used for tempo stuff)
 
-                const modplug::tracker::patternindex_t numPats = min(MAX_PATTERNS, LittleEndianW(patInfo->numPatterns));
+                const modplug::tracker::patternindex_t numPats = bad_min(MAX_PATTERNS, LittleEndianW(patInfo->numPatterns));
                 patternOffset.assign(numPats, 0);
                 patternLength.assign(numPats, 0);
 
@@ -929,7 +929,7 @@ bool module_renderer::ReadDMF(const uint8_t *lpStream, const uint32_t dwMemLengt
             if(m_nSamples == 0)
             {
                 ASSERT_CAN_READ_CHUNK(1);
-                m_nSamples = (modplug::tracker::sampleindex_t)min(MAX_SAMPLES - 1, lpStream[dwMemPos]);
+                m_nSamples = (modplug::tracker::sampleindex_t)bad_min(MAX_SAMPLES - 1, lpStream[dwMemPos]);
                 dwMemPos++;
 
                 sampleFlags.assign(m_nSamples, 0);

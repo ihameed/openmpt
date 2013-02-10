@@ -157,7 +157,7 @@ bool module_renderer::ReadFixedLineLengthMessage(const uint8_t *data, const size
 
     for(size_t line = 0, fpos = 0, cpos = 0; line < num_lines; line++, fpos += (lineLength + lineEndingLength), cpos += (lineLength + 1))
     {
-            memcpy(m_lpszSongComments + cpos, data + fpos, min(lineLength, length - fpos));
+            memcpy(m_lpszSongComments + cpos, data + fpos, bad_min(lineLength, length - fpos));
             m_lpszSongComments[cpos + lineLength] = '\r';
 
             // fix weird chars

@@ -2082,8 +2082,8 @@ bool CModTree::CanDrop(HTREEITEM hItem, bool bDoDrop)
                                     if(::MessageBox(0, _T("Replace the current orderlist?"), _T("Sequence import"), MB_YESNO|MB_ICONQUESTION) == IDNO)
                                             return false;
                             }
-                            pSndFile->Order.resize(min(pSndFile->GetModSpecifications().ordersMax, pOrigSeq->GetLength()), pSndFile->Order.GetInvalidPatIndex());
-                            for(modplug::tracker::orderindex_t nOrd = 0; nOrd < min(pSndFile->GetModSpecifications().ordersMax,pOrigSeq->GetLengthTailTrimmed()); nOrd++)
+                            pSndFile->Order.resize(bad_min(pSndFile->GetModSpecifications().ordersMax, pOrigSeq->GetLength()), pSndFile->Order.GetInvalidPatIndex());
+                            for(modplug::tracker::orderindex_t nOrd = 0; nOrd < bad_min(pSndFile->GetModSpecifications().ordersMax,pOrigSeq->GetLengthTailTrimmed()); nOrd++)
                             {
                                     modplug::tracker::patternindex_t nOrigPat = pDragSndFile->Order.GetSequence(nOrigSeq)[nOrd];
                                     // translate pattern index

@@ -442,7 +442,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 if(chunkSize < sizeof(PSMOLDSAMPLEHEADER)) return false;
                 PSMOLDSAMPLEHEADER *pSample = (PSMOLDSAMPLEHEADER *)(lpStream + dwMemPos);
                 modplug::tracker::sampleindex_t smp = (modplug::tracker::sampleindex_t)(LittleEndianW(pSample->sampleNumber) + 1);
-                m_nSamples = max(m_nSamples, smp);
+                m_nSamples = bad_max(m_nSamples, smp);
                 memcpy(m_szNames[smp], pSample->sampleName, 31);
                 SpaceToNullStringFixed<31>(m_szNames[smp]);
                 memcpy(Samples[smp].legacy_filename, pSample->fileName, 8);
@@ -466,7 +466,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 if(chunkSize < sizeof(PSMNEWSAMPLEHEADER)) return false;
                 PSMNEWSAMPLEHEADER *pSample = (PSMNEWSAMPLEHEADER *)(lpStream + dwMemPos);
                 modplug::tracker::sampleindex_t smp = (modplug::tracker::sampleindex_t)(LittleEndianW(pSample->sampleNumber) + 1);
-                m_nSamples = max(m_nSamples, smp);
+                m_nSamples = bad_max(m_nSamples, smp);
                 memcpy(m_szNames[smp], pSample->sampleName, 31);
                 SpaceToNullStringFixed<31>(m_szNames[smp]);
                 memcpy(Samples[smp].legacy_filename, pSample->fileName, 8);
@@ -543,7 +543,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                 if(dwRowOffset + 1 > dwMemLength) return false;
                 uint8_t mask = lpStream[dwRowOffset];
                 // Point to the correct channel
-                modplug::tracker::modevent_t *m = row_data + min(m_nChannels - 1, lpStream[dwRowOffset + 1]);
+                modplug::tracker::modevent_t *m = row_data + bad_min(m_nChannels - 1, lpStream[dwRowOffset + 1]);
                 dwRowOffset += 2;
 
                 if(mask & 0x80)
@@ -578,7 +578,7 @@ bool module_renderer::ReadPSM(const uint8_t * const lpStream, const uint32_t dwM
                     if(dwRowOffset + 1 > dwMemLength) return false;
                     // Volume present
                     m->volcmd = VolCmdVol;
-                    m->vol = (min(lpStream[dwRowOffset], 127) + 1) >> 1;
+                    m->vol = (bad_min(lpStream[dwRowOffset], 127) + 1) >> 1;
                     dwRowOffset++;
                 }
 
@@ -830,8 +830,8 @@ struct PSM16HEADER
     uint16_t songOrders;            // 0 ... 255 (same as previous value as no subsongs are present)
     uint16_t numPatterns;            // 1 ... 255
     uint16_t numSamples;            // 1 ... 255
-    uint16_t numChannelsPlay;    // 0 ... 32 (max. number of channels to play)
-    uint16_t numChannelsReal;    // 0 ... 32 (max. number of channels to process)
+    uint16_t numChannelsPlay;    // 0 ... 32 (bad_max. number of channels to play)
+    uint16_t numChannelsReal;    // 0 ... 32 (bad_max. number of channels to process)
     uint32_t orderOffset;
     uint32_t panOffset;
     uint32_t patOffset;
@@ -881,13 +881,13 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
         || (shdr->formatVersion != 0x10 && shdr->formatVersion != 0x01) // why is this sometimes 0x01?
         || (shdr->patternVersion != 0) // 255ch pattern version not supported (did anyone use this?)
         || ((shdr->songType & 3) != 0)
-        || (min(shdr->numChannelsPlay, shdr->numChannelsReal) == 0)
+        || (bad_min(shdr->numChannelsPlay, shdr->numChannelsReal) == 0)
         ) return false;
 
     // Seems to be valid!
 
     m_nType = MOD_TYPE_S3M;
-    m_nChannels = min(max(shdr->numChannelsPlay, shdr->numChannelsReal), MAX_BASECHANNELS);
+    m_nChannels = bad_min(bad_max(shdr->numChannelsPlay, shdr->numChannelsReal), MAX_BASECHANNELS);
     m_nMasterVolume = shdr->masterVolume;
     m_nDefaultGlobalVolume = MAX_GLOBAL_VOLUME;
     m_nDefaultSpeed = shdr->songSpeed;
@@ -931,7 +931,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
             dwMemPos += sizeof(PSM16SMPHEADER);
 
             modplug::tracker::sampleindex_t iSmp = LittleEndianW(smphdr->sampleNumber);
-            m_nSamples = max(m_nSamples, iSmp);
+            m_nSamples = bad_max(m_nSamples, iSmp);
 
             memcpy(m_szNames[iSmp], smphdr->name, 24);
             SpaceToNullStringFixed<24>(m_szNames[iSmp]);
@@ -1015,7 +1015,7 @@ bool module_renderer::ReadPSM16(const uint8_t * const lpStream, const uint32_t d
                     continue;
                 }
 
-                row_data = Patterns[nPat] + iRow * m_nChannels + min(bChnFlag & 0x1F, m_nChannels - 1);
+                row_data = Patterns[nPat] + iRow * m_nChannels + bad_min(bChnFlag & 0x1F, m_nChannels - 1);
 
                 if(bChnFlag & 0x80)
                 {

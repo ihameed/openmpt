@@ -759,7 +759,7 @@ void CNoteMapWnd::StopNote(int note = -1)
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup"
 #define MAX_ATTACK_LENGTH    2001
-#define MAX_ATTACK_VALUE    (MAX_ATTACK_LENGTH - 1)  // 16 bit unsigned max
+#define MAX_ATTACK_VALUE    (MAX_ATTACK_LENGTH - 1)  // 16 bit unsigned bad_max
 // -! NEW_FEATURE#0027
 
 BEGIN_MESSAGE_MAP(CCtrlInstruments, CModControlDlg)
@@ -1714,10 +1714,10 @@ void CCtrlInstruments::OnInstrumentSave()
     if (!pIns) return;
     if (pIns->legacy_filename[0])
     {
-            strncpy(szFileName, pIns->legacy_filename, min(CountOf(pIns->legacy_filename), CountOf(szFileName) - 1));
+            strncpy(szFileName, pIns->legacy_filename, bad_min(CountOf(pIns->legacy_filename), CountOf(szFileName) - 1));
     } else
     {
-            strncpy(szFileName, pIns->name, min(CountOf(pIns->name), CountOf(szFileName) - 1));
+            strncpy(szFileName, pIns->name, bad_min(CountOf(pIns->name), CountOf(szFileName) - 1));
     }
     SetNullTerminator(szFileName);
     SanitizeFilename(szFileName);

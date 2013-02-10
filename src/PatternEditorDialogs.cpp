@@ -680,7 +680,7 @@ void CEditCommand::UpdateNote(UINT note, UINT instr)
             m_Command = *m;
             m_pModDoc->SetModified();
             // -> CODE#0008
-            // -> DESC"#define to set pattern max size (number of rows) limit (now set to 1024 instead of 256)"
+            // -> DESC"#define to set pattern bad_max size (number of rows) limit (now set to 1024 instead of 256)"
             //                m_pModDoc->UpdateAllViews(NULL, (m_nRow << 24) | HINT_PATTERNROW, NULL);
             m_pModDoc->UpdateAllViews(NULL, (m_nRow << HINT_SHIFT_ROW) | HINT_PATTERNROW, NULL);
             // -! BEHAVIOUR_CHANGE#0008
@@ -709,7 +709,7 @@ void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
             m->vol = vol;
             m_pModDoc->SetModified();
             // -> CODE#0008
-            // -> DESC"#define to set pattern max size (number of rows) limit (now set to 1024 instead of 256)"
+            // -> DESC"#define to set pattern bad_max size (number of rows) limit (now set to 1024 instead of 256)"
             //                m_pModDoc->UpdateAllViews(NULL, (m_nRow << 24) | HINT_PATTERNROW, NULL);
             m_pModDoc->UpdateAllViews(NULL, (m_nRow << HINT_SHIFT_ROW) | HINT_PATTERNROW, NULL);
             // -! BEHAVIOUR_CHANGE#0008
@@ -749,7 +749,7 @@ void CEditCommand::UpdateEffect(UINT raw_command, UINT param)
             m->param = param;
             m_pModDoc->SetModified();
             // -> CODE#0008
-            // -> DESC"#define to set pattern max size (number of rows) limit (now set to 1024 instead of 256)"
+            // -> DESC"#define to set pattern bad_max size (number of rows) limit (now set to 1024 instead of 256)"
             //                m_pModDoc->UpdateAllViews(NULL, (m_nRow << 24) | HINT_PATTERNROW, NULL);
             m_pModDoc->UpdateAllViews(NULL, (m_nRow << HINT_SHIFT_ROW) | HINT_PATTERNROW, NULL);
             // -! BEHAVIOUR_CHANGE#0008

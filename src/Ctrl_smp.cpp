@@ -997,10 +997,10 @@ void CCtrlSamples::OnSampleSave()
         }
         if (m_pSndFile->m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT))
         {
-            strncpy(szFileName, m_pSndFile->Samples[m_nSample].legacy_filename, min(CountOf(m_pSndFile->Samples[m_nSample].legacy_filename), CountOf(szFileName) - 1));
+            strncpy(szFileName, m_pSndFile->Samples[m_nSample].legacy_filename, bad_min(CountOf(m_pSndFile->Samples[m_nSample].legacy_filename), CountOf(szFileName) - 1));
         } else
         {
-            strncpy(szFileName, m_pSndFile->m_szNames[m_nSample], min(CountOf(m_pSndFile->m_szNames[m_nSample]), CountOf(szFileName) - 1));
+            strncpy(szFileName, m_pSndFile->m_szNames[m_nSample], bad_min(CountOf(m_pSndFile->m_szNames[m_nSample]), CountOf(szFileName) - 1));
         }
         if (!szFileName[0]) strcpy(szFileName, "untitled");
     }
@@ -1161,18 +1161,18 @@ void CCtrlSamples::OnNormalize()
             if (pSmp->flags & CHN_16BIT)
             {
                 int16_t *p = (int16_t *)pSmp->sample_data;
-                int max = 1;
+                int bad_max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
-                    if (p[i] > max) max = p[i];
-                    if (-p[i] > max) max = -p[i];
+                    if (p[i] > bad_max) bad_max = p[i];
+                    if (-p[i] > bad_max) bad_max = -p[i];
                 }
-                if (max < 32767)
+                if (bad_max < 32767)
                 {
-                    max++;
+                    bad_max++;
                     for (UINT j = iStart; j < iEnd; j++)
                     {
-                        int l = (((int)p[j]) << 15) / max;
+                        int l = (((int)p[j]) << 15) / bad_max;
                         p[j] = (int16_t)l;
                     }
                     bModified = bOk = true;
@@ -1180,18 +1180,18 @@ void CCtrlSamples::OnNormalize()
             } else
             {
                 int8_t *p = (int8_t *)pSmp->sample_data;
-                int max = 1;
+                int bad_max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
-                    if (p[i] > max) max = p[i];
-                    if (-p[i] > max) max = -p[i];
+                    if (p[i] > bad_max) bad_max = p[i];
+                    if (-p[i] > bad_max) bad_max = -p[i];
                 }
-                if (max < 127)
+                if (bad_max < 127)
                 {
-                    max++;
+                    bad_max++;
                     for (UINT j = iStart; j < iEnd; j++)
                     {
-                        int l = (((int)p[j]) << 7) / max;
+                        int l = (((int)p[j]) << 7) / bad_max;
                         p[j] = (int8_t)l;
                     }
                     bModified = bOk = true;
@@ -1758,10 +1758,10 @@ void CCtrlSamples::OnPitchShiftTimeStretch()
         //Update loop points only if no error occured.
         if(errorcode == 0)
         {
-            pSmp->loop_start = (UINT)min(pSmp->loop_start * (m_dTimeStretchRatio / 100.0), pSmp->length);
-            pSmp->loop_end = (UINT)min(pSmp->loop_end * (m_dTimeStretchRatio/100.0), pSmp->length);
-            pSmp->sustain_start = (UINT)min(pSmp->sustain_start * (m_dTimeStretchRatio/100.0), pSmp->length);
-            pSmp->sustain_end = (UINT)min(pSmp->sustain_end * (m_dTimeStretchRatio/100.0), pSmp->length);
+            pSmp->loop_start = (UINT)bad_min(pSmp->loop_start * (m_dTimeStretchRatio / 100.0), pSmp->length);
+            pSmp->loop_end = (UINT)bad_min(pSmp->loop_end * (m_dTimeStretchRatio/100.0), pSmp->length);
+            pSmp->sustain_start = (UINT)bad_min(pSmp->sustain_start * (m_dTimeStretchRatio/100.0), pSmp->length);
+            pSmp->sustain_end = (UINT)bad_min(pSmp->sustain_end * (m_dTimeStretchRatio/100.0), pSmp->length);
         }
 
     }
@@ -2003,7 +2003,7 @@ int CCtrlSamples::TimeStretch(float ratio)
 
     m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
     // Swap sample buffer pointer to new buffer, update song + sample data & free old sample buffer
-    ctrlSmp::ReplaceSample(*pSmp, (LPSTR)pNewSample, min(nLengthCounter, nNewSampleLength), m_pSndFile);
+    ctrlSmp::ReplaceSample(*pSmp, (LPSTR)pNewSample, bad_min(nLengthCounter, nNewSampleLength), m_pSndFile);
 
     // Free progress bar brushes
     DeleteObject((HBRUSH)green);
@@ -2260,7 +2260,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 
     m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
     // Swap sample buffer pointer to new buffer, update song + sample data & free old sample buffer
-    ctrlSmp::ReplaceSample(*pSmp, (LPSTR)pNewSample, min(nLengthCounter, nNewSampleLength), m_pSndFile);
+    ctrlSmp::ReplaceSample(*pSmp, (LPSTR)pNewSample, bad_min(nLengthCounter, nNewSampleLength), m_pSndFile);
 
     // Free progress bar brushes
     DeleteObject((HBRUSH)green);
@@ -2334,7 +2334,7 @@ int CCtrlSamples::PitchShift(float pitch)
     // Get original sample rate
     long lSampleRate = pSmp->GetSampleRate(m_pSndFile->GetType());
 
-    // Deduce max sample value (float conversion step)
+    // Deduce bad_max sample value (float conversion step)
     float maxSampleValue = float(( 1 << (smpsize * 8 - 1) ) - 1);
 
     // Allocate working buffers
@@ -2349,7 +2349,7 @@ int CCtrlSamples::PitchShift(float pitch)
         UINT pos = 0;
         UINT len = MAX_BUFFER_LENGTH;
 
-        // Process sample buffer using MAX_BUFFER_LENGTH (max) sized chunk steps (in order to allow
+        // Process sample buffer using MAX_BUFFER_LENGTH (bad_max) sized chunk steps (in order to allow
         // the processing of BIG samples...)
         while(pos < pSmp->length){
 
@@ -3247,7 +3247,7 @@ NoSample:
             if (d < 1) d = 8363;
             if(d < m_nFinetuneStep) d = m_nFinetuneStep;
             d += (pos * m_nFinetuneStep);
-            pSmp->c5_samplerate = CLAMP(d, 1, 9999999); // 9999999 is max. in Impulse Tracker
+            pSmp->c5_samplerate = CLAMP(d, 1, 9999999); // 9999999 is bad_max. in Impulse Tracker
             int transp = module_renderer::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
@@ -3377,7 +3377,7 @@ void CCtrlSamples::SetSelectionPoints(UINT nStart, UINT nEnd)
 
 // Crossfade loop to create smooth loop transitions
 #define DEFAULT_XFADE_LENGTH 16384 //4096
-#define LimitXFadeLength(x)    min(min(x, pSmp->loop_end - pSmp->loop_start), pSmp->loop_end / 2)
+#define LimitXFadeLength(x)    bad_min(bad_min(x, pSmp->loop_end - pSmp->loop_start), pSmp->loop_end / 2)
 
 void CCtrlSamples::OnXFade()
 //--------------------------
