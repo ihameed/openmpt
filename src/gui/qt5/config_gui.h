@@ -1,5 +1,6 @@
 #pragma once
 #include <QtGui>
+#include <memory>
 
 #include "config_dialog.h"
 #include "keymap.h"

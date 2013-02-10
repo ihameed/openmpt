@@ -10,6 +10,7 @@
 
 #include "gui/qt5/app_config.h"
 
+#include <memory>
 #include "legacy_soundlib/sndfile.h"
 #include "CommandSet.h"
 #include "inputhandler.h"

@@ -27,14 +27,17 @@
     <UseOfMfc>Dynamic</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet />
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet />
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <UseOfMfc>Dynamic</UseOfMfc>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -118,6 +121,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <Profile>false</Profile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>
@@ -185,6 +189,7 @@
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Manifest>
       <AdditionalManifestFiles>$(ProjectDir)res/rt_manif.bin;%(AdditionalManifestFiles)</AdditionalManifestFiles>

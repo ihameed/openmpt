@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtGui>
+#include <memory>
 #include <json/json.h>
 
 #include "../../pervasives/pervasives.h"

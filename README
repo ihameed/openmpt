@@ -1,7 +1,8 @@
 build dependencies:
- - visual studio 2010 professional+
+ - visual studio 2012 professional+
  - vst 2.4 sdk (disable by defining NO_VST)
  - asio sdk
  - directx sdk
- - qt 4.8
+ - qt 5.0.1
+   - configure -platform win32-msvc2012 -opensource -confirm-license -mp -opengl desktop -no-audio-backend -c++11 -no-qml-debug -developer-build -debug-and-release -ltcg -no-rtti -no-accessibility -nomake demos -nomake examples -nomake tests -no-dbus
  - qt visual studio add-in
