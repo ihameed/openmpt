@@ -33,30 +33,35 @@ pattern_editor_tab::pattern_editor_tab(
     top_layout.addLayout(&order_layout);
     order_layout.addWidget(&orderedit);
 
+    /*
     QFontDatabase fontdb;
     fontdb.addApplicationFont(":/openmpt/icons/entypo/entypo.ttf");
 
     foreach(QString s, fontdb.families()) {
         DEBUG_FUNC("fontdb font: '%s'", s.toLatin1().constData());
     }
-
-    QFont entypo("Entypo",16 );
-    //QFont entypo("wingdings", 20);
+    QFont entypo("Entypo", 16);
 
     auto ico_new = QString::fromUtf8("\xf0\x9f\x93\x84");
     auto ico_rec = QString::fromUtf8("\xe2\x97\x8f");
-    //auto huoa = "t";
+    */
 
-    new_pattern.setFont(entypo);
-    new_pattern.setText(ico_new);
+    QIcon icon_new(":/openmpt/icons/entypo/list-add.svg");
+    QIcon icon_record(":/openmpt/icons/entypo/record.svg");
+    QIcon icon_play_pattern(":/openmpt/icons/entypo/derived/play-cw90.svg");
 
-    play_pattern_from_cursor.setText("A");
+    new_pattern.setIcon(icon_new);
+    new_pattern.setText("New Pattern");
+
+    play_pattern_from_cursor.setIcon(icon_play_pattern);
+    play_pattern_from_cursor.setText("Play Pattern From Cursor");
+
     play_pattern_from_start.setText("B");
     stop.setText("C");
     play_row.setText("D");
 
-    record.setFont(entypo);
-    record.setText(ico_rec);
+    record.setIcon(icon_record);
+    record.setText("Record");
 
     pattern_tool_bar.addWidget(&new_pattern);
     pattern_tool_bar.addWidget(&play_pattern_from_cursor);

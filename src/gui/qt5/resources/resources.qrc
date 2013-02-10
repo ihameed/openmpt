@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/openmpt">
-        <file>icons/entypo/entypo.ttf</file>
         <file>bitmapfonts/pattern_editor.png</file>
+        <file>icons/entypo/doc-text.svg</file>
+        <file>icons/entypo/list-add.svg</file>
+        <file>icons/entypo/record.svg</file>
+        <file>icons/entypo/derived/play-cw90.svg</file>
     </qresource>
 </RCC>

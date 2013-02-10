@@ -4,5 +4,7 @@ build dependencies:
  - asio sdk
  - directx sdk
  - qt 5.0.1
-   - configure -platform win32-msvc2012 -opensource -confirm-license -mp -opengl desktop -no-audio-backend -c++11 -no-qml-debug -developer-build -debug-and-release -ltcg -no-rtti -no-accessibility -nomake demos -nomake examples -nomake tests -no-dbus
  - qt visual studio add-in
+
+whee:
+configure -platform win32-msvc2012 -opensource -confirm-license -mp -opengl desktop -c++11 -sse2 -developer-build -debug-and-release -ltcg -no-rtti -fully-process -nomake demos -nomake examples -no-openvg -nomake tests -no-dbus -no-directwrite -no-vcproj -no-audio-backend -no-qml-debug -no-angle
