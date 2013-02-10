@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #ifdef USE_GHETTO_NEWTYPES
 #define NUMERIC_NEWTYPE(alias, type) \
 struct alias { \
