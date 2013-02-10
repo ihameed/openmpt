@@ -17,8 +17,6 @@ inline int rect_right(const QRect &rect) {
     return rect.left() + rect.width();
 }
 
-QImage load_bmp_resource(LPTSTR, HINSTANCE, HDC);
-
 }
 }
 }

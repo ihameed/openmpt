@@ -175,3 +175,6 @@ test.saved.mptm
 x86/
 
 !extlib/zlib-1.2.5/contrib/masmx86/*
+
+
+src/GeneratedFiles/

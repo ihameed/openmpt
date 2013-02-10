@@ -280,7 +280,7 @@
     <ClCompile Include="gui\qt5\song_overview.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\qt5\util.cpp">
+    <ClCompile Include="GeneratedFiles\qrc_resources.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -506,6 +506,11 @@
       <Extensions>h</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gui\qt5\app_config.h">
@@ -540,6 +545,9 @@
     </CustomBuild>
     <CustomBuild Include="gui\qt5\song_overview.h">
       <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\resources\resources.qrc">
+      <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

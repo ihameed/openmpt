@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/openmpt">
+        <file>icons/entypo/entypo.ttf</file>
+        <file>bitmapfonts/pattern_editor.png</file>
+    </qresource>
+</RCC>

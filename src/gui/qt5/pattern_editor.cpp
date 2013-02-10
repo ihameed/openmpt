@@ -19,23 +19,6 @@ namespace modplug {
 namespace gui {
 namespace qt5 {
 
-
-QImage load_font() {
-    auto resource = MAKEINTRESOURCE(IDB_PATTERNVIEW);
-    auto instance = GetModuleHandle(nullptr);
-    auto hdc      = GetDC(nullptr);
-
-    auto font_bitmap = load_bmp_resource(resource, instance, hdc)
-                      .convertToFormat(QImage::Format_MonoLSB);
-
-    font_bitmap.setColor(0, qRgba(0xff, 0xff, 0xff, 0x00));
-    font_bitmap.setColor(1, qRgba(0xff, 0xff, 0xff, 0xff));
-
-    ReleaseDC(nullptr, hdc);
-
-    return font_bitmap;
-};
-
 pattern_editor_draw::pattern_editor_draw(
     module_renderer &renderer,
     const colors_t &colors,
@@ -48,7 +31,12 @@ pattern_editor_draw::pattern_editor_draw(
     parent(parent)
 {
     setFocusPolicy(Qt::ClickFocus);
-    font_bitmap = load_font();
+
+    font_bitmap = QImage(":/openmpt/bitmapfonts/pattern_editor.png")
+                 .convertToFormat(QImage::Format_MonoLSB);
+    font_bitmap.setColor(0, qRgba(0xff, 0xff, 0xff, 0x00));
+    font_bitmap.setColor(1, qRgba(0xff, 0xff, 0xff, 0xff));
+              
 }
 
 void pattern_editor_draw::initializeGL() {
