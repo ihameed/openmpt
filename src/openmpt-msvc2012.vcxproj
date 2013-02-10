@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>mptrack</ProjectName>
+    <ProjectName>openmpt</ProjectName>
     <ProjectGuid>{21D95071-FB97-4E69-B3B1-050D0D4A5021}</ProjectGuid>
     <RootNamespace>mptrack</RootNamespace>
     <Keyword>MFCProj</Keyword>
