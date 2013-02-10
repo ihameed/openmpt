@@ -16,9 +16,9 @@ namespace qt5 {
 mfc_root::mfc_root(app_config &settings, CMainFrame &mfc_parent) :
     QWinWidget(&mfc_parent), settings(settings), mainwnd(mfc_parent)
 {
-    QObject::connect(
-        &settings, SIGNAL(audio_settings_changed(void)),
-        this, SLOT(update_audio_settings())
+    connect(
+        &settings, &app_config::audio_settings_changed,
+        this, &mfc_root::update_audio_settings
     );
 }
 

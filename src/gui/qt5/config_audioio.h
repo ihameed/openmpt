@@ -1,5 +1,6 @@
 #pragma once
 #include <QtGui>
+#include <QtWidgets/QtWidgets>
 
 #include "config_dialog.h"
 #include "../../pervasives/pervasives.h"

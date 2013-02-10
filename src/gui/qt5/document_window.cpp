@@ -40,9 +40,9 @@ document_window::document_window(module_renderer *renderer,
     tab_bar.addTab(editor, "Patterns");
     tab_bar.addTab(commentsplitter, "Comments");
 
-    QObject::connect(
-        &global_config, SIGNAL(colors_changed()),
-        this, SLOT(config_colors_changed())
+    connect(
+        &global_config, &app_config::colors_changed,
+        this, &document_window::config_colors_changed
     );
 }
 

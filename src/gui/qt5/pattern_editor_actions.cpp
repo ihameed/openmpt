@@ -11,6 +11,7 @@ namespace modplug {
 namespace gui {
 namespace qt5 {
 
+namespace pattern_editor_actions {
 
 const int hugeor = 999999;
 
@@ -25,7 +26,7 @@ void clear_at(modevent_t *evt, elem_t elem) {
     }
 }
 
-void pattern_editor_actions::clear_selected_cells(pattern_editor &editor) {
+void clear_selected_cells(pattern_editor &editor) {
     auto &corners = editor.selection_corners();
     auto &upper_left   = corners.topleft;
     auto &bottom_right = corners.bottomright;
@@ -50,7 +51,7 @@ void pattern_editor_actions::clear_selected_cells(pattern_editor &editor) {
     editor.update();
 }
 
-void pattern_editor_actions::delete_row(pattern_editor &editor) {
+void delete_row(pattern_editor &editor) {
     auto pattern  = editor.active_pattern();
     auto &pos     = editor.pos();
     auto numrows  = pattern->GetNumRows();
@@ -68,11 +69,11 @@ void pattern_editor_actions::delete_row(pattern_editor &editor) {
     editor.update();
 }
 
-void pattern_editor_actions::insert_row(pattern_editor &editor) {
+void insert_row(pattern_editor &editor) {
     //TODO
 }
 
-void pattern_editor_actions::insert_note(pattern_editor &editor, uint8_t octave,
+void insert_note(pattern_editor &editor, uint8_t octave,
     uint8_t tone_number)
 {
     editor.collapse_selection();
@@ -85,7 +86,7 @@ void pattern_editor_actions::insert_note(pattern_editor &editor, uint8_t octave,
     editor.update();
 }
 
-void pattern_editor_actions::insert_instr(pattern_editor &editor, uint8_t digit) {
+void insert_instr(pattern_editor &editor, uint8_t digit) {
     editor.collapse_selection();
     auto evt = editor.active_event();
     auto newcmd = *evt;
@@ -97,7 +98,7 @@ void pattern_editor_actions::insert_instr(pattern_editor &editor, uint8_t digit)
     editor.update();
 }
 
-void pattern_editor_actions::insert_volparam(pattern_editor &editor, uint8_t digit) {
+void insert_volparam(pattern_editor &editor, uint8_t digit) {
     editor.collapse_selection();
     auto evt = editor.active_event();
     auto newcmd = *evt;
@@ -116,7 +117,7 @@ void pattern_editor_actions::insert_volparam(pattern_editor &editor, uint8_t dig
     editor.update();
 }
 
-void pattern_editor_actions::insert_volcmd(pattern_editor &editor, volcmd_t cmd) {
+void insert_volcmd(pattern_editor &editor, volcmd_t cmd) {
     editor.collapse_selection();
     auto evt = editor.active_event();
     auto newcmd = *evt;
@@ -127,7 +128,7 @@ void pattern_editor_actions::insert_volcmd(pattern_editor &editor, volcmd_t cmd)
     editor.update();
 }
 
-void pattern_editor_actions::insert_cmd(pattern_editor &editor, cmd_t cmd) {
+void insert_cmd(pattern_editor &editor, cmd_t cmd) {
     editor.collapse_selection();
     auto evt = editor.active_event();
     auto newcmd = *evt;
@@ -138,7 +139,7 @@ void pattern_editor_actions::insert_cmd(pattern_editor &editor, cmd_t cmd) {
     editor.update();
 }
 
-void pattern_editor_actions::insert_cmdparam(pattern_editor &editor, uint8_t digit) {
+void insert_cmdparam(pattern_editor &editor, uint8_t digit) {
     editor.collapse_selection();
     auto evt = editor.active_event();
     auto newcmd = *evt;
@@ -153,43 +154,43 @@ void pattern_editor_actions::insert_cmdparam(pattern_editor &editor, uint8_t dig
 
 
 
-void pattern_editor_actions::move_up(pattern_editor &editor) {
+void move_up(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), -1);
     editor.move_to(newpos);
 }
 
-void pattern_editor_actions::move_down(pattern_editor &editor) {
+void move_down(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), 1);
     editor.move_to(newpos);
 }
 
-void pattern_editor_actions::move_left(pattern_editor &editor) {
+void move_left(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), -1);
     editor.move_to(newpos);
 }
 
-void pattern_editor_actions::move_right(pattern_editor &editor) {
+void move_right(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), 1);
     editor.move_to(newpos);
 }
 
 
-void pattern_editor_actions::move_first_row(pattern_editor &editor) {
+void move_first_row(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), -hugeor);
     editor.move_to(newpos);
 }
 
-void pattern_editor_actions::move_last_row(pattern_editor &editor) {
+void move_last_row(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), hugeor);
     editor.move_to(newpos);
 }
 
-void pattern_editor_actions::move_first_col(pattern_editor &editor) {
+void move_first_col(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), -hugeor);
     editor.move_to(newpos);
 }
 
-void pattern_editor_actions::move_last_col(pattern_editor &editor) {
+void move_last_col(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), hugeor);
     editor.move_to(newpos);
 }
@@ -198,53 +199,55 @@ void pattern_editor_actions::move_last_col(pattern_editor &editor) {
 
 
 
-void pattern_editor_actions::select_up(pattern_editor &editor) {
+void select_up(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), -1);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
-void pattern_editor_actions::select_down(pattern_editor &editor) {
+void select_down(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), 1);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
-void pattern_editor_actions::select_left(pattern_editor &editor) {
+void select_left(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), -1);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
-void pattern_editor_actions::select_right(pattern_editor &editor) {
+void select_right(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), 1);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
 
-void pattern_editor_actions::select_first_row(pattern_editor &editor) {
+void select_first_row(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), -hugeor);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
-void pattern_editor_actions::select_last_row(pattern_editor &editor) {
+void select_last_row(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_row(editor.pos(), hugeor);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
-void pattern_editor_actions::select_first_col(pattern_editor &editor) {
+void select_first_col(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), -hugeor);
     editor.set_selection_end(newpos);
     editor.update();
 }
 
-void pattern_editor_actions::select_last_col(pattern_editor &editor) {
+void select_last_col(pattern_editor &editor) {
     auto newpos = editor.pos_move_by_subcol(editor.pos(), hugeor);
     editor.set_selection_end(newpos);
     editor.update();
+}
+
 }
 
 

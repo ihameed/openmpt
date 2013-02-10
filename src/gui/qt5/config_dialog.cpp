@@ -128,14 +128,14 @@ config_dialog::config_dialog(app_config &context, QWidget *parent)
 
     for_each(categories, add_category);
 
-    QObject::connect(
-        category_list, SIGNAL(itemSelectionChanged()),
-        this, SLOT(change_page())
+    connect(
+        category_list, &config_treeview::itemSelectionChanged,
+        this, &config_dialog::change_page
     );
 
-    QObject::connect(
-        &buttons, SIGNAL(clicked(QAbstractButton *)),
-        this, SLOT(button_clicked(QAbstractButton *))
+    connect(
+        &buttons, &QDialogButtonBox::clicked,
+        this, &config_dialog::button_clicked
     );
 }
 

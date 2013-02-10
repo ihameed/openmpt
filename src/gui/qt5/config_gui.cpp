@@ -44,14 +44,15 @@ config_gui_main::config_gui_main(app_config &context) :
         box->addItem(color.value, QVariant(color.key));
     });
 
-    QObject::connect(&preset_it, SIGNAL(clicked()),
-                     this, SLOT(preset_clicked()));
-    QObject::connect(&preset_xm, SIGNAL(clicked()),
-                     this, SLOT(preset_clicked()));
-    QObject::connect(&preset_mpt, SIGNAL(clicked()),
-                     this, SLOT(preset_clicked()));
-    QObject::connect(&preset_buzz, SIGNAL(clicked()),
-                     this, SLOT(preset_clicked()));
+    auto wire = [&] (QPushButton &b) { connect(
+        &b, &QPushButton::clicked,
+        this, &config_gui_main::preset_clicked
+    ); };
+
+    wire(preset_it);
+    wire(preset_xm);
+    wire(preset_mpt);
+    wire(preset_buzz);
 
     auto layout = new QVBoxLayout(this);
     layout->addWidget(box);

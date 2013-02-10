@@ -91,44 +91,46 @@ config_audioio_main::config_audioio_main(app_config &context) :
             );
         }
     }
+    auto combo_changed = static_cast<void(QComboBox::*)(int)>(
+        &QComboBox::currentIndexChanged
+    );
+
+    auto spin_changed = static_cast<void(QSpinBox::*)(int)>(
+        &QSpinBox::valueChanged
+    );
 
     auto connect_change_notifiers = [&] () {
-        QObject::connect(
-            &devices, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(modified(int))
+        connect(
+            &devices, combo_changed,
+            this, &config_audioio_main::modified
         );
 
-        QObject::connect(
-            &rates, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(modified(int))
+        connect(
+            &rates, combo_changed,
+            this, &config_audioio_main::modified
         );
 
-        QObject::connect(
-            &rates, SIGNAL(valueChanged(int)),
-            this, SLOT(modified(int))
+        connect(
+            &channels, spin_changed,
+            this, &config_audioio_main::modified
         );
 
-        QObject::connect(
-            &channels, SIGNAL(valueChanged(int)),
-            this, SLOT(modified(int))
-        );
-
-        QObject::connect(
-            &buflen, SIGNAL(valueChanged(int)),
-            this, SLOT(modified(int))
+        connect(
+            &buflen, spin_changed,
+            this, &config_audioio_main::modified
         );
     };
 
     connect_change_notifiers();
 
-    QObject::connect(
-        &rates, SIGNAL(currentIndexChanged(int)),
-        this, SLOT(latency_event_with_int(int))
+    connect(
+        &rates, combo_changed,
+        this, &config_audioio_main::latency_event_with_int
     );
 
-    QObject::connect(
-        &buflen, SIGNAL(valueChanged(int)),
-        this, SLOT(latency_event_with_int(int))
+    connect(
+        &buflen, spin_changed,
+        this, &config_audioio_main::latency_event_with_int
     );
 
     refresh();

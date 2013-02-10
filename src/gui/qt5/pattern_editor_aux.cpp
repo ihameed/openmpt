@@ -55,9 +55,9 @@ pattern_editor_tab::pattern_editor_tab(
     pattern_info_layout.addWidget(new QLabel("Pattern Name"));
     pattern_info_layout.addWidget(new QLineEdit());
 
-    QObject::connect(
-        &orderedit, SIGNAL(active_pattern_changed(patternindex_t)),
-        &editor, SLOT(set_active_pattern(patternindex_t))
+    connect(
+        &orderedit, &order_editor::active_pattern_changed,
+        &editor, &pattern_editor::set_active_pattern
     );
 }
 

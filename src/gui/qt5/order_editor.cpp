@@ -31,16 +31,16 @@ order_editor::order_editor(module_renderer &renderer)
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    QObject::connect(
-        &order_list, SIGNAL(customContextMenuRequested(const QPoint &)),
-        this, SLOT(display_context_menu(const QPoint &))
+    connect(
+        &order_list, &QListView::customContextMenuRequested,
+        this, &order_editor::display_context_menu
     );
 
     auto smodel = order_list.selectionModel();
 
-    QObject::connect(
-        smodel, SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
-        this, SLOT(_set_active_pattern(const QModelIndex &, const QModelIndex &))
+    connect(
+        smodel, &QItemSelectionModel::currentChanged,
+        this, &order_editor::_set_active_pattern
     );
 }
 
@@ -54,7 +54,6 @@ void order_editor::display_context_menu(const QPoint &point) {
 
 void order_editor::_set_active_pattern(const QModelIndex &index, const QModelIndex &) {
     patternindex_t idx = patternindex_t(index.row());
-    DEBUG_FUNC("HUAOAOAOAOA huoah %d", idx);
     emit active_pattern_changed(idx);
 }
 

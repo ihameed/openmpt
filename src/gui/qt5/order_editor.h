@@ -14,7 +14,7 @@ class app_config;
 
 namespace order_internal {
 
-class model: public QAbstractListModel {
+class model : public QAbstractListModel {
     Q_OBJECT
 public:
     model(module_renderer &renderer);

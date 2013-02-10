@@ -426,7 +426,6 @@ void pattern_editor::set_selection_end(const editor_position_t &pos) {
 }
 
 void pattern_editor::set_active_pattern(patternindex_t idx) {
-    DEBUG_FUNC("HUAOAOAOAOA OAOAO %d", idx);
     draw.active_pos.pattern = idx;
     draw.update();
 }

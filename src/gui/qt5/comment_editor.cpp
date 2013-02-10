@@ -28,9 +28,9 @@ comment_editor::comment_editor(module_renderer &legacy_module)
     editor.setFont(font);
     editor.setLineWrapMode(QPlainTextEdit::NoWrap);
 
-    QObject::connect(
-        &editor, SIGNAL(textChanged()),
-        this, SLOT(legacy_update_module_comment())
+    connect(
+        &editor, &QPlainTextEdit::textChanged,
+        this, &comment_editor::legacy_update_module_comment
     );
 }
 
