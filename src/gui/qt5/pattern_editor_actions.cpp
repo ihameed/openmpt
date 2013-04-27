@@ -248,6 +248,9 @@ void select_last_col(pattern_editor &editor) {
     editor.update();
 }
 
+
+
+
 }
 
 

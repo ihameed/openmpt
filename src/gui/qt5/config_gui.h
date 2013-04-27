@@ -39,7 +39,7 @@ private:
     QPushButton preset_mpt;
     QPushButton preset_buzz;
 
-    pattern_keymap_t emptymap;
+    keymap_t emptymap;
 
     pattern_editor *demo;
     std::unique_ptr<module_renderer> demo_dummy;

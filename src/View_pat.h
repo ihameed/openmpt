@@ -213,7 +213,6 @@ public:
     void OnDrawDragSel();
 
     //rewbs.customKeys
-    BOOL ExecuteCommand(CommandID command);
     void CursorJump(uint32_t distance, bool direction, bool snap);
     void TempEnterNote(int n, bool oldStyle = false, int vol = -1);
     void TempStopNote(int note, bool fromMidi=false, const bool bChordMode=false);
@@ -239,7 +238,6 @@ public:
     virtual void OnDraw(CDC *);
     virtual void OnInitialUpdate();
     virtual BOOL OnScrollBy(CSize sizeScroll, BOOL bDoScroll = TRUE);
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual LRESULT OnModViewMsg(WPARAM, LPARAM);
     virtual LRESULT OnPlayerNotify(MPTNOTIFICATION *);
@@ -329,7 +327,6 @@ protected:
     afx_msg LRESULT OnUpdatePosition(WPARAM nOrd, LPARAM nRow);
     afx_msg LRESULT OnMidiMsg(WPARAM, LPARAM);
     afx_msg LRESULT OnRecordPlugParamChange(WPARAM, LPARAM);
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM); //rewbs.customKeys
     afx_msg void OnClearSelectionFromMenu();
     afx_msg void OnSelectInstrument(UINT nid);
     afx_msg void OnSelectPCNoteParam(UINT nid);
@@ -350,22 +347,22 @@ private:
     bool BuildChannelControlCtxMenu(HMENU hMenu);
     bool BuildPluginCtxMenu(HMENU hMenu, UINT nChn, module_renderer* pSndFile);
     bool BuildRecordCtxMenu(HMENU hMenu, UINT nChn, CModDoc* pModDoc);
-    bool BuildSoloMuteCtxMenu(HMENU hMenu, CInputHandler* ih, UINT nChn, module_renderer* pSndFile);
-    bool BuildRowInsDelCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildMiscCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildSelectionCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildGrowShrinkCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildNoteInterpolationCtxMenu(HMENU hMenu, CInputHandler* ih, module_renderer* pSndFile);
-    bool BuildVolColInterpolationCtxMenu(HMENU hMenu, CInputHandler* ih, module_renderer* pSndFile);
-    bool BuildEffectInterpolationCtxMenu(HMENU hMenu, CInputHandler* ih, module_renderer* pSndFile);
-    bool BuildEditCtxMenu(HMENU hMenu, CInputHandler* ih,  CModDoc* pModDoc);
-    bool BuildVisFXCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildRandomCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildTransposeCtxMenu(HMENU hMenu, CInputHandler* ih);
-    bool BuildSetInstCtxMenu(HMENU hMenu, CInputHandler* ih, module_renderer* pSndFile);
-    bool BuildAmplifyCtxMenu(HMENU hMenu, CInputHandler* ih);
+    bool BuildSoloMuteCtxMenu(HMENU hMenu, UINT nChn, module_renderer* pSndFile);
+    bool BuildRowInsDelCtxMenu(HMENU hMenu);
+    bool BuildMiscCtxMenu(HMENU hMenu);
+    bool BuildSelectionCtxMenu(HMENU hMenu);
+    bool BuildGrowShrinkCtxMenu(HMENU hMenu);
+    bool BuildNoteInterpolationCtxMenu(HMENU hMenu, module_renderer* pSndFile);
+    bool BuildVolColInterpolationCtxMenu(HMENU hMenu, module_renderer* pSndFile);
+    bool BuildEffectInterpolationCtxMenu(HMENU hMenu, module_renderer* pSndFile);
+    bool BuildEditCtxMenu(HMENU hMenu, CModDoc* pModDoc);
+    bool BuildVisFXCtxMenu(HMENU hMenu);
+    bool BuildRandomCtxMenu(HMENU hMenu);
+    bool BuildTransposeCtxMenu(HMENU hMenu);
+    bool BuildSetInstCtxMenu(HMENU hMenu, module_renderer* pSndFile);
+    bool BuildAmplifyCtxMenu(HMENU hMenu);
     bool BuildChannelMiscCtxMenu(HMENU hMenu, module_renderer* pSndFile);
-    bool BuildPCNoteCtxMenu(HMENU hMenu, CInputHandler* ih, module_renderer* pSndFile);
+    bool BuildPCNoteCtxMenu(HMENU hMenu, module_renderer* pSndFile);
 
     modplug::tracker::rowindex_t GetSelectionStartRow();
     modplug::tracker::rowindex_t GetSelectionEndRow();

@@ -1,5 +1,6 @@
 #include "../../tracker/types.h"
 #include "../../tracker/modevent.h"
+#include <QAction>
 
 namespace modplug {
 namespace gui {
@@ -39,6 +40,8 @@ void insert_volcmd(pattern_editor &, modplug::tracker::volcmd_t);
 void insert_volparam(pattern_editor &, uint8_t);
 void insert_cmd(pattern_editor &, modplug::tracker::cmd_t);
 void insert_cmdparam(pattern_editor &, uint8_t);
+
+
 }
 
 

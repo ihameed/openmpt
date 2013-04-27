@@ -3500,46 +3500,6 @@ void CModDoc::on_test_graph_editor() {
 }
 
 
-LRESULT CModDoc::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-//---------------------------------------------------------------
-{
-    if (wParam == kcNull)
-        return NULL;
-
-    switch(wParam)
-    {
-        case kcViewGeneral: OnEditGlobals(); break;
-        case kcViewPattern: OnEditPatterns(); break;
-        case kcViewSamples: OnEditSamples(); break;
-        case kcViewInstruments: OnEditInstruments(); break;
-        case kcViewGraph: OnEditGraph(); break; //rewbs.graph
-        case kcViewSongProperties: SongProperties(); break;
-
-        case kcFileSaveAsWave:    OnFileWaveConvert(); break;
-        case kcFileSaveMidi:    OnFileMidiConvert(); break;
-        case kcFileExportCompat:  OnFileCompatibilitySave(); break;
-        case kcEstimateSongLength: OnEstimateSongLength(); break;
-        case kcApproxRealBPM:    OnApproximateBPM(); break;
-        case kcFileSave:            DoSave(m_strPathName, 0); break;
-        case kcFileSaveAs:            DoSave(NULL, 1); break;
-        case kcFileClose:            SafeFileClose(); break;
-
-        case kcPlayPatternFromCursor: OnPatternPlay(); break;
-        case kcPlayPatternFromStart: OnPatternRestart(); break;
-        case kcPlaySongFromCursor: OnPatternPlayNoLoop(); break;
-        case kcPlaySongFromStart: OnPlayerPlayFromStart(); break;
-        case kcPlayPauseSong: OnPlayerPlay(); break;
-        case kcStopSong: OnPlayerStop(); break;
-        case kcPanic: OnPanic(); break;
-//            case kcPauseSong: OnPlayerPause(); break;
-
-
-    }
-
-    return wParam;
-}
-//end rewbs.customKeys
-
 void CModDoc::TogglePluginEditor(UINT m_nCurrentPlugin)
 //-----------------------------------------------------
 {

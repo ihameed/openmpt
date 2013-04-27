@@ -44,10 +44,10 @@ public:
     CONFIG_KNOB(paudio_settings_t, audio_settings)
     CONFIG_KNOB(colors_t,          colors)
 
-    MUTABLE_CONFIG_KNOB(global_keymap_t,  global_keymap)
-    MUTABLE_CONFIG_KNOB(pattern_keymap_t, pattern_keymap)
-    const pattern_keymap_t &it_pattern_keymap() const;
-    const pattern_keymap_t &xm_pattern_keymap() const;
+    MUTABLE_CONFIG_KNOB(keymap_t,  global_keymap)
+    MUTABLE_CONFIG_KNOB(keymap_t, pattern_keymap)
+    const keymap_t &it_pattern_keymap() const;
+    const keymap_t &xm_pattern_keymap() const;
 
 signals:
     void audio_settings_changed();

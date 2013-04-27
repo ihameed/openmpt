@@ -36,7 +36,6 @@ BEGIN_MESSAGE_MAP(CNoteMapWnd, CStatic)
     ON_COMMAND(ID_INSTRUMENT_SAMPLEMAP, OnEditSampleMap)
     ON_COMMAND(ID_INSTRUMENT_DUPLICATE, OnInstrumentDuplicate)
     ON_COMMAND_RANGE(ID_NOTEMAP_EDITSAMPLE, ID_NOTEMAP_EDITSAMPLE+MAX_SAMPLES, OnEditSample)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,                OnCustomKeyMsg)
 END_MESSAGE_MAP()
 
 
@@ -47,41 +46,10 @@ BOOL CNoteMapWnd::PreTranslateMessage(MSG* pMsg)
     if (!pMsg) return TRUE;
     wParam = pMsg->wParam;
 
-    if (pMsg)
-    {
-            //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-            if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-                    (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-            {
-                    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-                    //Translate message manually
-                    UINT nChar = pMsg->wParam;
-                    UINT nRepCnt = LOWORD(pMsg->lParam);
-                    UINT nFlags = HIWORD(pMsg->lParam);
-                    KeyEventType kT = ih->GetKeyEventType(nFlags);
-                    InputTargetContext ctx = (InputTargetContext)(kCtxInsNoteMap);
-
-                    if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                            return true; // Mapped to a command, no need to pass message on.
-
-                    // a bit of a hack...
-                    ctx = (InputTargetContext)(kCtxCtrlInstruments);
-
-                    if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                            return true; // Mapped to a command, no need to pass message on.
-            }
-    }
 
     //The key was not handled by a command, but it might still be useful
     if ((pMsg->message == WM_CHAR) && (m_pModDoc)) //key is a character
     {
-            UINT nFlags = HIWORD(pMsg->lParam);
-            KeyEventType kT = (CMainFrame::GetMainFrame())->GetInputHandler()->GetKeyEventType(nFlags);
-
-            if (kT == kKeyEventDown)
-                    if (HandleChar(wParam))
-                            return true;
     }
     else if (pMsg->message == WM_KEYDOWN) //key is not a character
     {
@@ -304,7 +272,6 @@ void CNoteMapWnd::OnRButtonDown(UINT, CPoint pt)
             CHAR s[64];
             module_renderer *pSndFile;
             modplug::tracker::modinstrument_t *pIns;
-            CInputHandler* ih = CMainFrame::GetInputHandler();
 
             pSndFile = m_pModDoc->GetSoundFile();
             pIns = pSndFile->Instruments[m_nInstrument];
@@ -316,7 +283,7 @@ void CNoteMapWnd::OnRButtonDown(UINT, CPoint pt)
 
                     if (hMenu)
                     {
-                            AppendMenu(hMenu, MF_STRING, ID_INSTRUMENT_SAMPLEMAP, "Edit Sample &Map\t" + ih->GetKeyTextFromCommand(kcInsNoteMapEditSampleMap));
+                            AppendMenu(hMenu, MF_STRING, ID_INSTRUMENT_SAMPLEMAP, "Edit Sample &Map");
                             if (hSubMenu)
                             {
                                     const modplug::tracker::sampleindex_t numSamps = pSndFile->GetNumSamples();
@@ -337,24 +304,24 @@ void CNoteMapWnd::OnRButtonDown(UINT, CPoint pt)
                                                     AppendMenu(hSubMenu, MF_STRING, ID_NOTEMAP_EDITSAMPLE+j, s);
                                             }
                                     }
-                                    AppendMenu(hMenu, MF_POPUP, (UINT)hSubMenu, "&Edit Sample\t" + ih->GetKeyTextFromCommand(kcInsNoteMapEditSample));
+                                    AppendMenu(hMenu, MF_POPUP, (UINT)hSubMenu, "&Edit Sample");
                                     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
                             }
-                            wsprintf(s, "Map all notes to &sample %d\t" + ih->GetKeyTextFromCommand(kcInsNoteMapCopyCurrentSample), pIns->Keyboard[m_nNote]);
+                            wsprintf(s, "Map all notes to &sample %d", pIns->Keyboard[m_nNote]);
                             AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_COPY_SMP, s);
 
                             if(pSndFile->GetType() != MOD_TYPE_XM)
                             {
                                     if(note_is_valid(pIns->NoteMap[m_nNote]))
                                     {
-                                            wsprintf(s, "Map all &notes to %s\t" + ih->GetKeyTextFromCommand(kcInsNoteMapCopyCurrentNote), pSndFile->GetNoteName(pIns->NoteMap[m_nNote], m_nInstrument).c_str());
+                                            wsprintf(s, "Map all &notes to %s", pSndFile->GetNoteName(pIns->NoteMap[m_nNote], m_nInstrument).c_str());
                                             AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_COPY_NOTE, s);
                                     }
-                                    AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_TRANS_UP, "Transpose map &up\t" + ih->GetKeyTextFromCommand(kcInsNoteMapTransposeUp));
-                                    AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_TRANS_DOWN, "Transpose map &down\t" + ih->GetKeyTextFromCommand(kcInsNoteMapTransposeDown));
+                                    AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_TRANS_UP, "Transpose map &up");
+                                    AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_TRANS_DOWN, "Transpose map &down");
                             }
-                            AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_RESET, "&Reset note mapping\t" + ih->GetKeyTextFromCommand(kcInsNoteMapReset));
-                            AppendMenu(hMenu, MF_STRING, ID_INSTRUMENT_DUPLICATE, "Duplicate &Instrument\t" + ih->GetKeyTextFromCommand(kcInstrumentCtrlDuplicate));
+                            AppendMenu(hMenu, MF_STRING, ID_NOTEMAP_RESET, "&Reset note mapping");
+                            AppendMenu(hMenu, MF_STRING, ID_INSTRUMENT_DUPLICATE, "Duplicate &Instrument");
                             SetMenuDefaultItem(hMenu, ID_INSTRUMENT_SAMPLEMAP, FALSE);
                             ClientToScreen(&pt);
                             ::TrackPopupMenu(hMenu, TPM_LEFTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, 0, m_hWnd, NULL);
@@ -510,63 +477,6 @@ void CNoteMapWnd::OnInstrumentDuplicate()
 //---------------------------------------
 {
     if (m_pParent) m_pParent->PostMessage(WM_COMMAND, ID_INSTRUMENT_DUPLICATE);
-}
-
-//rewbs.customKeys
-LRESULT CNoteMapWnd::OnCustomKeyMsg(WPARAM wParam, LPARAM lParam)
-//---------------------------------------------------------------
-{
-    if (wParam == kcNull)
-            return NULL;
-
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-    module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-    modplug::tracker::modinstrument_t *pIns = nullptr;
-    if(pSndFile)
-    {
-            pIns = pSndFile->Instruments[m_nInstrument];
-    }
-
-    // Handle notes
-
-    if (wParam>=kcInsNoteMapStartNotes && wParam<=kcInsNoteMapEndNotes)
-    {
-            //Special case: number keys override notes if we're in the sample # column.
-            if ((m_bIns) && (((lParam >= '0') && (lParam <= '9')) || (lParam == ' ')))
-                    HandleChar(lParam);
-            else
-                    EnterNote(wParam-kcInsNoteMapStartNotes+1+pMainFrm->GetBaseOctave()*12);
-
-            return wParam;
-    }
-
-    if (wParam>=kcInsNoteMapStartNoteStops && wParam<=kcInsNoteMapEndNoteStops)
-    {
-            StopNote(m_nPlayingNote);
-            return wParam;
-    }
-
-    // Other shortcuts
-
-    switch(wParam)
-    {
-    case kcInsNoteMapTransposeDown:                MapTranspose(-1); return wParam;
-    case kcInsNoteMapTransposeUp:                MapTranspose(1); return wParam;
-    case kcInsNoteMapTransposeOctDown:        MapTranspose(-12); return wParam;
-    case kcInsNoteMapTransposeOctUp:        MapTranspose(12); return wParam;
-
-    case kcInsNoteMapCopyCurrentSample:        OnMapCopySample(); return wParam;
-    case kcInsNoteMapCopyCurrentNote:        OnMapCopyNote(); return wParam;
-    case kcInsNoteMapReset:                                OnMapReset(); return wParam;
-
-    case kcInsNoteMapEditSample:                if(pIns) OnEditSample(pIns->Keyboard[m_nNote] + ID_NOTEMAP_EDITSAMPLE); return wParam;
-    case kcInsNoteMapEditSampleMap:                OnEditSampleMap(); return wParam;
-
-    // Parent shortcuts (also displayed in context menu of this control)
-    case kcInstrumentCtrlDuplicate:                OnInstrumentDuplicate(); return wParam;
-    }
-
-    return NULL;
 }
 
 void CNoteMapWnd::EnterNote(UINT note)
@@ -1619,13 +1529,6 @@ void CCtrlInstruments::OnInstrumentNew()
     if (m_pModDoc)
     {
             module_renderer *pSndFile = m_pModDoc->GetSoundFile();
-            if ((pSndFile->m_nType & (MOD_TYPE_IT | MOD_TYPE_MPT))
-             && (pSndFile->m_nInstruments > 0)
-             && (CMainFrame::GetInputHandler()->ShiftPressed())) //rewbs.customKeys
-            {
-                    OnInstrumentDuplicate();
-                    return;
-            }
             bool bFirst = (pSndFile->GetNumInstruments() == 0);
             LONG ins = m_pModDoc->InsertInstrument();
             if (ins != modplug::tracker::InstrumentIndexInvalid)
@@ -2444,53 +2347,6 @@ void CCtrlInstruments::TogglePluginEditor()
 }
 //end rewbs.instroVSTi
 
-//rewbs.customKeys
-BOOL CCtrlInstruments::PreTranslateMessage(MSG *pMsg)
-//-----------------------------------------------
-{
-    if (pMsg)
-    {
-            //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-            if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-                    (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-            {
-                    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-                    //Translate message manually
-                    UINT nChar = pMsg->wParam;
-                    UINT nRepCnt = LOWORD(pMsg->lParam);
-                    UINT nFlags = HIWORD(pMsg->lParam);
-                    KeyEventType kT = ih->GetKeyEventType(nFlags);
-                    InputTargetContext ctx = (InputTargetContext)(kCtxCtrlInstruments);
-
-                    if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                            return true; // Mapped to a command, no need to pass message on.
-            }
-
-    }
-
-    return CModControlDlg::PreTranslateMessage(pMsg);
-}
-
-LRESULT CCtrlInstruments::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-//--------------------------------------------------------------------
-{
-    if (wParam == kcNull)
-            return NULL;
-
-    switch(wParam)
-    {
-            case kcInstrumentCtrlLoad: OnInstrumentOpen(); return wParam;
-            case kcInstrumentCtrlSave: OnInstrumentSave(); return wParam;
-            case kcInstrumentCtrlNew:  OnInstrumentNew();  return wParam;
-
-            case kcInstrumentCtrlDuplicate:        OnInstrumentDuplicate(); return wParam;
-    }
-
-    return 0;
-}
-
-//end rewbs.customKeys
 
 void CCtrlInstruments::OnCbnSelchangeCombotuning()
 //------------------------------------------------

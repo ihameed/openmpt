@@ -18,8 +18,8 @@ struct private_configs {
     paudio_settings_t audio;
     colors_t colors;
 
-    global_keymap_t global_keymap;
-    pattern_keymap_t pattern_keymap;
+    keymap_t global_keymap;
+    keymap_t pattern_keymap;
 };
 
 class misc_globals {
@@ -83,14 +83,14 @@ void app_config::change_colors(const colors_t &colors) {
 }
 
 
-pattern_keymap_t &app_config::pattern_keymap() {
+keymap_t &app_config::pattern_keymap() {
     return store->pattern_keymap;
 }
-const pattern_keymap_t & app_config::it_pattern_keymap() const {
+const keymap_t & app_config::it_pattern_keymap() const {
     return pattern_it_fxmap;
 }
 
-const pattern_keymap_t & app_config::xm_pattern_keymap() const {
+const keymap_t & app_config::xm_pattern_keymap() const {
     return pattern_xm_fxmap;
 }
 

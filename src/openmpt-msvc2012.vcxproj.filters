@@ -6,7 +6,6 @@
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="CleanupSong.cpp" />
     <ClCompile Include="ColourEdit.cpp" />
-    <ClCompile Include="CommandSet.cpp" />
     <ClCompile Include="ctrl_gen.cpp" />
     <ClCompile Include="ctrl_ins.cpp" />
     <ClCompile Include="ctrl_pat.cpp" />
@@ -17,8 +16,6 @@
     <ClCompile Include="draw_pat.cpp" />
     <ClCompile Include="fxp.cpp" />
     <ClCompile Include="globals.cpp" />
-    <ClCompile Include="InputHandler.cpp" />
-    <ClCompile Include="KeyConfigDlg.cpp" />
     <ClCompile Include="mainbar.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MIDIMappingDialog.cpp" />
@@ -290,7 +287,6 @@
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="CleanupSong.h" />
     <ClInclude Include="ColourEdit.h" />
-    <ClInclude Include="CommandSet.h" />
     <ClInclude Include="ctrl_gen.h" />
     <ClInclude Include="ctrl_ins.h" />
     <ClInclude Include="ctrl_pat.h" />
@@ -299,8 +295,6 @@
     <ClInclude Include="dlg_misc.h" />
     <ClInclude Include="fxp.h" />
     <ClInclude Include="globals.h" />
-    <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="KeyConfigDlg.h" />
     <ClInclude Include="mainbar.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MIDIMappingDialog.h" />
@@ -423,6 +417,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="pervasives\type.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

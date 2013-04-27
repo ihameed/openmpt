@@ -48,7 +48,6 @@ BEGIN_MESSAGE_MAP(CAbstractVstEditor, CDialog)
     ON_COMMAND(ID_VSTPRESETFORWARDJUMP,        OnVSTPresetForwardJump)
     ON_COMMAND(ID_PLUGINTOINSTRUMENT,        OnCreateInstrument)
     ON_COMMAND_RANGE(ID_PRESET_SET, ID_PRESET_SET+MAX_PLUGPRESETS, OnSetPreset)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,        OnCustomKeyMsg) //rewbs.customKeys
     ON_COMMAND_RANGE(ID_PLUGSELECT, ID_PLUGSELECT+MAX_MIXPLUGINS, OnToggleEditor) //rewbs.patPlugName
     ON_COMMAND_RANGE(ID_SELECTINST, ID_SELECTINST+MAX_INSTRUMENTS, OnSetInputInstrument) //rewbs.patPlugName
     ON_COMMAND_RANGE(ID_LEARN_MACRO_FROM_PLUGGUI, ID_LEARN_MACRO_FROM_PLUGGUI + NUM_MACROS, PrepareToLearnMacro)
@@ -263,44 +262,6 @@ void CAbstractVstEditor::OnInputInfo()
 }
 //end rewbs.defaultPlugGUI
 
-BOOL CAbstractVstEditor::PreTranslateMessage(MSG* pMsg)
-//----------------------------------------------------
-{
-    if (pMsg)
-    {
-            //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-            if ( (!m_pVstPlugin->m_bPassKeypressesToPlug) &&
-                    ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-                     (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN)) )
-            {
-
-                    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-                    //Translate message manually
-                    UINT nChar = pMsg->wParam;
-                    UINT nRepCnt = LOWORD(pMsg->lParam);
-                    UINT nFlags = HIWORD(pMsg->lParam);
-                    KeyEventType kT = ih->GetKeyEventType(nFlags);
-                    InputTargetContext ctx = (InputTargetContext)(kCtxVSTGUI);
-
-                    // If we successfully mapped to a command and plug does not listen for keypresses, no need to pass message on.
-                    if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT, (CWnd*)this) != kcNull)
-                    {
-                            return true;
-                    }
-
-                    // Don't forward key repeats if plug does not listen for keypresses
-                // (avoids system beeps on note hold)
-                    if (kT == kKeyEventRepeat)
-                    {
-                            return true;
-                    }
-            }
-    }
-
-    return CDialog::PreTranslateMessage(pMsg);
-
-}
 
 void CAbstractVstEditor::SetTitle()
 //---------------------------------
@@ -318,49 +279,6 @@ void CAbstractVstEditor::SetTitle()
 
             SetWindowText(Title);
     }
-}
-
-LRESULT CAbstractVstEditor::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-//--------------------------------------------------------------------------
-{
-    if (wParam == kcNull)
-            return NULL;
-
-//    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-
-    switch(wParam)
-    {
-            case kcVSTGUIPrevPreset:                        OnSetPreviousVSTPreset(); return wParam;
-            case kcVSTGUIPrevPresetJump:                OnVSTPresetBackwardJump(); return wParam;
-            case kcVSTGUINextPreset:                        OnSetNextVSTPreset(); return wParam;
-            case kcVSTGUINextPresetJump:                OnVSTPresetForwardJump(); return wParam;
-            case kcVSTGUIRandParams:                        OnRandomizePreset() ; return wParam;
-            case kcVSTGUIToggleRecordParams:        OnRecordAutomation(); return wParam;
-            case kcVSTGUIToggleSendKeysToPlug:        OnPassKeypressesToPlug(); return wParam;
-            case kcVSTGUIBypassPlug:                        OnBypassPlug(); return wParam;
-    }
-    if (wParam >= kcVSTGUIStartNotes && wParam <= kcVSTGUIEndNotes)
-    {
-            if(ValidateCurrentInstrument())
-            {
-                    CModDoc* pModDoc     = m_pVstPlugin->GetModDoc();
-                    CMainFrame* pMainFrm = CMainFrame::GetMainFrame();
-                    pModDoc->PlayNote(wParam - kcVSTGUIStartNotes + 1 + pMainFrm->GetBaseOctave() * 12, m_nInstrument, 0, FALSE);
-            }
-            return wParam;
-    }
-    if (wParam >= kcVSTGUIStartNoteStops && wParam <= kcVSTGUIEndNoteStops)
-    {
-            if(ValidateCurrentInstrument())
-            {
-                    CModDoc* pModDoc     = m_pVstPlugin->GetModDoc();
-                    CMainFrame* pMainFrm = CMainFrame::GetMainFrame();
-                    pModDoc->NoteOff(wParam - kcVSTGUIStartNoteStops + 1 + pMainFrm->GetBaseOctave() * 12, FALSE, m_nInstrument);
-            }
-            return wParam;
-    }
-
-    return NULL;
 }
 
 
@@ -649,19 +567,17 @@ void CAbstractVstEditor::UpdateOptionsMenu() {
     if (m_pOptionsMenu->m_hMenu)
             m_pOptionsMenu->DestroyMenu();
 
-    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
     m_pOptionsMenu->CreatePopupMenu();
 
     //Bypass
     m_pOptionsMenu->AppendMenu(MF_STRING | m_pVstPlugin->IsBypassed()?MF_CHECKED:0,
-                                                       ID_PLUG_BYPASS, "&Bypass\t" + ih->GetKeyTextFromCommand(kcVSTGUIBypassPlug));
+                                                       ID_PLUG_BYPASS, "&Bypass");
     //Record Params
     m_pOptionsMenu->AppendMenu(MF_STRING | m_pVstPlugin->m_bRecordAutomation?MF_CHECKED:0,
-                                                       ID_PLUG_RECORDAUTOMATION, "Record &Params\t" + ih->GetKeyTextFromCommand(kcVSTGUIToggleRecordParams));
+                                                       ID_PLUG_RECORDAUTOMATION, "Record &Params");
     //Pass on keypresses
     m_pOptionsMenu->AppendMenu(MF_STRING | m_pVstPlugin->m_bPassKeypressesToPlug?MF_CHECKED:0,
-                                                       ID_PLUG_PASSKEYS, "Pass &Keys to Plug\t" + ih->GetKeyTextFromCommand(kcVSTGUIToggleSendKeysToPlug));
+                                                       ID_PLUG_PASSKEYS, "Pass &Keys to Plug");
 
 
     m_pMenu->DeleteMenu(3, MF_BYPOSITION);

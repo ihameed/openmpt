@@ -162,13 +162,6 @@ public:
     VOID UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify);
     bool IsItemExpanded(HTREEITEM hItem);
 
-// Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CModTree)
-    public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    //}}AFX_VIRTUAL
-
 // Drag & Drop operations
 public:
     DROPEFFECT OnDragEnter(COleDataObject* pDataObject, uint32_t dwKeyState, CPoint point);
@@ -224,7 +217,6 @@ protected:
     afx_msg void OnRefreshInstrLib();
     afx_msg void OnShowAllFiles();
     afx_msg void OnShowSoundFiles();
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM);        //rewbs.customKeys
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 public:

@@ -78,7 +78,6 @@ public:
     virtual BOOL OnScrollBy(CSize sizeScroll, BOOL bDoScroll=TRUE);
     virtual BOOL OnDragonDrop(BOOL, LPDRAGONDROP);
     virtual LRESULT OnPlayerNotify(MPTNOTIFICATION *);
-    virtual BOOL PreTranslateMessage(MSG *pMsg); //rewbs.customKeys
     //}}AFX_VIRTUAL
 
 protected:
@@ -131,7 +130,6 @@ protected:
     afx_msg void OnChangeGridSize();
     afx_msg void OnQuickFade() { PostCtrlMessage(IDC_SAMPLE_QUICKFADE); };
     afx_msg LRESULT OnMidiMsg(WPARAM, LPARAM);
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM); //rewbs.customKeys
     afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()

@@ -2,6 +2,9 @@
 //
 
 #include "stdafx.h"
+
+#include <iostream>
+
 #include "mptrack.h"
 #include "MainFrm.h"
 #include "moddoc.h"
@@ -10,7 +13,6 @@
 #include "mpdlgs.h"
 #include "moptions.h"
 #include "vstplug.h"
-#include "KeyConfigDlg.h"
 #include "mainfrm.h"
 // -> CODE#0015
 // -> DESC="channels management dlg"
@@ -93,7 +95,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_MESSAGE(WM_MOD_UPDATEPOSITION,            OnUpdatePosition)
     ON_MESSAGE(WM_MOD_INVALIDATEPATTERNS,    OnInvalidatePatterns)
     ON_MESSAGE(WM_MOD_SPECIALKEY,                    OnSpecialKey)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,    OnCustomKeyMsg) //rewbs.customKeys
     //}}AFX_MSG_MAP
     ON_WM_INITMENU()
     ON_WM_KILLFOCUS() //rewbs.fix3116
@@ -244,8 +245,6 @@ const TCHAR CMainFrame::m_szDirectoryToSettingsName[NUM_DIRS][32] =
 };
 
 
-CInputHandler *CMainFrame::m_InputHandler = nullptr; //rewbs.customKeys
-
 static UINT indicators[] =
 {
     ID_SEPARATOR,           // status line indicator
@@ -351,11 +350,8 @@ CMainFrame::CMainFrame() :
         LoadIniSettings();
     }
 
-    m_InputHandler = new CInputHandler(this);     //rewbs.customKeys
-
     //Loading static tunings here - probably not the best place to do that but anyway.
     module_renderer::LoadStaticTunings();
-
 }
 
 void CMainFrame::LoadIniSettings()
@@ -629,8 +625,6 @@ VOID CMainFrame::Initialize() {
     //SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
     SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
-    // Setup Keyboard Hook
-    ghKbdHook = SetWindowsHookEx(WH_KEYBOARD, KeyboardProc, AfxGetInstanceHandle(), GetCurrentThreadId());
     // Initialize Audio Mixer
     //XXXih: UpdateAudioParameters(TRUE);
     // Update the tree
@@ -642,7 +636,6 @@ CMainFrame::~CMainFrame()
 //-----------------------
 {
     DeleteCriticalSection(&m_csAudio);
-    delete m_InputHandler;     //rewbs.customKeys
 
     CChannelManagerDlg::DestroySharedInstance();
     module_renderer::DeleteStaticdata();
@@ -821,10 +814,6 @@ void CMainFrame::OnClose()
     if (pMDIActive) pMDIActive->SavePosition(TRUE);
     // Save Settings
     SaveIniSettings();
-    if(m_InputHandler && m_InputHandler->activeCommandSet)
-    {
-        m_InputHandler->activeCommandSet->SaveFile(m_szKbdFile, false);
-    }
 
     EndWaitCursor();
     CMDIFrameWnd::OnClose();
@@ -970,38 +959,6 @@ CString CMainFrame::GetPrivateProfileCString(const CString section, const CStrin
     return valueBuffer;
 }
 
-
-
-LRESULT CALLBACK CMainFrame::KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
-//-------------------------------------------------------------------------------
-{
-    if (code>=0)
-    {
-        //Check if textbox has focus
-        bool textboxHasFocus = false;
-        bool handledByTextBox = false;
-
-        HWND hWnd = ::GetFocus();
-        if (hWnd != NULL) {
-            TCHAR activeWindowClassName[512];
-            GetClassName(hWnd, activeWindowClassName, 6);
-            textboxHasFocus = _tcsicmp(activeWindowClassName, _T("Edit")) == 0;
-            if (textboxHasFocus) {
-                handledByTextBox = m_InputHandler->isKeyPressHandledByTextBox(wParam);
-            }
-        }
-
-        if (!handledByTextBox && m_InputHandler->GeneralKeyEvent(kCtxAllContexts, code, wParam, lParam) != kcNull)
-        {
-            if (wParam != VK_ESCAPE)
-                return -1;    // We've handled the keypress. No need to take it further.
-                            // Unless it was esc, in which case we need it to close Windows
-                            // (there might be other special cases, we'll see.. )
-        }
-    }
-
-    return CallNextHookEx(ghKbdHook, code, wParam, lParam);
-}
 
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
@@ -1904,11 +1861,9 @@ void CMainFrame::OnViewOptions()
 
     CPropertySheet dlg("OpenMPT Setup", this, m_nLastOptionsPage);
     COptionsGeneral general;
-    COptionsKeyboard keyboard;
     COptionsColors colors;
     CMidiSetupDlg mididlg(m_dwMidiSetup, m_nMidiDevice);
     dlg.AddPage(&general);
-    dlg.AddPage(&keyboard);
     dlg.AddPage(&colors);
     dlg.AddPage(&mididlg);
     m_bOptionsLocked=true;    //rewbs.customKeys
@@ -2278,91 +2233,10 @@ LRESULT CMainFrame::OnSpecialKey(WPARAM /*vKey*/, LPARAM)
     return 0;
 }
 
-//rewbs.customKeys
-LRESULT CMainFrame::OnCustomKeyMsg(WPARAM wParam, LPARAM lParam)
-//---------------------------------------------------------------
-{
-    if (wParam == kcNull)
-        return NULL;
-
-    switch(wParam)
-    {
-        case kcViewTree: OnBarCheck(IDD_TREEVIEW); break;
-        case kcViewOptions: OnViewOptions(); break;
-        case kcViewMain: OnBarCheck(59392); break;
-        case kcFileImportMidiLib: OnImportMidiLib(); break;
-        case kcFileAddSoundBank: OnAddDlsBank(); break;
-        case kcPauseSong:    OnPlayerPause(); break;
-        case kcPrevOctave:    OnPrevOctave(); break;
-        case kcNextOctave:    OnNextOctave(); break;
-        case kcFileNew:            theApp.OnFileNew(); break;
-        case kcFileOpen:    theApp.OnFileOpen(); break;
-        case kcMidiRecord:    OnMidiRecord(); break;
-        case kcHelp:             CMDIFrameWnd::OnHelp(); break;
-        case kcViewAddPlugin: OnPluginManager(); break;
-        case kcViewChannelManager: OnChannelManager(); break;
-        case kcViewMIDImapping: OnViewMIDIMapping(); break;
-        case kcViewEditHistory:    OnViewEditHistory(); break;
-        case kcNextDocument:    MDINext(); break;
-        case kcPrevDocument:    MDIPrev(); break;
-
-
-        //D'oh!! moddoc isn't a CWnd so we have to handle its messages and pass them on.
-
-        case kcFileSaveAs:
-        case kcFileSaveAsWave:
-        case kcFileSaveMidi:
-        case kcFileExportCompat:
-        case kcFileClose:
-        case kcFileSave:
-        case kcViewGeneral:
-        case kcViewPattern:
-        case kcViewSamples:
-        case kcViewInstruments:
-        case kcViewComments:
-        case kcViewGraph: //rewbs.graph
-        case kcViewSongProperties:
-        case kcPlayPatternFromCursor:
-        case kcPlayPatternFromStart:
-        case kcPlaySongFromCursor:
-        case kcPlaySongFromStart:
-        case kcPlayPauseSong:
-        case kcStopSong:
-        case kcEstimateSongLength:
-        case kcApproxRealBPM:
-            {    CModDoc* pModDoc = GetActiveDoc();
-                if (pModDoc)
-                    return GetActiveDoc()->OnCustomKeyMsg(wParam, lParam);
-                break;
-            }
-
-        //if handled neither by MainFrame nor by ModDoc...
-        default:
-            //If the treeview has focus, post command to the tree view
-            if (m_bModTreeHasFocus)
-                return m_wndTree.PostMessageToModTree(WM_MOD_KEYCOMMAND, wParam, lParam);
-            if (m_pNoteMapHasFocus)
-                return m_pNoteMapHasFocus->PostMessage(WM_MOD_KEYCOMMAND, wParam, lParam);
-            if (m_pOrderlistHasFocus)
-                return m_pOrderlistHasFocus->PostMessage(WM_MOD_KEYCOMMAND, wParam, lParam);
-
-            //Else send it to the active view
-            CView* pView = GetActiveView();
-            if (pView)
-                return pView->PostMessage(WM_MOD_KEYCOMMAND, wParam, lParam);
-    }
-
-    return wParam;
-}
-//end rewbs.customKeys
 
 void CMainFrame::OnInitMenu(CMenu* pMenu)
 //---------------------------------------
 {
-    m_InputHandler->SetModifierMask(0);
-    if (m_InputHandler->noAltMenu())
-        return;
-
     CMDIFrameWnd::OnInitMenu(pMenu);
 
 }
@@ -2420,38 +2294,12 @@ BOOL CMainFrame::StopRenderer(module_renderer* pSndFile)
 }
 //end rewbs.VSTTimeInfo
 
-//rewbs.customKeys
-// We have swicthed focus to a new module - might need to update effect keys to reflect module type
-bool CMainFrame::UpdateEffectKeys(void)
-//-------------------------------------
-{
-    CModDoc* pModDoc = GetActiveDoc();
-    if (pModDoc)
-    {
-        module_renderer* pSndFile = pModDoc->GetSoundFile();
-        if (pSndFile)
-        {
-            if    (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-                return m_InputHandler->SetXMEffects();
-            else
-                return m_InputHandler->SetITEffects();
-        }
-    }
-
-    return false;
-}
-//end rewbs.customKeys
-
 
 //rewbs.fix3116
 void CMainFrame::OnKillFocus(CWnd* pNewWnd)
 //-----------------------------------------
 {
     CMDIFrameWnd::OnKillFocus(pNewWnd);
-
-    //rewbs: ensure modifiers are reset when we leave the window (e.g. alt-tab)
-    CMainFrame::GetMainFrame()->GetInputHandler()->SetModifierMask(0);
-    //end rewbs
 }
 //end rewbs.fix3116
 

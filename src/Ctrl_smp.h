@@ -69,7 +69,6 @@ public:
     virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     virtual LRESULT OnModCtrlMsg(WPARAM wParam, LPARAM lParam);
     virtual BOOL GetToolTipText(UINT uId, LPSTR pszText);
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
     //}}AFX_VIRTUAL
 protected:
     //{{AFX_MSG(CCtrlSamples)
@@ -111,7 +110,6 @@ protected:
     afx_msg void OnVibRateChanged();
     afx_msg void OnXFade();
     afx_msg void OnVScroll(UINT, UINT, CScrollBar *);
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM); //rewbs.customKeys
 
     afx_msg void OnPitchShiftTimeStretch();
     afx_msg void OnEnableStretchToSize();

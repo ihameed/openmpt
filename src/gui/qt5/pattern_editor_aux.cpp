@@ -33,19 +33,6 @@ pattern_editor_tab::pattern_editor_tab(
     top_layout.addLayout(&order_layout);
     order_layout.addWidget(&orderedit);
 
-    /*
-    QFontDatabase fontdb;
-    fontdb.addApplicationFont(":/openmpt/icons/entypo/entypo.ttf");
-
-    foreach(QString s, fontdb.families()) {
-        DEBUG_FUNC("fontdb font: '%s'", s.toLatin1().constData());
-    }
-    QFont entypo("Entypo", 16);
-
-    auto ico_new = QString::fromUtf8("\xf0\x9f\x93\x84");
-    auto ico_rec = QString::fromUtf8("\xe2\x97\x8f");
-    */
-
     QIcon icon_new(":/openmpt/icons/entypo/list-add.svg");
     QIcon icon_record(":/openmpt/icons/entypo/record.svg");
     QIcon icon_play_pattern(":/openmpt/icons/entypo/derived/play-cw90.svg");

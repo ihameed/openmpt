@@ -98,7 +98,6 @@ BEGIN_MESSAGE_MAP(CViewInstrument, CModScrollView)
     ON_COMMAND(ID_EDIT_PASTE,                                OnEditPaste)
     ON_COMMAND(ID_INSTRUMENT_SAMPLEMAP,                OnEditSampleMap)
     ON_MESSAGE(WM_MOD_MIDIMSG,                                OnMidiMsg)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,        OnCustomKeyMsg) //rewbs.customKeys
     ON_COMMAND(ID_ENVELOPE_TOGGLERELEASENODE, OnEnvToggleReleasNode)
     //}}AFX_MSG_MAP
     ON_COMMAND(ID_ENVELOPE_SCALEPOINTS, OnEnvelopeScalepoints)
@@ -1453,16 +1452,6 @@ void CViewInstrument::OnMouseMove(UINT, CPoint pt)
             {
                     int nRelTick = pEnv->Ticks[m_nDragItem - 1];
                     bChanged = EnvSetValue(m_nDragItem - 1, nTick, nVal);
-
-                    // Ctrl pressed -> move tail of envelope
-                    if(m_nDragItem > 1 && CMainFrame::GetMainFrame()->GetInputHandler()->CtrlPressed())
-                    {
-                            nRelTick = pEnv->Ticks[m_nDragItem - 1] - nRelTick;
-                            for(size_t i = m_nDragItem; i < pEnv->num_nodes; i++)
-                            {
-                                    pEnv->Ticks[i] = (uint16_t)(bad_max(0, (int)pEnv->Ticks[i] + nRelTick));
-                            }
-                    }
             } else
             {
                     int nPoint = ScreenToPoint(pt.x, pt.y);
@@ -1627,20 +1616,6 @@ void CViewInstrument::OnLButtonDown(UINT, CPoint pt)
                     m_dwStatus |= INSSTATUS_DRAGGING;
                     // refresh active node colour
                     InvalidateRect(NULL, FALSE);
-            }
-            else
-            {
-                    // Shift-Click: Insert envelope point here
-                    if(CMainFrame::GetMainFrame()->GetInputHandler()->ShiftPressed())
-                    {
-                            m_nDragItem = EnvInsertPoint(ScreenToTick(pt.x), ScreenToValue(pt.y)); // returns point ID + 1 if successful, else 0.
-                            if(m_nDragItem > 0)
-                            {
-                                    // Drag point if successful
-                                    SetCapture();
-                                    m_dwStatus |= INSSTATUS_DRAGGING;
-                            }
-                    }
             }
     }
 }
@@ -2161,93 +2136,7 @@ LRESULT CViewInstrument::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
     return 0;
 }
 
-BOOL CViewInstrument::PreTranslateMessage(MSG *pMsg)
-//-----------------------------------------------
-{
-    if (pMsg)
-    {
-            //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-            if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-                    (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-            {
-                    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
 
-                    //Translate message manually
-                    UINT nChar = pMsg->wParam;
-                    UINT nRepCnt = LOWORD(pMsg->lParam);
-                    UINT nFlags = HIWORD(pMsg->lParam);
-                    KeyEventType kT = ih->GetKeyEventType(nFlags);
-                    InputTargetContext ctx = (InputTargetContext)(kCtxViewInstruments);
-
-                    if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                            return true; // Mapped to a command, no need to pass message on.
-            }
-
-    }
-
-    return CModScrollView::PreTranslateMessage(pMsg);
-}
-
-LRESULT CViewInstrument::OnCustomKeyMsg(WPARAM wParam, LPARAM)
-//------------------------------------------------------------
-{
-    if (wParam == kcNull)
-            return NULL;
-
-    CModDoc *pModDoc = GetDocument();
-    if (!pModDoc) return NULL;
-
-    //CSoundFile *pSndFile = pModDoc->GetSoundFile();
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-
-    switch(wParam)
-    {
-            case kcPrevInstrument:        OnPrevInstrument(); return wParam;
-            case kcNextInstrument:        OnNextInstrument(); return wParam;
-            case kcEditCopy:                OnEditCopy(); return wParam;
-            case kcEditPaste:                OnEditPaste(); return wParam;
-            case kcNoteOffOld:
-            case kcNoteOff:                        PlayNote(NoteKeyOff); return wParam;
-            case kcNoteCutOld:
-            case kcNoteCut:                        PlayNote(NoteNoteCut); return wParam;
-            case kcInstrumentLoad:        SendCtrlMessage(IDC_INSTRUMENT_OPEN); return wParam;
-            case kcInstrumentSave:        SendCtrlMessage(IDC_INSTRUMENT_SAVEAS); return wParam;
-            case kcInstrumentNew:        SendCtrlMessage(IDC_INSTRUMENT_NEW); return wParam;
-
-            // envelope editor
-            case kcInstrumentEnvelopeZoomIn:                                OnEnvZoomIn(); return wParam;
-            case kcInstrumentEnvelopeZoomOut:                                OnEnvZoomOut(); return wParam;
-            case kcInstrumentEnvelopePointPrev:                                EnvKbdSelectPrevPoint(); return wParam;
-            case kcInstrumentEnvelopePointNext:                                EnvKbdSelectNextPoint(); return wParam;
-            case kcInstrumentEnvelopePointMoveLeft:                        EnvKbdMovePointLeft(); return wParam;
-            case kcInstrumentEnvelopePointMoveRight:                EnvKbdMovePointRight(); return wParam;
-            case kcInstrumentEnvelopePointMoveUp:                        EnvKbdMovePointUp(1); return wParam;
-            case kcInstrumentEnvelopePointMoveDown:                        EnvKbdMovePointDown(1); return wParam;
-            case kcInstrumentEnvelopePointMoveUp8:                        EnvKbdMovePointUp(8); return wParam;
-            case kcInstrumentEnvelopePointMoveDown8:                EnvKbdMovePointDown(8); return wParam;
-            case kcInstrumentEnvelopePointInsert:                        EnvKbdInsertPoint(); return wParam;
-            case kcInstrumentEnvelopePointRemove:                        EnvKbdRemovePoint(); return wParam;
-            case kcInstrumentEnvelopeSetLoopStart:                        EnvKbdSetLoopStart(); return wParam;
-            case kcInstrumentEnvelopeSetLoopEnd:                        EnvKbdSetLoopEnd(); return wParam;
-            case kcInstrumentEnvelopeSetSustainLoopStart:        EnvKbdSetSustainStart(); return wParam;
-            case kcInstrumentEnvelopeSetSustainLoopEnd:                EnvKbdSetSustainEnd(); return wParam;
-            case kcInstrumentEnvelopeToggleReleaseNode:                EnvKbdToggleReleaseNode(); return wParam;
-    }
-    if (wParam>=kcInstrumentStartNotes && wParam<=kcInstrumentEndNotes)
-    {
-            PlayNote(wParam-kcInstrumentStartNotes+1+pMainFrm->GetBaseOctave()*12);
-            return wParam;
-    }
-    if (wParam>=kcInstrumentStartNoteStops && wParam<=kcInstrumentEndNoteStops)
-    {
-            int note =wParam-kcInstrumentStartNoteStops+1+pMainFrm->GetBaseOctave()*12;
-            m_baPlayingNote[note]=false;
-            pModDoc->NoteOff(note, FALSE, m_nInstrument);
-            return wParam;
-    }
-
-    return NULL;
-}
 void CViewInstrument::OnEnvelopeScalepoints()
 //--------------------------------------------
 {

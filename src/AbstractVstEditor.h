@@ -5,13 +5,6 @@
 
 class CAbstractVstEditor: public CDialog
 {
-
-protected:
-    //{{AFX_VIRTUAL(CNoteMapWnd)
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    //}}AFX_VIRTUAL
-
-
 public:
     CVstPlugin *m_pVstPlugin;
     int m_nCurProg;
@@ -39,7 +32,6 @@ public:
     afx_msg void OnVSTPresetBackwardJump();
     afx_msg void OnVSTPresetForwardJump();
     afx_msg void OnCreateInstrument();
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM); //rewbs.customKeys
 
     //Overridden methods:
     virtual VOID OnOK()=0;

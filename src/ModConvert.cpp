@@ -515,14 +515,6 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     UpdateAllViews(NULL, HINT_MODTYPE | HINT_MODGENERAL);
     EndWaitCursor();
 
-    //rewbs.customKeys: update effect key commands
-    CInputHandler *ih = CMainFrame::GetMainFrame()->GetInputHandler();
-    if    (newTypeIsMOD_XM)
-        ih->SetXMEffects();
-    else
-        ih->SetITEffects();
-    //end rewbs.customKeys
-
     return true;
 }
 

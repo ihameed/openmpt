@@ -234,15 +234,37 @@ void pattern_editor_column_header::paintEvent(QPaintEvent *event) {
 
 pattern_editor::pattern_editor(
     module_renderer &renderer,
-    const pattern_keymap_t &keymap,
-    const pattern_keymap_t &it_keymap,
-    const pattern_keymap_t &xm_keymap,
+    const keymap_t &keymap,
+    const keymap_t &it_keymap,
+    const keymap_t &xm_keymap,
     const colors_t &colors
 ) : keymap(keymap),
     it_keymap(it_keymap),
     xm_keymap(xm_keymap),
     follow_playback(true),
-    draw(renderer, colors, *this)
+    draw(renderer, colors, *this),
+
+    select_column("Select Column", this),
+    select_pattern("Select Pattern", this),
+    cut("Cut", this),
+    copy("Copy", this),
+    paste("Paste", this),
+    undo("Undo", this),
+    redo("Redo", this),
+    clear_selection("Clear Selection", this),
+    interpolate_note("Interpolate Note", this),
+    interpolate_volume("Interpolate Volume", this),
+    interpolate_effect("Interpolate Effect", this),
+    transpose_semiup("Transpose +1", this),
+    transpose_semidown("Transpose -1", this),
+    transpose_octup("Transpose +12", this),
+    transpose_octdown("Transpose -12", this),
+    amplify("Amplify...", this),
+    change_instrument("Change Instrument", this),
+    grow_selection("Grow Selection", this),
+    shrink_selection("Shrink Selection", this),
+    insert_row("Insert Row", this),
+    delete_row("Delete Row", this)
 {
     auto herp = this->viewport();
     auto grid = new QGridLayout(herp);
@@ -263,6 +285,19 @@ pattern_editor::pattern_editor(
 
     set_base_octave(4);
     update_colors(colors);
+
+    context_menu.addAction(&select_column);
+    context_menu.addAction(&select_pattern);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(
+        this,
+        &pattern_editor::customContextMenuRequested,
+        [&] (const QPoint &point) {
+            auto global = mapToGlobal(point);
+            context_menu.exec(global);
+        }
+);
 }
 
 void pattern_editor::update_colors(const colors_t &newcolors) {
@@ -466,12 +501,12 @@ const editor_position_t &pattern_editor::pos() const {
 
 keycontext_t pattern_editor::keycontext() const{
     switch (pos().subcolumn) {
-    case ElemNote:  return ContextNoteCol;
-    case ElemInstr: return ContextInstrCol;
-    case ElemVol:   return ContextVolCol;
-    case ElemCmd:   return ContextCmdCol;
-    case ElemParam: return ContextParamCol;
-    default:        return ContextGlobal;
+    case ElemNote:  return keycontext_t::NoteCol;
+    case ElemInstr: return keycontext_t::InstrCol;
+    case ElemVol:   return keycontext_t::VolCol;
+    case ElemCmd:   return keycontext_t::CmdCol;
+    case ElemParam: return keycontext_t::ParamCol;
+    default:        return keycontext_t::Global;
     }
 }
 
@@ -513,7 +548,7 @@ const normalized_selection_t & pattern_editor::selection_corners() {
     return draw.corners;
 }
 
-bool pattern_editor::invoke_key(const pattern_keymap_t &km, key_t key) {
+bool pattern_editor::invoke_key(const keymap_t &km, key_t key) {
     auto action = action_of_key(km, pattern_actionmap, key);
     if (action) {
         action(*this);

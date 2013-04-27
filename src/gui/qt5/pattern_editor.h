@@ -99,9 +99,9 @@ public:
 
     pattern_editor(
         module_renderer &renderer,
-        const pattern_keymap_t &keymap,
-        const pattern_keymap_t &it_keymap,
-        const pattern_keymap_t &xm_keymap,
+        const keymap_t &keymap,
+        const keymap_t &it_keymap,
+        const keymap_t &xm_keymap,
         const colors_t &colors
     );
 
@@ -131,7 +131,7 @@ public:
     const editor_position_t &pos() const;
 
     keycontext_t keycontext() const;
-    bool invoke_key(const pattern_keymap_t &, key_t);
+    bool invoke_key(const keymap_t &, key_t);
 
     const CPattern *active_pattern() const;
     CPattern *active_pattern();
@@ -155,12 +155,46 @@ private:
     pattern_editor_draw draw;
     bool is_dragging;
 
-    const pattern_keymap_t &keymap;
-    const pattern_keymap_t &it_keymap;
-    const pattern_keymap_t &xm_keymap;
+    const keymap_t &keymap;
+    const keymap_t &it_keymap;
+    const keymap_t &xm_keymap;
 
     uint8_t _base_octave;
     bool follow_playback;
+
+    QMenu context_menu;
+
+    QAction select_column;
+    QAction select_pattern;
+    QAction cut;
+    QAction copy;
+    QAction paste;
+    
+    QMenu paste_special;
+
+    QAction undo;
+    QAction redo;
+
+    QAction clear_selection;
+
+    QAction interpolate_note;
+    QAction interpolate_volume;
+    QAction interpolate_effect;
+
+    QAction transpose_semiup;
+    QAction transpose_semidown;
+    QAction transpose_octup;
+    QAction transpose_octdown;
+
+    QAction amplify;
+
+    QAction change_instrument;
+
+    QAction grow_selection;
+    QAction shrink_selection;
+
+    QAction insert_row;
+    QAction delete_row;
 };
 
 

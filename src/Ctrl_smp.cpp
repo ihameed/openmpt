@@ -94,7 +94,6 @@ BEGIN_MESSAGE_MAP(CCtrlSamples, CModControlDlg)
     ON_CBN_SELCHANGE(IDC_COMBO1,            OnLoopTypeChanged)
     ON_CBN_SELCHANGE(IDC_COMBO2,            OnSustainTypeChanged)
     ON_CBN_SELCHANGE(IDC_COMBO3,            OnVibTypeChanged)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,            OnCustomKeyMsg)        //rewbs.customKeys
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -898,7 +897,7 @@ void CCtrlSamples::OnZoomChanged()
 void CCtrlSamples::OnSampleNew()
 //------------------------------
 {
-    bool bDuplicate = CMainFrame::GetInputHandler()->ShiftPressed();
+    bool bDuplicate = false;
 
     modplug::tracker::sampleindex_t smp = m_pModDoc->InsertSample(true);
     if (smp != modplug::tracker::SampleIndexInvalid)
@@ -985,7 +984,7 @@ void CCtrlSamples::OnSampleSave()
     if(!m_pSndFile) return;
 
     TCHAR szFileName[_MAX_PATH];
-    bool bBatchSave = CMainFrame::GetInputHandler()->ShiftPressed();
+    bool bBatchSave = false;
 
     if(!bBatchSave)
     {
@@ -1112,20 +1111,12 @@ void CCtrlSamples::OnNormalize()
     UINT iStart = 0, iEnd = 0;
 
     //Shift -> Normalize all samples
-    if(CMainFrame::GetInputHandler()->ShiftPressed())
-    {
-        if(MessageBox(GetStrI18N(TEXT("This will normalize all samples independently. Continue?")), GetStrI18N(TEXT("Normalize")), MB_YESNO | MB_ICONQUESTION) == IDNO)
-            return;
-        iMinSample = 1;
-        iMaxSample = m_pSndFile->m_nSamples;
-    } else {
-        SAMPLEVIEWSTATE viewstate;
-        memset(&viewstate, 0, sizeof(viewstate));
-        SendViewMessage(VIEWMSG_SAVESTATE, (LPARAM)&viewstate);
+    SAMPLEVIEWSTATE viewstate;
+    memset(&viewstate, 0, sizeof(viewstate));
+    SendViewMessage(VIEWMSG_SAVESTATE, (LPARAM)&viewstate);
 
-        iStart = viewstate.dwBeginSel;
-        iEnd = viewstate.dwEndSel;
-    }
+    iStart = viewstate.dwBeginSel;
+    iEnd = viewstate.dwEndSel;
 
 
     BeginWaitCursor();
@@ -1274,15 +1265,6 @@ void CCtrlSamples::OnRemoveDCOffset()
         return;
 
     modplug::tracker::sampleindex_t iMinSample = m_nSample, iMaxSample = m_nSample;
-
-    //Shift -> Process all samples
-    if(CMainFrame::GetInputHandler()->ShiftPressed())
-    {
-        if(MessageBox(GetStrI18N(TEXT("This will process all samples independently. Continue?")), GetStrI18N(TEXT("DC Offset Removal")), MB_YESNO | MB_ICONQUESTION) == IDNO)
-            return;
-        iMinSample = 1;
-        iMaxSample = m_pSndFile->m_nSamples;
-    }
 
     BeginWaitCursor();
 
@@ -3283,52 +3265,6 @@ NoSample:
     }
     UnlockControls();
 }
-
-
-//rewbs.customKeys
-BOOL CCtrlSamples::PreTranslateMessage(MSG *pMsg)
-//-----------------------------------------------
-{
-    if (pMsg)
-    {
-        //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-        if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-            (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-        {
-            CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-            //Translate message manually
-            UINT nChar = pMsg->wParam;
-            UINT nRepCnt = LOWORD(pMsg->lParam);
-            UINT nFlags = HIWORD(pMsg->lParam);
-            KeyEventType kT = ih->GetKeyEventType(nFlags);
-            InputTargetContext ctx = (InputTargetContext)(kCtxCtrlSamples);
-
-            if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                return true; // Mapped to a command, no need to pass message on.
-        }
-
-    }
-
-    return CModControlDlg::PreTranslateMessage(pMsg);
-}
-
-LRESULT CCtrlSamples::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-//----------------------------------------------------------------
-{
-    if (wParam == kcNull)
-        return NULL;
-
-    switch(wParam)
-    {
-        case kcSampleCtrlLoad: OnSampleOpen(); return wParam;
-        case kcSampleCtrlSave: OnSampleSave(); return wParam;
-        case kcSampleCtrlNew:  OnSampleNew();  return wParam;
-    }
-
-    return 0;
-}
-//end rewbs.customKeys
 
 
 // Return currently selected part of the sample.

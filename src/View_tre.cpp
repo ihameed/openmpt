@@ -91,7 +91,6 @@ BEGIN_MESSAGE_MAP(CModTree, CTreeCtrl)
     ON_COMMAND(ID_SOUNDBANK_PROPERTIES,        OnSoundBankProperties)
     ON_COMMAND(ID_MODTREE_SHOWALLFILES, OnShowAllFiles)
     ON_COMMAND(ID_MODTREE_SOUNDFILESONLY,OnShowSoundFiles)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,                OnCustomKeyMsg)        //rewbs.customKeys
     //}}AFX_MSG_MAP
     ON_WM_KILLFOCUS()                //rewbs.customKeys
     ON_WM_SETFOCUS()                //rewbs.customKeys
@@ -169,58 +168,6 @@ VOID CModTree::Init()
     RefreshDlsBanks();
     RefreshInstrumentLibrary();
     m_DropTarget.Register(this);
-}
-
-
-BOOL CModTree::PreTranslateMessage(MSG* pMsg)
-//-------------------------------------------
-{
-    if (!pMsg) return TRUE;
-    if (pMsg->message == WM_KEYDOWN)
-    {
-            if (pMsg->wParam == VK_SPACE)
-            {
-                    if (!(pMsg->lParam & 0x40000000)) OnPlayTreeItem();
-                    return TRUE;
-            } else
-            if (pMsg->wParam == VK_RETURN)
-            {
-                    if (!(pMsg->lParam & 0x40000000))
-                    {
-                            HTREEITEM hItem = GetSelectedItem();
-                            if (hItem)
-                            {
-                                    if (!ExecuteItem(hItem))
-                                    {
-                                            if (ItemHasChildren(hItem))
-                                            {
-                                                    Expand(hItem, TVE_TOGGLE);
-                                            }
-                                    }
-                            }
-                    }
-                    return TRUE;
-            }
-    }
-    //rewbs.customKeys
-    //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-    if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-            (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-    {
-            CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-            //Translate message manually
-            UINT nChar = pMsg->wParam;
-            UINT nRepCnt = LOWORD(pMsg->lParam);
-            UINT nFlags = HIWORD(pMsg->lParam);
-            KeyEventType kT = ih->GetKeyEventType(nFlags);
-            InputTargetContext ctx = (InputTargetContext)(kCtxViewTree);
-
-            if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                    return true; // Mapped to a command, no need to pass message on.
-    }
-    //end rewbs.customKeys
-    return CTreeCtrl::PreTranslateMessage(pMsg);
 }
 
 
@@ -3248,27 +3195,6 @@ void CModTree::OnSoundBankProperties()
                     dlg.DoModal();
             }
     }
-}
-
-
-LRESULT CModTree::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-{
-    if (wParam == kcNull)
-            return NULL;
-
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-
-    if (wParam>=kcTreeViewStartNotes && wParam<=kcTreeViewEndNotes)
-    {
-            PlayItem(GetSelectedItem(), wParam-kcTreeViewStartNotes+1+pMainFrm->GetBaseOctave()*12);
-            return wParam;
-    }
-    if (wParam>=kcTreeViewStartNoteStops && wParam<=kcTreeViewEndNoteStops)
-    {
-            return wParam;
-    }
-
-    return NULL;
 }
 
 void CModTree::OnKillFocus(CWnd* pNewWnd)

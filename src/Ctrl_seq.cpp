@@ -63,7 +63,6 @@ BEGIN_MESSAGE_MAP(COrderList, CWnd)
     ON_COMMAND_RANGE(ID_SEQUENCE_ITEM, ID_SEQUENCE_ITEM + MAX_SEQUENCES + 2, OnSelectSequence)
     ON_MESSAGE(WM_MOD_DRAGONDROPPING,        OnDragonDropping)
     ON_MESSAGE(WM_HELPHITTEST,                        OnHelpHitTest)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,                OnCustomKeyMsg)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -343,133 +342,6 @@ UINT COrderList::GetCurrentPattern() const
     {
             return pSndFile->Order[m_nScrollPos];
     }
-    return 0;
-}
-
-
-BOOL COrderList::PreTranslateMessage(MSG *pMsg)
-//---------------------------------------------
-{
-    //rewbs.customKeys:
-    //handle Patterns View context keys that we want to take effect in the orderlist.
-    if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-            (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-    {
-            CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-            //Translate message manually
-            UINT nChar = pMsg->wParam;
-            UINT nRepCnt = LOWORD(pMsg->lParam);
-            UINT nFlags = HIWORD(pMsg->lParam);
-            KeyEventType kT = ih->GetKeyEventType(nFlags);
-
-            InputTargetContext ctx = (InputTargetContext)(kCtxCtrlOrderlist);
-            if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                    return true; // Mapped to a command, no need to pass message on.
-
-            //HACK: masquerade as kCtxViewPatternsNote context until we implement appropriate
-            //      command propagation to kCtxCtrlOrderlist context.
-
-            ctx = (InputTargetContext)(kCtxViewPatternsNote);
-            if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                    return true; // Mapped to a command, no need to pass message on.
-
-    }
-    //end rewbs.customKeys
-
-    return CWnd::PreTranslateMessage(pMsg);
-}
-
-
-LRESULT COrderList::OnCustomKeyMsg(WPARAM wParam, LPARAM)
-//-------------------------------------------------------
-{
-    if (wParam == kcNull)
-            return 0;
-
-    switch(wParam)
-    {
-    case kcEditCopy:
-            OnEditCopy(); return wParam;
-    case kcEditCut:
-            OnEditCut(); return wParam;
-    case kcEditPaste:
-            OnEditPaste(); return wParam;
-
-    // Orderlist navigation
-    case kcOrderlistNavigateLeftSelect:
-    case kcOrderlistNavigateLeft:
-            SetCurSelTo2ndSel(wParam == kcOrderlistNavigateLeftSelect); SetCurSel(m_nScrollPos - 1); return wParam;
-    case kcOrderlistNavigateRightSelect:
-    case kcOrderlistNavigateRight:
-            SetCurSelTo2ndSel(wParam == kcOrderlistNavigateRightSelect); SetCurSel(m_nScrollPos + 1); return wParam;
-    case kcOrderlistNavigateFirstSelect:
-    case kcOrderlistNavigateFirst:
-            SetCurSelTo2ndSel(wParam == kcOrderlistNavigateFirstSelect); SetCurSel(0); return wParam;
-    case kcEditSelectAll:
-            SetCurSel(0);
-            // fallthroughs intended.
-    case kcOrderlistNavigateLastSelect:
-    case kcOrderlistNavigateLast:
-            if((m_pModDoc != nullptr) && (m_pModDoc->GetSoundFile() != nullptr))
-            {
-                    SetCurSelTo2ndSel(wParam == kcOrderlistNavigateLastSelect || wParam == kcEditSelectAll);
-                    modplug::tracker::orderindex_t nLast = m_pModDoc->GetSoundFile()->Order.GetLengthTailTrimmed();
-                    if(nLast > 0) nLast--;
-                    SetCurSel(nLast);
-            }
-            return wParam;
-
-    // Orderlist edit
-    case kcOrderlistEditDelete:
-            OnDeleteOrder(); return wParam;
-    case kcOrderlistEditInsert:
-            OnInsertOrder(); return wParam;
-    case kcOrderlistSwitchToPatternView:
-            OnSwitchToView(); return wParam;
-    case kcOrderlistEditPattern:
-            OnLButtonDblClk(0, CPoint(0,0)); OnSwitchToView(); return wParam;
-
-    // Enter pattern number
-    case kcOrderlistPat0:
-    case kcOrderlistPat1:
-    case kcOrderlistPat2:
-    case kcOrderlistPat3:
-    case kcOrderlistPat4:
-    case kcOrderlistPat5:
-    case kcOrderlistPat6:
-    case kcOrderlistPat7:
-    case kcOrderlistPat8:
-    case kcOrderlistPat9:
-            EnterPatternNum(wParam - kcOrderlistPat0); return wParam;
-    case kcOrderlistPatMinus:
-            EnterPatternNum(10); return wParam;
-    case kcOrderlistPatPlus:
-            EnterPatternNum(11); return wParam;
-    case kcOrderlistPatIgnore:
-            EnterPatternNum(12); return wParam;
-    case kcOrderlistPatInvalid:
-            EnterPatternNum(13); return wParam;
-
-    // kCtxViewPatternsNote messages
-    case kcSwitchToOrderList:
-            OnSwitchToView();
-            return wParam;
-    case kcChangeLoopStatus:
-            m_pParent->OnModCtrlMsg(CTRLMSG_PAT_LOOP, -1); return wParam;
-    case kcToggleFollowSong:
-            m_pParent->OnModCtrlMsg(CTRLMSG_PAT_FOLLOWSONG, 1); return wParam;
-
-    case kcChannelUnmuteAll:
-    case kcUnmuteAllChnOnPatTransition:
-            ::PostMessage(m_pParent->GetViewWnd(), WM_MOD_KEYCOMMAND, wParam, 0); return wParam;
-
-    case kcDuplicatePattern:
-            OnDuplicatePattern(); return wParam;
-    case kcNewPattern:
-            OnCreateNewPattern(); return wParam;
-    }
-
     return 0;
 }
 
@@ -858,41 +730,29 @@ void COrderList::OnLButtonDown(UINT nFlags, CPoint pt)
 {
     CRect rect;
     GetClientRect(&rect);
-    if (pt.y < rect.bottom)
-    {
-            SetFocus();
-            CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
+    if (pt.y < rect.bottom) {
+        SetFocus();
+        // mark pattern (+skip to)
+        const int oldXScroll = m_nXScroll;
 
-            if (ih->CtrlPressed())
-            {
-                    // queue pattern
-                    QueuePattern(pt);
-            } else
-            {
-                    // mark pattern (+skip to)
-                    const int oldXScroll = m_nXScroll;
+        modplug::tracker::orderindex_t nOrder = GetOrderFromPoint(rect, pt);
+        ORD_SELECTION selection = GetCurSel(false);
 
-                    modplug::tracker::orderindex_t nOrder = GetOrderFromPoint(rect, pt);
-                    ORD_SELECTION selection = GetCurSel(false);
+        // check if cursor is in selection - if it is, only react on MouseUp as the user might want to drag those orders
+        if(m_nScrollPos2nd == modplug::tracker::OrderIndexInvalid || nOrder < selection.nOrdLo || nOrder > selection.nOrdHi)
+        {
+                m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
+        }
+        m_bDragging = IsOrderInMargins(m_nScrollPos, oldXScroll) ? false : true;
 
-                    // check if cursor is in selection - if it is, only react on MouseUp as the user might want to drag those orders
-                    if(m_nScrollPos2nd == modplug::tracker::OrderIndexInvalid || nOrder < selection.nOrdLo || nOrder > selection.nOrdHi)
-                    {
-                            m_nScrollPos2nd = modplug::tracker::OrderIndexInvalid;
-                            SetCurSel(nOrder, true, ih->ShiftPressed());
-                    }
-                    m_bDragging = IsOrderInMargins(m_nScrollPos, oldXScroll) ? false : true;
-
-                    if(m_bDragging == true)
-                    {
-                            m_nDragOrder = GetCurSel(true).nOrdLo;
-                            m_nDropPos = m_nDragOrder;
-                            SetCapture();
-                    }
-            }
-    } else
-    {
-            CWnd::OnLButtonDown(nFlags, pt);
+        if(m_bDragging == true)
+        {
+                m_nDragOrder = GetCurSel(true).nOrdLo;
+                m_nDropPos = m_nDragOrder;
+                SetCapture();
+        }
+    } else {
+        CWnd::OnLButtonDown(nFlags, pt);
     }
 }
 
@@ -902,7 +762,7 @@ void COrderList::OnLButtonUp(UINT nFlags, CPoint pt)
 {
     CRect rect;
     GetClientRect(&rect);
-    bool bSelection = IsSelectionKeyPressed();
+    bool bSelection = false;
 
     if (m_bDragging)
     {
@@ -1047,31 +907,29 @@ void COrderList::OnRButtonDown(UINT nFlags, CPoint pt)
 
     const uint32_t greyed = bPatternExists ? 0 : MF_GRAYED;
 
-    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
     if(bMultiSelection)
     {
             // several patterns are selected.
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_INSERT, "&Insert Patterns\t" + ih->GetKeyTextFromCommand(kcOrderlistEditInsert));
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_DELETE, "&Remove Patterns\t" + ih->GetKeyTextFromCommand(kcOrderlistEditDelete));
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_INSERT, "&Insert Patterns");
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_DELETE, "&Remove Patterns");
             AppendMenu(hMenu, MF_SEPARATOR, NULL, "");
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_COPY, "&Copy Orders\t" + ih->GetKeyTextFromCommand(kcEditCopy));
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_CUT, "&C&ut Orders\t" + ih->GetKeyTextFromCommand(kcEditCut));
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_PASTE, "&Paste Orders\t" + ih->GetKeyTextFromCommand(kcEditPaste));
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_COPY, "&Copy Orders");
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_CUT, "&C&ut Orders");
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_PASTE, "&Paste Orders");
             AppendMenu(hMenu, MF_SEPARATOR, NULL, "");
-            AppendMenu(hMenu, MF_STRING | greyed, ID_ORDERLIST_COPY, "&Duplicate Patterns\t" + ih->GetKeyTextFromCommand(kcDuplicatePattern));
+            AppendMenu(hMenu, MF_STRING | greyed, ID_ORDERLIST_COPY, "&Duplicate Patterns");
     }
     else
     {
             // only one pattern is selected
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_INSERT, "&Insert Pattern\t" + ih->GetKeyTextFromCommand(kcOrderlistEditInsert));
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_DELETE, "&Remove Pattern\t" + ih->GetKeyTextFromCommand(kcOrderlistEditDelete));
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_INSERT, "&Insert Pattern");
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_DELETE, "&Remove Pattern");
             AppendMenu(hMenu, MF_SEPARATOR, NULL, "");
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_NEW, "Create &New Pattern\t" + ih->GetKeyTextFromCommand(kcNewPattern));
-            AppendMenu(hMenu, MF_STRING | greyed, ID_ORDERLIST_COPY, "&Duplicate Pattern\t" + ih->GetKeyTextFromCommand(kcDuplicatePattern));
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_NEW, "Create &New Pattern");
+            AppendMenu(hMenu, MF_STRING | greyed, ID_ORDERLIST_COPY, "&Duplicate Pattern");
             AppendMenu(hMenu, MF_STRING | greyed, ID_PATTERNCOPY, "&Copy Pattern");
             AppendMenu(hMenu, MF_STRING | greyed, ID_PATTERNPASTE, "P&aste Pattern");
-            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_PASTE, "&Paste Orders\t" + ih->GetKeyTextFromCommand(kcEditPaste));
+            AppendMenu(hMenu, MF_STRING, ID_ORDERLIST_EDIT_PASTE, "&Paste Orders");
             if (pSndFile->TypeIsIT_MPT_XM())
             {
                     AppendMenu(hMenu, MF_SEPARATOR, NULL, "");

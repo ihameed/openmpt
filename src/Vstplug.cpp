@@ -561,18 +561,6 @@ VstIntPtr CVstPluginManager::VstCallback(AEffect *effect, VstInt32 opcode, VstIn
                 pModDoc->RecordParamChange(pVstPlugin->GetSlot(), index);
             }
 
-            if (pModDoc && CMainFrame::GetInputHandler()->ShiftPressed() && pVstPlugin->GetEditor() && (pVstPlugin->GetEditor()->m_hWnd == ::GetForegroundWindow() || ::IsChild(pVstPlugin->GetEditor()->m_hWnd, ::GetForegroundWindow())))
-            {
-                CMainFrame::GetInputHandler()->SetModifierMask(0); // Make sure that the dialog will open only once.
-                CAbstractVstEditor *pVstEditor = pVstPlugin->GetEditor();
-                const HWND oldMIDIRecondWnd = CMainFrame::GetMainFrame()->GetMidiRecordWnd();
-                CMIDIMappingDialog dlg(pVstEditor, *pModDoc->GetSoundFile());
-                dlg.m_Setting.SetParamIndex(index);
-                dlg.m_Setting.SetPlugIndex(pVstPlugin->GetSlot()+1);
-                dlg.DoModal();
-                CMainFrame::GetMainFrame()->SetMidiRecordWnd(oldMIDIRecondWnd);
-            }
-
             // Learn macro
             CAbstractVstEditor *pVstEditor = pVstPlugin->GetEditor();
             if (pVstEditor) {

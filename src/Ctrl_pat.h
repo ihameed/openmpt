@@ -92,9 +92,6 @@ public:
     // Set given sqeuence and update orderlist display.
     void SelectSequence(const modplug::tracker::sequenceindex_t nSeq);
 
-    // Little helper function to avoid copypasta
-    bool IsSelectionKeyPressed() {return CMainFrame::GetInputHandler()->SelectionPressed();}
-
     // Clipboard.
     void OnEditCopy();
     void OnEditCut();
@@ -104,7 +101,6 @@ public:
     void EnterPatternNum(int enterNum);
 
     //{{AFX_VIRTUAL(COrderList)
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void UpdateView(uint32_t dwHintMask=0, CObject *pObj=NULL);
     //}}AFX_VIRTUAL
 
@@ -138,7 +134,6 @@ protected:
     afx_msg LRESULT OnDragonDropping(WPARAM bDoDrop, LPARAM lParam);
     afx_msg LRESULT OnHelpHitTest(WPARAM, LPARAM lParam);
     afx_msg void OnSelectSequence(UINT nid);
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM);
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };

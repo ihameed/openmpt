@@ -843,7 +843,6 @@ BOOL CTrackApp::InitInstance()
     pMainFrame->Initialize();
     InitCommonControls();
     m_dwLastPluginIdleCall=0;    //rewbs.VSTCompliance
-    pMainFrame->m_InputHandler->UpdateMainMenu();    //rewbs.customKeys
 
     pMainFrame->ShowWindow(m_nCmdShow);
     pMainFrame->UpdateWindow();
@@ -2012,14 +2011,9 @@ FileDlgResult CTrackApp::ShowOpenSaveFileDialog(const bool load, const std::stri
         dlg.GetOFN().nMaxFile = bufferSize;
     }
 
-    // Do it!
-    CMainFrame::GetInputHandler()->Bypass(true);
-    if(dlg.DoModal() != IDOK)
-    {
-        CMainFrame::GetInputHandler()->Bypass(false);
+    if(dlg.DoModal() != IDOK) {
         return result;
     }
-    CMainFrame::GetInputHandler()->Bypass(false);
 
     // Retrieve variables
     if(filterIndex != nullptr)

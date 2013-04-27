@@ -96,7 +96,6 @@ BEGIN_MESSAGE_MAP(CViewSample, CModScrollView)
     ON_COMMAND(ID_SAMPLE_GRID,                                OnChangeGridSize)
     ON_COMMAND(ID_SAMPLE_QUICKFADE,                        OnQuickFade)
     ON_MESSAGE(WM_MOD_MIDIMSG,                                OnMidiMsg)
-    ON_MESSAGE(WM_MOD_KEYCOMMAND,        OnCustomKeyMsg) //rewbs.customKeys
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1347,16 +1346,7 @@ void CViewSample::OnMouseMove(UINT, CPoint point)
             {
                     if(m_dwEndDrag < len)
                     {
-                            // Shift = draw horizontal lines
-                            if(CMainFrame::GetInputHandler()->ShiftPressed())
-                            {
-                                    if(m_lastDrawPoint.y != -1)
-                                            point.y = m_lastDrawPoint.y;
-                                    m_lastDrawPoint = point;
-                            } else
-                            {
-                                    m_lastDrawPoint.SetPoint(-1, -1);
-                            }
+                            m_lastDrawPoint.SetPoint(-1, -1);
 
                             if(pSndFile->Samples[m_nSample].GetElementarySampleSize() == 2)
                                     SetSampleData<int16_t, uint16_t>(pSndFile->Samples[m_nSample].sample_data, point, old);
@@ -1396,18 +1386,9 @@ void CViewSample::OnLButtonDown(UINT, CPoint point)
     SetCapture();
     bool oldsel = (m_dwBeginSel != m_dwEndSel) ? true : false;
 
-    // shift + click = update selection
-    if(!m_bDrawingEnabled && CMainFrame::GetInputHandler()->ShiftPressed())
-    {
-            oldsel = true;
-            m_dwEndDrag = ScreenToSample(point.x);
-            SetCurSel(m_dwBeginDrag, m_dwEndDrag);
-    } else
-    {
-            m_dwBeginDrag = ScreenToSample(point.x);
-            if (m_dwBeginDrag >= len) m_dwBeginDrag = len-1;
-            m_dwEndDrag = m_dwBeginDrag;
-    }
+    m_dwBeginDrag = ScreenToSample(point.x);
+    if (m_dwBeginDrag >= len) m_dwBeginDrag = len-1;
+    m_dwEndDrag = m_dwBeginDrag;
     if (oldsel) SetCurSel(m_dwBeginDrag, m_dwEndDrag);
     // set initial point for sample drawing
     if (m_bDrawingEnabled)
@@ -1421,12 +1402,6 @@ void CViewSample::OnLButtonDown(UINT, CPoint point)
 
             InvalidateSample();
             pModDoc->SetModified();
-    }
-    else
-    {
-            // ctrl + click = play from cursor pos
-            if(CMainFrame::GetInputHandler()->CtrlPressed())
-                    PlayNote(NoteMiddleC, ScreenToSample(point.x));
     }
 }
 
@@ -1466,7 +1441,6 @@ void CViewSample::OnRButtonDown(UINT, CPoint pt)
             module_renderer *pSndFile = pModDoc->GetSoundFile();
             modplug::tracker::modsample_t *pSmp = &pSndFile->Samples[m_nSample];
             HMENU hMenu = ::CreatePopupMenu();
-            CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler(); //rewbs.customKeys
             if (!hMenu)        return;
             if (pSmp->length)
             {
@@ -1530,18 +1504,17 @@ void CViewSample::OnRButtonDown(UINT, CPoint pt)
                                     bIsGrayed = false;
                     }
 
-                    sTrimMenuText += "\t" + ih->GetKeyTextFromCommand(kcSampleTrim);
 
                     ::AppendMenu(hMenu, MF_STRING|(bIsGrayed) ? MF_GRAYED : 0, ID_SAMPLE_TRIM, sTrimMenuText.c_str());
                     if((m_dwBeginSel == 0 && m_dwEndSel != 0) || (m_dwBeginSel < pSmp->length && m_dwEndSel == pSmp->length))
                     {
-                            ::AppendMenu(hMenu, MF_STRING, ID_SAMPLE_QUICKFADE, "Quick fade\t" + ih->GetKeyTextFromCommand(kcSampleQuickFade));
+                            ::AppendMenu(hMenu, MF_STRING, ID_SAMPLE_QUICKFADE, "Quick fade");
                     }
-                    ::AppendMenu(hMenu, MF_STRING, ID_EDIT_CUT, "Cut\t" + ih->GetKeyTextFromCommand(kcEditCut));
-                    ::AppendMenu(hMenu, MF_STRING, ID_EDIT_COPY, "Copy\t" + ih->GetKeyTextFromCommand(kcEditCopy));
+                    ::AppendMenu(hMenu, MF_STRING, ID_EDIT_CUT, "Cut");
+                    ::AppendMenu(hMenu, MF_STRING, ID_EDIT_COPY, "Copy");
             }
-            ::AppendMenu(hMenu, MF_STRING, ID_EDIT_PASTE, "Paste\t" + ih->GetKeyTextFromCommand(kcEditPaste));
-            ::AppendMenu(hMenu, MF_STRING | (pModDoc->GetSampleUndo()->CanUndo(m_nSample) ? 0 : MF_GRAYED), ID_EDIT_UNDO, "Undo\t" + ih->GetKeyTextFromCommand(kcEditUndo));
+            ::AppendMenu(hMenu, MF_STRING, ID_EDIT_PASTE, "Paste");
+            ::AppendMenu(hMenu, MF_STRING | (pModDoc->GetSampleUndo()->CanUndo(m_nSample) ? 0 : MF_GRAYED), ID_EDIT_UNDO, "Undo");
             ClientToScreen(&pt);
             ::TrackPopupMenu(hMenu, TPM_LEFTALIGN|TPM_RIGHTBUTTON, pt.x, pt.y, 0, m_hWnd, NULL);
             ::DestroyMenu(hMenu);
@@ -2569,93 +2542,6 @@ LRESULT CViewSample::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
 
     return 0;
 }
-
-BOOL CViewSample::PreTranslateMessage(MSG *pMsg)
-//-----------------------------------------------
-{
-    if (pMsg)
-    {
-            //We handle keypresses before Windows has a chance to handle them (for alt etc..)
-            if ((pMsg->message == WM_SYSKEYUP)   || (pMsg->message == WM_KEYUP) ||
-                    (pMsg->message == WM_SYSKEYDOWN) || (pMsg->message == WM_KEYDOWN))
-            {
-                    CInputHandler* ih = (CMainFrame::GetMainFrame())->GetInputHandler();
-
-                    //Translate message manually
-                    UINT nChar = pMsg->wParam;
-                    UINT nRepCnt = LOWORD(pMsg->lParam);
-                    UINT nFlags = HIWORD(pMsg->lParam);
-                    KeyEventType kT = ih->GetKeyEventType(nFlags);
-                    InputTargetContext ctx = (InputTargetContext)(kCtxViewSamples);
-
-                    if (ih->KeyEvent(ctx, nChar, nRepCnt, nFlags, kT) != kcNull)
-                            return true; // Mapped to a command, no need to pass message on.
-            }
-
-    }
-
-    return CModScrollView::PreTranslateMessage(pMsg);
-}
-
-LRESULT CViewSample::OnCustomKeyMsg(WPARAM wParam, LPARAM /*lParam*/)
-//-------------------------------------------------------------------
-{
-    if (wParam == kcNull)
-            return NULL;
-
-    CModDoc *pModDoc = GetDocument();
-    if (!pModDoc) return NULL;
-
-    //CSoundFile *pSndFile = pModDoc->GetSoundFile();
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-
-    switch(wParam)
-    {
-            case kcSampleTrim:                OnSampleTrim() ; return wParam;
-            case kcSampleZoomUp:        OnZoomUp(); return wParam;
-            case kcSampleZoomDown:        OnZoomDown(); return wParam;
-            case kcPrevInstrument:        OnPrevInstrument(); return wParam;
-            case kcNextInstrument:        OnNextInstrument(); return wParam;
-            case kcEditSelectAll:        OnEditSelectAll(); return wParam;
-            case kcSampleDelete:        OnEditDelete(); return wParam;
-            case kcEditCut:                        OnEditCut(); return wParam;
-            case kcEditCopy:                OnEditCopy(); return wParam;
-            case kcEditPaste:                OnEditPaste(); return wParam;
-            case kcEditUndo:                OnEditUndo(); return wParam;
-
-            case kcSampleLoad:                PostCtrlMessage(IDC_SAMPLE_OPEN); return wParam;
-            case kcSampleSave:                PostCtrlMessage(IDC_SAMPLE_SAVEAS); return wParam;
-            case kcSampleNew:                PostCtrlMessage(IDC_SAMPLE_NEW); return wParam;
-
-            case kcSampleReverse:                        PostCtrlMessage(IDC_SAMPLE_REVERSE); return wParam;
-            case kcSampleSilence:                        PostCtrlMessage(IDC_SAMPLE_SILENCE); return wParam;
-            case kcSampleNormalize:                        PostCtrlMessage(IDC_SAMPLE_NORMALIZE); return wParam;
-            case kcSampleAmplify:                        PostCtrlMessage(IDC_SAMPLE_AMPLIFY); return wParam;
-            case kcSampleInvert:                        PostCtrlMessage(IDC_SAMPLE_INVERT); return wParam;
-            case kcSampleSignUnsign:                PostCtrlMessage(IDC_SAMPLE_SIGN_UNSIGN); return wParam;
-            case kcSampleRemoveDCOffset:        PostCtrlMessage(IDC_SAMPLE_DCOFFSET); return wParam;
-            case kcSampleXFade:                                PostCtrlMessage(IDC_SAMPLE_XFADE); return wParam;
-            case kcSampleQuickFade:                        PostCtrlMessage(IDC_SAMPLE_QUICKFADE); return wParam;
-
-            // Those don't seem to work.
-            case kcNoteOff:                        PlayNote(NoteKeyOff); return wParam;
-            case kcNoteCut:                        PlayNote(NoteNoteCut); return wParam;
-
-    }
-    if (wParam >= kcSampStartNotes && wParam <= kcSampEndNotes)
-    {
-            PlayNote(wParam - kcSampStartNotes + 1 + pMainFrm->GetBaseOctave() * 12);
-            return wParam;
-    }
-    if (wParam >= kcSampStartNoteStops && wParam <= kcSampEndNoteStops)
-    {
-            m_dwStatus &= ~SMPSTATUS_KEYDOWN;
-            return wParam;
-    }
-
-    return NULL;
-}
-
 
 // Returns auto-zoom level compared to other zoom levels.
 // If auto-zoom gives bigger zoom than zoom level N but smaller than zoom level N-1,

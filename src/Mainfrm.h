@@ -12,7 +12,6 @@
 
 #include <memory>
 #include "legacy_soundlib/sndfile.h"
-#include "CommandSet.h"
 #include "inputhandler.h"
 #include "mptrack.h"
 
@@ -23,7 +22,6 @@ class config_dialog;
 
 namespace modplug { namespace audioio { class paudio; } }
 
-class CInputHandler;
 class CMainFrame;
 class CModDoc;
 class CAutoSaver;
@@ -531,10 +529,8 @@ public:
     static HFONT GetFixedFont() { return m_hFixedFont; }
     static HFONT GetLargeFixedFont() { return m_hLargeFixedFont; }
     static void UpdateAllViews(uint32_t dwHint, CObject *pHint=NULL);
-    static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam);
     static void TranslateKeyboardMap(LPSTR pszKbd);
     static VOID GetKeyName(LONG lParam, LPSTR pszName, UINT cbSize);
-    static CInputHandler *m_InputHandler;         //rewbs.customKeys
 
     static bool WritePrivateProfileLong(const CString section, const CString key, const long value, const CString iniFile);
     static long GetPrivateProfileLong(const CString section, const CString key, const long defaultValue, const CString iniFile);
@@ -558,7 +554,6 @@ public:
     VOID OnDocumentCreated(CModDoc *pModDoc);
     VOID OnDocumentClosed(CModDoc *pModDoc);
     VOID UpdateTree(CModDoc *pModDoc, uint32_t lHint=0, CObject *pHint=NULL);
-    static CInputHandler* GetInputHandler() { return m_InputHandler; }          //rewbs.customKeys
     bool m_bModTreeHasFocus;          //rewbs.customKeys
     CWnd *m_pNoteMapHasFocus;          //rewbs.customKeys
     CWnd* m_pOrderlistHasFocus;
@@ -676,14 +671,12 @@ protected:
     afx_msg LRESULT OnUpdatePosition(WPARAM, LPARAM lParam);
     afx_msg LRESULT OnInvalidatePatterns(WPARAM, LPARAM);
     afx_msg LRESULT OnSpecialKey(WPARAM, LPARAM);
-    afx_msg LRESULT OnCustomKeyMsg(WPARAM, LPARAM);
     afx_msg void OnViewMIDIMapping();
     afx_msg void OnViewEditHistory();
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg void OnInitMenu(CMenu* pMenu);
-    bool UpdateEffectKeys(void);
     afx_msg void OnKillFocus(CWnd* pNewWnd);
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 

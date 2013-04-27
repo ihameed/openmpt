@@ -18,8 +18,8 @@ namespace qt5 {
 global_actionmap_t global_actionmap;
 pattern_actionmap_t pattern_actionmap;
 
-pattern_keymap_t pattern_it_fxmap;
-pattern_keymap_t pattern_xm_fxmap;
+keymap_t pattern_it_fxmap;
+keymap_t pattern_xm_fxmap;
 
 template <typename f_t>
 struct actionmap_assoc {
@@ -235,8 +235,14 @@ void init_default_cmd_maps() {
     auto &xm = pattern_xm_fxmap;
 
     for_each(defaultcmds, [&it, &xm] (const itxm_default_assoc &assoc) {
-        it[key_t(Qt::NoModifier, assoc.itkey, ContextCmdCol)] = assoc.val;
-        xm[key_t(Qt::NoModifier, assoc.xmkey, ContextCmdCol)] = assoc.val;
+        it.insert(
+            key_t(Qt::NoModifier, assoc.itkey, keycontext_t::CmdCol),
+            assoc.val
+        );
+        xm.insert(
+            key_t(Qt::NoModifier, assoc.xmkey, keycontext_t::CmdCol),
+            assoc.val
+        );
     });
 }
 
@@ -289,51 +295,60 @@ void init_action_maps() {
     init_default_cmd_maps();
 }
 
-global_keymap_t default_global_keymap() {
-    global_keymap_t keymap;
-    keymap[key_t(Qt::NoModifier, Qt::Key_A)] = "maptest";
+keymap_t default_global_keymap() {
+    keymap_t km;
+    auto key = [&km] (const key_t &key, const char *act) {
+        km.insert(key, act);
+    };
+    key(key_t(Qt::NoModifier, Qt::Key_A), "maptest");
 
-    keymap[key_t(Qt::ControlModifier, Qt::Key_N)] = "new";
-    keymap[key_t(Qt::ControlModifier, Qt::Key_S)] = "save";
+    key(key_t(Qt::ControlModifier, Qt::Key_N), "new");
+    key(key_t(Qt::ControlModifier, Qt::Key_S), "save");
 
-    keymap[key_t(Qt::NoModifier, Qt::Key_F5)] = "play_pause";
-    keymap[key_t(Qt::NoModifier, Qt::Key_F6)] = "play_song_from_start";
-    keymap[key_t(Qt::NoModifier, Qt::Key_F7)] = "play_pattern_from_start";
-    keymap[key_t(Qt::NoModifier, Qt::Key_F8)] = "stop";
-    keymap[key_t(Qt::NoModifier, Qt::Key_F9)] = "play_song_from_cursor";
+    key(key_t(Qt::NoModifier, Qt::Key_F5), "play_pause");
+    key(key_t(Qt::NoModifier, Qt::Key_F6), "play_song_from_start");
+    key(key_t(Qt::NoModifier, Qt::Key_F7), "play_pattern_from_start");
+    key(key_t(Qt::NoModifier, Qt::Key_F8), "stop");
+    key(key_t(Qt::NoModifier, Qt::Key_F9), "play_song_from_cursor");
 
-    return keymap;
+    return km;
 }
 
-pattern_keymap_t default_pattern_keymap() {
-    pattern_keymap_t m;
+keymap_t default_pattern_keymap() {
+    keymap_t m;
+    auto key = [&m] (const key_t &key, const char *act) {
+        m.insert(key, act);
+    };
 
-    m[key_t(Qt::NoModifier, Qt::Key_Up)]    = "move_up";
-    m[key_t(Qt::NoModifier, Qt::Key_Down)]  = "move_down";
-    m[key_t(Qt::NoModifier, Qt::Key_Left)]  = "move_left";
-    m[key_t(Qt::NoModifier, Qt::Key_Right)] = "move_right";
+    key(key_t(Qt::NoModifier, Qt::Key_Up), "move_up");
+    key(key_t(Qt::NoModifier, Qt::Key_Down), "move_down");
+    key(key_t(Qt::NoModifier, Qt::Key_Left), "move_left");
+    key(key_t(Qt::NoModifier, Qt::Key_Right), "move_right");
 
-    m[key_t(Qt::ControlModifier, Qt::Key_Home)] = "move_first_row";
-    m[key_t(Qt::ControlModifier, Qt::Key_End)]  = "move_last_row";
-    m[key_t(Qt::NoModifier, Qt::Key_Home)] = "move_first_col";
-    m[key_t(Qt::NoModifier, Qt::Key_End)]  = "move_last_col";
+    key(key_t(Qt::ControlModifier, Qt::Key_Home), "move_first_row");
+    key(key_t(Qt::ControlModifier, Qt::Key_End), "move_last_row");
+    key(key_t(Qt::NoModifier, Qt::Key_Home), "move_first_col");
+    key(key_t(Qt::NoModifier, Qt::Key_End), "move_last_col");
 
-    m[key_t(Qt::ShiftModifier, Qt::Key_Up)]    = "select_up";
-    m[key_t(Qt::ShiftModifier, Qt::Key_Down)]  = "select_down";
-    m[key_t(Qt::ShiftModifier, Qt::Key_Left)]  = "select_left";
-    m[key_t(Qt::ShiftModifier, Qt::Key_Right)] = "select_right";
+    key(key_t(Qt::ShiftModifier, Qt::Key_Up), "select_up");
+    key(key_t(Qt::ShiftModifier, Qt::Key_Down), "select_down");
+    key(key_t(Qt::ShiftModifier, Qt::Key_Left), "select_left");
+    key(key_t(Qt::ShiftModifier, Qt::Key_Right), "select_right");
 
-    m[key_t(Qt::ShiftModifier | Qt::ControlModifier, Qt::Key_Home)] = "select_first_row";
-    m[key_t(Qt::ShiftModifier | Qt::ControlModifier, Qt::Key_End)]  = "select_last_row";
-    m[key_t(Qt::ShiftModifier, Qt::Key_Home)] = "select_first_col";
-    m[key_t(Qt::ShiftModifier, Qt::Key_End)]  = "select_last_col";
+    key(key_t(Qt::ShiftModifier | Qt::ControlModifier, Qt::Key_Home), "select_first_row");
+    key(key_t(Qt::ShiftModifier | Qt::ControlModifier, Qt::Key_End), "select_last_row");
+    key(key_t(Qt::ShiftModifier, Qt::Key_Home), "select_first_col");
+    key(key_t(Qt::ShiftModifier, Qt::Key_End), "select_last_col");
 
-    m[key_t(Qt::NoModifier, Qt::Key_Delete)]    = "clear_selected_cells";
-    m[key_t(Qt::NoModifier, Qt::Key_Backspace)] = "delete_row";
-    m[key_t(Qt::NoModifier, Qt::Key_Insert)]    = "insert_row";
+    key(key_t(Qt::NoModifier, Qt::Key_Delete), "clear_selected_cells");
+    key(key_t(Qt::NoModifier, Qt::Key_Backspace), "delete_row");
+    key(key_t(Qt::NoModifier, Qt::Key_Insert), "insert_row");
 
     auto notekey = [&m] (int key, const char *act) {
-        return m[key_t(Qt::NoModifier, key, ContextNoteCol)] = act;
+        return m.insert(
+            key_t(Qt::NoModifier, key, keycontext_t::NoteCol),
+            act
+        );
     };
 
     notekey(Qt::Key_Q,            "note_oct0_c");
@@ -374,7 +389,10 @@ pattern_keymap_t default_pattern_keymap() {
     notekey(Qt::Key_Slash,  "note_oct2_a");
 
     auto instrkey = [&m] (int key, const char *act) {
-        return m[key_t(Qt::NoModifier, key, ContextInstrCol)] = act;
+        return m.insert(
+            key_t(Qt::NoModifier, key, keycontext_t::InstrCol),
+            act
+        );
     };
     instrkey(Qt::Key_0, "instr_0");
     instrkey(Qt::Key_1, "instr_1");
@@ -388,7 +406,10 @@ pattern_keymap_t default_pattern_keymap() {
     instrkey(Qt::Key_9, "instr_9");
 
     auto volkey = [&m] (int key, const char *act) {
-        return m[key_t(Qt::NoModifier, key, ContextVolCol)] = act;
+        return m.insert(
+            key_t(Qt::NoModifier, key, keycontext_t::VolCol),
+            act
+        );
     };
 
     volkey(Qt::Key_0, "vol_0");
@@ -419,10 +440,16 @@ pattern_keymap_t default_pattern_keymap() {
     volkey(Qt::Key_O, "vol_offset");
 
     auto cmdkey = [&m] (int key, const char *act) {
-        return m[key_t(Qt::NoModifier, key, ContextCmdCol)] = act;
+        return m.insert(
+            key_t(Qt::NoModifier, key, keycontext_t::CmdCol),
+            act
+        );
     };
     auto paramkey = [&m] (int key, const char *act) {
-        return m[key_t(Qt::NoModifier, key, ContextParamCol)] = act;
+        return m.insert(
+            key_t(Qt::NoModifier, key, keycontext_t::ParamCol),
+            act
+        );
     };
 
     cmdkey(Qt::Key_Backslash, "cmd_smooth_midi_macro");

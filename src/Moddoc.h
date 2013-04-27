@@ -353,7 +353,6 @@ public:
     LRESULT ActivateView(UINT nIdView, uint32_t dwParam);
     void UpdateAllViews(CView *pSender, LPARAM lHint=0L, CObject *pHint=NULL);
     HWND GetEditPosition(modplug::tracker::rowindex_t &row, modplug::tracker::patternindex_t &pat, modplug::tracker::orderindex_t &ord); //rewbs.customKeys
-    LRESULT OnCustomKeyMsg(WPARAM, LPARAM);                               //rewbs.customKeys
     void TogglePluginEditor(UINT m_nCurrentPlugin);               //rewbs.patPlugNames
     void RecordParamChange(int slot, long param);
     void LearnMacro(int macro, long param);
