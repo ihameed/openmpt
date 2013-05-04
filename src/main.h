@@ -1,19 +1,11 @@
-// mptrack.h : main header file for the MPTRACK application
-//
-
-#if !defined(AFX_MPTRACK_H__AE144DC4_DD0B_11D1_AF24_444553540000__INCLUDED_)
-#define AFX_MPTRACK_H__AE144DC4_DD0B_11D1_AF24_444553540000__INCLUDED_
-
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
 
 #ifndef __AFXWIN_H__
     #error include 'stdafx.h' before including this file for PCH
 #endif
 
 #include "stdafx.h"
-#include "resource.h"       // main symbols
+#include "resource.h"
 #include "legacy_soundlib/Sndfile.h"
 #include <windows.h>
 #include "tracker/constants.h"
@@ -32,25 +24,16 @@ typedef struct MODPLUGDIB
 } MODPLUGDIB, *LPMODPLUGDIB;
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Midi Library
-
 typedef struct MIDILIBSTRUCT
 {
     LPTSTR MidiMap[128*2];        // 128 instruments + 128 percussions
 } MIDILIBSTRUCT, *LPMIDILIBSTRUCT;
 
 
-/////////////////////////////////////////////////////////////////////////////
-// DLS Sound Banks
-
 #define MAX_DLS_BANKS    100 //rewbs.increaseMaxDLSBanks
 
 class CDLSBank;
 
-
-/////////////////////////////////////////////////////////////////////////
-// Chords
 
 typedef struct MPTCHORD
 {
@@ -58,9 +41,6 @@ typedef struct MPTCHORD
     uint8_t notes[3];
 } MPTCHORD, *PMPTCHORD;
 
-
-//////////////////////////////////////////////////////////////////////////
-// Dragon Droppings
 
 typedef struct DRAGONDROP
 {
@@ -72,15 +52,15 @@ typedef struct DRAGONDROP
 
 enum {
     DRAGONDROP_NOTHING=0,        // |------< Drop Type >-------------|--< dwDropItem >---|--< lDropParam >---|
-    DRAGONDROP_DLS,                        // | Instrument from a DLS bank                |          DLS Bank #        |        DLS Instrument        |
-    DRAGONDROP_SAMPLE,                // | Sample from a song                                |     Sample #                |            NULL                |
-    DRAGONDROP_INSTRUMENT,        // | Instrument from a song                        |          Instrument #        |            NULL                |
-    DRAGONDROP_SOUNDFILE,        // | File from instrument library        |                ?                        |        pszFileName                |
-    DRAGONDROP_MIDIINSTR,        // | File from midi library                        | Midi Program/Perc        |        pszFileName                |
-    DRAGONDROP_PATTERN,                // | Pattern from a song                        |      Pattern #    |       NULL        |
-    DRAGONDROP_ORDER,                // | Pattern index in a song                |       Order #     |       NULL        |
-    DRAGONDROP_SONG,                // | Song file (mod/s3m/xm/it)                |                0                        |        pszFileName                |
-    DRAGONDROP_SEQUENCE                // | Sequence (a set of orders)                |    Sequence #     |       NULL        |
+    DRAGONDROP_DLS,              // | Instrument from a DLS bank     | DLS Bank #        | DLS Instrument    |
+    DRAGONDROP_SAMPLE,           // | Sample from a song             | Sample #          | NULL              |
+    DRAGONDROP_INSTRUMENT,       // | Instrument from a song         | Instrument #      | NULL              |
+    DRAGONDROP_SOUNDFILE,        // | File from instrument library   | ?                 | pszFileName       |
+    DRAGONDROP_MIDIINSTR,        // | File from midi library         | Midi Program/Perc | pszFileName       |
+    DRAGONDROP_PATTERN,          // | Pattern from a song            |      Pattern #    | NULL              |
+    DRAGONDROP_ORDER,            // | Pattern index in a song        |       Order #     | NULL              |
+    DRAGONDROP_SONG,             // | Song file (mod/s3m/xm/it)      | 0                 | pszFileName       |
+    DRAGONDROP_SEQUENCE          // | Sequence (a set of orders)     |    Sequence #     | NULL              |
 };
 
 
@@ -88,23 +68,15 @@ enum {
 // File dialog (open/save) results
 struct FileDlgResult
 {
-    std::string workingDirectory;                        // working directory. will include filename, so beware.
-    std::string first_file;                                        // for some convenience, this will keep the first filename of the filenames vector.
-    std::vector <std::string> filenames;        // all selected filenames in one vector.
-    std::string extension;                                        // extension used. beware of this when multiple files can be selected!
-    bool abort;                                                                // no selection has been made.
+    std::string workingDirectory;        // working directory. will include filename, so beware.
+    std::string first_file;              // for some convenience, this will keep the first filename of the filenames vector.
+    std::vector <std::string> filenames; // all selected filenames in one vector.
+    std::string extension;               // extension used. beware of this when multiple files can be selected!
+    bool abort;                          // no selection has been made.
 };
 
 
-/////////////////////////////////////////////////////////////////////////////
-// CTrackApp:
-// See mptrack.cpp for the implementation of this class
-//
-
-//=============================
-class CTrackApp: public CWinApp
-//=============================
-{
+class CTrackApp: public CWinApp {
     friend class CMainFrame;
 // static data
 protected:
@@ -138,8 +110,9 @@ public:
 
 public:
     //XXXih: qt hurrr
-    virtual BOOL Run();
+    virtual BOOL Run() override;
 
+public:
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
     static BOOL IsProject() { return m_nProject; }
@@ -224,10 +197,7 @@ private:
 };
 
 
-//=============================
-class CButtonEx: public CButton
-//=============================
-{
+class CButtonEx: public CButton {
 protected:
     MODPLUGDIB m_Dib;
     RECT m_srcRect;
@@ -257,13 +227,7 @@ protected:
 extern CTrackApp theApp;
 
 
-//////////////////////////////////////////////////////////////////
-// File Mapping Class
-
-//===============
-class CMappedFile
-//===============
-{
+class CMappedFile {
 protected:
     CFile m_File;
     HANDLE m_hFMap;
@@ -296,10 +260,7 @@ typedef struct MODPLUGFASTDIB
     uint8_t DibBits[FASTBMP_MAXWIDTH*FASTBMP_MAXHEIGHT];
 } MODPLUGFASTDIB, *LPMODPLUGFASTDIB;
 
-//===============
-class CFastBitmap
-//===============
-{
+class CFastBitmap {
 protected:
     MODPLUGFASTDIB m_Dib;
     UINT m_nTextColor, m_nBkColor;
@@ -391,10 +352,3 @@ static_assert(
 extern const LPCSTR szMidiProgramNames[128];
 extern const LPCSTR szMidiPercussionNames[61]; // notes 25..85
 extern const LPCSTR szMidiGroupNames[17];            // 16 groups + Percussions
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Developer Studio will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_MPTRACK_H__AE144DC4_DD0B_11D1_AF24_444553540000__INCLUDED_)

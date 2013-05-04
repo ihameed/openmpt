@@ -13,7 +13,7 @@
 #include <memory>
 #include "legacy_soundlib/sndfile.h"
 #include "inputhandler.h"
-#include "mptrack.h"
+#include "main.h"
 
 namespace modplug { namespace gui { namespace qt5 {
 class mfc_root;
@@ -359,10 +359,10 @@ typedef struct MPTNOTIFICATION
 {
     uint32_t dwType;
     uint32_t dwLatency;
-    modplug::tracker::orderindex_t nOrder;                        // Always valid
-    modplug::tracker::patternindex_t nPattern;                // dito
-    modplug::tracker::rowindex_t nRow;                                // dito
-    uint32_t dwPos[MAX_VIRTUAL_CHANNELS];        // sample/envelope pos for each channel if >= 0
+    modplug::tracker::orderindex_t nOrder;     // Always valid
+    modplug::tracker::patternindex_t nPattern; // dito
+    modplug::tracker::rowindex_t nRow;         // dito
+    uint32_t dwPos[MAX_VIRTUAL_CHANNELS];      // sample/envelope pos for each channel if >= 0
 } MPTNOTIFICATION, *PMPTNOTIFICATION;
 
 /////////////////////////////////////////////////////////////////////////
@@ -386,8 +386,8 @@ enum Directory
 
 
 #define DeleteGDIObject(h) if (h) { ::DeleteObject(h); h = NULL; }
-#define BEGIN_CRITICAL()            EnterCriticalSection(&CMainFrame::m_csAudio)
-#define END_CRITICAL()                    LeaveCriticalSection(&CMainFrame::m_csAudio)
+#define BEGIN_CRITICAL()   EnterCriticalSection(&CMainFrame::m_csAudio)
+#define END_CRITICAL()     LeaveCriticalSection(&CMainFrame::m_csAudio)
 
 #include "mainbar.h"
 

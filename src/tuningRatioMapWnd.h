@@ -2,6 +2,7 @@
 #define TUNINGRATIOMAPWND_H
 
 #include "legacy_soundlib/tuningbase.h"
+#include "tracker/tracker.h"
 
 class CTuningDialog;
 

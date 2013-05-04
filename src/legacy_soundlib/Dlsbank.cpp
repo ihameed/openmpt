@@ -14,7 +14,7 @@
 
 #include "stdafx.h"
 #include "sndfile.h"
-#include "../mptrack.h"
+#include "../main.h"
 #include "dlsbank.h"
 #include "Wav.h"
 

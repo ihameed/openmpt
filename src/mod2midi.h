@@ -1,5 +1,6 @@
-#ifndef _MOD2MIDI_H_
-#define _MOD2MIDI_H_
+#pragma once
+
+#include "legacy_soundlib/Sndfile.h"
 
 typedef struct _MOD2MIDIINSTR
 {
@@ -37,6 +38,3 @@ protected:
     afx_msg VOID OnProgramChanged();
     DECLARE_MESSAGE_MAP();
 };
-
-
-#endif // _MOD2MIDI_H_

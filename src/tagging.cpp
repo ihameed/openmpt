@@ -4,10 +4,10 @@
 */
 
 #include "stdafx.h"
-#include "mptrack.h"
 #include "tagging.h"
 #include "version.h"
 #include "legacy_soundlib/sndfile.h"
+#include "legacy_soundlib/Wav.h"
 
 ///////////////////////////////////////////////////
 // CFileTagging - helper class for writing tags

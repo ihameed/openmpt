@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "mptrack.h"
 #include "TuningDialog.h"
 #include "MainFrm.h"
 #include <algorithm>

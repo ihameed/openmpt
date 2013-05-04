@@ -26,9 +26,9 @@ class pattern_editor_row_header : public QWidget {
     Q_OBJECT
 public:
     pattern_editor_row_header(pattern_editor &);
-    virtual QSize sizeHint() const override;
-protected:
-    virtual void paintEvent(QPaintEvent *event) override;
+    QSize sizeHint() const override;
+
+    void paintEvent(QPaintEvent *event) override;
 private:
     pattern_editor &parent;
 };
@@ -37,9 +37,9 @@ class pattern_editor_column_header : public QWidget {
     Q_OBJECT
 public:
     pattern_editor_column_header(pattern_editor &);
-    virtual QSize sizeHint() const override;
-protected:
-    virtual void paintEvent(QPaintEvent *) override;
+    QSize sizeHint() const override;
+
+    void paintEvent(QPaintEvent *) override;
 private:
     pattern_editor &parent;
 };
@@ -59,14 +59,13 @@ public:
 
     bool position_from_point(const QPoint &, editor_position_t &);
 
-protected:
-    virtual void initializeGL() override;
-    virtual void paintGL() override;
-    virtual void resizeGL(int, int) override;
+    void initializeGL() override;
+    void paintGL() override;
+    void resizeGL(int, int) override;
 
-    virtual void mousePressEvent(QMouseEvent *) override;
-    virtual void mouseMoveEvent(QMouseEvent *) override;
-    virtual void mouseReleaseEvent(QMouseEvent *) override;
+    void mousePressEvent(QMouseEvent *) override;
+    void mouseMoveEvent(QMouseEvent *) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
 
 private:
     selection_t selection;
@@ -107,6 +106,7 @@ public:
 
     void update_colors(const colors_t &colors);
     void update_playback_position(const player_position_t &);
+    void update_scrollbars(QSize size);
 
     void set_base_octave(uint8_t octave);
     uint8_t base_octave();
@@ -140,19 +140,18 @@ public:
 
     QSize pattern_size();
 
+    void paintEvent(QPaintEvent *) override;
+    void resizeEvent(QResizeEvent *) override;
+    void keyPressEvent(QKeyEvent *) override;
+    void scrollContentsBy(int, int) override;
+
 public slots:
     void set_active_order(modplug::tracker::orderindex_t);
 
-protected:
-    virtual void paintEvent(QPaintEvent *) override;
-    virtual void resizeEvent(QResizeEvent *) override;
-
-    virtual void keyPressEvent(QKeyEvent *) override;
-
-    virtual void scrollContentsBy(int, int) override;
-
 private:
     pattern_editor_draw draw;
+    pattern_editor_row_header row_header;
+    pattern_editor_column_header column_header;
     bool is_dragging;
 
     const keymap_t &keymap;

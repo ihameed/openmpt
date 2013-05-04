@@ -12,11 +12,12 @@ namespace qt5 {
 
 class pattern_editor;
 class pattern_editor_tab;
+class graph_editor;
 class app_config;
 class comment_editor;
 class song_overview;
 
-class document_window : public QDialog {
+class document_window : public QWidget {
     Q_OBJECT
 public:
     document_window(module_renderer *, app_config &, QWidget *);
@@ -27,6 +28,7 @@ public slots:
 
 private:
     pattern_editor_tab *editor;
+    graph_editor *graph;
     comment_editor *comments;
     song_overview *overview;
     app_config &global_config;

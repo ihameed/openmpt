@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "mptrack.h"
 #include "MIDIMappingDialog.h"
 #include "mainfrm.h"
 

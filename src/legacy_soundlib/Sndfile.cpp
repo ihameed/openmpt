@@ -12,7 +12,6 @@
 #include "../serializers/wao.h"
 
 
-#include "../mptrack.h"
 #include "../mainfrm.h"
 #include "../moddoc.h"
 #include "../version.h"

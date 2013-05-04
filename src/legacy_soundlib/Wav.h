@@ -7,11 +7,11 @@
  *
  */
 
-#ifndef WAV_H
-#define WAV_H
 #pragma once
 
 #pragma pack(1)
+
+#include <cstdint>
 
 // Standard IFF chunks IDs
 #define IFFID_FORM            0x4d524f46
@@ -150,5 +150,3 @@ typedef struct WAVCUEPOINT
 
 
 #pragma pack()
-
-#endif // WAV_H

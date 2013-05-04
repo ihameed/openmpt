@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <mmsystem.h>
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "moddoc.h"
 #include "legacy_soundlib/dlsbank.h"

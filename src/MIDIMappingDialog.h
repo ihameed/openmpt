@@ -4,6 +4,7 @@
 #include <vector>
 #include "afxwin.h"
 #include "afxcmn.h"
+#include "resource.h"
 
 
 // CMIDIMappingDialog dialog

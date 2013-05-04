@@ -1,7 +1,8 @@
 #include "stdafx.h"
-#include "mptrack.h"
 #include "mod2midi.h"
+#include "resource.h"
 #include "legacy_soundlib/Wav.h"
+#include "main.h"
 
 #pragma pack(1)
 

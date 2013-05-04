@@ -5,7 +5,6 @@
 #endif
 
 // rewbs.resamplerConf
-#include "../mptrack.h"
 #include "../MainFrm.h"
 // end  rewbs.resamplerConf
 

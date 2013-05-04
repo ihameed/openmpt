@@ -3,7 +3,6 @@
 #include <dmoreg.h>
 #include <shlwapi.h>
 #include <medparam.h>
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "vstplug.h"
 #include "moddoc.h"

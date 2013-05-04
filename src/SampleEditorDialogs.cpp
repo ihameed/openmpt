@@ -9,8 +9,9 @@
  *
  */
 
+#include <cstdint>
 #include "stdafx.h"
-#include "mptrack.h"
+#include "resource.h"
 #include "SampleEditorDialogs.h"
 
 

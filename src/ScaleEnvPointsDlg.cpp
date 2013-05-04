@@ -7,7 +7,8 @@
  */
 
 #include "stdafx.h"
-#include "mptrack.h"
+#include "resource.h"
+#include "misc_util.h"
 #include "ScaleEnvPointsDlg.h"
 
 float CScaleEnvPointsDlg::m_fFactorX = 1;

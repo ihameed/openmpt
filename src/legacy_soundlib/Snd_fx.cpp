@@ -11,7 +11,6 @@
 #include "sndfile.h"
 // -> CODE#0022
 // -> DESC="alternative BPM/Speed interpretation method"
-#include "../mptrack.h"
 #include "../moddoc.h"
 #include "../misc_util.h"
 // -! NEW_FEATURE#0022

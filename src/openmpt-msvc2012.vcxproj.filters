@@ -29,7 +29,6 @@
     <ClCompile Include="Mpdlgs.cpp" />
     <ClCompile Include="mpt_midi.cpp" />
     <ClCompile Include="MPTHacks.cpp" />
-    <ClCompile Include="mptrack.cpp" />
     <ClCompile Include="PatternEditorDialogs.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
     <ClCompile Include="SampleEditorDialogs.cpp" />
@@ -69,7 +68,6 @@
     </ClCompile>
     <ClCompile Include="mixgraph\mixer.cpp" />
     <ClCompile Include="serializers\wao.cpp" />
-    <ClCompile Include="gui\mixgraph_view.cpp" />
     <ClCompile Include="legacy_soundlib\Dlsbank.cpp" />
     <ClCompile Include="legacy_soundlib\Fastmix.cpp" />
     <ClCompile Include="legacy_soundlib\Load_669.cpp" />
@@ -280,6 +278,33 @@
     <ClCompile Include="GeneratedFiles\qrc_resources.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\main_window.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_main_window.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_main_window.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_main_window.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\graph_editor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_graph_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_graph_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_graph_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -305,7 +330,6 @@
     <ClInclude Include="moddoc.h" />
     <ClInclude Include="Moptions.h" />
     <ClInclude Include="Mpdlgs.h" />
-    <ClInclude Include="mptrack.h" />
     <ClInclude Include="PatternEditorDialogs.h" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
@@ -354,8 +378,6 @@
     <ClInclude Include="tracker\tracker.h">
       <Filter>tracker</Filter>
     </ClInclude>
-    <ClInclude Include="gui\mixgraph_view.h" />
-    <ClInclude Include="gui\widget.h" />
     <ClInclude Include="legacy_soundlib\WindowedFIR.h" />
     <ClInclude Include="legacy_soundlib\Dlsbank.h" />
     <ClInclude Include="legacy_soundlib\Endianness.h" />
@@ -421,6 +443,9 @@
     </ClInclude>
     <ClInclude Include="InputHandler.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -545,6 +570,12 @@
     </CustomBuild>
     <CustomBuild Include="gui\qt5\resources\resources.qrc">
       <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\main_window.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\graph_editor.h">
+      <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

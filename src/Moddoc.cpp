@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "moddoc.h"
 #include "childfrm.h"
@@ -16,7 +15,6 @@
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "CleanupSong.h"
 
-#include "gui/mixgraph_view.h"
 #include "pervasives/pervasives.h"
 #include "gui/qt5/config_dialog.h"
 
@@ -62,7 +60,6 @@ BEGIN_MESSAGE_MAP(CModDoc, CDocument)
     ON_COMMAND(ID_VIEW_GRAPH,                    OnEditGraph) //rewbs.graph
     ON_COMMAND(ID_VIEW_EDITHISTORY,            OnViewEditHistory)
     ON_COMMAND(ID_VIEW_MPTHACKS,            OnViewMPTHacks)
-    ON_COMMAND(ID_VIEW_TESTGRAPHEDITOR,    on_test_graph_editor)
     ON_COMMAND(ID_INSERT_PATTERN,            OnInsertPattern)
     ON_COMMAND(ID_INSERT_SAMPLE,            OnInsertSample)
     ON_COMMAND(ID_INSERT_INSTRUMENT,    OnInsertInstrument)
@@ -3492,11 +3489,6 @@ void CModDoc::OnViewMPTHacks()
     }
     ShowLog();
     ClearLog();
-}
-
-//XXXih: gross!
-void CModDoc::on_test_graph_editor() {
-    modplug::gui::show_my_weldus(&this->m_SndFile.mixgraph);
 }
 
 

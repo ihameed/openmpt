@@ -30,7 +30,6 @@ DAMAGE.
 #include <utility>
 
 #include "core.h"
-#include "../mptrack.h"
 #include "../pervasives/pervasives.h"
 #include "../mixer/mixutil.h"
 #include "./source_vertex.h"

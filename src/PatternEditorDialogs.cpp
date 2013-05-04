@@ -10,7 +10,6 @@
  */
 
 #include "stdafx.h"
-#include "mptrack.h"
 #include "Mainfrm.h"
 #include "PatternEditorDialogs.h"
 

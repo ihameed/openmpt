@@ -34,9 +34,16 @@ void mfc_root::update_audio_settings() {
     }
 
     try {
-        mainwnd.stream = std::make_shared<paudio>(audio_settings, settings.audio_handle(), mainwnd);
+        mainwnd.stream = std::make_shared<paudio>(
+            audio_settings,
+            settings.audio_handle(),
+            mainwnd
+        );
     } catch (portaudio::PaException &exc) {
-        DEBUG_FUNC("!!!!! caught exception; paErrorText = \"%s\" !!!!!", exc.paErrorText());
+        DEBUG_FUNC(
+            "!!!!! caught exception; paErrorText = \"%s\" !!!!!",
+            exc.paErrorText()
+        );
         throw exc;
     }
     mainwnd.stream->start();

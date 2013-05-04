@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "moddoc.h"
 #include "childfrm.h"

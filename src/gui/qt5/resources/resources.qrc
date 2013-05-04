@@ -5,5 +5,7 @@
         <file>icons/entypo/list-add.svg</file>
         <file>icons/entypo/record.svg</file>
         <file>icons/entypo/derived/play-cw90.svg</file>
+        <file>icons/nobu-icons/mptgloss/128.png</file>
+        <file>icons/nobu-icons/mpt_document.svg</file>
     </qresource>
 </RCC>

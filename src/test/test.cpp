@@ -5,7 +5,6 @@
 
 #include "stdafx.h"
 #include "test.h"
-#include "../mptrack.h"
 #include "../moddoc.h"
 #include "../MainFrm.h"
 #include "../version.h"

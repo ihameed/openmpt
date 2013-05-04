@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 
-#include "../mptrack.h"
 #include "../moddoc.h"
 #include "../MainFrm.h"
 #include "../misc_util.h"

@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-#include "mptrack.h"
 #include "MainFrm.h"
 #include "moddoc.h"
 #include "childfrm.h"
@@ -590,6 +589,7 @@ VOID CMainFrame::Initialize() {
         new modplug::gui::qt5::mfc_root(global_config, *this));
     config_dialog = new modplug::gui::qt5::config_dialog(
         global_config, ui_root.get());
+    ui_root->mainwindow.show();
 
     //Adding version number to the frame title
     CString title = GetTitle();

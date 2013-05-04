@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "mptrack.h"
 #include "legacy_soundlib/sndfile.h"
 #include "mainfrm.h"
 #include "legacy_soundlib/dlsbank.h"

@@ -77,7 +77,7 @@ class CChildFrame: public CMDIChildWnd {
     DECLARE_DYNCREATE(CChildFrame)
 public:
     CChildFrame();
-    std::unique_ptr<QWinWidget> qwinwidget;
+    ~CChildFrame() override;
     modplug::gui::qt5::document_window *pattern_test;
 
 protected:
@@ -128,7 +128,6 @@ public:
 
 // Implementation
 public:
-    virtual ~CChildFrame();
 #ifdef _DEBUG
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;

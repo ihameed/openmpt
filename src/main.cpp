@@ -1,8 +1,4 @@
-// mptrack.cpp : Defines the class behaviors for the application.
-//
-
 #include "stdafx.h"
-#include "mptrack.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
 #include "moddoc.h"
@@ -13,40 +9,18 @@
 #include "version.h"
 #include "test/test.h"
 #include <shlwapi.h>
-
-// rewbs.memLeak
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#include ".\mptrack.h"
-//end  rewbs.memLeak
+#include "main.h"
 
 
 #include "qmfcapp.h"
 
-#include "gui/mixgraph_view.h"
-
 #include "pervasives/pervasives.h"
 using namespace modplug::pervasives;
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-/////////////////////////////////////////////////////////////////////////////
-// The one and only CTrackApp object
 
 CTrackApp theApp;
 
 
-/////////////////////////////////////////////////////////////////////////////
-// Document Template
-
-//=============================================
 class CModDocTemplate: public CMultiDocTemplate
-//=============================================
 {
 public:
     CModDocTemplate(UINT nIDResource, CRuntimeClass* pDocClass, CRuntimeClass* pFrameClass, CRuntimeClass* pViewClass):
@@ -561,8 +535,6 @@ CTrackApp::CTrackApp()
     strcpy(m_MidiCfg.szMidiGlb[MIDIOUT_PROGRAM], "Cc p");
     strcpy(m_MidiCfg.szMidiSFXExt[0], "F0F000z");
     CModDoc::CreateZxxFromType(m_MidiCfg.szMidiZXXExt, zxx_reso4Bit);
-
-    modplug::gui::mixgraph_view_register();
 }
 
 /////////////////////////////////////////////////////////////////////////////

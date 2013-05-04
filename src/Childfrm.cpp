@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include <afxpriv.h>
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "ChildFrm.h"
 #include "moddoc.h"
@@ -12,6 +11,8 @@
 #include "childfrm.h"
 
 #include "qwinwidget.h"
+#include "gui/qt5/mfc_root.h"
+#include "gui/qt5/main_window.h"
 #include "gui/qt5/document_window.h"
 
 #ifdef _DEBUG
@@ -68,7 +69,7 @@ LONG CChildFrame::glMdiOpenCount = 0;
 /////////////////////////////////////////////////////////////////////////////
 // CChildFrame construction/destruction
 
-CChildFrame::CChildFrame()
+CChildFrame::CChildFrame() : pattern_test(nullptr)
 //------------------------
 {
     m_bInitialActivation=true; //rewbs.fix3185
@@ -90,6 +91,13 @@ CChildFrame::~CChildFrame()
     if ((--glMdiOpenCount) == 0)
     {
             CMainFrame::gbMdiMaximize = m_bMaxWhenClosed;
+    }
+
+    if (pattern_test) {
+        CMainFrame::GetMainFrame()
+            ->ui_root.get()
+            ->mainwindow.remove_document_window(pattern_test);
+        delete pattern_test;
     }
 }
 
@@ -160,18 +168,24 @@ void CChildFrame::ActivateFrame(int nCmdShow)
                     m_ViewPatterns.nRow=0;   //just in case
                     m_bInitialActivation=false;
             }
-        if (!qwinwidget) {
+        if (!pattern_test) {
             DEBUG_FUNC("creating my homie");
             DEBUG_FUNC("pModDoc = %p", pModDoc);
             auto pSndFile = pModDoc->GetSoundFile();
-            qwinwidget = std::unique_ptr<QWinWidget>(new QWinWidget(this->m_hWnd));
-            pattern_test = new modplug::gui::qt5::document_window(
-                pSndFile,
-                CMainFrame::GetMainFrame()->global_config,
-                qwinwidget.get()
-            );
-            pattern_test->resize(400, 400);
-            pattern_test->show();
+            if (pSndFile) {
+                pattern_test = new modplug::gui::qt5::document_window(
+                    pSndFile,
+                    CMainFrame::GetMainFrame()->global_config,
+                    nullptr
+                );
+                /*
+                pattern_test->resize(400, 400);
+                pattern_test->show();
+                */
+                CMainFrame::GetMainFrame()
+                    ->ui_root
+                    ->mainwindow.add_document_window(pattern_test);
+            }
         }
     }
     //end rewbs.fix3185
@@ -458,7 +472,7 @@ void CChildFrame::OnSetFocus(CWnd* pOldWnd)
 
 LRESULT CChildFrame::OnUpdatePosition(WPARAM, LPARAM lparam) {
     MPTNOTIFICATION *pnotify = (MPTNOTIFICATION *) lparam;
-    if (this->qwinwidget && pnotify) {
+    if (this->pattern_test && pnotify) {
         this->pattern_test->test_notification(pnotify);
     }
     return 0;

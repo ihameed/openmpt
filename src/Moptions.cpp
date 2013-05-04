@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <shlobj.h>
 #include <afxpriv.h>
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "moptions.h"
 #include "moddoc.h"

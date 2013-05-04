@@ -5,6 +5,7 @@
 #include "legacy_soundlib/tuningcollection.h"
 #include <vector>
 #include <string>
+#include "resource.h"
 #include "afxcmn.h"
 #include "afxwin.h"
 

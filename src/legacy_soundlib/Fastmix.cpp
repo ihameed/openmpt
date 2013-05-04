@@ -18,7 +18,6 @@
 #include "../mixer/mixutil.h"
 
 // rewbs.resamplerConf
-#include "../mptrack.h"
 #include "../MainFrm.h"
 #include "WindowedFIR.h"
 // end  rewbs.resamplerConf

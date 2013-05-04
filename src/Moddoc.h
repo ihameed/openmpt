@@ -447,7 +447,6 @@ public:
     afx_msg void OnPatternPlayNoLoop(); //rewbs.customKeys
     afx_msg void OnViewEditHistory();
     afx_msg void OnViewMPTHacks();
-    afx_msg void on_test_graph_editor();
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 private:

@@ -4,6 +4,7 @@
 #include "document_window.h"
 #include "comment_editor.h"
 #include "pattern_editor.h"
+#include "graph_editor.h"
 #include "pattern_editor_aux.h"
 #include "song_overview.h"
 #include "../MainFrm.h"
@@ -15,8 +16,11 @@ namespace qt5 {
 document_window::document_window(module_renderer *renderer,
                                  app_config &config,
                                  QWidget *parent
-) : QDialog(parent), global_config(config)
+) : QWidget(parent), global_config(config)
 {
+    QIcon window_icon(":/openmpt/icons/nobu-icons/mpt_document.svg");
+    setWindowIcon(window_icon);
+    setWindowTitle("docuhoot");
     auto layout = new QHBoxLayout;
     setLayout(layout);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -37,7 +41,10 @@ document_window::document_window(module_renderer *renderer,
 
     editor = new pattern_editor_tab(*renderer, config);
 
+    graph = new graph_editor(&renderer->mixgraph);
+
     tab_bar.addTab(editor, "Patterns");
+    tab_bar.addTab(graph, "Graph");
     tab_bar.addTab(commentsplitter, "Comments");
 
     connect(

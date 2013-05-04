@@ -7,9 +7,9 @@
  *          OpenMPT Devs
  */
 
-#ifndef SAMPLEEDITORDIALOGS_H
-#define SAMPLEEDITORDIALOGS_H
 #pragma once
+
+#include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////
 // Sample amplification dialog
@@ -158,6 +158,3 @@ protected:
     virtual BOOL OnInitDialog();
     virtual void OnOK();
 };
-
-
-#endif

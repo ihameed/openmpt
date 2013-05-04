@@ -238,33 +238,35 @@ pattern_editor::pattern_editor(
     const keymap_t &it_keymap,
     const keymap_t &xm_keymap,
     const colors_t &colors
-) : keymap(keymap),
-    it_keymap(it_keymap),
-    xm_keymap(xm_keymap),
-    follow_playback(true),
-    draw(renderer, colors, *this),
+) : keymap(keymap)
+  , it_keymap(it_keymap)
+  , xm_keymap(xm_keymap)
+  , follow_playback(true)
+  , draw(renderer, colors, *this)
+  , row_header(*this)
+  , column_header(*this)
 
-    select_column("Select Column", this),
-    select_pattern("Select Pattern", this),
-    cut("Cut", this),
-    copy("Copy", this),
-    paste("Paste", this),
-    undo("Undo", this),
-    redo("Redo", this),
-    clear_selection("Clear Selection", this),
-    interpolate_note("Interpolate Note", this),
-    interpolate_volume("Interpolate Volume", this),
-    interpolate_effect("Interpolate Effect", this),
-    transpose_semiup("Transpose +1", this),
-    transpose_semidown("Transpose -1", this),
-    transpose_octup("Transpose +12", this),
-    transpose_octdown("Transpose -12", this),
-    amplify("Amplify...", this),
-    change_instrument("Change Instrument", this),
-    grow_selection("Grow Selection", this),
-    shrink_selection("Shrink Selection", this),
-    insert_row("Insert Row", this),
-    delete_row("Delete Row", this)
+  , select_column("Select Column", this)
+  , select_pattern("Select Pattern", this)
+  , cut("Cut", this)
+  , copy("Copy", this)
+  , paste("Paste", this)
+  , undo("Undo", this)
+  , redo("Redo", this)
+  , clear_selection("Clear Selection", this)
+  , interpolate_note("Interpolate Note", this)
+  , interpolate_volume("Interpolate Volume", this)
+  , interpolate_effect("Interpolate Effect", this)
+  , transpose_semiup("Transpose +1", this)
+  , transpose_semidown("Transpose -1", this)
+  , transpose_octup("Transpose +12", this)
+  , transpose_octdown("Transpose -12", this)
+  , amplify("Amplify...", this)
+  , change_instrument("Change Instrument", this)
+  , grow_selection("Grow Selection", this)
+  , shrink_selection("Shrink Selection", this)
+  , insert_row("Insert Row", this)
+  , delete_row("Delete Row", this)
 {
     auto herp = this->viewport();
     auto grid = new QGridLayout(herp);
@@ -274,8 +276,8 @@ pattern_editor::pattern_editor(
     derf->setMinimumSize(1, 1);
     derf->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     grid->addWidget(derf, 0, 0);
-    grid->addWidget(new pattern_editor_column_header(*this), 0, 1);
-    grid->addWidget(new pattern_editor_row_header(*this), 1, 0);
+    grid->addWidget(&column_header, 0, 1);
+    grid->addWidget(&row_header   , 1, 0);
     grid->addWidget(&draw, 1, 1);
 
     verticalScrollBar()->setSingleStep(1);
@@ -453,6 +455,41 @@ void pattern_editor::set_active_order(modplug::tracker::orderindex_t idx) {
     draw.update();
 }
 
+void pattern_editor::update_scrollbars(QSize size) {
+    QSize sbsize(verticalScrollBar()->width(), horizontalScrollBar()->height());
+    auto sz = pattern_size();
+    sz.setWidth(sz.width() + row_header.width());
+    sz.setHeight(sz.height() + column_header.height());
+
+    auto needs_vertical_scrollbar = sz.height() > size.height();
+    auto needs_horizontal_scrollbar = sz.width() > size.width();
+
+    if (needs_vertical_scrollbar) {
+        if (sz.width() > size.width() - sbsize.width()) {
+            needs_horizontal_scrollbar = true;
+        }
+    }
+
+    if (needs_horizontal_scrollbar) {
+        if (sz.height() > size.height() - sbsize.height()) {
+            needs_vertical_scrollbar = true;
+        }
+    }
+
+    auto update = [&] (bool active, QScrollBar *sb, int (QSize::*length)() const) {
+        if (active) {
+            auto slider_length = (sz.*length)() - (sb->size().*length)();
+            sb->setRange(0, slider_length);
+            sb->setPageStep((draw.size().*length)());
+        } else {
+            sb->setRange(0, 0);
+        }
+    };
+
+    update(needs_vertical_scrollbar,   verticalScrollBar(),   &QSize::width);
+    update(needs_horizontal_scrollbar, horizontalScrollBar(), &QSize::height);
+}
+
 void pattern_editor::keyPressEvent(QKeyEvent *event) {
     Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
     auto context_key = key_t(modifiers, event->key(), keycontext());
@@ -466,29 +503,7 @@ void pattern_editor::keyPressEvent(QKeyEvent *event) {
 }
 
 void pattern_editor::resizeEvent(QResizeEvent *event) {
-    draw.resize(event->size());
-    auto sz = pattern_size();
-
-    const auto pattern = active_pattern();
-
-    auto slider_height = sz.height() - draw.size().height();
-    auto slider_width  = sz.width()  - draw.size().width();
-    if (slider_height > 0) {
-        verticalScrollBar()->setRange(0, slider_height);
-        verticalScrollBar()->setPageStep(draw.size().height());
-        verticalScrollBar()->show();
-    } else {
-        verticalScrollBar()->setRange(0, 0);
-        verticalScrollBar()->setPageStep(draw.size().height());
-    }
-    if (slider_width > 0) {
-        horizontalScrollBar()->setRange(0, slider_width);
-        horizontalScrollBar()->setPageStep(draw.size().width());
-        horizontalScrollBar()->show();
-    } else {
-        horizontalScrollBar()->setRange(0, 0);
-        horizontalScrollBar()->setPageStep(draw.size().width());
-    }
+    update_scrollbars(event->size());
 }
 
 void pattern_editor::paintEvent(QPaintEvent *event) {
@@ -499,7 +514,7 @@ const editor_position_t &pattern_editor::pos() const {
     return draw.selection.end;
 }
 
-keycontext_t pattern_editor::keycontext() const{
+keycontext_t pattern_editor::keycontext() const {
     switch (pos().subcolumn) {
     case ElemNote:  return keycontext_t::NoteCol;
     case ElemInstr: return keycontext_t::InstrCol;

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "mptrack.h"
 #include "mainfrm.h"
 #include "legacy_soundlib/tuning.h"
 #include "tuningRatioMapWnd.h"

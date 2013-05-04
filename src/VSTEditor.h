@@ -1,5 +1,4 @@
 #pragma once
-#include "mptrack.h"
 #include "MainFrm.h"
 #include "VstPlug.h"
 #include "AbstractVstEditor.h"

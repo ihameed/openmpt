@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "tracker/tracker.h"
+
 struct modplug::tracker::modenvelope_t;
 //=======================================
 class CScaleEnvPointsDlg : public CDialog

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "mptrack.h"
 #include "moddoc.h"
 #include "mainfrm.h"
 #include "dlg_misc.h"

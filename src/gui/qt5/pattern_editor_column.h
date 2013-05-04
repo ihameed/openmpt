@@ -3,8 +3,6 @@
 #include "pattern_editor.h"
 #include "../../Resource.h"
 
-#include "../../mptrack.h"
-
 #include "../../pervasives/pervasives.h"
 #include "../../legacy_soundlib/sndfile.h"
 #include "../../tracker/constants.h"
@@ -84,8 +82,8 @@ struct note_column {
         for (elem_t elem = ElemNote; elem < ElemMax; ++elem) {
             elemright += font_metrics.element_widths[elem];
             if (localx < elemright) {
-                pos.row        = row;
-                pos.column     = column;
+                pos.row       = row;
+                pos.column    = column;
                 pos.subcolumn = elem;
                 return true;
             };

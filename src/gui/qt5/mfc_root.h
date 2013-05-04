@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "qwinwidget.h"
+#include "main_window.h"
 
 class CMainFrame;
 
@@ -15,12 +16,12 @@ class mfc_root : public QWinWidget {
 public:
     mfc_root(app_config &settings, CMainFrame &mfc_parent);
 
-public slots:
-    void update_audio_settings();
-
-private:
     app_config &settings;
     CMainFrame &mainwnd;
+    main_window mainwindow;
+
+public slots:
+    void update_audio_settings();
 };
 
 }

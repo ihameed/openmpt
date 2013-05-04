@@ -10,7 +10,7 @@
 #include "Loaders.h"
 #ifdef MODPLUG_TRACKER
 #include "../moddoc.h"
-#include "../Mptrack.h"
+#include "../main.h"
 #endif // MODPLUG_TRACKER
 
 // decode a MO3 file (returns the same "exit codes" as UNMO3.EXE, eg. 0=success)
