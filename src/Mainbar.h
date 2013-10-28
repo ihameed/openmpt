@@ -6,7 +6,6 @@
 
 class module_renderer;
 class CModDoc;
-class CModTree;
 
 //===============================
 class CToolBarEx: public CToolBar
@@ -75,69 +74,6 @@ protected:
 #define MTB_CAPTURE            0x02
 #define MTB_DRAGGING    0x04
 #define MTB_TRACKER            0x08
-
-//==================================
-class CModTreeBar: public CDialogBar
-//==================================
-{
-protected:
-    CModTree *m_pModTree, *m_pModTreeData;
-    uint32_t m_dwStatus; // MTB_XXXX
-    UINT m_nCursorDrag;
-    CPoint ptDragging;
-    UINT m_cxOriginal, m_cyOriginal, m_nTrackPos;
-    UINT m_nTreeSplitRatio;
-
-public:
-    CModTreeBar();
-    virtual ~CModTreeBar();
-
-public:
-    VOID Init();
-    VOID RecalcLayout();
-    VOID DoMouseMove(CPoint point);
-    VOID DoLButtonDown(CPoint point);
-    VOID DoLButtonUp();
-    VOID CancelTracking();
-    VOID OnInvertTracker(UINT x);
-    VOID RefreshDlsBanks();
-    VOID RefreshMidiLibrary();
-    VOID OnOptionsChanged();
-    VOID OnDocumentCreated(CModDoc *pModDoc);
-    VOID OnDocumentClosed(CModDoc *pModDoc);
-    VOID OnUpdate(CModDoc *pModDoc, uint32_t lHint=0, CObject *pHint=NULL);
-    VOID UpdatePlayPos(CModDoc *pModDoc, PMPTNOTIFICATION pNotify);
-    HWND GetModTreeHWND(); //rewbs.customKeys
-    BOOL PostMessageToModTree(UINT cmdID, WPARAM wParam, LPARAM lParam); //rewbs.customKeys
-
-
-protected:
-    //{{AFX_VIRTUAL(CModTreeBar)
-    virtual CSize CalcFixedLayout(BOOL bStretch, BOOL bHorz);
-    //}}AFX_VIRTUAL
-
-protected:
-    //{{AFX_MSG(CModTreeBar)
-    afx_msg void OnNcPaint();
-#if _MFC_VER > 0x0710
-    afx_msg LRESULT OnNcHitTest(CPoint point);
-#else
-    afx_msg UINT OnNcHitTest(CPoint point);
-#endif
-    afx_msg void OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
-    afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-    afx_msg void OnNcLButtonDown(UINT, CPoint);
-    afx_msg void OnLButtonDown(UINT, CPoint);
-    afx_msg void OnNcLButtonUp(UINT, CPoint);
-    afx_msg void OnLButtonUp(UINT, CPoint);
-    afx_msg void OnNcRButtonDown(UINT, CPoint) { CancelTracking(); }
-    afx_msg void OnRButtonDown(UINT, CPoint) { CancelTracking(); }
-    afx_msg LRESULT OnInitDialog(WPARAM, LPARAM);
-    //}}AFX_MSG
-    DECLARE_MESSAGE_MAP()
-};
 
 
 #endif

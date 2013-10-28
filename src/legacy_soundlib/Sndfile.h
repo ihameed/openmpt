@@ -23,6 +23,7 @@
 #include "../tracker/tracker.h"
 #include "../mixgraph/core.h"
 #include "../tracker/modsequence.h"
+#include "../tracker/orderlist.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
@@ -209,19 +210,9 @@ enum enmLineEndings
     leAutodetect,    // Detect suitable line ending
 };
 
-
-// For WAV export (writing pattern positions to file)
-struct PatternCuePoint
-{
-    bool            processed;                // has this point been processed by the main WAV render function yet?
-    ULONGLONG    offset;                        // offset in the file (in samples)
-    modplug::tracker::orderindex_t    order;                        // which order is this?
-};
-
 // Data type for the visited rows routines.
 typedef vector<bool> VisitedRowsBaseType;
 typedef vector<VisitedRowsBaseType> VisitedRowsType;
-
 
 // Return values for GetLength()
 struct GetLengthType
@@ -658,6 +649,8 @@ public:    // for Editing
     modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
     CPatternContainer Patterns;                                                    // Patterns
     modplug::tracker::deprecated_modsequence_list_t Order;                                                            // Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
+    modplug::tracker::orderlist_t orders;
+
 
     modplug::tracker::modsample_t Samples[MAX_SAMPLES];                                            // Sample Headers
     modplug::tracker::modinstrument_t *Instruments[MAX_INSTRUMENTS];            // Instrument Headers
@@ -675,8 +668,6 @@ public:    // for Editing
     CSoundFilePlayConfig* m_pConfig;
     uint32_t m_dwCreatedWithVersion;
     uint32_t m_dwLastSavedWithVersion;
-
-    vector<PatternCuePoint> m_PatternCuePoints;                    // For WAV export (writing pattern positions to file)
 
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
@@ -846,9 +837,6 @@ inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instru
 // Low-level Mixing functions
 
 #define FADESONGDELAY            100
-#define EQ_BUFFERSIZE            (modplug::mixer::MIX_BUFFER_SIZE)
-#define AGC_PRECISION            10
-#define AGC_UNITY                    (1 << AGC_PRECISION)
 
 // Calling conventions
 #ifdef WIN32

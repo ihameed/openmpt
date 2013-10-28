@@ -1,24 +1,92 @@
 #pragma once
 
+// #define USE_GHETTO_NEWTYPES
+
 #ifdef USE_GHETTO_NEWTYPES
-#define NUMERIC_NEWTYPE(alias, type) \
-struct alias { \
-    explicit alias(type val) { \
+
+#define NEWTYPE(type, wrapped) \
+struct type { \
+    explicit type(wrapped val) { \
         this->val = val; \
     } \
-    bool operator < (const alias & other) const { \
-        return val < other.val; \
-    } \
-    bool operator > (const alias & other) const { \
-        return val > other.val; \
-    } \
-    bool operator == (const alias & other) const { \
-        return val == other.val; \
-    } \
-    type val; \
+    wrapped val; \
 };
+
+#define ORDERED_TYPE(type) \
+inline bool operator < (const type & x, const type & y) { \
+    return x.val < y.val; \
+} \
+inline bool operator <= (const type & x, const type & y) { \
+    return x.val <= y.val; \
+} \
+inline bool operator > (const type & x, const type & y) { \
+    return x.val > y.val; \
+} \
+inline bool operator >= (const type & x, const type & y) { \
+    return x.val >= y.val; \
+} \
+inline bool operator == (const type & x, const type & y) { \
+    return x.val == y.val; \
+} \
+inline bool operator != (const type & x, const type & y) { \
+    return x.val != y.val; \
+}
+
+#define FINITE_FIELD_TYPE(type) \
+inline type operator + (const type & x, const type & y) { \
+    return type(x.val + y.val); \
+} \
+inline type operator - (const type & x, const type & y) { \
+    return type(x.val - y.val); \
+} \
+inline type operator * (const type & x, const type & y) { \
+    return type(x.val * y.val); \
+} \
+inline type operator / (const type & x, const type & y) { \
+    return type(x.val / y.val); \
+} \
+inline type operator % (const type & x, const type & y) { \
+    return type(x.val % y.val); \
+} \
+inline type operator - (const type & x) { \
+    return type(-x.val); \
+}
+
+#define INCR_DECR_TYPE(type) \
+inline type & operator ++ (type & x) { \
+    ++x.val; \
+    return x; \
+} \
+inline type & operator -- (type & x) { \
+    --x.val; \
+    return x; \
+} \
+inline type & operator ++ (type & x, int) { \
+    type old = x; \
+    ++x.val; \
+    return old; \
+} \
+inline type & operator -- (type & x, int) { \
+    type old = x; \
+    --x.val; \
+    return old; \
+}
+
+#define BITS_TYPE(type) \
+inline type operator << (const type & x, int y) { \
+    return type(x.val << y); \
+} \
+inline type operator >> (const type & x, int y) { \
+    return type(x.val >> y); \
+}
+
 #else
-#define NUMERIC_NEWTYPE(alias, type) typedef type alias;
+
+#define NEWTYPE(alias, type) typedef type alias;
+#define ORDERED_TYPE(type)
+#define FINITE_FIELD_TYPE(type)
+#define INCR_DECR_TYPE(type)
+
 #endif
 
 
@@ -33,7 +101,7 @@ auto unwrap(Ty &wrapped) -> decltype(wrapped.val) {
 }
 #else
 template <typename Ty>
-Ty unwrap(Ty &wrapped) { return wrapped; }
+Ty unwrap(Ty &&wrapped) { return wrapped; }
 #endif
 
 

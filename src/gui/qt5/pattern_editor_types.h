@@ -59,14 +59,15 @@ normalize_selection(const selection_t selection) {
     elem_t minsub = start.column == mincol ? start.subcolumn : end.subcolumn;
     elem_t maxsub = start.column == mincol ? end.subcolumn : start.subcolumn;
 
-    normalized_selection_t ret = { editor_position_t(minrow, mincol, minsub),
-                                   editor_position_t(maxrow, maxcol, maxsub) };
+    normalized_selection_t ret = {
+        editor_position_t(minrow, mincol, minsub),
+        editor_position_t(maxrow, maxcol, maxsub)
+    };
     return ret;
 }
 
-inline bool pos_in_rect(const normalized_selection_t &corners,
-                        const editor_position_t &pos)
-{
+inline bool
+pos_in_rect(const normalized_selection_t &corners, const editor_position_t &pos) {
     if (corners.topleft.row <= pos.row && pos.row <= corners.bottomright.row) {
         bool in_left = (pos.column == corners.topleft.column &&
                         pos.subcolumn >= corners.topleft.subcolumn

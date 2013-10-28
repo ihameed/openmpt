@@ -10,6 +10,7 @@
 #include "Loaders.h"
 #include "../version.h"
 #include "../misc_util.h"
+#include "../serializers/xm.h"
 
 ////////////////////////////////////////////////////////
 // FastTracker II XM file support
@@ -243,6 +244,10 @@ bool module_renderer::ReadXM(const uint8_t *lpStream, const uint32_t dwMemLength
     XMSAMPLEHEADER xmsh;
     XMSAMPLESTRUCT xmss;
     uint32_t dwMemPos;
+
+    auto buf = std::make_shared<std::vector<uint8_t>>(lpStream, lpStream + dwMemLength);
+    auto ctx = modplug::serializers::binaryparse::mkcontext(buf);
+    auto temp_orders = modplug::serializers::xm::read(ctx);
 
     bool bMadeWithModPlug = false, bProbablyMadeWithModPlug = false, bProbablyMPT109 = false, bIsFT2 = false;
 

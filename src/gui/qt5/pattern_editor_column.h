@@ -35,17 +35,9 @@ struct draw_state {
     const editor_position_t &pos;
 };
 
-//TODO: vertex batching
-/*
-const size_t MaxVertices = 32768;
-
-static const int vertex_homies[MaxVertices];
-static const float texture_homies[MaxVertices];
-*/
-
 struct note_column {
     const int left;
-    const int column;
+    const uint32_t column;
 
     const pattern_font_metrics_t &font_metrics;
 
@@ -55,7 +47,7 @@ struct note_column {
 
     note_column(
         const int left,
-        const int column,
+        const uint32_t column,
         const pattern_font_metrics_t &font_metrics
     )
     : font_metrics(font_metrics), column(column), left(left)
@@ -92,21 +84,6 @@ struct note_column {
         return false;
     }
 
-    void draw_header(draw_state &state) {
-        /*
-        QRect rect(left, 0,
-                   font_metrics.width, column_header_height);
-                   */
-        //state.painter.drawRect(rect);
-        const char *fmt = state.renderer.m_bChannelMuteTogglePending[column]
-            ? "[Channel %1]"
-            : "Channel %1";
-            /*
-        state.painter.drawText(rect, Qt::AlignCenter,
-                               QString(fmt).arg(column + 1));
-                               */
-    }
-
     void draw_column(draw_state &state) {
         if (state.active_pos.pattern > state.num_patterns) {
             return;
@@ -116,7 +93,6 @@ struct note_column {
 
         auto clip_bottom = rect_bottom(state.clip);
 
-        const int left = column * font_metrics.width;
         const int height = font_metrics.height;
 
         int top = 0;

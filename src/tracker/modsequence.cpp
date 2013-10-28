@@ -11,8 +11,11 @@
 
 #define str_SequenceTruncationNote (GetStrI18N((_TEXT("Module has sequence of length %u; it will be truncated to maximum supported length, %u."))))
 
+using namespace modplug::pervasives;
+
 namespace modplug {
 namespace tracker {
+
 
 modsequence_t::modsequence_t(
     module_renderer& rSf,
@@ -38,7 +41,7 @@ modsequence_t::modsequence_t(module_renderer& rSf, orderindex_t nSize) :
 {
     m_nSize = nSize;
     m_nCapacity = m_nSize;
-    m_pArray = new patternindex_t[m_nCapacity];
+    m_pArray = new patternindex_t[unwrap(m_nCapacity)];
     std::fill(begin(), end(), invalid_index_of_modtype(MOD_TYPE_MPT));
 }
 
@@ -380,7 +383,7 @@ void ReadModSequence(std::istream& iStrm, modsequence_t& seq, const size_t)
     std::string str;
     ssb.ReadItem(str, "n");
     seq.m_sName = str.c_str();
-    uint16_t nSize = MAX_ORDERS;
+    uint16_t nSize = unwrap(MAX_ORDERS);
     ssb.ReadItem<uint16_t>(nSize, "l");
     LimitMax(nSize, ModSpecs::mptm.ordersMax);
     seq.resize(bad_max(nSize, deprecated_modsequence_list_t::s_nCacheSize));
@@ -393,9 +396,9 @@ void WriteModSequence(std::ostream& oStrm, const modsequence_t& seq)
     srlztn::Ssb ssb(oStrm);
     ssb.BeginWrite(FileIdSequence, MptVersion::num);
     ssb.WriteItem((LPCSTR)seq.m_sName.c_str(), "n");
-    const uint16_t nLength = seq.GetLengthTailTrimmed();
+    const orderindex_t nLength = seq.GetLengthTailTrimmed();
     ssb.WriteItem<uint16_t>(nLength, "l");
-    ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16_t>(nLength));
+    ssb.WriteItem(seq.m_pArray, "a", 1, srlztn::ArrayWriter<uint16_t>(unwrap(nLength)));
     ssb.FinishWrite();
 }
 
@@ -404,7 +407,7 @@ deprecated_modsequence_list_t::deprecated_modsequence_list_t(module_renderer& sn
       m_nCurrentSeq(0)
 //-------------------------------------------------------------------
 {
-    m_Sequences.push_back(modsequence_t(sndFile, s_nCacheSize));
+    m_Sequences.push_back(modsequence_t(sndFile, orderindex_t(s_nCacheSize)));
 }
 
 
@@ -678,7 +681,7 @@ bool deprecated_modsequence_list_t::MergeSequences()
     }
     // Remove order name + fill up with empty patterns.
     m_sName = "";
-    const orderindex_t nMinLength = (std::min)(deprecated_modsequence_list_t::s_nCacheSize, m_pSndFile->GetModSpecifications().ordersMax);
+    const orderindex_t nMinLength = std::min<uint32_t>(deprecated_modsequence_list_t::s_nCacheSize, m_pSndFile->GetModSpecifications().ordersMax);
     if (GetLength() < nMinLength)
             resize(nMinLength);
     return true;

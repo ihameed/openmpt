@@ -57,12 +57,14 @@ public:
     }
 
     patternindex_t& Last() {
-        assert(m_nSize > 0);
-        return m_pArray[m_nSize-1];
+        auto size = modplug::pervasives::unwrap(m_nSize);
+        assert(size > 0);
+        return m_pArray[size - 1];
     }
     const patternindex_t& Last() const {
-        assert(m_nSize > 0);
-        return m_pArray[m_nSize-1];
+        auto size = modplug::pervasives::unwrap(m_nSize);
+        assert(size > 0);
+        return m_pArray[size - 1];
     }
 
     // Returns last accessible index, i.e. GetLength() - 1.
@@ -141,8 +143,12 @@ public:
 protected:
     iterator begin() {return m_pArray;}
     const_iterator begin() const {return m_pArray;}
-    iterator end() {return m_pArray + m_nSize;}
-    const_iterator end() const {return m_pArray + m_nSize;}
+    iterator end() {
+        return m_pArray + modplug::pervasives::unwrap(m_nSize);
+    }
+    const_iterator end() const {
+        return m_pArray + modplug::pervasives::unwrap(m_nSize);
+    }
 
 public:
     std::string m_sName;                // Sequence name.
@@ -202,7 +208,7 @@ public:
     // Returns true if sequences were modified, false otherwise.
     bool ConvertSubsongsToMultipleSequences();
 
-    static const orderindex_t s_nCacheSize = MAX_ORDERS;
+    static const uint32_t s_nCacheSize = 255;
 
 private:
     void CopyCacheToStorage();

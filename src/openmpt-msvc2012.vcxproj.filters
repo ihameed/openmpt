@@ -42,7 +42,6 @@
     <ClCompile Include="view_ins.cpp" />
     <ClCompile Include="view_pat.cpp" />
     <ClCompile Include="view_smp.cpp" />
-    <ClCompile Include="view_tre.cpp" />
     <ClCompile Include="VSTEditor.cpp" />
     <ClCompile Include="vstplug.cpp" />
     <ClCompile Include="TuningDialog.cpp" />
@@ -305,6 +304,15 @@
     <ClCompile Include="GeneratedFiles\Template\moc_graph_editor.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="tracker\orderlist.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serializers\legacy_util.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serializers\xm.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractVstEditor.h" />
@@ -346,7 +354,6 @@
     <ClInclude Include="view_ins.h" />
     <ClInclude Include="view_pat.h" />
     <ClInclude Include="view_smp.h" />
-    <ClInclude Include="view_tre.h" />
     <ClInclude Include="VSTEditor.h" />
     <ClInclude Include="vstplug.h" />
     <ClInclude Include="TuningDialog.h" />
@@ -446,6 +453,24 @@
     </ClInclude>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\undoredo.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\orderlist.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\binaryparse.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\legacy_util.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\binaryprint.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\xm.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

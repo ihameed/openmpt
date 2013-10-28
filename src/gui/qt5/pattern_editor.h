@@ -29,7 +29,6 @@ public:
     QSize sizeHint() const override;
 
     void paintEvent(QPaintEvent *event) override;
-private:
     pattern_editor &parent;
 };
 
@@ -40,16 +39,12 @@ public:
     QSize sizeHint() const override;
 
     void paintEvent(QPaintEvent *) override;
-private:
     pattern_editor &parent;
 };
 
 class pattern_editor_draw : public QGLWidget {
     Q_OBJECT
 public:
-    friend class pattern_editor;
-    friend class pattern_editor_row_header;
-    friend class pattern_editor_column_header;
 
     pattern_editor_draw(
         module_renderer &renderer,
@@ -67,7 +62,6 @@ public:
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
 
-private:
     selection_t selection;
     normalized_selection_t corners;
 
@@ -80,6 +74,7 @@ private:
     QImage font_bitmap;
     colors_t colors;
 
+    uint32_t first_column;
     int width;
     int height;
 
@@ -106,7 +101,7 @@ public:
 
     void update_colors(const colors_t &colors);
     void update_playback_position(const player_position_t &);
-    void update_scrollbars(QSize size);
+    void update_scrollbars(QSize, QSize);
 
     void set_base_octave(uint8_t octave);
     uint8_t base_octave();

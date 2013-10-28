@@ -627,8 +627,6 @@ VOID CMainFrame::Initialize() {
 
     // Initialize Audio Mixer
     //XXXih: UpdateAudioParameters(TRUE);
-    // Update the tree
-    m_wndTree.Init();
 }
 
 
@@ -699,17 +697,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     EnableDocking(CBRS_ALIGN_ANY);
     if (!m_wndToolBar.Create(this)) return -1;
     if (!m_wndStatusBar.Create(this)) return -1;
-    if (!m_wndTree.Create(this, IDD_TREEVIEW, CBRS_LEFT|CBRS_BORDER_RIGHT, IDD_TREEVIEW)) return -1;
     m_wndStatusBar.SetIndicators(indicators, CountOf(indicators));
     m_wndToolBar.Init(this);
-    m_wndTree.RecalcLayout();
-
-    RemoveControlBar(&m_wndStatusBar); //Removing statusbar because corrupted statusbar inifiledata can crash the program.
-    m_wndTree.EnableDocking(0); //To prevent a crash when there's "Docking=1" for treebar in ini-settings.
-    // Restore toobar positions
-    LoadBarState("Toolbars");
-
-    AddControlBar(&m_wndStatusBar); //Restore statusbar to mainframe.
 
     if(m_dwPatternSetup & PATTERN_MIDIRECORD) OnMidiRecord();
 
@@ -1459,7 +1448,6 @@ BOOL CMainFrame::PauseMod(CModDoc *pModDoc)
     if (m_pModPlaying)
     {
         m_pModPlaying->SetPause(TRUE);
-        m_wndTree.UpdatePlayPos(m_pModPlaying, NULL);
     }
     if (renderer)
     {
@@ -1826,7 +1814,6 @@ VOID CMainFrame::SetHelpText(LPCSTR lpszText)
 VOID CMainFrame::OnDocumentCreated(CModDoc *pModDoc)
 //--------------------------------------------------
 {
-    m_wndTree.OnDocumentCreated(pModDoc);
 }
 
 
@@ -1838,14 +1825,12 @@ VOID CMainFrame::OnDocumentClosed(CModDoc *pModDoc)
     // Make sure that OnTimer() won't try to set the closed document modified anymore.
     if (pModDoc == m_pJustModifiedDoc) m_pJustModifiedDoc = 0;
 
-    m_wndTree.OnDocumentClosed(pModDoc);
 }
 
 
 VOID CMainFrame::UpdateTree(CModDoc *pModDoc, uint32_t lHint, CObject *pHint)
 //------------------------------------------------------------------------
 {
-    m_wndTree.OnUpdate(pModDoc, lHint, pHint);
 }
 
 
@@ -1869,7 +1854,6 @@ void CMainFrame::OnViewOptions()
     m_bOptionsLocked=true;    //rewbs.customKeys
     dlg.DoModal();
     m_bOptionsLocked=false;    //rewbs.customKeys
-    m_wndTree.OnOptionsChanged();
 }
 
 void CMainFrame::display_config_editor() {
@@ -1958,7 +1942,6 @@ void CMainFrame::OnAddDlsBank()
     {
         CTrackApp::AddDLSBank(files.filenames[counter].c_str());
     }
-    m_wndTree.RefreshDlsBanks();
     EndWaitCursor();
 }
 
@@ -1976,7 +1959,6 @@ void CMainFrame::OnImportMidiLib()
 
     BeginWaitCursor();
     CTrackApp::ImportMidiConfig(files.first_file.c_str());
-    m_wndTree.RefreshMidiLibrary();
     EndWaitCursor();
 }
 
@@ -2142,7 +2124,6 @@ LRESULT CMainFrame::OnUpdatePosition(WPARAM, LPARAM lParam)
         //Log("OnUpdatePosition: row=%d time=%lu\n", pnotify->nRow, pnotify->dwLatency);
         if ((m_pModPlaying) && (renderer))
         {
-            m_wndTree.UpdatePlayPos(m_pModPlaying, pnotify);
             if (m_hFollowSong) {
                 ::SendMessage(m_hFollowSong, WM_MOD_UPDATEPOSITION, 0, lParam);
             }

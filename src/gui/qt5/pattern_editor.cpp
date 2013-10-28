@@ -23,12 +23,12 @@ pattern_editor_draw::pattern_editor_draw(
     module_renderer &renderer,
     const colors_t &colors,
     pattern_editor &parent
-) :
-    renderer(renderer),
-    font_metrics(small_pattern_font),
-    //font_metrics(medium_pattern_font),
-    is_dragging(false),
-    parent(parent)
+) : renderer(renderer)
+  , font_metrics(small_pattern_font)
+  //, font_metrics(medium_pattern_font)
+  , is_dragging(false)
+  , first_column(0)
+  , parent(parent)
 {
     setFocusPolicy(Qt::ClickFocus);
 
@@ -36,11 +36,9 @@ pattern_editor_draw::pattern_editor_draw(
                  .convertToFormat(QImage::Format_MonoLSB);
     font_bitmap.setColor(0, qRgba(0xff, 0xff, 0xff, 0x00));
     font_bitmap.setColor(1, qRgba(0xff, 0xff, 0xff, 0xff));
-              
 }
 
 void pattern_editor_draw::initializeGL() {
-    //DEBUG_FUNC("");
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY_EXT);
 
@@ -55,7 +53,8 @@ void pattern_editor_draw::initializeGL() {
 }
 
 void pattern_editor_draw::resizeGL(int width, int height) {
-    //DEBUG_FUNC("width = %d, height = %d", width, height);
+    DEBUG_FUNC("width: %d, height: %d", width, height);
+    ghettotimer homesled(__FUNCTION__);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -70,8 +69,7 @@ void pattern_editor_draw::resizeGL(int width, int height) {
 }
 
 void pattern_editor_draw::paintGL() {
-    //ghettotimer homesled(__FUNCTION__);
-
+    ghettotimer homesled(__FUNCTION__);
     chnindex_t channel_count = renderer.GetNumChannels();
 
     draw_state state = {
@@ -88,18 +86,18 @@ void pattern_editor_draw::paintGL() {
         selection.end
     };
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
-            GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT |
+    //         GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    int painted_width = 0;
+    int left = 0;
 
-    for (chnindex_t idx = 0;
-         idx < channel_count && painted_width < width;
+    for (chnindex_t idx = first_column;
+         idx < channel_count && left < width;
          ++idx)
     {
-        note_column notehomie(painted_width, idx, font_metrics);
+        note_column notehomie(left, idx, font_metrics);
         notehomie.draw_column(state);
-        painted_width += notehomie.width();
+        left += notehomie.width();
     }
 }
 
@@ -110,7 +108,7 @@ bool pattern_editor_draw::position_from_point(const QPoint &point,
     int left = 0;
     bool success = false;
 
-    for (chnindex_t idx = 0; idx < channel_count; ++idx) {
+    for (chnindex_t idx = first_column; idx < channel_count; ++idx) {
         note_column notehomie(left, idx, font_metrics);
         success = notehomie.position_from_point(point, pos);
         if (success) {
@@ -189,7 +187,8 @@ void pattern_editor_row_header::paintEvent(QPaintEvent *event) {
 
 pattern_editor_column_header::pattern_editor_column_header(
     pattern_editor &parent
-) : parent(parent) {
+) : parent(parent)
+{
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 }
@@ -218,9 +217,10 @@ void pattern_editor_column_header::paintEvent(QPaintEvent *event) {
     opt.textAlignment = Qt::AlignHCenter | Qt::AlignVCenter;
     opt.state = QStyle::State_Enabled;
 
-    for (chnindex_t column = 0;
-        column < parent.active_pattern()->GetNumChannels();
-         ++column) {
+    for (chnindex_t column = parent.draw.first_column;
+         column < parent.active_pattern()->GetNumChannels();
+         ++column)
+    {
         current.moveLeft(left);
         opt.rect = current;
         const char *fmt = parent.draw.renderer.m_bChannelMuteTogglePending[column]
@@ -299,22 +299,15 @@ pattern_editor::pattern_editor(
             auto global = mapToGlobal(point);
             context_menu.exec(global);
         }
-);
+    );
 }
 
 void pattern_editor::update_colors(const colors_t &newcolors) {
     draw.colors = newcolors;
-    /*
-    auto &bgc = colors[colors_t::Normal].background;
-    makeCurrent();
-    glClearColor(bgc.redF() * 0.75, bgc.greenF() * 0.75, bgc.blueF() * 0.75, 0.5);
-    */
     draw.updateGL();
 }
 
-void pattern_editor::update_playback_position(
-    const player_position_t &position)
-{
+void pattern_editor::update_playback_position(const player_position_t &position) {
     draw.playback_pos = position;
     if (follow_playback) {
         draw.active_pos = draw.playback_pos;
@@ -343,9 +336,8 @@ void pattern_editor::collapse_selection() {
     move_to(newpos);
 }
 
-editor_position_t pattern_editor::pos_move_by_row(
-    const editor_position_t &in, int amount) const
-{
+editor_position_t
+pattern_editor::pos_move_by_row(const editor_position_t &in, int amount) const {
     auto newpos = in;
     bool down = amount < 0;
     uint32_t absamount = down ? -amount : amount;
@@ -366,9 +358,8 @@ editor_position_t pattern_editor::pos_move_by_row(
     return newpos;
 }
 
-editor_position_t pattern_editor::pos_move_by_subcol(
-    const editor_position_t &in, int amount) const
-{
+editor_position_t
+pattern_editor::pos_move_by_subcol(const editor_position_t &in, int amount) const {
     auto newpos = in;
 
     bool left = amount < 0;
@@ -455,59 +446,41 @@ void pattern_editor::set_active_order(modplug::tracker::orderindex_t idx) {
     draw.update();
 }
 
-void pattern_editor::update_scrollbars(QSize size) {
-    QSize sbsize(verticalScrollBar()->width(), horizontalScrollBar()->height());
-    auto sz = pattern_size();
-    sz.setWidth(sz.width() + row_header.width());
-    sz.setHeight(sz.height() + column_header.height());
+void pattern_editor::update_scrollbars(QSize container, QSize viewport) {
+    const QSize sbsize(verticalScrollBar()->width(), horizontalScrollBar()->height());
+    const auto pattern = pattern_size();
+    const QSize editor(
+        pattern.width() + row_header.width(),
+        pattern.height() + column_header.height()
+    );
 
-    auto needs_vertical_scrollbar = sz.height() > size.height();
-    auto needs_horizontal_scrollbar = sz.width() > size.width();
+    auto needs_vertical_scrollbar = editor.height() > container.height();
+    auto needs_horizontal_scrollbar = editor.width() > container.width();
 
     if (needs_vertical_scrollbar) {
-        if (sz.width() > size.width() - sbsize.width()) {
+        if (editor.width() > container.width() - sbsize.width()) {
             needs_horizontal_scrollbar = true;
         }
     }
 
     if (needs_horizontal_scrollbar) {
-        if (sz.height() > size.height() - sbsize.height()) {
+        if (editor.height() > container.height() - sbsize.height()) {
             needs_vertical_scrollbar = true;
         }
     }
 
     auto update = [&] (bool active, QScrollBar *sb, int (QSize::*length)() const) {
         if (active) {
-            auto slider_length = (sz.*length)() - (sb->size().*length)();
+            auto slider_length = (pattern.*length)();
             sb->setRange(0, slider_length);
-            sb->setPageStep((draw.size().*length)());
+            sb->setPageStep((pattern.*length)());
         } else {
             sb->setRange(0, 0);
         }
     };
 
-    update(needs_vertical_scrollbar,   verticalScrollBar(),   &QSize::width);
-    update(needs_horizontal_scrollbar, horizontalScrollBar(), &QSize::height);
-}
-
-void pattern_editor::keyPressEvent(QKeyEvent *event) {
-    Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
-    auto context_key = key_t(modifiers, event->key(), keycontext());
-    auto pattern_key = key_t(modifiers, event->key());
-
-    if (invoke_key(keymap,    context_key)) return;
-    if (invoke_key(it_keymap, context_key)) return;
-    if (invoke_key(keymap,    pattern_key)) return;
-
-    QAbstractScrollArea::keyPressEvent(event);
-}
-
-void pattern_editor::resizeEvent(QResizeEvent *event) {
-    update_scrollbars(event->size());
-}
-
-void pattern_editor::paintEvent(QPaintEvent *event) {
-    draw.updateGL();
+    update(needs_vertical_scrollbar,   verticalScrollBar(),   &QSize::height);
+    update(needs_horizontal_scrollbar, horizontalScrollBar(), &QSize::width);
 }
 
 const editor_position_t &pattern_editor::pos() const {
@@ -525,18 +498,17 @@ keycontext_t pattern_editor::keycontext() const {
     }
 }
 
-CPattern *pattern_editor::active_pattern() {
+CPattern * pattern_editor::active_pattern() {
     auto patternidx = draw.active_pos.pattern;
     CPattern *ret = &draw.renderer.Patterns[patternidx];
     return ret;
 }
 
-const CPattern *pattern_editor::active_pattern() const {
+const CPattern * pattern_editor::active_pattern() const {
     auto patternidx = draw.active_pos.pattern;
     CPattern *ret = &draw.renderer.Patterns[patternidx];
     return ret;
 }
-
 
 modevent_t *pattern_editor::active_event() {
     return active_pattern()->GetpModCommand(pos().row, pos().column);
@@ -576,11 +548,34 @@ bool pattern_editor::invoke_key(const keymap_t &km, key_t key) {
 void pattern_editor::ensure_selection_end_visible() {
 }
 
-void pattern_editor::scrollContentsBy(int dx, int dy) {
-    DEBUG_FUNC("scroll!!! dx = %d, dy = %d",
-        horizontalScrollBar()->value(),
-        verticalScrollBar()->value()
-    );
+void pattern_editor::keyPressEvent(QKeyEvent *event) {
+    Qt::KeyboardModifiers modifiers = event->modifiers() & ~Qt::KeypadModifier;
+    auto context_key = key_t(modifiers, event->key(), keycontext());
+    auto pattern_key = key_t(modifiers, event->key());
+
+    if (invoke_key(keymap,    context_key)) return;
+    if (invoke_key(it_keymap, context_key)) return;
+    if (invoke_key(keymap,    pattern_key)) return;
+
+    QAbstractScrollArea::keyPressEvent(event);
+}
+
+void pattern_editor::resizeEvent(QResizeEvent *event) {
+    update_scrollbars(size(), event->size());
+}
+
+void pattern_editor::paintEvent(QPaintEvent *) {
+    draw.updateGL();
+}
+
+void pattern_editor::scrollContentsBy(int, int) {
+    const chnindex_t channel_count = draw.renderer.GetNumChannels();
+    auto horiz = horizontalScrollBar()->value();
+    int col = horiz / draw.font_metrics.width;
+
+    draw.first_column = col;
+    draw.updateGL();
+    column_header.update();
 }
 
 

@@ -13,10 +13,10 @@ namespace qt5 {
 pattern_editor_tab::pattern_editor_tab(
     module_renderer &renderer,
     app_config &config
-) : renderer(renderer),
-    config(config),
-    orderedit(renderer),
-    editor(
+) : renderer(renderer)
+  , config(config)
+  , orderedit(renderer)
+  , editor(
         renderer,
         config.pattern_keymap(),
         config.it_pattern_keymap(),

@@ -479,7 +479,6 @@ public:
 
 protected:
     module_renderer m_WaveFile;
-    CModTreeBar m_wndTree;
     CStatusBar m_wndStatusBar;
     CMainToolBar m_wndToolBar;
     CImageList m_ImageList;

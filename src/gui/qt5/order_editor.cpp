@@ -53,6 +53,7 @@ void order_editor::display_context_menu(const QPoint &point) {
 }
 
 void order_editor::_set_active_pattern(const QModelIndex &index, const QModelIndex &) {
+    DEBUG_FUNC("index = %d", index.row()); 
     patternindex_t idx = patternindex_t(index.row());
     emit active_pattern_changed(idx);
 }

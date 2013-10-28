@@ -13,10 +13,12 @@ namespace modplug {
 namespace gui {
 namespace qt5 {
 
-document_window::document_window(module_renderer *renderer,
-                                 app_config &config,
-                                 QWidget *parent
-) : QWidget(parent), global_config(config)
+document_window::document_window(
+    module_renderer *renderer,
+    app_config &config,
+    QWidget *parent
+) : QWidget(parent)
+  , global_config(config)
 {
     QIcon window_icon(":/openmpt/icons/nobu-icons/mpt_document.svg");
     setWindowIcon(window_icon);
@@ -44,6 +46,8 @@ document_window::document_window(module_renderer *renderer,
     graph = new graph_editor(&renderer->mixgraph);
 
     tab_bar.addTab(editor, "Patterns");
+    tab_bar.addTab(new QWidget(), "Samples");
+    tab_bar.addTab(new QWidget(), "Instruments");
     tab_bar.addTab(graph, "Graph");
     tab_bar.addTab(commentsplitter, "Comments");
 

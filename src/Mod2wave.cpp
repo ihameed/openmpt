@@ -459,10 +459,6 @@ void CDoWaveConvert::OnButton1()
         ::SendMessage(progress, PBM_SETRANGE, 0, MAKELPARAM(0, (uint32_t)(bad_max >> 14)));
     }
 
-    // No pattern cue points yet
-    m_pSndFile->m_PatternCuePoints.clear();
-    m_pSndFile->m_PatternCuePoints.reserve(m_pSndFile->Order.GetLength());
-
     // Process the conversion
     UINT nBytesPerSample = (module_renderer::deprecated_global_bits_per_sample * module_renderer::deprecated_global_channels) / 8;
     // For calculating the remaining time
@@ -474,19 +470,6 @@ void CDoWaveConvert::OnButton1()
     for (UINT n = 0; ; n++)
     {
         UINT lRead = m_pSndFile->ReadPattern(buffer, sizeof(buffer));
-
-        // Process cue points (add base offset), if there are any to process.
-        vector<PatternCuePoint>::reverse_iterator iter;
-        for(iter = m_pSndFile->m_PatternCuePoints.rbegin(); iter != m_pSndFile->m_PatternCuePoints.rend(); ++iter)
-        {
-            if(iter->processed)
-            {
-                // From this point, all cues have already been processed.
-                break;
-            }
-            iter->offset += ullSamples;
-            iter->processed = true;
-        }
 
 /*            if (m_bGivePlugsIdleTime) {
             LARGE_INTEGER startTime, endTime, duration,Freq;
@@ -616,38 +599,7 @@ void CDoWaveConvert::OnButton1()
         }
     }
 
-    // Write cue points
-    uint32_t cuePointLength = 0;
-    if(m_pSndFile->m_PatternCuePoints.size() > 0)
-    {
-        // Cue point header
-        WAVCUEHEADER cuehdr;
-        cuehdr.cue_id = LittleEndian(IFFID_cue);
-        cuehdr.cue_num = m_pSndFile->m_PatternCuePoints.size();
-        cuehdr.cue_len = 4 + cuehdr.cue_num * sizeof(WAVCUEPOINT);
-        cuePointLength = 8 + cuehdr.cue_len;
-        cuehdr.cue_num = LittleEndian(cuehdr.cue_num);
-        cuehdr.cue_len = LittleEndian(cuehdr.cue_len);
-        fwrite(&cuehdr, 1, sizeof(WAVCUEHEADER), f);
-
-        // Write all cue points
-        vector<PatternCuePoint>::const_iterator iter;
-        uint32_t num = 0;
-        for(iter = m_pSndFile->m_PatternCuePoints.begin(); iter != m_pSndFile->m_PatternCuePoints.end(); ++iter, num++)
-        {
-            WAVCUEPOINT cuepoint;
-            cuepoint.cp_id = LittleEndian(num);
-            cuepoint.cp_pos = LittleEndian((uint32_t)iter->offset);
-            cuepoint.cp_chunkid = LittleEndian(IFFID_data);
-            cuepoint.cp_chunkstart = 0;            // we use no Wave List Chunk (wavl) as we have only one data block, so this should be 0.
-            cuepoint.cp_blockstart = 0;            // dito
-            cuepoint.cp_offset = LittleEndian((uint32_t)iter->offset);
-            fwrite(&cuepoint, 1, sizeof(WAVCUEPOINT), f);
-        }
-        m_pSndFile->m_PatternCuePoints.clear();
-    }
-
-    header.filesize = (sizeof(WAVEFILEHEADER) - 8) + (8 + fmthdr.length) + (8 + datahdr.length) + (cuePointLength);
+    header.filesize = (sizeof(WAVEFILEHEADER) - 8) + (8 + fmthdr.length) + (8 + datahdr.length);
     fseek(f, 0, SEEK_SET);
     fwrite(&header, sizeof(header), 1, f);
     fseek(f, dwDataOffset-sizeof(datahdr), SEEK_SET);

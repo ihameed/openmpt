@@ -18,6 +18,7 @@
 #include "gui/qt5/pattern_editor.h"
 
 using namespace modplug::tracker;
+using namespace modplug::pervasives;
 
 #define    PLUGNAME_HEIGHT        16        //rewbs.patPlugName
 
@@ -262,7 +263,7 @@ BOOL CViewPattern::SetCurrentRow(UINT row, BOOL bWrap, BOOL bUpdateHorizontalScr
             if (CMainFrame::m_dwPatternSetup & PATTERN_CONTSCROLL)
             {
                 UINT nCurOrder = SendCtrlMessage(CTRLMSG_GETCURRENTORDER);
-                if ((nCurOrder > 0) && (nCurOrder < pSndFile->Order.size()) && (m_nPattern == pSndFile->Order[nCurOrder]))
+                if ((nCurOrder > 0) && (nCurOrder < unwrap(pSndFile->Order.size())) && (m_nPattern == pSndFile->Order[nCurOrder]))
                 {
                     const modplug::tracker::orderindex_t prevOrd = pSndFile->Order.GetPreviousOrderIgnoringSkips(nCurOrder);
                     const modplug::tracker::patternindex_t nPrevPat = pSndFile->Order[prevOrd];

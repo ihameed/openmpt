@@ -46,8 +46,8 @@ struct modsample_t {
 
     uint16_t flags;
 
-    signed char RelativeTone;                    // Relative note to middle c (for MOD/XM)
-    signed char nFineTune;                            // Finetune period (for MOD/XM)
+    signed char RelativeTone; // Relative note to middle c (for MOD/XM)
+    signed char nFineTune;    // Finetune period (for MOD/XM)
 
     uint8_t vibrato_type;
     uint8_t vibrato_sweep;
@@ -72,8 +72,8 @@ struct modsample_t {
 struct modenvelope_t {
     uint32_t flags;
 
-    uint16_t Ticks[MAX_ENVPOINTS];    // envelope point position (x axis)
-    uint8_t Values[MAX_ENVPOINTS];    // envelope point value (y axis)
+    uint16_t Ticks[MAX_ENVPOINTS]; // envelope point position (x axis)
+    uint8_t Values[MAX_ENVPOINTS]; // envelope point value (y axis)
 
     uint32_t num_nodes;
 
@@ -97,7 +97,7 @@ struct modinstrument_t {
     modenvelope_t pitch_envelope;
 
     uint8_t NoteMap[128];    // Note mapping, f.e. C-5 => D-5.
-    uint16_t Keyboard[128];    // Sample mapping, f.e. C-5 => Sample 1
+    uint16_t Keyboard[128];  // Sample mapping, f.e. C-5 => Sample 1
 
     uint8_t new_note_action;
     uint8_t duplicate_check_type;

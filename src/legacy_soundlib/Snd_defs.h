@@ -28,7 +28,7 @@ typedef uint32_t MODTYPE;
                                         // Note: Sample size in bytes can be more than 256 MB.
 // -! BEHAVIOUR_CHANGE#0006
 #define MAX_SAMPLE_RATE            192000
-#define MAX_ORDERS                    256
+const modplug::tracker::orderindex_t MAX_ORDERS = modplug::tracker::orderindex_t(256);
 #define MAX_PATTERNS            240
 #define MAX_SAMPLES                    4000
 

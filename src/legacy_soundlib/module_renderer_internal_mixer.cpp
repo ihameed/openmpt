@@ -300,14 +300,6 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
             } else
 #endif
             if (ReadNote()) {
-                // Save pattern cue points for WAV rendering here (if we reached a new pattern, that is.)
-                if (m_bIsRendering && (m_PatternCuePoints.empty() || m_nCurrentPattern != m_PatternCuePoints.back().order)) {
-                    PatternCuePoint cue;
-                    cue.offset = max_samples - uncomputed_samples;
-                    cue.order = m_nCurrentPattern;
-                    cue.processed = false;    // We don't know the base offset in the file here. It has to be added in the main conversion loop.
-                    m_PatternCuePoints.push_back(cue);
-                }
             } else {
                 #ifdef MODPLUG_TRACKER
                     if ((m_nMaxOrderPosition) && (m_nCurrentPattern >= m_nMaxOrderPosition)) {
