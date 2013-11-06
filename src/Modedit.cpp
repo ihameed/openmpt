@@ -5,7 +5,6 @@
 #include "mainfrm.h"
 #include "moddoc.h"
 #include "dlg_misc.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "misc_util.h"
 

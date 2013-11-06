@@ -31,7 +31,7 @@ void ReplaceSample(modplug::tracker::modsample_t& smp, const LPSTR pNewSample, c
                     ctrlChn::ReplaceSample(pSndFile->Chn, pOldSmp, pNewSample, nNewLength, dwOrFlags, dwAndFlags);
             smp.sample_data = pNewSample;
             smp.length = nNewLength;
-            module_renderer::FreeSample(pOldSmp);
+            modplug::legacy_soundlib::free_sample(pOldSmp);
     END_CRITICAL();
 }
 
@@ -56,7 +56,7 @@ SmpLength InsertSilence(modplug::tracker::modsample_t& smp, const SmpLength nSil
     }
     else // Have to allocate new sample.
     {
-            pNewSmp = module_renderer::AllocateSample(nNewSmpBytes);
+            pNewSmp = modplug::legacy_soundlib::alloc_sample(nNewSmpBytes);
             if(pNewSmp == 0)
                     return smp.length; //Sample allocation failed.
             if(nStartFrom == 0)
@@ -108,7 +108,7 @@ SmpLength ResizeSample(modplug::tracker::modsample_t& smp, const SmpLength nNewL
     const SmpLength nNewSmpBytes = nNewLength * smp.GetBytesPerSample();
 
     LPSTR pNewSmp = 0;
-    pNewSmp = module_renderer::AllocateSample(nNewSmpBytes);
+    pNewSmp = modplug::legacy_soundlib::alloc_sample(nNewSmpBytes);
     if(pNewSmp == 0)
             return smp.length; //Sample allocation failed.
 

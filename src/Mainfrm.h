@@ -569,7 +569,6 @@ public:
     BOOL PlaySoundFile(module_renderer *);
     BOOL PlaySoundFile(LPCSTR lpszFileName, UINT nNote=0);
     BOOL PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nSample, UINT nNote=0);
-    BOOL PlayDLSInstrument(UINT nDLSBank, UINT nIns, UINT nRgn);
     BOOL StopSoundFile(module_renderer *);
     inline BOOL IsPlaying() const { return (m_dwStatus & MODSTATUS_PLAYING);         }
     inline BOOL IsRendering() const { return (m_dwStatus & MODSTATUS_RENDERING);         } //rewbs.VSTTimeInfo
@@ -632,8 +631,6 @@ public:
 // Message map functions
     //{{AFX_MSG(CMainFrame)
 public:
-    afx_msg void OnAddDlsBank();
-    afx_msg void OnImportMidiLib();
     afx_msg void OnViewOptions();
     afx_msg void display_config_editor();
 protected:

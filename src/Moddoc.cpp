@@ -7,13 +7,12 @@
 #include "childfrm.h"
 #include "mpdlgs.h"
 #include "dlg_misc.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "mod2wave.h"
-#include "mod2midi.h"
 #include "vstplug.h"
 #include "version.h"
-#include "legacy_soundlib/modsmp_ctrl.h"
 #include "CleanupSong.h"
+
+#include "legacy_soundlib/modsmp_ctrl.h"
 
 #include "pervasives/pervasives.h"
 #include "gui/qt5/config_dialog.h"
@@ -47,7 +46,6 @@ IMPLEMENT_SERIAL(CModDoc, CDocument, 0 /* schema number*/ )
 BEGIN_MESSAGE_MAP(CModDoc, CDocument)
     //{{AFX_MSG_MAP(CModDoc)
     ON_COMMAND(ID_FILE_SAVEASWAVE,            OnFileWaveConvert)
-    ON_COMMAND(ID_FILE_SAVEMIDI,            OnFileMidiConvert)
     ON_COMMAND(ID_FILE_SAVECOMPAT,            OnFileCompatibilitySave)
     ON_COMMAND(ID_PLAYER_PLAY,                    OnPlayerPlay)
     ON_COMMAND(ID_PLAYER_PAUSE,                    OnPlayerPause)
@@ -223,137 +221,7 @@ BOOL CModDoc::OnOpenDocument(LPCTSTR lpszPathName)
     }
 
     if ((m_SndFile.m_nType == MOD_TYPE_NONE) || (!m_SndFile.m_nChannels)) return FALSE;
-    // Midi Import
-    if (m_SndFile.m_nType == MOD_TYPE_MID)
-    {
-        CDLSBank *pCachedBank = NULL, *pEmbeddedBank = NULL;
-        CHAR szCachedBankFile[_MAX_PATH] = "";
 
-        if (CDLSBank::IsDLSBank(lpszPathName))
-        {
-            pEmbeddedBank = new CDLSBank();
-            pEmbeddedBank->Open(lpszPathName);
-        }
-        m_SndFile.ChangeModTypeTo(MOD_TYPE_IT);
-        BeginWaitCursor();
-        LPMIDILIBSTRUCT lpMidiLib = CTrackApp::GetMidiLibrary();
-        // Scan Instruments
-        if (lpMidiLib) for (modplug::tracker::instrumentindex_t nIns = 1; nIns <= m_SndFile.m_nInstruments; nIns++) if (m_SndFile.Instruments[nIns])
-        {
-            LPCSTR pszMidiMapName;
-            modplug::tracker::modinstrument_t *pIns = m_SndFile.Instruments[nIns];
-            UINT nMidiCode;
-            BOOL bEmbedded = FALSE;
-
-            if (pIns->midi_channel == 10)
-                nMidiCode = 0x80 | (pIns->midi_drum_set & 0x7F);
-            else
-                nMidiCode = pIns->midi_program & 0x7F;
-            pszMidiMapName = lpMidiLib->MidiMap[nMidiCode];
-            if (pEmbeddedBank)
-            {
-                UINT nDlsIns = 0, nDrumRgn = 0;
-                UINT nProgram = pIns->midi_program;
-                UINT dwKey = (nMidiCode < 128) ? 0xFF : (nMidiCode & 0x7F);
-                if ((pEmbeddedBank->FindInstrument(    (nMidiCode >= 128),
-                                                    (pIns->midi_bank & 0x3FFF),
-                                                    nProgram, dwKey, &nDlsIns))
-                 || (pEmbeddedBank->FindInstrument(    (nMidiCode >= 128),        0xFFFF,
-                                                    (nMidiCode >= 128) ? 0xFF : nProgram,
-                                                    dwKey, &nDlsIns)))
-                {
-                    if (dwKey < 0x80) nDrumRgn = pEmbeddedBank->GetRegionFromKey(nDlsIns, dwKey);
-                    if (pEmbeddedBank->ExtractInstrument(&m_SndFile, nIns, nDlsIns, nDrumRgn))
-                    {
-                        pIns = m_SndFile.Instruments[nIns]; // Reset pIns because ExtractInstrument may delete the previous value.
-                        if ((dwKey >= 24) && (dwKey < 100))
-                        {
-                            lstrcpyn(pIns->name, szMidiPercussionNames[dwKey-24], sizeof(pIns->name));
-                        }
-                        bEmbedded = TRUE;
-                    }
-                    else
-                        pIns = m_SndFile.Instruments[nIns]; // Reset pIns because ExtractInstrument may delete the previous value.
-                }
-            }
-            if ((pszMidiMapName) && (pszMidiMapName[0]) && (!bEmbedded))
-            {
-                // Load From DLS Bank
-                if (CDLSBank::IsDLSBank(pszMidiMapName))
-                {
-                    CDLSBank *pDLSBank = NULL;
-
-                    if ((pCachedBank) && (!lstrcmpi(szCachedBankFile, pszMidiMapName)))
-                    {
-                        pDLSBank = pCachedBank;
-                    } else
-                    {
-                        if (pCachedBank) delete pCachedBank;
-                        pCachedBank = new CDLSBank;
-                        strcpy(szCachedBankFile, pszMidiMapName);
-                        if (pCachedBank->Open(pszMidiMapName)) pDLSBank = pCachedBank;
-                    }
-                    if (pDLSBank)
-                    {
-                        UINT nDlsIns = 0, nDrumRgn = 0;
-                        UINT nProgram = pIns->midi_program;
-                        UINT dwKey = (nMidiCode < 128) ? 0xFF : (nMidiCode & 0x7F);
-                        if ((pDLSBank->FindInstrument(    (nMidiCode >= 128),
-                                                        (pIns->midi_bank & 0x3FFF),
-                                                        nProgram, dwKey, &nDlsIns))
-                         || (pDLSBank->FindInstrument(    (nMidiCode >= 128), 0xFFFF,
-                                                        (nMidiCode >= 128) ? 0xFF : nProgram,
-                                                        dwKey, &nDlsIns)))
-                        {
-                            if (dwKey < 0x80) nDrumRgn = pDLSBank->GetRegionFromKey(nDlsIns, dwKey);
-                            pDLSBank->ExtractInstrument(&m_SndFile, nIns, nDlsIns, nDrumRgn);
-                            pIns = m_SndFile.Instruments[nIns]; // Reset pIns because ExtractInstrument may delete the previous value.
-                            if ((dwKey >= 24) && (dwKey < 24+61))
-                            {
-                                lstrcpyn(pIns->name, szMidiPercussionNames[dwKey-24], sizeof(pIns->name));
-                            }
-                        }
-                    }
-                } else
-                {
-                    // Load from Instrument or Sample file
-                    CHAR szName[_MAX_FNAME], szExt[_MAX_EXT];
-                    CFile f;
-
-                    if (f.Open(pszMidiMapName, CFile::modeRead))
-                    {
-                        uint32_t len = static_cast<uint32_t>(f.GetLength());
-                        LPBYTE lpFile;
-                        if ((len) && ((lpFile = (LPBYTE)GlobalAllocPtr(GHND, len)) != NULL))
-                        {
-                            f.Read(lpFile, len);
-                            m_SndFile.ReadInstrumentFromFile(nIns, lpFile, len);
-                            _splitpath(pszMidiMapName, NULL, NULL, szName, szExt);
-                            strncat(szName, szExt, sizeof(szName));
-                            pIns = m_SndFile.Instruments[nIns];
-                            if (!pIns->legacy_filename[0]) lstrcpyn(pIns->legacy_filename, szName, sizeof(pIns->legacy_filename));
-                            if (!pIns->name[0])
-                            {
-                                if (nMidiCode < 128)
-                                {
-                                    lstrcpyn(pIns->name, szMidiProgramNames[nMidiCode], sizeof(pIns->name));
-                                } else
-                                {
-                                    UINT nKey = nMidiCode & 0x7F;
-                                    if (nKey >= 24)
-                                        lstrcpyn(pIns->name, szMidiPercussionNames[nKey-24], sizeof(pIns->name));
-                                }
-                            }
-                        }
-                        f.Close();
-                    }
-                }
-            }
-        }
-        if (pCachedBank) delete pCachedBank;
-        if (pEmbeddedBank) delete pEmbeddedBank;
-        EndWaitCursor();
-    }
     // Convert to MOD/S3M/XM/IT
     switch(m_SndFile.m_nType)
     {
@@ -450,9 +318,9 @@ BOOL CModDoc::OnSaveDocument(LPCTSTR lpszPathName)
     FixNullStrings();
     switch(nType)
     {
-    case MOD_TYPE_MOD:    bOk = m_SndFile.SaveMod(lpszPathName, dwPacking); break;
-    case MOD_TYPE_S3M:    bOk = m_SndFile.SaveS3M(lpszPathName, dwPacking); break;
-    case MOD_TYPE_XM:    bOk = m_SndFile.SaveXM(lpszPathName, dwPacking); break;
+    //case MOD_TYPE_MOD:    bOk = m_SndFile.SaveMod(lpszPathName, dwPacking); break;
+    //case MOD_TYPE_S3M:    bOk = m_SndFile.SaveS3M(lpszPathName, dwPacking); break;
+    //case MOD_TYPE_XM:    bOk = m_SndFile.SaveXM(lpszPathName, dwPacking); break;
     case MOD_TYPE_IT:    bOk = (m_SndFile.m_dwSongFlags & SONG_ITPROJECT || !lstrcmpi(fext, ".itp")) ? m_SndFile.SaveITProject(lpszPathName) : m_SndFile.SaveIT(lpszPathName, dwPacking); break;
     case MOD_TYPE_MPT:    bOk = m_SndFile.SaveIT(lpszPathName, dwPacking); break;
     }
@@ -1679,34 +1547,6 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
     //XXXih: CMainFrame::GetMainFrame()->UpdateAudioParameters(TRUE);
 }
 
-
-void CModDoc::OnFileMidiConvert()
-//-------------------------------
-{
-    CHAR path[_MAX_PATH]="", drive[_MAX_DRIVE]="";
-    CHAR s[_MAX_PATH], fname[_MAX_FNAME]="";
-    CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
-
-    if ((!pMainFrm) || (!m_SndFile.GetType())) return;
-    _splitpath(GetPathName(), drive, path, fname, NULL);
-    strcpy(s, drive);
-    strcat(s, path);
-    strcat(s, fname);
-    strcat(s, ".mid");
-
-    FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(false, "mid", s,
-        "Midi Files (*.mid,*.rmi)|*.mid;*.rmi||");
-    if(files.abort) return;
-
-    CModToMidi mididlg(files.first_file.c_str(), &m_SndFile, pMainFrm);
-    if (mididlg.DoModal() == IDOK)
-    {
-        BeginWaitCursor();
-        mididlg.DoConvert();
-        EndWaitCursor();
-    }
-}
-
 //HACK: This is a quick fix. Needs to be better integrated into player and GUI.
 void CModDoc::OnFileCompatibilitySave()
 //-------------------------------------
@@ -1769,12 +1609,12 @@ void CModDoc::OnFileCompatibilitySave()
     switch (type)
     {
         case MOD_TYPE_MOD:
-            m_SndFile.SaveMod(files.first_file.c_str(), 0, true);
+            //m_SndFile.SaveMod(files.first_file.c_str(), 0, true);
             SetModified(); // Compatibility save may adjust samples so set modified...
             m_ShowSavedialog = true;    // ...and force save dialog to appear when saving.
             break;
         case MOD_TYPE_XM:
-            m_SndFile.SaveXM(files.first_file.c_str(), 0, true);
+            //m_SndFile.SaveXM(files.first_file.c_str(), 0, true);
             break;
         case MOD_TYPE_IT:
             m_SndFile.SaveCompatIT(files.first_file.c_str());

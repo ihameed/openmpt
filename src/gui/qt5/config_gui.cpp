@@ -23,6 +23,7 @@ config_gui_main::config_gui_main(app_config &context) :
     preset_buzz("Buzz")
 {
     demo_dummy = std::unique_ptr<module_renderer>(new module_renderer());
+    demo_dummy->ChangeModTypeTo(MOD_TYPE_IT);
     demo_dummy->m_nChannels = 3;
     demo_dummy->InitChannel(1);
     demo_dummy->InitChannel(2);

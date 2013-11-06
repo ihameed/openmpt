@@ -5,7 +5,6 @@
 #include "globals.h"
 #include "ctrl_ins.h"
 #include "view_ins.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "channelManagerDlg.h"
 #include "ScaleEnvPointsDlg.h"
 #include "view_ins.h"
@@ -1966,8 +1965,6 @@ BOOL CViewInstrument::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
             break;
 
     case DRAGONDROP_DLS:
-            bCanDrop = ((lpDropInfo->dwDropItem < MAX_DLS_BANKS)
-                             && (CTrackApp::gpDLSBanks[lpDropInfo->dwDropItem]));
             break;
 
     case DRAGONDROP_SOUNDFILE:
@@ -1998,60 +1995,12 @@ BOOL CViewInstrument::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
             break;
 
     case DRAGONDROP_MIDIINSTR:
-            if (CDLSBank::IsDLSBank((LPCSTR)lpDropInfo->lDropParam))
-            {
-                    CDLSBank dlsbank;
-                    if (dlsbank.Open((LPCSTR)lpDropInfo->lDropParam))
-                    {
-                            DLSINSTRUMENT *pDlsIns;
-                            UINT nIns = 0, nRgn = 0xFF;
-                            // Drums
-                            if (lpDropInfo->dwDropItem & 0x80)
-                            {
-                                    UINT key = lpDropInfo->dwDropItem & 0x7F;
-                                    pDlsIns = dlsbank.FindInstrument(TRUE, 0xFFFF, 0xFF, key, &nIns);
-                                    if (pDlsIns) nRgn = dlsbank.GetRegionFromKey(nIns, key);
-                            } else
-                            // Melodic
-                            {
-                                    pDlsIns = dlsbank.FindInstrument(FALSE, 0xFFFF, lpDropInfo->dwDropItem, 60, &nIns);
-                                    if (pDlsIns) nRgn = dlsbank.GetRegionFromKey(nIns, 60);
-                            }
-                            bCanDrop = FALSE;
-                            if (pDlsIns)
-                            {
-                                    BEGIN_CRITICAL();
-                                    bCanDrop = dlsbank.ExtractInstrument(pSndFile, m_nInstrument, nIns, nRgn);
-                                    END_CRITICAL();
-                            }
-                            bUpdate = TRUE;
-                            break;
-                    }
-            }
             // Instrument file -> fall through
     case DRAGONDROP_SOUNDFILE:
             SendCtrlMessage(CTRLMSG_INS_OPENFILE, lpDropInfo->lDropParam);
             break;
 
     case DRAGONDROP_DLS:
-            {
-                    CDLSBank *pDLSBank = CTrackApp::gpDLSBanks[lpDropInfo->dwDropItem];
-                    UINT nIns = lpDropInfo->lDropParam & 0x7FFF;
-                    UINT nRgn;
-                    // Drums:        (0x80000000) | (Region << 16) | (Instrument)
-                    if (lpDropInfo->lDropParam & 0x80000000)
-                    {
-                            nRgn = (lpDropInfo->lDropParam & 0xFF0000) >> 16;
-                    } else
-                    // Melodic: (Instrument)
-                    {
-                            nRgn = pDLSBank->GetRegionFromKey(nIns, 60);
-                    }
-                    BEGIN_CRITICAL();
-                    bCanDrop = pDLSBank->ExtractInstrument(pSndFile, m_nInstrument, nIns, nRgn);
-                    END_CRITICAL();
-                    bUpdate = TRUE;
-            }
             break;
     }
     if (bUpdate)

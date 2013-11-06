@@ -16,7 +16,11 @@
 #endif //MODPLUG_TRACKER
 #include "Wav.h"
 
+#include "misc.h"
+
 using namespace modplug::tracker;
+
+using namespace modplug::legacy_soundlib;
 
 #pragma warning(disable:4244)
 
@@ -261,12 +265,12 @@ bool module_renderer::ReadSampleFromSong(modplug::tracker::sampleindex_t nSample
     if (Samples[nSample].sample_data)
     {
         Samples[nSample].length = 0;
-        FreeSample(Samples[nSample].sample_data);
+        modplug::legacy_soundlib::free_sample(Samples[nSample].sample_data);
     }
     Samples[nSample] = *psmp;
     if (psmp->sample_data)
     {
-        Samples[nSample].sample_data = AllocateSample(nSize+8);
+        Samples[nSample].sample_data = modplug::legacy_soundlib::alloc_sample(nSize+8);
         if (Samples[nSample].sample_data)
         {
             memcpy(Samples[nSample].sample_data, psmp->sample_data, nSize);
@@ -276,13 +280,15 @@ bool module_renderer::ReadSampleFromSong(modplug::tracker::sampleindex_t nSample
     if ((!(m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))) && (pSrcSong->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)))
     {
         modplug::tracker::modsample_t *pSmp = &Samples[nSample];
-        pSmp->c5_samplerate = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+        pSmp->c5_samplerate = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
         pSmp->RelativeTone = 0;
         pSmp->nFineTune = 0;
     } else
     if ((m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) && (!(pSrcSong->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))))
     {
-        FrequencyToTranspose(&Samples[nSample]);
+        auto &smp = Samples[nSample];
+        std::tie(smp.RelativeTone, smp.nFineTune) =
+            transpose_of_frequency(smp.c5_samplerate);
     }
     return true;
 }
@@ -293,8 +299,6 @@ bool module_renderer::ReadSampleFromSong(modplug::tracker::sampleindex_t nSample
 
 #define IFFID_pcm    0x206d6370
 #define IFFID_fact    0x74636166
-
-extern BOOL IMAADPCMUnpack16(signed short *pdest, UINT nLen, LPBYTE psrc, uint32_t dwBytes, UINT pkBlkAlign);
 
 bool module_renderer::ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset)
 //-------------------------------------------------------------------------------------------------------------
@@ -415,7 +419,7 @@ bool module_renderer::ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPB
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     if (pSmp->sample_data)
     {
-        FreeSample(pSmp->sample_data);
+        modplug::legacy_soundlib::free_sample(pSmp->sample_data);
         pSmp->sample_data = nullptr;
         pSmp->length = 0;
     }
@@ -430,7 +434,10 @@ bool module_renderer::ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPB
     if (m_nType & MOD_TYPE_XM) pSmp->flags |= CHN_PANNING;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
-    if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
+    if (m_nType & MOD_TYPE_XM) {
+        std::tie(pSmp->RelativeTone, pSmp->nFineTune) =
+            transpose_of_frequency(pSmp->c5_samplerate);
+    }
     pSmp->vibrato_type = pSmp->vibrato_sweep = pSmp->vibrato_depth = pSmp->vibrato_rate = 0;
     pSmp->legacy_filename[0] = 0;
     memset(m_szNames[nSample], 0, 32);
@@ -438,11 +445,14 @@ bool module_renderer::ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPB
     // IMA ADPCM 4:1
     if (pfmtpk)
     {
+        /*
         if (dwFact < 4) dwFact = pdata->length * 2;
         pSmp->length = dwFact;
-        pSmp->sample_data = AllocateSample(pSmp->length*2+16);
+        pSmp->sample_data = modplug::legacy_soundlib::alloc_sample(pSmp->length*2+16);
         IMAADPCMUnpack16((signed short *)pSmp->sample_data, pSmp->length,
                          (LPBYTE)(lpMemFile+dwDataPos), dwFileLength-dwDataPos, pfmtpk->samplesize);
+                         */
+        throw "ADPCM unsupported!";
         AdjustSampleLoop(pSmp);
     } else
     {
@@ -567,7 +577,7 @@ bool module_renderer::SaveWAVSample(UINT nSample, LPCSTR lpszFileName)
     format.hdrlen = 16;
     format.format = 1;
     format.freqHz = pSmp->c5_samplerate;
-    if (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) format.freqHz = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+    if (m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) format.freqHz = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
     format.channels = pSmp->GetNumChannels();
     format.bitspersample = pSmp->GetElementarySampleSize() * 8;
     format.samplesize = pSmp->GetBytesPerSample() * 8;
@@ -813,10 +823,11 @@ void PatchToSample(module_renderer *that, UINT nSample, LPBYTE lpStream, uint32_
     pIns->vibrato_sweep = psh->vibrato_sweep;
     pIns->vibrato_depth = psh->vibrato_depth;
     pIns->vibrato_rate = psh->vibrato_rate/4;
-    that->FrequencyToTranspose(pIns);
+    std::tie(pIns->RelativeTone, pIns->nFineTune) =
+        transpose_of_frequency(pIns->c5_samplerate);
     pIns->RelativeTone += 84 - PatchFreqToNote(psh->root_freq);
     if (psh->scale_factor) pIns->RelativeTone -= psh->scale_frequency - 60;
-    pIns->c5_samplerate = that->TransposeToFrequency(pIns->RelativeTone, pIns->nFineTune);
+    pIns->c5_samplerate = frequency_of_transpose(pIns->RelativeTone, pIns->nFineTune);
     if (pIns->flags & CHN_16BIT)
     {
         nSmpType = (psh->flags & 2) ? RS_PCM16U : RS_PCM16S;
@@ -1022,7 +1033,10 @@ bool module_renderer::ReadS3ISample(modplug::tracker::sampleindex_t nSample, LPB
     pSmp->c5_samplerate = pss->nC5Speed;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
-    if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
+    if (m_nType & MOD_TYPE_XM) {
+        std::tie(pSmp->RelativeTone, pSmp->nFineTune) =
+            transpose_of_frequency(pSmp->c5_samplerate);
+    }
     if (pss->flags & 0x01) pSmp->flags |= CHN_LOOP;
     flags = (pss->flags & 0x04) ? RS_PCM16U : RS_PCM8U;
     if (pss->flags & 0x02) flags |= RSF_STEREO;
@@ -1231,7 +1245,7 @@ bool module_renderer::ReadXIInstrument(modplug::tracker::instrumentindex_t nInst
         pSmp->RelativeTone = (int)psh->relnote;
         if (m_nType != MOD_TYPE_XM)
         {
-            pSmp->c5_samplerate = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+            pSmp->c5_samplerate = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
             pSmp->RelativeTone = 0;
             pSmp->nFineTune = 0;
         }
@@ -1372,9 +1386,8 @@ bool module_renderer::SaveXIInstrument(modplug::tracker::instrumentindex_t nInst
             xsh.relnote = (signed char) pSmp->RelativeTone;
         else
         {
-            int f2t = FrequencyToTranspose(pSmp->c5_samplerate);
-            xsh.relnote = (signed char)(f2t >> 7);
-            xsh.finetune = (signed char)(f2t & 0x7F);
+            std::tie(xsh.relnote, xsh.finetune) =
+                transpose_of_frequency(pSmp->c5_samplerate);
         }
         xsh.res = 0;
         memcpy(xsh.name, pSmp->legacy_filename, 22);
@@ -1467,7 +1480,7 @@ bool module_renderer::ReadXISample(modplug::tracker::sampleindex_t nSample, LPBY
         pSmp->RelativeTone = (int)psh->relnote;
         if (m_nType != MOD_TYPE_XM)
         {
-            pSmp->c5_samplerate = TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+            pSmp->c5_samplerate = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
             pSmp->RelativeTone = 0;
             pSmp->nFineTune = 0;
         }
@@ -1583,7 +1596,7 @@ bool module_renderer::ReadAIFFSample(modplug::tracker::sampleindex_t nSample, LP
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
     if (pSmp->sample_data)
     {
-        FreeSample(pSmp->sample_data);
+        modplug::legacy_soundlib::free_sample(pSmp->sample_data);
         pSmp->sample_data = nullptr;
         pSmp->length = 0;
     }
@@ -1599,7 +1612,10 @@ bool module_renderer::ReadAIFFSample(modplug::tracker::sampleindex_t nSample, LP
     if (m_nType & MOD_TYPE_XM) pSmp->flags |= CHN_PANNING;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
-    if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
+    if (m_nType & MOD_TYPE_XM) {
+        std::tie(pSmp->RelativeTone, pSmp->nFineTune) =
+            transpose_of_frequency(pSmp->c5_samplerate);
+    }
     pSmp->vibrato_type = pSmp->vibrato_sweep = pSmp->vibrato_depth = pSmp->vibrato_rate = 0;
     pSmp->legacy_filename[0] = 0;
     m_szNames[nSample][0] = 0;
@@ -1645,7 +1661,10 @@ UINT module_renderer::ReadITSSample(modplug::tracker::sampleindex_t nSample, LPB
     if (pis->C5Speed < 256) pSmp->c5_samplerate = 256;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
-    if (GetType() == MOD_TYPE_XM) FrequencyToTranspose(pSmp);
+    if (GetType() == MOD_TYPE_XM) {
+        std::tie(pSmp->RelativeTone, pSmp->nFineTune) =
+            transpose_of_frequency(pSmp->c5_samplerate);
+    }
     pSmp->default_volume = pis->vol << 2;
     if (pSmp->default_volume > 256) pSmp->default_volume = 256;
     pSmp->global_volume = pis->gvl;
@@ -2131,7 +2150,10 @@ bool module_renderer::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dw
     if (!pSmp->c5_samplerate) pSmp->c5_samplerate = 22050;
     pSmp->RelativeTone = 0;
     pSmp->nFineTune = 0;
-    if (m_nType & MOD_TYPE_XM) FrequencyToTranspose(pSmp);
+    if (m_nType & MOD_TYPE_XM) {
+        std::tie(pSmp->RelativeTone, pSmp->nFineTune) =
+            transpose_of_frequency(pSmp->c5_samplerate);
+    }
     dwMemPos += BigEndian(pvh->dwSize) + 8;
     while (dwMemPos + 8 < dwFileLength)
     {

@@ -2,7 +2,6 @@
 #include <mmsystem.h>
 #include "mainfrm.h"
 #include "moddoc.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "legacy_soundlib/midi.h"
 #include "Moptions.h"    // for OPTIONS_PAGE_MIDI
 
@@ -20,7 +19,8 @@ int ApplyVolumeRelatedMidiSettings(const uint32_t& dwParam1, const uint8_t midiv
     int nVol = GetFromMIDIMsg_DataByte2(dwParam1);
     if (CMainFrame::m_dwMidiSetup & MIDISETUP_RECORDVELOCITY)
     {
-            nVol = (CDLSBank::DLSMidiVolumeToLinear(nVol)+255) >> 8;
+            // XXXih: ???
+            // nVol = (CDLSBank::DLSMidiVolumeToLinear(nVol)+255) >> 8;
             if (CMainFrame::m_dwMidiSetup & MIDISETUP_AMPLIFYVELOCITY) nVol *= 2;
             if (nVol < 1) nVol = 1;
             if (nVol > 256) nVol = 256;

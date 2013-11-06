@@ -201,13 +201,11 @@ BOOL module_renderer::InitPlayer(BOOL bReset)
 //--------------------------------------
 {
     DEBUG_FUNC("");
-#ifndef FASTSOUNDLIB
     if (!gbInitTables)
     {
         SndMixInitializeTables();
         gbInitTables = true;
     }
-#endif
     if (m_nMaxMixChannels > MAX_VIRTUAL_CHANNELS) m_nMaxMixChannels = MAX_VIRTUAL_CHANNELS;
     if (deprecated_global_mixing_freq < 4000) deprecated_global_mixing_freq = 4000;
     if (deprecated_global_mixing_freq > MAX_SAMPLE_RATE) deprecated_global_mixing_freq = MAX_SAMPLE_RATE;
@@ -293,12 +291,10 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         // Update Channel Data
         if (!m_nBufferCount)
         {
-#ifndef FASTSOUNDLIB
             if (m_dwSongFlags & SONG_FADINGSONG) {
                 m_dwSongFlags |= SONG_ENDREACHED;
                 m_nBufferCount = uncomputed_samples;
             } else
-#endif
             if (ReadNote()) {
             } else {
                 #ifdef MODPLUG_TRACKER
@@ -307,9 +303,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
                         break;
                     }
                 #endif
-                #ifndef FASTSOUNDLIB
                     if (!FadeSong(FADESONGDELAY) || m_bIsRendering)    //rewbs: disable song fade when rendering.
-                #endif
                     {
                         m_dwSongFlags |= SONG_ENDREACHED;
                         if (uncomputed_samples == max_samples || m_bIsRendering)            //rewbs: don't complete buffer when rendering
@@ -1649,9 +1643,7 @@ BOOL module_renderer::ReadNote()
                 pan /= 128;
                 pan += 128;
                 pan = CLAMP(pan, 0, 256);
-#ifndef FASTSOUNDLIB
                 if (deprecated_global_sound_setup_bitmask & SNDMIX_REVERSESTEREO) pan = 256 - pan;
-#endif
 
                 LONG realvol;
                 if (m_pConfig->getUseGlobalPreAmp())
@@ -1696,7 +1688,6 @@ BOOL module_renderer::ReadNote()
             } else
             {
                 current_vchan->flags &= ~(CHN_NOIDO|CHN_HQSRC);
-#ifndef FASTSOUNDLIB
                 if (current_vchan->position_delta == 0x10000)
                 {
                     current_vchan->flags |= CHN_NOIDO;
@@ -1734,10 +1725,6 @@ BOOL module_renderer::ReadNote()
                     || ((gnCPUUsage > 80) && (current_vchan->nNewLeftVol < 0x100) && (current_vchan->nNewRightVol < 0x100)))
                         current_vchan->flags |= CHN_NOIDO;
                 }
-#else
-                if (current_vchan->position_delta >= 0xFE00) current_vchan->flags |= CHN_NOIDO;
-                if (true) current_vchan->flags |= CHN_NOIDO;
-#endif // FASTSOUNDLIB
             }
 
             /*if (m_pConfig->getUseGlobalPreAmp())
@@ -1776,7 +1763,6 @@ BOOL module_renderer::ReadNote()
 // -! NEW_FEATURE#0027
                 LONG nRightDelta = ((current_vchan->nNewRightVol - current_vchan->right_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
                 LONG nLeftDelta  = ((current_vchan->nNewLeftVol - current_vchan->left_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
-#ifndef FASTSOUNDLIB
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup "
 //                            if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
@@ -1794,7 +1780,6 @@ BOOL module_renderer::ReadNote()
                         }
                     }
                 }
-#endif // FASTSOUNDLIB
                 current_vchan->right_ramp = nRightDelta / rampLength;
                 current_vchan->left_ramp = nLeftDelta / rampLength;
                 current_vchan->right_volume = current_vchan->nNewRightVol - ((current_vchan->right_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);

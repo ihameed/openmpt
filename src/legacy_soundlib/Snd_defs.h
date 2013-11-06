@@ -35,23 +35,12 @@ const modplug::tracker::orderindex_t MAX_ORDERS = modplug::tracker::orderindex_t
 const modplug::tracker::sequenceindex_t MAX_SEQUENCES = 50;
 
 const size_t MAX_INSTRUMENTS = 256;    //200 // -> CODE#0006 -> DESC="misc quantity changes" // -! BEHAVIOUR_CHANGE#0006
-//#ifdef FASTSOUNDLIB
-//#define MAX_VIRTUAL_CHANNELS            80
-//#else
-// -> CODE#0006
-// -> DESC="misc quantity changes"
-const size_t MAX_VIRTUAL_CHANNELS = 256;    //200 // Note: This is the maximum number of sound channels,
-                                //            see MAX_BASECHANNELS for bad_max pattern channels.
-// -! BEHAVIOUR_CHANGE#0006
-//#endif
-// -> CODE#0006
-// -> DESC="misc quantity changes"
-//#ifdef FASTSOUNDLIB
-//#define MAX_BASECHANNELS    64
-//#else
+
+//200 // Note: This is the maximum number of sound channels,
+// see MAX_BASECHANNELS for max pattern channels.
+const size_t MAX_VIRTUAL_CHANNELS = 256;
+
 const size_t MAX_BASECHANNELS = 127;    // Max pattern channels.
-//#endif
-// -! BEHAVIOUR_CHANGE#0006
 #define MAX_ENVPOINTS            240
 #define MIN_PERIOD                    0x0020
 #define MAX_PERIOD                    0xFFFF
@@ -217,15 +206,6 @@ enum enmEnvelopeTypes
 #define RS_IT21416            0x14
 #define RS_IT2158            0x12
 #define RS_IT21516            0x16
-// AMS Packed Samples
-#define RS_AMS8                    0x11
-#define RS_AMS16            0x15
-// DMF Huffman compression
-#define RS_DMF8                    0x13
-#define RS_DMF16            0x17
-// MDL Huffman compression
-#define RS_MDL8                    0x20
-#define RS_MDL16            0x24
 #define RS_PTM8DTO16    0x25
 // Stereo Interleaved Samples
 #define RS_STIPCM8S            (RS_PCM8S|0x40|RSF_STEREO)        // stereo 8-bit signed

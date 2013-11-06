@@ -24,6 +24,7 @@
 #include "../mixgraph/core.h"
 #include "../tracker/modsequence.h"
 #include "../tracker/orderlist.h"
+#include "misc.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.
 #ifndef NO_VST
@@ -159,14 +160,6 @@ typedef SNDMIXPLUGIN* PSNDMIXPLUGIN;
 class CModDoc;
 typedef    BOOL (__cdecl *PMIXPLUGINCREATEPROC)(PSNDMIXPLUGIN, module_renderer*);
 
-struct SNDMIXSONGEQ
-{
-    ULONG nEQBands;
-    ULONG EQFreq_Gains[MAX_EQ_BANDS];
-};
-typedef SNDMIXSONGEQ* PSNDMIXSONGEQ;
-
-////////////////////////////////////////////////////////////////////
 
 // Global MIDI macros
 enum
@@ -182,9 +175,8 @@ enum
     MIDIOUT_PROGRAM,
 };
 
-
 #define NUM_MACROS 16    // number of parametered macros
-#define MACRO_LENGTH 32    // bad_max number of chars per macro
+#define MACRO_LENGTH 32    // max number of chars per macro
 struct MODMIDICFG
 {
     CHAR szMidiGlb[9][MACRO_LENGTH];
@@ -198,7 +190,6 @@ typedef VOID (__cdecl * LPSNDMIXHOOKPROC)(int *, unsigned long, unsigned long); 
 #include "pattern.h"
 #include "patternContainer.h"
 #include "PlaybackEventer.h"
-
 
 // Line ending types (for reading song messages from module files)
 enum enmLineEndings
@@ -264,6 +255,7 @@ public:
 
     //XXXih:   <:(
     modplug::mixgraph::core mixgraph;
+    modplug::tracker::orderlist_t orders;
 
 private:
     modplug::audioio::paudio_settings_t render_settings;
@@ -291,7 +283,6 @@ public:
     static BOOL InitPlayer(BOOL bReset=FALSE);
     static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
     static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
-    static BOOL IsStereo() { return (deprecated_global_channels > 1) ? TRUE : FALSE; }
     static uint32_t GetSampleRate() { return deprecated_global_mixing_freq; }
     static uint32_t GetBitsPerSample() { return deprecated_global_bits_per_sample; }
     static uint32_t InitSysInfo();
@@ -445,16 +436,8 @@ public:
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
-    // Static helper functions
-public:
-    static uint32_t TransposeToFrequency(int transp, int ftune=0);
-    static int FrequencyToTranspose(uint32_t freq);
-    static void FrequencyToTranspose(modplug::tracker::modsample_t *psmp);
-
     // System-Dependant functions
 public:
-    static LPSTR AllocateSample(UINT nbytes);
-    static void FreeSample(LPVOID p);
     static UINT Normalize24BitBuffer(LPBYTE pbuffer, UINT cbsizebytes, uint32_t lmax24, uint32_t dwByteInc);
 
     // Song message helper functions
@@ -649,7 +632,6 @@ public:    // for Editing
     modplug::tracker::MODCHANNELSETTINGS ChnSettings[MAX_BASECHANNELS];    // Initial channels settings
     CPatternContainer Patterns;                                                    // Patterns
     modplug::tracker::deprecated_modsequence_list_t Order;                                                            // Modsequences. Order[x] returns an index of a pattern located at order x of the current sequence.
-    modplug::tracker::orderlist_t orders;
 
 
     modplug::tracker::modsample_t Samples[MAX_SAMPLES];                                            // Sample Headers
@@ -661,7 +643,6 @@ public:    // for Editing
 
     MODMIDICFG m_MidiCfg;                                                            // Midi macro config table
     SNDMIXPLUGIN m_MixPlugins[MAX_MIXPLUGINS];                    // Mix plugins
-    SNDMIXSONGEQ m_SongEQ;                                                            // Default song EQ preset
     CHAR CompressionTable[16];                                                    // ADPCM compression LUT
     bool m_bChannelMuteTogglePending[MAX_BASECHANNELS];
 
@@ -708,8 +689,6 @@ public:
     void DontLoopPattern(modplug::tracker::patternindex_t nPat, modplug::tracker::rowindex_t nRow = 0);            //rewbs.playSongFromCursor
     void SetCurrentPos(UINT nPos);
     void SetCurrentOrder(modplug::tracker::orderindex_t nOrder);
-    void GetTitle(LPSTR s) const { lstrcpyn(s, song_name.c_str(), song_name.length()); }
-    LPCSTR GetTitle() const { return song_name.c_str(); }
     LPCTSTR GetSampleName(UINT nSample) const;
     CString GetInstrumentName(UINT nInstr) const;
     UINT GetMusicSpeed() const { return m_nMusicSpeed; }
@@ -740,7 +719,6 @@ public:
     void ResetChannelState(modplug::tracker::chnindex_t chn, uint8_t resetStyle);
 
     // Module Loaders
-    bool ReadXM(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadS3M(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadMod(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadMed(const uint8_t * const lpStream, const uint32_t dwMemLength);
@@ -766,7 +744,6 @@ public:
     bool ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadUMX(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMO3(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength);
@@ -776,7 +753,6 @@ public:
     // Save Functions
 #ifndef MODPLUG_NO_FILESAVE
     UINT WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen=0);
-    bool SaveXM(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
     bool SaveS3M(LPCSTR lpszFileName, UINT nPacking=0);
     bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
     bool SaveIT(LPCSTR lpszFileName, UINT nPacking=0);
@@ -811,18 +787,6 @@ public:
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())
 
 
-inline uint32_t modplug::tracker::modsample_t::GetSampleRate(const MODTYPE type) const
-//--------------------------------------------------------------
-{
-    uint32_t nRate;
-    if(type & (MOD_TYPE_MOD|MOD_TYPE_XM))
-        nRate = module_renderer::TransposeToFrequency(RelativeTone, nFineTune);
-    else
-        nRate = c5_samplerate;
-    return (nRate > 0) ? nRate : 8363;
-}
-
-
 inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instrumentindex_t instr)
 //-----------------------------------------------------------------------
 {
@@ -832,9 +796,6 @@ inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instru
         return NULL;
 }
 
-
-///////////////////////////////////////////////////////////
-// Low-level Mixing functions
 
 #define FADESONGDELAY            100
 
@@ -853,11 +814,6 @@ inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instru
 int _muldiv(long a, long b, long c);
 int _muldivr(long a, long b, long c);
 
-///////////////////////////////////////////////////////////
-// File Formats Information (name, extension, etc)
-
-#ifndef FASTSOUNDLIB
-
 typedef struct MODFORMATINFO
 {
     MODTYPE mtFormatId;            // MOD_TYPE_XXXX
@@ -867,9 +823,6 @@ typedef struct MODFORMATINFO
 } MODFORMATINFO;
 
 extern MODFORMATINFO gModFormatInfo[];
-
-#endif
-
 
 // Used in instrument/song extension reading to make sure the size field is valid.
 bool IsValidSizeField(const uint8_t * const pData, const uint8_t * const pEnd, const int16_t size);

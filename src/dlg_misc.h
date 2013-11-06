@@ -112,22 +112,6 @@ protected:
 
 
 ////////////////////////////////////////////////////////////////////////
-// Sound Banks
-
-//========================================
-class CSoundBankProperties: public CDialog
-//========================================
-{
-protected:
-    CHAR m_szInfo[4096];
-
-public:
-    CSoundBankProperties(CDLSBank *pBank, CWnd *parent=NULL);
-    virtual BOOL OnInitDialog();
-};
-
-
-////////////////////////////////////////////////////////////////////////
 // Midi Macros (Zxx)
 
 //class CColourEdit;

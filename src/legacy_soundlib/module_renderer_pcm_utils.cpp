@@ -247,95 +247,12 @@ LONG module_renderer::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT
     return 0;
 }
 
-#ifndef FASTSOUNDLIB
-
-#undef ASM_NORMALIZE
-#ifdef ASM_NORMALIZE
-
-#pragma warning(disable:4100)
-#pragma warning(disable:4731)
-
-
-/*
-void normalize_24_bit_buffer(char *buffer, size_t size, int lmax24, int *output) {
-    if (256 <= lmax24) {
-        lmax24 = 256;
-    }
-    for (size_t idx = 0; idx < size; ++idx) {
-        int bufidx = idx * 3;
-        long pbuffer = buffer[bufidx + 2];
-        pbuffer = (pbuffer << 16) | (buffer[bufidx + 1] << 8) | buffer[bufidx];
-
-        int scale = 1 << (31 - modplug::mixer::MIXING_ATTENUATION);
-        pbuffer *= scale;
-        pbuffer /=
-
-        output[idx] = pbuffer;
-    }
-}
-
-void __cdecl X86_Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, int *poutput)
-{
-    _asm {
-    mov esi, pbuffer    // esi = edi = pbuffer
-    mov edx, dwSize            // edx = dwSize
-    mov ebx, lmax24            // ebx = bad_max
-    mov edi, poutput    // edi = output 32-bit buffer
-    push ebp
-    mov ebp, edx            // ebp = dwSize
-    cmp ebx, 256
-    jg normloop
-    mov ebx, 256
-normloop:
-    movsx eax, byte ptr [esi+2]
-    movzx edx, byte ptr [esi+1]
-    shl eax, 8
-    or eax, edx
-    movzx edx, byte ptr [esi]
-    shl eax, 8
-    or eax, edx            // eax = 24-bit sample
-    mov edx, 1 << (31-modplug::mixer::MIXING_ATTENUATION)
-    add esi, 3
-    imul edx
-    add edi, 4
-    idiv ebx            // eax = 28-bit normalized sample
-    dec ebp
-    mov dword ptr [edi-4], eax
-    jnz normloop
-    pop ebp
-    }
-}
-*/
-
-#pragma warning(default:4100)
-
-#endif
-
 extern void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
 extern int MixSoundBuffer[];
 
 UINT module_renderer::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, uint32_t dwByteInc)
 //-----------------------------------------------------------------------------------------------
 {
-#ifdef ASM_NORMALIZE
-    int * const tempbuf = MixSoundBuffer;
-    int n = dwSize / 3;
-    while (n > 0)
-    {
-        int nbuf = (n > modplug::mixer::MIX_BUFFER_SIZE*2) ? modplug::mixer::MIX_BUFFER_SIZE*2 : n;
-        X86_Normalize24BitBuffer(pbuffer, nbuf, lmax24, tempbuf);
-        X86_Dither(tempbuf, nbuf, 8 * dwByteInc);
-        switch(dwByteInc)
-        {
-        case 2:            X86_Convert32To16(pbuffer, tempbuf, nbuf); break;
-        case 3:            X86_Convert32To24(pbuffer, tempbuf, nbuf); break;
-        default:    X86_Convert32To8(pbuffer, tempbuf, nbuf);
-        }
-        n -= nbuf;
-        pbuffer += dwByteInc * nbuf;
-    }
-    return (dwSize/3) * dwByteInc;
-#else
     LONG lMax = (lmax24 / 128) + 1;
     UINT i = 0;
     for (UINT j=0; j<dwSize; j+=3, i+=dwByteInc)
@@ -352,8 +269,4 @@ UINT module_renderer::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t
         }
     }
     return i;
-#endif
 }
-
-
-#endif // FASTSOUNDLIB

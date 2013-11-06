@@ -28,9 +28,7 @@
 int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 
 
-#ifndef FASTSOUNDLIB
 float MixFloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
-#endif
 
 #pragma bss_seg()
 
@@ -1925,8 +1923,6 @@ VOID module_renderer::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
 //////////////////////////////////////////////////////////////////////////
 // Noise Shaping (Dither)
 
-#ifndef FASTSOUNDLIB
-
 #pragma warning(disable:4731) // ebp modified
 
 void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits)
@@ -1976,10 +1972,6 @@ noiseloop:
     mov gDitherB, ebx
     }
 }
-
-
-#endif // FASTSOUNDLIB
-
 
 VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples)
 //-------------------------------------------------------------

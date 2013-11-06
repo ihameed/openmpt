@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "legacy_soundlib/sndfile.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "mainfrm.h"
 #include "mpdlgs.h"
 #include "vstplug.h"

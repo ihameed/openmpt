@@ -38,11 +38,15 @@
 #include "Stdafx.h"
 #include "Moddoc.h"
 #include "Mainfrm.h"
-#include "legacy_soundlib/modsmp_ctrl.h"
 #include "ModConvert.h"
 #include "tracker/types.h"
 
+#include "legacy_soundlib/modsmp_ctrl.h"
+#include "legacy_soundlib/misc.h"
+
 using namespace modplug::tracker;
+
+namespace legacy_soundlib = modplug::legacy_soundlib;
 
 
 #define CHANGEMODTYPE_WARNING(x)    warnings.set(x);
@@ -299,7 +303,10 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Transpose to Frequency (MOD/XM to S3M/IT/MPT)
         if(oldTypeIsMOD_XM && newTypeIsS3M_IT_MPT)
         {
-            m_SndFile.Samples[nSmp].c5_samplerate = module_renderer::TransposeToFrequency(m_SndFile.Samples[nSmp].RelativeTone, m_SndFile.Samples[nSmp].nFineTune);
+            m_SndFile.Samples[nSmp].c5_samplerate = frequency_of_transpose(
+                m_SndFile.Samples[nSmp].RelativeTone,
+                m_SndFile.Samples[nSmp].nFineTune
+            );
             m_SndFile.Samples[nSmp].RelativeTone = 0;
             m_SndFile.Samples[nSmp].nFineTune = 0;
         }
@@ -307,7 +314,9 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         // Frequency to Transpose, panning (S3M/IT/MPT to MOD/XM)
         if(oldTypeIsS3M_IT_MPT && newTypeIsMOD_XM)
         {
-            module_renderer::FrequencyToTranspose(&m_SndFile.Samples[nSmp]);
+            auto &smp = m_SndFile.Samples[nSmp];
+            std::tie(smp.RelativeTone, smp.nFineTune) =
+                transpose_of_frequency(smp.c5_samplerate);
             if (!(m_SndFile.Samples[nSmp].flags & CHN_PANNING)) m_SndFile.Samples[nSmp].default_pan = 128;
             // No relative note for MOD files
             // TODO: Pattern notes could be transposed based on the previous relative tone?

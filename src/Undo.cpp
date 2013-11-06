@@ -286,7 +286,7 @@ bool CSampleUndo::PrepareUndo(const sampleindex_t nSmp, sampleUndoTypes nChangeT
                     UINT nBytesPerSample = pSndFile->Samples[nSmp].GetBytesPerSample();
                     UINT nChangeLen = nChangeEnd - nChangeStart;
 
-                    sUndo.SamplePtr = pSndFile->AllocateSample(nChangeLen * nBytesPerSample + 4 * nBytesPerSample);
+                    sUndo.SamplePtr = modplug::legacy_soundlib::alloc_sample(nChangeLen * nBytesPerSample + 4 * nBytesPerSample);
                     if(sUndo.SamplePtr == nullptr) return false;
                     memcpy(sUndo.SamplePtr, pSndFile->Samples[nSmp].sample_data + nChangeStart * nBytesPerSample, nChangeLen * nBytesPerSample);
 
@@ -367,7 +367,7 @@ bool CSampleUndo::Undo(const sampleindex_t nSmp)
 
     case sundo_delete:
             // insert deleted data
-            pNewSample = pSndFile->AllocateSample(pUndo->OldSample.GetSampleSizeInBytes() + 4 * nBytesPerSample);
+            pNewSample = modplug::legacy_soundlib::alloc_sample(pUndo->OldSample.GetSampleSizeInBytes() + 4 * nBytesPerSample);
             if(pNewSample == nullptr) return false;
             memcpy(pNewSample, pCurrentSample, pUndo->nChangeStart * nBytesPerSample);
             memcpy(pNewSample + pUndo->nChangeStart * nBytesPerSample, pUndo->SamplePtr, nChangeLen * nBytesPerSample);
@@ -419,7 +419,7 @@ void CSampleUndo::DeleteUndoStep(const sampleindex_t nSmp, const UINT nStep)
 //------------------------------------------------------------------------
 {
     if(!SampleBufferExists(nSmp, false) || nStep >= UndoBuffer[nSmp - 1].size()) return;
-    module_renderer::FreeSample(UndoBuffer[nSmp - 1][nStep].SamplePtr);
+    modplug::legacy_soundlib::free_sample(UndoBuffer[nSmp - 1][nStep].SamplePtr);
     UndoBuffer[nSmp - 1].erase(UndoBuffer[nSmp - 1].begin() + nStep);
 }
 

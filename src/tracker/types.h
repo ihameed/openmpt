@@ -6,6 +6,8 @@
 namespace modplug {
 namespace tracker {
 
+typedef uint32_t sampleoffset_t;
+
 typedef uint32_t rowindex_t;
 const rowindex_t RowIndexMax     = UINT32_MAX;
 const rowindex_t RowIndexInvalid = RowIndexMax;
@@ -14,10 +16,13 @@ typedef uint16_t chnindex_t;
 const chnindex_t ChannelIndexMax     = UINT16_MAX;
 const chnindex_t ChannelIndexInvalid = ChannelIndexMax;
 
+/*
 NEWTYPE(orderindex_t, uint16_t);
 ORDERED_TYPE(orderindex_t);
 FINITE_FIELD_TYPE(orderindex_t);
 INCR_DECR_TYPE(orderindex_t);
+*/
+typedef uint16_t orderindex_t;
 const orderindex_t OrderIndexMax     = orderindex_t(UINT16_MAX);
 const orderindex_t OrderIndexInvalid = orderindex_t(OrderIndexMax);
 

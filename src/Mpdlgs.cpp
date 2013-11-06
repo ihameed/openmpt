@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "legacy_soundlib/sndfile.h"
 #include "mainfrm.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "mpdlgs.h"
 #include "moptions.h"
 #include "moddoc.h"
@@ -74,9 +73,6 @@ BOOL CMidiSetupDlg::OnInitDialog()
         }
         combo->SetCurSel((m_nMidiDevice == MIDI_MAPPER) ? 0 : m_nMidiDevice);
     }
-    // Midi Import settings
-    SetDlgItemInt(IDC_EDIT1, gnMidiImportSpeed);
-    SetDlgItemInt(IDC_EDIT2, gnMidiPatternLen);
     m_SpinSpd.SetRange(2, 6);
     m_SpinPat.SetRange(64, 256);
     return TRUE;
@@ -105,8 +101,6 @@ void CMidiSetupDlg::OnOK()
         int n = combo->GetCurSel();
         if (n >= 0) m_nMidiDevice = combo->GetItemData(n);
     }
-    gnMidiImportSpeed = GetDlgItemInt(IDC_EDIT1);
-    gnMidiPatternLen = GetDlgItemInt(IDC_EDIT2);
     if (pMainFrm) pMainFrm->SetupMidi(m_dwMidiSetup, m_nMidiDevice);
     CPropertyPage::OnOK();
 }

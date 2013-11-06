@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 #include <windows.h>
 
@@ -54,8 +55,8 @@ private:
 };
 
 template <typename ty, typename ty1, typename ty2>
-ty clamp(ty val, ty1 bad_min, ty2 bad_max) {
-    return val < bad_min ? bad_min : (val > bad_max ? bad_max : val);
+ty clamp(ty val, ty1 lo, ty2 hi) {
+    return val < lo ? lo : (val > hi ? hi : val);
 }
 
 typedef HKEY hkey_t; // :  -  (
@@ -82,6 +83,23 @@ template <typename container_type, typename function_type>
 function_type for_each_rev(container_type &container, function_type f) {
     std::for_each(container.rbegin(), container.rend(), f);
     return f;
+}
+
+template <typename function_type>
+auto replicate(size_t n, function_type f) -> std::vector<decltype(f())> {
+    std::vector<decltype(f())> ret;
+    ret.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+        ret.push_back(f());
+    }
+    return ret;
+}
+
+template <typename function_type>
+void replicate_(size_t n, function_type f) {
+    for (size_t i = 0; i < n; ++i) {
+        f();
+    }
 }
 
 }

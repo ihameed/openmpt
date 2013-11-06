@@ -20,7 +20,6 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MIDIMappingDialog.cpp" />
     <ClCompile Include="misc_util.cpp" />
-    <ClCompile Include="mod2midi.cpp" />
     <ClCompile Include="Mod2wave.cpp" />
     <ClCompile Include="ModConvert.cpp" />
     <ClCompile Include="Moddoc.cpp" />
@@ -67,36 +66,9 @@
     </ClCompile>
     <ClCompile Include="mixgraph\mixer.cpp" />
     <ClCompile Include="serializers\wao.cpp" />
-    <ClCompile Include="legacy_soundlib\Dlsbank.cpp" />
     <ClCompile Include="legacy_soundlib\Fastmix.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_669.cpp" />
-    <ClCompile Include="legacy_soundlib\LOAD_AMF.CPP" />
-    <ClCompile Include="legacy_soundlib\Load_ams.cpp" />
-    <ClCompile Include="legacy_soundlib\LOAD_DBM.CPP" />
-    <ClCompile Include="legacy_soundlib\LOAD_DMF.CPP" />
-    <ClCompile Include="legacy_soundlib\LOAD_DSM.CPP" />
-    <ClCompile Include="legacy_soundlib\Load_far.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_gdm.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_imf.cpp" />
     <ClCompile Include="legacy_soundlib\Load_it.cpp" />
     <ClCompile Include="legacy_soundlib\Load_itp.cpp" />
-    <ClCompile Include="legacy_soundlib\load_j2b.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_mdl.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_med.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_mid.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_mo3.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_mod.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_mt2.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_mtm.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_okt.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_psm.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_ptm.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_s3m.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_stm.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_ult.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_umx.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_wav.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_xm.cpp" />
     <ClCompile Include="legacy_soundlib\Message.cpp" />
     <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
     <ClCompile Include="legacy_soundlib\Mmx_mix.cpp" />
@@ -310,7 +282,16 @@
     <ClCompile Include="serializers\legacy_util.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="modformat\xm\read.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="legacy_soundlib\misc.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
     <ClCompile Include="serializers\xm.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tracker\sample.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,7 +313,6 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MIDIMappingDialog.h" />
     <ClInclude Include="misc_util.h" />
-    <ClInclude Include="mod2midi.h" />
     <ClInclude Include="mod2wave.h" />
     <ClInclude Include="ModConvert.h" />
     <ClInclude Include="moddoc.h" />
@@ -386,7 +366,6 @@
       <Filter>tracker</Filter>
     </ClInclude>
     <ClInclude Include="legacy_soundlib\WindowedFIR.h" />
-    <ClInclude Include="legacy_soundlib\Dlsbank.h" />
     <ClInclude Include="legacy_soundlib\Endianness.h" />
     <ClInclude Include="legacy_soundlib\IT_DEFS.H" />
     <ClInclude Include="legacy_soundlib\Loaders.h" />
@@ -469,7 +448,19 @@
     <ClInclude Include="serializers\binaryprint.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="modformat\xm\xm.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\samplecodec.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="legacy_soundlib\misc.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
     <ClInclude Include="serializers\xm.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\sample.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

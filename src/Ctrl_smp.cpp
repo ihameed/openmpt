@@ -11,8 +11,12 @@
 #include "SoundTouch.h"
 #include "TDStretch.h"
 #include "SoundTouchDLL.h"
-#include "legacy_soundlib/modsmp_ctrl.h"
 #include <Shlwapi.h>
+
+#include "legacy_soundlib/modsmp_ctrl.h"
+#include "legacy_soundlib/misc.h"
+
+using namespace modplug::legacy_soundlib;
 
 #ifdef _DEBUG
     #define new DEBUG_NEW
@@ -516,7 +520,7 @@ BOOL CCtrlSamples::GetToolTipText(UINT uId, LPSTR pszText)
             if ((m_pSndFile) && (m_pSndFile->m_nType & (MOD_TYPE_XM|MOD_TYPE_MOD)) && (m_nSample))
             {
                 modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
-                UINT nFreqHz = module_renderer::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+                UINT nFreqHz = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
                 wsprintf(pszText, "%ldHz", nFreqHz);
                 return TRUE;
             }
@@ -651,7 +655,8 @@ void CCtrlSamples::UpdateView(uint32_t dwHintMask, CObject *pObj)
         {
             wsprintf(s, "%lu", pSmp->c5_samplerate);
             m_EditFineTune.SetWindowText(s);
-            transp = module_renderer::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
+            std::tie(transp, std::ignore) =
+                transpose_of_frequency(pSmp->c5_samplerate);
         } else
         {
             int ftune = ((int)pSmp->nFineTune);
@@ -911,7 +916,7 @@ void CCtrlSamples::OnSampleNew()
             memcpy(&m_pSndFile->Samples[smp], &m_pSndFile->Samples[nOldSmp], sizeof(modplug::tracker::modsample_t));
             strcpy(m_pSndFile->m_szNames[smp], m_pSndFile->m_szNames[nOldSmp]);
             // clone sample.
-            if((m_pSndFile->Samples[smp].sample_data = module_renderer::AllocateSample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
+            if((m_pSndFile->Samples[smp].sample_data = modplug::legacy_soundlib::alloc_sample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
             {
                 memcpy(m_pSndFile->Samples[smp].sample_data, m_pSndFile->Samples[nOldSmp].sample_data, m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes());
             }
@@ -1395,7 +1400,7 @@ void CCtrlSamples::OnUpsample()
     pOriginal = pSmp->sample_data;
     dwNewLen = pSmp->length + (dwEnd-dwStart);
     pNewSample = NULL;
-    if (dwNewLen+4 <= MAX_SAMPLE_LENGTH) pNewSample = module_renderer::AllocateSample((dwNewLen+4)*newsmplsize);
+    if (dwNewLen+4 <= MAX_SAMPLE_LENGTH) pNewSample = modplug::legacy_soundlib::alloc_sample((dwNewLen+4)*newsmplsize);
     if (pNewSample)
     {
         m_pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
@@ -1501,7 +1506,7 @@ void CCtrlSamples::OnUpsample()
         pSmp->sample_data = (LPSTR)pNewSample;
         pSmp->length = dwNewLen;
 
-        module_renderer::FreeSample(pOriginal);
+        modplug::legacy_soundlib::free_sample(pOriginal);
         END_CRITICAL();
         m_pModDoc->AdjustEndOfSample(m_nSample);
         if (selection.bSelected == true)
@@ -1543,7 +1548,7 @@ void CCtrlSamples::OnDownsample()
     dwNewLen = pSmp->length - dwRemove;
     dwEnd = dwStart+dwRemove*2;
     pNewSample = NULL;
-    if ((dwNewLen > 32) && (dwRemove)) pNewSample = module_renderer::AllocateSample((dwNewLen+4)*smplsize);
+    if ((dwNewLen > 32) && (dwRemove)) pNewSample = modplug::legacy_soundlib::alloc_sample((dwNewLen+4)*smplsize);
     if (pNewSample)
     {
 
@@ -1628,7 +1633,7 @@ void CCtrlSamples::OnDownsample()
         }
         pSmp->length = dwNewLen;
         pSmp->sample_data = (LPSTR)pNewSample;
-        module_renderer::FreeSample(pOriginal);
+        modplug::legacy_soundlib::free_sample(pOriginal);
         END_CRITICAL();
         m_pModDoc->AdjustEndOfSample(m_nSample);
         if (selection.bSelected == true)
@@ -1703,7 +1708,7 @@ void CCtrlSamples::OnEstimateSampleSize()
     //Calculate/verify samplerate at C5.
     long lSampleRate = pSmp->c5_samplerate;
     if(m_pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-        lSampleRate = module_renderer::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+        lSampleRate = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
     if(lSampleRate <= 0)
         lSampleRate = 8363;
 
@@ -1871,7 +1876,7 @@ int CCtrlSamples::TimeStretch(float ratio)
     // so allocate a bit more(1.03*).
     const uint32_t nNewSampleLength = (uint32_t)(1.03 * ratio * (double)pSmp->length);
     //const uint32_t nNewSampleLength = (uint32_t)(0.5 + ratio * (double)pSmp->length);
-    PVOID pNewSample = module_renderer::AllocateSample(nNewSampleLength * nChn * smpsize);
+    PVOID pNewSample = modplug::legacy_soundlib::alloc_sample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
 
@@ -2109,7 +2114,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
     // so allocate a bit more(1.03*).
     const uint32_t nNewSampleLength = (uint32_t)(2.03 * ratio * (double)pSmp->length);
     //const uint32_t nNewSampleLength = (uint32_t)(0.5 + ratio * (double)pSmp->length);
-    PVOID pNewSample = module_renderer::AllocateSample(nNewSampleLength * nChn * smpsize);
+    PVOID pNewSample = modplug::legacy_soundlib::alloc_sample(nNewSampleLength * nChn * smpsize);
     if(pNewSample == NULL)
         return 3;
 
@@ -2716,7 +2721,8 @@ void CCtrlSamples::OnFineTuneChanged()
         if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].c5_samplerate))
         {
             m_pSndFile->Samples[m_nSample].c5_samplerate = n;
-            int transp = module_renderer::FrequencyToTranspose(n) >> 7;
+            int transp = 0;
+            std::tie(transp, std::ignore) = transpose_of_frequency(n);
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
             if (basenote >= BASENOTE_MAX) basenote = BASENOTE_MAX-1;
@@ -2750,8 +2756,9 @@ void CCtrlSamples::OnBaseNoteChanged()
     int n = (NoteMiddleC - 1) - (m_CbnBaseNote.GetCurSel() + BASENOTE_MIN);
     if (m_pSndFile->m_nType & (MOD_TYPE_IT|MOD_TYPE_S3M|MOD_TYPE_MPT))
     {
-        LONG ft = module_renderer::FrequencyToTranspose(m_pSndFile->Samples[m_nSample].c5_samplerate) & 0x7f;
-        n = module_renderer::TransposeToFrequency(n, ft);
+        LONG ft = 0;
+        std::tie(std::ignore, ft) = transpose_of_frequency(m_pSndFile->Samples[m_nSample].c5_samplerate);
+        n = frequency_of_transpose(n, ft);
         if ((n > 0) && (n <= (m_pSndFile->GetType() == MOD_TYPE_S3M ? 65535 : 9999999)) && (n != (int)m_pSndFile->Samples[m_nSample].c5_samplerate))
         {
             CHAR s[32];
@@ -3229,7 +3236,8 @@ NoSample:
             if(d < m_nFinetuneStep) d = m_nFinetuneStep;
             d += (pos * m_nFinetuneStep);
             pSmp->c5_samplerate = CLAMP(d, 1, 9999999); // 9999999 is bad_max. in Impulse Tracker
-            int transp = module_renderer::FrequencyToTranspose(pSmp->c5_samplerate) >> 7;
+            int transp = 0;
+            std::tie(transp, std::ignore) = transpose_of_frequency(pSmp->c5_samplerate);
             int basenote = 60 - transp;
             if (basenote < BASENOTE_MIN) basenote = BASENOTE_MIN;
             if (basenote >= BASENOTE_MAX) basenote = BASENOTE_MAX-1;

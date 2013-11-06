@@ -86,7 +86,6 @@ protected:
 
 public:
     static MEMORYSTATUS gMemStatus;
-    static CDLSBank *gpDLSBanks[MAX_DLS_BANKS];
 
 protected:
     CMultiDocTemplate *m_pModTemplate;
@@ -123,13 +122,7 @@ public:
     static UINT GetDefaultDocType() { return m_nDefaultDocType; }
     static VOID SetDefaultDocType(UINT n) { m_nDefaultDocType = n; }
     static LPMIDILIBSTRUCT GetMidiLibrary() { return glpMidiLibrary; }
-    static BOOL ImportMidiConfig(LPCSTR lpszFileName, BOOL bNoWarning=FALSE);
-    static BOOL ExportMidiConfig(LPCSTR lpszFileName);
     static void RegisterExtensions();
-    static BOOL LoadDefaultDLSBanks();
-    static BOOL SaveDefaultDLSBanks();
-    static BOOL RemoveDLSBank(UINT nBank);
-    static BOOL AddDLSBank(LPCSTR);
 
     static FileDlgResult ShowOpenSaveFileDialog(const bool load, const std::string defaultExtension, const std::string defaultFilename, const std::string extFilter, const std::string workingDirectory = "", const bool allowMultiSelect = false, int *filterIndex = nullptr);
 

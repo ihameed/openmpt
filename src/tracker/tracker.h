@@ -1,12 +1,13 @@
 #pragma once
 
-#include "../legacy_soundlib/Snd_defs.h"
-#include "../mixgraph/constants.h"
 #include <cstdint>
-
 
 #include "modevent.h"
 #include "types.h"
+#include "sample.h"
+
+#include "../legacy_soundlib/Snd_defs.h"
+#include "../mixgraph/constants.h"
 
 class CTuningBase;
 typedef CTuningBase CTuning;
@@ -15,10 +16,10 @@ namespace modplug {
 namespace tracker {
 
 
-typedef uint32_t sampleoffset_t;
 typedef uint32_t ufixedpt_t;
 typedef int32_t fixedpt_t;
 
+//struct modsample_t;
 
 struct resampler_config_t {
     //rewbs.resamplerConf
@@ -28,46 +29,6 @@ struct resampler_config_t {
     uint8_t fir_type; //WFIR_KAISER4T;
     //end rewbs.resamplerConf
 };
-
-struct modsample_t {
-    sampleoffset_t length;
-
-    sampleoffset_t loop_start;
-    sampleoffset_t loop_end;
-    sampleoffset_t sustain_start;
-    sampleoffset_t sustain_end;
-
-    char *sample_data;
-
-    uint32_t c5_samplerate;
-    uint16_t default_pan;
-    uint16_t default_volume;
-    uint16_t global_volume;
-
-    uint16_t flags;
-
-    signed char RelativeTone; // Relative note to middle c (for MOD/XM)
-    signed char nFineTune;    // Finetune period (for MOD/XM)
-
-    uint8_t vibrato_type;
-    uint8_t vibrato_sweep;
-    uint8_t vibrato_depth;
-    uint8_t vibrato_rate;
-
-    char name[MAX_SAMPLENAME];
-    char legacy_filename[MAX_SAMPLEFILENAME];
-
-    uint8_t GetElementarySampleSize() const {return (flags & CHN_16BIT) ? 2 : 1;}
-
-    uint8_t GetNumChannels() const {return (flags & CHN_STEREO) ? 2 : 1;}
-
-    uint8_t GetBytesPerSample() const {return GetElementarySampleSize() * GetNumChannels();}
-
-    uint32_t GetSampleSizeInBytes() const {return length * GetBytesPerSample();}
-
-    uint32_t GetSampleRate(const MODTYPE type) const;
-};
-
 
 struct modenvelope_t {
     uint32_t flags;

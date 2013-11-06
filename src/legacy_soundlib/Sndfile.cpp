@@ -23,11 +23,14 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <memory>
+
+#include "../serializers/binaryparse.h"
+#include "../serializers/xm.h"
 
 #define str_SampleAllocationError    (GetStrI18N(_TEXT("Sample allocation error")))
 #define str_Error                                    (GetStrI18N(_TEXT("Error")))
 
-#ifndef NO_COPYRIGHT
 #ifndef NO_MMCMP_SUPPORT
 #define MMCMP_SUPPORT
 #endif // NO_MMCMP_SUPPORT
@@ -43,10 +46,6 @@ LPCSTR glpszModExtensions = "mod|s3m|xm|it|stm|nst|ult|669|wow|mtm|med|far|mdl|a
 ;
 //Should there be mptm?
 #endif // NO_ARCHIVE_SUPPORT
-#else // NO_COPYRIGHT: EarSaver only loads mod/s3m/xm/it/wav
-#define MODPLUG_BASIC_SUPPORT
-#endif
-
 #ifdef ZIPPED_MOD_SUPPORT
 #include "unzip32.h"
 #endif
@@ -69,10 +68,9 @@ extern BOOL MMCMP_Unpack(const uint8_t * *ppMemFile, uint32_t *pdwMemLength);
 
 using namespace modplug::tracker;
 
+namespace binaryparse = modplug::serializers::binaryparse;
+
 // External decompressors
-extern void AMSUnpack(const char *psrc, UINT inputlen, char *pdest, UINT dmax, char packcharacter);
-extern uint16_t MDLReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
-extern int DMFUnpack(LPBYTE psample, uint8_t *ibuf, uint8_t *ibufmax, UINT maxlen);
 extern uint32_t ITReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
 extern void ITUnpack8Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215);
 extern void ITUnpack16Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215);
@@ -503,7 +501,6 @@ module_renderer::module_renderer() :
     MemsetZero(Instruments);
     MemsetZero(m_szNames);
     MemsetZero(m_MixPlugins);
-    MemsetZero(m_SongEQ);
     Order.Init();
     Patterns.ClearPatterns();
     m_lTotalSampleCount=0;
@@ -564,7 +561,6 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     MemsetZero(Instruments);
     MemsetZero(m_szNames);
     MemsetZero(m_MixPlugins);
-    MemsetZero(m_SongEQ);
     //Order.assign(MAX_ORDERS, Order.GetInvalidPatIndex());
     Order.resize(1);
     Patterns.ClearPatterns();
@@ -623,45 +619,18 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
 #ifdef MMCMP_SUPPORT
         BOOL bMMCmp = MMCMP_Unpack(&lpStream, &dwMemLength);
 #endif
-        if ((!ReadXM(lpStream, dwMemLength))
+        std::shared_ptr<const uint8_t> buf(lpStream, [] (const uint8_t *) { });
+        auto ctx = binaryparse::mkcontext(buf, dwMemLength);
+        if (
+            (!modplug::serializers::xm::read(*this, ctx))
 // -> CODE#0023
 // -> DESC="IT project files (.itp)"
          && (!ReadITProject(lpStream, dwMemLength))
 // -! NEW_FEATURE#0023
          && (!ReadIT(lpStream, dwMemLength))
-         /*&& (!ReadMPT(lpStream, dwMemLength))*/
-         && (!ReadS3M(lpStream, dwMemLength))
-         && (!ReadWav(lpStream, dwMemLength))
-#ifndef MODPLUG_BASIC_SUPPORT
-         && (!ReadSTM(lpStream, dwMemLength))
-         && (!ReadMed(lpStream, dwMemLength))
-#ifndef FASTSOUNDLIB
-         && (!ReadMTM(lpStream, dwMemLength))
-         && (!ReadMDL(lpStream, dwMemLength))
-         && (!ReadDBM(lpStream, dwMemLength))
-         && (!Read669(lpStream, dwMemLength))
-         && (!ReadFAR(lpStream, dwMemLength))
-         && (!ReadAMS(lpStream, dwMemLength))
-         && (!ReadOKT(lpStream, dwMemLength))
-         && (!ReadPTM(lpStream, dwMemLength))
-         && (!ReadUlt(lpStream, dwMemLength))
-         && (!ReadDMF(lpStream, dwMemLength))
-         && (!ReadDSM(lpStream, dwMemLength))
-         && (!ReadUMX(lpStream, dwMemLength))
-         && (!ReadAMF(lpStream, dwMemLength))
-         && (!ReadPSM(lpStream, dwMemLength))
-         && (!ReadMT2(lpStream, dwMemLength))
-#ifdef MODPLUG_TRACKER
-         && (!ReadMID(lpStream, dwMemLength))
-#endif // MODPLUG_TRACKER
-#endif
-#endif // MODPLUG_BASIC_SUPPORT
-         && (!ReadGDM(lpStream, dwMemLength))
-         && (!ReadIMF(lpStream, dwMemLength))
-         && (!ReadAM(lpStream, dwMemLength))
-         && (!ReadJ2B(lpStream, dwMemLength))
-         && (!ReadMO3(lpStream, dwMemLength))
-         && (!ReadMod(lpStream, dwMemLength))) m_nType = MOD_TYPE_NONE;
+         ) {
+             m_nType = MOD_TYPE_NONE;
+        }
 #ifdef ZIPPED_MOD_SUPPORT
         if ((!m_lpszSongComments) && (archive.GetComments(FALSE)))
         {
@@ -841,7 +810,7 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
     m_pConfig->SetMixLevels(m_nMixLevels);
     RecalculateGainForAllPlugs();
 
-    modplug::serializers::write_wao(Patterns, *this);
+    //modplug::serializers::write_wao(Patterns, *this);
 
     if (m_nType)
     {
@@ -869,7 +838,7 @@ BOOL module_renderer::Destroy()
         modplug::tracker::modsample_t *pSmp = &Samples[i];
         if (pSmp->sample_data)
         {
-            FreeSample(pSmp->sample_data);
+            modplug::legacy_soundlib::free_sample(pSmp->sample_data);
             pSmp->sample_data = nullptr;
         }
     }
@@ -896,30 +865,6 @@ BOOL module_renderer::Destroy()
     m_nType = MOD_TYPE_NONE;
     m_nChannels = m_nSamples = m_nInstruments = 0;
     return TRUE;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-// Memory Allocation
-
-LPSTR module_renderer::AllocateSample(UINT nbytes)
-//-------------------------------------------
-{
-    if (nbytes>0xFFFFFFD6)
-        return NULL;
-    LPSTR p = (LPSTR)GlobalAllocPtr(GHND, (nbytes+39) & ~7);
-    if (p) p += 16;
-    return p;
-}
-
-
-void module_renderer::FreeSample(LPVOID p)
-//-----------------------------------
-{
-    if (p)
-    {
-        GlobalFreePtr(((LPSTR)p)-16);
-    }
 }
 
 
@@ -1813,7 +1758,7 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
         pSmp->flags |= CHN_STEREO;
     }
 
-    if ((pSmp->sample_data = AllocateSample(mem)) == NULL)
+    if ((pSmp->sample_data = modplug::legacy_soundlib::alloc_sample(mem)) == NULL)
     {
         pSmp->length = 0;
         return 0;
@@ -1824,7 +1769,7 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
     if( mem < pSmp->GetSampleSizeInBytes() )
     {
         pSmp->length = 0;
-        FreeSample(pSmp->sample_data);
+        modplug::legacy_soundlib::free_sample(pSmp->sample_data);
         pSmp->sample_data = nullptr;
         MessageBox(0, str_SampleAllocationError, str_Error, MB_ICONERROR);
         return 0;
@@ -2031,8 +1976,6 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
             ITUnpack16Bit(pSmp->sample_data, pSmp->length, (LPBYTE)lpMemFile, dwMemLength, (nFlags == RS_IT21516));
         break;
 
-#ifndef MODPLUG_BASIC_SUPPORT
-#ifndef FASTSOUNDLIB
     // 8-bit interleaved stereo samples
     case RS_STIPCM8S:
     case RS_STIPCM8U:
@@ -2073,21 +2016,6 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
         }
         break;
 
-    // AMS compressed samples
-    case RS_AMS8:
-    case RS_AMS16:
-        len = 9;
-        if (dwMemLength > 9)
-        {
-            const char *psrc = lpMemFile;
-            char packcharacter = lpMemFile[8], *pdest = (char *)pSmp->sample_data;
-            len += *((LPDWORD)(lpMemFile+4));
-            if (len > dwMemLength) len = dwMemLength;
-            UINT dmax = pSmp->length;
-            if (pSmp->flags & CHN_16BIT) dmax <<= 1;
-            AMSUnpack(psrc+9, len-9, pdest, dmax, packcharacter);
-        }
-        break;
 
     // PTM 8bit delta to 16-bit sample
     case RS_PTM8DTO16:
@@ -2101,58 +2029,6 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
                 delta8 += lpMemFile[j];
                 *pSample++ = delta8;
             }
-        }
-        break;
-
-    // Huffman MDL compressed samples
-    case RS_MDL8:
-    case RS_MDL16:
-        len = dwMemLength;
-        if (len >= 4)
-        {
-            LPBYTE pSample = (LPBYTE)pSmp->sample_data;
-            LPBYTE ibuf = (LPBYTE)lpMemFile;
-            uint32_t bitbuf = *((uint32_t *)ibuf);
-            UINT bitnum = 32;
-            uint8_t dlt = 0, lowbyte = 0;
-            ibuf += 4;
-            for (UINT j=0; j<pSmp->length; j++)
-            {
-                uint8_t hibyte;
-                uint8_t sign;
-                if (nFlags == RS_MDL16) lowbyte = (uint8_t)MDLReadBits(bitbuf, bitnum, ibuf, 8);
-                sign = (uint8_t)MDLReadBits(bitbuf, bitnum, ibuf, 1);
-                if (MDLReadBits(bitbuf, bitnum, ibuf, 1))
-                {
-                    hibyte = (uint8_t)MDLReadBits(bitbuf, bitnum, ibuf, 3);
-                } else
-                {
-                    hibyte = 8;
-                    while (!MDLReadBits(bitbuf, bitnum, ibuf, 1)) hibyte += 0x10;
-                    hibyte += MDLReadBits(bitbuf, bitnum, ibuf, 4);
-                }
-                if (sign) hibyte = ~hibyte;
-                dlt += hibyte;
-                if (nFlags != RS_MDL16)
-                    pSample[j] = dlt;
-                else
-                {
-                    pSample[j<<1] = lowbyte;
-                    pSample[(j<<1)+1] = dlt;
-                }
-            }
-        }
-        break;
-
-    case RS_DMF8:
-    case RS_DMF16:
-        len = dwMemLength;
-        if (len >= 4)
-        {
-            UINT maxlen = pSmp->length;
-            if (pSmp->flags & CHN_16BIT) maxlen <<= 1;
-            uint8_t *ibuf = (uint8_t *)lpMemFile, *ibufmax = (uint8_t *)(lpMemFile + dwMemLength);
-            len = DMFUnpack((LPBYTE)pSmp->sample_data, ibuf, ibufmax, maxlen);
         }
         break;
 
@@ -2247,8 +2123,6 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
         break;
 
 #endif // MODPLUG_TRACKER
-#endif // !FASTSOUNDLIB
-#endif // !MODPLUG_BASIC_SUPPORT
 
     // Default: 8-bit signed PCM data
     default:
@@ -2261,7 +2135,7 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
         if (pSmp->sample_data)
         {
             pSmp->length = 0;
-            FreeSample(pSmp->sample_data);
+            modplug::legacy_soundlib::free_sample(pSmp->sample_data);
             pSmp->sample_data = nullptr;
         }
         return 0;
@@ -2309,7 +2183,6 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
     } else
     {
         LPSTR pSample = pSmp->sample_data;
-#ifndef FASTSOUNDLIB
         // Crappy samples (except chiptunes) ?
         if ((pSmp->length > 0x100) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M))
          && (!(pSmp->flags & CHN_STEREO)))
@@ -2336,7 +2209,6 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
                 }
             }
         }
-#endif
         // Adjust end of sample
         if (pSmp->flags & CHN_STEREO)
         {
@@ -2360,81 +2232,6 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
     }
 }
 
-
-/////////////////////////////////////////////////////////////
-// Transpose <-> Frequency conversions
-
-// returns 8363*2^((transp*128+ftune)/(12*128))
-uint32_t module_renderer::TransposeToFrequency(int transp, int ftune)
-//-----------------------------------------------------------
-{
-    const float _fbase = 8363;
-    const float _factor = 1.0f/(12.0f*128.0f);
-    int result;
-    uint32_t freq;
-
-    transp = (transp << 7) + ftune;
-    _asm {
-    fild transp
-    fld _factor
-    fmulp st(1), st(0)
-    fist result
-    fisub result
-    f2xm1
-    fild result
-    fld _fbase
-    fscale
-    fstp st(1)
-    fmul st(1), st(0)
-    faddp st(1), st(0)
-    fistp freq
-    }
-    UINT derr = freq % 11025;
-    if (derr <= 8) freq -= derr;
-    if (derr >= 11015) freq += 11025-derr;
-    derr = freq % 1000;
-    if (derr <= 5) freq -= derr;
-    if (derr >= 995) freq += 1000-derr;
-    return freq;
-}
-
-
-// returns 12*128*log2(freq/8363)
-int module_renderer::FrequencyToTranspose(uint32_t freq)
-//----------------------------------------------
-{
-    const float _f1_8363 = 1.0f / 8363.0f;
-    const float _factor = 128 * 12;
-    LONG result;
-
-    if (!freq) return 0;
-    _asm {
-    fld _factor
-    fild freq
-    fld _f1_8363
-    fmulp st(1), st(0)
-    fyl2x
-    fistp result
-    }
-    return result;
-}
-
-
-void module_renderer::FrequencyToTranspose(modplug::tracker::modsample_t *psmp)
-//----------------------------------------------------
-{
-    int f2t = FrequencyToTranspose(psmp->c5_samplerate);
-    int transp = f2t >> 7;
-    int ftune = f2t & 0x7F; //0x7F == 111 1111
-    if (ftune > 80)
-    {
-        transp++;
-        ftune -= 128;
-    }
-    Limit(transp, -127, 127);
-    psmp->RelativeTone = static_cast<int8_t>(transp);
-    psmp->nFineTune = static_cast<int8_t>(ftune);
-}
 
 
 void module_renderer::CheckCPUUsage(UINT nCPU)
@@ -2466,8 +2263,6 @@ void module_renderer::CheckCPUUsage(UINT nCPU)
     }
 }
 
-
-#ifndef FASTSOUNDLIB
 
 // Check whether a sample is used.
 // In sample mode, the sample numbers in all patterns are checked.
@@ -2617,7 +2412,7 @@ bool module_renderer::DestroySample(modplug::tracker::sampleindex_t nSample)
             Chn[i].sample_data = Chn[i].active_sample_data = NULL;
         }
     }
-    FreeSample(pSample);
+    modplug::legacy_soundlib::free_sample(pSample);
     return true;
 }
 
@@ -2641,7 +2436,6 @@ bool module_renderer::MoveSample(modplug::tracker::sampleindex_t from, modplug::
     return true;
 }
 // -! NEW_FEATURE#0020
-#endif // FASTSOUNDLIB
 
 //rewbs.plugDocAware
 /*PSNDMIXPLUGIN CSoundFile::GetSndPlugMixPlug(IMixPlugin *pPlugin)

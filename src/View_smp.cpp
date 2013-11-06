@@ -4,18 +4,20 @@
 #include "moddoc.h"
 #include "globals.h"
 #include "ctrl_smp.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "channelManagerDlg.h"
 #include "view_smp.h"
 #include "legacy_soundlib/midi.h"
 #include "SampleEditorDialogs.h"
+
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "legacy_soundlib/Wav.h"
+#include "legacy_soundlib/misc.h"
 
 #define new DEBUG_NEW
 
 
 using namespace modplug::tracker;
+using namespace modplug::legacy_soundlib;
 
 
 // Non-client toolbar
@@ -308,7 +310,7 @@ void CViewSample::SetCurSel(uint32_t nBegin, uint32_t nEnd)
                             LONG lSampleRate = pSndFile->Samples[m_nSample].c5_samplerate;
                             if (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
                             {
-                                    lSampleRate = module_renderer::TransposeToFrequency(pSndFile->Samples[m_nSample].RelativeTone, pSndFile->Samples[m_nSample].nFineTune);
+                                    lSampleRate = frequency_of_transpose(pSndFile->Samples[m_nSample].RelativeTone, pSndFile->Samples[m_nSample].nFineTune);
                             }
                             if (!lSampleRate) lSampleRate = 8363;
                             ULONG msec = ((ULONG)selLength * 1000) / lSampleRate;
@@ -1826,9 +1828,8 @@ void CViewSample::OnEditCopy()
             pfmt->hdrlen = 16;
             pfmt->format = 1;
             pfmt->freqHz = pSmp->c5_samplerate;
-            if (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM))
-            {
-                    pfmt->freqHz = module_renderer::TransposeToFrequency(pSmp->RelativeTone, pSmp->nFineTune);
+            if (pSndFile->m_nType & (MOD_TYPE_MOD|MOD_TYPE_XM)) {
+                pfmt->freqHz = frequency_of_transpose(pSmp->RelativeTone, pSmp->nFineTune);
             }
             pfmt->channels = (pSmp->flags & CHN_STEREO) ? (uint16_t)2 : (uint16_t)1;
             pfmt->bitspersample = (pSmp->flags & CHN_16BIT) ? (uint16_t)16 : (uint16_t)8;
@@ -2192,8 +2193,6 @@ BOOL CViewSample::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
             break;
 
     case DRAGONDROP_DLS:
-            bCanDrop = ((lpDropInfo->dwDropItem < MAX_DLS_BANKS)
-                             && (CTrackApp::gpDLSBanks[lpDropInfo->dwDropItem]));
             break;
 
     case DRAGONDROP_SOUNDFILE:
@@ -2219,62 +2218,12 @@ BOOL CViewSample::OnDragonDrop(BOOL bDoDrop, LPDRAGONDROP lpDropInfo)
             break;
 
     case DRAGONDROP_MIDIINSTR:
-            if (CDLSBank::IsDLSBank((LPCSTR)lpDropInfo->lDropParam))
-            {
-                    CDLSBank dlsbank;
-                    if (dlsbank.Open((LPCSTR)lpDropInfo->lDropParam))
-                    {
-                            DLSINSTRUMENT *pDlsIns;
-                            UINT nIns = 0, nRgn = 0xFF;
-                            // Drums
-                            if (lpDropInfo->dwDropItem & 0x80)
-                            {
-                                    UINT key = lpDropInfo->dwDropItem & 0x7F;
-                                    pDlsIns = dlsbank.FindInstrument(TRUE, 0xFFFF, 0xFF, key, &nIns);
-                                    if (pDlsIns) nRgn = dlsbank.GetRegionFromKey(nIns, key);
-                            } else
-                            // Melodic
-                            {
-                                    pDlsIns = dlsbank.FindInstrument(FALSE, 0xFFFF, lpDropInfo->dwDropItem, 60, &nIns);
-                                    if (pDlsIns) nRgn = dlsbank.GetRegionFromKey(nIns, 60);
-                            }
-                            bCanDrop = FALSE;
-                            if (pDlsIns)
-                            {
-                                    BEGIN_CRITICAL();
-                                    pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
-                                    bCanDrop = dlsbank.ExtractSample(pSndFile, m_nSample, nIns, nRgn);
-                                    END_CRITICAL();
-                            }
-                            bUpdate = TRUE;
-                            break;
-                    }
-            }
             // Fall through
     case DRAGONDROP_SOUNDFILE:
             SendCtrlMessage(CTRLMSG_SMP_OPENFILE, (LPARAM)lpDropInfo->lDropParam);
             break;
 
     case DRAGONDROP_DLS:
-            {
-                    CDLSBank *pDLSBank = CTrackApp::gpDLSBanks[lpDropInfo->dwDropItem];
-                    UINT nIns = lpDropInfo->lDropParam & 0x7FFF;
-                    UINT nRgn;
-                    // Drums:        (0x80000000) | (Region << 16) | (Instrument)
-                    if (lpDropInfo->lDropParam & 0x80000000)
-                    {
-                            nRgn = (lpDropInfo->lDropParam & 0xFF0000) >> 16;
-                    } else
-                    // Melodic: (MidiBank << 16) | (Instrument)
-                    {
-                            nRgn = pDLSBank->GetRegionFromKey(nIns, 60);
-                    }
-                    BEGIN_CRITICAL();
-                    pModDoc->GetSampleUndo()->PrepareUndo(m_nSample, sundo_replace);
-                    bCanDrop = pDLSBank->ExtractSample(pSndFile, m_nSample, nIns, nRgn);
-                    END_CRITICAL();
-                    bUpdate = TRUE;
-            }
             break;
     }
     if (bUpdate)

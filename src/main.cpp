@@ -3,7 +3,6 @@
 #include "ChildFrm.h"
 #include "moddoc.h"
 #include "globals.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "vstplug.h"
 #include "commctrl.h"
 #include "version.h"
@@ -212,271 +211,6 @@ bool CTrackApp::m_bPortableMode = false;
 
 LPMIDILIBSTRUCT CTrackApp::glpMidiLibrary = NULL;
 
-BOOL CTrackApp::ImportMidiConfig(LPCSTR lpszConfigFile, BOOL bNoWarn)
-//-------------------------------------------------------------------
-{
-    TCHAR szFileName[_MAX_PATH], s[_MAX_PATH], szUltraSndPath[_MAX_PATH];
-
-    if ((!lpszConfigFile) || (!lpszConfigFile[0])) return FALSE;
-    if (!glpMidiLibrary)
-    {
-        glpMidiLibrary = new MIDILIBSTRUCT;
-        if (!glpMidiLibrary) return FALSE;
-        memset(glpMidiLibrary, 0, sizeof(MIDILIBSTRUCT));
-    }
-    if (CDLSBank::IsDLSBank(lpszConfigFile))
-    {
-        UINT id = IDYES;
-        if (!bNoWarn)
-        {
-            id = CMainFrame::GetMainFrame()->MessageBox("You are about to replace the current MIDI library:\n"
-                                                "Do you want to replace only the missing instruments? (recommended)",
-                                                "Warning", MB_YESNOCANCEL|MB_ICONQUESTION );
-        }
-        if (id == IDCANCEL) return FALSE;
-        BOOL bReplaceAll = (id == IDNO) ? TRUE : FALSE;
-        CDLSBank dlsbank;
-        if (dlsbank.Open(lpszConfigFile))
-        {
-            for (UINT iIns=0; iIns<256; iIns++)
-            {
-                if ((bReplaceAll) || (!glpMidiLibrary->MidiMap[iIns]) || (!glpMidiLibrary->MidiMap[iIns][0]))
-                {
-                    uint32_t dwProgram = (iIns < 128) ? iIns : 0xFF;
-                    uint32_t dwKey = (iIns < 128) ? 0xFF : iIns & 0x7F;
-                    uint32_t dwBank = (iIns < 128) ? 0 : F_INSTRUMENT_DRUMS;
-                    if (dlsbank.FindInstrument((iIns < 128) ? FALSE : TRUE,    dwBank, dwProgram, dwKey))
-                    {
-                        if (!glpMidiLibrary->MidiMap[iIns])
-                        {
-                            if ((glpMidiLibrary->MidiMap[iIns] = new CHAR[_MAX_PATH]) == NULL) break;
-                        }
-                        strcpy(glpMidiLibrary->MidiMap[iIns], lpszConfigFile);
-                    }
-                }
-            }
-        }
-        return TRUE;
-    }
-    GetPrivateProfileString(_T("Ultrasound"), _T("PatchDir"), _T(""), szUltraSndPath, CountOf(szUltraSndPath), lpszConfigFile);
-    if (!strcmp(szUltraSndPath, _T(".\\"))) szUltraSndPath[0] = 0;
-    if (!szUltraSndPath[0]) GetCurrentDirectory(CountOf(szUltraSndPath), szUltraSndPath);
-    for (UINT iMidi=0; iMidi<256; iMidi++)
-    {
-        szFileName[0] = 0;
-        wsprintf(s, (iMidi < 128) ? _T("Midi%d") : _T("Perc%d"), iMidi & 0x7f);
-        GetPrivateProfileString(_T("Midi Library"), s, _T(""), szFileName, CountOf(szFileName), lpszConfigFile);
-        // Check for ULTRASND.INI
-        if (!szFileName[0])
-        {
-            LPCSTR pszSection = (iMidi < 128) ? _T("Melodic Patches") : _T("Drum Patches");
-            wsprintf(s, _T("%d"), iMidi & 0x7f);
-            GetPrivateProfileString(pszSection, s, _T(""), szFileName, CountOf(szFileName), lpszConfigFile);
-            if (!szFileName[0])
-            {
-                pszSection = (iMidi < 128) ? _T("Melodic Bank 0") : _T("Drum Bank 0");
-                GetPrivateProfileString(pszSection, s, "", szFileName, CountOf(szFileName), lpszConfigFile);
-            }
-            if (szFileName[0])
-            {
-                s[0] = 0;
-                if (szUltraSndPath[0])
-                {
-                    strcpy(s, szUltraSndPath);
-                    int len = strlen(s)-1;
-                    if ((len) && (s[len-1] != '\\')) strcat(s, _T("\\"));
-                }
-                _tcsncat(s, szFileName, CountOf(s));
-                _tcsncat(s, ".pat", CountOf(s));
-                _tcscpy(szFileName, s);
-            }
-        }
-        if (szFileName[0])
-        {
-            if (!glpMidiLibrary->MidiMap[iMidi])
-            {
-                if ((glpMidiLibrary->MidiMap[iMidi] = new TCHAR[_MAX_PATH]) == nullptr) return FALSE;
-            }
-            CMainFrame::RelativePathToAbsolute(szFileName);
-            _tcscpy(glpMidiLibrary->MidiMap[iMidi], szFileName);
-        }
-    }
-    return FALSE;
-}
-
-
-BOOL CTrackApp::ExportMidiConfig(LPCSTR lpszConfigFile)
-//-----------------------------------------------------
-{
-    TCHAR szFileName[_MAX_PATH], s[128];
-
-    if ((!glpMidiLibrary) || (!lpszConfigFile) || (!lpszConfigFile[0])) return FALSE;
-    for(size_t iMidi = 0; iMidi < 256; iMidi++) if (glpMidiLibrary->MidiMap[iMidi])
-    {
-        if (iMidi < 128)
-            wsprintf(s, _T("Midi%d"), iMidi);
-        else
-            wsprintf(s, _T("Perc%d"), iMidi & 0x7F);
-
-        strcpy(szFileName, glpMidiLibrary->MidiMap[iMidi]);
-
-        if(szFileName[0])
-        {
-            if(IsPortableMode())
-                CMainFrame::AbsolutePathToRelative(szFileName);
-            if (!WritePrivateProfileString("Midi Library", s, szFileName, lpszConfigFile)) break;
-        }
-    }
-    return TRUE;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-// DLS Banks support
-
-#define MPTRACK_REG_DLS            "Software\\Olivier Lapicque\\ModPlug Tracker\\DLS Banks"
-CDLSBank *CTrackApp::gpDLSBanks[MAX_DLS_BANKS];
-
-
-BOOL CTrackApp::LoadDefaultDLSBanks()
-//-----------------------------------
-{
-    CHAR szFileName[MAX_PATH];
-    HKEY key;
-
-    CString storedVersion = CMainFrame::GetPrivateProfileCString("Version", "Version", "", theApp.GetConfigFileName());
-    //If version number stored in INI is 1.17.02.40 or later, load DLS from INI file.
-    //Else load DLS from Registry
-    if (storedVersion >= "1.17.02.40")
-    {
-        CHAR s[MAX_PATH];
-        UINT numBanks = CMainFrame::GetPrivateProfileLong("DLS Banks", "NumBanks", 0, theApp.GetConfigFileName());
-        for(size_t i = 0; i < numBanks; i++)
-        {
-            wsprintf(s, _T("Bank%d"), i + 1);
-            TCHAR szPath[_MAX_PATH];
-            GetPrivateProfileString("DLS Banks", s, "", szPath, INIBUFFERSIZE, theApp.GetConfigFileName());
-            CMainFrame::RelativePathToAbsolute(szPath);
-            AddDLSBank(szPath);
-        }
-    } else
-    {
-        LoadRegistryDLS();
-    }
-
-    SaveDefaultDLSBanks(); // This will avoid a crash the next time if we crash while loading the bank
-
-    szFileName[0] = 0;
-    GetSystemDirectory(szFileName, sizeof(szFileName));
-    lstrcat(szFileName, "\\GM.DLS");
-    if (!AddDLSBank(szFileName))
-    {
-        GetWindowsDirectory(szFileName, sizeof(szFileName));
-        lstrcat(szFileName, "\\SYSTEM32\\DRIVERS\\GM.DLS");
-        if (!AddDLSBank(szFileName))
-        {
-            if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\DirectMusic", 0, KEY_READ, &key) == ERROR_SUCCESS)
-            {
-                uint32_t dwRegType = REG_SZ;
-                uint32_t dwSize = sizeof(szFileName);
-                szFileName[0] = 0;
-                if (registry_query_value(key, "GMFilePath", NULL, &dwRegType, (LPBYTE)&szFileName, &dwSize) == ERROR_SUCCESS)
-                {
-                    AddDLSBank(szFileName);
-                }
-                RegCloseKey(key);
-            }
-        }
-    }
-    if (glpMidiLibrary) ImportMidiConfig(szFileName, TRUE);
-
-    return TRUE;
-}
-
-void CTrackApp::LoadRegistryDLS()
-//-------------------------------
-{
-    CHAR szFileNameX[_MAX_PATH];
-    HKEY keyX;
-
-    if (RegOpenKeyEx(HKEY_CURRENT_USER,    MPTRACK_REG_DLS, 0, KEY_READ, &keyX) == ERROR_SUCCESS)
-    {
-        uint32_t dwRegType = REG_DWORD;
-        uint32_t dwSize = sizeof(uint32_t);
-        uint32_t d = 0;
-        if (registry_query_value(keyX, "NumBanks", NULL, &dwRegType, (LPBYTE)&d, &dwSize) == ERROR_SUCCESS)
-        {
-            CHAR s[64];
-            for (UINT i=0; i<d; i++)
-            {
-                wsprintf(s, "Bank%d", i+1);
-                szFileNameX[0] = 0;
-                dwRegType = REG_SZ;
-                dwSize = sizeof(szFileNameX);
-                registry_query_value(keyX, s, NULL, &dwRegType, (LPBYTE)szFileNameX, &dwSize);
-                AddDLSBank(szFileNameX);
-            }
-        }
-        RegCloseKey(keyX);
-    }
-}
-
-
-BOOL CTrackApp::SaveDefaultDLSBanks()
-//-----------------------------------
-{
-    TCHAR s[64];
-    TCHAR szPath[_MAX_PATH];
-    uint32_t nBanks = 0;
-    for (UINT i=0; i<MAX_DLS_BANKS; i++) {
-
-        if (!gpDLSBanks[i] || !gpDLSBanks[i]->GetFileName() || !gpDLSBanks[i]->GetFileName()[0])
-            continue;
-
-        _tcsncpy(szPath, gpDLSBanks[i]->GetFileName(), CountOf(szPath) - 1);
-        if(IsPortableMode())
-        {
-            CMainFrame::AbsolutePathToRelative(szPath);
-        }
-
-        wsprintf(s, _T("Bank%d"), nBanks+1);
-        WritePrivateProfileString("DLS Banks", s, szPath, theApp.GetConfigFileName());
-        nBanks++;
-
-    }
-    CMainFrame::WritePrivateProfileLong("DLS Banks", "NumBanks", nBanks, theApp.GetConfigFileName());
-    return TRUE;
-}
-
-
-BOOL CTrackApp::RemoveDLSBank(UINT nBank)
-//---------------------------------------
-{
-    if ((nBank >= MAX_DLS_BANKS) || (!gpDLSBanks[nBank])) return FALSE;
-    delete gpDLSBanks[nBank];
-    gpDLSBanks[nBank] = NULL;
-    return TRUE;
-}
-
-
-BOOL CTrackApp::AddDLSBank(LPCSTR lpszFileName)
-//---------------------------------------------
-{
-    if ((!lpszFileName) || (!lpszFileName[0]) || (!CDLSBank::IsDLSBank(lpszFileName))) return FALSE;
-    for (UINT j=0; j<MAX_DLS_BANKS; j++) if (gpDLSBanks[j])
-    {
-        if (!lstrcmpi(lpszFileName, gpDLSBanks[j]->GetFileName())) return TRUE;
-    }
-    for (UINT i=0; i<MAX_DLS_BANKS; i++) if (!gpDLSBanks[i])
-    {
-        gpDLSBanks[i] = new CDLSBank;
-        gpDLSBanks[i]->Open(lpszFileName);
-        return TRUE;
-    }
-    return FALSE;
-}
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CTrackApp
 
@@ -525,7 +259,6 @@ CTrackApp::CTrackApp()
     m_bDebugMode = FALSE;
     m_hAlternateResourceHandle = NULL;
     m_szConfigFileName[0] = 0;
-    for (UINT i=0; i<MAX_DLS_BANKS; i++) gpDLSBanks[i] = NULL;
     // Default macro config
     MemsetZero(m_MidiCfg);
     strcpy(m_MidiCfg.szMidiGlb[MIDIOUT_START], "FF");
@@ -755,8 +488,6 @@ BOOL CTrackApp::InitInstance()
     {
         CMainFrame::m_nSrcMode = SRCMODE_POLYPHASE;
     }
-    // Load Midi Library
-    if (m_szConfigFileName[0]) ImportMidiConfig(m_szConfigFileName);
 
     // Load default macro configuration
     for (UINT isfx=0; isfx<16; isfx++)
@@ -782,7 +513,6 @@ BOOL CTrackApp::InitInstance()
 
 
     bool opt_debug_mode = false;
-    bool opt_disable_dls = false;
     bool opt_disable_plugins = false;
     bool opt_suppress_yet_another_helpful_modal_dialog = false;
 
@@ -801,9 +531,6 @@ BOOL CTrackApp::InitInstance()
 
     // Register MOD extensions
     //RegisterExtensions();
-
-    // Load DLS Banks
-    if (!opt_disable_dls) LoadDefaultDLSBanks();
 
     // Initialize DXPlugins
     if (!opt_disable_plugins) deprecated_InitializeDXPlugins();
@@ -842,26 +569,6 @@ int CTrackApp::ExitInstance()
 //---------------------------
 {
     //::MessageBox("Exiting/Crashing");
-    if (glpMidiLibrary)
-    {
-        if (m_szConfigFileName[0]) ExportMidiConfig(m_szConfigFileName);
-        for (UINT iMidi=0; iMidi<256; iMidi++) {
-            if (glpMidiLibrary->MidiMap[iMidi]) {
-                delete[] glpMidiLibrary->MidiMap[iMidi];
-            }
-        }
-        delete glpMidiLibrary;
-        glpMidiLibrary = NULL;
-    }
-    SaveDefaultDLSBanks();
-    for (UINT i=0; i<MAX_DLS_BANKS; i++)
-    {
-        if (gpDLSBanks[i])
-        {
-            delete gpDLSBanks[i];
-            gpDLSBanks[i] = NULL;
-        }
-    }
     // Save default macro configuration
     if (m_szConfigFileName[0])
     {

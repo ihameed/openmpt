@@ -8,7 +8,6 @@
 #include "MainFrm.h"
 #include "moddoc.h"
 #include "childfrm.h"
-#include "legacy_soundlib/dlsbank.h"
 #include "mpdlgs.h"
 #include "moptions.h"
 #include "vstplug.h"
@@ -43,9 +42,6 @@ static char THIS_FILE[] = __FILE__;
 
 #define MPTTIMER_PERIOD            200
 
-extern UINT gnMidiImportSpeed;
-extern UINT gnMidiPatternLen;
-
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame
 
@@ -77,8 +73,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWnd)
     ON_COMMAND(ID_DEFAULT_HELP,                            CMDIFrameWnd::OnHelpFinder)
     ON_COMMAND(ID_NEXTOCTAVE,                            OnNextOctave)
     ON_COMMAND(ID_PREVOCTAVE,                            OnPrevOctave)
-    ON_COMMAND(ID_ADD_SOUNDBANK,                    OnAddDlsBank)
-    ON_COMMAND(ID_IMPORT_MIDILIB,                    OnImportMidiLib)
     ON_COMMAND(ID_MIDI_RECORD,                            OnMidiRecord)
     ON_COMMAND(ID_PANIC,                                    OnPanic)
     ON_COMMAND(ID_PLAYER_PAUSE,                            OnPlayerPause)
@@ -418,8 +412,6 @@ void CMainFrame::LoadIniSettings()
 
     m_dwMidiSetup = GetPrivateProfileDWord("MIDI Settings", "MidiSetup", m_dwMidiSetup, iniFile);
     m_nMidiDevice = GetPrivateProfileDWord("MIDI Settings", "MidiDevice", m_nMidiDevice, iniFile);
-    gnMidiImportSpeed = GetPrivateProfileLong("MIDI Settings", "MidiImportSpeed", gnMidiImportSpeed, iniFile);
-    gnMidiPatternLen = GetPrivateProfileLong("MIDI Settings", "MidiImportPatLen", gnMidiPatternLen, iniFile);
 
     m_dwPatternSetup = GetPrivateProfileDWord("Pattern Editor", "PatternSetup", m_dwPatternSetup, iniFile);
     if(vIniVersion < MAKE_VERSION_NUMERIC(1,17,02,50))
@@ -530,8 +522,6 @@ bool CMainFrame::LoadRegistrySettings()
         registry_query_value(key, "RowSpacing", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing, &dwDWORDSize);
         registry_query_value(key, "RowSpacing2", NULL, &dwREG_DWORD, (LPBYTE)&m_nRowSpacing2, &dwDWORDSize);
         registry_query_value(key, "LoopSong", NULL, &dwREG_DWORD, (LPBYTE)&gbLoopSong, &dwDWORDSize);
-        registry_query_value(key, "MidiImportSpeed", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiImportSpeed, &dwDWORDSize);
-        registry_query_value(key, "MidiImportPatLen", NULL, &dwREG_DWORD, (LPBYTE)&gnMidiPatternLen, &dwDWORDSize);
 
         //rewbs.resamplerConf
         dwDWORDSize = sizeof(gbWFIRType);
@@ -858,8 +848,6 @@ void CMainFrame::SaveIniSettings()
 
     WritePrivateProfileDWord("MIDI Settings", "MidiSetup", m_dwMidiSetup, iniFile);
     WritePrivateProfileDWord("MIDI Settings", "MidiDevice", m_nMidiDevice, iniFile);
-    WritePrivateProfileLong("MIDI Settings", "MidiImportSpeed", gnMidiImportSpeed, iniFile);
-    WritePrivateProfileLong("MIDI Settings", "MidiImportPatLen", gnMidiPatternLen, iniFile);
 
     WritePrivateProfileDWord("Pattern Editor", "PatternSetup", m_dwPatternSetup, iniFile);
     WritePrivateProfileDWord("Pattern Editor", "RowSpacing", m_nRowSpacing, iniFile);
@@ -1515,23 +1503,6 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
 }
 
 
-BOOL CMainFrame::PlayDLSInstrument(UINT nDLSBank, UINT nIns, UINT nRgn)
-//---------------------------------------------------------------------
-{
-    if ((nDLSBank >= MAX_DLS_BANKS) || (!CTrackApp::gpDLSBanks[nDLSBank])) return FALSE;
-    BeginWaitCursor();
-    PlaySoundFile((LPCSTR)NULL);
-    m_WaveFile.m_nInstruments = 1;
-    if (CTrackApp::gpDLSBanks[nDLSBank]->ExtractInstrument(&m_WaveFile, 1, nIns, nRgn))
-    {
-        PlaySoundFile(&m_WaveFile);
-        m_WaveFile.SetRepeatCount(-1);
-    }
-    EndWaitCursor();
-    return TRUE;
-}
-
-
 BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
 //-------------------------------------------------------------
 {
@@ -1925,43 +1896,6 @@ void CMainFrame::OnChannelManager()
     }
 }
 // -! NEW_FEATURE#0015
-void CMainFrame::OnAddDlsBank()
-//-----------------------------
-{
-    FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(true, "dls", "",
-        "All Sound Banks|*.dls;*.sbk;*.sf2;*.mss|"
-        "Downloadable Sounds Banks (*.dls)|*.dls;*.mss|"
-        "SoundFont 2.0 Banks (*.sf2)|*.sbk;*.sf2|"
-        "All Files (*.*)|*.*||",
-        "",
-        true);
-    if(files.abort) return;
-
-    BeginWaitCursor();
-    for(size_t counter = 0; counter < files.filenames.size(); counter++)
-    {
-        CTrackApp::AddDLSBank(files.filenames[counter].c_str());
-    }
-    EndWaitCursor();
-}
-
-
-void CMainFrame::OnImportMidiLib()
-//--------------------------------
-{
-    FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(true, "", "",
-        "Text and INI files (*.txt,*.ini)|*.txt;*.ini;*.dls;*.sf2;*.sbk|"
-        "Downloadable Sound Banks (*.dls)|*.dls;*.mss|"
-        "SoundFont 2.0 banks (*.sf2)|*.sbk;*.sf2|"
-        "Gravis UltraSound (ultrasnd.ini)|ultrasnd.ini|"
-        "All Files (*.*)|*.*||");
-    if(files.abort) return;
-
-    BeginWaitCursor();
-    CTrackApp::ImportMidiConfig(files.first_file.c_str());
-    EndWaitCursor();
-}
-
 
 void CMainFrame::OnTimer(UINT)
 //----------------------------
