@@ -393,9 +393,6 @@
     <ClInclude Include="legacy_soundlib\misc.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="modformat\internal.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="serializers\it.hpp">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -511,6 +508,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="gui\qt5\colors.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modformat\internal.hpp">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

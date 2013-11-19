@@ -758,7 +758,7 @@
     <ClInclude Include="ModConvert.h" />
     <ClInclude Include="moddoc.h" />
     <ClInclude Include="modformat\common\mptexts.hpp" />
-    <ClInclude Include="modformat\internal.h" />
+    <ClInclude Include="modformat\internal.hpp" />
     <ClInclude Include="modformat\it\it.hpp" />
     <ClInclude Include="Moptions.h" />
     <ClInclude Include="Mpdlgs.h" />

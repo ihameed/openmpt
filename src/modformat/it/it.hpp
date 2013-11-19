@@ -8,7 +8,7 @@
 #include "../pervasives/bitset.hpp"
 #include "../pervasives/type.hpp"
 
-#include "../internal.h"
+#include "../internal.hpp"
 #include "../common/mptexts.hpp"
 
 namespace modplug {
