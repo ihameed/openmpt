@@ -500,7 +500,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
 
     if ((pIns) && (note) && (note <= 128))
     {
-        if(bPorta && pIns == pChn->instrument && (pChn->sample != nullptr && pChn->sample->sample_data != nullptr) && IsCompatibleMode(TRK_IMPULSETRACKER))
+        if(bPorta && pIns == pChn->instrument && (pChn->sample != nullptr && pChn->sample->sample_data.generic != nullptr) && IsCompatibleMode(TRK_IMPULSETRACKER))
         {
 #ifdef DEBUG
             {
@@ -718,7 +718,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
     }
 
 
-    pChn->sample_data = pSmp->sample_data;
+    pChn->sample_data = pSmp->sample_data.generic;
     pChn->nTranspose = pSmp->RelativeTone;
 
     pChn->m_PortamentoFineSteps = 0;
@@ -854,7 +854,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
         if ((!bPorta) || ((!pChn->length) && (!(m_nType & MOD_TYPE_S3M))))
         {
             pChn->sample = pSmp;
-            pChn->sample_data = pSmp->sample_data;
+            pChn->sample_data = pSmp->sample_data.generic;
             pChn->length = pSmp->length;
             pChn->loop_end = pSmp->length;
             pChn->loop_start = 0;
@@ -1117,7 +1117,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             {
                 n = pHeader->Keyboard[note-1];
                 note = pHeader->NoteMap[note-1];
-                if ((n) && (n < MAX_SAMPLES)) pSample = Samples[n].sample_data;
+                if ((n) && (n < MAX_SAMPLES)) pSample = Samples[n].sample_data.generic;
             }
         } else pSample = nullptr;
     }
@@ -1508,7 +1508,7 @@ BOOL module_renderer::ProcessEffects()
                     }
                     else //Case: Only samples used
                     {
-                        if(instr < MAX_SAMPLES && pChn->sample_data != Samples[instr].sample_data)
+                        if(instr < MAX_SAMPLES && pChn->sample_data != Samples[instr].sample_data.generic)
                             note = pChn->nNote;
                     }
                 }
@@ -3036,7 +3036,7 @@ inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
 
     // we obviously also need a sample for this
     modplug::tracker::modsample_t *pModSample = pChn->sample;
-    if(pModSample == nullptr || pModSample->sample_data == nullptr || !(pModSample->flags & CHN_LOOP) || (pModSample->flags & CHN_16BIT)) return;
+    if(pModSample == nullptr || pModSample->sample_data.generic == nullptr || !(pModSample->flags & CHN_LOOP) || (pModSample->flags & CHN_16BIT)) return;
 
     pChn->nEFxDelay += ModEFxTable[pChn->nEFxSpeed & 0x0F];
     if((pChn->nEFxDelay & 0x80) == 0) return; // only applied if the "delay" reaches 128
@@ -3046,7 +3046,7 @@ inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
         pChn->nEFxOffset = 0;
 
     // TRASH IT!!! (Yes, the sample!)
-    pModSample->sample_data[pModSample->loop_start + pChn->nEFxOffset] = ~pModSample->sample_data[pModSample->loop_start + pChn->nEFxOffset];
+    pModSample->sample_data.generic[pModSample->loop_start + pChn->nEFxOffset] = ~pModSample->sample_data.generic[pModSample->loop_start + pChn->nEFxOffset];
     //AdjustSampleLoop(sample);
 }
 

@@ -9,8 +9,8 @@ using namespace modplug::pervasives;
 namespace modplug {
 namespace mixgraph {
 
-double upsample_sinc_table[SINC_SIZE];
-double downsample_sinc_table[SINC_SIZE];
+sample_t upsample_sinc_table[SINC_SIZE];
+sample_t downsample_sinc_table[SINC_SIZE];
 
 // see https://ccrma.stanford.edu/~jos/sasp/Kaiser_Window.html
 // see http://mathworld.wolfram.com/ModifiedBesselFunctionoftheFirstKind.html

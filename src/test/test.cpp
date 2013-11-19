@@ -21,7 +21,7 @@ using namespace modplug::tracker;
 #ifdef _DEBUG
     #define new DEBUG_NEW
 #endif
-
+#undef ENABLE_TESTS
 #ifdef ENABLE_TESTS
 
 namespace MptTest

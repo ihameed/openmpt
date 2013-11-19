@@ -523,7 +523,7 @@ bool CModCleanupDlg::RemoveUnusedSamples()
     vector<bool> samplesUsed(pSndFile->GetNumSamples() + 1, true);
 
     BeginWaitCursor();
-    for (modplug::tracker::sampleindex_t nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].sample_data)
+    for (modplug::tracker::sampleindex_t nSmp = pSndFile->GetNumSamples(); nSmp >= 1; nSmp--) if (pSndFile->Samples[nSmp].sample_data.generic)
     {
             if (!pSndFile->IsSampleUsed(nSmp))
             {
@@ -547,7 +547,7 @@ bool CModCleanupDlg::RemoveUnusedSamples()
             {
                     for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= pSndFile->GetNumSamples(); nSmp++)
                     {
-                            if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].sample_data))
+                            if ((!samplesUsed[nSmp]) && (pSndFile->Samples[nSmp].sample_data.generic))
                             {
                                     m_pModDoc->GetSampleUndo()->PrepareUndo(nSmp, sundo_delete);
                                     BEGIN_CRITICAL();
@@ -578,7 +578,7 @@ bool CModCleanupDlg::OptimizeSamples()
 
     for (modplug::tracker::sampleindex_t nSmp=1; nSmp <= pSndFile->m_nSamples; nSmp++)
     {
-            if(pSndFile->Samples[nSmp].sample_data && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
+            if(pSndFile->Samples[nSmp].sample_data.generic && (pSndFile->Samples[nSmp].flags & CHN_LOOP)
                     && (pSndFile->Samples[nSmp].length > pSndFile->Samples[nSmp].loop_end + 2)) nLoopOpt++;
     }
     if (nLoopOpt == 0) return false;
@@ -629,7 +629,7 @@ bool CModCleanupDlg::RearrangeSamples()
     // First, find out which sample slots are unused and create the new sample map
     for(modplug::tracker::sampleindex_t i = 1; i <= pSndFile->GetNumSamples(); i++)
     {
-            if(!pSndFile->Samples[i].sample_data)
+            if(!pSndFile->Samples[i].sample_data.generic)
             {
                     // Move all following samples
                     nRemap++;
@@ -650,7 +650,7 @@ bool CModCleanupDlg::RearrangeSamples()
                     // This gotta be moved
                     BEGIN_CRITICAL();
                     pSndFile->MoveSample(i, nSampleMap[i]);
-                    pSndFile->Samples[i].sample_data = nullptr;
+                    pSndFile->Samples[i].sample_data.generic = nullptr;
                     END_CRITICAL();
                     if(nSampleMap[i] > 0) strcpy(pSndFile->m_szNames[nSampleMap[i]], pSndFile->m_szNames[i]);
                     memset(pSndFile->m_szNames[i], 0, sizeof(pSndFile->m_szNames[i]));

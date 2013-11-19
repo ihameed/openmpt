@@ -4,6 +4,7 @@
 #include "document_window.h"
 #include "comment_editor.h"
 #include "pattern_editor.h"
+#include "sample_editor.hpp"
 #include "graph_editor.h"
 #include "pattern_editor_aux.h"
 #include "song_overview.h"
@@ -45,8 +46,10 @@ document_window::document_window(
 
     graph = new graph_editor(&renderer->mixgraph);
 
+    smpedit = new sample_editor();
+
     tab_bar.addTab(editor, "Patterns");
-    tab_bar.addTab(new QWidget(), "Samples");
+    tab_bar.addTab(smpedit, "Samples");
     tab_bar.addTab(new QWidget(), "Instruments");
     tab_bar.addTab(graph, "Graph");
     tab_bar.addTab(commentsplitter, "Comments");

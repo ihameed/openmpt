@@ -13,13 +13,19 @@
 #include <windows.h>
 #include <strsafe.h>
 
+#ifdef _DEBUG
+#define MODPLUG_ENABLE_DEBUG_LOG
+#else
+//#define MODPLUG_ENABLE_DEBUG_LOG
+#endif
+
 namespace modplug {
 namespace pervasives {
 
 
 void vdebug_log(const char *fmt, va_list arglist) {
-//#ifdef _DEBUG
-    static const size_t maxlen = 2048;
+#ifdef MODPLUG_ENABLE_DEBUG_LOG
+    static const size_t maxlen = 8192;
     static const size_t buflen = maxlen + 1;
     char buf[buflen];
     char *sprintf_end = nullptr;
@@ -34,30 +40,29 @@ void vdebug_log(const char *fmt, va_list arglist) {
     } else {
         OutputDebugString("modplug::pervasives::debug_log(): failure in StringCchVPrintfEx!\n");
     }
-//#endif
+#endif
 }
 
 void debug_log(const char *fmt, ...) {
-//#ifdef _DEBUG
+#ifdef MODPLUG_ENABLE_DEBUG_LOG
     va_list arglist;
     va_start(arglist, fmt);
 
     vdebug_log(fmt, arglist);
 
     va_end(arglist);
-//#endif
+#endif
 }
 
 std::string debug_json_dump(Json::Value &root) {
-//#ifdef _DEBUG
+#ifdef MODPLUG_ENABLE_DEBUG_LOG
     std::ostringstream buf;
     Json::StyledStreamWriter json("  ");
     json.write(buf, root);
     return buf.str();
-/*#else
+#else
     return "";
 #endif
-    */
 }
 
 

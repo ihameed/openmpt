@@ -1,23 +1,22 @@
 #include "stdafx.h"
 
 #include "xm.h"
+#include "../../pervasives/binaryparse.h"
 #include "../../pervasives/pervasives.h"
-#include "../../serializers/binaryparse.h"
 
+using namespace modplug::modformat;
 using namespace modplug::pervasives;
+using namespace modplug::pervasives::binaryparse;
 
 namespace modplug {
 namespace modformat {
 namespace xm {
 
-using namespace modplug::serializers::binaryparse;
-using namespace modplug::serializers;
-
 file_header_ty
 read_file_header(context &ctx) {
     file_header_ty header;
-    auto buf = read_bytestring_str(ctx, 17);
-    if (buf != "Extended Module: ") throw invalid_data_exception();
+    auto tag = read_bytestring_str(ctx, 17);
+    if (tag != "Extended Module: ") throw invalid_data_exception();
     read_bytestring_arr(ctx, header.song_name);
     read_skip(ctx, 1);
     read_bytestring_arr(ctx, header.tracker_name);
@@ -49,87 +48,73 @@ read_pattern_header(context &ctx, FunTy read_row_len) {
     return ret;
 }
 
-std::tuple<vol_type_ty, uint8_t>
+std::tuple<vol_ty, uint8_t>
 parse_volcmd(uint8_t raw) {
-    auto low_nibble = [=] (vol_type_ty type) {
+    auto nibble = [=] (vol_ty type) {
         return std::make_tuple(type, raw & 0xf);
     };
-    if (raw < 0x0f) {
-        return EmptyVol;
-    } else if (raw <= 0x50) {
-        return std::make_tuple(vol_type_ty::VolSet, raw - 0x10);
-    } else if (raw <= 0x60) {
-        return EmptyVol;
-    } else if (raw <= 0x6f) {
-        return low_nibble(vol_type_ty::VolSlideDown);
-    } else if (raw <= 0x7f) {
-        return low_nibble(vol_type_ty::VolSlideUp);
-    } else if (raw <= 0x8f) {
-        return low_nibble(vol_type_ty::VolFineDown);
-    } else if (raw <= 0x9f) {
-        return low_nibble(vol_type_ty::VolFineUp);
-    } else if (raw <= 0xaf) {
-        return low_nibble(vol_type_ty::VibSpeed);
-    } else if (raw <= 0xbf) {
-        return low_nibble(vol_type_ty::VibDepth);
-    } else if (raw <= 0xcf) {
-        return low_nibble(vol_type_ty::PanSet);
-    } else if (raw <= 0xdf) {
-        return low_nibble(vol_type_ty::PanSlideLeft);
-    } else if (raw <= 0xef) {
-        return low_nibble(vol_type_ty::PanSlideRight);
-    } else {
-        return low_nibble(vol_type_ty::Portamento);
-    }
+    if      (raw < 0x0f)  return EmptyVol;
+    else if (raw <= 0x50) return std::make_tuple(vol_ty::VolSet, raw - 0x10);
+    else if (raw <= 0x60) return EmptyVol;
+    else if (raw <= 0x6f) return nibble(vol_ty::VolSlideDown);
+    else if (raw <= 0x7f) return nibble(vol_ty::VolSlideUp);
+    else if (raw <= 0x8f) return nibble(vol_ty::VolFineDown);
+    else if (raw <= 0x9f) return nibble(vol_ty::VolFineUp);
+    else if (raw <= 0xaf) return nibble(vol_ty::VibSpeed);
+    else if (raw <= 0xbf) return nibble(vol_ty::VibDepth);
+    else if (raw <= 0xcf) return nibble(vol_ty::PanSet);
+    else if (raw <= 0xdf) return nibble(vol_ty::PanSlideLeft);
+    else if (raw <= 0xef) return nibble(vol_ty::PanSlideRight);
+    else                  return nibble(vol_ty::Portamento);
 }
 
-std::tuple<fx_type_ty, uint8_t>
+std::tuple<cmd_ty, uint8_t>
 parse_fxcmd(uint8_t rawcmd, uint8_t rawparam) {
-    auto low_nibble = [=] (fx_type_ty type) {
+    auto nibble = [=] (const cmd_ty type) {
         return std::make_tuple(type, rawparam & 0xf);
     };
-    auto full_param = [=] (fx_type_ty type) {
+    auto full = [=] (const cmd_ty type) {
         return std::make_tuple(type, rawparam);
     };
     switch (rawcmd) {
-    case 0x0: return full_param(rawparam ? fx_type_ty::Arpeggio : fx_type_ty::Nothing);
-    case 0x1: return full_param(fx_type_ty::PortaUp);
-    case 0x2: return full_param(fx_type_ty::PortaDown);
-    case 0x3: return full_param(fx_type_ty::Portamento);
-    case 0x4: return full_param(fx_type_ty::Vibrato);
-    case 0x5: return full_param(fx_type_ty::PortamentoVolSlide);
-    case 0x6: return full_param(fx_type_ty::VibratoVolSlide);
-    case 0x7: return full_param(fx_type_ty::Tremolo);
-    case 0x8: return full_param(fx_type_ty::SetPan);
-    case 0x9: return full_param(fx_type_ty::SampleOffset);
-    case 0xa: return full_param(fx_type_ty::VolSlide);
-    case 0xb: return full_param(fx_type_ty::PosJump);
-    case 0xc: return full_param(fx_type_ty::SetVol);
-    case 0xd: return full_param(fx_type_ty::PatternBreak);
-    case 0xe: switch ((rawparam & 0xf0) >> 4) {
-        case 0x1: return low_nibble(fx_type_ty::FinePortaUp);
-        case 0x2: return low_nibble(fx_type_ty::FinePortaDown);
-        case 0x3: return low_nibble(fx_type_ty::GlissControl);
-        case 0x4: return low_nibble(fx_type_ty::VibratoControl);
-        case 0x5: return low_nibble(fx_type_ty::Finetune);
-        case 0x6: return low_nibble(fx_type_ty::LoopControl);
-        case 0x7: return low_nibble(fx_type_ty::TremoloControl);
-        case 0x9: return low_nibble(fx_type_ty::RetriggerNote);
-        case 0xa: return low_nibble(fx_type_ty::FineVolSlideUp);
-        case 0xb: return low_nibble(fx_type_ty::FineVolSlideDown);
-        case 0xc: return low_nibble(fx_type_ty::NoteCut);
-        case 0xd: return low_nibble(fx_type_ty::NoteDelay);
-        case 0xe: return low_nibble(fx_type_ty::PatternDelay);
+    case 0x0: return full(rawparam ? cmd_ty::Arpeggio : cmd_ty::Nothing);
+    case 0x1: return full(cmd_ty::PortaUp);
+    case 0x2: return full(cmd_ty::PortaDown);
+    case 0x3: return full(cmd_ty::Portamento);
+    case 0x4: return full(cmd_ty::Vibrato);
+    case 0x5: return full(cmd_ty::PortamentoVolSlide);
+    case 0x6: return full(cmd_ty::VibratoVolSlide);
+    case 0x7: return full(cmd_ty::Tremolo);
+    case 0x8: return full(cmd_ty::SetPan);
+    case 0x9: return full(cmd_ty::SampleOffset);
+    case 0xa: return full(cmd_ty::VolSlide);
+    case 0xb: return full(cmd_ty::PosJump);
+    case 0xc: return full(cmd_ty::SetVol);
+    case 0xd: return full(cmd_ty::PatternBreak);
+    case 0xe: switch (rawparam >> 4) {
+        case 0x1: return nibble(cmd_ty::FinePortaUp);
+        case 0x2: return nibble(cmd_ty::FinePortaDown);
+        case 0x3: return nibble(cmd_ty::GlissControl);
+        case 0x4: return nibble(cmd_ty::VibratoControl);
+        case 0x5: return nibble(cmd_ty::Finetune);
+        case 0x6: return nibble(cmd_ty::LoopControl);
+        case 0x7: return nibble(cmd_ty::TremoloControl);
+        case 0x9: return nibble(cmd_ty::RetriggerNote);
+        case 0xa: return nibble(cmd_ty::FineVolSlideUp);
+        case 0xb: return nibble(cmd_ty::FineVolSlideDown);
+        case 0xc: return nibble(cmd_ty::NoteCut);
+        case 0xd: return nibble(cmd_ty::NoteDelay);
+        case 0xe: return nibble(cmd_ty::PatternDelay);
         };
-    case 0xf: return full_param(fx_type_ty::SetTicksTempo);
-    case 'G' - 55: return full_param(fx_type_ty::SetGlobalVolume);
-    case 'H' - 55: return full_param(fx_type_ty::GlobalVolumeSlide);
-    case 'L' - 55: return full_param(fx_type_ty::SetEnvelopePosition);
-    case 'P' - 55: return full_param(fx_type_ty::PanningSlide);
-    case 'R' - 55: return full_param(fx_type_ty::MultiRetrigNote);
-    case 'X' - 55: switch ((rawparam & 0xf0) >> 4) {
-        case 0x1: return low_nibble(fx_type_ty::ExtraFinePortaUp);
-        case 0x2: return low_nibble(fx_type_ty::ExtraFinePortaDown);
+    case 0xf: return full(cmd_ty::SetTicksTempo);
+    case 'G' - 55: return full(cmd_ty::SetGlobalVolume);
+    case 'H' - 55: return full(cmd_ty::GlobalVolumeSlide);
+    case 'L' - 55: return full(cmd_ty::SetEnvelopePosition);
+    case 'P' - 55: return full(cmd_ty::PanningSlide);
+    case 'R' - 55: return full(cmd_ty::MultiRetrigNote);
+    case 'X' - 55: switch (rawparam >> 4) {
+        case 0x1: return nibble(cmd_ty::ExtraFinePortaUp);
+        case 0x2: return nibble(cmd_ty::ExtraFinePortaDown);
         };
     default: return EmptyFx;
     };
@@ -138,7 +123,7 @@ parse_fxcmd(uint8_t rawcmd, uint8_t rawparam) {
 pattern_entry_ty
 read_pattern_entry(context &ctx) {
     pattern_entry_ty elem =
-        { 0, 0, vol_type_ty::Nothing, 0, fx_type_ty::Nothing, 0 };
+        { 0, 0, vol_ty::Nothing, 0, cmd_ty::Nothing, 0 };
     auto flag = read_uint8(ctx);
     if (flag & IsFlag) {
         if (flag & NotePresent) elem.note = read_uint8(ctx);
@@ -194,18 +179,18 @@ read_patterns(context &ctx, const file_header_ty &header, FunTy read_row_len) {
 
 void
 read_envelope(context &ctx, std::array<env_point_ty, 12> &env) {
-    for_each(env, [&] (env_point_ty &point) {
+    for (auto &point : env) {
         point.x = read_uint16_le(ctx);
         point.y = read_uint16_le(ctx);
-    });
+    }
 }
 
-env_flags_ty
+bitset<env_flags_ty>
 env_flags(const uint8_t val) {
-    env_flags_ty ret  = env_flags_ty::Empty;
-    if (val & 1) ret |= env_flags_ty::Enabled;
-    if (val & 2) ret |= env_flags_ty::Sustain;
-    if (val & 4) ret |= env_flags_ty::Loop;
+    bitset<env_flags_ty> ret;
+    if (val & 1) ret = bitset_set(ret, env_flags_ty::Enabled);
+    if (val & 2) ret = bitset_set(ret, env_flags_ty::Sustain);
+    if (val & 4) ret = bitset_set(ret, env_flags_ty::Loop);
     return ret;
 }
 
@@ -241,10 +226,9 @@ read_sample_data(context &ctx, sample_ty &sample) {
 
 void
 read_sample_data_in_place(context &ctx, instrument_ty &instr) {
-    auto &samples = instr.samples;
-    for_each(samples, [&] (sample_ty &sample) {
+    for (auto &sample : instr.samples) {
         read_sample_data(ctx, sample);
-    });
+    }
 }
 
 std::vector<sample_ty>
@@ -275,12 +259,14 @@ read_sample_headers(context &ctx, const instrument_header_ty &header) {
 
 instrument_header_ty
 read_instrument_header(context &ctx) {
+    const uint8_t min_point = 0;
+    const uint8_t max_point = 12;
     auto ret = read_lookahead(ctx, [&] (context &ctx) {
         instrument_header_ty ret;
         ret.size = read_uint32_le(ctx);
         uint8_t temp[SizeOfInstrumentHeader] = { 0 };
         read_bytestring_ptr(ctx, std::min(ret.size, SizeOfInstrumentHeader), temp);
-        std::shared_ptr<uint8_t> shared(temp, [] (void *) { });
+        std::shared_ptr<uint8_t> shared(temp, [] (uint8_t *) { });
         auto temp_ctx = mkcontext(shared, SizeOfInstrumentHeader);
         read_bytestring_arr(temp_ctx, ret.name);
         ret.type               = read_uint8(temp_ctx);
@@ -289,8 +275,8 @@ read_instrument_header(context &ctx) {
         read_bytestring_arr(temp_ctx, ret.keymap);
         read_envelope(temp_ctx, ret.vol_envelope.nodes);
         read_envelope(temp_ctx, ret.pan_envelope.nodes);
-        ret.vol_envelope.num_points       = clamp(read_uint8(temp_ctx), 0, 12);
-        ret.pan_envelope.num_points       = clamp(read_uint8(temp_ctx), 0, 12);
+        ret.vol_envelope.num_points       = clamp(read_uint8(temp_ctx), min_point, max_point);
+        ret.pan_envelope.num_points       = clamp(read_uint8(temp_ctx), min_point, max_point);
         ret.vol_envelope.sustain_point    = read_uint8(temp_ctx);
         ret.vol_envelope.loop_start_point = read_uint8(temp_ctx);
         ret.vol_envelope.loop_end_point   = read_uint8(temp_ctx);
@@ -341,18 +327,16 @@ read_incomplete_instruments(context &ctx, const file_header_ty &header) {
 }
 
 void
-unify_instruments_and_samples(
-    context &ctx,
-    std::vector<instrument_ty> &instrs
-) {
-    for_each(instrs, [&] (instrument_ty &instr) {
+unify_instruments_and_samples(context &ctx, std::vector<instrument_ty> &instrs) {
+    for (auto &instr : instrs) {
         read_sample_data_in_place(ctx, instr);
-    });
+    }
 }
 
-song
+std::shared_ptr<song>
 read(context &ctx) {
-    song ret;
+    auto ptr = std::make_shared<song>();
+    auto &ret = *ptr;
     read_lookahead(ctx, [&] (context &ctx) {
         ret.header = read_file_header(ctx);
         ret.orders = read_bytestring(ctx, ret.header.orders);
@@ -372,7 +356,7 @@ read(context &ctx) {
         ret.patterns    = read_patterns(ctx, ret.header, read_row_len);
         unify_instruments_and_samples(ctx, ret.instruments);
     }
-    return ret;
+    return ptr;
 }
 
 

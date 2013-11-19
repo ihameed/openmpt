@@ -7,10 +7,10 @@
 #include <memory>
 #include <exception>
 
-#include "boost/optional.hpp"
+#include "../pervasives/option.h"
 
 namespace modplug {
-namespace serializers {
+namespace pervasives {
 namespace binaryparse {
 
 struct overflow_exception : public std::exception {
@@ -25,6 +25,12 @@ struct buffer_too_short_exception : public std::exception {
     }
 };
 
+struct rollback_exception : public std::exception {
+    const char * what() const throw () override {
+        return "uncaught rollback exception!";
+    }
+};
+
 struct context {
     const std::shared_ptr<const uint8_t> buf;
     const size_t size;
@@ -33,12 +39,18 @@ struct context {
 };
 
 inline void
-check_size(context &ctx, size_t requested) {
-    if (std::numeric_limits<size_t>::max() - requested < ctx.offset) {
-        throw overflow_exception();
-    } else if (requested + ctx.offset > ctx.size) {
+check_size(context &ctx, size_t offset) {
+    if (offset > ctx.size) {
         throw buffer_too_short_exception();
     }
+}
+
+inline void
+check_overflow(context &ctx, size_t requested) {
+    if (std::numeric_limits<size_t>::max() - requested < ctx.offset) {
+        throw overflow_exception();
+    }
+    check_size(ctx, requested + ctx.offset);
 }
 
 inline context
@@ -49,13 +61,13 @@ mkcontext(std::shared_ptr<const uint8_t> buf, size_t size) {
 
 inline void
 read_skip(context &ctx, size_t size) {
-    check_size(ctx, size);
+    check_overflow(ctx, size);
     ctx.offset += size;
 }
 
 inline uint8_t
 read_uint8(context &ctx) {
-    check_size(ctx, 1);
+    check_overflow(ctx, 1);
     auto buf = ctx.data;
     uint8_t ret = buf[ctx.offset];
     ctx.offset += 1;
@@ -64,7 +76,7 @@ read_uint8(context &ctx) {
 
 inline uint16_t
 read_uint16_be(context &ctx) {
-    check_size(ctx, 2);
+    check_overflow(ctx, 2);
     auto buf = ctx.data;
     uint16_t ret =
         (static_cast<uint16_t>(buf[ctx.offset]) << 8) |
@@ -75,7 +87,7 @@ read_uint16_be(context &ctx) {
 
 inline uint32_t
 read_uint32_be(context &ctx) {
-    check_size(ctx, 4);
+    check_overflow(ctx, 4);
     auto buf = ctx.data;
     uint32_t ret =
         (static_cast<uint32_t>(buf[ctx.offset])     << 24) |
@@ -88,7 +100,7 @@ read_uint32_be(context &ctx) {
 
 inline uint64_t
 read_uint64_be(context &ctx) {
-    check_size(ctx, 8);
+    check_overflow(ctx, 8);
     auto buf = ctx.data;
     uint64_t ret =
         (static_cast<uint64_t>(buf[ctx.offset])     << 56) |
@@ -105,7 +117,7 @@ read_uint64_be(context &ctx) {
 
 inline uint16_t
 read_uint16_le(context &ctx) {
-    check_size(ctx, 2);
+    check_overflow(ctx, 2);
     auto buf = ctx.data;
     uint16_t ret =
         (static_cast<uint16_t>(buf[ctx.offset + 1]) << 8) |
@@ -116,7 +128,7 @@ read_uint16_le(context &ctx) {
 
 inline uint32_t
 read_uint32_le(context &ctx) {
-    check_size(ctx, 4);
+    check_overflow(ctx, 4);
     auto buf = ctx.data;
     uint32_t ret =
         (static_cast<uint32_t>(buf[ctx.offset + 3]) << 24) |
@@ -129,7 +141,7 @@ read_uint32_le(context &ctx) {
 
 inline uint64_t
 read_uint64_le(context &ctx) {
-    check_size(ctx, 8);
+    check_overflow(ctx, 8);
     auto buf = ctx.data;
     uint64_t ret =
         (static_cast<uint64_t>(buf[ctx.offset + 7]) << 56) |
@@ -144,9 +156,19 @@ read_uint64_le(context &ctx) {
     return ret;
 }
 
+inline float
+read_float32_le(context &ctx) {
+    union {
+        uint32_t bytes;
+        float ieee754;
+    } conv;
+    conv.bytes = read_uint32_le(ctx);
+    return conv.ieee754;
+}
+
 inline std::vector<uint8_t>
 read_bytestring(context &ctx, size_t length) {
-    check_size(ctx, length);
+    check_overflow(ctx, length);
     std::vector<uint8_t> ret;
     ret.reserve(length);
     auto buf = ctx.data;
@@ -159,7 +181,7 @@ read_bytestring(context &ctx, size_t length) {
 
 inline const uint8_t *
 read_bytestring_slice(context &ctx, size_t length) {
-    check_size(ctx, length);
+    check_overflow(ctx, length);
     auto ret = &ctx.data[ctx.offset];
     ctx.offset += length;
     return ret;
@@ -167,7 +189,7 @@ read_bytestring_slice(context &ctx, size_t length) {
 
 inline std::string
 read_bytestring_str(context &ctx, size_t length) {
-    check_size(ctx, length);
+    check_overflow(ctx, length);
     std::string ret;
     ret.reserve(length);
     auto buf = ctx.data;
@@ -180,7 +202,7 @@ read_bytestring_str(context &ctx, size_t length) {
 
 inline void
 read_bytestring_ptr(context &ctx, size_t length, uint8_t *dst) {
-    check_size(ctx, length);
+    check_overflow(ctx, length);
     memcpy(dst, ctx.data + ctx.offset, length);
     ctx.offset += length;
 }
@@ -188,7 +210,7 @@ read_bytestring_ptr(context &ctx, size_t length, uint8_t *dst) {
 template <size_t length>
 inline void
 read_bytestring_arr(context &ctx, std::array<uint8_t, length> &arr) {
-    check_size(ctx, length);
+    check_overflow(ctx, length);
     memcpy(arr.data(), ctx.data + ctx.offset, length);
     ctx.offset += length;
 }
@@ -198,17 +220,30 @@ inline void zero_fill(std::array<Ty, length> &arr) {
     memset(arr.data(), 0, sizeof(Ty) * length);
 }
 
+inline size_t
+read_offset(context &ctx) {
+    return ctx.offset;
+}
+
+inline void
+read_seek(context &ctx, size_t new_pos) {
+    check_size(ctx, new_pos);
+    ctx.offset = new_pos;
+}
+
 template <typename FunTy>
 auto
-read_limit(context &ctx, size_t limit, FunTy fun) -> decltype(fun(ctx)) {
+read_limit_abs(context &ctx, size_t limit, FunTy fun) -> decltype(fun(ctx)) {
     check_size(ctx, limit);
     context dup_ctx = {
         ctx.buf,
-        ctx.offset + limit,
+        limit,
         ctx.data,
         ctx.offset
     };
-}
+    auto ret = fun(dup_ctx);
+    ctx.offset 
+};
 
 template <typename FunTy>
 auto
@@ -219,23 +254,46 @@ read_lookahead(context &ctx, FunTy fun) -> decltype(fun(ctx)) {
 
 template <typename FunTy>
 auto
-read_try(context &ctx, FunTy fun) -> boost::optional<decltype(fun(ctx))> {
-    context dup_ctx = ctx;
+read_try(FunTy fun) -> boost::optional<decltype(fun())> {
     try {
-        return fun(dup_ctx);
+        return fun();
     } catch (overflow_exception e) {
         return boost::none;
     } catch (buffer_too_short_exception e) {
         return boost::none;
+    } catch (rollback_exception e) {
+        return boost::none;
     }
 }
 
+// XXXih: gets ugly when i want fun : unit -> unit
 template <typename FunTy>
 auto
-read_try_limit(context &ctx, size_t limit, FunTy fun) -> decltype(read_try(ctx, fun)) {
-    return read_try(ctx, [&] (context &ctx) {
-        return read_limit(ctx, limit, fun);
+read_txn(context &ctx, FunTy fun) -> boost::optional<decltype(fun(ctx))> {
+    context dup_ctx = ctx;
+    auto ret = read_try([&] () { return fun(dup_ctx); });
+    if (ret) ctx.offset = dup_ctx.offset;
+    return ret;
+}
+
+inline void
+read_rollback() {
+    throw rollback_exception();
+}
+
+template <size_t Size, typename FunTy>
+auto
+read_magic(context &ctx, const char (&magic)[Size], FunTy fun)
+    -> boost::optional<decltype(fun())>
+{
+    using namespace modplug::pervasives;
+    const size_t undelimited_size = Size - 1;
+    auto success = read_txn(ctx, [&] (context &ctx) { 
+        auto ptr = read_bytestring_slice(ctx, undelimited_size);
+        if (memcmp(ptr, magic, undelimited_size) != 0) read_rollback();
+        return nullptr;
     });
+    return success ? some(fun()) : boost::none;
 }
 
 }

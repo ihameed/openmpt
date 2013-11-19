@@ -268,8 +268,7 @@ pattern_editor::pattern_editor(
   , insert_row("Insert Row", this)
   , delete_row("Delete Row", this)
 {
-    auto herp = this->viewport();
-    auto grid = new QGridLayout(herp);
+    auto grid = new QGridLayout(this->viewport());
     grid->setMargin(0);
     grid->setSpacing(0);
     auto derf = new QPushButton;

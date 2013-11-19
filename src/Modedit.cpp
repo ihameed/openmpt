@@ -387,7 +387,7 @@ BOOL CModDoc::AdjustEndOfSample(UINT nSample)
     modplug::tracker::modsample_t *pSmp;
     if (nSample >= MAX_SAMPLES) return FALSE;
     pSmp = &m_SndFile.Samples[nSample];
-    if ((!pSmp->length) || (!pSmp->sample_data)) return FALSE;
+    if ((!pSmp->length) || (!pSmp->sample_data.generic)) return FALSE;
 
     ctrlSmp::AdjustEndOfSample(*pSmp, &m_SndFile);
 
@@ -441,7 +441,7 @@ modplug::tracker::sampleindex_t CModDoc::InsertSample(bool bLimit)
     modplug::tracker::sampleindex_t i = 1;
     for(i = 1; i <= m_SndFile.m_nSamples; i++)
     {
-            if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].sample_data == NULL))
+            if ((!m_SndFile.m_szNames[i][0]) && (m_SndFile.Samples[i].sample_data.generic == NULL))
             {
                     if ((!m_SndFile.m_nInstruments) || (!m_SndFile.IsSampleUsed(i)))
                     break;
@@ -485,7 +485,7 @@ modplug::tracker::instrumentindex_t CModDoc::InsertInstrument(modplug::tracker::
     {
             pDup = m_SndFile.Instruments[nDuplicate];
     }
-    if ((!m_SndFile.m_nInstruments) && ((m_SndFile.m_nSamples > 1) || (m_SndFile.Samples[1].sample_data)))
+    if ((!m_SndFile.m_nInstruments) && ((m_SndFile.m_nSamples > 1) || (m_SndFile.Samples[1].sample_data.generic)))
     {
             if (pDup) return modplug::tracker::InstrumentIndexInvalid;
             UINT n = CMainFrame::GetMainFrame()->MessageBox("Convert existing samples to instruments first?", NULL, MB_YESNOCANCEL|MB_ICONQUESTION);
@@ -647,7 +647,7 @@ bool CModDoc::RemoveSample(modplug::tracker::sampleindex_t nSmp)
             m_SndFile.m_szNames[nSmp][0] = 0;
             while ((m_SndFile.m_nSamples > 1)
              && (!m_SndFile.m_szNames[m_SndFile.m_nSamples][0])
-             && (!m_SndFile.Samples[m_SndFile.m_nSamples].sample_data)) m_SndFile.m_nSamples--;
+             && (!m_SndFile.Samples[m_SndFile.m_nSamples].sample_data.generic)) m_SndFile.m_nSamples--;
             END_CRITICAL();
             SetModified();
             return true;

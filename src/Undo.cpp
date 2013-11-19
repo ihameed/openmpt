@@ -288,7 +288,7 @@ bool CSampleUndo::PrepareUndo(const sampleindex_t nSmp, sampleUndoTypes nChangeT
 
                     sUndo.SamplePtr = modplug::legacy_soundlib::alloc_sample(nChangeLen * nBytesPerSample + 4 * nBytesPerSample);
                     if(sUndo.SamplePtr == nullptr) return false;
-                    memcpy(sUndo.SamplePtr, pSndFile->Samples[nSmp].sample_data + nChangeStart * nBytesPerSample, nChangeLen * nBytesPerSample);
+                    memcpy(sUndo.SamplePtr, pSndFile->Samples[nSmp].sample_data.generic + nChangeStart * nBytesPerSample, nChangeLen * nBytesPerSample);
 
 #ifdef DEBUG
                     char s[64];
@@ -325,7 +325,7 @@ bool CSampleUndo::Undo(const sampleindex_t nSmp)
     // Select most recent undo slot
     SAMPLEUNDOBUFFER *pUndo = &UndoBuffer[nSmp - 1].back();
 
-    LPSTR pCurrentSample = pSndFile->Samples[nSmp].sample_data;
+    LPSTR pCurrentSample = pSndFile->Samples[nSmp].sample_data.generic;
     LPSTR pNewSample = nullptr;        // a new sample is possibly going to be allocated, depending on what's going to be undone.
 
     UINT nBytesPerSample = pUndo->OldSample.GetBytesPerSample();
@@ -387,7 +387,7 @@ bool CSampleUndo::Undo(const sampleindex_t nSmp)
 
     // Restore old sample header
     memcpy(&pSndFile->Samples[nSmp], &pUndo->OldSample, sizeof(modsample_t));
-    pSndFile->Samples[nSmp].sample_data = pCurrentSample; // select the "correct" old sample
+    pSndFile->Samples[nSmp].sample_data.generic = pCurrentSample; // select the "correct" old sample
     memcpy(pSndFile->m_szNames[nSmp], pUndo->szOldName, sizeof(pUndo->szOldName));
 
     if(pNewSample != nullptr)

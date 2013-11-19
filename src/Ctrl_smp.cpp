@@ -916,9 +916,9 @@ void CCtrlSamples::OnSampleNew()
             memcpy(&m_pSndFile->Samples[smp], &m_pSndFile->Samples[nOldSmp], sizeof(modplug::tracker::modsample_t));
             strcpy(m_pSndFile->m_szNames[smp], m_pSndFile->m_szNames[nOldSmp]);
             // clone sample.
-            if((m_pSndFile->Samples[smp].sample_data = modplug::legacy_soundlib::alloc_sample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
+            if((m_pSndFile->Samples[smp].sample_data.generic = modplug::legacy_soundlib::alloc_sample(m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes())) != nullptr)
             {
-                memcpy(m_pSndFile->Samples[smp].sample_data, m_pSndFile->Samples[nOldSmp].sample_data, m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes());
+                memcpy(m_pSndFile->Samples[smp].sample_data.generic, m_pSndFile->Samples[nOldSmp].sample_data.generic, m_pSndFile->Samples[nOldSmp].GetSampleSizeInBytes());
             }
         }
 
@@ -993,7 +993,7 @@ void CCtrlSamples::OnSampleSave()
     if(!bBatchSave)
     {
         // save this sample
-        if ((!m_nSample) || (!m_pSndFile->Samples[m_nSample].sample_data))
+        if ((!m_nSample) || (!m_pSndFile->Samples[m_nSample].sample_data.generic))
         {
             SwitchToView();
             return;
@@ -1047,7 +1047,7 @@ void CCtrlSamples::OnSampleSave()
 
     for(UINT iSmp = iMinSmp; iSmp <= iMaxSmp; iSmp++)
     {
-        if (m_pSndFile->Samples[iSmp].sample_data)
+        if (m_pSndFile->Samples[iSmp].sample_data.generic)
         {
             if(bBatchSave)
             {
@@ -1128,7 +1128,7 @@ void CCtrlSamples::OnNormalize()
 
     for(modplug::tracker::sampleindex_t iSmp = iMinSample; iSmp <= iMaxSample; iSmp++)
     {
-        if (m_pSndFile->Samples[iSmp].sample_data)
+        if (m_pSndFile->Samples[iSmp].sample_data.generic)
         {
             bool bOk = false;
             modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[iSmp];
@@ -1155,7 +1155,7 @@ void CCtrlSamples::OnNormalize()
 
             if (pSmp->flags & CHN_16BIT)
             {
-                int16_t *p = (int16_t *)pSmp->sample_data;
+                int16_t *p = (int16_t *)pSmp->sample_data.generic;
                 int bad_max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
@@ -1174,7 +1174,7 @@ void CCtrlSamples::OnNormalize()
                 }
             } else
             {
-                int8_t *p = (int8_t *)pSmp->sample_data;
+                int8_t *p = (int8_t *)pSmp->sample_data.generic;
                 int bad_max = 1;
                 for (UINT i = iStart; i < iEnd; i++)
                 {
@@ -1215,7 +1215,7 @@ void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
 {
     modplug::tracker::modsample_t *pSmp;
 
-    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
 
     BeginWaitCursor();
     pSmp = &m_pSndFile->Samples[m_nSample];
@@ -1229,7 +1229,7 @@ void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
     if ((bFadeIn) && (bFadeOut)) lAmp *= 4;
     if (pSmp->flags & CHN_16BIT)
     {
-        signed short *p = ((signed short *)pSmp->sample_data) + selection.nStart;
+        signed short *p = ((signed short *)pSmp->sample_data.generic) + selection.nStart;
 
         for (UINT i=0; i<len; i++)
         {
@@ -1242,7 +1242,7 @@ void CCtrlSamples::ApplyAmplify(LONG lAmp, bool bFadeIn, bool bFadeOut)
         }
     } else
     {
-        signed char *p = ((signed char *)pSmp->sample_data) + selection.nStart;
+        signed char *p = ((signed char *)pSmp->sample_data.generic) + selection.nStart;
 
         for (UINT i=0; i<len; i++)
         {
@@ -1280,7 +1280,7 @@ void CCtrlSamples::OnRemoveDCOffset()
     {
         UINT iStart, iEnd;
 
-        if(m_pSndFile->Samples[iSmp].sample_data == nullptr)
+        if(m_pSndFile->Samples[iSmp].sample_data.generic == nullptr)
             continue;
 
         if (iMinSample != iMaxSample)
@@ -1353,7 +1353,7 @@ void CCtrlSamples::OnAmplify()
 void CCtrlSamples::OnQuickFade()
 //------------------------------
 {
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
 
     SELECTIONPOINTS sel = GetSelectionPoints();
     if(sel.bSelected && (sel.nStart == 0 || sel.nEnd == m_pSndFile->Samples[m_nSample].length))
@@ -1381,7 +1381,7 @@ void CCtrlSamples::OnUpsample()
     UINT smplsize, newsmplsize;
     PVOID pOriginal, pNewSample;
 
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
     BeginWaitCursor();
     pSmp = &m_pSndFile->Samples[m_nSample];
     SELECTIONPOINTS selection = GetSelectionPoints();
@@ -1397,7 +1397,7 @@ void CCtrlSamples::OnUpsample()
 
     smplsize = pSmp->GetBytesPerSample();
     newsmplsize = pSmp->GetNumChannels() * 2;    // new sample is always 16-Bit
-    pOriginal = pSmp->sample_data;
+    pOriginal = pSmp->sample_data.generic;
     dwNewLen = pSmp->length + (dwEnd-dwStart);
     pNewSample = NULL;
     if (dwNewLen+4 <= MAX_SAMPLE_LENGTH) pNewSample = modplug::legacy_soundlib::alloc_sample((dwNewLen+4)*newsmplsize);
@@ -1503,7 +1503,7 @@ void CCtrlSamples::OnUpsample()
             }
         }
         pSmp->flags |= CHN_16BIT;
-        pSmp->sample_data = (LPSTR)pNewSample;
+        pSmp->sample_data.generic = (LPSTR)pNewSample;
         pSmp->length = dwNewLen;
 
         modplug::legacy_soundlib::free_sample(pOriginal);
@@ -1529,7 +1529,7 @@ void CCtrlSamples::OnDownsample()
     UINT smplsize;
     PVOID pOriginal, pNewSample;
 
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
     BeginWaitCursor();
     pSmp = &m_pSndFile->Samples[m_nSample];
     SELECTIONPOINTS selection = GetSelectionPoints();
@@ -1543,7 +1543,7 @@ void CCtrlSamples::OnDownsample()
         dwEnd = pSmp->length;
     }
     smplsize = pSmp->GetBytesPerSample();
-    pOriginal = pSmp->sample_data;
+    pOriginal = pSmp->sample_data.generic;
     dwRemove = (dwEnd-dwStart+1)>>1;
     dwNewLen = pSmp->length - dwRemove;
     dwEnd = dwStart+dwRemove*2;
@@ -1632,7 +1632,7 @@ void CCtrlSamples::OnDownsample()
             }
         }
         pSmp->length = dwNewLen;
-        pSmp->sample_data = (LPSTR)pNewSample;
+        pSmp->sample_data.generic = (LPSTR)pNewSample;
         modplug::legacy_soundlib::free_sample(pOriginal);
         END_CRITICAL();
         m_pModDoc->AdjustEndOfSample(m_nSample);
@@ -1697,7 +1697,7 @@ void CCtrlSamples::OnEnableStretchToSize()
 
 void CCtrlSamples::OnEstimateSampleSize()
 {
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return;
 
@@ -1731,7 +1731,7 @@ void CCtrlSamples::OnPitchShiftTimeStretch()
     // Error management
     int errorcode = -1;
 
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) goto error;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) goto error;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp || pSmp->length == 0) goto error;
 
@@ -1810,7 +1810,7 @@ int CCtrlSamples::TimeStretch(float ratio)
         }
 
     static HANDLE handleSt = NULL; // Handle to SoundTouch object.
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return -1;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return -1;
 
@@ -1967,7 +1967,7 @@ int CCtrlSamples::TimeStretch(float ratio)
         ::GdiFlush();
 
         // Send sampledata for processing.
-        soundtouch_putSamples(handleSt, reinterpret_cast<int16_t*>(pSmp->sample_data + pos * smpsize * nChn), len);
+        soundtouch_putSamples(handleSt, reinterpret_cast<int16_t*>(pSmp->sample_data.generic + pos * smpsize * nChn), len);
 
         // Receive some processed samples (it's not guaranteed that there is any available).
         nLengthCounter += soundtouch_receiveSamples(handleSt, reinterpret_cast<int16_t*>(pNewSample) + nChn * nLengthCounter, nNewSampleLength - nLengthCounter);
@@ -2056,7 +2056,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 //----------------------------------------
 {
     static CElastiqueProIf *handleSt = NULL; // Handle to SoundTouch object.
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return -1;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
     if(!pSmp) return -1;
 
@@ -2192,7 +2192,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
             }
             outChannels[ch] = new float[512];
             for(UINT s=0;s<len;s++) {
-                inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16_t*>(pSmp->sample_data) + (pos + s)*nChn + ch);
+                inChannels[ch][s] = 1.0/32768.0 * *(reinterpret_cast<int16_t*>(pSmp->sample_data.generic) + (pos + s)*nChn + ch);
             }
         }
 
@@ -2265,7 +2265,7 @@ int CCtrlSamples::ElastiqueTimeStretch(float ratio)
 int CCtrlSamples::PitchShift(float pitch)
 //---------------------------------------
 {
-    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return -1;
+    if((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return -1;
     if(pitch < 0.5f) return 1 + (1<<8);
     if(pitch > 2.0f) return 1 + (2<<8);
 
@@ -2378,7 +2378,7 @@ int CCtrlSamples::PitchShift(float pitch)
             }
 
             // Convert current channel's data chunk to float
-            uint8_t * ptr = (uint8_t *)pSmp->sample_data + pos * smpsize * nChn + i * smpsize;
+            uint8_t * ptr = (uint8_t *)pSmp->sample_data.generic + pos * smpsize * nChn + i * smpsize;
 
             for(UINT j = 0 ; j < len ; j++){
                 switch(smpsize){
@@ -2400,7 +2400,7 @@ int CCtrlSamples::PitchShift(float pitch)
             //smbPitchShift(pitch, len + finaloffset, fft, ovs, (float)lSampleRate, buffer, outbuf, false);
 
             // Restore pitched-shifted float sample into original sample buffer
-            ptr = (uint8_t *)pSmp->sample_data + (pos - inneroffset) * smpsize * nChn + i * smpsize;
+            ptr = (uint8_t *)pSmp->sample_data.generic + (pos - inneroffset) * smpsize * nChn + i * smpsize;
 
             for(UINT j = startoffset ; j < len + finaloffset ; j++){
                 // Just perform a little bit of clipping...
@@ -2488,7 +2488,7 @@ void CCtrlSamples::OnSignUnSign()
 {
     modplug::tracker::modsample_t *pSmp;
 
-    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if ((!m_pModDoc) || (!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
 
     if(m_pModDoc->IsNotePlaying(0, m_nSample, 0) == TRUE)
         MsgBoxHidable(ConfirmSignUnsignWhenPlaying);
@@ -2516,7 +2516,7 @@ void CCtrlSamples::OnSilence()
 {
     modplug::tracker::modsample_t *pSmp;
 
-    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data)) return;
+    if ((!m_pSndFile) || (!m_pSndFile->Samples[m_nSample].sample_data.generic)) return;
     BeginWaitCursor();
     SELECTIONPOINTS selection = GetSelectionPoints();
 
@@ -2530,12 +2530,12 @@ void CCtrlSamples::OnSilence()
         if (pSmp->flags & CHN_STEREO)
         {
             int smplsize = (pSmp->flags & CHN_16BIT) ? 4 : 2;
-            signed char *p = ((signed char *)pSmp->sample_data) + selection.nStart * smplsize;
+            signed char *p = ((signed char *)pSmp->sample_data.generic) + selection.nStart * smplsize;
             memset(p, 0, len*smplsize);
         } else
             if (pSmp->flags & CHN_16BIT)
             {
-                short int *p = ((short int *)pSmp->sample_data) + selection.nStart;
+                short int *p = ((short int *)pSmp->sample_data.generic) + selection.nStart;
                 int dest = (selection.nEnd < pSmp->length) ? p[len-1] : 0;
                 int base = (selection.nStart) ? p[0] : 0;
                 int delta = dest - base;
@@ -2546,7 +2546,7 @@ void CCtrlSamples::OnSilence()
                 }
             } else
             {
-                signed char *p = ((signed char *)pSmp->sample_data) + selection.nStart;
+                signed char *p = ((signed char *)pSmp->sample_data.generic) + selection.nStart;
                 int dest = (selection.nEnd < pSmp->length) ? p[len-1] : 0;
                 int base = (selection.nStart) ? p[0] : 0;
                 int delta = dest - base;
@@ -3038,7 +3038,7 @@ void CCtrlSamples::OnVScroll(UINT nCode, UINT, CScrollBar *)
     if ((IsLocked()) || (!m_pSndFile)) return;
     UINT nsample = m_nSample, pinc = 1;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[nsample];
-    LPSTR pSample = pSmp->sample_data;
+    LPSTR pSample = pSmp->sample_data.generic;
     short int pos;
     bool bRedraw = false;
 
@@ -3328,7 +3328,7 @@ void CCtrlSamples::OnXFade()
     static UINT nFadeLength = DEFAULT_XFADE_LENGTH;
     modplug::tracker::modsample_t *pSmp = &m_pSndFile->Samples[m_nSample];
 
-    if(pSmp->sample_data == nullptr) return;
+    if(pSmp->sample_data.generic == nullptr) return;
     if(pSmp->loop_end <= pSmp->loop_start || pSmp->loop_end > pSmp->length) return;
     // Case 1: The loop start is preceeded by > XFADE_LENGTH samples. Nothing has to be adjusted.
     // Case 2: The actual loop is shorter than XFADE_LENGTH samples.

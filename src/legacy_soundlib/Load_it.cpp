@@ -18,6 +18,9 @@
 #include <list>
 #include "../version.h"
 
+#include "../modformat/it/it.hpp"
+#include "../pervasives/binaryparse.h"
+
 #define str_tooMuchPatternData    (GetStrI18N((_TEXT("Warning: File format limit was reached. Some pattern data may not get written to file."))))
 #define str_pattern                            (GetStrI18N((_TEXT("pattern"))))
 #define str_PatternSetTruncationNote (GetStrI18N((_TEXT("The module contains %u patterns but only %u patterns can be loaded in this OpenMPT version.\n"))))
@@ -480,6 +483,9 @@ void CopyPatternName(CPattern &pattern, char **patNames, UINT &patNamesLen)
 bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength)
 //----------------------------------------------------------------------
 {
+    std::shared_ptr<const uint8_t> dummyptr(lpStream, [] (const uint8_t *ptr) { });
+    auto horf = modplug::pervasives::binaryparse::mkcontext(dummyptr, dwMemLength);
+    auto ret = modplug::modformat::it::read(horf);
     ITFILEHEADER *pifh = (ITFILEHEADER *)lpStream;
 
     uint32_t dwMemPos = sizeof(ITFILEHEADER);
@@ -1865,7 +1871,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         itss.gvl = (uint8_t)psmp->global_volume;
 
         UINT flags = RS_PCM8S;
-        if(psmp->length && psmp->sample_data)
+        if(psmp->length && psmp->sample_data.generic)
         {
             itss.flags = 0x01;
             if (psmp->flags & CHN_LOOP) itss.flags |= 0x10;
@@ -1921,7 +1927,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         fseek(f, smppos[nsmp-1], SEEK_SET);
         fwrite(&itss, 1, sizeof(ITSAMPLESTRUCT), f);
         fseek(f, dwPos, SEEK_SET);
-        if ((psmp->sample_data) && (psmp->length))
+        if ((psmp->sample_data.generic) && (psmp->length))
         {
             dwPos += WriteSample(f, psmp, flags);
         }
@@ -2447,7 +2453,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         itss.gvl = (uint8_t)psmp->global_volume;
 
         UINT flags = RS_PCM8S;
-        if(psmp->length && psmp->sample_data)
+        if(psmp->length && psmp->sample_data.generic)
         {
             itss.flags = 0x01;
             if (psmp->flags & CHN_LOOP) itss.flags |= 0x10;
@@ -2492,7 +2498,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         fseek(f, smppos[nsmp-1], SEEK_SET);
         fwrite(&itss, 1, sizeof(ITSAMPLESTRUCT), f);
         fseek(f, dwPos, SEEK_SET);
-        if ((psmp->sample_data) && (psmp->length))
+        if ((psmp->sample_data.generic) && (psmp->length))
         {
             dwPos += WriteSample(f, psmp, flags);
         }

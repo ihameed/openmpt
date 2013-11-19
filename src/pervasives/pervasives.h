@@ -11,6 +11,7 @@
 
 #include "static_assoc.h"
 #include "debug.h"
+#include "minmax.h"
 #include "type.h"
 
 typedef int32_t int24_t;
@@ -54,8 +55,8 @@ private:
     noncopyable & operator = (const noncopyable &);
 };
 
-template <typename ty, typename ty1, typename ty2>
-ty clamp(ty val, ty1 lo, ty2 hi) {
+template <typename ty>
+ty clamp(ty val, ty lo, ty hi) {
     return val < lo ? lo : (val > hi ? hi : val);
 }
 
@@ -74,7 +75,7 @@ function_type for_each(array_type (&container)[array_size], function_type f) {
 
 template <typename container_type, typename function_type>
 function_type for_each(container_type &container, function_type f) {
-    std::for_each(container.begin(), container.end(), f);
+    std::for_each(std::begin(container), std::end(container), f);
     return f;
 }
 
@@ -102,5 +103,19 @@ void replicate_(size_t n, function_type f) {
     }
 }
 
+template <typename Ty>
+void ignore_arg(const Ty &arg) { }
+
+inline void
+noop(...) { }
+
+}
+}
+
+namespace std {
+template <typename Ty>
+string
+to_string(const boost::optional<Ty> &val) {
+    return val ? string("Some ").append(to_string(val.get())) : "None";
 }
 }

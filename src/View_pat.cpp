@@ -4767,8 +4767,8 @@ bool CViewPattern::BuildSetInstCtxMenu( HMENU hMenu, module_renderer* pSndFile )
             {
                 CHAR s[256];
                 UINT nmax = pSndFile->m_nSamples;
-                while ((nmax > 1) && (pSndFile->Samples[nmax].sample_data == NULL) && (!pSndFile->m_szNames[nmax][0])) nmax--;
-                for (UINT i=1; i<=nmax; i++) if ((pSndFile->m_szNames[i][0]) || (pSndFile->Samples[i].sample_data))
+                while ((nmax > 1) && (pSndFile->Samples[nmax].sample_data.generic == NULL) && (!pSndFile->m_szNames[nmax][0])) nmax--;
+                for (UINT i=1; i<=nmax; i++) if ((pSndFile->m_szNames[i][0]) || (pSndFile->Samples[i].sample_data.generic))
                 {
                     wsprintf(s, "%02d: %s", i, pSndFile->m_szNames[i]);
                     AppendMenu(instrumentChangeMenu, MF_STRING, ID_CHANGE_INSTRUMENT+i, s);

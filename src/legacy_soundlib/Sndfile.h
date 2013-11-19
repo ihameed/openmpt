@@ -718,37 +718,7 @@ public:
     bool InitChannel(modplug::tracker::chnindex_t nChn);
     void ResetChannelState(modplug::tracker::chnindex_t chn, uint8_t resetStyle);
 
-    // Module Loaders
-    bool ReadS3M(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMod(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMed(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadSTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
     bool ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    //bool ReadMPT(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadITProject(const uint8_t * const lpStream, const uint32_t dwMemLength); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
-    bool Read669(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadUlt(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadWav(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadDSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadFAR(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAMS(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAMS2(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMDL(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadOKT(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadDMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadPTM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadDBM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMT2(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadPSM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadPSM16(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadUMX(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadGDM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadIMF(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadAM(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadJ2B(const uint8_t * const lpStream, const uint32_t dwMemLength);
-    bool ReadMID(const uint8_t * const lpStream, uint32_t dwMemLength);
 
     // Save Functions
 #ifndef MODPLUG_NO_FILESAVE
@@ -757,7 +727,6 @@ public:
     bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
     bool SaveIT(LPCSTR lpszFileName, UINT nPacking=0);
     bool SaveCompatIT(LPCSTR lpszFileName);
-    bool SaveITProject(LPCSTR lpszFileName); // -> CODE#0023 -> DESC="IT project files (.itp)" -! NEW_FEATURE#0023
     UINT SaveMixPlugins(FILE *f=NULL, BOOL bUpdate=TRUE);
     void WriteInstrumentPropertyForAllInstruments(__int32 code,  __int16 size, FILE* f, modplug::tracker::modinstrument_t* instruments[], UINT nInstruments);
     void SaveExtendedInstrumentProperties(modplug::tracker::modinstrument_t *instruments[], UINT nInstruments, FILE* f);

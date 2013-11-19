@@ -68,7 +68,6 @@
     <ClCompile Include="serializers\wao.cpp" />
     <ClCompile Include="legacy_soundlib\Fastmix.cpp" />
     <ClCompile Include="legacy_soundlib\Load_it.cpp" />
-    <ClCompile Include="legacy_soundlib\Load_itp.cpp" />
     <ClCompile Include="legacy_soundlib\Message.cpp" />
     <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
     <ClCompile Include="legacy_soundlib\Mmx_mix.cpp" />
@@ -282,9 +281,6 @@
     <ClCompile Include="serializers\legacy_util.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="modformat\xm\read.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="legacy_soundlib\misc.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -293,6 +289,33 @@
     </ClCompile>
     <ClCompile Include="tracker\sample.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modformat\it\it_read.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modformat\xm\xm_read.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modformat\common\mptexts.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serializers\it.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modformat\it\it_common.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\qt5\sample_editor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_sample_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_sample_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_sample_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -439,13 +462,7 @@
     <ClInclude Include="tracker\orderlist.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="serializers\binaryparse.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="serializers\legacy_util.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="serializers\binaryprint.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="modformat\xm\xm.h">
@@ -461,6 +478,33 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="tracker\sample.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modformat\internal.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\bitset.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\option.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modformat\common\mptexts.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\minmax.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\binaryparse.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\binaryprint.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\it.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modformat\it\it.hpp">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -591,6 +635,9 @@
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="gui\qt5\graph_editor.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\sample_editor.hpp">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

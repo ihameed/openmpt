@@ -4,10 +4,15 @@
 
 #include "boost/multi_array.hpp"
 
-#include "../serializers/binaryparse.h"
 #include "../pervasives/type.h"
+#include "../pervasives/bitset.h"
+
+#include "../internal.h"
 
 namespace modplug {
+
+namespace pervasives { namespace binaryparse { struct context; } }
+
 namespace modformat {
 namespace xm {
 
@@ -37,27 +42,24 @@ struct env_point_ty {
     uint16_t y;
 };
 
-enum class env_flags_ty : uint8_t {
-    Empty   = 0,
-    Enabled = 1,
-    Sustain = 2,
-    Loop    = 4
+enum struct env_flags_ty : uint8_t {
+    Enabled = 1 << 0,
+    Sustain = 1 << 1,
+    Loop    = 1 << 2 
 };
 
-ENUM_BITFIELD(env_flags_ty);
-
-enum class sample_loop_ty : uint8_t {
+enum struct sample_loop_ty : uint8_t {
     NoLoop,
     ForwardLoop,
     BidiLoop
 };
 
-enum class sample_width_ty : uint8_t {
+enum struct sample_width_ty : uint8_t {
     EightBit,
     SixteenBit
 };
 
-enum class sample_format_ty : uint8_t {
+enum struct sample_format_ty : uint8_t {
     DeltaEncoded,
     AdpcmEncoded
 };
@@ -87,7 +89,7 @@ struct env_ty {
     uint8_t sustain_point;
     uint8_t loop_start_point;
     uint8_t loop_end_point;
-    env_flags_ty flags;
+    modplug::pervasives::bitset<env_flags_ty> flags;
 };
 
 struct instrument_header_ty {
@@ -116,7 +118,7 @@ struct instrument_ty {
     std::vector<sample_ty> samples;
 };
 
-enum class vol_type_ty {
+enum struct vol_ty : uint8_t {
     Nothing,
     VolSet,
     VolSlideDown,
@@ -131,7 +133,7 @@ enum class vol_type_ty {
     Portamento
 };
 
-enum class fx_type_ty {
+enum struct cmd_ty : uint8_t {
     Nothing,
     Arpeggio,
     PortaUp,
@@ -171,10 +173,10 @@ enum class fx_type_ty {
     ExtraFinePortaDown
 };
 
-const std::tuple<vol_type_ty, uint8_t> EmptyVol =
-    std::make_tuple(vol_type_ty::Nothing, 0);
-const std::tuple<fx_type_ty, uint8_t> EmptyFx =
-    std::make_tuple(fx_type_ty::Nothing, 0);
+const std::tuple<vol_ty, uint8_t> EmptyVol =
+    std::make_tuple(vol_ty::Nothing, 0);
+const std::tuple<cmd_ty, uint8_t> EmptyFx =
+    std::make_tuple(cmd_ty::Nothing, 0);
 
 const uint8_t IsFlag             = 0x80;
 const uint8_t NotePresent        = 0x1;
@@ -187,9 +189,9 @@ const uint8_t AllPresent         = 0xff;
 struct pattern_entry_ty {
     uint8_t note;
     uint8_t instrument;
-    vol_type_ty volcmd;
+    vol_ty volcmd;
     uint8_t volcmd_parameter;
-    fx_type_ty effect_type;
+    cmd_ty effect_type;
     uint8_t effect_parameter;
 };
 
@@ -212,14 +214,8 @@ struct song {
     std::vector<instrument_ty> instruments;
 };
 
-struct invalid_data_exception : public std::exception {
-    const char* what() const throw () override {
-        return "invalid data, broski!";
-    };
-};
-
-song
-read(modplug::serializers::binaryparse::context &ctx);
+std::shared_ptr<song>
+read(modplug::pervasives::binaryparse::context &ctx);
 
 }
 }

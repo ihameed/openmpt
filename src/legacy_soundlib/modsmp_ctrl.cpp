@@ -14,7 +14,7 @@ namespace ctrlSmp
 void ReplaceSample(modplug::tracker::modsample_t& smp, const LPSTR pNewSample, const SmpLength nNewLength, module_renderer* pSndFile)
 //----------------------------------------------------------------------------------------------------------
 {
-    LPSTR const pOldSmp = smp.sample_data;
+    LPSTR const pOldSmp = smp.sample_data.generic;
     uint32_t dwOrFlags = 0;
     uint32_t dwAndFlags = MAXDWORD;
     if(smp.flags & CHN_16BIT)
@@ -29,7 +29,7 @@ void ReplaceSample(modplug::tracker::modsample_t& smp, const LPSTR pNewSample, c
     BEGIN_CRITICAL();
             if (pSndFile != nullptr)
                     ctrlChn::ReplaceSample(pSndFile->Chn, pOldSmp, pNewSample, nNewLength, dwOrFlags, dwAndFlags);
-            smp.sample_data = pNewSample;
+            smp.sample_data.generic = pNewSample;
             smp.length = nNewLength;
             modplug::legacy_soundlib::free_sample(pOldSmp);
     END_CRITICAL();
@@ -62,11 +62,11 @@ SmpLength InsertSilence(modplug::tracker::modsample_t& smp, const SmpLength nSil
             if(nStartFrom == 0)
             {
                     memset(pNewSmp, 0, nSilenceBytes);
-                    memcpy(pNewSmp + nSilenceBytes, smp.sample_data, nOldBytes);
+                    memcpy(pNewSmp + nSilenceBytes, smp.sample_data.generic, nOldBytes);
             }
             else if(nStartFrom == smp.length)
             {
-                    memcpy(pNewSmp, smp.sample_data, nOldBytes);
+                    memcpy(pNewSmp, smp.sample_data.generic, nOldBytes);
                     memset(pNewSmp + nOldBytes, 0, nSilenceBytes);
             }
             else
@@ -113,7 +113,7 @@ SmpLength ResizeSample(modplug::tracker::modsample_t& smp, const SmpLength nNewL
             return smp.length; //Sample allocation failed.
 
     // Copy over old data and replace sample by the new one
-    memcpy(pNewSmp, smp.sample_data, nNewSmpBytes);
+    memcpy(pNewSmp, smp.sample_data.generic, nNewSmpBytes);
     ReplaceSample(smp, pNewSmp, nNewLength, pSndFile);
 
     // Adjust loops
@@ -145,7 +145,7 @@ void AdjustEndOfSampleImpl(modplug::tracker::modsample_t& smp)
 {
     modplug::tracker::modsample_t* const pSmp = &smp;
     const UINT len = pSmp->length;
-    T* p = reinterpret_cast<T*>(pSmp->sample_data);
+    T* p = reinterpret_cast<T*>(pSmp->sample_data.generic);
     if (pSmp->flags & CHN_STEREO)
     {
             p[(len+3)*2] = p[(len+2)*2] = p[(len+1)*2] = p[(len)*2] = p[(len-1)*2];
@@ -174,7 +174,7 @@ bool AdjustEndOfSample(modplug::tracker::modsample_t& smp, module_renderer* pSnd
 {
     modplug::tracker::modsample_t* const pSmp = &smp;
 
-    if ((!pSmp->length) || (!pSmp->sample_data))
+    if ((!pSmp->length) || (!pSmp->sample_data.generic))
             return false;
 
     BEGIN_CRITICAL();
@@ -319,7 +319,7 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
                                      module_renderer* const pSndFile)
 //----------------------------------------------
 {
-    if(smp.sample_data == nullptr || smp.length < 1)
+    if(smp.sample_data.generic == nullptr || smp.length < 1)
             return 0;
 
     modplug::tracker::modsample_t* const pSmp = &smp;
@@ -340,9 +340,9 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
     // step 1: Calculate offset.
     OffsetData oData = {0,0,0};
     if(pSmp->GetElementarySampleSize() == 2)
-            oData = CalculateOffset(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            oData = CalculateOffset(pSmp->sample_data.int16 + iStart, iEnd - iStart);
     else if(pSmp->GetElementarySampleSize() == 1)
-            oData = CalculateOffset(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            oData = CalculateOffset(pSmp->sample_data.int8 + iStart, iEnd - iStart);
 
     double dMin = oData.dMin, dMax = oData.dMax, dOffset = oData.dOffset;
 
@@ -361,9 +361,9 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
     // step 2: centralize + normalize sample
     dOffset *= dMaxAmplitude * dAmplify;
     if(pSmp->GetElementarySampleSize() == 2)
-            RemoveOffsetAndNormalize( reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart, dOffset, dAmplify);
+            RemoveOffsetAndNormalize(pSmp->sample_data.int16 + iStart, iEnd - iStart, dOffset, dAmplify);
     else if(pSmp->GetElementarySampleSize() == 1)
-            RemoveOffsetAndNormalize( reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart, dOffset, dAmplify);
+            RemoveOffsetAndNormalize(pSmp->sample_data.int8 + iStart, iEnd - iStart, dOffset, dAmplify);
 
     // step 3: adjust global vol (if available)
     if((modtype & (MOD_TYPE_IT | MOD_TYPE_MPT)) && (iStart == 0) && (iEnd == pSmp->length * pSmp->GetNumChannels()))
@@ -372,7 +372,7 @@ float RemoveDCOffset(modplug::tracker::modsample_t& smp,
             pSmp->global_volume = bad_min((uint16_t)(pSmp->global_volume / dAmplify), 64);
             for (modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
             {
-                    if(pSndFile->Chn[i].sample_data == pSmp->sample_data)
+                    if(pSndFile->Chn[i].sample_data == pSmp->sample_data.generic)
                     {
                             pSndFile->Chn[i].nGlobalVol = pSmp->global_volume;
                     }
@@ -400,7 +400,7 @@ void ReverseSampleImpl(T* pStart, const SmpLength nLength)
 bool ReverseSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, module_renderer *pSndFile)
 //-----------------------------------------------------------------------------------------
 {
-    if(pSmp->sample_data == nullptr) return false;
+    if(pSmp->sample_data.generic == nullptr) return false;
     if(iEnd == 0 || iStart > pSmp->length || iEnd > pSmp->length)
     {
             iStart = 0;
@@ -410,13 +410,13 @@ bool ReverseSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLen
     if(iEnd - iStart < 2) return false;
 
     if(pSmp->GetBytesPerSample() == 8)                // unused (yet)
-            ReverseSampleImpl(reinterpret_cast<int64_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            ReverseSampleImpl(reinterpret_cast<int64_t*>(pSmp->sample_data.generic) + iStart, iEnd - iStart);
     else if(pSmp->GetBytesPerSample() == 4)        // 16 bit stereo
-            ReverseSampleImpl(reinterpret_cast<int32_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            ReverseSampleImpl(reinterpret_cast<int32_t*>(pSmp->sample_data.generic) + iStart, iEnd - iStart);
     else if(pSmp->GetBytesPerSample() == 2)        // 16 bit mono / 8 bit stereo
-            ReverseSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            ReverseSampleImpl(pSmp->sample_data.int16 + iStart, iEnd - iStart);
     else if(pSmp->GetBytesPerSample() == 1)        // 8 bit mono
-            ReverseSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            ReverseSampleImpl(pSmp->sample_data.int8 + iStart, iEnd - iStart);
     else
             return false;
 
@@ -440,7 +440,7 @@ void UnsignSampleImpl(T* pStart, const SmpLength nLength)
 bool UnsignSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, module_renderer *pSndFile)
 //----------------------------------------------------------------------------------------
 {
-    if(pSmp->sample_data == nullptr) return false;
+    if(pSmp->sample_data.generic == nullptr) return false;
     if(iEnd == 0 || iStart > pSmp->length || iEnd > pSmp->length)
     {
             iStart = 0;
@@ -449,9 +449,9 @@ bool UnsignSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLeng
     iStart *= pSmp->GetNumChannels();
     iEnd *= pSmp->GetNumChannels();
     if(pSmp->GetElementarySampleSize() == 2)
-            UnsignSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            UnsignSampleImpl(pSmp->sample_data.int16 + iStart, iEnd - iStart);
     else if(pSmp->GetElementarySampleSize() == 1)
-            UnsignSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            UnsignSampleImpl(pSmp->sample_data.int8 + iStart, iEnd - iStart);
     else
             return false;
 
@@ -474,7 +474,7 @@ void InvertSampleImpl(T* pStart, const SmpLength nLength)
 bool InvertSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLength iEnd, module_renderer *pSndFile)
 //----------------------------------------------------------------------------------------
 {
-    if(pSmp->sample_data == nullptr) return false;
+    if(pSmp->sample_data.generic == nullptr) return false;
     if(iEnd == 0 || iStart > pSmp->length || iEnd > pSmp->length)
     {
             iStart = 0;
@@ -483,9 +483,9 @@ bool InvertSample(modplug::tracker::modsample_t *pSmp, SmpLength iStart, SmpLeng
     iStart *= pSmp->GetNumChannels();
     iEnd *= pSmp->GetNumChannels();
     if(pSmp->GetElementarySampleSize() == 2)
-            InvertSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            InvertSampleImpl(pSmp->sample_data.int16 + iStart, iEnd - iStart);
     else if(pSmp->GetElementarySampleSize() == 1)
-            InvertSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart);
+            InvertSampleImpl(pSmp->sample_data.int8 + iStart, iEnd - iStart);
     else
             return false;
 
@@ -509,7 +509,7 @@ void XFadeSampleImpl(T* pStart, const SmpLength nOffset, SmpLength nFadeLength)
 bool XFadeSample(modplug::tracker::modsample_t *pSmp, SmpLength iFadeLength, module_renderer *pSndFile)
 //----------------------------------------------------------------------------
 {
-    if(pSmp->sample_data == nullptr) return false;
+    if(pSmp->sample_data.generic == nullptr) return false;
     if(pSmp->loop_end <= pSmp->loop_start || pSmp->loop_end > pSmp->length) return false;
     if(pSmp->loop_start < iFadeLength) return false;
 
@@ -520,9 +520,9 @@ bool XFadeSample(modplug::tracker::modsample_t *pSmp, SmpLength iFadeLength, mod
     iFadeLength *= pSmp->GetNumChannels();
 
     if(pSmp->GetElementarySampleSize() == 2)
-            XFadeSampleImpl(reinterpret_cast<int16_t*>(pSmp->sample_data) + iStart, iEnd - iStart, iFadeLength);
+            XFadeSampleImpl(pSmp->sample_data.int16 + iStart, iEnd - iStart, iFadeLength);
     else if(pSmp->GetElementarySampleSize() == 1)
-            XFadeSampleImpl(reinterpret_cast<int8_t*>(pSmp->sample_data) + iStart, iEnd - iStart, iFadeLength);
+            XFadeSampleImpl(pSmp->sample_data.int8 + iStart, iEnd - iStart, iFadeLength);
     else
             return false;
 
@@ -547,13 +547,13 @@ void ConvertStereoToMonoImpl(T* pDest, const SmpLength length)
 bool ConvertToMono(modplug::tracker::modsample_t *pSmp, module_renderer *pSndFile)
 //-------------------------------------------------------
 {
-    if(pSmp->sample_data == nullptr || pSmp->length == 0 || pSmp->GetNumChannels() != 2) return false;
+    if(pSmp->sample_data.generic == nullptr || pSmp->length == 0 || pSmp->GetNumChannels() != 2) return false;
 
     // Note: Sample is overwritten in-place! Unused data is not deallocated!
     if(pSmp->GetElementarySampleSize() == 2)
-            ConvertStereoToMonoImpl(reinterpret_cast<int16_t*>(pSmp->sample_data), pSmp->length);
+            ConvertStereoToMonoImpl(pSmp->sample_data.int16, pSmp->length);
     else if(pSmp->GetElementarySampleSize() == 1)
-            ConvertStereoToMonoImpl(reinterpret_cast<int8_t*>(pSmp->sample_data), pSmp->length);
+            ConvertStereoToMonoImpl(pSmp->sample_data.int8, pSmp->length);
     else
             return false;
 
@@ -561,7 +561,7 @@ bool ConvertToMono(modplug::tracker::modsample_t *pSmp, module_renderer *pSndFil
     pSmp->flags &= ~(CHN_STEREO);
     for (modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)
     {
-            if(pSndFile->Chn[i].sample_data == pSmp->sample_data)
+            if(pSndFile->Chn[i].sample_data == pSmp->sample_data.generic)
             {
                     pSndFile->Chn[i].flags &= ~CHN_STEREO;
             }

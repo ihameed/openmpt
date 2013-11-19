@@ -1135,7 +1135,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                     modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
                     p->dwPos[k] = 0;
                     if ((nSmp) && (nSmp <= renderer->m_nSamples) && (pChn->length)
-                     && (pChn->sample_data) && (pChn->sample_data == renderer->Samples[nSmp].sample_data)
+                     && (pChn->sample_data) && (pChn->sample_data == renderer->Samples[nSmp].sample_data.generic)
                      && ((!(pChn->flags & CHN_NOTEFADE)) || (pChn->nFadeOutVol)))
                     {
                         p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->sample_position);

@@ -1213,7 +1213,7 @@ BOOL CSplitKeyboadSettings::OnInitDialog()
     {
             for (modplug::tracker::sampleindex_t nSmp = 1; nSmp <= m_pSndFile->m_nSamples; nSmp++)
             {
-                    if ((m_pSndFile->m_szNames[nSmp][0]) || (m_pSndFile->Samples[nSmp].sample_data))
+                    if ((m_pSndFile->m_szNames[nSmp][0]) || (m_pSndFile->Samples[nSmp].sample_data.generic))
                     {
                             wsprintf(s, "%02d: %s", nSmp, m_pSndFile->m_szNames[nSmp]);
                             int n = m_CbnSplitInstrument.AddString(s);

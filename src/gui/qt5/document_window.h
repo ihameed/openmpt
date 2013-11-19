@@ -12,6 +12,7 @@ namespace qt5 {
 
 class pattern_editor;
 class pattern_editor_tab;
+class sample_editor;
 class graph_editor;
 class app_config;
 class comment_editor;
@@ -28,6 +29,7 @@ public slots:
 
 private:
     pattern_editor_tab *editor;
+    sample_editor *smpedit;
     graph_editor *graph;
     comment_editor *comments;
     song_overview *overview;

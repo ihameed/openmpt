@@ -321,7 +321,7 @@ BOOL CModDoc::OnSaveDocument(LPCTSTR lpszPathName)
     //case MOD_TYPE_MOD:    bOk = m_SndFile.SaveMod(lpszPathName, dwPacking); break;
     //case MOD_TYPE_S3M:    bOk = m_SndFile.SaveS3M(lpszPathName, dwPacking); break;
     //case MOD_TYPE_XM:    bOk = m_SndFile.SaveXM(lpszPathName, dwPacking); break;
-    case MOD_TYPE_IT:    bOk = (m_SndFile.m_dwSongFlags & SONG_ITPROJECT || !lstrcmpi(fext, ".itp")) ? m_SndFile.SaveITProject(lpszPathName) : m_SndFile.SaveIT(lpszPathName, dwPacking); break;
+    case MOD_TYPE_IT:    bOk = m_SndFile.SaveIT(lpszPathName, dwPacking); break;
     case MOD_TYPE_MPT:    bOk = m_SndFile.SaveIT(lpszPathName, dwPacking); break;
     }
     EndWaitCursor();
@@ -788,10 +788,10 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         else if ((nsmp) && (nsmp < MAX_SAMPLES))    // Or set sample
         {
             modplug::tracker::modsample_t *pSmp = &m_SndFile.Samples[nsmp];
-            pChn->active_sample_data = pSmp->sample_data;
+            pChn->active_sample_data = pSmp->sample_data.generic;
             pChn->instrument = nullptr;
             pChn->sample = pSmp;
-            pChn->sample_data = pSmp->sample_data;
+            pChn->sample_data = pSmp->sample_data.generic;
             pChn->nFineTune = pSmp->nFineTune;
             pChn->nC5Speed = pSmp->c5_samplerate;
             pChn->sample_position = pChn->fractional_sample_position = pChn->length = 0;
@@ -1471,7 +1471,7 @@ void CModDoc::OnFileWaveConvert(modplug::tracker::orderindex_t nMinOrder, modplu
                 // Re-mute previously processed sample
                 if(i > 0) MuteSample((modplug::tracker::sampleindex_t)i, true);
 
-                if(m_SndFile.Samples[i + 1].sample_data == nullptr || !m_SndFile.IsSampleUsed((modplug::tracker::sampleindex_t)(i + 1)))
+                if(m_SndFile.Samples[i + 1].sample_data.generic == nullptr || !m_SndFile.IsSampleUsed((modplug::tracker::sampleindex_t)(i + 1)))
                     continue;
                 // Add sample number & name (if available) to path string
                 if(strlen(m_SndFile.m_szNames[i + 1]) > 0)
@@ -3536,7 +3536,7 @@ CString CModDoc::GetPatternViewInstrumentName(UINT nInstr,
     if (instrumentName.IsEmpty())
     {
         const modplug::tracker::sampleindex_t nSmp = m_SndFile.Instruments[nInstr]->Keyboard[NoteMiddleC - 1];
-        if (nSmp < CountOf(m_SndFile.Samples) && m_SndFile.Samples[nSmp].sample_data)
+        if (nSmp < CountOf(m_SndFile.Samples) && m_SndFile.Samples[nSmp].sample_data.generic)
             instrumentName.Format(TEXT("s: %s"), m_SndFile.GetSampleName(nSmp)); //60 is C-5
     }
 

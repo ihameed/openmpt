@@ -14,8 +14,8 @@ static const size_t FIR_TAPS = 64;
 static const size_t FIR_CENTER = (FIR_TAPS / 2) - 1;
 static const size_t TAP_PHASES = 4096;
 static const size_t SINC_SIZE = FIR_TAPS * TAP_PHASES;
-static const sample_t NORM_INT16 = 1.0 / INT16_MAX;
-static const sample_t NORM_INT8  = 1.0 / INT8_MAX;
+static const sample_t NORM_INT16 = static_cast<sample_t>(1.0 / INT16_MAX);
+static const sample_t NORM_INT8  = static_cast<sample_t>(1.0 / INT8_MAX);
 
 extern sample_t upsample_sinc_table[];
 extern sample_t downsample_sinc_table[];
@@ -32,34 +32,39 @@ struct filterstate_t {
     filterchannelstate_t right;
 };
 
-inline void init_filterstate(filterstate_t &butt_abs, modplug::tracker::modchannel_t *source) {
+inline void
+init_filterstate(filterstate_t &state, modplug::tracker::modchannel_t *source) {
     if (!(source->flags & CHN_FILTER)) return;
-    butt_abs.left.y1 = source->nFilter_Y1;
-    butt_abs.left.y2 = source->nFilter_Y2;
-    butt_abs.right.y1 = source->nFilter_Y3;
-    butt_abs.right.y2 = source->nFilter_Y4;
+    state.left.y1 = source->nFilter_Y1;
+    state.left.y2 = source->nFilter_Y2;
+    state.right.y1 = source->nFilter_Y3;
+    state.right.y2 = source->nFilter_Y4;
 }
 
-inline void save_filterstate(filterstate_t &butt_abs, modplug::tracker::modchannel_t *source) {
+inline void
+save_filterstate(filterstate_t &state, modplug::tracker::modchannel_t *source) {
     if (!(source->flags & CHN_FILTER)) return;
-    source->nFilter_Y1 = butt_abs.left.y1;
-    source->nFilter_Y2 = butt_abs.left.y2;
-    source->nFilter_Y3 = butt_abs.right.y1;
-    source->nFilter_Y4 = butt_abs.right.y2;
+    source->nFilter_Y1 = state.left.y1;
+    source->nFilter_Y2 = state.left.y2;
+    source->nFilter_Y3 = state.right.y1;
+    source->nFilter_Y4 = state.right.y2;
 }
 
-inline sample_t convert_sample(const int16_t *derp, int idx) {
+inline sample_t
+convert_sample(const int16_t *derp, int idx) {
     if (idx < 0) return 0;
     return derp[idx] * NORM_INT16;
 }
 
-inline sample_t convert_sample(const int8_t *derp, int idx) {
+inline sample_t
+convert_sample(const int8_t *derp, int idx) {
     if (idx < 0) return 0;
     return derp[idx] * NORM_INT8;
 }
 
 template <typename buf_t>
-inline void resample_and_mix_no_interpolation(
+inline void
+resample_and_mix_no_interpolation(
     sample_t &left,
     sample_t &right,
     modplug::tracker::modchannel_t *source,
@@ -80,7 +85,8 @@ inline void resample_and_mix_no_interpolation(
 }
 
 template <typename buf_t>
-inline void resample_and_mix_windowed_sinc(
+inline void
+resample_and_mix_windowed_sinc(
     sample_t &left,
     sample_t &right,
     modplug::tracker::modchannel_t *source,
@@ -91,7 +97,7 @@ inline void resample_and_mix_windowed_sinc(
     int pos = smp_pos;
     int fir_idx = ((fixedpt_pos & 0xfff0) >> 4) * FIR_TAPS;
 
-    const double *fir_table =
+    const sample_t *fir_table =
         ((source->position_delta > 0x13000 || source->position_delta < -0x13000) ?
             (downsample_sinc_table) :
             (upsample_sinc_table))
@@ -115,7 +121,8 @@ inline void resample_and_mix_windowed_sinc(
     }
 }
 
-inline void apply_filter(sample_t &left, sample_t &right, modplug::tracker::modchannel_t *source, filterstate_t &fst) {
+inline void
+apply_filter(sample_t &left, sample_t &right, modplug::tracker::modchannel_t *source, filterstate_t &fst) {
     if (!(source->flags & CHN_FILTER)) return;
     sample_t fy;
 
@@ -131,7 +138,8 @@ inline void apply_filter(sample_t &left, sample_t &right, modplug::tracker::modc
 }
 
 template <typename buf_t, bool fir_resampler>
-inline void hurfa(sample_t *left, sample_t *right, modplug::tracker::modchannel_t *source, size_t length/*, uint32_t flags*/) {
+inline void
+resample_and_mix_inner(sample_t *left, sample_t *right, modplug::tracker::modchannel_t *source, size_t length/*, uint32_t flags*/) {
     const buf_t *in_sample = reinterpret_cast<buf_t *>(source->active_sample_data);
     int pos = source->sample_position;
     if (source->flags & CHN_STEREO) in_sample += source->sample_position;
@@ -150,9 +158,10 @@ inline void hurfa(sample_t *left, sample_t *right, modplug::tracker::modchannel_
         }
 
         apply_filter(left_smp, right_smp, source, filterstate);
+        const auto vol_scale = static_cast<sample_t>(4096.0);
 
-        *left  += static_cast<double>(source->left_volume)  / 4096.0 * left_smp;
-        *right += static_cast<double>(source->right_volume) / 4096.0 * right_smp;
+        *left  += static_cast<sample_t>(source->left_volume)  / vol_scale * left_smp;
+        *right += static_cast<sample_t>(source->right_volume) / vol_scale * right_smp;
         ++left;
         ++right;
         fixedpt_pos += source->position_delta;
@@ -163,11 +172,12 @@ inline void hurfa(sample_t *left, sample_t *right, modplug::tracker::modchannel_
     save_filterstate(filterstate, source);
 }
 
-inline void resample_and_mix(sample_t *left, sample_t *right, modplug::tracker::modchannel_t *source, size_t length) {
+inline void
+resample_and_mix(sample_t *left, sample_t *right, modplug::tracker::modchannel_t *source, size_t length) {
     if (source->flags & CHN_16BIT) {
-        hurfa<int16_t, true>(left, right, source, length);
+        resample_and_mix_inner<int16_t, true>(left, right, source, length);
     } else {
-        hurfa<int8_t, true>(left, right, source, length);
+        resample_and_mix_inner<int8_t, true>(left, right, source, length);
     }
 }
 

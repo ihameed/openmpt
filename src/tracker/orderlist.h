@@ -8,7 +8,7 @@
 namespace modplug {
 namespace tracker {
 
-enum struct orderlist_entry_tag_t {
+enum struct orderlist_entry_tag_t : uint8_t {
     Nil = 0,
     Spacer,
     Pattern

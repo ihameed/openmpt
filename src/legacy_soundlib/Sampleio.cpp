@@ -82,7 +82,7 @@ bool module_renderer::ReadSampleAsInstrument(modplug::tracker::instrumentindex_t
         UINT nSample = 0;
         for (UINT iscan=1; iscan<MAX_SAMPLES; iscan++)
         {
-            if ((!Samples[iscan].sample_data) && (!m_szNames[iscan][0]))
+            if ((!Samples[iscan].sample_data.generic) && (!m_szNames[iscan][0]))
             {
                 nSample = iscan;
                 if (nSample > m_nSamples) m_nSamples = nSample;
@@ -220,7 +220,7 @@ bool module_renderer::ReadInstrumentFromSong(modplug::tracker::instrumentindex_t
                 }
                 if (j >= nSamples)
                 {
-                    while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
+                    while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data.generic) || (m_szNames[nsmp][0]))) nsmp++;
                     if ((nSamples < 32) && (nsmp < MAX_SAMPLES))
                     {
                         samplesrc[nSamples] = (uint16_t)n;
@@ -262,18 +262,18 @@ bool module_renderer::ReadSampleFromSong(modplug::tracker::sampleindex_t nSample
     if (psmp->flags & CHN_16BIT) nSize *= 2;
     if (psmp->flags & CHN_STEREO) nSize *= 2;
     if (m_nSamples < nSample) m_nSamples = nSample;
-    if (Samples[nSample].sample_data)
+    if (Samples[nSample].sample_data.generic)
     {
         Samples[nSample].length = 0;
-        modplug::legacy_soundlib::free_sample(Samples[nSample].sample_data);
+        modplug::legacy_soundlib::free_sample(Samples[nSample].sample_data.generic);
     }
     Samples[nSample] = *psmp;
-    if (psmp->sample_data)
+    if (psmp->sample_data.generic)
     {
-        Samples[nSample].sample_data = modplug::legacy_soundlib::alloc_sample(nSize+8);
-        if (Samples[nSample].sample_data)
+        Samples[nSample].sample_data.generic = modplug::legacy_soundlib::alloc_sample(nSize+8);
+        if (Samples[nSample].sample_data.generic)
         {
-            memcpy(Samples[nSample].sample_data, psmp->sample_data, nSize);
+            memcpy(Samples[nSample].sample_data.generic, psmp->sample_data.generic, nSize);
             AdjustSampleLoop(&Samples[nSample]);
         }
     }
@@ -417,10 +417,10 @@ bool module_renderer::ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPB
     }
     UINT samplesize = pfmt->channels * (pfmt->bitspersample >> 3);
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
-    if (pSmp->sample_data)
+    if (pSmp->sample_data.generic)
     {
-        modplug::legacy_soundlib::free_sample(pSmp->sample_data);
-        pSmp->sample_data = nullptr;
+        modplug::legacy_soundlib::free_sample(pSmp->sample_data.generic);
+        pSmp->sample_data.generic = nullptr;
         pSmp->length = 0;
     }
     pSmp->length = pdata->length / samplesize;
@@ -912,7 +912,7 @@ bool module_renderer::ReadPATInstrument(modplug::tracker::instrumentindex_t nIns
     for (UINT iSmp=0; iSmp<nSamples; iSmp++)
     {
         // Find a free sample
-        while ((nFreeSmp < MAX_SAMPLES) && ((Samples[nFreeSmp].sample_data) || (m_szNames[nFreeSmp][0]))) nFreeSmp++;
+        while ((nFreeSmp < MAX_SAMPLES) && ((Samples[nFreeSmp].sample_data.generic) || (m_szNames[nFreeSmp][0]))) nFreeSmp++;
         if (nFreeSmp >= MAX_SAMPLES) break;
         if (m_nSamples < nFreeSmp) m_nSamples = nFreeSmp;
         if (!nMinSmp) nMinSmp = nFreeSmp;
@@ -1131,7 +1131,7 @@ bool module_renderer::ReadXIInstrument(modplug::tracker::instrumentindex_t nInst
     UINT nsmp = 1;
     for (UINT j=0; j<nsamples; j++)
     {
-        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
+        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data.generic) || (m_szNames[nsmp][0]))) nsmp++;
         if (nsmp >= MAX_SAMPLES) break;
         samplemap[j] = nsmp;
         if (m_nSamples < nsmp) m_nSamples = nsmp;
@@ -1594,10 +1594,10 @@ bool module_renderer::ReadAIFFSample(modplug::tracker::sampleindex_t nSample, LP
     UINT samplesize = (pcomm->wSampleSize >> 11) * (pcomm->wChannels >> 8);
     if (!samplesize) samplesize = 1;
     modplug::tracker::modsample_t *pSmp = &Samples[nSample];
-    if (pSmp->sample_data)
+    if (pSmp->sample_data.generic)
     {
-        modplug::legacy_soundlib::free_sample(pSmp->sample_data);
-        pSmp->sample_data = nullptr;
+        modplug::legacy_soundlib::free_sample(pSmp->sample_data.generic);
+        pSmp->sample_data.generic = nullptr;
         pSmp->length = 0;
     }
     pSmp->length = dwSSNDLen / samplesize;
@@ -1754,7 +1754,7 @@ bool module_renderer::ReadITIInstrument(modplug::tracker::instrumentindex_t nIns
     // Reading Samples
     for (UINT i=0; i<nsamples; i++)
     {
-        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data) || (m_szNames[nsmp][0]))) nsmp++;
+        while ((nsmp < MAX_SAMPLES) && ((Samples[nsmp].sample_data.generic) || (m_szNames[nsmp][0]))) nsmp++;
         if (nsmp >= MAX_SAMPLES) break;
         if (m_nSamples < nsmp) m_nSamples = nsmp;
         samplemap[i] = nsmp;
@@ -2173,7 +2173,7 @@ bool module_renderer::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dw
             }
             break;
         case IFFID_BODY:
-            if (!pSmp->sample_data)
+            if (!pSmp->sample_data.generic)
             {
                 UINT len = dwChunkLen;
                 if (len > dwFileLength - dwMemPos - 8) len = dwFileLength - dwMemPos - 8;
@@ -2188,5 +2188,5 @@ bool module_renderer::Read8SVXSample(UINT nSample, LPBYTE lpMemFile, uint32_t dw
         }
         dwMemPos += dwChunkLen + 8;
     }
-    return (pSmp->sample_data != nullptr);
+    return (pSmp->sample_data.generic != nullptr);
 }

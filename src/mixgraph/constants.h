@@ -27,7 +27,6 @@ DAMAGE.
 #pragma once
 
 #include <cstddef>
-//#include "../legacy_soundlib/Snd_defs.h"
 
 namespace modplug {
 namespace mixgraph {
@@ -35,6 +34,7 @@ namespace mixgraph {
 
 typedef unsigned int id_t;
 typedef double sample_t;
+//typedef float sample_t;
 
 static const id_t ID_INVALID = 0;
 static const id_t ID_MASTER_SINK = 1;

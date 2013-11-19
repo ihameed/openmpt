@@ -6,7 +6,7 @@
 #include <exception>
 
 namespace modplug {
-namespace serializers {
+namespace pervasives {
 namespace binaryprint {
 
 struct overflow_exception : public std::exception {

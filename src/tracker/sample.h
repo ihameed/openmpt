@@ -14,6 +14,12 @@ uint32_t frequency_of_transpose(int8_t, int8_t);
 
 std::tuple<int8_t, int8_t> transpose_of_frequency(uint32_t);
 
+union sample_data_ty {
+    char *generic;
+    int8_t *int8;
+    int16_t *int16;
+};
+
 struct modsample_t {
     sampleoffset_t length;
 
@@ -22,7 +28,7 @@ struct modsample_t {
     sampleoffset_t sustain_start;
     sampleoffset_t sustain_end;
 
-    char *sample_data;
+    sample_data_ty sample_data;
 
     uint32_t c5_samplerate;
     uint16_t default_pan;

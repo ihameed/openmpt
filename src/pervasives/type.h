@@ -35,7 +35,7 @@ inline bool operator != (const type & x, const type & y) { \
     return x.val != y.val; \
 }
 
-#define FINITE_FIELD_TYPE(type) \
+#define ARITHMETIC_TYPE(type) \
 inline type operator + (const type & x, const type & y) { \
     return type(x.val + y.val); \
 } \
@@ -87,31 +87,14 @@ inline type operator >> (const type & x, int y) { \
 
 #define NEWTYPE(alias, type) typedef type alias;
 #define ORDERED_TYPE(type)
-#define FINITE_FIELD_TYPE(type)
+#define ARITHMETIC_TYPE(type)
 #define INCR_DECR_TYPE(type)
 
 #endif
 
-#define ENUM_BITFIELD(origtype) \
-inline origtype & operator |= (origtype & x, const origtype & y) { \
-    typedef std::underlying_type< origtype >::type durr;\
-    x = static_cast< origtype >(static_cast<durr>(x) | static_cast<durr>(y)); \
-    return x; \
-} \
-inline origtype operator & (const origtype & x, const origtype & y) { \
-    typedef std::underlying_type< origtype >::type durr;\
-    return static_cast< origtype >(static_cast<durr>(x) & static_cast<durr>(y)); \
-}
-
 
 namespace modplug {
 namespace pervasives {
-
-template <typename Ty>
-bool
-is_set(Ty flags, Ty elem) {
-    return (flags & elem) != static_cast<Ty>(0);
-}
 
 #ifdef USE_GHETTO_NEWTYPES
 template <typename Ty>
