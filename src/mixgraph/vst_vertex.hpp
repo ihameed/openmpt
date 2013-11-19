@@ -26,7 +26,13 @@ DAMAGE.
 
 #pragma once
 
-#include "vertex.h"
+#include "constants.hpp"
+
+#define VST_FORCE_DEPRECATED 0
+#include <aeffectx.h>
+#include <vstfxstore.h>
+
+class CVstPlugin;
 
 namespace modplug {
 namespace mixgraph {
@@ -34,12 +40,13 @@ namespace mixgraph {
 
 class vertex;
 
-class source_vertex : public vertex {
+class vst_vertex : public vertex {
 public:
-    source_vertex(id_t, std::string);
-    ~source_vertex();
+    vst_vertex(id_t, CVstPlugin *);
+    ~vst_vertex();
 
 private:
+    CVstPlugin *_vst;
 };
 
 

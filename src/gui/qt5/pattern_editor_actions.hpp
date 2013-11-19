@@ -1,5 +1,5 @@
-#include "../../tracker/types.h"
-#include "../../tracker/modevent.h"
+#include "../../tracker/types.hpp"
+#include "../../tracker/modevent.hpp"
 #include <QAction>
 
 namespace modplug {

@@ -13,7 +13,7 @@
 #include "../MainFrm.h"
 #include "../misc_util.h"
 
-#include "../mixgraph/constants.h"
+#include "../mixgraph/constants.hpp"
 #include "../mixer/mixutil.h"
 #include "sndfile.h"
 #include "midi.h"

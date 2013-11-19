@@ -13,7 +13,7 @@
 #include "MainFrm.h"
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "Undo.h"
-#include "tracker/types.h"
+#include "tracker/types.hpp"
 
 #define new DEBUG_NEW
 

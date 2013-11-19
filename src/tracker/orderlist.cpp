@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "orderlist.h"
-#include "pervasives/pervasives.h"
+#include "orderlist.hpp"
+#include "pervasives/pervasives.hpp"
 
 #include <iterator>
 #include <algorithm>

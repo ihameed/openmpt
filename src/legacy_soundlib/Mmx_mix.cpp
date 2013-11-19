@@ -24,7 +24,7 @@
 //
 ////////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#include "../mixgraph/constants.h"
+#include "../mixgraph/constants.hpp"
 #include "sndfile.h"
 
 extern short int gFastSinc[];

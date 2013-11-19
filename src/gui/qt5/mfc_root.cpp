@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
 #include "../../MainFrm.h"
-#include "app_config.h"
-#include "mfc_root.h"
-#include "../../audioio/paudio.h"
-#include "../../pervasives/pervasives.h"
+#include "app_config.hpp"
+#include "mfc_root.hpp"
+#include "../../audioio/paudio.hpp"
+#include "../../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 using namespace modplug::audioio;

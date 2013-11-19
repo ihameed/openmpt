@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-#include "xm.h"
+#include "xm.hpp"
 
 #include <type_traits>
 
-#include "legacy_util.h"
-#include "samplecodec.h"
-#include "../modformat/xm/xm.h"
-#include "../../pervasives/binaryparse.h"
-#include "../../pervasives/pervasives.h"
+#include "legacy_util.hpp"
+#include "samplecodec.hpp"
+#include "../modformat/xm/xm.hpp"
+#include "../../pervasives/binaryparse.hpp"
+#include "../../pervasives/pervasives.hpp"
 #include "../legacy_soundlib/Sndfile.h"
 
 using namespace modplug::pervasives;

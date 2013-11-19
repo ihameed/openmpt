@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "tracker/tracker.h"
+#include "tracker/tracker.hpp"
 
 #define MAX_UNDO_LEVEL 1000    // 1000 undo steps for each undo type!
 

@@ -10,7 +10,7 @@
 
 #include "Sndfile.h"
 
-#include "../tracker/tracker.h"
+#include "../tracker/tracker.hpp"
 
 using namespace modplug::tracker;
 

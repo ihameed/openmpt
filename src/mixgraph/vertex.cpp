@@ -26,7 +26,7 @@ DAMAGE.
 
 #include "stdafx.h"
 
-#include "vertex.h"
+#include "vertex.hpp"
 
 namespace modplug {
 namespace mixgraph {

@@ -8,7 +8,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "gui/qt5/app_config.h"
+#include "gui/qt5/app_config.hpp"
 
 #include <memory>
 #include "legacy_soundlib/sndfile.h"

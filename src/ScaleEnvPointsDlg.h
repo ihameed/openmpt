@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "tracker/tracker.h"
+#include "tracker/tracker.hpp"
 
 struct modplug::tracker::modenvelope_t;
 //=======================================

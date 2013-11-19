@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "it.hpp"
-#include "../../pervasives/binaryparse.h"
-#include "../../pervasives/option.h"
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/binaryparse.hpp"
+#include "../../pervasives/option.hpp"
+#include "../../pervasives/pervasives.hpp"
 
 using namespace modplug::modformat::mptexts;
 using namespace modplug::pervasives;
@@ -418,7 +418,7 @@ read_plugin_data(context &ctx) {
         if (tag == 'CHFX') {
             ret->channel_mix_plugins = read_channel_plugin_assignments(ctx);
         } else if (tag >= 'FX00' && tag <= 'FX99') {
-            const uint8_t idx = ((((tag >> 4) & 0xff) - '0') * 10) + ((tag & 0xff) - '0');
+            const uint8_t idx = ((((tag >> 8) & 0xff) - '0') * 10) + ((tag & 0xff) - '0');
             auto &ref = ret->plugin_data[idx];
             inject_plugin_info(ctx, ref);
         }

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 
-#include "../../audioio/paudio.h"
-#include "colors.h"
+#include "../../audioio/paudio.hpp"
+#include "colors.hpp"
 
-#include "app_config.h"
+#include "app_config.hpp"
 
 using namespace modplug::pervasives;
 using namespace modplug::audioio;

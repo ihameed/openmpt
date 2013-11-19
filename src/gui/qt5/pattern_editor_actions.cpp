@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "../../pervasives/pervasives.h"
-#include "pattern_editor_actions.h"
-#include "pattern_editor.h"
+#include "../../pervasives/pervasives.hpp"
+#include "pattern_editor_actions.hpp"
+#include "pattern_editor.hpp"
 
 using namespace modplug::pervasives;
 using namespace modplug::tracker;

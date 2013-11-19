@@ -26,55 +26,20 @@ DAMAGE.
 
 #pragma once
 
-#include <array>
-#include <vector>
-#include <map>
-#include <utility>
-
-#include "./constants.h"
-#include "vertex.h"
+#include "vertex.hpp"
 
 namespace modplug {
 namespace mixgraph {
 
 
-typedef std::pair<id_t, vertex *> vertex_item_t;
-typedef std::map<id_t, vertex *> vertex_map_t;
+class vertex;
 
-typedef std::pair<id_t, arrow *> arrow_item_t;
-typedef std::map<id_t, arrow *> arrow_map_t;
-
-class core {
+class source_vertex : public vertex {
 public:
-    core();
-    ~core();
+    source_vertex(id_t, std::string);
+    ~source_vertex();
 
-    void pre_process(size_t);
-    void process(int *, size_t, const sample_t, const sample_t);
-
-    id_t add_channel();
-    id_t add_vst();
-
-    id_t load_vertex();
-
-    bool remove_vertex(id_t);
-    void rename_vertex();
-
-
-    vertex *vertex_with_id(id_t vertex);
-
-    id_t link_vertices(id_t, size_t, id_t, size_t);
-    bool unlink_vertices(id_t);
-
-    id_t new_id();
-    id_t _largest_id;
-    
-    std::array<vertex *, MAX_PHYSICAL_CHANNELS> channel_vertices;
-    vertex *channel_bypass;
-    vertex *master_sink;
-
-    vertex_map_t vertices;
-    arrow_map_t arrows;
+private:
 };
 
 

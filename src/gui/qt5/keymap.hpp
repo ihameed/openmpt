@@ -3,7 +3,7 @@
 #include <functional>
 #include <unordered_map>
 
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 
 namespace modplug {
 namespace gui {

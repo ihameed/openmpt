@@ -1,9 +1,9 @@
 #ifndef MOD_SPECIFICATIONS_H
 #define MOD_SPECIFICATIONS_H
 
-#include "../tracker/types.h"
-#include "../tracker/modevent.h"
-#include "../tracker/tracker.h"
+#include "../tracker/types.hpp"
+#include "../tracker/modevent.hpp"
+#include "../tracker/tracker.hpp"
 #include "../SoundFilePlayConfig.h" // mixlevel constants.
 
 struct CModSpecifications

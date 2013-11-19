@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "app_config.h"
-#include "pattern_editor_aux.h"
+#include "app_config.hpp"
+#include "pattern_editor_aux.hpp"
 #include "../../legacy_soundlib/Sndfile.h"
 
 using namespace modplug::tracker;

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "graph_editor.h"
+#include "graph_editor.hpp"
 
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 
 #include <QMouseEvent>
 #include <QPainter>
@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "../mixgraph/core.h"
+#include "../mixgraph/core.hpp"
 
 #include <cstdlib>
 #include <cstdint>

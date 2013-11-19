@@ -10,7 +10,7 @@
 #include "view_ins.h"
 #include "legacy_soundlib/midi.h"
 
-#include "tracker/types.h"
+#include "tracker/types.hpp"
 
 using namespace modplug::tracker;
 

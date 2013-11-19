@@ -2,11 +2,11 @@
 
 #include <QtGui>
 
-#include "keymap.h"
-#include "../pervasives/pervasives.h"
+#include "keymap.hpp"
+#include "../pervasives/pervasives.hpp"
 
-#include "pattern_editor_actions.h"
-#include "../../tracker/modevent.h"
+#include "pattern_editor_actions.hpp"
+#include "../../tracker/modevent.hpp"
 
 using namespace modplug::pervasives;
 using namespace modplug::tracker;

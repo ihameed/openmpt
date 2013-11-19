@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "legacy_util.h"
+#include "legacy_util.hpp"
 
 #include "../legacy_soundlib/Sndfile.h"
 

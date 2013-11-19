@@ -26,12 +26,12 @@ DAMAGE.
 
 #include "stdafx.h"
 
-#include "vertex.h"
-#include "vst_vertex.h"
+#include "vertex.hpp"
+#include "vst_vertex.hpp"
 
 #include "../vstplug.h"
 
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 using namespace modplug::pervasives;
 
 namespace modplug {

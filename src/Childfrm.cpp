@@ -11,9 +11,9 @@
 #include "childfrm.h"
 
 #include "qwinwidget.h"
-#include "gui/qt5/mfc_root.h"
-#include "gui/qt5/main_window.h"
-#include "gui/qt5/document_window.h"
+#include "gui/qt5/mfc_root.hpp"
+#include "gui/qt5/main_window.hpp"
+#include "gui/qt5/document_window.hpp"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

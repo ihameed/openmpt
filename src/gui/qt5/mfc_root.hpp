@@ -1,6 +1,6 @@
 #include <QtGui>
 #include "qwinwidget.h"
-#include "main_window.h"
+#include "main_window.hpp"
 
 class CMainFrame;
 

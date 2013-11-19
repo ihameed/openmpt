@@ -2,10 +2,10 @@
 #include <QtGui>
 #include <memory>
 
-#include "config_dialog.h"
-#include "keymap.h"
-#include "../../pervasives/pervasives.h"
-#include "colors.h"
+#include "config_dialog.hpp"
+#include "keymap.hpp"
+#include "../../pervasives/pervasives.hpp"
+#include "colors.hpp"
 
 class module_renderer;
 

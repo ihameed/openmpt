@@ -6,7 +6,7 @@ rudely sepple-ized and jammed into openmpt by xaimus  : - [
 #pragma once
 
 #include <cstddef>
-#include "../tracker/tracker.h"
+#include "../tracker/tracker.hpp"
 
 
 namespace modplug {

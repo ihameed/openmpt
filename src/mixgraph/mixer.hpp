@@ -1,7 +1,7 @@
 #pragma once
 
-#include "constants.h"
-#include "../tracker/tracker.h"
+#include "constants.hpp"
+#include "../tracker/tracker.hpp"
 #include <cmath>
 #include <cstdint>
 

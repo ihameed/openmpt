@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "types.h"
+#include "types.hpp"
 
 #include "../legacy_soundlib/Snd_defs.h"
 #include "../legacy_soundlib/misc.h"

@@ -26,8 +26,8 @@ DAMAGE.
 
 #include "Stdafx.h"
 
-#include "source_vertex.h"
-#include "../pervasives/pervasives.h"
+#include "source_vertex.hpp"
+#include "../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 

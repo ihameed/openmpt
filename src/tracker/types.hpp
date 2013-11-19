@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 
 namespace modplug {
 namespace tracker {

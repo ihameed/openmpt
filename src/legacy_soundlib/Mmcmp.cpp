@@ -7,7 +7,7 @@
 */
 
 #include "stdafx.h"
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 #include "sndfile.h"
 
 //#define MMCMP_LOG

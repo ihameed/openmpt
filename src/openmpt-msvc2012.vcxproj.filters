@@ -86,38 +86,11 @@
     <ClCompile Include="legacy_soundlib\tuningCollection.cpp" />
     <ClCompile Include="legacy_soundlib\WindowedFIR.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_config_dialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_config_dialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_config_dialog.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
     <ClCompile Include="pervasives\debug.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_config_audioio.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_config_audioio.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_config_audioio.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
     <ClCompile Include="tracker\module_renderer.cpp">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_mfc_root.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_mfc_root.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_mfc_root.cpp">
-      <Filter>Generated Files\Template</Filter>
     </ClCompile>
     <ClCompile Include="legacy_soundlib\module_renderer_filters.cpp">
       <Filter>Source Files</Filter>
@@ -128,80 +101,8 @@
     <ClCompile Include="legacy_soundlib\module_renderer_pcm_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_config_gui.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_config_gui.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_config_gui.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_app_config.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_app_config.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_app_config.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_document_window.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_document_window.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_document_window.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_comment_editor.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_comment_editor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_comment_editor.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_song_overview.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_song_overview.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_song_overview.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor_aux.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor_aux.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor_aux.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
     <ClCompile Include="tracker\modsequence.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_order_editor.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_order_editor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_order_editor.cpp">
-      <Filter>Generated Files\Template</Filter>
     </ClCompile>
     <ClCompile Include="gui\qt5\app_config.cpp">
       <Filter>Generated Files</Filter>
@@ -254,26 +155,8 @@
     <ClCompile Include="gui\qt5\main_window.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_main_window.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_main_window.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_main_window.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
     <ClCompile Include="gui\qt5\graph_editor.cpp">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_graph_editor.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_graph_editor.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_graph_editor.cpp">
-      <Filter>Generated Files\Template</Filter>
     </ClCompile>
     <ClCompile Include="tracker\orderlist.cpp">
       <Filter>Generated Files</Filter>
@@ -315,6 +198,123 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_sample_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_song_overview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_song_overview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_song_overview.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor_aux.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor_aux.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor_aux.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pattern_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pattern_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_pattern_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_order_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_order_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_order_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mfc_root.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mfc_root.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_mfc_root.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_main_window.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_main_window.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_main_window.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_document_window.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_document_window.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_document_window.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_graph_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_graph_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_graph_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_config_gui.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_config_gui.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_config_gui.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_config_dialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_config_dialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_config_dialog.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_config_audioio.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_config_audioio.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_config_audioio.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_comment_editor.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_comment_editor.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_comment_editor.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_app_config.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_app_config.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_app_config.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
   </ItemGroup>
@@ -365,29 +365,6 @@
     <ClInclude Include="mixer\mixutil.h">
       <Filter>mixer</Filter>
     </ClInclude>
-    <ClInclude Include="pervasives\pervasives.h">
-      <Filter>pervasives</Filter>
-    </ClInclude>
-    <ClInclude Include="mixgraph\constants.h">
-      <Filter>mixgraph</Filter>
-    </ClInclude>
-    <ClInclude Include="mixgraph\core.h">
-      <Filter>mixgraph</Filter>
-    </ClInclude>
-    <ClInclude Include="mixgraph\source_vertex.h">
-      <Filter>mixgraph</Filter>
-    </ClInclude>
-    <ClInclude Include="mixgraph\vertex.h">
-      <Filter>mixgraph</Filter>
-    </ClInclude>
-    <ClInclude Include="mixgraph\vst_vertex.h">
-      <Filter>mixgraph</Filter>
-    </ClInclude>
-    <ClInclude Include="mixgraph\mixer.h" />
-    <ClInclude Include="serializers\wao.h" />
-    <ClInclude Include="tracker\tracker.h">
-      <Filter>tracker</Filter>
-    </ClInclude>
     <ClInclude Include="legacy_soundlib\WindowedFIR.h" />
     <ClInclude Include="legacy_soundlib\Endianness.h" />
     <ClInclude Include="legacy_soundlib\IT_DEFS.H" />
@@ -404,51 +381,8 @@
     <ClInclude Include="legacy_soundlib\tuningcollection.h" />
     <ClInclude Include="legacy_soundlib\Wav.h" />
     <ClInclude Include="legacy_soundlib\wavConverter.h" />
-    <ClInclude Include="audioio\paudio.h" />
-    <ClInclude Include="pervasives\static_assoc.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\debug.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tracker\constants.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tracker\modevent.h">
-      <Filter>tracker</Filter>
-    </ClInclude>
     <ClInclude Include="legacy_soundlib\Snd_defs.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tracker\types.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tracker\modsequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\colors.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\keymap.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\pattern_bitmap_fonts.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\pattern_editor_actions.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\pattern_editor_column.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\pattern_editor_types.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui\qt5\util.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\type.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="InputHandler.h">
       <Filter>Generated Files</Filter>
@@ -456,55 +390,127 @@
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\qt5\undoredo.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tracker\orderlist.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="serializers\legacy_util.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="modformat\xm\xm.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="serializers\samplecodec.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="legacy_soundlib\misc.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="serializers\xm.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tracker\sample.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="modformat\internal.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\bitset.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\option.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="modformat\common\mptexts.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\minmax.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\binaryparse.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pervasives\binaryprint.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="serializers\it.hpp">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="modformat\it\it.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\xm.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\samplecodec.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\wao.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serializers\legacy_util.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modformat\xm\xm.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modformat\common\mptexts.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\type.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\static_assoc.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\pervasives.hpp">
+      <Filter>pervasives</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\option.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\minmax.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\debug.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\bitset.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\binaryprint.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pervasives\binaryparse.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\constants.hpp">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\core.hpp">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\mixer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\source_vertex.hpp">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\vertex.hpp">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="mixgraph\vst_vertex.hpp">
+      <Filter>mixgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="audioio\paudio.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\types.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\tracker.hpp">
+      <Filter>tracker</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\sample.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\orderlist.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\modsequence.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\modevent.hpp">
+      <Filter>tracker</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\constants.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\util.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\undoredo.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_editor_types.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_editor_column.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_editor_actions.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\pattern_bitmap_fonts.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\keymap.hpp">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\qt5\colors.hpp">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -595,49 +601,49 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="gui\qt5\app_config.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\comment_editor.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\config_audioio.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\config_dialog.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\config_gui.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\document_window.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\mfc_root.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\order_editor.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\pattern_editor.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\pattern_editor_aux.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\song_overview.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="gui\qt5\resources\resources.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="gui\qt5\main_window.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="gui\qt5\graph_editor.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="gui\qt5\sample_editor.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\song_overview.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\pattern_editor_aux.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\pattern_editor.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\order_editor.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\mfc_root.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\main_window.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\document_window.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\graph_editor.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\config_gui.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\config_dialog.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\config_audioio.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\comment_editor.hpp">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="gui\qt5\app_config.hpp">
       <Filter>Generated Files</Filter>
     </CustomBuild>
   </ItemGroup>

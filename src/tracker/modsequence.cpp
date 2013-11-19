@@ -2,8 +2,8 @@
 
 #include <functional>
 
-#include "modsequence.h"
-#include "modevent.h"
+#include "modsequence.hpp"
+#include "modevent.hpp"
 #include "../moddoc.h"
 #include "../version.h"
 #include "../serialization_utils.h"

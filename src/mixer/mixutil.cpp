@@ -33,7 +33,7 @@ rudely sepple-ized and jammed into openmpt by xaimus  : - [
 #include <cstring>
 
 #include "../legacy_soundlib/sndfile.h"
-#include "../mixgraph/constants.h"
+#include "../mixgraph/constants.hpp"
 #include "mixutil.h"
 
 namespace modplug {

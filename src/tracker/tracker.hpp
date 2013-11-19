@@ -2,12 +2,12 @@
 
 #include <cstdint>
 
-#include "modevent.h"
-#include "types.h"
-#include "sample.h"
+#include "modevent.hpp"
+#include "types.hpp"
+#include "sample.hpp"
 
 #include "../legacy_soundlib/Snd_defs.h"
-#include "../mixgraph/constants.h"
+#include "../mixgraph/constants.hpp"
 
 class CTuningBase;
 typedef CTuningBase CTuning;

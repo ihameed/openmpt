@@ -5,9 +5,9 @@
 #include <functional>
 #include <string>
 
-#include "paudio.h"
+#include "paudio.hpp"
 #include "../MainFrm.h"
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 

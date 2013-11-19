@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "xm.h"
-#include "../../pervasives/binaryparse.h"
-#include "../../pervasives/pervasives.h"
+#include "xm.hpp"
+#include "../../pervasives/binaryparse.hpp"
+#include "../../pervasives/pervasives.hpp"
 
 using namespace modplug::modformat;
 using namespace modplug::pervasives;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "legacy_soundlib/sndfile.h"
 #include ".\soundfileplayconfig.h"
-#include "mixgraph/constants.h"
+#include "mixgraph/constants.hpp"
 
 CSoundFilePlayConfig::CSoundFilePlayConfig(void) {
     setVSTiVolume(1.0f);

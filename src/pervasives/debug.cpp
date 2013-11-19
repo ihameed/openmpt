@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "debug.h"
+#include "debug.hpp"
 
 #include <algorithm>
 #include <functional>

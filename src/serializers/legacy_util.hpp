@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "../tracker/orderlist.h"
-#include "../pervasives/binaryparse.h"
+#include "../tracker/orderlist.hpp"
+#include "../pervasives/binaryparse.hpp"
 
 class CPattern;
 class module_renderer;

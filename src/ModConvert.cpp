@@ -39,7 +39,7 @@
 #include "Moddoc.h"
 #include "Mainfrm.h"
 #include "ModConvert.h"
-#include "tracker/types.h"
+#include "tracker/types.hpp"
 
 #include "legacy_soundlib/modsmp_ctrl.h"
 #include "legacy_soundlib/misc.h"

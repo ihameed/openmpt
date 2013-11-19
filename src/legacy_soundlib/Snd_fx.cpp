@@ -15,7 +15,7 @@
 #include "../misc_util.h"
 // -! NEW_FEATURE#0022
 #include "tuning.h"
-#include "../tracker/types.h"
+#include "../tracker/types.hpp"
 
 using namespace modplug::tracker;
 

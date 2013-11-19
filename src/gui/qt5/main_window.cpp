@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "pervasives/pervasives.h"
-#include "main_window.h"
-#include "document_window.h"
+#include "pervasives/pervasives.hpp"
+#include "main_window.hpp"
+#include "document_window.hpp"
 
 using namespace modplug::pervasives;
 

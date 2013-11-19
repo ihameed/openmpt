@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../legacy_soundlib/Sndfile.h"
-#include "../pervasives/pervasives.h"
-#include "../audioio/paudio.h"
+#include "../pervasives/pervasives.hpp"
+#include "../audioio/paudio.hpp"
 
 using namespace modplug::audioio;
 

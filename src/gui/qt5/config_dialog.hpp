@@ -2,8 +2,8 @@
 #include <QtGui>
 #include <QtWidgets/QtWidgets>
 
-#include "../../audioio/paudio.h"
-#include "../../pervasives/pervasives.h"
+#include "../../audioio/paudio.hpp"
+#include "../../pervasives/pervasives.hpp"
 
 namespace modplug {
 namespace gui {

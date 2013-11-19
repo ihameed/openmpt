@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "Moddoc.h"
 #include "legacy_soundlib/modsmp_ctrl.h"
-#include "tracker/tracker.h"
+#include "tracker/tracker.hpp"
 
 using namespace modplug::tracker;
 

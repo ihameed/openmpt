@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
 #include "../../legacy_soundlib/sndfile.h"
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 
-#include "app_config.h"
-#include "config_dialog.h"
-#include "config_gui.h"
-#include "pattern_editor.h"
+#include "app_config.hpp"
+#include "config_dialog.hpp"
+#include "config_gui.hpp"
+#include "pattern_editor.hpp"
 
 namespace modplug {
 namespace gui {

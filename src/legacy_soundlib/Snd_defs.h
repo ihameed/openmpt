@@ -12,7 +12,7 @@
 
 #include <cstdint>
 #include "../typedefs.h"
-#include "../tracker/types.h"
+#include "../tracker/types.hpp"
 typedef uint8_t  PLUGINDEX;
 typedef uint16_t TEMPO;
 

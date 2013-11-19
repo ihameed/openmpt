@@ -29,10 +29,10 @@ DAMAGE.
 #include <algorithm>
 #include <utility>
 
-#include "core.h"
-#include "../pervasives/pervasives.h"
+#include "core.hpp"
+#include "../pervasives/pervasives.hpp"
 #include "../mixer/mixutil.h"
-#include "./source_vertex.h"
+#include "./source_vertex.hpp"
 
 #include <cstdio>
 

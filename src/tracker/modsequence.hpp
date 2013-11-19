@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "types.h"
+#include "types.hpp"
 #include "../legacy_soundlib/Snd_defs.h"
 #include <algorithm>
 #include <cassert>

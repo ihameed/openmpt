@@ -30,8 +30,8 @@ DAMAGE.
 #include <vector>
 #include <cstdio>
 
-#include "../pervasives/pervasives.h"
-#include "./constants.h"
+#include "../pervasives/pervasives.hpp"
+#include "constants.hpp"
 
 namespace modplug {
 namespace mixgraph {

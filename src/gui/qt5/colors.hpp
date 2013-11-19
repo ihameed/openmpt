@@ -4,7 +4,7 @@
 #include <QtWidgets/QtWidgets>
 #include <json/json.h>
 
-#include "../../tracker/modevent.h"
+#include "../../tracker/modevent.hpp"
 
 namespace modplug {
 namespace gui {

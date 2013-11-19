@@ -8,7 +8,7 @@
  */
 
 #include "Sndfile.h"
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 using namespace modplug::tracker;

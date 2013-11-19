@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cstdint>
 
-
 namespace modplug {
 namespace tracker {
 

@@ -2,7 +2,7 @@
 
 #include <QtGui>
 #include <QtWidgets/QtWidgets>
-#include "../../tracker/types.h"
+#include "../../tracker/types.hpp"
 
 class module_renderer;
 

@@ -4,8 +4,8 @@
 #include <memory>
 #include <json/json.h>
 
-#include "../../pervasives/pervasives.h"
-#include "keymap.h"
+#include "../../pervasives/pervasives.hpp"
+#include "keymap.hpp"
 
 namespace portaudio { class System; }
 

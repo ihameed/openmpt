@@ -19,11 +19,11 @@
 #include "Snd_defs.h"
 #include "Endianness.h"
 
-#include "../audioio/paudio.h"
-#include "../tracker/tracker.h"
-#include "../mixgraph/core.h"
-#include "../tracker/modsequence.h"
-#include "../tracker/orderlist.h"
+#include "../audioio/paudio.hpp"
+#include "../tracker/tracker.hpp"
+#include "../mixgraph/core.hpp"
+#include "../tracker/modsequence.hpp"
+#include "../tracker/orderlist.hpp"
 #include "misc.h"
 
 // For VstInt32 and stuff - a stupid workaround for IMixPlugin.

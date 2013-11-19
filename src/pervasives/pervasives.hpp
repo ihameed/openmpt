@@ -9,10 +9,10 @@
 
 #include <windows.h>
 
-#include "static_assoc.h"
-#include "debug.h"
-#include "minmax.h"
-#include "type.h"
+#include "static_assoc.hpp"
+#include "debug.hpp"
+#include "minmax.hpp"
+#include "type.hpp"
 
 typedef int32_t int24_t;
 #define INT24_MAX (2^23 - 1);

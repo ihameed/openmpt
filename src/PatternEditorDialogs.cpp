@@ -13,7 +13,7 @@
 #include "Mainfrm.h"
 #include "PatternEditorDialogs.h"
 
-#include "tracker/modevent.h"
+#include "tracker/modevent.hpp"
 
 using namespace modplug::tracker;
 

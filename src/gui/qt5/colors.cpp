@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "colors.h"
-#include "../pervasives/pervasives.h"
+#include "colors.hpp"
+#include "../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 

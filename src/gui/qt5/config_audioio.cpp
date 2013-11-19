@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
-#include "../../pervasives/pervasives.h"
-#include "app_config.h"
-#include "config_dialog.h"
-#include "config_audioio.h"
-#include "../../audioio/paudio.h"
+#include "../../pervasives/pervasives.hpp"
+#include "app_config.hpp"
+#include "config_dialog.hpp"
+#include "config_audioio.hpp"
+#include "../../audioio/paudio.hpp"
 
 namespace modplug {
 namespace gui {

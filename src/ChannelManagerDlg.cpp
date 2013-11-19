@@ -3,7 +3,7 @@
 #include "moddoc.h"
 #include "view_gen.h"
 #include "ChannelManagerDlg.h"
-#include "tracker/tracker.h"
+#include "tracker/tracker.hpp"
 
 using namespace modplug::tracker;
 

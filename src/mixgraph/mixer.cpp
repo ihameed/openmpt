@@ -1,8 +1,8 @@
 // mostly lifted from Tables.cpp, by Olivier and Ericus
 #include "stdafx.h"
 
-#include "mixer.h"
-#include "../pervasives/pervasives.h"
+#include "mixer.hpp"
+#include "../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 

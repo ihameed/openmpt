@@ -19,7 +19,7 @@
 #include "../version.h"
 
 #include "../modformat/it/it.hpp"
-#include "../pervasives/binaryparse.h"
+#include "../pervasives/binaryparse.hpp"
 
 #define str_tooMuchPatternData    (GetStrI18N((_TEXT("Warning: File format limit was reached. Some pattern data may not get written to file."))))
 #define str_pattern                            (GetStrI18N((_TEXT("pattern"))))

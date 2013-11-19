@@ -1,9 +1,8 @@
 #include <cstdint>
 #include <algorithm>
 
-#include "pattern_bitmap_fonts.h"
-#include "../../tracker/types.h"
-#include "../../tracker/modevent.h"
+#include "../../tracker/types.hpp"
+#include "../../tracker/modevent.hpp"
 
 namespace modplug {
 namespace gui {

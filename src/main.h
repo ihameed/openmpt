@@ -8,7 +8,7 @@
 #include "resource.h"
 #include "legacy_soundlib/Sndfile.h"
 #include <windows.h>
-#include "tracker/constants.h"
+#include "tracker/constants.hpp"
 
 class CModDoc;
 class CVstPluginManager;

@@ -2,8 +2,8 @@
 #define PATTERN_H
 
 #include <vector>
-#include "../tracker/tracker.h"
-#include "../tracker/types.h"
+#include "../tracker/tracker.hpp"
+#include "../tracker/types.hpp"
 #include "Snd_defs.h"
 
 using std::vector;

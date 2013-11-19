@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include "sample.h"
+#include "sample.hpp"
 
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 
 using namespace modplug::pervasives;
 

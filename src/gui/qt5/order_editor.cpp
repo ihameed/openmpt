@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "order_editor.h"
+#include "order_editor.hpp"
 #include "../../legacy_soundlib/Sndfile.h"
 
 using namespace modplug::tracker;

@@ -22,10 +22,10 @@
 #include "version.h"
 #include "ctrl_pat.h"
 
-#include "gui/qt5/mfc_root.h"
-#include "gui/qt5/config_dialog.h"
+#include "gui/qt5/mfc_root.hpp"
+#include "gui/qt5/config_dialog.hpp"
 
-#include "pervasives/pervasives.h"
+#include "pervasives/pervasives.hpp"
 using namespace modplug::pervasives;
 using namespace modplug::tracker;
 

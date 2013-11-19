@@ -8,7 +8,7 @@
 #include "legacy_soundlib/tuningbase.h"
 #include <string>
 
-#include "gui/qt5/pattern_bitmap_fonts.h"
+#include "gui/qt5/pattern_bitmap_fonts.hpp"
 
 using std::string;
 

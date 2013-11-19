@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "wao.h"
+#include "wao.hpp"
 
-#include "../pervasives/pervasives.h"
+#include "../pervasives/pervasives.hpp"
 
 #include "../legacy_soundlib/patternContainer.h"
 #include "../legacy_soundlib/Sndfile.h"

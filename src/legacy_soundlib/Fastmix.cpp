@@ -13,8 +13,8 @@
 #include <math.h>
 #endif
 
-#include "../mixgraph/constants.h"
-#include "../mixgraph/mixer.h"
+#include "../mixgraph/constants.hpp"
+#include "../mixgraph/mixer.hpp"
 #include "../mixer/mixutil.h"
 
 // rewbs.resamplerConf

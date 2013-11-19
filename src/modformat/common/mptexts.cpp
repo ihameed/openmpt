@@ -2,8 +2,8 @@
 
 #include <cstdlib>
 
-#include "mptexts.h"
-#include "../../pervasives/binaryparse.h"
+#include "mptexts.hpp"
+#include "../../pervasives/binaryparse.hpp"
 
 using namespace modplug::pervasives::binaryparse;
 

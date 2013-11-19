@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 
-#include "../serializers/wao.h"
+#include "../serializers/wao.hpp"
 
 #include "../mainfrm.h"
 #include "../moddoc.h"
@@ -18,14 +18,14 @@
 #include "sndfile.h"
 #include "wavConverter.h"
 #include "tuningcollection.h"
-#include "../mixgraph/constants.h"
+#include "../mixgraph/constants.hpp"
 #include <vector>
 #include <list>
 #include <algorithm>
 #include <memory>
 
-#include "../pervasives/binaryparse.h"
-#include "../serializers/xm.h"
+#include "../pervasives/binaryparse.hpp"
+#include "../serializers/xm.hpp"
 #include "../serializers/it.hpp"
 
 #define str_SampleAllocationError (GetStrI18N(_TEXT("Sample allocation error")))

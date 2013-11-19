@@ -1,16 +1,16 @@
 #include "stdafx.h"
 
 #include "../../Resource.h"
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 
-#include "pattern_editor.h"
-#include "pattern_editor_column.h"
-#include "util.h"
+#include "pattern_editor.hpp"
+#include "pattern_editor_column.hpp"
+#include "util.hpp"
 
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "keymap.h"
+#include "keymap.hpp"
 
 using namespace modplug::pervasives;
 using namespace modplug::tracker;

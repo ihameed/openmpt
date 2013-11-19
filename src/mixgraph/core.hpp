@@ -26,27 +26,55 @@ DAMAGE.
 
 #pragma once
 
-#include "./constants.h"
+#include <array>
+#include <vector>
+#include <map>
+#include <utility>
 
-#define VST_FORCE_DEPRECATED 0
-#include <aeffectx.h>
-#include <vstfxstore.h>
-
-class CVstPlugin;
+#include "constants.hpp"
+#include "vertex.hpp"
 
 namespace modplug {
 namespace mixgraph {
 
 
-class vertex;
+typedef std::pair<id_t, vertex *> vertex_item_t;
+typedef std::map<id_t, vertex *> vertex_map_t;
 
-class vst_vertex : public vertex {
+typedef std::pair<id_t, arrow *> arrow_item_t;
+typedef std::map<id_t, arrow *> arrow_map_t;
+
+class core {
 public:
-    vst_vertex(id_t, CVstPlugin *);
-    ~vst_vertex();
+    core();
+    ~core();
 
-private:
-    CVstPlugin *_vst;
+    void pre_process(size_t);
+    void process(int *, size_t, const sample_t, const sample_t);
+
+    id_t add_channel();
+    id_t add_vst();
+
+    id_t load_vertex();
+
+    bool remove_vertex(id_t);
+    void rename_vertex();
+
+
+    vertex *vertex_with_id(id_t vertex);
+
+    id_t link_vertices(id_t, size_t, id_t, size_t);
+    bool unlink_vertices(id_t);
+
+    id_t new_id();
+    id_t _largest_id;
+    
+    std::array<vertex *, MAX_PHYSICAL_CHANNELS> channel_vertices;
+    vertex *channel_bypass;
+    vertex *master_sink;
+
+    vertex_map_t vertices;
+    arrow_map_t arrows;
 };
 
 

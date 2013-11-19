@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 
-#include "comment_editor.h"
+#include "comment_editor.hpp"
 #include "../../legacy_soundlib/Sndfile.h"
 
 using namespace modplug::pervasives;

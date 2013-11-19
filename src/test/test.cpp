@@ -10,7 +10,7 @@
 #include "../version.h"
 #include "../misc_util.h"
 #include "../serialization_utils.h"
-#include "../tracker/types.h"
+#include "../tracker/types.hpp"
 #include <limits>
 #include <fstream>
 #include <strstream>

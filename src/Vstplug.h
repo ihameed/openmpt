@@ -2,7 +2,7 @@
 #define _VST_PLUGIN_MANAGER_H_
 
 #include "legacy_soundlib/sndfile.h"
-#include "mixgraph/constants.h"
+#include "mixgraph/constants.hpp"
 
 #ifndef NO_VST
     #define VST_FORCE_DEPRECATED 0

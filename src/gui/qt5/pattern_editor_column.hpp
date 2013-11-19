@@ -1,14 +1,14 @@
 #pragma once
 
-#include "pattern_editor.h"
+#include "pattern_editor.hpp"
 #include "../../Resource.h"
 
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 #include "../../legacy_soundlib/sndfile.h"
-#include "../../tracker/constants.h"
+#include "../../tracker/constants.hpp"
 
-#include "colors.h"
-#include "util.h"
+#include "colors.hpp"
+#include "util.hpp"
 #include "../legacy_soundlib/Snd_defs.h"
 
 #include <GL/gl.h>

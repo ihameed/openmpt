@@ -4,8 +4,8 @@
 
 #include "boost/multi_array.hpp"
 
-#include "../pervasives/type.h"
-#include "../pervasives/bitset.h"
+#include "../pervasives/type.hpp"
+#include "../pervasives/bitset.hpp"
 
 #include "../internal.h"
 

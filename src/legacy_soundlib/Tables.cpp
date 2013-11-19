@@ -16,7 +16,7 @@
 #include "sndfile.h"
 
 // rewbs.resamplerConf
-#include "../mixgraph/mixer.h"
+#include "../mixgraph/mixer.hpp"
 #include "../MainFrm.h"
 #include "WindowedFIR.h"
 // end  rewbs.resamplerConf

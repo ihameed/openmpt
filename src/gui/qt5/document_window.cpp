@@ -1,13 +1,13 @@
 #include "stdafx.h"
 
-#include "app_config.h"
-#include "document_window.h"
-#include "comment_editor.h"
-#include "pattern_editor.h"
+#include "app_config.hpp"
+#include "document_window.hpp"
+#include "comment_editor.hpp"
+#include "pattern_editor.hpp"
 #include "sample_editor.hpp"
-#include "graph_editor.h"
-#include "pattern_editor_aux.h"
-#include "song_overview.h"
+#include "graph_editor.hpp"
+#include "pattern_editor_aux.hpp"
+#include "song_overview.hpp"
 #include "../MainFrm.h"
 
 namespace modplug {

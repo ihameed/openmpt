@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "song_overview.h"
+#include "song_overview.hpp"
 
 namespace modplug {
 namespace gui {

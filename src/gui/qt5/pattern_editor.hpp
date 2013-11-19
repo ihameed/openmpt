@@ -4,14 +4,14 @@
 #include <QtWidgets/QtWidgets>
 #include <QGLWidget>
 #include <cstdint>
-#include "colors.h"
-#include "pattern_bitmap_fonts.h"
-#include "pattern_editor_types.h"
+#include "colors.hpp"
+#include "pattern_bitmap_fonts.hpp"
+#include "pattern_editor_types.hpp"
 
-#include "keymap.h"
+#include "keymap.hpp"
 #include "../../legacy_soundlib/Snd_defs.h"
-#include "../../tracker/types.h"
-#include "../../tracker/modevent.h"
+#include "../../tracker/types.hpp"
+#include "../../tracker/modevent.hpp"
 #include "../../legacy_soundlib/patternContainer.h"
 
 class module_renderer;

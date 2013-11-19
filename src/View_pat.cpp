@@ -15,7 +15,7 @@
 #include "legacy_soundlib/midi.h"
 #include <cmath>
 
-#include "gui/qt5/pattern_editor.h"
+#include "gui/qt5/pattern_editor.hpp"
 
 using namespace modplug::tracker;
 using namespace modplug::pervasives;

@@ -21,8 +21,8 @@
 
 #include <set>
 
-#include "../../mixgraph/core.h"
-#include "../../pervasives/pervasives.h"
+#include "../../mixgraph/core.hpp"
+#include "../../pervasives/pervasives.hpp"
 
 namespace modplug {
 namespace gui {

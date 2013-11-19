@@ -14,8 +14,8 @@
 
 #include "legacy_soundlib/modsmp_ctrl.h"
 
-#include "pervasives/pervasives.h"
-#include "gui/qt5/config_dialog.h"
+#include "pervasives/pervasives.hpp"
+#include "gui/qt5/config_dialog.hpp"
 
 #include <QtGui>
 #include <qwinwidget.h>

@@ -5,11 +5,11 @@
 
 #include "boost/multi_array.hpp"
 
-#include "../pervasives/bitset.h"
-#include "../pervasives/type.h"
+#include "../pervasives/bitset.hpp"
+#include "../pervasives/type.hpp"
 
 #include "../internal.h"
-#include "../common/mptexts.h"
+#include "../common/mptexts.hpp"
 
 namespace modplug {
 

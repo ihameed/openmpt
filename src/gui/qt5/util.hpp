@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pattern_editor.h"
+#include "pattern_editor.hpp"
 #include "../../Resource.h"
 
-#include "../../pervasives/pervasives.h"
+#include "../../pervasives/pervasives.hpp"
 
 namespace modplug {
 namespace gui {

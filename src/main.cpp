@@ -13,7 +13,7 @@
 
 #include "qmfcapp.h"
 
-#include "pervasives/pervasives.h"
+#include "pervasives/pervasives.hpp"
 using namespace modplug::pervasives;
 
 CTrackApp theApp;

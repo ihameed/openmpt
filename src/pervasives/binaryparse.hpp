@@ -7,7 +7,7 @@
 #include <memory>
 #include <exception>
 
-#include "../pervasives/option.h"
+#include "../pervasives/option.hpp"
 
 namespace modplug {
 namespace pervasives {

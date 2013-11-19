@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QtGui>
-#include "pattern_editor.h"
-#include "order_editor.h"
+#include "pattern_editor.hpp"
+#include "order_editor.hpp"
 
-#include "keymap.h"
+#include "keymap.hpp"
 
 class module_renderer;
 

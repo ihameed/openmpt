@@ -5,10 +5,10 @@
 #include <map>
 #include <vector>
 
-#include "../../pervasives/pervasives.h"
-#include "config_dialog.h"
-#include "config_audioio.h"
-#include "config_gui.h"
+#include "../../pervasives/pervasives.hpp"
+#include "config_dialog.hpp"
+#include "config_audioio.hpp"
+#include "config_gui.hpp"
 #include "../../MainFrm.h"
 
 using namespace modplug::pervasives;
