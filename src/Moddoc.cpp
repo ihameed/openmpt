@@ -101,9 +101,6 @@ CModDoc::CModDoc()
     m_lpszLog = NULL;
     m_hWndFollow = NULL;
 
-    m_PatternUndo.SetParent(this);
-    m_SampleUndo.SetParent(this);
-
     m_SplitKeyboardSettings.splitInstrument = 0;
     m_SplitKeyboardSettings.splitNote = NoteMiddleC - 1;
     m_SplitKeyboardSettings.splitVolume = 0;

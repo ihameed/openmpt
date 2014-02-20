@@ -34,7 +34,6 @@
     <ClCompile Include="SoundFilePlayConfig.cpp" />
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="tagging.cpp" />
-    <ClCompile Include="Undo.cpp" />
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_ins.cpp" />
     <ClCompile Include="view_pat.cpp" />
@@ -345,7 +344,6 @@
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="tagging.h" />
     <ClInclude Include="typedefs.h" />
-    <ClInclude Include="Undo.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="view_gen.h" />
     <ClInclude Include="view_ins.h" />

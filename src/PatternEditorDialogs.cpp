@@ -671,7 +671,7 @@ void CEditCommand::UpdateNote(UINT note, UINT instr)
     {
             if(!m_bModified)        // let's create just one undo step.
             {
-                    m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
+                    //m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
                     m_bModified = true;
             }
             m->note = note;
@@ -700,7 +700,7 @@ void CEditCommand::UpdateVolume(UINT volcmd, UINT vol)
     {
             if(!m_bModified)        // let's create just one undo step.
             {
-                    m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
+                    //m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
                     m_bModified = true;
             }
             //XXXih: gross
@@ -741,7 +741,7 @@ void CEditCommand::UpdateEffect(UINT raw_command, UINT param)
     {
             if(!m_bModified)        // let's create just one undo step.
             {
-                    m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
+                    //m_pModDoc->GetPatternUndo()->PrepareUndo(m_nPattern, m_nChannel, m_nRow, 1, 1);
                     m_bModified = true;
             }
             m->command = command;

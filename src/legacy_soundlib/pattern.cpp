@@ -149,7 +149,7 @@ bool CPattern::Expand()
     if (!newPattern) return true;
 
     const modplug::tracker::patternindex_t nPattern = m_rPatternContainer.GetIndex(this);
-    rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
+    //rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
     oldPattern = m_ModCommands;
     for (modplug::tracker::rowindex_t y = 0; y < nRows; y++)
     {
@@ -178,7 +178,7 @@ bool CPattern::Shrink()
     modplug::tracker::rowindex_t nRows = m_Rows;
     const modplug::tracker::chnindex_t nChns = sndFile.m_nChannels;
     const modplug::tracker::patternindex_t nPattern = m_rPatternContainer.GetIndex(this);
-    rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
+    //rModDoc.GetPatternUndo()->PrepareUndo(nPattern, 0, 0, nChns, nRows);
     nRows /= 2;
     for (modplug::tracker::rowindex_t y = 0; y < nRows; y++)
     {

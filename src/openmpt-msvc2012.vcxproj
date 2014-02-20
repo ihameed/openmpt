@@ -488,7 +488,6 @@
     <ClCompile Include="tracker\modsequence.cpp" />
     <ClCompile Include="tracker\orderlist.cpp" />
     <ClCompile Include="tracker\sample.cpp" />
-    <ClCompile Include="Undo.cpp" />
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_ins.cpp" />
     <ClCompile Include="view_pat.cpp" />
@@ -787,7 +786,6 @@
     <ClInclude Include="legacy_soundlib\Snd_defs.h" />
     <ClInclude Include="tracker\types.hpp" />
     <ClInclude Include="typedefs.h" />
-    <ClInclude Include="Undo.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="view_gen.h" />
     <ClInclude Include="view_ins.h" />

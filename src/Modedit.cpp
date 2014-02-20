@@ -159,7 +159,7 @@ modplug::tracker::chnindex_t CModDoc::ReArrangeChannels(const vector<modplug::tr
     if(nRemainingChannels != GetNumChannels())
     {
             // For now, changing number of channels can't be undone
-            GetPatternUndo()->ClearUndo();
+            //GetPatternUndo()->ClearUndo();
     }
 
     BEGIN_CRITICAL();
@@ -169,7 +169,7 @@ modplug::tracker::chnindex_t CModDoc::ReArrangeChannels(const vector<modplug::tr
             {
                     if(nRemainingChannels == GetNumChannels())
                     {
-                            GetPatternUndo()->PrepareUndo(nPat, 0, 0, GetNumChannels(), m_SndFile.Patterns[nPat].GetNumRows(), !first);
+                            //GetPatternUndo()->PrepareUndo(nPat, 0, 0, GetNumChannels(), m_SndFile.Patterns[nPat].GetNumRows(), !first);
                             first = false;
                     }
 
@@ -976,7 +976,7 @@ bool CModDoc::PastePattern(modplug::tracker::patternindex_t nPattern, uint32_t d
                                             // Before changing anything in this pattern, we have to create an undo point.
                                             if(bPrepareUndo)
                                             {
-                                                    GetPatternUndo()->PrepareUndo(nPattern, 0, 0, m_SndFile.m_nChannels, m_SndFile.Patterns[nPattern].GetNumRows(), !bFirstUndo);
+                                                    //GetPatternUndo()->PrepareUndo(nPattern, 0, 0, m_SndFile.m_nChannels, m_SndFile.Patterns[nPattern].GetNumRows(), !bFirstUndo);
                                                     bPrepareUndo = false;
                                                     bFirstUndo = false;
                                             }

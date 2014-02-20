@@ -11,7 +11,6 @@
 
 #include "legacy_soundlib/sndfile.h"
 #include "misc_util.h"
-#include "Undo.h"
 #include <time.h>
 
 
@@ -34,7 +33,6 @@
 #define HINT_ENVELOPE            0x02000
 #define HINT_SMPNAMES            0x04000
 #define HINT_INSNAMES            0x08000
-#define HINT_UNDO                    0x10000
 #define HINT_MIXPLUGINS            0x20000
 #define HINT_SPEEDCHANGE    0x40000        //rewbs.envRowGrid
 #define HINT_SEQNAMES            0x80000
@@ -196,8 +194,6 @@ protected:
     std::bitset<MAX_BASECHANNELS> m_bsMultiSplitRecordMask;
 // -! NEW_FEATURE#0015
 
-    CPatternUndo m_PatternUndo;
-    CSampleUndo m_SampleUndo;
     SplitKeyboardSettings m_SplitKeyboardSettings;    // this is maybe not the best place to keep them, but it should do the job
     vector<FileHistory> m_FileHistory;    // File edit history
     time_t m_creationTime;
@@ -275,8 +271,6 @@ public:
 
     void SongProperties();
 
-    CPatternUndo *GetPatternUndo() { return &m_PatternUndo; }
-    CSampleUndo *GetSampleUndo() { return &m_SampleUndo; }
     SplitKeyboardSettings *GetSplitKeyboardSettings() { return &m_SplitKeyboardSettings; }
 
     vector<FileHistory> *GetFileHistory() { return &m_FileHistory; }

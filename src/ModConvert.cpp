@@ -518,8 +518,6 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
     CHANGEMODTYPE_CHECK(wCompatibilityMode, "Consider enabling the \"compatible playback\" option in the song properties to increase compatiblity with other players.\n");
 
     SetModified();
-    GetPatternUndo()->ClearUndo();
-    GetSampleUndo()->ClearUndo();
     UpdateAllViews(NULL, HINT_MODTYPE | HINT_MODGENERAL);
     EndWaitCursor();
 
