@@ -13,6 +13,7 @@
 #include "debug.hpp"
 #include "minmax.hpp"
 #include "type.hpp"
+#include "unit.hpp"
 
 typedef int32_t int24_t;
 #define INT24_MAX (2^23 - 1);

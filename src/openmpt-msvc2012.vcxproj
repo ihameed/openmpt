@@ -225,7 +225,6 @@
     <ClCompile Include="ctrl_ins.cpp" />
     <ClCompile Include="ctrl_pat.cpp" />
     <ClCompile Include="ctrl_seq.cpp" />
-    <ClCompile Include="ctrl_smp.cpp" />
     <ClCompile Include="DefaultVstEditor.cpp" />
     <ClCompile Include="dlg_misc.cpp" />
     <ClCompile Include="draw_pat.cpp" />
@@ -495,7 +494,6 @@
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_ins.cpp" />
     <ClCompile Include="view_pat.cpp" />
-    <ClCompile Include="view_smp.cpp" />
     <ClCompile Include="VSTEditor.cpp" />
     <ClCompile Include="vstplug.cpp" />
     <ClCompile Include="TuningDialog.cpp" />
@@ -709,7 +707,6 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_SVG_LIB -D_AFXDLL  "-I.\..\extlib\agg-2.4\font_win32_tt" "-I.\..\extlib\agg-2.4\include" "-I.\..\extlib\asiosdk2.2" "-I.\..\extlib\boost_1_54_0" "-I.\..\extlib\jsoncpp-src-0.5.0\include" "-I.\..\extlib\qtwinmigrate\src" "-I.\..\extlib\pa_stable_v19_20111121\include" "-I.\..\extlib\pa_stable_v19_20111121\bindings\cpp\include" "-I.\..\extlib\soundtouch" "-I.\..\extlib\unlha" "-I.\..\extlib\unrar" "-I.\..\extlib\unzip" "-I.\..\extlib\vstsdk2.4" "-I.\..\extlib\WDL\include" "-I.\..\extlib\zlib-1.2.5" "-I.\GeneratedFiles" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I." "-I$(QTDIR)\include" "-I$(QTDIR)\include\qtmain" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\..\qtsvg\include\QtSvg" "-I$(QTDIR)\..\qtsvg\include" "-I.\serializers" "-I.\mixgraph" "-I.\audioio"</Command>
     </CustomBuild>
-    <ClInclude Include="gui\qt5\undoredo.hpp" />
     <ClInclude Include="gui\qt5\util.hpp" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="legacy_soundlib\Endianness.h" />
@@ -745,7 +742,6 @@
     <ClInclude Include="ctrl_gen.h" />
     <ClInclude Include="ctrl_ins.h" />
     <ClInclude Include="ctrl_pat.h" />
-    <ClInclude Include="ctrl_smp.h" />
     <ClInclude Include="DefaultVstEditor.h" />
     <ClInclude Include="dlg_misc.h" />
     <ClInclude Include="fxp.h" />
@@ -800,7 +796,6 @@
     <ClInclude Include="view_gen.h" />
     <ClInclude Include="view_ins.h" />
     <ClInclude Include="view_pat.h" />
-    <ClInclude Include="view_smp.h" />
     <ClInclude Include="VSTEditor.h" />
     <ClInclude Include="vstplug.h" />
     <ClInclude Include="TuningDialog.h" />

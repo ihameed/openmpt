@@ -639,7 +639,6 @@ void CModDoc::ViewPattern(UINT nPat, UINT nOrd)
 void CModDoc::ViewSample(UINT nSmp)
 //---------------------------------
 {
-    SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_SAMPLES, nSmp);
 }
 
 
@@ -1776,7 +1775,6 @@ void CModDoc::OnEditPatterns()
 void CModDoc::OnEditSamples()
 //---------------------------
 {
-    SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_SAMPLES);
 }
 
 

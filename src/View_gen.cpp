@@ -971,7 +971,6 @@ void CViewGlobals::OnParamChanged()
                     pVstPlugin->GetParamLabel(m_nCurrentParam, sunits);
                     pVstPlugin->GetParamDisplay(m_nCurrentParam, sdisplay);
                     wsprintf(s, "Value: %s %s", sdisplay, sunits);
-                    SetDlgItemText(IDC_TEXT5, s);
                     float fValue = pVstPlugin->GetParameter(m_nCurrentParam);
                     int nValue = (int)(fValue * 100.0f + 0.5f);
                     sprintf(s, "%f", fValue); //wsprintf(s, "%d.%02d", nValue/100, nValue%100); // ericus 25/01/2005
@@ -980,7 +979,6 @@ void CViewGlobals::OnParamChanged()
                     return;
             }
     }
-    SetDlgItemText(IDC_TEXT5, "Value:");
     SetDlgItemText(IDC_EDIT14, "");
     m_sbValue.SetPos(0);
 }

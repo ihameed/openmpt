@@ -156,7 +156,7 @@ read_modular_instrument_suffix(context &ctx) {
     auto found_header = read_txn(ctx, [&] (context &ctx) {
         const auto tag = read_uint32_be(ctx);
         if (tag != 'MSNI') read_rollback();
-        return nullptr;
+        return unit;
     });
     if (found_header) {
         boost::optional<uint8_t> ret;
@@ -167,10 +167,10 @@ read_modular_instrument_suffix(context &ctx) {
             return read_txn(nested, [&ret] (context &ctx) {
                 const auto tag = read_uint32_le(ctx);
                 if (tag == 'PLUG') ret = read_uint8(ctx);
-                return nullptr;
+                return unit;
             });
         };
-        repeat_until_failure_(reader, [] (nullptr_t) { });
+        repeat_until_failure_(reader, [] (unit_ty) { });
         return ret;
     }
     return boost::none;
@@ -347,7 +347,7 @@ skip_zero_length_history(context &ctx) {
     read_txn(ctx, [&] (context &ctx) {
         const auto num_entries = read_uint16_le(ctx);
         if (num_entries != 0) read_rollback();
-        return nullptr;
+        return unit;
     });
 }
 
@@ -388,7 +388,7 @@ inject_plugin_info(context &ctx, plugin_ty &ref) {
         memcpy(plugin_data.get(), rawbuf, vst_chunk_size);
         ref.data_size = vst_chunk_size;
         ref.data      = plugin_data;
-        return nullptr;
+        return unit;
     });
     const auto modular_data_size = read_uint32_le(ctx);
     auto pred = [&] () { return read_txn(ctx, [&] (context &ctx) {
@@ -485,7 +485,7 @@ move_some(Ty &ref, boost::optional<Ty> &&x) {
     if (x) ref = std::move(x.get());
 }
 
-boost::optional<nullptr_t>
+boost::optional<unit_ty>
 inject_extended_instr_block(context &ctx, mpt_extensions_ty &ret, const size_t instrs) {
     return read_txn(ctx, [&] (context &ctx) {
         const auto raw = read_uint32_le(ctx);
@@ -499,18 +499,18 @@ inject_extended_instr_block(context &ctx, mpt_extensions_ty &ret, const size_t i
         } else {
             read_skip(ctx, instrs * len);
         }
-        return nullptr;
+        return unit;
     });
 }
 
-boost::optional<nullptr_t>
+boost::optional<unit_ty>
 inject_extended_song_block(context &ctx, mpt_song_ty &ret) {
     return read_txn(ctx, [&] (context &ctx) {
         const auto tag = song_tag_of_bytes(read_uint32_le(ctx));
         const auto len = read_uint16_le(ctx);
         if (tag) inject_extended_song_data(ctx, tag.get(), len, ret);
         else read_skip(ctx, len);
-        return nullptr;
+        return unit;
     });
 }
 
@@ -527,15 +527,15 @@ inject_extended_info(
         const auto blocktag = read_uint32_le(ctx);
         if (blocktag != 'MPTX') read_rollback();
         auto read = [&] () { return inject_extended_instr_block(ctx, ret, header.instruments); };
-        repeat_until_failure_(read, [] (const nullptr_t) {});
-        return nullptr;
+        repeat_until_failure_(read, [] (unit_ty) {});
+        return unit;
     });
     read_txn(ctx, [&] (context &ctx) {
         const auto blocktag = read_uint32_le(ctx);
         if (blocktag != 'MPTS') read_rollback();
         auto read = [&] () { return inject_extended_song_block(ctx, ret.song); };
-        repeat_until_failure_(read, [] (const nullptr_t) {});
-        return nullptr;
+        repeat_until_failure_(read, [] (const unit_ty) {});
+        return unit;
     });
 }
 
@@ -751,7 +751,7 @@ read(context &ctx) {
     ret.header = read_header(ctx);
     move_some(ret.edit_history, try_read_history(ctx, ret.header));
     ret.midi_cfg = read_midi_config(ctx, ret.header);
-    read_magic(ctx, "MODU", [&] () { return nullptr; });
+    read_magic(ctx, "MODU", [&] () { return unit; });
     const auto patbuf = read_raw_pattern_names(ctx);
     move_some(ret.channel_names, read_channel_names(ctx));
     ret.mix_info = read_plugin_data(ctx);

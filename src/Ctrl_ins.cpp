@@ -1410,14 +1410,6 @@ BOOL CCtrlInstruments::OpenInstrument(module_renderer *pSndFile, UINT nInstr)
 BOOL CCtrlInstruments::EditSample(UINT nSample)
 //---------------------------------------------
 {
-    if ((nSample > 0) && (nSample < MAX_SAMPLES))
-    {
-            if (m_pParent)
-            {
-                    m_pParent->PostMessage(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_SAMPLES, nSample);
-                    return TRUE;
-            }
-    }
     return FALSE;
 }
 

@@ -275,7 +275,7 @@ struct vertex_guistate_t {
         size_t output_nubs = vertex->_output_channels;
 
         pos.width  = (2 * layout->nub_width) + layout->main_width;
-        pos.height = bad_max(input_nubs, output_nubs) * (layout->nub_height + layout->vertical_padding) + layout->vertical_padding;
+        pos.height = std::max(input_nubs, output_nubs) * (layout->nub_height + layout->vertical_padding) + layout->vertical_padding;
     }
 
     point_t _nub_location(int channel, bool input) {

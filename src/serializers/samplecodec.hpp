@@ -11,18 +11,10 @@ struct delta_decode {
     delta_decode() : acc(0) { };
     Ty operator () (const Ty in) {
         Ty out = acc + in;
-        this->acc = out;
+        acc = out;
         return out;
     };
     Ty acc;
-};
-
-template <typename Ty>
-struct fixed_size_type;
-
-template<>
-struct fixed_size_type<int16_t> {
-    const static size_t width = 2;
 };
 
 template <typename InTy, typename OutTy>

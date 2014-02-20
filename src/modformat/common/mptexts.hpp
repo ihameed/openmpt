@@ -163,7 +163,6 @@ song_tag_of_bytes(const uint32_t);
 uint32_t
 bytes_of_song_tag(const song_tag_ty);
 
-
 nullptr_t
 inject_extended_instr_data(
     modplug::pervasives::binaryparse::context &,

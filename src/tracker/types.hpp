@@ -19,7 +19,7 @@ const chnindex_t ChannelIndexInvalid = ChannelIndexMax;
 /*
 NEWTYPE(orderindex_t, uint16_t);
 ORDERED_TYPE(orderindex_t);
-FINITE_FIELD_TYPE(orderindex_t);
+ARITHMETIC_TYPE(orderindex_t);
 INCR_DECR_TYPE(orderindex_t);
 */
 typedef uint16_t orderindex_t;

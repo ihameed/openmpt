@@ -13,7 +13,6 @@
 #define IDD_LOADRAWSAMPLE               113
 #define IDD_CONTROL_GLOBALS             114
 #define IDD_CONTROL_PATTERNS            116
-#define IDD_CONTROL_SAMPLES             117
 #define IDD_CONTROL_INSTRUMENTS         118
 #define IDD_MODDOC_MODTYPE              119
 #define IDD_REMOVECHANNELS              120
@@ -151,7 +150,6 @@
 #define IDC_EDIT13                      1113
 #define IDC_EDIT14                      1114
 #define IDC_EDIT15                      1115
-#define IDC_EDIT16                      1116
 #define IDC_EDIT17                      1117
 #define IDC_EDIT18                      1118
 #define IDC_EDIT19                      1119
@@ -178,9 +176,7 @@
 #define IDC_TEXT2                       1302
 #define IDC_TEXT3                       1303
 #define IDC_TEXT4                       1304
-#define IDC_TEXT5                       1305
 #define IDC_TEXT6                       1306
-#define IDC_TEXT7                       1307
 #define IDC_TEXT8                       1308
 #define IDC_TEXT9                       1309
 #define IDC_TEXT10                      1310
@@ -523,7 +519,6 @@
 #define IDC_SPIN10                      1860
 #define IDC_SPIN11                      1861
 #define IDC_SPIN12                      1862
-#define IDC_SPIN13                      1863
 #define IDC_SPIN14                      1864
 #define IDC_SPIN15                      1865
 #define IDC_SPIN16                      1866
@@ -573,15 +568,12 @@
 #define IDC_SAMPLE_NEW                  2036
 #define IDC_SAMPLE_OPEN                 2037
 #define IDC_SAMPLE_SAVEAS               2038
-#define IDC_SPIN_SAMPLE                 2039
-#define IDC_EDIT_SAMPLE                 2040
 #define IDC_SAMPLE_NORMALIZE            2041
 #define IDC_SAMPLE_AMPLIFY              2042
 #define IDC_SAMPLE_UPSAMPLE             2043
 #define IDC_SAMPLE_REVERSE              2044
 #define IDC_COMBO_ZOOM                  2045
 #define IDC_SAMPLE_PLAY                 2046
-#define IDC_COMBO_BASENOTE              2046
 #define IDC_COMBO_RESAMPLING            2047
 #define IDC_CHECK_BASS                  2048
 #define IDC_CHECK_REVERB                2049
@@ -608,7 +600,6 @@
 #define IDC_SPIN_BASEOCTAVE             2071
 #define IDC_LIST1                       2072
 #define IDC_TOOLBAR1                    2074
-#define IDC_TOOLBAR2                    2075
 #define IDC_TOOLBAR_DETAILS             2076
 #define IDC_TREEVIEW                    2081
 #define IDC_COMMANDKEY                  2081
@@ -743,13 +734,6 @@
 #define IDC_SPINMOVEMAPPING             2325
 #define IDC_BUTTON_HALF                 2326
 #define IDC_BUTTON_DOUBLE               2327
-#define IDC_GROUPBOX_PITCH_TIME         2328
-#define IDC_TEXT_PITCH                  2329
-#define IDC_TEXT_QUALITY                2330
-#define IDC_TEXT_FFT                    2331
-#define IDC_TEXT_PERCENT                2332
-#define IDC_TEXT_STRETCHPARAMS          2337
-#define IDC_EDIT_STRETCHPARAMS          2338
 #define IDC_MIDI_MACRO_CONTROL          2339
 #define IDC_MIDIPLAYPATTERNONMIDIIN     2340
 #define IDC_DONTSHOWAGAIN               2341
