@@ -388,34 +388,6 @@ public:
     modplug::tracker::sampleindex_t DetectUnusedSamples(vector<bool> &sampleUsed) const;
     modplug::tracker::sampleindex_t RemoveSelectedSamples(const vector<bool> &keepSamples);
     void AdjustSampleLoop(modplug::tracker::modsample_t *pSmp);
-    // Samples file I/O
-    bool ReadSampleFromFile(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadWAVSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t *pdwWSMPOffset=NULL);
-    bool ReadPATSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadS3ISample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadAIFFSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadXISample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength);
-
-// -> CODE#0027
-// -> DESC="per-instrument volume ramping setup"
-//    BOOL ReadITSSample(UINT nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
-    UINT ReadITSSample(modplug::tracker::sampleindex_t nSample, LPBYTE lpMemFile, uint32_t dwFileLength, uint32_t dwOffset=0);
-// -! NEW_FEATURE#0027
-
-    bool Read8SVXSample(UINT nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool SaveWAVSample(UINT nSample, LPCSTR lpszFileName);
-    bool SaveRAWSample(UINT nSample, LPCSTR lpszFileName);
-    // Instrument file I/O
-    bool ReadInstrumentFromFile(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadXIInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadITIInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadPATInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool ReadSampleAsInstrument(modplug::tracker::instrumentindex_t nInstr, LPBYTE lpMemFile, uint32_t dwFileLength);
-    bool SaveXIInstrument(modplug::tracker::instrumentindex_t nInstr, LPCSTR lpszFileName);
-    bool SaveITIInstrument(modplug::tracker::instrumentindex_t nInstr, LPCSTR lpszFileName);
-    // I/O from another sound file
-    bool ReadInstrumentFromSong(modplug::tracker::instrumentindex_t nInstr, module_renderer *pSrcSong, UINT nSrcInstrument);
-    bool ReadSampleFromSong(modplug::tracker::sampleindex_t nSample, module_renderer *pSrcSong, UINT nSrcSample);
     // Period/Note functions
     UINT GetNoteFromPeriod(UINT period) const;
     UINT GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const;

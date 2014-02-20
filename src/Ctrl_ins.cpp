@@ -1296,114 +1296,14 @@ VOID CCtrlInstruments::UpdateFilterText()
 BOOL CCtrlInstruments::OpenInstrument(LPCSTR lpszFileName)
 //--------------------------------------------------------
 {
-    CMappedFile f;
-    BOOL bFirst, bOk;
-    uint32_t len;
-    LPBYTE lpFile;
-
-    BeginWaitCursor();
-    if ((!lpszFileName) || (!f.Open(lpszFileName)))
-    {
-            EndWaitCursor();
-            return FALSE;
-    }
-    bFirst = FALSE;
-    len = f.GetLength();
-    if (len > CTrackApp::gMemStatus.dwTotalPhys) len = CTrackApp::gMemStatus.dwTotalPhys;
-    lpFile = f.Lock(len);
-    bOk = FALSE;
-    if (!lpFile) goto OpenError;
-    BEGIN_CRITICAL();
-    if (!m_pSndFile->m_nInstruments)
-    {
-            bFirst = TRUE;
-            m_pSndFile->m_nInstruments = 1;
-            m_NoteMap.SetCurrentInstrument(m_pModDoc, 1);
-            m_pModDoc->SetModified();
-    }
-    if (!m_nInstrument) m_nInstrument = 1;
-    if (m_pSndFile->ReadInstrumentFromFile(m_nInstrument, lpFile, len))
-    {
-            m_pModDoc->UpdateAllViews(NULL, HINT_SAMPLEINFO | HINT_MODTYPE, NULL);
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-            int n = strlen(lpszFileName);
-            if(n >= _MAX_PATH) n = _MAX_PATH-1;
-            strncpy(m_pSndFile->m_szInstrumentPath[m_nInstrument-1],lpszFileName,n);
-            m_pSndFile->m_szInstrumentPath[m_nInstrument-1][n] = '\0';
-            SetInstrumentModified(false);
-// -! NEW_FEATURE#0023
-            bOk = TRUE;
-    }
-    END_CRITICAL();
-    f.Unlock();
-OpenError:
-    f.Close();
-    EndWaitCursor();
-    if (bOk)
-    {
-            modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
-            if (pIns)
-            {
-                    TCHAR szName[_MAX_FNAME], szExt[_MAX_EXT];
-                    _tsplitpath(lpszFileName, nullptr, nullptr, szName, szExt);
-                    CMainFrame::SetWorkingDirectory(lpszFileName, DIR_INSTRUMENTS, true);
-
-                    if (!pIns->name[0])
-                    {
-                            szName[31] = 0;
-                            memset(pIns->name, 0, 32);
-                            strcpy(pIns->name, szName);
-                    }
-                    if (!pIns->legacy_filename[0])
-                    {
-                            strcat(szName, szExt);
-                            szName[11] = 0;
-                            strcpy(pIns->legacy_filename, szName);
-                            pIns->legacy_filename[11] = 0;
-                    }
-                    SetCurrentInstrument(m_nInstrument);
-                    if (m_pModDoc)
-                    {
-                            m_pModDoc->SetModified();
-                            m_pModDoc->UpdateAllViews(NULL, (m_nInstrument << HINT_SHIFT_INS) | HINT_INSTRUMENT | HINT_ENVELOPE | HINT_INSNAMES | HINT_SMPNAMES);
-                    }
-            } else bOk = FALSE;
-    }
-    if (bFirst) m_pModDoc->UpdateAllViews(NULL, HINT_MODTYPE | HINT_INSNAMES | HINT_SMPNAMES);
-    if (!bOk) ErrorBox(IDS_ERR_FILETYPE, this);
-    return TRUE;
+    return FALSE;
 }
 
 
 BOOL CCtrlInstruments::OpenInstrument(module_renderer *pSndFile, UINT nInstr)
 //----------------------------------------------------------------------
 {
-    if ((!pSndFile) || (!nInstr) || (nInstr > pSndFile->m_nInstruments)) return FALSE;
-    BeginWaitCursor();
-    BEGIN_CRITICAL();
-    BOOL bFirst = FALSE;
-    if (!m_pSndFile->m_nInstruments)
-    {
-            bFirst = TRUE;
-            m_pSndFile->m_nInstruments = 1;
-            m_NoteMap.SetCurrentInstrument(m_pModDoc, 1);
-            m_pModDoc->SetModified();
-            bFirst = TRUE;
-    }
-    if (!m_nInstrument)
-    {
-            m_nInstrument = 1;
-            bFirst = TRUE;
-    }
-    m_pSndFile->ReadInstrumentFromSong(m_nInstrument, pSndFile, nInstr);
-    END_CRITICAL();
-    m_pModDoc->SetModified();
-    m_pModDoc->UpdateAllViews(NULL, (m_nInstrument << HINT_SHIFT_INS) | HINT_INSTRUMENT | HINT_ENVELOPE | HINT_INSNAMES | HINT_SMPNAMES);
-    if (bFirst) m_pModDoc->UpdateAllViews(NULL, HINT_MODTYPE | HINT_INSNAMES | HINT_SMPNAMES);
-    m_pModDoc->SetModified();
-    EndWaitCursor();
-    return TRUE;
+    return FALSE;
 }
 
 
@@ -1602,61 +1502,6 @@ void CCtrlInstruments::OnInstrumentOpen()
 void CCtrlInstruments::OnInstrumentSave()
 //---------------------------------------
 {
-    TCHAR szFileName[_MAX_PATH] = "", drive[_MAX_DRIVE], path[_MAX_PATH], ext[_MAX_EXT];
-    modplug::tracker::modinstrument_t *pIns = m_pSndFile->Instruments[m_nInstrument];
-
-    if (!pIns) return;
-    if (pIns->legacy_filename[0])
-    {
-            strncpy(szFileName, pIns->legacy_filename, bad_min(CountOf(pIns->legacy_filename), CountOf(szFileName) - 1));
-    } else
-    {
-            strncpy(szFileName, pIns->name, bad_min(CountOf(pIns->name), CountOf(szFileName) - 1));
-    }
-    SetNullTerminator(szFileName);
-    SanitizeFilename(szFileName);
-
-    FileDlgResult files = CTrackApp::ShowOpenSaveFileDialog(false, (m_pSndFile->GetType() == MOD_TYPE_XM) ? "xi" : "iti", szFileName,
-            (m_pSndFile->GetType() == MOD_TYPE_XM) ?
-                    "FastTracker II Instruments (*.xi)|*.xi|"
-                    "Impulse Tracker Instruments (*.iti)|*.iti||" :
-                    "Impulse Tracker Instruments (*.iti)|*.iti|"
-                    "FastTracker II Instruments (*.xi)|*.xi||",
-            CMainFrame::GetWorkingDirectory(DIR_INSTRUMENTS));
-    if(files.abort) return;
-
-    BeginWaitCursor();
-
-    _splitpath(files.first_file.c_str(), drive, path, NULL, ext);
-    BOOL bOk = FALSE;
-    if (!lstrcmpi(ext, ".iti"))
-            bOk = m_pSndFile->SaveITIInstrument(m_nInstrument, files.first_file.c_str());
-    else
-            bOk = m_pSndFile->SaveXIInstrument(m_nInstrument, files.first_file.c_str());
-
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-    int n = strlen(files.first_file.c_str());
-    if(n > _MAX_PATH) n = _MAX_PATH;
-    strncpy(m_pSndFile->m_szInstrumentPath[m_nInstrument-1], files.first_file.c_str(),n);
-    SetInstrumentModified(false);
-// -! NEW_FEATURE#0023
-
-    EndWaitCursor();
-    if (!bOk) ErrorBox(IDS_ERR_SAVEINS, this); else
-    {
-            strcpy(szFileName, drive);
-            strcat(szFileName, path);
-
-            CMainFrame::SetWorkingDirectory(files.workingDirectory.c_str(), DIR_INSTRUMENTS);
-
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-//            m_pModDoc->UpdateAllViews(NULL, (m_nInstrument << 24) | HINT_INSTRUMENT);
-            m_pModDoc->UpdateAllViews(NULL, HINT_MODTYPE | HINT_INSNAMES | HINT_SMPNAMES);
-// -! NEW_FEATURE#0023
-    }
-    SwitchToView();
 }
 
 

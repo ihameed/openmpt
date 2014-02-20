@@ -1506,136 +1506,14 @@ BOOL CMainFrame::PlaySoundFile(module_renderer *pSndFile)
 BOOL CMainFrame::PlaySoundFile(LPCSTR lpszFileName, UINT nNote)
 //-------------------------------------------------------------
 {
-    CMappedFile f;
-    bool bOk = false;
-
-    if (lpszFileName)
-    {
-        BeginWaitCursor();
-        if (!f.Open(lpszFileName))
-        {
-            EndWaitCursor();
-            return FALSE;
-        }
-    }
-    StopSoundFile(&m_WaveFile);
-    m_WaveFile.Destroy();
-    m_WaveFile.Create(NULL, 0);
-
-    //Avoid global volume ramping when trying samples in the treeview.
-    m_WaveFile.m_pConfig->setGlobalVolumeAppliesToMaster(false);
-    m_WaveFile.m_nDefaultGlobalVolume=64;
-
-    m_WaveFile.m_nDefaultTempo = 125;
-    m_WaveFile.m_nGlobalVolume=64;
-    m_WaveFile.m_nDefaultSpeed = 4;
-    m_WaveFile.SetRepeatCount(0);
-    m_WaveFile.m_nType = MOD_TYPE_IT;
-    m_WaveFile.m_nChannels = 4;
-    m_WaveFile.m_nInstruments = 1;
-    m_WaveFile.m_nSamples = 1;
-    m_WaveFile.Order.resize(3);
-    m_WaveFile.Order[0] = 0;
-    m_WaveFile.Order[1] = 1;
-    m_WaveFile.Order[2] = m_WaveFile.Order.GetInvalidPatIndex();
-    m_WaveFile.Patterns.Insert(0,64);
-    m_WaveFile.Patterns.Insert(1,64);
-    if (m_WaveFile.Patterns[0])
-    {
-        if (!nNote) nNote = NoteMiddleC;
-        modplug::tracker::modevent_t *m = m_WaveFile.Patterns[0];
-        m[0].note = (uint8_t)nNote;
-        m[0].instr = 1;
-        m[1].note = (uint8_t)nNote;
-        m[1].instr = 1;
-    }
-    if (lpszFileName)
-    {
-        uint32_t dwLen = f.GetLength();
-        if (dwLen)
-        {
-            LPBYTE p = f.Lock();
-            if (p)
-            {
-                bOk = m_WaveFile.ReadInstrumentFromFile(1, p, dwLen);
-                f.Unlock();
-            }
-            if (bOk)
-            {
-                if ((m_WaveFile.m_nSamples > 1) || (m_WaveFile.Samples[1].flags & CHN_LOOP))
-                {
-                    modplug::tracker::modevent_t *m = m_WaveFile.Patterns[0];
-                    m[32*4].note = NoteKeyOff;
-                    m[32*4+1].note = NoteKeyOff;
-                    m[63*4].note = NoteNoteCut;
-                    m[63*4+1].note = NoteNoteCut;
-                } else
-                {
-                    modplug::tracker::modevent_t *m = m_WaveFile.Patterns[1];
-                    if (m)
-                    {
-                        m[63*4].command = modplug::tracker::CmdPositionJump;
-                        m[63*4].param = 1;
-                    }
-                }
-                bOk = PlaySoundFile(&m_WaveFile) ? true : false;
-            }
-        }
-        f.Close();
-        EndWaitCursor();
-    }
-    return bOk;
+    return FALSE;
 }
 
 
 BOOL CMainFrame::PlaySoundFile(module_renderer *pSong, UINT nInstrument, UINT nSample, UINT nNote)
 //-------------------------------------------------------------------------------------------
 {
-    StopSoundFile(&m_WaveFile);
-    m_WaveFile.Destroy();
-    m_WaveFile.Create(NULL, 0);
-    m_WaveFile.m_nDefaultTempo = 125;
-    m_WaveFile.m_nDefaultSpeed = 6;
-    m_WaveFile.SetRepeatCount(0);
-    m_WaveFile.m_nType = pSong->m_nType;
-    m_WaveFile.m_nChannels = 4;
-    if ((nInstrument) && (nInstrument <= pSong->m_nInstruments))
-    {
-        m_WaveFile.m_nInstruments = 1;
-        m_WaveFile.m_nSamples = 32;
-    } else
-    {
-        m_WaveFile.m_nInstruments = 0;
-        m_WaveFile.m_nSamples = 1;
-    }
-    m_WaveFile.Order.resize(3);
-    m_WaveFile.Order[0] = 0;
-    m_WaveFile.Order[1] = 1;
-    m_WaveFile.Order[2] = m_WaveFile.Order.GetInvalidPatIndex();
-    m_WaveFile.Patterns.Insert(0, 64);
-    m_WaveFile.Patterns.Insert(1, 64);
-    if (m_WaveFile.Patterns[0])
-    {
-        if (!nNote) nNote = 5*12+1;
-        modplug::tracker::modevent_t *m = m_WaveFile.Patterns[0];
-        m[0].note = (uint8_t)nNote;
-        m[0].instr = 1;
-        m[1].note = (uint8_t)nNote;
-        m[1].instr = 1;
-        m = m_WaveFile.Patterns[1];
-        m[32*4].note = NoteFade;
-        m[32*4+1].note = NoteFade;
-        m[63*4].note = NoteKeyOff;
-        m[63*4+1].note = NoteKeyOff;
-    }
-    if ((nInstrument) && (nInstrument <= pSong->m_nInstruments))
-    {
-        m_WaveFile.ReadInstrumentFromSong(1, pSong, nInstrument);
-    } else
-    {
-        m_WaveFile.ReadSampleFromSong(1, pSong, nSample);
-    }
-    return PlaySoundFile(&m_WaveFile);
+    return FALSE;
 }
 
 
