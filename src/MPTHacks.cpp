@@ -8,7 +8,6 @@
 
 #include "stdafx.h"
 #include "Moddoc.h"
-#include "legacy_soundlib/modsmp_ctrl.h"
 #include "tracker/tracker.hpp"
 
 using namespace modplug::tracker;
@@ -268,7 +267,7 @@ bool CModDoc::HasMPTHacks(const bool autofix)
                     foundHere = foundHacks = true;
                     if(autofix)
                     {
-                            ctrlSmp::ConvertToMono(&smp, &m_SndFile);
+                            //ctrlSmp::ConvertToMono(&smp, &m_SndFile); //XXXih: ctrlSmp
                     } else
                     {
                             break;

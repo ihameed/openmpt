@@ -219,7 +219,6 @@
     <ClCompile Include="audioio\paudio.cpp" />
     <ClCompile Include="ChannelManagerDlg.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
-    <ClCompile Include="CleanupSong.cpp" />
     <ClCompile Include="ColourEdit.cpp" />
     <ClCompile Include="ctrl_gen.cpp" />
     <ClCompile Include="ctrl_ins.cpp" />
@@ -430,7 +429,6 @@
     <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
     <ClCompile Include="legacy_soundlib\Mmx_mix.cpp" />
     <ClCompile Include="legacy_soundlib\modcommand.cpp" />
-    <ClCompile Include="legacy_soundlib\modsmp_ctrl.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_filters.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_internal_mixer.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_pcm_utils.cpp" />
@@ -714,7 +712,6 @@
     <ClInclude Include="legacy_soundlib\Loaders.h" />
     <ClInclude Include="legacy_soundlib\midi.h" />
     <ClInclude Include="legacy_soundlib\misc.h" />
-    <ClInclude Include="legacy_soundlib\modsmp_ctrl.h" />
     <ClInclude Include="legacy_soundlib\mod_specifications.h" />
     <ClInclude Include="legacy_soundlib\pattern.h" />
     <ClInclude Include="legacy_soundlib\patternContainer.h" />
@@ -737,7 +734,6 @@
     <ClInclude Include="AbstractVstEditor.h" />
     <ClInclude Include="ChannelManagerDlg.h" />
     <ClInclude Include="ChildFrm.h" />
-    <ClInclude Include="CleanupSong.h" />
     <ClInclude Include="ColourEdit.h" />
     <ClInclude Include="ctrl_gen.h" />
     <ClInclude Include="ctrl_ins.h" />

@@ -5,7 +5,6 @@
 #include "mainfrm.h"
 #include "moddoc.h"
 #include "dlg_misc.h"
-#include "legacy_soundlib/modsmp_ctrl.h"
 #include "misc_util.h"
 
 using namespace modplug::tracker;
@@ -384,14 +383,7 @@ UINT CModDoc::RemovePlugs(const bool (&keepMask)[MAX_MIXPLUGINS])
 BOOL CModDoc::AdjustEndOfSample(UINT nSample)
 //-------------------------------------------
 {
-    modplug::tracker::modsample_t *pSmp;
-    if (nSample >= MAX_SAMPLES) return FALSE;
-    pSmp = &m_SndFile.Samples[nSample];
-    if ((!pSmp->length) || (!pSmp->sample_data.generic)) return FALSE;
-
-    ctrlSmp::AdjustEndOfSample(*pSmp, &m_SndFile);
-
-    return TRUE;
+    return FALSE;
 }
 
 

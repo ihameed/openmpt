@@ -10,9 +10,6 @@
 #include "mod2wave.h"
 #include "vstplug.h"
 #include "version.h"
-#include "CleanupSong.h"
-
-#include "legacy_soundlib/modsmp_ctrl.h"
 
 #include "pervasives/pervasives.hpp"
 #include "gui/qt5/config_dialog.hpp"
@@ -585,8 +582,6 @@ BOOL CModDoc::InitializeMod()
     {
         strcpy(m_SndFile.m_szNames[1], "untitled");
         m_SndFile.m_nSamples = (GetModType() == MOD_TYPE_MOD) ? 31 : 1;
-
-        ctrlSmp::ResetSamples(m_SndFile, ctrlSmp::SmpResetInit);
 
         if ((!m_SndFile.m_nInstruments) && (m_SndFile.m_nType & MOD_TYPE_XM))
         {
@@ -1791,8 +1786,6 @@ void CModDoc::OnEditGraph() { }
 void CModDoc::OnShowCleanup()
 //---------------------------
 {
-    CModCleanupDlg dlg(this, CMainFrame::GetMainFrame());
-    dlg.DoModal();
 }
 
 

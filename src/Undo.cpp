@@ -11,7 +11,6 @@
 #include "stdafx.h"
 #include "moddoc.h"
 #include "MainFrm.h"
-#include "legacy_soundlib/modsmp_ctrl.h"
 #include "Undo.h"
 #include "tracker/types.hpp"
 
@@ -338,17 +337,17 @@ bool CSampleUndo::Undo(const sampleindex_t nSmp)
 
     case sundo_invert:
             // invert again
-            ctrlSmp::InvertSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
+            //ctrlSmp::InvertSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile); //XXXih: ctrlSmp
             break;
 
     case sundo_reverse:
             // reverse again
-            ctrlSmp::ReverseSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
+            //ctrlSmp::ReverseSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile); //XXXih: ctrlSmp
             break;
 
     case sundo_unsign:
             // unsign again
-            ctrlSmp::UnsignSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile);
+            //ctrlSmp::UnsignSample(&pSndFile->Samples[nSmp], pUndo->nChangeStart, pUndo->nChangeEnd, pSndFile); //XXXih: ctrlSmp
             break;
 
     case sundo_insert:
@@ -392,9 +391,9 @@ bool CSampleUndo::Undo(const sampleindex_t nSmp)
 
     if(pNewSample != nullptr)
     {
-            ctrlSmp::ReplaceSample(pSndFile->Samples[nSmp], pNewSample, pUndo->OldSample.length, pSndFile);
+            //ctrlSmp::ReplaceSample(pSndFile->Samples[nSmp], pNewSample, pUndo->OldSample.length, pSndFile); //XXXih: ctrlSmp
     }
-    ctrlSmp::AdjustEndOfSample(pSndFile->Samples[nSmp], pSndFile);
+    //ctrlSmp::AdjustEndOfSample(pSndFile->Samples[nSmp], pSndFile); //XXXih: ctrlSmp
 
     RemoveLastUndoStep(nSmp);
 
