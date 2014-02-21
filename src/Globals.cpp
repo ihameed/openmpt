@@ -8,7 +8,6 @@
 #include "globals.h"
 #include "ctrl_gen.h"
 #include "ctrl_pat.h"
-#include "ctrl_ins.h"
 #include ".\globals.h"
 
 #ifdef _DEBUG
@@ -297,9 +296,6 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
         case IDD_CONTROL_PATTERNS:
             nIndex = 1;
             break;
-        case IDD_CONTROL_INSTRUMENTS:
-            nIndex = 3;
-            break;
         default:
             return FALSE;
     }
@@ -338,9 +334,6 @@ BOOL CModControlView::SetActivePage(int nIndex, LPARAM lParam)
             break;
         case IDD_CONTROL_PATTERNS:
             pDlg = new CCtrlPatterns();
-            break;
-        case IDD_CONTROL_INSTRUMENTS:
-            pDlg = new CCtrlInstruments();
             break;
         default:
             return FALSE;
@@ -417,7 +410,6 @@ void CModControlView::UpdateView(uint32_t lHint, CObject *pObject)
             m_TabCtrl.DeleteAllItems();
             if (mask & 1) m_TabCtrl.InsertItem(count++, "General", IDD_CONTROL_GLOBALS, IMAGE_GENERAL);
             if (mask & 2) m_TabCtrl.InsertItem(count++, "Patterns", IDD_CONTROL_PATTERNS, IMAGE_PATTERNS);
-            if (mask & 8) m_TabCtrl.InsertItem(count++, "Instruments", IDD_CONTROL_INSTRUMENTS, IMAGE_INSTRUMENTS);
         }
     }
     // Update child dialogs

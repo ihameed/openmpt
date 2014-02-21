@@ -393,7 +393,6 @@ public:
     UINT GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed) const;
     UINT GetFreqFromPeriod(UINT period, UINT nC5Speed, int nPeriodFrac=0) const;
     // Misc functions
-    modplug::tracker::modsample_t *GetSample(UINT n) { return Samples+n; }
     void ResetMidiCfg();
     void SanitizeMacros();
     UINT MapMidiInstrument(uint32_t dwProgram, UINT nChannel, UINT nNote);

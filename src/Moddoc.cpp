@@ -607,7 +607,6 @@ void CModDoc::ViewSample(UINT nSmp)
 void CModDoc::ViewInstrument(UINT nIns)
 //-------------------------------------
 {
-    SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_INSTRUMENTS, nIns);
 }
 
 void CModDoc::AddLogEvent(LogEventType eventType, LPCTSTR pszFuncName, LPCTSTR pszFormat, ...)
@@ -1744,7 +1743,6 @@ void CModDoc::OnEditInstruments()
 //-------------------------------
 {
     //if (m_SndFile.m_nInstruments) rewbs.cosmetic: allow keyboard access to instruments even with no instruments
-    SendMessageToActiveViews(WM_MOD_ACTIVATEVIEW, IDD_CONTROL_INSTRUMENTS);
 }
 
 void CModDoc::OnEditGraph() { }

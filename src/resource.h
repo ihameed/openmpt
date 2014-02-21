@@ -13,7 +13,6 @@
 #define IDD_LOADRAWSAMPLE               113
 #define IDD_CONTROL_GLOBALS             114
 #define IDD_CONTROL_PATTERNS            116
-#define IDD_CONTROL_INSTRUMENTS         118
 #define IDD_MODDOC_MODTYPE              119
 #define IDD_REMOVECHANNELS              120
 #define IDD_PATTERN_PROPERTIES          123
@@ -84,7 +83,6 @@
 #define IDD_SAVEPRESET                  421
 #define IDD_SELECTMIXPLUGIN             423
 #define IDD_PLUGINEDITOR                424
-#define IDD_SETUP_REVERB                425
 #define IDB_VISNODE                     427
 #define IDB_SPLASHTEST                  432
 #define IDR_VSTMENU                     436
@@ -95,7 +93,6 @@
 #define IDR_PLUGINMENU                  442
 #define IDD_PITCHSHIFT                  442
 #define IDD_DIALOG1                     501
-#define IDD_SCALE_ENV_POINTS            510
 #define IDD_TUNING                      511
 #define IDD_DIALOG2                     512
 #define IDD_DIALOG3                     513
@@ -107,8 +104,6 @@
 #define IDR_BUILTIN_TUNINGS             520
 #define IDD_CHANNEL_NAME                522
 #define IDD_KEYBOARD_SPLIT              523
-#define IDD_SAMPLE_GRID_SIZE            527
-#define IDD_SAMPLE_XFADE                528
 #define IDD_DIALOG4                     530
 #define IDC_BUTTON1                     1001
 #define IDC_BUTTON2                     1002
@@ -148,7 +143,6 @@
 #define IDC_EDIT12                      1112
 #define IDC_EDIT13                      1113
 #define IDC_EDIT14                      1114
-#define IDC_EDIT15                      1115
 #define IDC_EDIT17                      1117
 #define IDC_EDIT18                      1118
 #define IDC_EDIT19                      1119
@@ -170,7 +164,6 @@
 #define IDC_COMBO5                      1205
 #define IDC_COMBO6                      1206
 #define IDC_COMBO9                      1207
-#define IDC_NOTEMAP                     1213
 #define IDC_TEXT1                       1301
 #define IDC_TEXT2                       1302
 #define IDC_TEXT3                       1303
@@ -514,10 +507,7 @@
 #define IDC_SPIN6                       1856
 #define IDC_SPIN7                       1857
 #define IDC_SPIN8                       1858
-#define IDC_SPIN9                       1859
 #define IDC_SPIN10                      1860
-#define IDC_SPIN11                      1861
-#define IDC_SPIN12                      1862
 #define IDC_SPIN14                      1864
 #define IDC_SPIN15                      1865
 #define IDC_SPIN16                      1866
@@ -562,8 +552,6 @@
 #define IDC_PATTERN_OCTAVELINK          2031
 #define IDC_SPIN_SPACING                2032
 #define IDC_EDIT_SPACING                2033
-#define IDC_SAMPLE_NAME                 2034
-#define IDC_SAMPLE_FILENAME             2035
 #define IDC_SAMPLE_NEW                  2036
 #define IDC_SAMPLE_OPEN                 2037
 #define IDC_SAMPLE_SAVEAS               2038
@@ -590,7 +578,6 @@
 #define IDC_INSTRUMENT_SAVEAS           2062
 #define IDC_INSTRUMENT_PLAY             2063
 #define IDC_SPIN_INSTRUMENT             2064
-#define IDC_EDIT_INSTRUMENT             2065
 #define IDC_EDIT_PATTERNNAME            2066
 #define IDC_INSTRUMENT_MORE             2067
 #define IDC_EDIT_TRANSPOSE              2068
@@ -612,7 +599,6 @@
 #define IDC_BROWSEKEYCONF               2107
 #define IDC_REMCHANSLIST                2108
 #define IDC_NOTESREPEAT2                2109
-#define IDC_INSVIEWPLG                  2110
 #define IDC_PARAMLABEL                  2111
 #define IDC_PARAMLIST                   2112
 #define IDC_PARAMVALUETEXT              2113
@@ -658,7 +644,6 @@
 #define IDC_MOVEFXSLOT                  2235
 #define IDC_CLONEPLUG                   2236
 #define IDC_INSERTFXSLOT                2237
-#define IDC_FILTERMODE                  2238
 #define IDC_BUTTON_MODTYPE2             2246
 #define IDC_BUTTON_PLAYERPROPS          2247
 #define IDC_SLIDER_SAMPLEPREAMP3        2248
@@ -668,8 +653,6 @@
 #define IDC_MACROCC                     2252
 #define IDC_GENMACROLABEL               2253
 #define IDC_PATTERN_LOOP                2255
-#define IDC_EDIT_FACTORX                2256
-#define IDC_EDIT_FACTORY                2257
 #define IDC_EDIT_ORDERLIST_MARGINS      2258
 #define IDC_STATICRATIOMAP              2259
 #define IDC_SPIN_ORDERLIST_MARGINS      2260
@@ -689,9 +672,6 @@
 #define IDC_BUTTON_SETVALUES            2274
 #define IDC_BUTTON_IMPORT               2275
 #define IDC_BUTTON_EXPORT               2276
-#define IDC_COMBOTUNING                 2277
-#define IDC_EDIT_PITCHTEMPOLOCK         2278
-#define IDC_CHECK_PITCHTEMPOLOCK        2279
 #define IDC_CHECK_NEWTUNING             2280
 #define IDC_COMBO_T                     2281
 #define IDC_COMBOTUNINGNAME             2282
@@ -713,8 +693,6 @@
 #define IDC_NAMEFILTER                  2304
 #define IDC_TUNINGTYPE_DESC             2305
 #define IDC_MIDIVOL_TO_NOTEVOL          2306
-#define IDC_PLUGIN_VELOCITYSTYLE        2307
-#define IDC_PLUGIN_VOLUMESTYLE          2308
 #define IDC_CHECKACTIVE                 2310
 #define IDC_COMBO_CONTROLLER            2311
 #define IDC_COMBO_CHANNEL               2312
@@ -802,11 +780,7 @@
 #define IDC_EDIT_ROWSPERMEASURE         2429
 #define IDC_SAMPLE_QUICKFADE            2433
 #define IDC_SAMPLE_XFADE                2434
-#define IDC_INSTR_RAMPUP                2436
-#define IDC_INSTR_RAMPUP_SPIN           2437
-#define IDC_INSTR_RAMPDOWN              2438
 #define IDC_CUSTOM1                     2438
-#define IDC_INSTR_RAMPDOWN_SPIN         2439
 #define IDC_HERPDERP                    2446
 #define ID_FILE_NEWMOD                  32771
 #define ID_FILE_NEWXM                   32772

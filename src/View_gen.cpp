@@ -1096,21 +1096,6 @@ VOID CViewGlobals::OnSetParameter()
 VOID CViewGlobals::OnSetWetDry()
 //------------------------------
 {
-    CModDoc *pModDoc = GetDocument();
-    PSNDMIXPLUGIN pPlugin;
-    module_renderer *pSndFile;
-
-    if ((m_nCurrentPlugin >= MAX_MIXPLUGINS) || (!pModDoc)) return;
-    pSndFile = pModDoc->GetSoundFile();
-    pPlugin = &pSndFile->m_MixPlugins[m_nCurrentPlugin];
-    if (pPlugin->pMixPlugin){
-            //CVstPlugin *pVstPlugin = (CVstPlugin *)pPlugin->pMixPlugin;
-            UINT value = GetDlgItemIntEx(IDC_EDIT15);
-            pPlugin->fDryRatio = (float)value / 100.0f;
-            if(pSndFile->GetModSpecifications().supportsPlugins)
-                    pModDoc->SetModified();
-            //OnWetDryChanged();
-    }
 }
 
 /*

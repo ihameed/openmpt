@@ -6,7 +6,6 @@
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColourEdit.cpp" />
     <ClCompile Include="ctrl_gen.cpp" />
-    <ClCompile Include="ctrl_ins.cpp" />
     <ClCompile Include="ctrl_pat.cpp" />
     <ClCompile Include="ctrl_seq.cpp" />
     <ClCompile Include="DefaultVstEditor.cpp" />
@@ -28,23 +27,17 @@
     <ClCompile Include="MPTHacks.cpp" />
     <ClCompile Include="PatternEditorDialogs.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
-    <ClCompile Include="SampleEditorDialogs.cpp" />
-    <ClCompile Include="ScaleEnvPointsDlg.cpp" />
     <ClCompile Include="serialization_utils.cpp" />
     <ClCompile Include="SoundFilePlayConfig.cpp" />
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="tagging.cpp" />
     <ClCompile Include="view_gen.cpp" />
-    <ClCompile Include="view_ins.cpp" />
     <ClCompile Include="view_pat.cpp" />
     <ClCompile Include="VSTEditor.cpp" />
     <ClCompile Include="vstplug.cpp" />
     <ClCompile Include="TuningDialog.cpp" />
     <ClCompile Include="tuningRatioMapWnd.cpp" />
     <ClCompile Include="test\test.cpp" />
-    <ClCompile Include="mixer\mixutil.cpp">
-      <Filter>mixer</Filter>
-    </ClCompile>
     <ClCompile Include="pervasives\pervasives.cpp">
       <Filter>pervasives</Filter>
     </ClCompile>
@@ -319,7 +312,6 @@
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColourEdit.h" />
     <ClInclude Include="ctrl_gen.h" />
-    <ClInclude Include="ctrl_ins.h" />
     <ClInclude Include="ctrl_pat.h" />
     <ClInclude Include="DefaultVstEditor.h" />
     <ClInclude Include="dlg_misc.h" />
@@ -337,8 +329,6 @@
     <ClInclude Include="PatternEditorDialogs.h" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SampleEditorDialogs.h" />
-    <ClInclude Include="ScaleEnvPointsDlg.h" />
     <ClInclude Include="serialization_utils.h" />
     <ClInclude Include="SoundFilePlayConfig.h" />
     <ClInclude Include="StdAfx.h" />
@@ -346,16 +336,12 @@
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="view_gen.h" />
-    <ClInclude Include="view_ins.h" />
     <ClInclude Include="view_pat.h" />
     <ClInclude Include="VSTEditor.h" />
     <ClInclude Include="vstplug.h" />
     <ClInclude Include="TuningDialog.h" />
     <ClInclude Include="tuningRatioMapWnd.h" />
     <ClInclude Include="test\test.h" />
-    <ClInclude Include="mixer\mixutil.h">
-      <Filter>mixer</Filter>
-    </ClInclude>
     <ClInclude Include="legacy_soundlib\WindowedFIR.h" />
     <ClInclude Include="legacy_soundlib\Endianness.h" />
     <ClInclude Include="legacy_soundlib\IT_DEFS.H" />

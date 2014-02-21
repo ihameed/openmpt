@@ -221,7 +221,6 @@
     <ClCompile Include="ChildFrm.cpp" />
     <ClCompile Include="ColourEdit.cpp" />
     <ClCompile Include="ctrl_gen.cpp" />
-    <ClCompile Include="ctrl_ins.cpp" />
     <ClCompile Include="ctrl_pat.cpp" />
     <ClCompile Include="ctrl_seq.cpp" />
     <ClCompile Include="DefaultVstEditor.cpp" />
@@ -454,7 +453,6 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MIDIMappingDialog.cpp" />
     <ClCompile Include="misc_util.cpp" />
-    <ClCompile Include="mixer\mixutil.cpp" />
     <ClCompile Include="Mod2wave.cpp" />
     <ClCompile Include="ModConvert.cpp" />
     <ClCompile Include="Moddoc.cpp" />
@@ -470,8 +468,6 @@
     <ClCompile Include="pervasives\debug.cpp" />
     <ClCompile Include="pervasives\pervasives.cpp" />
     <ClCompile Include="PSRatioCalc.cpp" />
-    <ClCompile Include="SampleEditorDialogs.cpp" />
-    <ClCompile Include="ScaleEnvPointsDlg.cpp" />
     <ClCompile Include="serialization_utils.cpp" />
     <ClCompile Include="serializers\it.cpp" />
     <ClCompile Include="serializers\legacy_util.cpp" />
@@ -489,7 +485,6 @@
     <ClCompile Include="tracker\orderlist.cpp" />
     <ClCompile Include="tracker\sample.cpp" />
     <ClCompile Include="view_gen.cpp" />
-    <ClCompile Include="view_ins.cpp" />
     <ClCompile Include="view_pat.cpp" />
     <ClCompile Include="VSTEditor.cpp" />
     <ClCompile Include="vstplug.cpp" />
@@ -729,13 +724,11 @@
     <ClInclude Include="mixgraph\core.hpp" />
     <ClInclude Include="mixgraph\vertex.hpp" />
     <ClInclude Include="mixgraph\vst_vertex.hpp" />
-    <ClInclude Include="mixer\mixutil.h" />
     <ClInclude Include="AbstractVstEditor.h" />
     <ClInclude Include="ChannelManagerDlg.h" />
     <ClInclude Include="ChildFrm.h" />
     <ClInclude Include="ColourEdit.h" />
     <ClInclude Include="ctrl_gen.h" />
-    <ClInclude Include="ctrl_ins.h" />
     <ClInclude Include="ctrl_pat.h" />
     <ClInclude Include="DefaultVstEditor.h" />
     <ClInclude Include="dlg_misc.h" />
@@ -763,8 +756,6 @@
     <ClInclude Include="pervasives\type.hpp" />
     <ClInclude Include="PSRatioCalc.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SampleEditorDialogs.h" />
-    <ClInclude Include="ScaleEnvPointsDlg.h" />
     <ClInclude Include="serialization_utils.h" />
     <ClInclude Include="pervasives\binaryparse.hpp" />
     <ClInclude Include="pervasives\binaryprint.hpp" />
@@ -788,7 +779,6 @@
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="view_gen.h" />
-    <ClInclude Include="view_ins.h" />
     <ClInclude Include="view_pat.h" />
     <ClInclude Include="VSTEditor.h" />
     <ClInclude Include="vstplug.h" />

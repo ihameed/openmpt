@@ -15,7 +15,6 @@
 
 #include "../mixgraph/constants.hpp"
 #include "../mixgraph/mixer.hpp"
-#include "../mixer/mixutil.h"
 
 // rewbs.resamplerConf
 #include "../MainFrm.h"
@@ -1538,7 +1537,7 @@ UINT module_renderer::CreateStereoMix(int count)
                 pOfsL = &pPlugin->nVolDecayL;
                 if (!(pPlugin->dwFlags & MIXPLUG_MIXREADY))
                 {
-                    modplug::mixer::stereo_fill(pbuffer, count, pOfsR, pOfsL);
+                    //modplug::mixer::stereo_fill(pbuffer, count, pOfsR, pOfsL);
                     pPlugin->dwFlags |= MIXPLUG_MIXREADY;
                 }
             }
@@ -1714,7 +1713,7 @@ void module_renderer::ProcessPlugins(UINT nCount)
             } else
             if (pState->nVolDecayR|pState->nVolDecayL)
             {
-                modplug::mixer::stereo_fill(pState->pMixBuffer, nCount, &pState->nVolDecayR, &pState->nVolDecayL);
+                //modplug::mixer::stereo_fill(pState->pMixBuffer, nCount, &pState->nVolDecayR, &pState->nVolDecayL);
                 //XXXih: indiana jones and the ancient mayan treasure
                 StereoMixToFloat(pState->pMixBuffer, pState->pOutBufferL, pState->pOutBufferR, nCount);
             } else
@@ -1855,8 +1854,6 @@ VOID module_renderer::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOu
     }
 #endif
 
-    modplug::mixer::stereo_mix_to_float(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
-
 }
 
 
@@ -1873,7 +1870,6 @@ VOID module_renderer::FloatToStereoMix(const float *pIn1, const float *pIn2, int
             return;
         }
     }
-    modplug::mixer::float_to_stereo_mix(pIn1, pIn2, pOut, nCount, m_pConfig->getFloatToInt());
 }
 
 
@@ -1897,7 +1893,6 @@ VOID module_renderer::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
             return;
         }
     }
-    modplug::mixer::mono_mix_to_float(pSrc, pOut, nCount, m_pConfig->getIntToFloat());
 
 }
 
@@ -1915,7 +1910,6 @@ VOID module_renderer::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
             return;
         }
     }
-    modplug::mixer::float_to_mono_mix(pIn, pOut, nCount, m_pConfig->getFloatToInt());
 }
 
 

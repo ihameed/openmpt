@@ -31,7 +31,6 @@ DAMAGE.
 
 #include "core.hpp"
 #include "../pervasives/pervasives.hpp"
-#include "../mixer/mixutil.h"
 #include "./source_vertex.hpp"
 
 #include <cstdio>
@@ -199,8 +198,6 @@ bool core::remove_vertex(id_t vertex_id) {
     return id_map_del(vertices, vertex_id);
 }
 
-
-
 inline void __mix_buffer_in_place(sample_t *mixtarget, const sample_t *source, const size_t num_samples) {
     for (size_t idx = 0; idx < num_samples; ++idx) {
         mixtarget[idx] += source[idx];
@@ -219,9 +216,7 @@ void __process(vertex *tail, const size_t num_samples) {
     }
 }
 
-
-
-void core::process(int *destbuf, const size_t num_samples, const sample_t float_to_int_scale, const sample_t int_to_float_scale) {
+void core::process(int *interleaved_out, const size_t num_samples, const sample_t float_to_int_scale, const sample_t int_to_float_scale) {
     memset(master_sink->channels[0], 0, sizeof(sample_t) * num_samples);
     memset(master_sink->channels[1], 0, sizeof(sample_t) * num_samples);
 
@@ -232,13 +227,23 @@ void core::process(int *destbuf, const size_t num_samples, const sample_t float_
     __process(master_sink, num_samples);
     //debug_log("process master vs child (left %f, right %f), (left %f, right %f)", left[0], right[0], channel_vertices[0]->channels[0][0], channel_vertices[0]->channels[0][1]);
 
-    modplug::mixer::float_to_stereo_mix(right, left, destbuf, num_samples, float_to_int_scale);
-    //modplug::mixer::float_to_stereo_mix(channel_vertices[0]->channels[0], channel_vertices[0]->channels[1], samples, num_samples, float_to_int_scale);
+    auto *dest = interleaved_out;
+    auto *r = right;
+    auto *l = left;
+    for (size_t i = 0; i < num_samples; ++i) {
+        *interleaved_out = static_cast<int>(*r * float_to_int_scale);
+        ++r;
+        ++interleaved_out;
+
+        *interleaved_out = static_cast<int>(*l * float_to_int_scale);
+        ++l;
+        ++interleaved_out;
+    };
 }
 
 void core::pre_process(const size_t num_samples) {
     auto clear_buffers = [&] (vertex *node) {
-        modplug::mixer::stereo_fill(node->ghetto_channels, num_samples, &node->ghetto_vol_decay_l, &node->ghetto_vol_decay_r);
+        memset(node->ghetto_channels, 0, sizeof(int) * num_samples * 2);
         memset(node->channels[0], 0, sizeof(sample_t) * num_samples);
         memset(node->channels[1], 0, sizeof(sample_t) * num_samples);
     };

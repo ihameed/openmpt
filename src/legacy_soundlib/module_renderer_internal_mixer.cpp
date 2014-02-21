@@ -14,7 +14,6 @@
 #include "../misc_util.h"
 
 #include "../mixgraph/constants.hpp"
-#include "../mixer/mixutil.h"
 #include "sndfile.h"
 #include "midi.h"
 #include "tuning.h"
@@ -262,7 +261,6 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     //XXXih: gnBitsPerSample shouldn't exist!
     deprecated_global_bits_per_sample = 16;
     unsigned char *buffer = static_cast<unsigned char *>(out_buffer);
-    LPCONVERTPROC clip_samples = modplug::mixer::clip_32_to_8;
     size_t max_samples;
     size_t sample_width;
     size_t num_samples;
@@ -276,9 +274,9 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
     m_nMixStat = 0;
     sample_width = deprecated_global_channels;
     switch (deprecated_global_bits_per_sample) {
-        case 16: sample_width *= 2; clip_samples = modplug::mixer::clip_32_to_16; break;
-        case 24: sample_width *= 3; clip_samples = modplug::mixer::clip_32_to_24; break;
-        case 32: sample_width *= 4; clip_samples = modplug::mixer::clip_32_to_32; break;
+        case 16: sample_width *= 2; break;
+        case 24: sample_width *= 3; break;
+        case 32: sample_width *= 4; break;
     }
 
     max_samples = out_buffer_length / sample_width;
@@ -318,8 +316,7 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         if (!computed_samples)
             break;
         num_samples = computed_samples;
-        // Resetting sound buffer
-        modplug::mixer::stereo_fill(MixSoundBuffer, num_samples, &gnDryROfsVol, &gnDryLOfsVol);
+        memset(MixSoundBuffer, 0, sizeof(int) * num_samples * 2);
 
         // ensure modplug::mixer::MIX_BUFFER_SIZE really is our bad_max buffer size
         ASSERT (computed_samples <= modplug::mixgraph::MIX_BUFFER_SIZE);
@@ -362,7 +359,16 @@ UINT module_renderer::ReadPattern(void *out_buffer, size_t out_buffer_length) {
         }
 
         // Perform clipping
-        buffer += clip_samples(buffer, MixSoundBuffer, total_num_samples);
+        //memcpy(buffer, MixSoundBuffer, total_num_samples * 4);
+        const auto truncate = [] (int16_t *out, int32_t *in, size_t num_samples) {
+            for (size_t i = 0; i < num_samples; ++i) {
+                *out = *in >> (16 - modplug::mixgraph::MIXING_ATTENUATION);
+                ++out;
+                ++in;
+            }
+        };
+        truncate((int16_t *)buffer, MixSoundBuffer, total_num_samples);
+        buffer += total_num_samples * 2;
 
         // Buffer ready
         uncomputed_samples -= computed_samples;
