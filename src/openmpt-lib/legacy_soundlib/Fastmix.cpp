@@ -377,7 +377,7 @@ signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH]; // rewbs.resamplerConf
 //////////////////////////////////////////////////////////
 // Interfaces
 
-typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::modchannel_t *, int *, int *);
+typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::voice_ty *, int *, int *);
 
 #define BEGIN_MIX_INTERFACE(func)\
     VOID MPPASMCALL func(modplug::tracker::modchannel_t *pChannel, int *pbuffer, int *pbufmax)\
@@ -1366,7 +1366,7 @@ UINT module_renderer::CreateStereoMix(int count)
     for (UINT nChn=0; nChn<m_nMixChannels; nChn++)
     {
         const LPMIXINTERFACE *pMixFuncTable;
-        modplug::tracker::modchannel_t * const pChannel = &Chn[ChnMix[nChn]];
+        modplug::tracker::voice_ty * const pChannel = &Chn[ChnMix[nChn]];
         LONG nSmpCount;
         int nsamples;
 
@@ -1377,7 +1377,7 @@ UINT module_renderer::CreateStereoMix(int count)
         auto herp_left = herp->channels[0];
         auto herp_right = herp->channels[1];
 
-        if (!pChannel->active_sample_data) continue;
+        if (!pChannel->active_sample_data.generic) continue;
         //nFlags |= GetResamplingFlag(pChannel);
         nsamples = count;
 
@@ -1429,7 +1429,7 @@ UINT module_renderer::CreateStereoMix(int count)
 
         if (nSmpCount <= 0) {
             // Stopping the channel
-            pChannel->active_sample_data = NULL;
+            pChannel->active_sample_data.generic = nullptr;
             pChannel->length = 0;
             pChannel->sample_position = 0;
             pChannel->fractional_sample_position = 0;
@@ -1494,7 +1494,7 @@ UINT module_renderer::CreateStereoMix(int count)
                 if (bitset_is_set(pChannel->flags, vflag_ty::NoteFade) && (!(pChannel->nFadeOutVol)))
                 {
                     pChannel->length = 0;
-                    pChannel->active_sample_data = NULL;
+                    pChannel->active_sample_data.generic = nullptr;
                 }
             }
         }
@@ -1504,7 +1504,7 @@ UINT module_renderer::CreateStereoMix(int count)
     return nchused;
 }
 
-UINT module_renderer::GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel)
+UINT module_renderer::GetResamplingFlag(const modplug::tracker::voice_ty *pChannel)
 //------------------------------------------------------------
 {
     if (pChannel->instrument) {

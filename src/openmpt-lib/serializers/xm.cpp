@@ -261,7 +261,7 @@ import_sample(
     ref.flags = sflags_ty();
     switch (header.width) {
     case xm::sample_width_ty::SixteenBit:
-        bitset_add(ref.flags, sflag_ty::SixteenBit);
+        ref.sample_tag = stag_ty::Int16;
         break;
     }
     switch (header.loop_type) {

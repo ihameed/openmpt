@@ -232,7 +232,7 @@ BOOL module_renderer::FadeSong(UINT msec)
     // Ramp everything down
     for (UINT noff=0; noff < m_nMixChannels; noff++)
     {
-        modplug::tracker::modchannel_t *pramp = &Chn[ChnMix[noff]];
+        modplug::tracker::voice_ty *pramp = &Chn[ChnMix[noff]];
         if (!pramp) continue;
         pramp->nNewLeftVol = pramp->nNewRightVol = 0;
         pramp->right_ramp = (-pramp->right_volume << modplug::mixgraph::VOLUME_RAMP_PRECISION) / nRampLength;
@@ -468,7 +468,7 @@ BOOL module_renderer::ProcessRow()
                                     Chn[i].loop_start = 0;
                                     Chn[i].loop_end = 0;
                                     Chn[i].instrument = nullptr;
-                                    Chn[i].sample_data = nullptr;
+                                    Chn[i].sample_data.generic = nullptr;
                                     Chn[i].sample = nullptr;
                                 }
                             }
@@ -576,7 +576,7 @@ BOOL module_renderer::ProcessRow()
             }
         }
         // Reset channel values
-        modplug::tracker::modchannel_t *pChn = Chn.data();
+        modplug::tracker::voice_ty *pChn = Chn.data();
         modplug::tracker::modevent_t *m = Patterns[m_nPattern] + m_nRow * m_nChannels;
         for (UINT nChn=0; nChn<m_nChannels; pChn++, nChn++, m++)
         {
@@ -696,7 +696,7 @@ BOOL module_renderer::ReadNote()
     ////////////////////////////////////////////////////////////////////////////////////
     // Update channels data
     m_nMixChannels = 0;
-    modplug::tracker::modchannel_t *current_vchan = Chn.data();
+    modplug::tracker::voice_ty *current_vchan = Chn.data();
     for (size_t vchan_idx = 0; vchan_idx < MAX_VIRTUAL_CHANNELS; vchan_idx++, current_vchan++)
     {
     skipchn:
@@ -1656,10 +1656,11 @@ BOOL module_renderer::ReadNote()
             bitset_remove(current_vchan->flags, vflag_ty::Loop);
         }
         current_vchan->nNewRightVol = current_vchan->nNewLeftVol = 0;
-        current_vchan->active_sample_data = ((current_vchan->sample_data) && (current_vchan->length) && (current_vchan->position_delta)) ? current_vchan->sample_data : NULL;
+        current_vchan->active_sample_data.generic =
+            ((current_vchan->sample_data.generic) && (current_vchan->length) && (current_vchan->position_delta))
+            ? current_vchan->sample_data.generic : nullptr;
         #pragma region HaveSampleData
-        if (current_vchan->active_sample_data)
-        {
+        if (current_vchan->active_sample_data.generic) {
             #pragma region DoVuMeterUpdate
             // Update VU-Meter (nRealVolume is 14-bit)
 #ifdef ENABLE_STEREOVU
@@ -1905,7 +1906,7 @@ BOOL module_renderer::ReadNote()
 
 #ifdef MODPLUG_TRACKER
 
-VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn)    //rewbs.VSTdelay: added arg
+VOID module_renderer::ProcessMidiOut(UINT nChn, modplug::tracker::voice_ty *pChn)    //rewbs.VSTdelay: added arg
 //----------------------------------------------------------
 {
     // Do we need to process midi?

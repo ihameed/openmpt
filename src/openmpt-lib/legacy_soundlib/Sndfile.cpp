@@ -1283,7 +1283,7 @@ void module_renderer::ResetChannelState(modplug::tracker::chnindex_t i, uint8_t 
         Chn[i].loop_start = 0;
         Chn[i].loop_end = 0;
         Chn[i].nROfs = Chn[i].nLOfs = 0;
-        Chn[i].sample_data = nullptr;
+        Chn[i].sample_data.generic = nullptr;
         Chn[i].sample = nullptr;
         Chn[i].instrument = nullptr;
         Chn[i].nCutOff = 0x7F;
@@ -1577,9 +1577,9 @@ UINT module_renderer::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, 
         bufcount = 0;
         {
             int8_t *p = (int8_t *)pSample;
-            int sinc = bitset_is_set(pSmp->flags, sflag_ty::SixteenBit) ? 2 : 1;
+            int sinc = pSmp->sample_tag == stag_ty::Int16 ? 2 : 1;
             int s_old = 0, s_ofs = (nFlags == RS_PCM8U) ? 0x80 : 0;
-            if (bitset_is_set(pSmp->flags, sflag_ty::SixteenBit)) p++;
+            if (pSmp->sample_tag == stag_ty::Int16) p++;
             for (UINT j=0; j<len; j++)
             {
                 int s_new = (int8_t)(*p);
@@ -1631,12 +1631,12 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
 
     UINT len = 0, mem = pSmp->length+6;
 
-    bitset_remove(pSmp->flags, sflag_ty::SixteenBit);
+    pSmp->sample_tag = stag_ty::Int8;
     bitset_remove(pSmp->flags, sflag_ty::Stereo);
     if (nFlags & RSF_16BIT)
     {
         mem *= 2;
-        bitset_add(pSmp->flags, sflag_ty::SixteenBit);
+        pSmp->sample_tag = stag_ty::Int16;
     }
     if (nFlags & RSF_STEREO)
     {
@@ -2044,7 +2044,7 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
     const auto loop = sflags_ty(sflag_ty::Loop);
     const auto test = bitset_set(bitset_set(loop, sflag_ty::BidiLoop), sflag_ty::Stereo);
     UINT len = pSmp->length;
-    if (bitset_is_set(pSmp->flags, sflag_ty::SixteenBit)) {
+    if (pSmp->sample_tag == stag_ty::Int16) {
         short int *pSample = (short int *)pSmp->sample_data.generic;
         // Adjust end of sample
         if (bitset_is_set(pSmp->flags, sflag_ty::Stereo)) {
@@ -2283,13 +2283,13 @@ bool module_renderer::DestroySample(modplug::tracker::sampleindex_t nSample)
     LPSTR pSample = pSmp->sample_data.generic;
     pSmp->sample_data.generic = nullptr;
     pSmp->length = 0;
-    bitset_remove(pSmp->flags, sflag_ty::SixteenBit);
+    pSmp->sample_tag = stag_ty::Int8;
     for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     {
-        if (Chn[i].sample_data == pSample)
+        if (Chn[i].sample_data.generic == pSample)
         {
             Chn[i].sample_position = Chn[i].length = 0;
-            Chn[i].sample_data = Chn[i].active_sample_data = NULL;
+            Chn[i].sample_data.generic = Chn[i].active_sample_data.generic = nullptr;
         }
     }
     modplug::legacy_soundlib::free_sample(pSample);
@@ -2311,7 +2311,7 @@ bool module_renderer::MoveSample(modplug::tracker::sampleindex_t from, modplug::
 
     pFrom->sample_data.generic = nullptr;
     pFrom->length = 0;
-    bitset_remove(pFrom->flags, sflag_ty::SixteenBit);
+    pFrom->sample_tag = stag_ty::Int8;
 
     return true;
 }

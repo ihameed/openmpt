@@ -1016,11 +1016,12 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                 {
                     flags += 5;
                     if (pis->flags & 4 && pifh->cwtv >= 0x214) flags |= RSF_STEREO;    // some old version of IT didn't clear the stereo flag when importing samples. Luckily, all other trackers are identifying as IT 2.14+, so let's check for old IT versions.
-                    bitset_add(pSmp->flags, sflag_ty::SixteenBit);
+                    pSmp->sample_tag = stag_ty::Int16;
                     // IT 2.14 16-bit packed sample?
                     if (pis->flags & 8) flags = ((pifh->cmwt >= 0x215) && (pis->cvt & 4)) ? RS_IT21516 : RS_IT21416;
                 } else    // 8-bit
                 {
+                    pSmp->sample_tag = stag_ty::Int8;
                     if (pis->flags & 4 && pifh->cwtv >= 0x214) flags |= RSF_STEREO;    // some old version of IT didn't clear the stereo flag when importing samples. Luckily, all other trackers are identifying as IT 2.14+, so let's check for old IT versions.
                     if (pis->cvt == 0xFF) flags = RS_ADPCM4; else
                     // IT 2.14 8-bit packed sample?
@@ -1895,7 +1896,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
                     flags = RS_STPCM8S;
                     itss.flags |= 0x04;
                 }
-                if (bitset_is_set(psmp->flags, sflag_ty::SixteenBit))
+                if (psmp->sample_tag == stag_ty::Int16)
                 {
                     itss.flags |= 0x02;
                     flags = bitset_is_set(psmp->flags, sflag_ty::Stereo) ? RS_STPCM16S : RS_PCM16S;
@@ -2465,7 +2466,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
                 flags = RS_STPCM8S;
                 itss.flags |= 0x04;
             }
-            if (bitset_is_set(psmp->flags, sflag_ty::SixteenBit)) {
+            if (psmp->sample_tag == stag_ty::Int16) {
                 itss.flags |= 0x02;
                 flags = bitset_is_set(psmp->flags, sflag_ty::Stereo) ? RS_STPCM16S : RS_PCM16S;
             }

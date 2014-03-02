@@ -198,8 +198,8 @@ modplug::tracker::chnindex_t CModDoc::ReArrangeChannels(const vector<modplug::tr
             }
     }
 
-    modplug::tracker::modchannel_t chns[MAX_BASECHANNELS];
-    modplug::tracker::MODCHANNELSETTINGS settings[MAX_BASECHANNELS];
+    modplug::tracker::voice_ty chns[MAX_BASECHANNELS];
+    modplug::tracker::initial_voice_settings_ty settings[MAX_BASECHANNELS];
     vector<UINT> recordStates(GetNumChannels(), 0);
     vector<bool> chnMutePendings(GetNumChannels(), false);
 

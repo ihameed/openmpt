@@ -33,11 +33,12 @@ bitset_add(bitset<Ty> &set, const Ty val) {
 
 template <typename Ty>
 void __forceinline
-bitset_remove(bitset<Ty> set, const Ty val) {
+bitset_remove(bitset<Ty> &set, const Ty val) {
     typedef typename bitset<Ty>::underlying_type wrapped;
     set._internal_val_ = static_cast<Ty>(
         static_cast<wrapped>(set._internal_val_) &
         ~static_cast<wrapped>(val));
+    printf("%p", &set._internal_val_);
 }
 
 template <typename Ty>
@@ -62,7 +63,7 @@ bitset_intersects(const bitset<Ty> x, const bitset<Ty> y) {
 
 template <typename Ty>
 bitset<Ty> __forceinline
-bitset_merge(const bitset<Ty> x, const bitset<Ty> y) {
+bitset_union(const bitset<Ty> x, const bitset<Ty> y) {
     typedef typename bitset<Ty>::underlying_type wrapped;
     return bitset<Ty>(
         static_cast<wrapped>(x._internal_val_) |

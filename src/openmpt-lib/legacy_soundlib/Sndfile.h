@@ -62,7 +62,7 @@ const uint32_t m_nFreqFactor = 128;
 
 //#define ANOS 1
 int32_t __forceinline
-GetSampleCount(modplug::tracker::modchannel_t *pChn, int32_t nSamples, bool bITBidiMode)
+GetSampleCount(modplug::tracker::voice_ty *pChn, int32_t nSamples, bool bITBidiMode)
 {
     using namespace modplug::pervasives;
     using namespace modplug::tracker;
@@ -405,7 +405,7 @@ public:
     UINT ReadPattern(void * const, const size_t);
     UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, module_renderer *, uint32_t *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
-    UINT GetResamplingFlag(const modplug::tracker::modchannel_t *pChannel);
+    UINT GetResamplingFlag(const modplug::tracker::voice_ty *pChannel);
     BOOL FadeSong(UINT msec);
     BOOL GlobalFadeSong(UINT msec);
     UINT GetTotalTickCount() const { return m_nTotalCount; }
@@ -437,7 +437,7 @@ public:
     UINT GetNNAChannel(UINT nChn) const;
     void CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut);
     void NoteChange(UINT nChn, int note, bool bPorta = false, bool bResetEnv = true, bool bManual = false);
-    void InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT instr, bool bPorta = false, bool bUpdVol = true, bool bResetEnv = true);
+    void InstrumentChange(modplug::tracker::voice_ty *pChn, UINT instr, bool bPorta = false, bool bUpdVol = true, bool bResetEnv = true);
 
     // Channel Effects
     void KeyOff(UINT nChn);
@@ -447,36 +447,36 @@ public:
 
 private:
     // Channel Effects
-    void PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param, const bool fineAsRegular = false);
-    void PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param, const bool fineAsRegular = false);
-    void MidiPortamento(modplug::tracker::modchannel_t *pChn, int param);
-    void FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param);
-    void FinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param);
-    void ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param);
-    void ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param);
-    void NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int sign);
-    void TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param);
-    void Vibrato(modplug::tracker::modchannel_t *pChn, UINT param);
-    void FineVibrato(modplug::tracker::modchannel_t *pChn, UINT param);
-    void VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT param);
-    void PanningSlide(modplug::tracker::modchannel_t *pChn, UINT param);
-    void ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT param);
-    void FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT param);
-    void FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT param);
-    void Tremolo(modplug::tracker::modchannel_t *pChn, UINT param);
-    void Panbrello(modplug::tracker::modchannel_t *pChn, UINT param);
+    void PortamentoUp(modplug::tracker::voice_ty *pChn, UINT param, const bool fineAsRegular = false);
+    void PortamentoDown(modplug::tracker::voice_ty *pChn, UINT param, const bool fineAsRegular = false);
+    void MidiPortamento(modplug::tracker::voice_ty *pChn, int param);
+    void FinePortamentoUp(modplug::tracker::voice_ty *pChn, UINT param);
+    void FinePortamentoDown(modplug::tracker::voice_ty *pChn, UINT param);
+    void ExtraFinePortamentoUp(modplug::tracker::voice_ty *pChn, UINT param);
+    void ExtraFinePortamentoDown(modplug::tracker::voice_ty *pChn, UINT param);
+    void NoteSlide(modplug::tracker::voice_ty *pChn, UINT param, int sign);
+    void TonePortamento(modplug::tracker::voice_ty *pChn, UINT param);
+    void Vibrato(modplug::tracker::voice_ty *pChn, UINT param);
+    void FineVibrato(modplug::tracker::voice_ty *pChn, UINT param);
+    void VolumeSlide(modplug::tracker::voice_ty *pChn, UINT param);
+    void PanningSlide(modplug::tracker::voice_ty *pChn, UINT param);
+    void ChannelVolSlide(modplug::tracker::voice_ty *pChn, UINT param);
+    void FineVolumeUp(modplug::tracker::voice_ty *pChn, UINT param);
+    void FineVolumeDown(modplug::tracker::voice_ty *pChn, UINT param);
+    void Tremolo(modplug::tracker::voice_ty *pChn, UINT param);
+    void Panbrello(modplug::tracker::voice_ty *pChn, UINT param);
     void RetrigNote(UINT nChn, int param, UINT offset=0);  //rewbs.volOffset: added last param
     void SampleOffset(UINT nChn, UINT param, bool bPorta);    //rewbs.volOffset: moved offset code to own method
     void NoteCut(UINT nChn, UINT nTick);
-    int PatternLoop(modplug::tracker::modchannel_t *, UINT param);
+    int PatternLoop(modplug::tracker::voice_ty *, UINT param);
     void ExtendedMODCommands(UINT nChn, UINT param);
     void ExtendedS3MCommands(UINT nChn, UINT param);
-    void ExtendedChannelEffect(modplug::tracker::modchannel_t *, UINT param);
-    inline void InvertLoop(modplug::tracker::modchannel_t* pChn);
+    void ExtendedChannelEffect(modplug::tracker::voice_ty *, UINT param);
+    inline void InvertLoop(modplug::tracker::voice_ty* pChn);
     void ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro, UINT param = 0);
-    void SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool bReset, int flt_modifier = 256) const;
+    void SetupChannelFilter(modplug::tracker::voice_ty *pChn, bool bReset, int flt_modifier = 256) const;
     // Low-Level effect processing
-    void DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSlide);
+    void DoFreqSlide(modplug::tracker::voice_ty *pChn, LONG nFreqSlide);
     void GlobalVolSlide(UINT param, UINT * nOldGlobalVolSlide);
     uint32_t IsSongFinished(UINT nOrder, UINT nRow) const;
     void UpdateTimeSignature();
@@ -534,7 +534,7 @@ public:
     uint32_t CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
 #endif
 #ifdef MODPLUG_TRACKER
-    VOID ProcessMidiOut(UINT nChn, modplug::tracker::modchannel_t *pChn);            //rewbs.VSTdelay : added arg.
+    VOID ProcessMidiOut(UINT nChn, modplug::tracker::voice_ty *pChn);            //rewbs.VSTdelay : added arg.
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
@@ -576,13 +576,13 @@ protected:
 
 public:
     int GetVolEnvValueFromPosition(int position, modplug::tracker::modinstrument_t* pIns) const;
-    void ResetChannelEnvelopes(modplug::tracker::modchannel_t *pChn);
+    void ResetChannelEnvelopes(modplug::tracker::voice_ty *pChn);
     void ResetChannelEnvelope(modplug::tracker::modenvstate_t &env);
     void SetDefaultInstrumentValues(modplug::tracker::modinstrument_t *pIns);
 private:
     UINT  __cdecl GetChannelPlugin(UINT nChan, bool respectMutes) const;
     UINT  __cdecl GetActiveInstrumentPlugin(UINT nChan, bool respectMutes) const;
-    UINT GetBestMidiChan(const modplug::tracker::modchannel_t *pChn) const;
+    UINT GetBestMidiChan(const modplug::tracker::voice_ty *pChn) const;
 
     void HandlePatternTransitionEvents();
     void BuildDefaultInstrument();
@@ -655,8 +655,8 @@ public: //Get 'controllers'
     const CMIDIMapper& GetMIDIMapper() const {return m_MIDIMapper;}
 
 private: //Effect functions
-    void PortamentoMPT(modplug::tracker::modchannel_t*, int);
-    void PortamentoFineMPT(modplug::tracker::modchannel_t*, int);
+    void PortamentoMPT(modplug::tracker::voice_ty*, int);
+    void PortamentoFineMPT(modplug::tracker::voice_ty*, int);
 
 private: //Misc private methods.
     static void SetModSpecsPointer(const CModSpecifications*& pModSpecs, const MODTYPE type);
@@ -733,10 +733,10 @@ public:    // for Editing
     std::array<uint32_t, MAX_VIRTUAL_CHANNELS> ChnMix;
 
     // Mixing channels... First m_nChannel channels are master channels (i.e. they are never NNA channels)!
-    std::array<modplug::tracker::modchannel_t, MAX_VIRTUAL_CHANNELS> Chn;
+    std::array<modplug::tracker::voice_ty, MAX_VIRTUAL_CHANNELS> Chn;
 
     // Initial channels settings
-    std::array<modplug::tracker::MODCHANNELSETTINGS, MAX_BASECHANNELS> ChnSettings;
+    std::array<modplug::tracker::initial_voice_settings_ty, MAX_BASECHANNELS> ChnSettings;
 
     // Patterns
     CPatternContainer Patterns;

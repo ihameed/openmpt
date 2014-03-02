@@ -14,6 +14,8 @@ ARITHMETIC_TYPE(sampleoffset_t);
 INCR_DECR_TYPE(sampleoffset_t);
 */
 
+typedef int32_t fixedpt_t;
+
 typedef uint32_t rowindex_t;
 const rowindex_t RowIndexMax     = UINT32_MAX;
 const rowindex_t RowIndexInvalid = RowIndexMax;

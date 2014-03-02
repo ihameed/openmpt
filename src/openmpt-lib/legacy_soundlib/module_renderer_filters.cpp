@@ -73,7 +73,7 @@ uint32_t module_renderer::CutOffToFrequency(UINT nCutOff, int flt_modifier) cons
 
 
 // Simple 2-poles resonant filter
-void module_renderer::SetupChannelFilter(modplug::tracker::modchannel_t *pChn, bool bReset, int flt_modifier) const
+void module_renderer::SetupChannelFilter(modplug::tracker::voice_ty *pChn, bool bReset, int flt_modifier) const
 //----------------------------------------------------------------------------------------
 {
     float fs = (float)deprecated_global_mixing_freq;

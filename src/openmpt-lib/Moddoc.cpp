@@ -114,7 +114,7 @@ CModDoc::CModDoc()
     m_bsInstrumentModified.reset();
 
 #ifdef _DEBUG
-    modplug::tracker::modchannel_t *p = m_SndFile.Chn.data();
+    modplug::tracker::voice_ty *p = m_SndFile.Chn.data();
     if (((uint32_t)p) & 7) Log("modplug::tracker::modchannel_t is not aligned (0x%08X)\n", p);
 #endif
 // Fix: save pattern scrollbar position when switching to other tab
@@ -719,7 +719,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             nChn = FindAvailableChannel();
         //}
 
-        modplug::tracker::modchannel_t *pChn = &m_SndFile.Chn[nChn];
+        modplug::tracker::voice_ty *pChn = &m_SndFile.Chn[nChn];
 
         //stop channel, just in case.
         if (pChn->length)
@@ -732,6 +732,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             voicef_unset_smpf(pChn->flags),
             vflag_ty::ScrubBackwards),
             vflag_ty::Mute);
+        pChn->sample_tag = stag_ty::Int8;
         pChn->nGlobalVol = 64;
         pChn->nInsVol = 64;
         pChn->nPan = 128;
@@ -751,16 +752,17 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         else if ((nsmp) && (nsmp < MAX_SAMPLES))    // Or set sample
         {
             modplug::tracker::modsample_t *pSmp = &m_SndFile.Samples[nsmp];
-            pChn->active_sample_data = pSmp->sample_data.generic;
+            pChn->active_sample_data.generic = pSmp->sample_data.generic;
             pChn->instrument = nullptr;
             pChn->sample = pSmp;
-            pChn->sample_data = pSmp->sample_data.generic;
+            pChn->sample_data = pSmp->sample_data;
             pChn->nFineTune = pSmp->nFineTune;
             pChn->nC5Speed = pSmp->c5_samplerate;
             pChn->sample_position = pChn->fractional_sample_position = pChn->length = 0;
             pChn->loop_start = pSmp->loop_start;
             pChn->loop_end = pSmp->loop_end;
             pChn->flags = bitset_unset(voicef_from_smpf(pSmp->flags), vflag_ty::Mute);
+            pChn->sample_tag = pSmp->sample_tag;
             pChn->nPan = 128;
             if (bitset_is_set(pSmp->flags, sflag_ty::ForcedPanning)) pChn->nPan = pSmp->default_pan;
             pChn->nInsVol = pSmp->global_volume;
@@ -841,9 +843,7 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
         //end rewbs.vstiLive
 
         END_CRITICAL();
-
-    } else
-    {
+    } else {
         BEGIN_CRITICAL();
         m_SndFile.NoteChange(nChn, note);
         if (bpause) m_SndFile.m_dwSongFlags |= SONG_PAUSED;
@@ -881,7 +881,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
     }
     //end rewbs.vstiLive
 
-    modplug::tracker::modchannel_t *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
+    modplug::tracker::voice_ty *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
     for (UINT i=m_SndFile.m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, pChn++) if (!pChn->parent_channel)
     {
         const auto mask = bFade
@@ -910,7 +910,7 @@ BOOL CModDoc::NoteOff(UINT note, BOOL bFade, UINT nins, UINT nCurrentChn) //rewb
 BOOL CModDoc::IsNotePlaying(UINT note, UINT nsmp, UINT nins)
 //----------------------------------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
+    modplug::tracker::voice_ty *pChn = &m_SndFile.Chn[m_SndFile.m_nChannels];
     for (UINT i=m_SndFile.m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, pChn++) if (!pChn->parent_channel)
     {
         if ( (pChn->length) &&
@@ -3389,7 +3389,7 @@ UINT CModDoc::FindAvailableChannel()
     // Search for available channel
     for (modplug::tracker::chnindex_t j = m_SndFile.m_nChannels; j < MAX_VIRTUAL_CHANNELS; j++)
     {
-        modplug::tracker::modchannel_t *p = &m_SndFile.Chn[j];
+        modplug::tracker::voice_ty *p = &m_SndFile.Chn[j];
         if (!p->length) {
             return j;
         } else if (bitset_is_set(p->flags, vflag_ty::NoteFade)) {

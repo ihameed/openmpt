@@ -228,7 +228,6 @@ sflags_of_sample_flags(const bitset<it::sample_flags_ty> val) {
     add(sample_flags_ty::SusLoopEnabled, sflag_ty::SustainLoop);
     add(sample_flags_ty::PingPongLoop, sflag_ty::BidiLoop);
     add(sample_flags_ty::PingPongSusLoop, sflag_ty::BidiSustainLoop);
-    add(sample_flags_ty::SixteenBit, sflag_ty::SixteenBit);
     add(sample_flags_ty::Stereo, sflag_ty::Stereo);
     return ret;
 }
@@ -376,6 +375,8 @@ import_sample(modsample_t &ref, const it::sample_ty &sample) {
     ref.vibrato_rate   = sample.vibrato_rate;
     ref.vibrato_type   = 0; //sample.vibrato_waveform;
     ref.flags          = sflags_of_sample_flags(sample.flags);
+    ref.sample_tag     = bitset_is_set(sample.flags, it::sample_flags_ty::SixteenBit)
+        ? stag_ty::Int16 : stag_ty::Int8;
     auto bytelength = sample.num_frames;
     if (bitset_is_set(sample.flags, it::sample_flags_ty::HasSampleData)) {
         ref.length = sample.num_frames;

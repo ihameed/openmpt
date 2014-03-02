@@ -1127,11 +1127,14 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                 UINT nSmp = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
-                    modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
+                    modplug::tracker::voice_ty *pChn = &renderer->Chn[k];
                     p->dwPos[k] = 0;
-                    if ((nSmp) && (nSmp <= renderer->m_nSamples) && (pChn->length)
-                     && (pChn->sample_data) && (pChn->sample_data == renderer->Samples[nSmp].sample_data.generic)
-                     && ((!bitset_is_set(pChn->flags, vflag_ty::NoteFade)) || (pChn->nFadeOutVol)))
+                    if ( (nSmp) &&
+                         (nSmp <= renderer->m_nSamples) &&
+                         (pChn->length) &&
+                         (pChn->sample_data.generic) &&
+                         (pChn->sample_data.generic == renderer->Samples[nSmp].sample_data.generic) &&
+                         ((!bitset_is_set(pChn->flags, vflag_ty::NoteFade)) || (pChn->nFadeOutVol)) )
                     {
                         p->dwPos[k] = MPTNOTIFY_POSVALID | (uint32_t)(pChn->sample_position);
                     }
@@ -1142,7 +1145,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                 UINT nIns = m_dwNotifyType & 0xFFFF;
                 for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
-                    modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
+                    modplug::tracker::voice_ty *pChn = &renderer->Chn[k];
                     p->dwPos[k] = 0;
                     if ((nIns) && (nIns <= renderer->m_nInstruments) && (pChn->length)
                      && (pChn->instrument) && (pChn->instrument == renderer->Instruments[nIns])
@@ -1166,7 +1169,7 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
             {
                 for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
                 {
-                    modplug::tracker::modchannel_t *pChn = &renderer->Chn[k];
+                    modplug::tracker::voice_ty *pChn = &renderer->Chn[k];
                     UINT vul = pChn->nLeftVU;
                     UINT vur = pChn->nRightVU;
                     p->dwPos[k] = (vul << 8) | (vur);

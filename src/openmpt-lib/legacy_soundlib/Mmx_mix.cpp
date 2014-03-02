@@ -118,10 +118,10 @@ uint32_t module_renderer::InitSysInfo()
 
 #ifdef _DEBUG
     // Must be aligned on 32 bytes for best performance
-    if (sizeof(modplug::tracker::modchannel_t) & 0x1F)
+    if (sizeof(modplug::tracker::voice_ty) & 0x1F)
     {
         CHAR s[64];
-        wsprintf(s, "modplug::tracker::modchannel_t not aligned: sizeof(modplug::tracker::modchannel_t) = %d", sizeof(modplug::tracker::modchannel_t));
+        wsprintf(s, "modplug::tracker::modchannel_t not aligned: sizeof(modplug::tracker::modchannel_t) = %d", sizeof(modplug::tracker::voice_ty));
         ::MessageBox(NULL, s, NULL, MB_OK|MB_ICONEXCLAMATION); //disabled by rewbs
     }
     uint32_t dwFastSinc = (uint32_t)(LPVOID)gFastSinc;

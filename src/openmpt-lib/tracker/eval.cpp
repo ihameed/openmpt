@@ -80,7 +80,7 @@ eval_row(eval_state_ty &state) {
 }
 
 void inline
-apply_pan_swing(modchannel_t &channel) {
+apply_pan_swing(voice_ty &channel) {
     channel.nPan += channel.nPanSwing;
     channel.nPan = clamp(channel.nPan, 0, 256);
     channel.nPanSwing = 0;
@@ -88,26 +88,26 @@ apply_pan_swing(modchannel_t &channel) {
 }
 
 void inline
-apply_vol_swing(modchannel_t &channel) {
+apply_vol_swing(voice_ty &channel) {
     channel.nVolume += channel.nVolSwing;
     channel.nVolume = clamp(channel.nVolume, 0, 256);
     channel.nVolSwing = 0;
 }
 
 void inline
-apply_tremolo(modchannel_t &channel) {
+apply_tremolo(voice_ty &channel) {
 }
 
 void inline
-apply_tremor(modchannel_t &channel) {
+apply_tremor(voice_ty &channel) {
 }
 
 void inline
-apply_arpeggio(modchannel_t &channel) {
+apply_arpeggio(voice_ty &channel) {
 }
 
 void inline
-clamp_freq_to_amiga_limits(modchannel_t &channel) {
+clamp_freq_to_amiga_limits(voice_ty &channel) {
 }
 
 int inline
@@ -116,7 +116,7 @@ env_value_linear_interp(modenvelope_t &env, modenvstate_t &pos) {
 }
 
 int inline
-apply_vol_env(int vol, modchannel_t &channel, const modinstrument_t &instr) {
+apply_vol_env(int vol, voice_ty &channel, const modinstrument_t &instr) {
     const bool should_process =
         bitset_is_set(channel.flags, vflag_ty::VolEnvOn) ||
         (channel.instrument->volume_envelope.flags & ENV_ENABLED) ||
@@ -131,7 +131,7 @@ apply_vol_env(int vol, modchannel_t &channel, const modinstrument_t &instr) {
 }
 
 int inline
-apply_instrument(int vol, modchannel_t &channel) {
+apply_instrument(int vol, voice_ty &channel) {
     const auto instr = channel.instrument;
     if (instr) {
         apply_vol_env(vol, channel, *instr);
@@ -140,7 +140,7 @@ apply_instrument(int vol, modchannel_t &channel) {
 }
 
 void inline
-eval_channel(eval_state_ty &state, modchannel_t &channel) {
+eval_channel(eval_state_ty &state, voice_ty &channel) {
     channel.position_delta = 0;
     channel.nRealVolume = 0;
 
@@ -166,7 +166,7 @@ eval_channels(eval_state_ty &state) {
 }
 
 void
-init_chan_from_settings(modchannel_t &dest, const MODCHANNELSETTINGS &src) {
+init_chan_from_settings(voice_ty &dest, const initial_voice_settings_ty &src) {
     dest.nGlobalVol = src.nVolume;
     dest.nVolume = src.nVolume;
     dest.nPan = src.nPan;
@@ -181,7 +181,7 @@ init_chan_from_settings(modchannel_t &dest, const MODCHANNELSETTINGS &src) {
         dest.loop_start = 0;
         dest.loop_end = 0;
         dest.instrument = nullptr;
-        dest.sample_data = nullptr;
+        dest.sample_data.generic = nullptr;
         dest.sample = nullptr;
     }
 }
@@ -229,7 +229,7 @@ calc_safe_frames(const fixedpt_t pos_dt, const int32_t frame_count) {
 }
 
 void
-advance_silently(modchannel_t &channel, const int32_t frame_count) {
+advance_silently(voice_ty &channel, const int32_t frame_count) {
     const auto delta = channel.position_delta * frame_count +
         static_cast<int32_t>(channel.fractional_sample_position);
     channel.fractional_sample_position = static_cast<uint32_t>(delta) & 0xffff;
@@ -248,7 +248,7 @@ generate_frames(
     uint32_t channels_used = 0;
     for (size_t idx = 0; idx < mix_channels; ++idx) {
         const auto channel = &(*state.channels)[(*state.mix_channels)[idx]];
-        if (!channel->active_sample_data) continue;
+        if (!channel->active_sample_data.generic) continue;
         ++channels_used;
 
         const auto parent_idx = channel->parent_channel

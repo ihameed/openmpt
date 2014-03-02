@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "tracker.hpp"
 #include "voice.hpp"
 
 namespace modplug {
@@ -23,7 +24,6 @@ voicef_from_smpf(const sflags_ty smpflags) {
     const auto set = [&] (const sflag_ty sf, const vflag_ty vf) {
         if (bitset_is_set(smpflags, sf)) bitset_add(ret, vf);
     };
-    set(sflag_ty::SixteenBit, vflag_ty::SixteenBit);
     set(sflag_ty::Loop, vflag_ty::Loop);
     set(sflag_ty::BidiLoop, vflag_ty::BidiLoop);
     set(sflag_ty::SustainLoop, vflag_ty::SustainLoop);
@@ -35,8 +35,7 @@ voicef_from_smpf(const sflags_ty smpflags) {
 
 vflags_ty
 voicef_unset_smpf(const vflags_ty vf) {
-    auto ret = bitset_unset(vf, vflag_ty::SixteenBit);
-    bitset_remove(ret, vflag_ty::SixteenBit);
+    auto ret = bitset_unset(vf, vflag_ty::Loop);
     bitset_remove(ret, vflag_ty::Loop);
     bitset_remove(ret, vflag_ty::BidiLoop);
     bitset_remove(ret, vflag_ty::SustainLoop);
@@ -76,5 +75,18 @@ voicef_from_oldchn(const uint32_t old) {
     return ret;
 }
 
+void
+voice_ty::ClearRowCmd() {
+    nRowNote = NoteNone; nRowInstr = 0;
+    nRowVolCmd = VolCmdNone; nRowVolume = 0;
+    nRowCommand = CmdNone; nRowParam = 0;
+}
+
+uint32_t
+voice_ty::GetVSTVolume() { 
+    return instrument ? instrument->global_volume*4 : nVolume;
+}
+
 }
 }
+

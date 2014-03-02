@@ -43,9 +43,21 @@ sample_channels(const modsample_t &smp) {
 }
 
 size_t
+sample_width(const modsample_t &smp) {
+    switch (smp.sample_tag) {
+    case stag_ty::Int8: return 1;
+    case stag_ty::Int16: return 2;
+    case stag_ty::Int24: return 4;
+    case stag_ty::Int32: return 4;
+    case stag_ty::Fp32: return 4;
+    case stag_ty::Fp64: return 8;
+    default: assert(false); return 0;
+    }
+}
+
+size_t
 sample_bytes_per_frame(const modsample_t &smp) {
-    const auto width = bitset_is_set(smp.flags, sflag_ty::SixteenBit) ? 2 : 1;
-    return width * sample_channels(smp);
+    return sample_width(smp) * sample_channels(smp);
 }
 
 size_t

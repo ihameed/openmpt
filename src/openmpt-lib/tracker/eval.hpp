@@ -58,9 +58,9 @@ struct eval_state_ty {
     tempo_mode_ty tempo_mode;
     bool processing_first_tick;
 
-    std::array<modchannel_t, MAX_VIRTUAL_CHANNELS> *channels;
+    std::array<voice_ty, MAX_VIRTUAL_CHANNELS> *channels;
     std::array<uint32_t, MAX_VIRTUAL_CHANNELS> *mix_channels;
-    std::array<MODCHANNELSETTINGS, MAX_BASECHANNELS> *chan_settings;
+    std::array<initial_voice_settings_ty, MAX_BASECHANNELS> *chan_settings;
 
     pattern_ty *patterns;
 
@@ -73,7 +73,7 @@ fp64_of_16_16(const int32_t val) {
 }
 
 void
-advance_silently(modchannel_t &, const int32_t);
+advance_silently(voice_ty &, const int32_t);
 
 uint32_t
 eval_pattern(int16_t * const, const size_t, eval_state_ty &);

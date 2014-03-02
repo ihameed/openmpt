@@ -25,7 +25,9 @@ mymax(const Ty &x, const Ty &y) {
 const std::string outpath1 = "D:\\Users\\imran\\hugeout.wav";
 const std::string outpath2 = "D:\\Users\\imran\\hugeout_orig.wav";
 
-using namespace modplug::mixgraph;
+using modplug::mixgraph::resample_and_mix_windowed_sinc;
+using modplug::mixgraph::upsample_sinc_table;
+using modplug::mixgraph::downsample_sinc_table;
 using namespace modplug::tracker;
 using namespace modplug::pervasives;
 
@@ -135,13 +137,13 @@ load_sample(const std::string &path) {
 template <typename Ty>
 void
 update_spill_buf_bidi(
-    const modchannel_t &chan, sample_t *dst, int32_t offset, int32_t direction)
+    const voice_ty &chan, sample_t *dst, int32_t offset, int32_t direction)
 {
-    const auto buf = reinterpret_cast<const Ty * const>(chan.active_sample_data);
+    const auto buf = chan.active_sample_data.int16;
     const int32_t loop_end = chan.loop_end;
     const int32_t loop_start = chan.loop_start;
     for (size_t i = 0; i < SpillMax; ++i) {
-        dst[i] = buf[offset] * NORM_INT16;
+        dst[i] = buf[offset] * NormInt16;
         if (offset >= (loop_end - 1)) {
             offset = loop_end - 2;
             direction = -1;
@@ -157,13 +159,13 @@ update_spill_buf_bidi(
 template <typename Ty>
 void
 update_spill_buf_fwd(
-    const modchannel_t &chan, sample_t *dst, int32_t offset, int32_t direction)
+    const voice_ty &chan, sample_t *dst, int32_t offset, int32_t direction)
 {
-    const auto buf = reinterpret_cast<const Ty * const>(chan.active_sample_data);
+    const auto buf = chan.active_sample_data.int16;
     const int32_t loop_end = chan.loop_end;
     const int32_t loop_start = chan.loop_start;
     for (size_t i = 0; i < SpillMax; ++i) {
-        dst[i] = buf[offset] * NORM_INT16;
+        dst[i] = buf[offset] * NormInt16;
         if (offset >= (loop_end - 1)) offset = loop_start;
         else if (offset <= loop_start) offset = loop_end - 1;
         else offset += direction;
@@ -172,8 +174,8 @@ update_spill_buf_fwd(
 
 template <typename Ty>
 void
-update_spill_bufs_in_place(modchannel_t &chan) {
-    if (chan.active_sample_data) {
+update_spill_bufs_in_place(voice_ty &chan) {
+    if (chan.active_sample_data.generic) {
         const bool valid_bidi_loop =
             bitset_is_set(chan.flags, vflag_ty::ScrubBackwards) &&
             (chan.length > 2);
@@ -196,30 +198,30 @@ update_spill_bufs_in_place(modchannel_t &chan) {
     memset(chan.spill_fwd, 0, SpillMax * sizeof(double));
 }
 
-modchannel_t
+voice_ty
 sample_to_channel(const sample_ty &val) {
-    modchannel_t ret = { 0 };
+    voice_ty ret = { 0 };
     ret.m_Freq = 44100;
-    ret.flags = vflags_ty(vflag_ty::SixteenBit);
+    ret.sample_tag = stag_ty::Int16;
     ret.length = val.num_frames;
     ret.loop_start = 0;
     ret.loop_end = 0;
     ret.left_volume = 4096;
     ret.right_volume = 4096;
     ret.nFilter_A0 = 1;
-    ret.active_sample_data = reinterpret_cast<char *>(val.buf);
-    ret.sample_data = reinterpret_cast<char *>(val.buf);
+    ret.active_sample_data.int16 = val.buf;
+    ret.sample_data.int16 = val.buf;
     return ret;
 }
 
-const size_t TestChunkSize = 32;
-//const size_t TestChunkSize = 1024 * 1024 * 50;
+//const size_t TestChunkSize = 32;
+const size_t TestChunkSize = 1024 * 1024 * 50;
 const int LoopCount = 1024 * 1024 * 50;
 //const int LoopCount = 40;
-#define USE_COUNT 1
+#define USE_COUNT 0
 
 void
-test_resample(const modchannel_t &chan_, outbuf_ty &out) {
+test_resample(const voice_ty &chan_, outbuf_ty &out) {
     ghettotimer timer(__FUNCTION__);
     auto chan = chan_;
     auto left = out.left;
@@ -228,9 +230,9 @@ test_resample(const modchannel_t &chan_, outbuf_ty &out) {
     while (true) {
         const auto remainder = GetSampleCount(&chan, TestChunkSize, false);
         if (remainder == 0) break;
-        //modplug::mixgraph::resample_and_mix(left, right, &chan, remainder);
-        //modplug::mixgraph::resample_and_mix_inner<int16_t, false>(left, right, &chan, remainder);
-        modplug::mixgraph::resample_and_mix_inner<int16_t, true>(left, right, &chan, remainder);
+        //modplug::mixgraph::resample_and_mix(left, right, chan, remainder);
+        //modplug::mixgraph::resample_and_mix_inner<int16_field, false>(left, right, chan, remainder);
+        modplug::mixgraph::resample_and_mix_inner<int16_f, true>(left, right, chan, remainder);
         //advance_silently(chan, remainder);
         left += remainder;
         right += remainder;
@@ -245,7 +247,7 @@ const sample_t VolScale = 1.0 / 4096.0;
 
 template <typename Ty>
 Ty __forceinline
-lookup(const modchannel_t &chan, const int32_t idx, const Ty * const buf) {
+lookup(const voice_ty &chan, const int32_t idx, const Ty * const buf) {
     if (idx >= chan.length) {
         if (bitset_is_set(chan.flags, vflag_ty::BidiLoop)) {
             const auto looplen = chan.length - chan.loop_start - 1;
@@ -273,7 +275,7 @@ lookup(const modchannel_t &chan, const int32_t idx, const Ty * const buf) {
 }
 
 sample_t __forceinline
-lookup_spill(const modchannel_t &chan, const int32_t idx, const int16_t * const buf) {
+lookup_spill(const voice_ty &chan, const int32_t idx, const int16_t * const buf) {
     const auto length = chan.length;
     const auto loop_start = chan.loop_start;
     if (idx >= length) {
@@ -291,13 +293,13 @@ lookup_spill(const modchannel_t &chan, const int32_t idx, const int16_t * const 
             return 0;
         }
     }
-    return buf[idx] * NORM_INT16;
+    return buf[idx] * NormInt16;
 }
 
 template <bool use_sinc>
 void
-resample_janky(sample_t *left, sample_t *right, size_t out_frames, modchannel_t &src) {
-    const auto buf = reinterpret_cast<const int16_t * const>(src.active_sample_data);
+resample_janky(sample_t *left, sample_t *right, size_t out_frames, voice_ty &src) {
+    const auto buf = src.active_sample_data.int16;
     const auto left_vol = static_cast<sample_t>(src.left_volume);
     const auto right_vol = static_cast<sample_t>(src.right_volume);
     int32_t pos = src.sample_position;
@@ -305,7 +307,7 @@ resample_janky(sample_t *left, sample_t *right, size_t out_frames, modchannel_t 
 
     while (out_frames--) {
         if (use_sinc) {
-            const auto fir_idx = ((pos & 0xfff0) >> 4) * FIR_TAPS;
+            const auto fir_idx = ((pos & 0xfff0) >> 4) * modplug::mixgraph::FIR_TAPS;
             const sample_t *fir_table =
                 ((src.position_delta > 0x13000 || src.position_delta < -0x13000)
                 ? downsample_sinc_table
@@ -313,47 +315,47 @@ resample_janky(sample_t *left, sample_t *right, size_t out_frames, modchannel_t 
             sample_t sample = 0;
             /*
             for (size_t tap = 0; tap < FIR_TAPS; ++tap) {
-                //sample += fir_table[tap] * (lookup(src, tap - FIR_CENTER + pos, buf) * NORM_INT16);
-                //sample += fir_table[tap] * buf[pos] * NORM_INT16;
+                //sample += fir_table[tap] * (lookup(src, tap - FIR_CENTER + pos, buf) * NormInt16);
+                //sample += fir_table[tap] * buf[pos] * NormInt16;
             }
             */
             #if 1
             if ((pos < (src.loop_start + 3)) || (pos >= (src.length - 4))) {
-                sample += fir_table[0] * (lookup(src, pos - 3, buf) * NORM_INT16);
-                sample += fir_table[1] * (lookup(src, pos - 2, buf) * NORM_INT16);
-                sample += fir_table[2] * (lookup(src, pos - 1, buf) * NORM_INT16);
-                sample += fir_table[3] * (buf[pos] * NORM_INT16);
-                sample += fir_table[4] * (lookup(src, pos + 1, buf) * NORM_INT16);
-                sample += fir_table[5] * (lookup(src, pos + 2, buf) * NORM_INT16);
-                sample += fir_table[6] * (lookup(src, pos + 3, buf) * NORM_INT16);
-                sample += fir_table[7] * (lookup(src, pos + 4, buf) * NORM_INT16);
+                sample += fir_table[0] * (lookup(src, pos - 3, buf) * NormInt16);
+                sample += fir_table[1] * (lookup(src, pos - 2, buf) * NormInt16);
+                sample += fir_table[2] * (lookup(src, pos - 1, buf) * NormInt16);
+                sample += fir_table[3] * (buf[pos] * NormInt16);
+                sample += fir_table[4] * (lookup(src, pos + 1, buf) * NormInt16);
+                sample += fir_table[5] * (lookup(src, pos + 2, buf) * NormInt16);
+                sample += fir_table[6] * (lookup(src, pos + 3, buf) * NormInt16);
+                sample += fir_table[7] * (lookup(src, pos + 4, buf) * NormInt16);
             #else
             if ((pos < (src.loop_start + 3)) || (pos >= (src.length - 4))) {
                 sample += fir_table[0] * (lookup_spill(src, pos - 3, buf) );
                 sample += fir_table[1] * (lookup_spill(src, pos - 2, buf) );
                 sample += fir_table[2] * (lookup_spill(src, pos - 1, buf) );
-                sample += fir_table[3] * (buf[pos] * NORM_INT16);
+                sample += fir_table[3] * (buf[pos] * NormInt16);
                 sample += fir_table[4] * (lookup_spill(src, pos + 1, buf) );
                 sample += fir_table[5] * (lookup_spill(src, pos + 2, buf) );
                 sample += fir_table[6] * (lookup_spill(src, pos + 3, buf) );
                 sample += fir_table[7] * (lookup_spill(src, pos + 4, buf) );
             #endif
             } else {
-                sample += fir_table[0] * (buf[pos - 3] * NORM_INT16);
-                sample += fir_table[1] * (buf[pos - 2] * NORM_INT16);
-                sample += fir_table[2] * (buf[pos - 1] * NORM_INT16);
-                sample += fir_table[3] * (buf[pos] * NORM_INT16);
-                sample += fir_table[4] * (buf[pos - 1] * NORM_INT16);
-                sample += fir_table[5] * (buf[pos - 2] * NORM_INT16);
-                sample += fir_table[6] * (buf[pos - 3] * NORM_INT16);
-                sample += fir_table[7] * (buf[pos - 4] * NORM_INT16);
+                sample += fir_table[0] * (buf[pos - 3] * NormInt16);
+                sample += fir_table[1] * (buf[pos - 2] * NormInt16);
+                sample += fir_table[2] * (buf[pos - 1] * NormInt16);
+                sample += fir_table[3] * (buf[pos] * NormInt16);
+                sample += fir_table[4] * (buf[pos - 1] * NormInt16);
+                sample += fir_table[5] * (buf[pos - 2] * NormInt16);
+                sample += fir_table[6] * (buf[pos - 3] * NormInt16);
+                sample += fir_table[7] * (buf[pos - 4] * NormInt16);
             }
             // */
 
             *left += left_vol * VolScale * sample;
             *right += right_vol * VolScale * sample;
         } else {
-            const auto normalized = buf[pos] * NORM_INT16;
+            const auto normalized = buf[pos] * NormInt16;
             *left += left_vol * VolScale * normalized;
             *right += right_vol * VolScale * normalized;
         }
@@ -401,17 +403,17 @@ resample_janky(sample_t *left, sample_t *right, size_t out_frames, modchannel_t 
 }
 
 void
-resample_janky_no_interpolation(sample_t *left, sample_t *right, size_t out_frames, modchannel_t &src) {
+resample_janky_no_interpolation(sample_t *left, sample_t *right, size_t out_frames, voice_ty &src) {
     return resample_janky<false>(left, right, out_frames, src);
 }
 
 void
-resample_janky_windowed_sinc(sample_t *left, sample_t *right, size_t out_frames, modchannel_t &src) {
+resample_janky_windowed_sinc(sample_t *left, sample_t *right, size_t out_frames, voice_ty &src) {
     return resample_janky<true>(left, right, out_frames, src);
 }
 
 void
-test_resample_janky(const outbuf_ty &dst, modchannel_t &chan) {
+test_resample_janky(const outbuf_ty &dst, voice_ty &chan) {
     ghettotimer timer(__FUNCTION__);
     int count = LoopCount;
     auto left = dst.left;
@@ -431,7 +433,7 @@ test_resample_janky(const outbuf_ty &dst, modchannel_t &chan) {
 }
 
 void
-chan_update_loop_points(modchannel_t &chan, const int32_t begin, const int32_t end) {
+chan_update_loop_points(voice_ty &chan, const int32_t begin, const int32_t end) {
     const auto length = end - begin;
     chan.length = begin + length;
     chan.loop_start = begin;

@@ -197,7 +197,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
                 patloop[ipck] = dElapsedTime;
         }
 
-        modplug::tracker::modchannel_t *pChn = Chn.data();
+        modplug::tracker::voice_ty *pChn = Chn.data();
         modplug::tracker::modevent_t *p = Patterns[nPattern] + nRow * m_nChannels;
         modplug::tracker::modevent_t *nextRow = NULL;
         for (modplug::tracker::chnindex_t nChn = 0; nChn < m_nChannels; p++, pChn++, nChn++) if (*((uint32_t *)p))
@@ -486,7 +486,7 @@ GetLengthType module_renderer::GetLength(enmGetLengthResetMode adjustMode, modpl
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // Effects
 
-void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UINT instr, bool bPorta, bool bUpdVol, bool bResetEnv)
+void module_renderer::InstrumentChange(modplug::tracker::voice_ty *pChn, UINT instr, bool bPorta, bool bUpdVol, bool bResetEnv)
 //--------------------------------------------------------------------------------------------------------
 {
     bool bInstrumentChanged = false;
@@ -656,13 +656,14 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
         return;
     }
 
+    pChn->sample_tag = pSmp->sample_tag;
     // Tone-Portamento doesn't reset the pingpong direction flag
     if ((bPorta) && (pSmp == pChn->sample))
     {
         if(m_nType & (MOD_TYPE_S3M|MOD_TYPE_IT|MOD_TYPE_MPT)) return;
         bitset_remove(pChn->flags, vflag_ty::KeyOff);
         bitset_remove(pChn->flags, vflag_ty::NoteFade);
-        pChn->flags = bitset_merge(
+        pChn->flags = bitset_union(
             voicef_unset_smpf(pChn->flags),
             voicef_from_smpf(pSmp->flags));
     } else
@@ -675,14 +676,13 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
 
         //IT compatibility tentative fix: Don't change bidi loop direction when
         //no sample nor instrument is changed.
+        const auto fresh_flags = voicef_unset_smpf(pChn->flags);
+        const auto voice_flags = voicef_from_smpf(pSmp->flags);
         if (IsCompatibleMode(TRK_IMPULSETRACKER) && pSmp == pChn->sample && !bInstrumentChanged) {
-            pChn->flags = bitset_merge(
-                voicef_unset_smpf(pChn->flags),
-                voicef_from_smpf(pSmp->flags));
+            pChn->flags = bitset_union(fresh_flags, voice_flags);
         } else {
-            pChn->flags = bitset_merge(
-                bitset_unset(voicef_unset_smpf(pChn->flags), vflag_ty::ScrubBackwards),
-                voicef_from_smpf(pSmp->flags));
+            pChn->flags = bitset_union(
+                bitset_unset(fresh_flags, vflag_ty::ScrubBackwards), voice_flags);
         }
 
 
@@ -732,7 +732,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
     }
 
 
-    pChn->sample_data = pSmp->sample_data.generic;
+    pChn->sample_data = pSmp->sample_data;
     pChn->nTranspose = pSmp->RelativeTone;
 
     pChn->m_PortamentoFineSteps = 0;
@@ -747,6 +747,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
             bitset_add(pChn->flags, vflag_ty::BidiLoop);
         }
     }
+
     if (bitset_is_set(pChn->flags, vflag_ty::Loop) && (pChn->loop_end < pChn->length)) pChn->length = pChn->loop_end;
 
     // Fix sample position on instrument change. This is needed for PT1x MOD and IT "on the fly" sample change.
@@ -768,7 +769,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
 //-----------------------------------------------------------------------------------------
 {
     if (note < NoteMin) return;
-    modplug::tracker::modchannel_t * const pChn = &Chn[nChn];
+    modplug::tracker::voice_ty * const pChn = &Chn[nChn];
     modplug::tracker::modsample_t *pSmp = pChn->sample;
     modplug::tracker::modinstrument_t *pIns = pChn->instrument;
 
@@ -871,11 +872,12 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
         if ((!bPorta) || ((!pChn->length) && (!(m_nType & MOD_TYPE_S3M))))
         {
             pChn->sample = pSmp;
-            pChn->sample_data = pSmp->sample_data.generic;
+            pChn->sample_data = pSmp->sample_data;
             pChn->length = pSmp->length;
             pChn->loop_end = pSmp->length;
             pChn->loop_start = 0;
-            pChn->flags = bitset_merge(
+            pChn->sample_tag = pSmp->sample_tag;
+            pChn->flags = bitset_union(
                 bitset_unset(voicef_unset_smpf(pChn->flags), vflag_ty::ScrubBackwards),
                 voicef_from_smpf(pSmp->flags));
             if (bitset_is_set(pChn->flags, vflag_ty::SustainLoop)) {
@@ -1065,16 +1067,16 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
 UINT module_renderer::GetNNAChannel(UINT nChn) const
 //---------------------------------------------
 {
-    const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    const modplug::tracker::voice_ty *pChn = &Chn[nChn];
     // Check for empty channel
-    const modplug::tracker::modchannel_t *pi = &Chn[m_nChannels];
+    const modplug::tracker::voice_ty *pi = &Chn[m_nChannels];
     for (UINT i=m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, pi++) if (!pi->length) return i;
     if (!pChn->nFadeOutVol) return 0;
     // All channels are used: check for lowest volume
     UINT result = 0;
     uint32_t vol = 64*65536;    // 25%
     uint32_t envpos = 0xFFFFFF;
-    const modplug::tracker::modchannel_t *pj = &Chn[m_nChannels];
+    const modplug::tracker::voice_ty *pj = &Chn[m_nChannels];
     for (UINT j=m_nChannels; j<MAX_VIRTUAL_CHANNELS; j++, pj++)
     {
         if (!pj->nFadeOutVol) return j;
@@ -1098,7 +1100,7 @@ UINT module_renderer::GetNNAChannel(UINT nChn) const
 void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
 //------------------------------------------------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
     modplug::tracker::modinstrument_t* pHeader = 0;
     LPSTR pSample;
     if (note > 0x80) note = NoteNone;
@@ -1115,7 +1117,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
         }
         UINT n = GetNNAChannel(nChn);
         if (!n) return;
-        modplug::tracker::modchannel_t *p = &Chn[n];
+        modplug::tracker::voice_ty *p = &Chn[n];
         // Copy Channel
         *p = *pChn;
         bitset_remove(p->flags, vflag_ty::Vibrato);
@@ -1136,7 +1138,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
         return;
     }
     if (instr >= MAX_INSTRUMENTS) instr = 0;
-    pSample = pChn->sample_data;
+    pSample = pChn->sample_data.generic;
     pHeader = pChn->instrument;
     if ((instr) && (note))
     {
@@ -1152,7 +1154,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             }
         } else pSample = nullptr;
     }
-    modplug::tracker::modchannel_t *p = pChn;
+    modplug::tracker::voice_ty *p = pChn;
     //if (!pIns) return;
     if (bitset_is_set(pChn->flags, vflag_ty::Mute)) return;
 
@@ -1174,7 +1176,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
                 break;
             // Sample
             case DCT_SAMPLE:
-                if ((pSample) && (pSample == p->sample_data)) bOk = true;
+                if ((pSample) && (pSample == p->sample_data.generic)) bOk = true;
                 break;
             // Instrument
             case DCT_INSTRUMENT:
@@ -1278,7 +1280,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
         UINT n = GetNNAChannel(nChn);
         if (n)
         {
-            modplug::tracker::modchannel_t *p = &Chn[n];
+            modplug::tracker::voice_ty *p = &Chn[n];
             // Copy Channel
             *p = *pChn;
             bitset_remove(p->flags, vflag_ty::Vibrato);
@@ -1292,7 +1294,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
             const auto req = bitset_set(
                 bitset_set(vflags_ty(), vflag_ty::Mute),
                 vflag_ty::DisableDsp);
-            p->flags = bitset_merge(p->flags, bitset_intersect(pChn->flags, req));
+            p->flags = bitset_union(p->flags, bitset_intersect(pChn->flags, req));
 
             p->parent_channel = nChn+1;
             p->nCommand = 0;
@@ -1339,7 +1341,7 @@ void module_renderer::CheckNNA(UINT nChn, UINT instr, int note, BOOL bForceCut)
 BOOL module_renderer::ProcessEffects()
 //-------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = Chn.data();
+    modplug::tracker::voice_ty *pChn = Chn.data();
     modplug::tracker::rowindex_t nBreakRow = RowIndexInvalid, nPatLoopRow = RowIndexInvalid;
     modplug::tracker::orderindex_t nPosJump = modplug::tracker::OrderIndexInvalid;
 
@@ -1548,7 +1550,7 @@ BOOL module_renderer::ProcessEffects()
                     }
                     else //Case: Only samples used
                     {
-                        if(instr < MAX_SAMPLES && pChn->sample_data != Samples[instr].sample_data.generic)
+                        if(instr < MAX_SAMPLES && pChn->sample_data.generic != Samples[instr].sample_data.generic)
                             note = pChn->nNote;
                     }
                 }
@@ -2238,7 +2240,7 @@ BOOL module_renderer::ProcessEffects()
 }
 
 
-void module_renderer::ResetChannelEnvelopes(modplug::tracker::modchannel_t* pChn)
+void module_renderer::ResetChannelEnvelopes(modplug::tracker::voice_ty* pChn)
 //------------------------------------------------------
 {
     ResetChannelEnvelope(pChn->volume_envelope);
@@ -2258,7 +2260,7 @@ void module_renderer::ResetChannelEnvelope(modplug::tracker::modenvstate_t &env)
 ////////////////////////////////////////////////////////////
 // Channels effects
 
-void module_renderer::PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param, const bool doFinePortamentoAsRegular)
+void module_renderer::PortamentoUp(modplug::tracker::voice_ty *pChn, UINT param, const bool doFinePortamentoAsRegular)
 //---------------------------------------------------------
 {
     MidiPortamento(pChn, param); //Send midi pitch bend event if there's a plugin
@@ -2301,7 +2303,7 @@ void module_renderer::PortamentoUp(modplug::tracker::modchannel_t *pChn, UINT pa
 }
 
 
-void module_renderer::PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param, const bool doFinePortamentoAsRegular)
+void module_renderer::PortamentoDown(modplug::tracker::voice_ty *pChn, UINT param, const bool doFinePortamentoAsRegular)
 //-----------------------------------------------------------
 {
     MidiPortamento(pChn, -1*param); //Send midi pitch bend event if there's a plugin
@@ -2341,7 +2343,7 @@ void module_renderer::PortamentoDown(modplug::tracker::modchannel_t *pChn, UINT 
     }
 }
 
-void module_renderer::MidiPortamento(modplug::tracker::modchannel_t *pChn, int param)
+void module_renderer::MidiPortamento(modplug::tracker::voice_ty *pChn, int param)
 //----------------------------------------------------------
 {
     //Send midi pitch bend event if there's a plugin:
@@ -2357,7 +2359,7 @@ void module_renderer::MidiPortamento(modplug::tracker::modchannel_t *pChn, int p
     }
 }
 
-void module_renderer::FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FinePortamentoUp(modplug::tracker::voice_ty *pChn, UINT param)
 //-------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2381,7 +2383,7 @@ void module_renderer::FinePortamentoUp(modplug::tracker::modchannel_t *pChn, UIN
 }
 
 
-void module_renderer::FinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FinePortamentoDown(modplug::tracker::voice_ty *pChn, UINT param)
 //---------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2405,7 +2407,7 @@ void module_renderer::FinePortamentoDown(modplug::tracker::modchannel_t *pChn, U
 }
 
 
-void module_renderer::ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ExtraFinePortamentoUp(modplug::tracker::voice_ty *pChn, UINT param)
 //------------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2429,7 +2431,7 @@ void module_renderer::ExtraFinePortamentoUp(modplug::tracker::modchannel_t *pChn
 }
 
 
-void module_renderer::ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ExtraFinePortamentoDown(modplug::tracker::voice_ty *pChn, UINT param)
 //--------------------------------------------------------------------
 {
     if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
@@ -2454,7 +2456,7 @@ void module_renderer::ExtraFinePortamentoDown(modplug::tracker::modchannel_t *pC
 
 // Implemented for IMF compatibility, can't actually save this in any formats
 // sign should be 1 (up) or -1 (down)
-void module_renderer::NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param, int sign)
+void module_renderer::NoteSlide(modplug::tracker::voice_ty *pChn, UINT param, int sign)
 //----------------------------------------------------------------
 {
     uint8_t x, y;
@@ -2480,7 +2482,7 @@ void module_renderer::NoteSlide(modplug::tracker::modchannel_t *pChn, UINT param
 }
 
 // Portamento Slide
-void module_renderer::TonePortamento(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::TonePortamento(modplug::tracker::voice_ty *pChn, UINT param)
 //-----------------------------------------------------------
 {
     bitset_add(pChn->flags, vflag_ty::Portamento);
@@ -2578,7 +2580,7 @@ void module_renderer::TonePortamento(modplug::tracker::modchannel_t *pChn, UINT 
 }
 
 
-void module_renderer::Vibrato(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::Vibrato(modplug::tracker::voice_ty *p, UINT param)
 //-------------------------------------------------
 {
     p->m_VibratoDepth = param % 16 / 15.0F;
@@ -2591,7 +2593,7 @@ void module_renderer::Vibrato(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void module_renderer::FineVibrato(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::FineVibrato(modplug::tracker::voice_ty *p, UINT param)
 //-----------------------------------------------------
 {
     if (param & 0x0F) p->nVibratoDepth = param & 0x0F;
@@ -2600,7 +2602,7 @@ void module_renderer::FineVibrato(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void module_renderer::Panbrello(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::Panbrello(modplug::tracker::voice_ty *p, UINT param)
 //---------------------------------------------------
 {
     if (param & 0x0F) p->nPanbrelloDepth = param & 0x0F;
@@ -2609,7 +2611,7 @@ void module_renderer::Panbrello(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void module_renderer::VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::VolumeSlide(modplug::tracker::voice_ty *pChn, UINT param)
 //--------------------------------------------------------
 {
     if (param)
@@ -2669,7 +2671,7 @@ void module_renderer::VolumeSlide(modplug::tracker::modchannel_t *pChn, UINT par
 }
 
 
-void module_renderer::PanningSlide(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::PanningSlide(modplug::tracker::voice_ty *pChn, UINT param)
 //---------------------------------------------------------
 {
     LONG nPanSlide = 0;
@@ -2736,7 +2738,7 @@ void module_renderer::PanningSlide(modplug::tracker::modchannel_t *pChn, UINT pa
 }
 
 
-void module_renderer::FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FineVolumeUp(modplug::tracker::voice_ty *pChn, UINT param)
 //---------------------------------------------------------
 {
     if (param) pChn->nOldFineVolUpDown = param; else param = pChn->nOldFineVolUpDown;
@@ -2749,7 +2751,7 @@ void module_renderer::FineVolumeUp(modplug::tracker::modchannel_t *pChn, UINT pa
 }
 
 
-void module_renderer::FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::FineVolumeDown(modplug::tracker::voice_ty *pChn, UINT param)
 //-----------------------------------------------------------
 {
     if (param) pChn->nOldFineVolUpDown = param; else param = pChn->nOldFineVolUpDown;
@@ -2762,7 +2764,7 @@ void module_renderer::FineVolumeDown(modplug::tracker::modchannel_t *pChn, UINT 
 }
 
 
-void module_renderer::Tremolo(modplug::tracker::modchannel_t *p, UINT param)
+void module_renderer::Tremolo(modplug::tracker::voice_ty *p, UINT param)
 //-------------------------------------------------
 {
     if (param & 0x0F) p->nTremoloDepth = (param & 0x0F) << 2;
@@ -2771,7 +2773,7 @@ void module_renderer::Tremolo(modplug::tracker::modchannel_t *p, UINT param)
 }
 
 
-void module_renderer::ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ChannelVolSlide(modplug::tracker::voice_ty *pChn, UINT param)
 //------------------------------------------------------------
 {
     LONG nChnSlide = 0;
@@ -2803,7 +2805,7 @@ void module_renderer::ChannelVolSlide(modplug::tracker::modchannel_t *pChn, UINT
 void module_renderer::ExtendedMODCommands(UINT nChn, UINT param)
 //---------------------------------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
     UINT command = param & 0xF0;
     param &= 0x0F;
     switch(command)
@@ -2868,7 +2870,7 @@ void module_renderer::ExtendedMODCommands(UINT nChn, UINT param)
 void module_renderer::ExtendedS3MCommands(UINT nChn, UINT param)
 //---------------------------------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
     UINT command = param & 0xF0;
     param &= 0x0F;
     switch(command)
@@ -2926,7 +2928,7 @@ void module_renderer::ExtendedS3MCommands(UINT nChn, UINT param)
                 case 1:
                 case 2:
                     {
-                        modplug::tracker::modchannel_t *bkp = &Chn[m_nChannels];
+                        modplug::tracker::voice_ty *bkp = &Chn[m_nChannels];
                         for (UINT i=m_nChannels; i<MAX_VIRTUAL_CHANNELS; i++, bkp++)
                         {
                             if (bkp->parent_channel == nChn+1)
@@ -3011,7 +3013,7 @@ void module_renderer::ExtendedS3MCommands(UINT nChn, UINT param)
 }
 
 
-void module_renderer::ExtendedChannelEffect(modplug::tracker::modchannel_t *pChn, UINT param)
+void module_renderer::ExtendedChannelEffect(modplug::tracker::voice_ty *pChn, UINT param)
 //------------------------------------------------------------------
 {
     // S9x and X9x commands (S3M/XM/IT only)
@@ -3063,7 +3065,7 @@ void module_renderer::ExtendedChannelEffect(modplug::tracker::modchannel_t *pChn
 }
 
 
-inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
+inline void module_renderer::InvertLoop(modplug::tracker::voice_ty *pChn)
 //--------------------------------------------------
 {
     // EFx implementation for MOD files (PT 1.1A and up: Invert Loop)
@@ -3075,7 +3077,7 @@ inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
     if (pModSample == nullptr ||
         pModSample->sample_data.generic == nullptr ||
         !bitset_is_set(pModSample->flags, sflag_ty::Loop) ||
-        bitset_is_set(pModSample->flags, sflag_ty::SixteenBit) )
+        (pModSample->sample_tag == stag_ty::Int16) )
     {
         return;
     }
@@ -3102,7 +3104,7 @@ inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
 void module_renderer::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiMacro, UINT param)
 //------------------------------------------------------------------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
     uint32_t dwMacro = LittleEndian(*((uint32_t *)pszMidiMacro)) & MACRO_MASK;
     int nInternalCode;
 
@@ -3340,7 +3342,7 @@ void module_renderer::SampleOffset(UINT nChn, UINT param, bool bPorta)
 //---------------------------------------------------------------
 {
 
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
 // -! NEW_FEATURE#0010
 // -> CODE#0010
 // -> DESC="add extended parameter mechanism to pattern effects"
@@ -3427,7 +3429,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
 //------------------------------------------------------------
 {
     // Retrig: bit 8 is set if it's the new XM retrig
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
     int nRetrigSpeed = param & 0x0F;
     int nRetrigCount = pChn->nRetrigCount;
     bool bDoRetrig = false;
@@ -3551,7 +3553,7 @@ void module_renderer::RetrigNote(UINT nChn, int param, UINT offset)    //rewbs.V
 }
 
 
-void module_renderer::DoFreqSlide(modplug::tracker::modchannel_t *pChn, LONG nFreqSlide)
+void module_renderer::DoFreqSlide(modplug::tracker::voice_ty *pChn, LONG nFreqSlide)
 //-------------------------------------------------------------
 {
     // IT Linear slides
@@ -3609,7 +3611,7 @@ void module_renderer::NoteCut(UINT nChn, UINT nTick)
 
     if (m_nTickCount == nTick)
     {
-        modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+        modplug::tracker::voice_ty *pChn = &Chn[nChn];
         // if (m_nInstruments) KeyOff(pChn); ?
         pChn->nVolume = 0;
         // S3M/IT compatibility: Note Cut really cuts notes and does not just mute them (so that following volume commands could restore the sample)
@@ -3641,7 +3643,7 @@ void module_renderer::NoteCut(UINT nChn, UINT nTick)
 void module_renderer::KeyOff(UINT nChn)
 //--------------------------------
 {
-    modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    modplug::tracker::voice_ty *pChn = &Chn[nChn];
     const bool bKeyOn = !bitset_is_set(pChn->flags, vflag_ty::KeyOff);
     bitset_add(pChn->flags, vflag_ty::KeyOff);
     //if ((!pChn->instrument) || (!(pChn->flags & CHN_VOLENV)))
@@ -3744,7 +3746,7 @@ void module_renderer::SetTempo(UINT param, bool setAsNonModcommand)
 }
 
 
-int module_renderer::PatternLoop(modplug::tracker::modchannel_t *pChn, UINT param)
+int module_renderer::PatternLoop(modplug::tracker::voice_ty *pChn, UINT param)
 //-------------------------------------------------------
 {
     if (param)
@@ -3762,7 +3764,7 @@ int module_renderer::PatternLoop(modplug::tracker::modchannel_t *pChn, UINT para
             }
         } else
         {
-            modplug::tracker::modchannel_t *p = Chn.data();
+            modplug::tracker::voice_ty *p = Chn.data();
 
             //IT compatibility 10. Pattern loops (+ same fix for XM and MOD files)
             if(!IsCompatibleMode(TRK_IMPULSETRACKER | TRK_FASTTRACKER2 | TRK_PROTRACKER))
@@ -4019,7 +4021,7 @@ UINT  module_renderer::GetBestPlugin(UINT nChn, UINT priority, bool respectMutes
 UINT __cdecl module_renderer::GetChannelPlugin(UINT nChn, bool respectMutes) const
 //---------------------------------------------------------------------------
 {
-    const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    const modplug::tracker::voice_ty *pChn = &Chn[nChn];
 
     // If it looks like this is an NNA channel, we need to find the master channel.
     // This ensures we pick up the right ChnSettings.
@@ -4043,7 +4045,7 @@ UINT __cdecl module_renderer::GetChannelPlugin(UINT nChn, bool respectMutes) con
 UINT module_renderer::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) const
 //----------------------------------------------------------------------------
 {
-    const modplug::tracker::modchannel_t *pChn = &Chn[nChn];
+    const modplug::tracker::voice_ty *pChn = &Chn[nChn];
     // Unlike channel settings, instrument is copied from the original chan to the NNA chan,
     // so we don't need to worry about finding the master chan.
 
@@ -4061,7 +4063,7 @@ UINT module_renderer::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) co
 }
 
 
-UINT module_renderer::GetBestMidiChan(const modplug::tracker::modchannel_t *pChn) const
+UINT module_renderer::GetBestMidiChan(const modplug::tracker::voice_ty *pChn) const
 //------------------------------------------------------------
 {
     if (pChn && pChn->instrument && pChn->instrument->midi_channel)
@@ -4120,7 +4122,7 @@ void module_renderer::UpdateTimeSignature()
 }
 
 
-void module_renderer::PortamentoMPT(modplug::tracker::modchannel_t* pChn, int param)
+void module_renderer::PortamentoMPT(modplug::tracker::voice_ty* pChn, int param)
 //---------------------------------------------------------
 {
     //Behavior: Modifies portamento by param-steps on every tick.
@@ -4131,7 +4133,7 @@ void module_renderer::PortamentoMPT(modplug::tracker::modchannel_t* pChn, int pa
 }
 
 
-void module_renderer::PortamentoFineMPT(modplug::tracker::modchannel_t* pChn, int param)
+void module_renderer::PortamentoFineMPT(modplug::tracker::voice_ty* pChn, int param)
 //-------------------------------------------------------------
 {
     //Behavior: Divides portamento change between ticks/row. For example
