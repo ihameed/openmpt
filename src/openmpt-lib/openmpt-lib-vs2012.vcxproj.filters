@@ -78,7 +78,6 @@
     <ClCompile Include="legacy_soundlib\Message.cpp" />
     <ClCompile Include="legacy_soundlib\misc.cpp" />
     <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
-    <ClCompile Include="legacy_soundlib\Mmx_mix.cpp" />
     <ClCompile Include="legacy_soundlib\modcommand.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_filters.cpp" />
     <ClCompile Include="legacy_soundlib\module_renderer_internal_mixer.cpp" />

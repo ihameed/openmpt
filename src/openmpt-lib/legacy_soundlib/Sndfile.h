@@ -405,7 +405,6 @@ public:
     UINT ReadPattern(void * const, const size_t);
     UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, module_renderer *, uint32_t *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
-    UINT GetResamplingFlag(const modplug::tracker::voice_ty *pChannel);
     BOOL FadeSong(UINT msec);
     BOOL GlobalFadeSong(UINT msec);
     UINT GetTotalTickCount() const { return m_nTotalCount; }
@@ -418,17 +417,11 @@ public:
     static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
     static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
     static uint32_t GetSampleRate() { return deprecated_global_mixing_freq; }
-    static uint32_t InitSysInfo();
 
     // Analyzer Functions
     static UINT WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
     static UINT WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
     static LONG SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nChannels);
-    // Float <-> Int conversion routines
-    /*static */VOID StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount);
-    /*static */VOID FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount);
-    /*static */VOID MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount);
-    /*static */VOID FloatToMonoMix(const float *pIn, int *pOut, UINT nCount);
 
 public:
     BOOL ReadNote();

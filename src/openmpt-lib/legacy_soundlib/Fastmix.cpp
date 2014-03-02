@@ -469,23 +469,6 @@ typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::voice_ty *, int *, 
 
 
 /////////////////////////////////////////////////////
-//
-
-
-#ifdef ENABLE_AMD
-extern void AMD_StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount, const float _i2fc);
-extern void AMD_FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount, const float _f2ic);
-extern void AMD_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc);
-extern void AMD_FloatToMonoMix(const float *pIn, int *pOut, UINT nCount, const float _f2ic);
-#endif
-
-#ifdef ENABLE_SSE
-extern void SSE_StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount, const float _i2fc);
-extern void SSE_MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount, const float _i2fc);
-#endif
-
-
-/////////////////////////////////////////////////////
 // Mono samples functions
 
 //XXXih: disabled legacy garbage
@@ -1504,28 +1487,6 @@ UINT module_renderer::CreateStereoMix(int count)
     return nchused;
 }
 
-UINT module_renderer::GetResamplingFlag(const modplug::tracker::voice_ty *pChannel)
-//------------------------------------------------------------
-{
-    if (pChannel->instrument) {
-        switch (pChannel->instrument->resampling_mode) {
-            case SRCMODE_NEAREST:    return 0;
-            case SRCMODE_LINEAR:    return MIXNDX_LINEARSRC;
-            case SRCMODE_SPLINE:    return MIXNDX_HQSRC;
-            case SRCMODE_POLYPHASE: return MIXNDX_KAISERSRC;
-            case SRCMODE_FIRFILTER: return MIXNDX_FIRFILTERSRC;
-//                    default: ;
-        }
-    }
-
-    //didn't manage to get flag from instrument header, use channel flags.
-        if (deprecated_global_sound_setup_bitmask & SNDMIX_SPLINESRCMODE)            return MIXNDX_HQSRC;
-        if (deprecated_global_sound_setup_bitmask & SNDMIX_POLYPHASESRCMODE)    return MIXNDX_KAISERSRC;
-        if (deprecated_global_sound_setup_bitmask & SNDMIX_FIRFILTERSRCMODE)    return MIXNDX_FIRFILTERSRC;
-        return MIXNDX_LINEARSRC;
-}
-
-
 extern int gbInitPlugins;
 
 void module_renderer::ProcessPlugins(UINT nCount)
@@ -1560,13 +1521,13 @@ void module_renderer::ProcessPlugins(UINT nCount)
             // Setup float input
             if (pState->dwFlags & MIXPLUG_MIXREADY)
             {
-                StereoMixToFloat(pState->pMixBuffer, pState->pOutBufferL, pState->pOutBufferR, nCount);
+                //StereoMixToFloat(pState->pMixBuffer, pState->pOutBufferL, pState->pOutBufferR, nCount);
             } else
             if (pState->nVolDecayR|pState->nVolDecayL)
             {
                 //modplug::mixer::stereo_fill(pState->pMixBuffer, nCount, &pState->nVolDecayR, &pState->nVolDecayL);
                 //XXXih: indiana jones and the ancient mayan treasure
-                StereoMixToFloat(pState->pMixBuffer, pState->pOutBufferL, pState->pOutBufferR, nCount);
+                //StereoMixToFloat(pState->pMixBuffer, pState->pOutBufferL, pState->pOutBufferR, nCount);
             } else
             {
                 memset(pState->pOutBufferL, 0, nCount*sizeof(FLOAT));
@@ -1576,7 +1537,7 @@ void module_renderer::ProcessPlugins(UINT nCount)
         }
     }
     // Convert mix buffer
-    StereoMixToFloat(MixSoundBuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, nCount);
+    //StereoMixToFloat(MixSoundBuffer, MixFloatBuffer, MixFloatBuffer+modplug::mixgraph::MIX_BUFFER_SIZE, nCount);
     FLOAT *pMixL = MixFloatBuffer;
     FLOAT *pMixR = MixFloatBuffer + modplug::mixgraph::MIX_BUFFER_SIZE;
 
@@ -1669,7 +1630,7 @@ void module_renderer::ProcessPlugins(UINT nCount)
     //XXXih replace
     //XXXih replace
     //XXXih replace
-    FloatToStereoMix(pMixL, pMixR, MixSoundBuffer, nCount);
+    //FloatToStereoMix(pMixL, pMixR, MixSoundBuffer, nCount);
     gbInitPlugins = 0;
 }
 
@@ -1680,90 +1641,6 @@ void module_renderer::ProcessPlugins(UINT nCount)
 
 
 float module_renderer::m_nMaxSample = 0;
-
-VOID module_renderer::StereoMixToFloat(const int *pSrc, float *pOut1, float *pOut2, UINT nCount)
-//-----------------------------------------------------------------------------------------
-{
-
-#ifdef ENABLE_MMX
-    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
-    {
-        if (deprecated_global_system_info & SYSMIX_SSE)
-        {
-#ifdef ENABLE_SSE
-        SSE_StereoMixToFloat(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
-#endif
-            return;
-        }
-        if (deprecated_global_system_info & SYSMIX_3DNOW)
-        {
-#ifdef ENABLE_AMD
-        AMD_StereoMixToFloat(pSrc, pOut1, pOut2, nCount, m_pConfig->getIntToFloat());
-#endif
-            return;
-        }
-    }
-#endif
-
-}
-
-
-VOID module_renderer::FloatToStereoMix(const float *pIn1, const float *pIn2, int *pOut, UINT nCount)
-//---------------------------------------------------------------------------------------------
-{
-    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
-    {
-        if (deprecated_global_system_info & SYSMIX_3DNOW)
-        {
-#ifdef ENABLE_AMDNOW
-            AMD_FloatToStereoMix(pIn1, pIn2, pOut, nCount, m_pConfig->getFloatToInt());
-#endif
-            return;
-        }
-    }
-}
-
-
-VOID module_renderer::MonoMixToFloat(const int *pSrc, float *pOut, UINT nCount)
-//------------------------------------------------------------------------
-{
-    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
-    {
-        if (deprecated_global_system_info & SYSMIX_SSE)
-        {
-#ifdef ENABLE_SSE
-        SSE_MonoMixToFloat(pSrc, pOut, nCount, m_pConfig->getIntToFloat());
-#endif
-            return;
-        }
-        if (deprecated_global_system_info & SYSMIX_3DNOW)
-        {
-#ifdef ENABLE_AMDNOW
-            AMD_MonoMixToFloat(pSrc, pOut, nCount, m_pConfig->getIntToFloat());
-#endif
-            return;
-        }
-    }
-
-}
-
-
-VOID module_renderer::FloatToMonoMix(const float *pIn, int *pOut, UINT nCount)
-//-----------------------------------------------------------------------
-{
-    if (deprecated_global_sound_setup_bitmask & SNDMIX_ENABLEMMX)
-    {
-        if (deprecated_global_system_info & SYSMIX_3DNOW)
-        {
-#ifdef ENABLE_AMDNOW
-            AMD_FloatToMonoMix(pIn, pOut, nCount, m_pConfig->getFloatToInt());
-#endif
-            return;
-        }
-    }
-}
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // Noise Shaping (Dither)

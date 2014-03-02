@@ -476,8 +476,10 @@ BOOL CTrackApp::InitInstance()
         RUNTIME_CLASS(CModControlView));
     AddDocTemplate(m_pModTemplate);
 
-    // Initialize Audio
-    module_renderer::InitSysInfo();
+    module_renderer::deprecated_global_system_info =
+        SYSMIX_ENABLEMMX | SYSMIX_FASTCPU | SYSMIX_MMXEX | SYSMIX_3DNOW |
+        SYSMIX_SSE;
+
     if (module_renderer::deprecated_global_system_info & SYSMIX_ENABLEMMX)
     {
         CMainFrame::m_nSrcMode = SRCMODE_SPLINE;
