@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{61B5C628-3580-4DD0-A3D7-D02AA942D18B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <Keyword>Qt4VSv1.0</Keyword>
+    <RootNamespace>openmpt_misc</RootNamespace>
+    <ProjectName>openmpt-misc</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\bin\build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\bin\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\bin\build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;NOMINMAX;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <AdditionalIncludeDirectories>..\..\extlib\agg-2.4\font_win32_tt;..\..\extlib\agg-2.4\include;..\..\extlib\boost_1_54_0;..\..\extlib\jsoncpp-src-0.5.0\include;..\..\extlib\libsndfile\include;..\..\extlib\qtwinmigrate\src;..\..\extlib\pa_stable_v19_20111121\include;..\..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\..\extlib\soundtouch;..\..\extlib\unlha;..\..\extlib\unrar;..\..\extlib\unzip;..\..\extlib\vstsdk2.4;..\..\extlib\WDL\include;..\..\extlib\zlib-1.2.5;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);.\;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\..\qtsvg\include\QtSvg;$(QTDIR)\..\qtsvg\include;.\serializers;.\mixgraph;.\audioio;.\tracker;.\legacy_soundlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Rpcrt4.lib;delayimp.lib;glu32.lib;opengl32.lib;version.lib;libsndfile-1.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;Qt5Svgd.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\extlib\libsndfile\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NOMINMAX;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <AdditionalIncludeDirectories>..\..\extlib\agg-2.4\font_win32_tt;..\..\extlib\agg-2.4\include;..\..\extlib\boost_1_54_0;..\..\extlib\jsoncpp-src-0.5.0\include;..\..\extlib\libsndfile\include;..\..\extlib\qtwinmigrate\src;..\..\extlib\pa_stable_v19_20111121\include;..\..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\..\extlib\soundtouch;..\..\extlib\unlha;..\..\extlib\unrar;..\..\extlib\unzip;..\..\extlib\vstsdk2.4;..\..\extlib\WDL\include;..\..\extlib\zlib-1.2.5;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);.\;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\..\qtsvg\include\QtSvg;$(QTDIR)\..\qtsvg\include;.\serializers;.\mixgraph;.\audioio;.\tracker;.\legacy_soundlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <StringPooling>true</StringPooling>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Rpcrt4.lib;delayimp.lib;glu32.lib;opengl32.lib;version.lib;libsndfile-1.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;Qt5Svg.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\extlib\libsndfile\lib;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <Profile>true</Profile>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\extlib\agg-2.4\makefiles\windows\vs2010\agg-2.4\agg-2.4.vcxproj">
+      <Project>{8787fae9-bb59-4076-b9f8-2e45df7e512e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj">
+      <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\pa_stable_v19_20111121\bindings\cpp\build\vc7_1\static_library.vcxproj">
+      <Project>{d18ea0c9-8c65-441d-884c-55eb43a84f2a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\pa_stable_v19_20111121\build\msvc\portaudio.vcxproj">
+      <Project>{0a18a071-125e-442f-aff7-a3f68abecf99}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\qtwinmigrate\build\qtwinmigrate.vcxproj">
+      <Project>{8cc04471-6f0d-486c-85f7-99f426393524}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\soundtouch\soundtouch_10.vcxproj">
+      <Project>{cf3c2ca5-5d45-4635-bba4-c1f435e10896}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\ungzip\ungzip_10.vcxproj">
+      <Project>{94cd7910-649a-4075-9f33-7ebee614fd45}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\unlha\unlha_10.vcxproj">
+      <Project>{fae39936-1dc7-40bb-ad3f-3b5b9e9ab0e8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\unrar\unrar_10.vcxproj">
+      <Project>{ff541ce2-daa1-4f84-9883-0a0f111baa0b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\unzip\unzip_10.vcxproj">
+      <Project>{44316f22-904e-48aa-b841-5a3a6ac77319}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\extlib\zlib-1.2.5\contrib\vstudio\vc10\zlibstat.vcxproj">
+      <Project>{745dec58-ebb3-47a9-a9b8-4c6627c01bf8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\openmpt-lib\openmpt-lib-vs2012.vcxproj">
+      <Project>{21d95071-fb97-4e69-b3b1-050d0d4a5021}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\openmpt\openmpt-vs2012.vcxproj">
+      <Project>{eaf08f88-5108-4de3-98d7-7f05b2ca6be7}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties Qt5Version_x0020_Win32="$(DefaultQtVersion)" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

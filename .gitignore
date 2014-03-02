@@ -169,6 +169,7 @@ Icon
 ################################################################################
 
 plan
+plan.txt
 test.saved.mptm
 
 *.lib
@@ -177,4 +178,5 @@ x86/
 !extlib/zlib-1.2.5/contrib/masmx86/*
 
 
-src/GeneratedFiles/
+src/*/GeneratedFiles/
+src/*/*Amplifier*XE*/
