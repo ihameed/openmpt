@@ -4,7 +4,6 @@
 #include "dlg_misc.h"
 #include "globals.h"
 #include "view_pat.h"
-#include "ChannelManagerDlg.h"
 #include "legacy_soundlib/tuningbase.h"
 #include <string>
 
@@ -615,14 +614,6 @@ void CViewPattern::OnDraw(CDC *pDC)
         DrawDragSel(hdc);
     }
     if (oldpen) ::SelectObject(hdc, oldpen);
-
-// -> CODE#0015
-// -> DESC="channels management dlg"
-    bool activeDoc = pMainFrm ? (pMainFrm->GetActiveDoc() == GetDocument()) : false;
-
-    if(activeDoc && CChannelManagerDlg::sharedInstance(FALSE) && CChannelManagerDlg::sharedInstance()->IsDisplayed())
-        CChannelManagerDlg::sharedInstance()->SetDocument((void*)this);
-// -! NEW_FEATURE#0015
 }
 
 

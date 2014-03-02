@@ -88,7 +88,6 @@
 #define IDR_VSTMENU                     436
 #define IDB_VISPCNODE                   437
 #define IDD_DEFAULTPLUGINEDITOR         438
-#define IDD_CHANNELMANAGER              440
 #define IDD_SOUNDBANK_INFO1             441
 #define IDR_PLUGINMENU                  442
 #define IDD_PITCHSHIFT                  442
@@ -612,7 +611,6 @@
 #define IDC_COMBO_OCTAVEMODIFIER        2123
 #define IDC_COMBO_SPLITINSTRUMENT       2124
 #define IDC_COMBO_SPLITVOLUME           2125
-#define IDC_TAB1                        2126
 #define IDC_CUSTOM2                     2127
 #define IDC_SLIDER_SONGTEMPO            2128
 #define IDC_STATIC8                     2200

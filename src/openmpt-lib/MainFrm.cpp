@@ -12,12 +12,8 @@
 #include "moptions.h"
 #include "vstplug.h"
 #include "mainfrm.h"
-// -> CODE#0015
-// -> DESC="channels management dlg"
 #include "globals.h"
-#include "ChannelManagerDlg.h"
 #include "MIDIMappingDialog.h"
-// -! NEW_FEATURE#0015
 #include <direct.h>
 #include "version.h"
 #include "ctrl_pat.h"
@@ -625,7 +621,6 @@ CMainFrame::~CMainFrame()
 {
     DeleteCriticalSection(&m_csAudio);
 
-    CChannelManagerDlg::DestroySharedInstance();
     module_renderer::DeleteStaticdata();
 }
 
@@ -1762,16 +1757,6 @@ void CMainFrame::OnPluginManager()
 void CMainFrame::OnChannelManager()
 //---------------------------------
 {
-    if(GetActiveDoc() && CChannelManagerDlg::sharedInstance())
-    {
-        if(CChannelManagerDlg::sharedInstance()->IsDisplayed())
-            CChannelManagerDlg::sharedInstance()->Hide();
-        else
-        {
-            CChannelManagerDlg::sharedInstance()->SetDocument(NULL);
-            CChannelManagerDlg::sharedInstance()->Show();
-        }
-    }
 }
 // -! NEW_FEATURE#0015
 

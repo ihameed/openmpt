@@ -6,7 +6,6 @@
 #include "ctrl_gen.h"
 #include "view_gen.h"
 #include "vstplug.h"
-#include "ChannelManagerDlg.h"
 #include ".\view_gen.h"
 
 #define ID_FXCOMMANDS_BASE    41000
@@ -247,9 +246,6 @@ void CViewGlobals::OnDraw(CDC* pDC)
 
     CMainFrame * pMainFrm = CMainFrame::GetMainFrame();
     BOOL activeDoc = pMainFrm ? pMainFrm->GetActiveDoc() == GetDocument() : FALSE;
-
-    if(activeDoc && CChannelManagerDlg::sharedInstance(FALSE) && CChannelManagerDlg::sharedInstance()->IsDisplayed())
-            CChannelManagerDlg::sharedInstance()->SetDocument((void*)this);
 }
 // -! NEW_FEATURE#0015
 

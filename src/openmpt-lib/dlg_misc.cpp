@@ -4,7 +4,6 @@
 #include "dlg_misc.h"
 #include "ChildFrm.h"
 #include "vstplug.h"
-#include "ChannelManagerDlg.h"
 #include "legacy_soundlib/midi.h"
 #include "version.h"
 
@@ -409,8 +408,6 @@ void CModTypeDlg::OnOK()
 
     m_pSndFile->SetupITBidiMode();
 
-    if(CChannelManagerDlg::sharedInstance(FALSE) && CChannelManagerDlg::sharedInstance()->IsDisplayed())
-            CChannelManagerDlg::sharedInstance()->Update();
     CDialog::OnOK();
 }
 

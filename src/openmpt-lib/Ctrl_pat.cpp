@@ -6,7 +6,6 @@
 #include "PatternEditorDialogs.h"
 #include "ctrl_pat.h"
 #include "view_pat.h"
-#include "ChannelManagerDlg.h"
 
 //////////////////////////////////////////////////////////////
 // CCtrlPatterns
@@ -653,14 +652,6 @@ void CCtrlPatterns::OnSequenceNext()
 void CCtrlPatterns::OnChannelManager()
 //------------------------------------
 {
-    if(CChannelManagerDlg::sharedInstance()){
-            if(CChannelManagerDlg::sharedInstance()->IsDisplayed())
-                    CChannelManagerDlg::sharedInstance()->Hide();
-            else{
-                    CChannelManagerDlg::sharedInstance()->SetDocument(NULL);
-                    CChannelManagerDlg::sharedInstance()->Show();
-            }
-    }
 }
 // -! NEW_FEATURE#0015
 
