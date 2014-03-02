@@ -38,7 +38,6 @@ bitset_remove(bitset<Ty> &set, const Ty val) {
     set._internal_val_ = static_cast<Ty>(
         static_cast<wrapped>(set._internal_val_) &
         ~static_cast<wrapped>(val));
-    printf("%p", &set._internal_val_);
 }
 
 template <typename Ty>
