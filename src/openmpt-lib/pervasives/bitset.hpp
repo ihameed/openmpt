@@ -17,6 +17,12 @@ struct bitset {
 };
 
 template <typename Ty>
+bool __forceinline
+operator == (const bitset<Ty> &x, const bitset<Ty> &y) {
+    return x._internal_val_ == y._internal_val_;
+}
+
+template <typename Ty>
 void __forceinline
 bitset_add(bitset<Ty> &set, const Ty val) {
     typedef typename bitset<Ty>::underlying_type wrapped;

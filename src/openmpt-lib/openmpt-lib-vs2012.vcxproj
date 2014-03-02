@@ -414,6 +414,7 @@
     <ClCompile Include="tracker\modsequence.cpp" />
     <ClCompile Include="tracker\orderlist.cpp" />
     <ClCompile Include="tracker\sample.cpp" />
+    <ClCompile Include="tracker\voice.cpp" />
     <ClCompile Include="view_gen.cpp" />
     <ClCompile Include="view_pat.cpp" />
     <ClCompile Include="VSTEditor.cpp" />
@@ -653,6 +654,7 @@
     <ClInclude Include="tracker\tracker.hpp" />
     <ClInclude Include="legacy_soundlib\Snd_defs.h" />
     <ClInclude Include="tracker\types.hpp" />
+    <ClInclude Include="tracker\voice.hpp" />
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="view_gen.h" />

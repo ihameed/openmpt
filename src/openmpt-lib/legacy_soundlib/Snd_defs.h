@@ -28,11 +28,11 @@ typedef uint32_t MODTYPE;
                                         // Note: Sample size in bytes can be more than 256 MB.
 // -! BEHAVIOUR_CHANGE#0006
 #define MAX_SAMPLE_RATE            192000
-const modplug::tracker::orderindex_t MAX_ORDERS = modplug::tracker::orderindex_t(256);
+const auto MAX_ORDERS = modplug::tracker::orderindex_t(256);
 #define MAX_PATTERNS            240
 #define MAX_SAMPLES                    4000
 
-const modplug::tracker::sequenceindex_t MAX_SEQUENCES = 50;
+const auto MAX_SEQUENCES = modplug::tracker::sequenceindex_t(50);
 
 const size_t MAX_INSTRUMENTS = 256;    //200 // -> CODE#0006 -> DESC="misc quantity changes" // -! BEHAVIOUR_CHANGE#0006
 
@@ -95,14 +95,7 @@ const size_t MAX_BASECHANNELS = 127;    // Max pattern channels.
 
 // Channel flags:
 // Bits 0-7:    Sample Flags
-#define CHN_16BIT                    0x01                // 16-bit sample
-#define CHN_LOOP                    0x02                // looped sample
-#define CHN_PINGPONGLOOP    0x04                // bidi-looped sample
-#define CHN_SUSTAINLOOP            0x08                // sample with sustain loop
-#define CHN_PINGPONGSUSTAIN    0x10                // sample with bidi sustain loop
-#define CHN_PANNING                    0x20                // sample with forced panning
 #define CHN_STEREO                    0x40                // stereo sample
-#define CHN_PINGPONGFLAG    0x80                // when flag is on, sample is processed backwards
 // Bits 8-31:    Channel Flags
 #define CHN_MUTE                    0x100                // muted channel
 #define CHN_KEYOFF                    0x200                // exit sustain
@@ -128,9 +121,6 @@ const size_t MAX_BASECHANNELS = 127;    // Max pattern channels.
 #define CHN_NOFX                    0x20000000        // dry channel -> CODE#0015 -> DESC="channels management dlg" -! NEW_FEATURE#0015
 #define CHN_SYNCMUTE            0x40000000        // keep sample sync on mute
 #define CHN_FILTERENV            0x80000000        // force pitch envelope to act as filter envelope
-
-#define CHN_SAMPLEFLAGS            (CHN_16BIT|CHN_LOOP|CHN_PINGPONGLOOP|CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN|CHN_PANNING|CHN_STEREO|CHN_PINGPONGFLAG)
-#define CHN_CHANNELFLAGS    (~CHN_SAMPLEFLAGS)
 
 // instrument envelope-specific flags
 #define ENV_ENABLED                    0x01        // env is enabled

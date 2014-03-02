@@ -39,11 +39,12 @@
 #include "Moddoc.h"
 #include "Mainfrm.h"
 #include "ModConvert.h"
-#include "tracker/types.hpp"
+#include "tracker/sample.hpp"
 
 #include "legacy_soundlib/misc.h"
 
 using namespace modplug::tracker;
+using namespace modplug::pervasives;
 
 namespace legacy_soundlib = modplug::legacy_soundlib;
 
@@ -273,23 +274,22 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
         if(newTypeIsMOD || newTypeIsS3M)
         {
             // Bidi loops
-            if((m_SndFile.Samples[nSmp].flags & CHN_PINGPONGLOOP) != 0)
-            {
-                m_SndFile.Samples[nSmp].flags &= ~CHN_PINGPONGLOOP;
+            if (bitset_is_set(m_SndFile.Samples[nSmp].flags, sflag_ty::BidiLoop)) {
+                bitset_remove(m_SndFile.Samples[nSmp].flags, sflag_ty::BidiLoop);
                 CHANGEMODTYPE_WARNING(wSampleBidiLoops);
             }
 
             // Sustain loops - convert to normal loops
-            if((m_SndFile.Samples[nSmp].flags & CHN_SUSTAINLOOP) != 0)
-            {
+            if(bitset_is_set(m_SndFile.Samples[nSmp].flags, sflag_ty::SustainLoop)) {
                 // We probably overwrite a normal loop here, but since sustain loops are evaluated before normal loops, this is just correct.
                 m_SndFile.Samples[nSmp].loop_start = m_SndFile.Samples[nSmp].sustain_start;
                 m_SndFile.Samples[nSmp].loop_end = m_SndFile.Samples[nSmp].sustain_end;
-                m_SndFile.Samples[nSmp].flags |= CHN_LOOP;
+                bitset_add(m_SndFile.Samples[nSmp].flags, sflag_ty::Loop);
                 CHANGEMODTYPE_WARNING(wSampleSustainLoops);
             }
             m_SndFile.Samples[nSmp].sustain_start = m_SndFile.Samples[nSmp].sustain_end = 0;
-            m_SndFile.Samples[nSmp].flags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
+            bitset_remove(m_SndFile.Samples[nSmp].flags, sflag_ty::SustainLoop);
+            bitset_remove(m_SndFile.Samples[nSmp].flags, sflag_ty::BidiSustainLoop);
 
             // Autovibrato
             if(m_SndFile.Samples[nSmp].vibrato_depth || m_SndFile.Samples[nSmp].vibrato_rate || m_SndFile.Samples[nSmp].vibrato_sweep)
@@ -316,7 +316,9 @@ bool CModDoc::ChangeModType(MODTYPE nNewType)
             auto &smp = m_SndFile.Samples[nSmp];
             std::tie(smp.RelativeTone, smp.nFineTune) =
                 transpose_of_frequency(smp.c5_samplerate);
-            if (!(m_SndFile.Samples[nSmp].flags & CHN_PANNING)) m_SndFile.Samples[nSmp].default_pan = 128;
+            if (!bitset_is_set(m_SndFile.Samples[nSmp].flags, sflag_ty::ForcedPanning)) {
+                m_SndFile.Samples[nSmp].default_pan = 128;
+            }
             // No relative note for MOD files
             // TODO: Pattern notes could be transposed based on the previous relative tone?
             if(newTypeIsMOD && m_SndFile.Samples[nSmp].RelativeTone != 0)

@@ -457,8 +457,9 @@ modplug::tracker::sampleindex_t CModDoc::InsertSample(bool bLimit)
     pSmp->vibrato_sweep = 0;
     pSmp->vibrato_depth = 0;
     pSmp->vibrato_rate = 0;
-    pSmp->flags &= ~(CHN_PANNING|CHN_SUSTAINLOOP);
-    if (m_SndFile.m_nType == MOD_TYPE_XM) pSmp->flags |= CHN_PANNING;
+    bitset_remove(pSmp->flags, sflag_ty::ForcedPanning);
+    bitset_remove(pSmp->flags, sflag_ty::SustainLoop);
+    if (m_SndFile.m_nType == MOD_TYPE_XM) bitset_add(pSmp->flags, sflag_ty::ForcedPanning);
     if (i > m_SndFile.m_nSamples) m_SndFile.m_nSamples = i;
     SetModified();
     return i;
@@ -487,7 +488,6 @@ modplug::tracker::instrumentindex_t CModDoc::InsertInstrument(modplug::tracker::
                     if (nInstruments > nInstrumentMax) nInstruments = nInstrumentMax;
                     for (modplug::tracker::sampleindex_t smp = 1; smp <= nInstruments; smp++)
                     {
-                            m_SndFile.Samples[smp].flags &= ~CHN_MUTE;
                             if (!m_SndFile.Instruments[smp])
                             {
                                     modplug::tracker::modinstrument_t *p = new modplug::tracker::modinstrument_t;

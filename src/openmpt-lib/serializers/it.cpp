@@ -217,16 +217,19 @@ uint32_of_pitch_env_flags(const bitset<it::pitch_env_flags_ty> val) {
     return ret;
 }
 
-uint16_t
-uint16_of_sample_flags(const bitset<it::sample_flags_ty> val) {
+sflags_ty
+sflags_of_sample_flags(const bitset<it::sample_flags_ty> val) {
     using namespace it;
-    uint16_t ret = 0;
-    if (bitset_is_set(val, sample_flags_ty::LoopEnabled))     ret |= CHN_LOOP;
-    if (bitset_is_set(val, sample_flags_ty::SusLoopEnabled))  ret |= CHN_SUSTAINLOOP;
-    if (bitset_is_set(val, sample_flags_ty::PingPongLoop))    ret |= CHN_PINGPONGLOOP;
-    if (bitset_is_set(val, sample_flags_ty::PingPongSusLoop)) ret |= CHN_PINGPONGSUSTAIN;
-    if (bitset_is_set(val, sample_flags_ty::SixteenBit))      ret |= CHN_16BIT;
-    if (bitset_is_set(val, sample_flags_ty::Stereo))          ret |= CHN_STEREO;
+    sflags_ty ret;
+    const auto add = [&] (const it::sample_flags_ty x, const sflag_ty y) {
+        if (bitset_is_set(val, x)) bitset_add(ret, y);
+    };
+    add(sample_flags_ty::LoopEnabled, sflag_ty::Loop);
+    add(sample_flags_ty::SusLoopEnabled, sflag_ty::SustainLoop);
+    add(sample_flags_ty::PingPongLoop, sflag_ty::BidiLoop);
+    add(sample_flags_ty::PingPongSusLoop, sflag_ty::BidiSustainLoop);
+    add(sample_flags_ty::SixteenBit, sflag_ty::SixteenBit);
+    add(sample_flags_ty::Stereo, sflag_ty::Stereo);
     return ret;
 }
 
@@ -372,7 +375,7 @@ import_sample(modsample_t &ref, const it::sample_ty &sample) {
     ref.vibrato_depth  = sample.vibrato_depth;
     ref.vibrato_rate   = sample.vibrato_rate;
     ref.vibrato_type   = 0; //sample.vibrato_waveform;
-    ref.flags          = uint16_of_sample_flags(sample.flags);
+    ref.flags          = sflags_of_sample_flags(sample.flags);
     auto bytelength = sample.num_frames;
     if (bitset_is_set(sample.flags, it::sample_flags_ty::HasSampleData)) {
         ref.length = sample.num_frames;

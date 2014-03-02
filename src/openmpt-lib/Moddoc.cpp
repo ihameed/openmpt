@@ -760,9 +760,9 @@ UINT CModDoc::PlayNote(UINT note, UINT nins, UINT nsmp, BOOL bpause, LONG nVol, 
             pChn->sample_position = pChn->fractional_sample_position = pChn->length = 0;
             pChn->loop_start = pSmp->loop_start;
             pChn->loop_end = pSmp->loop_end;
-            pChn->flags = bitset_unset(voicef_from_legacy(pSmp->flags), vflag_ty::Mute);
+            pChn->flags = bitset_unset(voicef_from_smpf(pSmp->flags), vflag_ty::Mute);
             pChn->nPan = 128;
-            if (pSmp->flags & CHN_PANNING) pChn->nPan = pSmp->default_pan;
+            if (bitset_is_set(pSmp->flags, sflag_ty::ForcedPanning)) pChn->nPan = pSmp->default_pan;
             pChn->nInsVol = pSmp->global_volume;
             pChn->nFadeOutVol = 0x10000;
         }
@@ -1100,19 +1100,25 @@ void CModDoc::ReinitRecordState(bool unselect)
 bool CModDoc::MuteSample(modplug::tracker::sampleindex_t nSample, bool bMute)
 //-------------------------------------------------------
 {
+    /*
     if ((nSample < 1) || (nSample > m_SndFile.m_nSamples)) return false;
     if (bMute) m_SndFile.Samples[nSample].flags |= CHN_MUTE;
     else m_SndFile.Samples[nSample].flags &= ~CHN_MUTE;
     return true;
+    */
+    return false;
 }
 
 bool CModDoc::MuteInstrument(modplug::tracker::instrumentindex_t nInstr, bool bMute)
 //--------------------------------------------------------------
 {
+    /*
     if ((nInstr < 1) || (nInstr > m_SndFile.m_nInstruments) || (!m_SndFile.Instruments[nInstr])) return false;
     if (bMute) m_SndFile.Instruments[nInstr]->flags |= INS_MUTE;
     else m_SndFile.Instruments[nInstr]->flags &= ~INS_MUTE;
     return true;
+    */
+    return false;
 }
 
 
@@ -1187,8 +1193,11 @@ bool CModDoc::IsChannelMuted(modplug::tracker::chnindex_t nChn) const
 bool CModDoc::IsSampleMuted(modplug::tracker::sampleindex_t nSample) const
 //----------------------------------------------------
 {
+    /*
     if ((!nSample) || (nSample > m_SndFile.m_nSamples)) return false;
     return (m_SndFile.Samples[nSample].flags & CHN_MUTE) ? true : false;
+    */
+    return false;
 }
 
 

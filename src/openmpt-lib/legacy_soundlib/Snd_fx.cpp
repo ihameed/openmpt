@@ -607,7 +607,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
         {
             pChn->nInsVol = pSmp->global_volume;
         }
-        if (pSmp->flags & CHN_PANNING) pChn->nPan = pSmp->default_pan;
+        if (bitset_is_set(pSmp->flags, sflag_ty::ForcedPanning)) pChn->nPan = pSmp->default_pan;
     }
 
 
@@ -664,7 +664,7 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
         bitset_remove(pChn->flags, vflag_ty::NoteFade);
         pChn->flags = bitset_merge(
             voicef_unset_smpf(pChn->flags),
-            voicef_from_legacy(pSmp->flags));
+            voicef_from_smpf(pSmp->flags));
     } else
     {
         bitset_remove(pChn->flags, vflag_ty::KeyOff);
@@ -678,11 +678,11 @@ void module_renderer::InstrumentChange(modplug::tracker::modchannel_t *pChn, UIN
         if (IsCompatibleMode(TRK_IMPULSETRACKER) && pSmp == pChn->sample && !bInstrumentChanged) {
             pChn->flags = bitset_merge(
                 voicef_unset_smpf(pChn->flags),
-                voicef_from_legacy(pSmp->flags));
+                voicef_from_smpf(pSmp->flags));
         } else {
             pChn->flags = bitset_merge(
                 bitset_unset(voicef_unset_smpf(pChn->flags), vflag_ty::ScrubBackwards),
-                voicef_from_legacy(pSmp->flags));
+                voicef_from_smpf(pSmp->flags));
         }
 
 
@@ -877,7 +877,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
             pChn->loop_start = 0;
             pChn->flags = bitset_merge(
                 bitset_unset(voicef_unset_smpf(pChn->flags), vflag_ty::ScrubBackwards),
-                voicef_from_legacy(pSmp->flags));
+                voicef_from_smpf(pSmp->flags));
             if (bitset_is_set(pChn->flags, vflag_ty::SustainLoop)) {
                 pChn->loop_start = pSmp->sustain_start;
                 pChn->loop_end = pSmp->sustain_end;
@@ -1053,9 +1053,8 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
     }
     // Special case for MPT
     if (bManual) bitset_remove(pChn->flags, vflag_ty::Mute);
-    if ((bitset_is_set(pChn->flags, vflag_ty::Mute) && (deprecated_global_sound_setup_bitmask & SNDMIX_MUTECHNMODE))
-     || ((pChn->sample) && (pChn->sample->flags & CHN_MUTE) && (!bManual))
-     || ((pChn->instrument) && (pChn->instrument->flags & INS_MUTE) && (!bManual)))
+    if ( (bitset_is_set(pChn->flags, vflag_ty::Mute) && (deprecated_global_sound_setup_bitmask & SNDMIX_MUTECHNMODE)) ||
+         ((pChn->instrument) && (pChn->instrument->flags & INS_MUTE) && (!bManual)) )
     {
         if (!bManual) pChn->nPeriod = 0;
     }
@@ -3073,7 +3072,13 @@ inline void module_renderer::InvertLoop(modplug::tracker::modchannel_t *pChn)
 
     // we obviously also need a sample for this
     modplug::tracker::modsample_t *pModSample = pChn->sample;
-    if(pModSample == nullptr || pModSample->sample_data.generic == nullptr || !(pModSample->flags & CHN_LOOP) || (pModSample->flags & CHN_16BIT)) return;
+    if (pModSample == nullptr ||
+        pModSample->sample_data.generic == nullptr ||
+        !bitset_is_set(pModSample->flags, sflag_ty::Loop) ||
+        bitset_is_set(pModSample->flags, sflag_ty::SixteenBit) )
+    {
+        return;
+    }
 
     pChn->nEFxDelay += ModEFxTable[pChn->nEFxSpeed & 0x0F];
     if((pChn->nEFxDelay & 0x80) == 0) return; // only applied if the "delay" reaches 128
@@ -3648,9 +3653,9 @@ void module_renderer::KeyOff(UINT nChn)
     if (bitset_is_set(pChn->flags, vflag_ty::SustainLoop) && (pChn->sample) && (bKeyOn))
     {
         const modplug::tracker::modsample_t *pSmp = pChn->sample;
-        if (pSmp->flags & CHN_LOOP)
+        if (bitset_is_set(pSmp->flags, sflag_ty::Loop))
         {
-            if (pSmp->flags & CHN_PINGPONGLOOP) {
+            if (bitset_is_set(pSmp->flags, sflag_ty::BidiLoop)) {
                 bitset_add(pChn->flags, vflag_ty::BidiLoop);
             } else {
                 bitset_remove(pChn->flags, vflag_ty::BidiLoop);
@@ -4044,11 +4049,13 @@ UINT module_renderer::GetActiveInstrumentPlugin(UINT nChn, bool respectMutes) co
 
     UINT nPlugin=0;
     if (pChn && pChn->instrument) {
+    /*
         if (respectMutes && pChn->sample && (pChn->sample->flags & CHN_MUTE)) {
             nPlugin = 0;
         } else {
+        */
             nPlugin = pChn->instrument->nMixPlug;
-        }
+        //}
     }
     return nPlugin;
 }

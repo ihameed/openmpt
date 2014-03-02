@@ -7,6 +7,12 @@ namespace modplug {
 namespace tracker {
 
 typedef int32_t sampleoffset_t;
+/*
+NEWTYPE(sampleoffset_t, int32_t);
+ORDERED_TYPE(sampleoffset_t);
+ARITHMETIC_TYPE(sampleoffset_t);
+INCR_DECR_TYPE(sampleoffset_t);
+*/
 
 typedef uint32_t rowindex_t;
 const rowindex_t RowIndexMax     = UINT32_MAX;
@@ -43,4 +49,13 @@ const sequenceindex_t SequenceIndexMax     = UINT8_MAX;
 const sequenceindex_t SequenceIndexInvalid = SequenceIndexMax;
 
 }
+
+namespace pervasives {
+modplug::tracker::sampleoffset_t inline
+unwrap(const modplug::tracker::sampleoffset_t &wrapped) { return wrapped; }
+
+modplug::tracker::orderindex_t inline
+unwrap(const modplug::tracker::orderindex_t &wrapped) { return wrapped; }
+}
+
 }

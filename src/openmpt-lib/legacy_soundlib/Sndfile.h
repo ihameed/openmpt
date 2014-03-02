@@ -66,12 +66,12 @@ GetSampleCount(modplug::tracker::modchannel_t *pChn, int32_t nSamples, bool bITB
 {
     using namespace modplug::pervasives;
     using namespace modplug::tracker;
-    const int32_t nLoopStart = bitset_is_set(pChn->flags, vflag_ty::Loop) ? pChn->loop_start : 0;
+    const int32_t nLoopStart = bitset_is_set(pChn->flags, vflag_ty::Loop) ? unwrap(pChn->loop_start) : 0;
     int32_t nInc = pChn->position_delta;
 
     if ((nSamples <= 0) || (!nInc) || (!pChn->length)) return 0;
     // Under zero ?
-    if ((int32_t)pChn->sample_position < nLoopStart)
+    if (unwrap(pChn->sample_position) < nLoopStart)
     {
         if (nInc < 0)
         {

@@ -142,6 +142,9 @@
     <ClCompile Include="TuningDialog.cpp" />
     <ClCompile Include="tuningRatioMapWnd.cpp" />
     <ClCompile Include="test\test.cpp" />
+    <ClCompile Include="tracker\voice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="audioio\paudio.hpp" />
@@ -242,6 +245,9 @@
     <ClInclude Include="pervasives\unit.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tracker\voice.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gui\qt5\config_dialog.hpp" />
@@ -292,6 +298,11 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;cxx;c;def</Extensions>
       <ParseFiles>true</ParseFiles>
     </Filter>
   </ItemGroup>

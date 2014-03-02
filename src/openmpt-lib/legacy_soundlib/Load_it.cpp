@@ -976,7 +976,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
             modsample_t *pSmp = &Samples[nsmp+1];
             memcpy(pSmp->legacy_filename, pis->filename, 12);
             SpaceToNullStringFixed<12>(pSmp->legacy_filename);
-            pSmp->flags = 0;
+            pSmp->flags = sflags_ty();
             pSmp->length = 0;
             pSmp->loop_start = pis->loopbegin;
             pSmp->loop_end = pis->loopend;
@@ -989,13 +989,13 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
             if (pSmp->default_volume > 256) pSmp->default_volume = 256;
             pSmp->global_volume = pis->gvl;
             if (pSmp->global_volume > 64) pSmp->global_volume = 64;
-            if (pis->flags & 0x10) pSmp->flags |= CHN_LOOP;
-            if (pis->flags & 0x20) pSmp->flags |= CHN_SUSTAINLOOP;
-            if (pis->flags & 0x40) pSmp->flags |= CHN_PINGPONGLOOP;
-            if (pis->flags & 0x80) pSmp->flags |= CHN_PINGPONGSUSTAIN;
+            if (pis->flags & 0x10) bitset_add(pSmp->flags, sflag_ty::Loop);
+            if (pis->flags & 0x20) bitset_add(pSmp->flags, sflag_ty::SustainLoop);
+            if (pis->flags & 0x40) bitset_add(pSmp->flags, sflag_ty::BidiLoop);
+            if (pis->flags & 0x80) bitset_add(pSmp->flags, sflag_ty::BidiSustainLoop);
             pSmp->default_pan = (pis->dfp & 0x7F) << 2;
             if (pSmp->default_pan > 256) pSmp->default_pan = 256;
-            if (pis->dfp & 0x80) pSmp->flags |= CHN_PANNING;
+            if (pis->dfp & 0x80) bitset_add(pSmp->flags, sflag_ty::ForcedPanning);
             pSmp->vibrato_type = autovibit2xm[pis->vit & 7];
             pSmp->vibrato_rate = pis->vis;
             pSmp->vibrato_depth = pis->vid & 0x7F;
@@ -1016,7 +1016,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
                 {
                     flags += 5;
                     if (pis->flags & 4 && pifh->cwtv >= 0x214) flags |= RSF_STEREO;    // some old version of IT didn't clear the stereo flag when importing samples. Luckily, all other trackers are identifying as IT 2.14+, so let's check for old IT versions.
-                    pSmp->flags |= CHN_16BIT;
+                    bitset_add(pSmp->flags, sflag_ty::SixteenBit);
                     // IT 2.14 16-bit packed sample?
                     if (pis->flags & 8) flags = ((pifh->cmwt >= 0x215) && (pis->cvt & 4)) ? RS_IT21516 : RS_IT21416;
                 } else    // 8-bit
@@ -1874,10 +1874,10 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         if(psmp->length && psmp->sample_data.generic)
         {
             itss.flags = 0x01;
-            if (psmp->flags & CHN_LOOP) itss.flags |= 0x10;
-            if (psmp->flags & CHN_SUSTAINLOOP) itss.flags |= 0x20;
-            if (psmp->flags & CHN_PINGPONGLOOP) itss.flags |= 0x40;
-            if (psmp->flags & CHN_PINGPONGSUSTAIN) itss.flags |= 0x80;
+            if (bitset_is_set(psmp->flags, sflag_ty::Loop)) itss.flags |= 0x10;
+            if (bitset_is_set(psmp->flags, sflag_ty::SustainLoop)) itss.flags |= 0x20;
+            if (bitset_is_set(psmp->flags, sflag_ty::BidiLoop)) itss.flags |= 0x40;
+            if (bitset_is_set(psmp->flags, sflag_ty::BidiSustainLoop)) itss.flags |= 0x80;
 #ifndef NO_PACKING
             if (nPacking)
             {
@@ -1890,15 +1890,15 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
             } else
 #endif // NO_PACKING
             {
-                if (psmp->flags & CHN_STEREO)
+                if (bitset_is_set(psmp->flags, sflag_ty::Stereo))
                 {
                     flags = RS_STPCM8S;
                     itss.flags |= 0x04;
                 }
-                if (psmp->flags & CHN_16BIT)
+                if (bitset_is_set(psmp->flags, sflag_ty::SixteenBit))
                 {
                     itss.flags |= 0x02;
-                    flags = (psmp->flags & CHN_STEREO) ? RS_STPCM16S : RS_PCM16S;
+                    flags = bitset_is_set(psmp->flags, sflag_ty::Stereo) ? RS_STPCM16S : RS_PCM16S;
                 }
             }
             itss.cvt = 0x01;
@@ -1921,7 +1921,7 @@ bool module_renderer::SaveIT(LPCSTR lpszFileName, UINT nPacking)
         itss.vis = bad_min(psmp->vibrato_rate, 64);
         itss.vid = bad_min(psmp->vibrato_depth, 32);
         itss.vir = bad_min(psmp->vibrato_sweep, 255); //(psmp->vibrato_sweep < 64) ? psmp->vibrato_sweep * 4 : 255;
-        if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
+        if (bitset_is_set(psmp->flags, sflag_ty::ForcedPanning)) itss.dfp |= 0x80;
 
         itss.samplepointer = dwPos;
         fseek(f, smppos[nsmp-1], SEEK_SET);
@@ -2456,20 +2456,18 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         if(psmp->length && psmp->sample_data.generic)
         {
             itss.flags = 0x01;
-            if (psmp->flags & CHN_LOOP) itss.flags |= 0x10;
-            if (psmp->flags & CHN_SUSTAINLOOP) itss.flags |= 0x20;
-            if (psmp->flags & CHN_PINGPONGLOOP) itss.flags |= 0x40;
-            if (psmp->flags & CHN_PINGPONGSUSTAIN) itss.flags |= 0x80;
+            if (bitset_is_set(psmp->flags, sflag_ty::Loop)) itss.flags |= 0x10;
+            if (bitset_is_set(psmp->flags, sflag_ty::SustainLoop)) itss.flags |= 0x20;
+            if (bitset_is_set(psmp->flags, sflag_ty::BidiLoop)) itss.flags |= 0x40;
+            if (bitset_is_set(psmp->flags, sflag_ty::BidiSustainLoop)) itss.flags |= 0x80;
 
-            if (psmp->flags & CHN_STEREO)
-            {
+            if (bitset_is_set(psmp->flags, sflag_ty::Stereo)) {
                 flags = RS_STPCM8S;
                 itss.flags |= 0x04;
             }
-            if (psmp->flags & CHN_16BIT)
-            {
+            if (bitset_is_set(psmp->flags, sflag_ty::SixteenBit)) {
                 itss.flags |= 0x02;
-                flags = (psmp->flags & CHN_STEREO) ? RS_STPCM16S : RS_PCM16S;
+                flags = bitset_is_set(psmp->flags, sflag_ty::Stereo) ? RS_STPCM16S : RS_PCM16S;
             }
 
             itss.cvt = 0x01;
@@ -2492,7 +2490,7 @@ bool module_renderer::SaveCompatIT(LPCSTR lpszFileName)
         itss.vis = bad_min(psmp->vibrato_rate, 64);
         itss.vid = bad_min(psmp->vibrato_depth, 32);
         itss.vir = bad_min(psmp->vibrato_sweep, 255);
-        if (psmp->flags & CHN_PANNING) itss.dfp |= 0x80;
+        if (bitset_is_set(psmp->flags, sflag_ty::ForcedPanning)) itss.dfp |= 0x80;
 
         itss.samplepointer = dwPos;
         fseek(f, smppos[nsmp-1], SEEK_SET);

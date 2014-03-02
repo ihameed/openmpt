@@ -67,8 +67,6 @@ LPCSTR glpszModExtensions = "mod|s3m|xm|it|stm|nst|ult|669|wow|mtm|med|far|mdl|a
 using namespace modplug::tracker;
 using namespace modplug::pervasives;
 
-namespace binaryparse = modplug::pervasives::binaryparse;
-
 // External decompressors
 extern uint32_t ITReadBits(uint32_t &bitbuf, UINT &bitnum, LPBYTE &ibuf, CHAR n);
 extern void ITUnpack8Bit(LPSTR pSample, uint32_t dwLen, LPBYTE lpMemFile, uint32_t dwMemLength, BOOL b215);
@@ -585,8 +583,14 @@ BOOL module_renderer::Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_
             pSmp->sustain_start = 0;
             pSmp->sustain_end = 0;
         }
-        if (!pSmp->loop_end) pSmp->flags &= ~(CHN_LOOP|CHN_PINGPONGLOOP);
-        if (!pSmp->sustain_end) pSmp->flags &= ~(CHN_SUSTAINLOOP|CHN_PINGPONGSUSTAIN);
+        if (!pSmp->loop_end) {
+            bitset_remove(pSmp->flags, sflag_ty::Loop);
+            bitset_remove(pSmp->flags, sflag_ty::BidiLoop);
+        }
+        if (!pSmp->sustain_end) {
+            bitset_remove(pSmp->flags, sflag_ty::SustainLoop);
+            bitset_remove(pSmp->flags, sflag_ty::BidiSustainLoop);
+        }
         if (pSmp->global_volume > 64) pSmp->global_volume = 64;
     }
     // Check invalid instruments
@@ -1445,7 +1449,7 @@ UINT module_renderer::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, 
             {
                 int s_new = *p;
                 p++;
-                if (pSmp->flags & CHN_STEREO)
+                if (bitset_is_set(pSmp->flags, sflag_ty::Stereo))
                 {
                     s_new = (s_new + (*p) + 1) >> 1;
                     p++;
@@ -1573,14 +1577,14 @@ UINT module_renderer::WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, 
         bufcount = 0;
         {
             int8_t *p = (int8_t *)pSample;
-            int sinc = (pSmp->flags & CHN_16BIT) ? 2 : 1;
+            int sinc = bitset_is_set(pSmp->flags, sflag_ty::SixteenBit) ? 2 : 1;
             int s_old = 0, s_ofs = (nFlags == RS_PCM8U) ? 0x80 : 0;
-            if (pSmp->flags & CHN_16BIT) p++;
+            if (bitset_is_set(pSmp->flags, sflag_ty::SixteenBit)) p++;
             for (UINT j=0; j<len; j++)
             {
                 int s_new = (int8_t)(*p);
                 p += sinc;
-                if (pSmp->flags & CHN_STEREO)
+                if (bitset_is_set(pSmp->flags, sflag_ty::Stereo))
                 {
                     s_new = (s_new + ((int)*p) + 1) >> 1;
                     p += sinc;
@@ -1627,16 +1631,17 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
 
     UINT len = 0, mem = pSmp->length+6;
 
-    pSmp->flags &= ~(CHN_16BIT|CHN_STEREO);
+    bitset_remove(pSmp->flags, sflag_ty::SixteenBit);
+    bitset_remove(pSmp->flags, sflag_ty::Stereo);
     if (nFlags & RSF_16BIT)
     {
         mem *= 2;
-        pSmp->flags |= CHN_16BIT;
+        bitset_add(pSmp->flags, sflag_ty::SixteenBit);
     }
     if (nFlags & RSF_STEREO)
     {
         mem *= 2;
-        pSmp->flags |= CHN_STEREO;
+        bitset_add(pSmp->flags, sflag_ty::Stereo);
     }
 
     if ((pSmp->sample_data.generic = modplug::legacy_soundlib::alloc_sample(mem)) == NULL)
@@ -1647,7 +1652,7 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
 
     // Check that allocated memory size is not less than what the modinstrument itself
     // thinks it is.
-    if( mem < pSmp->GetSampleSizeInBytes() )
+    if( mem < sample_len_bytes(*pSmp) )
     {
         pSmp->length = 0;
         modplug::legacy_soundlib::free_sample(pSmp->sample_data.generic);
@@ -1926,16 +1931,16 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
             {
                 char* pSrc = (char*)lpMemFile;
                 char* pDest = (char*)pSmp->sample_data.generic;
-                CopyWavBuffer<3, 2, WavSigned24To16, MaxFinderSignedInt<3> >(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
+                CopyWavBuffer<3, 2, WavSigned24To16, MaxFinderSignedInt<3> >(pSrc, len, pDest, sample_len_bytes(*pSmp));
             }
             else //RS_PCM32S
             {
                 char* pSrc = (char*)lpMemFile;
                 char* pDest = (char*)pSmp->sample_data.generic;
                 if(format == 3)
-                    CopyWavBuffer<4, 2, WavFloat32To16, MaxFinderFloat32>(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
+                    CopyWavBuffer<4, 2, WavFloat32To16, MaxFinderFloat32>(pSrc, len, pDest, sample_len_bytes(*pSmp));
                 else
-                    CopyWavBuffer<4, 2, WavSigned32To16, MaxFinderSignedInt<4> >(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
+                    CopyWavBuffer<4, 2, WavSigned32To16, MaxFinderSignedInt<4> >(pSrc, len, pDest, sample_len_bytes(*pSmp));
             }
         }
         break;
@@ -1961,7 +1966,7 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
             char* pDest = (char*)pSmp->sample_data.generic;
             if (len > 8*8)
             {
-                CopyWavBuffer<4, 2, WavFloat32To16, MaxFinderFloat32>(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
+                CopyWavBuffer<4, 2, WavFloat32To16, MaxFinderFloat32>(pSrc, len, pDest, sample_len_bytes(*pSmp));
             }
         }
         else
@@ -1975,11 +1980,11 @@ UINT module_renderer::ReadSample(modplug::tracker::modsample_t *pSmp, UINT nFlag
                 char* pDest = (char*)pSmp->sample_data.generic;
                 if(nFlags == RS_STIPCM32S)
                 {
-                    CopyWavBuffer<4,2,WavSigned32To16, MaxFinderSignedInt<4> >(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
+                    CopyWavBuffer<4,2,WavSigned32To16, MaxFinderSignedInt<4> >(pSrc, len, pDest, sample_len_bytes(*pSmp));
                 }
                 if(nFlags == RS_STIPCM24S)
                 {
-                    CopyWavBuffer<3,2,WavSigned24To16, MaxFinderSignedInt<3> >(pSrc, len, pDest, pSmp->GetSampleSizeInBytes());
+                    CopyWavBuffer<3,2,WavSigned24To16, MaxFinderSignedInt<3> >(pSrc, len, pDest, sample_len_bytes(*pSmp));
                 }
 
             }
@@ -2034,26 +2039,23 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
     if (pSmp->loop_start >= pSmp->loop_end)
     {
         pSmp->loop_start = pSmp->loop_end = 0;
-        pSmp->flags &= ~CHN_LOOP;
+        bitset_remove(pSmp->flags, sflag_ty::Loop);
     }
+    const auto loop = sflags_ty(sflag_ty::Loop);
+    const auto test = bitset_set(bitset_set(loop, sflag_ty::BidiLoop), sflag_ty::Stereo);
     UINT len = pSmp->length;
-    if (pSmp->flags & CHN_16BIT)
-    {
+    if (bitset_is_set(pSmp->flags, sflag_ty::SixteenBit)) {
         short int *pSample = (short int *)pSmp->sample_data.generic;
         // Adjust end of sample
-        if (pSmp->flags & CHN_STEREO)
-        {
+        if (bitset_is_set(pSmp->flags, sflag_ty::Stereo)) {
             pSample[len*2+6] = pSample[len*2+4] = pSample[len*2+2] = pSample[len*2] = pSample[len*2-2];
             pSample[len*2+7] = pSample[len*2+5] = pSample[len*2+3] = pSample[len*2+1] = pSample[len*2-1];
-        } else
-        {
+        } else {
             pSample[len+4] = pSample[len+3] = pSample[len+2] = pSample[len+1] = pSample[len] = pSample[len-1];
         }
-        if ((pSmp->flags & (CHN_LOOP|CHN_PINGPONGLOOP|CHN_STEREO)) == CHN_LOOP)
-        {
+        if (bitset_intersect(pSmp->flags, test) == loop) {
             // Fix bad loops
-            if ((pSmp->loop_end+3 >= pSmp->length) || (m_nType & MOD_TYPE_S3M))
-            {
+            if ((pSmp->loop_end+3 >= pSmp->length) || (m_nType & MOD_TYPE_S3M)) {
                 pSample[pSmp->loop_end] = pSample[pSmp->loop_start];
                 pSample[pSmp->loop_end+1] = pSample[pSmp->loop_start+1];
                 pSample[pSmp->loop_end+2] = pSample[pSmp->loop_start+2];
@@ -2065,18 +2067,18 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
     {
         LPSTR pSample = pSmp->sample_data.generic;
         // Crappy samples (except chiptunes) ?
-        if ((pSmp->length > 0x100) && (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M))
-         && (!(pSmp->flags & CHN_STEREO)))
+        if ( (pSmp->length > 0x100) &&
+             (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M)) &&
+             (!bitset_is_set(pSmp->flags, sflag_ty::Stereo)) )
         {
             int smpend = pSample[pSmp->length-1], smpfix = 0, kscan;
-            for (kscan=pSmp->length-1; kscan>0; kscan--)
-            {
+            for (kscan=pSmp->length-1; kscan>0; kscan--) {
                 smpfix = pSample[kscan-1];
                 if (smpfix != smpend) break;
             }
             int delta = smpfix - smpend;
-            if (((!(pSmp->flags & CHN_LOOP)) || (kscan > (int)pSmp->loop_end))
-             && ((delta < -8) || (delta > 8)))
+            if ( ((!bitset_is_set(pSmp->flags, sflag_ty::Loop)) || (kscan > (int)pSmp->loop_end)) &&
+                 ((delta < -8) || (delta > 8)) )
             {
                 while (kscan<(int)pSmp->length)
                 {
@@ -2091,16 +2093,13 @@ void module_renderer::AdjustSampleLoop(modplug::tracker::modsample_t *pSmp)
             }
         }
         // Adjust end of sample
-        if (pSmp->flags & CHN_STEREO)
-        {
+        if (bitset_is_set(pSmp->flags, sflag_ty::Stereo)) {
             pSample[len*2+6] = pSample[len*2+4] = pSample[len*2+2] = pSample[len*2] = pSample[len*2-2];
             pSample[len*2+7] = pSample[len*2+5] = pSample[len*2+3] = pSample[len*2+1] = pSample[len*2-1];
-        } else
-        {
+        } else {
             pSample[len+4] = pSample[len+3] = pSample[len+2] = pSample[len+1] = pSample[len] = pSample[len-1];
         }
-        if ((pSmp->flags & (CHN_LOOP|CHN_PINGPONGLOOP|CHN_STEREO)) == CHN_LOOP)
-        {
+        if (bitset_intersect(pSmp->flags, test) == loop) {
             if ((pSmp->loop_end+3 >= pSmp->length) || (m_nType & (MOD_TYPE_MOD|MOD_TYPE_S3M)))
             {
                 pSample[pSmp->loop_end] = pSample[pSmp->loop_start];
@@ -2284,7 +2283,7 @@ bool module_renderer::DestroySample(modplug::tracker::sampleindex_t nSample)
     LPSTR pSample = pSmp->sample_data.generic;
     pSmp->sample_data.generic = nullptr;
     pSmp->length = 0;
-    pSmp->flags &= ~(CHN_16BIT);
+    bitset_remove(pSmp->flags, sflag_ty::SixteenBit);
     for (UINT i=0; i<MAX_VIRTUAL_CHANNELS; i++)
     {
         if (Chn[i].sample_data == pSample)
@@ -2312,7 +2311,7 @@ bool module_renderer::MoveSample(modplug::tracker::sampleindex_t from, modplug::
 
     pFrom->sample_data.generic = nullptr;
     pFrom->length = 0;
-    pFrom->flags &= ~(CHN_16BIT);
+    bitset_remove(pFrom->flags, sflag_ty::SixteenBit);
 
     return true;
 }

@@ -5,6 +5,7 @@
 #include "modevent.hpp"
 #include "types.hpp"
 #include "sample.hpp"
+#include "voice.hpp"
 
 #include "../pervasives/bitset.hpp"
 
@@ -17,132 +18,7 @@ typedef CTuningBase CTuning;
 namespace modplug {
 namespace tracker {
 
-enum struct sflag_ty : uint32_t {
-    SixteenBit      = 1u << 0,
-    Loop            = 1u << 1,
-    BidiLoop        = 1u << 2,
-    SustainLoop     = 1u << 3,
-    BidiSustainLoop = 1u << 4,
-    ForcedPanning   = 1u << 5,
-    Stereo          = 1u << 6
-};
-
-enum struct vflag_ty : uint32_t {
-    SixteenBit           = 1u << 0,
-    Loop                 = 1u << 1,
-    BidiLoop             = 1u << 2,
-    SustainLoop          = 1u << 3,
-    BidiSustainLoop      = 1u << 4,
-    Stereo               = 1u << 5,
-    ScrubBackwards       = 1u << 6,
-    Mute                 = 1u << 7,
-    KeyOff               = 1u << 8,
-    NoteFade             = 1u << 9,
-    Surround             = 1u << 10,
-    DisableInterpolation = 1u << 11,
-    AlreadyLooping       = 1u << 12,
-    Filter               = 1u << 13,
-    VolumeRamp           = 1u << 14,
-    Vibrato              = 1u << 15,
-    Tremolo              = 1u << 16,
-    Panbrello            = 1u << 17,
-    Portamento           = 1u << 18,
-    Glissando            = 1u << 19,
-    VolEnvOn             = 1u << 20,
-    PanEnvOn             = 1u << 21,
-    PitchEnvOn           = 1u << 22,
-    FastVolRamp          = 1u << 23,
-    ExtraLoud            = 1u << 24,
-    Solo                 = 1u << 27,
-    DisableDsp           = 1u << 28,
-    SyncMute             = 1u << 29,
-    PitchEnvAsFilter     = 1u << 30,
-    ForcedPanning        = 1u << 31
-};
-
-typedef pervasives::bitset<vflag_ty> vflags_ty;
-
-modplug::pervasives::bitset<vflag_ty> __forceinline
-voicef_from_legacy(const uint32_t old) {
-    using namespace modplug::pervasives;
-    bitset<vflag_ty> ret;
-    const auto set = [&] (const uint32_t sf, const vflag_ty vf) {
-        if (old & sf) bitset_add(ret, vf);
-    };
-    set(CHN_16BIT, vflag_ty::SixteenBit);
-    set(CHN_LOOP, vflag_ty::Loop);
-    set(CHN_PINGPONGLOOP, vflag_ty::BidiLoop);
-    set(CHN_SUSTAINLOOP, vflag_ty::SustainLoop);
-    set(CHN_PINGPONGSUSTAIN, vflag_ty::BidiSustainLoop);
-    set(CHN_PANNING, vflag_ty::ForcedPanning);
-    set(CHN_STEREO, vflag_ty::Stereo);
-    return ret;
-}
-
-modplug::pervasives::bitset<vflag_ty> __forceinline
-voicef_from_smpf(const modplug::pervasives::bitset<sflag_ty> smpflags) {
-    using namespace modplug::pervasives;
-    bitset<vflag_ty> ret;
-    const auto set = [&] (const sflag_ty sf, const vflag_ty vf) {
-        if (bitset_is_set(smpflags, sf)) bitset_add(ret, vf);
-    };
-    set(sflag_ty::SixteenBit, vflag_ty::SixteenBit);
-    set(sflag_ty::Loop, vflag_ty::Loop);
-    set(sflag_ty::BidiLoop, vflag_ty::BidiLoop);
-    set(sflag_ty::SustainLoop, vflag_ty::SustainLoop);
-    set(sflag_ty::BidiSustainLoop, vflag_ty::BidiSustainLoop);
-    set(sflag_ty::ForcedPanning, vflag_ty::ForcedPanning);
-    set(sflag_ty::Stereo, vflag_ty::Stereo);
-    return ret;
-}
-
-modplug::pervasives::bitset<vflag_ty> __forceinline
-voicef_unset_smpf(const modplug::pervasives::bitset<vflag_ty> vf) {
-    auto ret = bitset_unset(vf, vflag_ty::SixteenBit);
-    bitset_remove(ret, vflag_ty::SixteenBit);
-    bitset_remove(ret, vflag_ty::Loop);
-    bitset_remove(ret, vflag_ty::BidiLoop);
-    bitset_remove(ret, vflag_ty::SustainLoop);
-    bitset_remove(ret, vflag_ty::BidiSustainLoop);
-    bitset_remove(ret, vflag_ty::ForcedPanning);
-    bitset_remove(ret, vflag_ty::Stereo);
-    return ret;
-}
-
-modplug::pervasives::bitset<vflag_ty> __forceinline
-voicef_from_oldchn(const uint32_t old) {
-    auto ret = voicef_from_legacy(old);
-    const auto set = [&] (const uint32_t sf, const vflag_ty vf) {
-        if (old & sf) bitset_add(ret, vf);
-    };
-    set(CHN_PINGPONGFLAG, vflag_ty::ScrubBackwards);
-    set(CHN_MUTE, vflag_ty::Mute);
-    set(CHN_KEYOFF, vflag_ty::KeyOff);
-    set(CHN_NOTEFADE, vflag_ty::NoteFade);
-    set(CHN_SURROUND, vflag_ty::Surround);
-    set(CHN_NOIDO, vflag_ty::DisableInterpolation);
-    set(CHN_FILTER, vflag_ty::Filter);
-    set(CHN_VOLUMERAMP, vflag_ty::VolumeRamp);
-    set(CHN_VIBRATO, vflag_ty::Vibrato);
-    set(CHN_TREMOLO, vflag_ty::Tremolo);
-    set(CHN_PANBRELLO, vflag_ty::Panbrello);
-    set(CHN_PORTAMENTO, vflag_ty::Portamento);
-    set(CHN_GLISSANDO, vflag_ty::Glissando);
-    set(CHN_VOLENV, vflag_ty::VolEnvOn);
-    set(CHN_PANENV, vflag_ty::PanEnvOn);
-    set(CHN_PITCHENV, vflag_ty::PitchEnvOn);
-    set(CHN_FASTVOLRAMP, vflag_ty::FastVolRamp);
-    set(CHN_EXTRALOUD, vflag_ty::ExtraLoud);
-    set(CHN_SOLO, vflag_ty::Solo);
-    set(CHN_NOFX, vflag_ty::DisableDsp);
-    set(CHN_SYNCMUTE, vflag_ty::SyncMute);
-    set(CHN_FILTERENV, vflag_ty::PitchEnvAsFilter);
-    return ret;
-}
-
 typedef int32_t fixedpt_t;
-
-//struct modsample_t;
 
 struct resampler_config_t {
     //rewbs.resamplerConf
@@ -168,7 +44,6 @@ struct modenvelope_t {
 
     uint8_t release_node;
 };
-
 
 struct modinstrument_t {
     uint32_t fadeout;

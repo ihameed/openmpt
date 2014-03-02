@@ -258,18 +258,19 @@ import_sample(
     }
     ref.sample_data.generic = modplug::legacy_soundlib::alloc_sample(bytelength);
     ref.length = header.sample_frames;
-    ref.flags = 0;
+    ref.flags = sflags_ty();
     switch (header.width) {
     case xm::sample_width_ty::SixteenBit:
-        ref.flags |= CHN_16BIT;
+        bitset_add(ref.flags, sflag_ty::SixteenBit);
         break;
     }
     switch (header.loop_type) {
     case xm::sample_loop_ty::ForwardLoop:
-        ref.flags |= CHN_LOOP;
+        bitset_add(ref.flags, sflag_ty::Loop);
         break;
     case xm::sample_loop_ty::BidiLoop:
-        ref.flags |= CHN_LOOP | CHN_PINGPONGLOOP;
+        bitset_add(ref.flags, sflag_ty::Loop);
+        bitset_add(ref.flags, sflag_ty::BidiLoop);
         break;
     }
     switch (header.width) {
@@ -289,7 +290,7 @@ import_sample(
     ref.default_pan = header.pan;
     ref.nFineTune = header.fine_tune;
     ref.RelativeTone = header.relative_note;
-    ref.flags |= CHN_PANNING;
+    bitset_add(ref.flags, sflag_ty::ForcedPanning);
     ref.vibrato_type = instr.header.vibrato_type;
     ref.vibrato_sweep = instr.header.vibrato_sweep;
     ref.vibrato_depth = instr.header.vibrato_depth;

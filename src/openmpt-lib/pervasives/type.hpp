@@ -1,19 +1,16 @@
 #pragma once
 
-// #define USE_GHETTO_NEWTYPES
+#define USE_GHETTO_NEWTYPES
 
 #ifdef USE_GHETTO_NEWTYPES
 
 #define NEWTYPE(type, wrapped) \
-#pragma pack(push) \
-#pragma pack(1) \
 struct type { \
     explicit type(wrapped val) { \
         this->val = val; \
     } \
     wrapped val; \
-}; \
-#pragma pack(pop)
+};
 
 #define ORDERED_TYPE(type) \
 inline bool operator < (const type & x, const type & y) { \

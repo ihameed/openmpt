@@ -36,5 +36,24 @@ transpose_of_frequency(uint32_t freq) {
     return std::make_tuple(semitones, microtones);
 }
 
+
+size_t
+sample_channels(const modsample_t &smp) {
+    return bitset_is_set(smp.flags, sflag_ty::Stereo) ? 2 : 1;
+}
+
+size_t
+sample_bytes_per_frame(const modsample_t &smp) {
+    const auto width = bitset_is_set(smp.flags, sflag_ty::SixteenBit) ? 2 : 1;
+    return width * sample_channels(smp);
+}
+
+size_t
+sample_len_bytes(const modsample_t &smp) {
+    using namespace modplug::pervasives;
+    const auto len = static_cast<size_t>(unwrap(smp.length));
+    return len * sample_bytes_per_frame(smp);
+}
+
 }
 }
