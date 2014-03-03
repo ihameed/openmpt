@@ -17,42 +17,7 @@ using namespace modplug::tracker;
 // EMU10K1 docs: cutoff = reg[0-127]*62+100
 #define FILTER_PRECISION    8192
 
-#ifndef NO_FILTER
-
-//#define _ASM_MATH
-
-#ifdef _ASM_MATH
-
-// pow(a,b) returns a^^b -> 2^^(b.log2(a))
-
-static float pow(float a, float b)
-{
-    long tmpint;
-    float result;
-    _asm {
-    fld b                                // Load b
-    fld a                                // Load a
-    fyl2x                                // ST(0) = b.log2(a)
-    fist tmpint                        // Store integer exponent
-    fisub tmpint                // ST(0) = -1 <= (b*log2(a)) <= 1
-    f2xm1                                // ST(0) = 2^(x)-1
-    fild tmpint                        // load integer exponent
-    fld1                                // Load 1
-    fscale                                // ST(0) = 2^ST(1)
-    fstp ST(1)                        // Remove the integer from the stack
-    fmul ST(1), ST(0)        // multiply with fractional part
-    faddp ST(1), ST(0)        // add integer_part
-    fstp result                        // Store the result
-    }
-    return result;
-}
-
-
-#else
-
 #include <math.h>
-
-#endif // _ASM_MATH
 
 
 uint32_t module_renderer::CutOffToFrequency(UINT nCutOff, int flt_modifier) const
@@ -127,27 +92,22 @@ void module_renderer::SetupChannelFilter(modplug::tracker::voice_ty *pChn, bool 
     fb0=(d+e+e)/(1+d+e);
     fb1=-e/(1+d+e);
 
-    switch(pChn->nFilterMode)
-    {
+    switch(pChn->nFilterMode) {
     case FLTMODE_HIGHPASS:
-            pChn->nFilter_A0 = 1.0f - fg;
-            pChn->nFilter_B0 = fb0;
-            pChn->nFilter_B1 = fb1;
-            pChn->nFilter_HP = 1;
-            break;
+        pChn->flt_coefs.a0 = 1.0f - fg;
+        pChn->flt_coefs.b0 = fb0;
+        pChn->flt_coefs.b1 = fb1;
+        pChn->flt_coefs.hp = 1;
+        break;
     default:
-            pChn->nFilter_A0 = fg;
-            pChn->nFilter_B0 = fb0;
-            pChn->nFilter_B1 = fb1;
-            pChn->nFilter_HP = 0;
+        pChn->flt_coefs.a0 = fg;
+        pChn->flt_coefs.b0 = fb0;
+        pChn->flt_coefs.b1 = fb1;
+        pChn->flt_coefs.hp = 0;
     }
 
-    if (bReset)
-    {
-            pChn->nFilter_Y1 = pChn->nFilter_Y2 = 0;
-            pChn->nFilter_Y3 = pChn->nFilter_Y4 = 0;
+    if (bReset) {
+        pChn->flt_hist = empty_flt_lr;
     }
     bitset_add(pChn->flags, vflag_ty::Filter);
 }
-
-#endif // NO_FILTER

@@ -1154,9 +1154,7 @@ BOOL module_renderer::ReadNote()
                 //if (pIns->pitch_envelope.flags & ENV_FILTER)
                 if (bitset_is_set(current_vchan->flags, vflag_ty::PitchEnvAsFilter))
                 {
-#ifndef NO_FILTER
                     SetupChannelFilter(current_vchan, !bitset_is_set(current_vchan->flags, vflag_ty::Filter), envpitch);
-#endif // NO_FILTER
                 } else
                 // Pitch Envelope
                 {

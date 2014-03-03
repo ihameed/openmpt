@@ -12,6 +12,7 @@
 // -> DESC="enable polyphase resampling on stereo samples"
 // -> !!! stolen from modplug-xmms sourceforge project !!!
 
+int16_t CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH];
 
 float CWindowedFIR::coef( int _PCnr, float _POfs, float _PCut, int _PWidth, int _PType ) //float _PPos, float _PFc, int _PLen )
 {    
@@ -83,8 +84,6 @@ void CWindowedFIR::InitTable() {
     }
 }
 
-
-//signed short CWindowedFIR::lut[WFIR_LUTLEN*WFIR_WIDTH];
 CWindowedFIR::CWindowedFIR()
 {    
 }

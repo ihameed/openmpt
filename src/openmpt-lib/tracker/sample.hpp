@@ -104,7 +104,7 @@ struct fp64_f {
     fetch(const sample_data_ty val) { return val.fp64; };
 
     static __forceinline sample_t
-    normalize(const double val) { return val; }
+    normalize(const double val) { return static_cast<sample_t>(val); }
 };
 
 template <typename Ty>

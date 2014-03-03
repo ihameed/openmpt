@@ -523,9 +523,7 @@ public:
     long ITInstrToMPT(const void *p, modplug::tracker::modinstrument_t *pIns, UINT trkvers); //change from BOOL for rewbs.modularInstData
     UINT LoadMixPlugins(const void *pData, UINT nLen);
 //    PSNDMIXPLUGIN GetSndPlugMixPlug(IMixPlugin *pPlugin); //rewbs.plugDocAware
-#ifndef NO_FILTER
     uint32_t CutOffToFrequency(UINT nCutOff, int flt_modifier=256) const; // [0-255] => [1-10KHz]
-#endif
 #ifdef MODPLUG_TRACKER
     VOID ProcessMidiOut(UINT nChn, modplug::tracker::voice_ty *pChn);            //rewbs.VSTdelay : added arg.
 #endif

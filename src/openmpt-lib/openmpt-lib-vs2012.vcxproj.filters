@@ -143,6 +143,9 @@
     <ClCompile Include="tracker\voice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tracker\mixer_internal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="audioio\paudio.hpp" />
@@ -172,7 +175,6 @@
     <ClInclude Include="legacy_soundlib\wavConverter.h" />
     <ClInclude Include="legacy_soundlib\WindowedFIR.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="mixgraph\mixer.hpp" />
     <ClInclude Include="mixgraph\source_vertex.hpp" />
     <ClInclude Include="mixgraph\constants.hpp" />
     <ClInclude Include="mixgraph\core.hpp" />
@@ -243,6 +245,22 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tracker\voice.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\mixer.hpp" />
+    <ClInclude Include="mixgraph\mixer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\mixer_internal.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\mixer_internal_resample.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\mixer_internal_util.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tracker\mixer_internal_filter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

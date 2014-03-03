@@ -61,10 +61,30 @@ struct modenvstate_t {
     int32_t release_value;
 };
 
+struct flt_hist_ty {
+    sample_t y1;
+    sample_t y2;
+};
+
+struct flt_lr_ty {
+    flt_hist_ty left;
+    flt_hist_ty right;
+};
+
+const flt_lr_ty empty_flt_lr = { 0 };
+
+struct flt_coefs_ty {
+    sample_t a0;
+    sample_t b0;
+    sample_t b1;
+    sample_t hp;
+};
+
 #pragma warning (push)
 #pragma warning (disable : 4324) //structure was padded due to __declspec(align())
 __declspec(align(32))
 struct voice_ty {
+    typedef modplug::mixgraph::sample_t sample_t;
     // First 32-bytes: Most used mixing information: don't change it
     // These fields are accessed directly by the MMX mixing code (look out for CHNOFS_PCURRENTSAMPLE), so the order is crucial
     sample_data_ty active_sample_data;
@@ -74,21 +94,22 @@ struct voice_ty {
 
     int32_t right_volume;
     int32_t left_volume;
-    int32_t right_ramp;
-    int32_t left_ramp;
 
     // 2nd cache line
     int32_t length;
     vflags_ty flags;
     sampleoffset_t loop_start;
     sampleoffset_t loop_end;
-    int32_t nRampRightVol;
-    int32_t nRampLeftVol;
 
-    modplug::mixgraph::sample_t nFilter_Y1, nFilter_Y2, nFilter_Y3, nFilter_Y4;
-    modplug::mixgraph::sample_t nFilter_A0, nFilter_B0, nFilter_B1, nFilter_HP;
+    flt_coefs_ty flt_coefs;
+    flt_lr_ty flt_hist;
 
     stag_ty sample_tag;
+
+    int32_t right_ramp;
+    int32_t left_ramp;
+    int32_t nRampRightVol;
+    int32_t nRampLeftVol;
 
     int32_t nROfs, nLOfs;
     int32_t nRampLength;
@@ -170,7 +191,6 @@ struct voice_ty {
         float m_VibratoDepth;
     //<----
 
-    typedef modplug::mixgraph::sample_t sample_t;
     sample_t spill_back[SpillMax];
     sample_t spill_fwd[SpillMax];
 };

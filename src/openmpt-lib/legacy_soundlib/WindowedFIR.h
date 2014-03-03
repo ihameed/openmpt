@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 /*
   ------------------------------------------------------------------------------------------------
    fir interpolation doc,
@@ -60,6 +62,5 @@ public:
     ~CWindowedFIR(void);
     static float coef(int,float,float,int,int);
     static void InitTable();
-    static signed short lut[WFIR_LUTLEN*WFIR_WIDTH];
-
+    static int16_t lut[WFIR_LUTLEN*WFIR_WIDTH];
 };

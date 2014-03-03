@@ -408,6 +408,7 @@
     </ClCompile>
     <ClCompile Include="tagging.cpp" />
     <ClCompile Include="tracker\eval.cpp" />
+    <ClCompile Include="tracker\mixer_internal.cpp" />
     <ClCompile Include="tracker\module_renderer.cpp" />
     <ClCompile Include="tracker\modsequence.cpp" />
     <ClCompile Include="tracker\orderlist.cpp" />
@@ -644,6 +645,11 @@
     <ClInclude Include="tagging.h" />
     <ClInclude Include="tracker\constants.hpp" />
     <ClInclude Include="tracker\eval.hpp" />
+    <ClInclude Include="tracker\mixer.hpp" />
+    <ClInclude Include="tracker\mixer_internal.hpp" />
+    <ClInclude Include="tracker\mixer_internal_filter.hpp" />
+    <ClInclude Include="tracker\mixer_internal_resample.hpp" />
+    <ClInclude Include="tracker\mixer_internal_util.hpp" />
     <ClInclude Include="tracker\modevent.hpp" />
     <ClInclude Include="tracker\modsequence.hpp" />
     <ClInclude Include="tracker\orderlist.hpp" />

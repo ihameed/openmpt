@@ -1049,9 +1049,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
             pChn->nVolSwing = pChn->nPanSwing = 0;
             pChn->nCutSwing = pChn->nResSwing = 0;
         }
-#ifndef NO_FILTER
         if ((pChn->nCutOff < 0x7F) && (bFlt)) SetupChannelFilter(pChn, true);
-#endif // NO_FILTER
     }
     // Special case for MPT
     if (bManual) bitset_remove(pChn->flags, vflag_ty::Mute);
@@ -3224,7 +3222,6 @@ void module_renderer::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiM
                     }
                     pChn->nRestoreCutoffOnNewNote = 0;
                 }
-#ifndef NO_FILTER
                 oldcutoff -= pChn->nCutOff;
                 if (oldcutoff < 0) oldcutoff = -oldcutoff;
                 if ( (pChn->nVolume > 0) ||
@@ -3234,7 +3231,6 @@ void module_renderer::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiM
                 {
                     SetupChannelFilter(pChn, !bitset_is_set(pChn->flags, vflag_ty::Filter));
                 }
-#endif // NO_FILTER
             }
             break;
 
@@ -3260,9 +3256,7 @@ void module_renderer::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiM
                 }
             }
 
-#ifndef NO_FILTER
             SetupChannelFilter(pChn, !bitset_is_set(pChn->flags, vflag_ty::Filter));
-#endif // NO_FILTER
             break;
 
         // F0.F0.02.xx: Set filter mode (high nibble determines filter mode)
@@ -3270,9 +3264,7 @@ void module_renderer::ProcessMidiMacro(UINT nChn, bool isSmooth, LPCSTR pszMidiM
             if (dwParam < 0x20)
             {
                 pChn->nFilterMode = (dwParam >> 4);
-#ifndef NO_FILTER
                 SetupChannelFilter(pChn, !bitset_is_set(pChn->flags, vflag_ty::Filter));
-#endif // NO_FILTER
             }
             break;
 
