@@ -11,7 +11,7 @@
 [Dd]ebug*/
 [Rr]elease/
 
-build/
+/build/
 
 
 [Tt]est[Rr]esult
