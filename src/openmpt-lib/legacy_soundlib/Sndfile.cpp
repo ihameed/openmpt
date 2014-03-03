@@ -351,7 +351,6 @@ module_renderer::module_renderer()
     m_nDefaultRowsPerMeasure = m_nCurrentRowsPerMeasure = (CMainFrame::m_nRowSpacing >= m_nDefaultRowsPerBeat) ? CMainFrame::m_nRowSpacing : m_nDefaultRowsPerBeat * 4;
     m_nTempoMode = tempo_mode_classic;
     m_bIsRendering = false;
-    m_nMaxSample = 0;
 
     m_ModFlags = 0;
     m_bITBidiMode = false;

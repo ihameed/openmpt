@@ -769,13 +769,13 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
 //-----------------------------------------------------------------------------------------
 {
     if (note < NoteMin) return;
-    modplug::tracker::voice_ty * const pChn = &Chn[nChn];
-    modplug::tracker::modsample_t *pSmp = pChn->sample;
-    modplug::tracker::modinstrument_t *pIns = pChn->instrument;
+    auto * const pChn = &Chn[nChn];
+    auto *pSmp = pChn->sample;
+    auto *pIns = pChn->instrument;
 
     const bool bNewTuning = (m_nType == MOD_TYPE_MPT && pIns && pIns->pTuning);
     // save the note that's actually used, as it's necessary to properly calculate PPS and stuff
-    const int realnote = note;
+    const auto realnote = note;
 
     if ((pIns) && (note <= 0x80))
     {
@@ -3901,8 +3901,7 @@ UINT module_renderer::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed)
             return _muldiv(8363, (FreqS3MTable[note % 12] << 5), nC5Speed << (note / 12));
             //8363 * freq[note%12] / nC5Speed * 2^(5-note/12)
         }
-    } else
-    if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
+    } else if (m_nType & (MOD_TYPE_XM|MOD_TYPE_MT2))
     {
         if (note < 13) note = 13;
         note -= 13;
@@ -3935,8 +3934,7 @@ UINT module_renderer::GetPeriodFromNote(UINT note, int nFineTune, UINT nC5Speed)
             per2 *= rfine;
             return ((per1 + per2) << 1) >> roct;
         }
-    } else
-    {
+    } else {
         note--;
         nFineTune = XM2MODFineTune(nFineTune);
         if ((nFineTune) || (note < 36) || (note >= 36+6*12))

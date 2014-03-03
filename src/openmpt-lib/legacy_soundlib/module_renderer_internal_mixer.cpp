@@ -9,6 +9,8 @@
 
 #include "stdafx.h"
 
+#include <cassert>
+
 #include "../moddoc.h"
 #include "../MainFrm.h"
 #include "../misc_util.h"
@@ -57,7 +59,6 @@ bool gbInitTables = 0;
 typedef size_t (MPPASMCALL * LPCONVERTPROC)(void *, int *, size_t);
 
 extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
-extern VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples);
 extern VOID SndMixInitializeTables();
 
 extern short int ModSinusTable[64];
@@ -72,7 +73,6 @@ extern uint32_t LinearSlideDownTable[256];
 extern uint32_t FineLinearSlideUpTable[16];
 extern uint32_t FineLinearSlideDownTable[16];
 extern signed char ft2VibratoTable[256];    // -64 .. +64
-extern int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
 
 // Log tables for pre-amp
 const UINT PreAmpTable[16] =
@@ -257,130 +257,103 @@ BOOL module_renderer::GlobalFadeSong(UINT msec)
     return TRUE;
 }
 
-uint32_t module_renderer::superduper_read_pattern(int16_t *const out, const size_t num_frames) {
+uint32_t
+module_renderer::superduper_read_pattern(int16_t *const out, const size_t num_frames) {
     #if 0
     return eval_pattern(out, num_frames, *this->eval_state);
     #else
-    return this->ReadPattern(out, num_frames * 2 * sizeof(int16_t));
+    return this->ReadPattern(out, num_frames);
     #endif
 }
 
-UINT module_renderer::ReadPattern(void * const out_buffer, const size_t out_buffer_length) {
-    //XXXih: i render here!
-    //XXXih: gnBitsPerSample shouldn't exist!
-    deprecated_global_bits_per_sample = 16;
-    unsigned char *buffer = static_cast<unsigned char *>(out_buffer);
-    size_t max_samples;
-    size_t sample_width;
-    size_t uncomputed_samples;
-    size_t computed_samples;
-    unsigned int nStat=0;
-    unsigned int last_plugin_idx;
+const auto SampleToInt16 = static_cast<sample_t>(INT16_MAX);
 
-    last_plugin_idx = MAX_MIXPLUGINS;
-    while ((last_plugin_idx > 0) && (!m_MixPlugins[last_plugin_idx-1].pMixPlugin)) last_plugin_idx--;
-    m_nMixStat = 0;
-    /*
-    switch (deprecated_global_bits_per_sample) {
-        case 16: sample_width *= 2; break;
-        case 24: sample_width *= 3; break;
-        case 32: sample_width *= 4; break;
+void
+interleave_and_convert(int16_t *out, sample_t *l, sample_t *r, size_t num_samples) {
+    using modplug::pervasives::clamp;
+    while (num_samples--) {
+        *out = static_cast<int16_t>(SampleToInt16 * clamp<sample_t>(*l, -1.0, 1.0));
+        ++out;
+        ++l;
+
+        *out = static_cast<int16_t>(SampleToInt16 * clamp<sample_t>(*r, -1.0, 1.0));
+        ++out;
+        ++r;
     }
-    */
-    sample_width = deprecated_global_channels * sizeof(int16_t);
+};
 
-    max_samples = out_buffer_length / sample_width;
-    if ((!max_samples) || (!buffer) || (!m_nChannels)) return 0;
-    uncomputed_samples = max_samples;
-    if (m_dwSongFlags & SONG_ENDREACHED)
-        goto MixDone;
-    while (uncomputed_samples > 0)
-    {
-        // Update Channel Data
-        if (!m_nBufferCount)
-        {
+uint32_t
+module_renderer::ReadPattern(int16_t *buffer, const size_t num_frames) {
+    deprecated_global_bits_per_sample = 16;
+    unsigned int nStat = 0;
+    m_nMixStat = 0;
+
+    if (!num_frames || !buffer || !m_nChannels) return 0;
+    auto uncomputed_frames = num_frames;
+    if (m_dwSongFlags & SONG_ENDREACHED) goto MixDone;
+    while (uncomputed_frames > 0) {
+        if (!m_nBufferCount) {
             if (m_dwSongFlags & SONG_FADINGSONG) {
                 m_dwSongFlags |= SONG_ENDREACHED;
-                m_nBufferCount = uncomputed_samples;
-            } else
-            if (ReadNote()) {
+                m_nBufferCount = uncomputed_frames;
             } else {
-                #ifdef MODPLUG_TRACKER
+                const auto success = ReadNote();
+                if (!success) { 
                     if ((m_nMaxOrderPosition) && (m_nCurrentPattern >= m_nMaxOrderPosition)) {
                         m_dwSongFlags |= SONG_ENDREACHED;
                         break;
                     }
-                #endif
-                    if (!FadeSong(FADESONGDELAY) || m_bIsRendering)    //rewbs: disable song fade when rendering.
-                    {
+                    //rewbs: disable song fade when rendering.
+                    if (!FadeSong(FADESONGDELAY) || m_bIsRendering) {
                         m_dwSongFlags |= SONG_ENDREACHED;
-                        if (uncomputed_samples == max_samples || m_bIsRendering)            //rewbs: don't complete buffer when rendering
-                            goto MixDone;
-                        m_nBufferCount = uncomputed_samples;
+                        //rewbs: don't complete buffer when rendering
+                        if (uncomputed_frames == num_frames || m_bIsRendering) break;
+                        m_nBufferCount = uncomputed_frames;
                     }
+                }
             }
         }
-        computed_samples = m_nBufferCount;
-        if (computed_samples > modplug::mixgraph::MIX_BUFFER_SIZE) computed_samples = modplug::mixgraph::MIX_BUFFER_SIZE;
-        if (computed_samples > uncomputed_samples) computed_samples = uncomputed_samples;
-        if (!computed_samples)
-            break;
+        const size_t computed_frames = std::min(m_nBufferCount,
+            std::min(modplug::mixgraph::MIX_BUFFER_SIZE, uncomputed_frames));
+        if (computed_frames == 0) break;
 
-        // ensure modplug::mixer::MIX_BUFFER_SIZE really is our bad_max buffer size
-        ASSERT (computed_samples <= modplug::mixgraph::MIX_BUFFER_SIZE);
+        assert(computed_frames <= modplug::mixgraph::MIX_BUFFER_SIZE);
 
-        const auto num_samples = computed_samples * ((deprecated_global_channels >= 2) ? 2 : 1);
-        memset(MixSoundBuffer, 0, sizeof(int) * num_samples);
-        mixgraph.pre_process(computed_samples);
-        m_nMixStat += CreateStereoMix(computed_samples);
+        const auto computed_samples = computed_frames * ((deprecated_global_channels >= 2) ? 2 : 1);
+        mixgraph.pre_process(computed_frames);
+        m_nMixStat += CreateStereoMix(computed_frames);
 
-        //XXXih: JUICY FRUITS
-        /*
-        if (last_plugin_idx) {
-            ProcessPlugins(computed_samples);
-        }
-        */
-        mixgraph.process(MixSoundBuffer, computed_samples, m_pConfig->getFloatToInt(), m_pConfig->getIntToFloat());
+        //XXXih: plugin-processing-revamp
+        /* if (last_plugin_idx) { ProcessPlugins(computed_samples); } */
+        mixgraph.process(computed_frames);
 
-        if (deprecated_global_channels < 2) {
-            X86_MonoFromStereo(MixSoundBuffer, computed_samples);
-        }
         nStat++;
 
-        //Apply global volume
-        if (m_pConfig->getGlobalVolumeAppliesToMaster()) {
-            ApplyGlobalVolume(MixSoundBuffer, num_samples);
-        }
+        interleave_and_convert(buffer,
+            mixgraph.master_sink->channels[0],
+            mixgraph.master_sink->channels[1],
+            computed_frames);
 
-        // Hook Function
-        if (sound_mix_callback) {    //Currently only used for VU Meter, so it's OK to do it after global Vol.
-            sound_mix_callback(MixSoundBuffer, num_samples, deprecated_global_channels);
-        }
-
-        // Perform clipping
-        //memcpy(buffer, MixSoundBuffer, num_samples * 4);
-        const auto truncate = [] (int16_t *out, int32_t *in, size_t num_samples) {
-            for (size_t i = 0; i < num_samples; ++i) {
-                *out = *in >> (16 - modplug::mixgraph::MIXING_ATTENUATION);
-                ++out;
-                ++in;
-            }
-        };
-        truncate((int16_t *)buffer, MixSoundBuffer, num_samples);
-        buffer += num_samples * 2;
+        buffer += computed_samples;
 
         // Buffer ready
-        uncomputed_samples -= computed_samples;
-        m_nBufferCount -= computed_samples;
-        m_lTotalSampleCount += computed_samples;            // increase sample count for VSTTimeInfo.
+        uncomputed_frames -= computed_frames;
+        m_nBufferCount -= computed_frames;
+        m_lTotalSampleCount += computed_frames;            // increase sample count for VSTTimeInfo.
         // Turn on ramping after first read (fix http://forum.openmpt.org/index.php?topic=523.0 )
         gnVolumeRampInSamples = CMainFrame::glVolumeRampInSamples;
         gnVolumeRampOutSamples = CMainFrame::glVolumeRampOutSamples;
     }
 MixDone:
-    if (uncomputed_samples) memset(buffer, (deprecated_global_bits_per_sample == 8) ? 0x80 : 0, uncomputed_samples * sample_width);
-    if (nStat) { m_nMixStat += nStat-1; m_nMixStat /= nStat; }
-    return max_samples - uncomputed_samples;;
+    if (uncomputed_frames) {
+        const auto sample_width = deprecated_global_channels * sizeof(int16_t);
+        memset(buffer, 0, uncomputed_frames * sample_width);
+    }
+    if (nStat) {
+        m_nMixStat += nStat - 1;
+        m_nMixStat /= nStat;
+    }
+    return num_frames - uncomputed_frames;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1788,9 +1761,15 @@ BOOL module_renderer::ReadNote()
 
             #pragma region DoVolumeRamping
             // Setting up volume ramp
-             // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
-            if (bitset_is_set(current_vchan->flags, vflag_ty::VolumeRamp) && ((current_vchan->right_volume != current_vchan->nNewRightVol) || (current_vchan->left_volume != current_vchan->nNewLeftVol)))    {
-                bool rampUp = (current_vchan->nNewRightVol > current_vchan->right_volume) || (current_vchan->nNewLeftVol > current_vchan->left_volume);
+            // && gnVolumeRampSamples //rewbs: this allows us to use non ramping mix functions if ramping is 0
+            //XXXih: ramp-revamp
+            if ( false && bitset_is_set(current_vchan->flags, vflag_ty::VolumeRamp) &&
+                 ( (current_vchan->right_volume != current_vchan->nNewRightVol) ||
+                   (current_vchan->left_volume != current_vchan->nNewLeftVol) ) )
+            {
+                bool rampUp =
+                    (current_vchan->nNewRightVol > current_vchan->right_volume) ||
+                    (current_vchan->nNewLeftVol > current_vchan->left_volume);
                 LONG rampLength, globalRampLength, instrRampLength = 0;
                 rampLength = globalRampLength = rampUp ? gnVolumeRampInSamples : gnVolumeRampOutSamples;
                 //XXXih: add real support for bidi ramping here
@@ -1806,8 +1785,12 @@ BOOL module_renderer::ReadNote()
                     rampLength = 1;
                 }
 // -! NEW_FEATURE#0027
-                LONG nRightDelta = ((current_vchan->nNewRightVol - current_vchan->right_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                LONG nLeftDelta  = ((current_vchan->nNewLeftVol - current_vchan->left_volume) << modplug::mixgraph::VOLUME_RAMP_PRECISION);
+                LONG nRightDelta = 
+                    (current_vchan->nNewRightVol - current_vchan->right_volume)
+                    << modplug::mixgraph::VOLUME_RAMP_PRECISION;
+                LONG nLeftDelta =
+                    (current_vchan->nNewLeftVol - current_vchan->left_volume)
+                    << modplug::mixgraph::VOLUME_RAMP_PRECISION;
 // -> CODE#0027
 // -> DESC="per-instrument volume ramping setup "
 //                            if ((gdwSoundSetup & SNDMIX_DIRECTTODISK)
@@ -1832,17 +1815,14 @@ BOOL module_renderer::ReadNote()
                 current_vchan->left_ramp = nLeftDelta / rampLength;
                 current_vchan->right_volume = current_vchan->nNewRightVol - ((current_vchan->right_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
                 current_vchan->left_volume = current_vchan->nNewLeftVol - ((current_vchan->left_ramp * rampLength) >> modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                if (current_vchan->right_ramp|current_vchan->left_ramp)
-                {
+                if (current_vchan->right_ramp|current_vchan->left_ramp) {
                     current_vchan->nRampLength = rampLength;
-                } else
-                {
+                } else {
                     bitset_remove(current_vchan->flags, vflag_ty::VolumeRamp);
                     current_vchan->right_volume = current_vchan->nNewRightVol;
                     current_vchan->left_volume = current_vchan->nNewLeftVol;
                 }
-            } else
-            {
+            } else {
                 bitset_remove(current_vchan->flags, vflag_ty::VolumeRamp);
                 current_vchan->right_volume = current_vchan->nNewRightVol;
                 current_vchan->left_volume = current_vchan->nNewLeftVol;

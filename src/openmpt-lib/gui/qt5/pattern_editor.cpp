@@ -69,7 +69,6 @@ void pattern_editor_draw::resizeGL(int width, int height) {
 }
 
 void pattern_editor_draw::paintGL() {
-    ghettotimer homesled(__FUNCTION__);
     chnindex_t channel_count = renderer.GetNumChannels();
 
     draw_state state = {

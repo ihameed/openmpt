@@ -60,140 +60,6 @@ extern uint8_t * GetInstrumentHeaderFieldPointer(modplug::tracker::modinstrument
 const uint32_t m_nTempoFactor = 128; 
 const uint32_t m_nFreqFactor = 128;
 
-//#define ANOS 1
-int32_t __forceinline
-GetSampleCount(modplug::tracker::voice_ty *pChn, int32_t nSamples, bool bITBidiMode)
-{
-    using namespace modplug::pervasives;
-    using namespace modplug::tracker;
-    const int32_t nLoopStart = bitset_is_set(pChn->flags, vflag_ty::Loop) ? unwrap(pChn->loop_start) : 0;
-    int32_t nInc = pChn->position_delta;
-
-    if ((nSamples <= 0) || (!nInc) || (!pChn->length)) return 0;
-    // Under zero ?
-    if (unwrap(pChn->sample_position) < nLoopStart)
-    {
-        if (nInc < 0)
-        {
-            // Invert loop for bidi loops
-            int32_t nDelta = ((nLoopStart - pChn->sample_position) << 16) - (pChn->fractional_sample_position & 0xffff);
-            pChn->sample_position = nLoopStart | (nDelta>>16);
-            pChn->fractional_sample_position = nDelta & 0xffff;
-            if (((int32_t)pChn->sample_position < nLoopStart) || (pChn->sample_position >= (nLoopStart+pChn->length)/2))
-            {
-                pChn->sample_position = nLoopStart; pChn->fractional_sample_position = 0;
-            }
-            nInc = -nInc;
-            pChn->position_delta = nInc;
-            bitset_remove(pChn->flags, vflag_ty::BidiLoop); // go forward
-            if ((!bitset_is_set(pChn->flags, vflag_ty::Loop)) || (pChn->sample_position >= pChn->length))
-            {
-                pChn->sample_position = pChn->length;
-                pChn->fractional_sample_position = 0;
-                return 0;
-            }
-        } else
-        {
-            // We probably didn't hit the loop end yet (first loop), so we do nothing
-            if ((int32_t)pChn->sample_position < 0) pChn->sample_position = 0;
-        }
-    } else
-    // Past the end
-    if (pChn->sample_position >= pChn->length)
-    {
-        if (!bitset_is_set(pChn->flags, vflag_ty::Loop)) return 0; // not looping -> stop this channel
-        if (bitset_is_set(pChn->flags, vflag_ty::BidiLoop))
-        {
-            // Invert loop
-            if (nInc > 0)
-            {
-                nInc = -nInc;
-                pChn->position_delta = nInc;
-            }
-            bitset_add(pChn->flags, vflag_ty::BidiLoop);
-            // adjust loop position
-            int32_t nDeltaHi = (pChn->sample_position - pChn->length);
-            int32_t nDeltaLo = 0x10000 - (pChn->fractional_sample_position & 0xffff);
-            pChn->sample_position = pChn->length - nDeltaHi - (nDeltaLo>>16);
-            pChn->fractional_sample_position = nDeltaLo & 0xffff;
-            // Impulse Tracker's software mixer would put a -2 (instead of -1) in the following line (doesn't happen on a GUS)
-            if ((pChn->sample_position <= pChn->loop_start) || (pChn->sample_position >= pChn->length)) pChn->sample_position = pChn->length - (bITBidiMode ? 2 : 1);
-        } else
-        {
-            if (nInc < 0) // This is a bug
-            {
-                nInc = -nInc;
-                pChn->position_delta = nInc;
-            }
-            // Restart at loop start
-            pChn->sample_position += nLoopStart - pChn->length;
-            if ((int32_t)pChn->sample_position < nLoopStart) pChn->sample_position = pChn->loop_start;
-        }
-    }
-    const int32_t nPos = pChn->sample_position;
-    // too big increment, and/or too small loop length
-    if (nPos < nLoopStart)
-    {
-        if ((nPos < 0) || (nInc < 0)) return 0;
-    }
-    if ((nPos < 0) || (nPos >= (int32_t)pChn->length)) return 0;
-    const int32_t nPosLo = (uint16_t)pChn->fractional_sample_position;
-    int32_t nSmpCount = nSamples;
-    if (nInc < 0)
-    {
-        const int32_t nInv = -nInc;
-        int32_t maxsamples = 16384 / ((nInv>>16)+1);
-        if (maxsamples < 2) maxsamples = 2;
-        if (nSamples > maxsamples) nSamples = maxsamples;
-        const int32_t nDeltaHi = (nInv>>16) * (nSamples - 1);
-        const int32_t nDeltaLo = (nInv&0xffff) * (nSamples - 1);
-        const int32_t nPosDest = nPos - nDeltaHi + ((nPosLo - nDeltaLo) >> 16);
-        if (nPosDest < nLoopStart)
-        {
-            nSmpCount = (uint32_t)(((((LONGLONG)nPos - nLoopStart) << 16) + nPosLo - 1) / nInv) + 1;
-        }
-    } else
-    {
-        #ifdef ANOS
-        printf("2nd: nInc >= 0; nInc = %d\n", nInc);
-        #endif
-        int32_t maxsamples = 16384 / ((nInc>>16)+1);
-        if (maxsamples < 2) maxsamples = 2;
-        if (nSamples > maxsamples) nSamples = maxsamples;
-        const int32_t nDeltaHi = (nInc>>16) * (nSamples - 1);
-        const int32_t nDeltaLo = (nInc&0xffff) * (nSamples - 1);
-        #ifdef ANOS
-        printf("2nd: nInc >= 0; nDeltaHi = %d, nDeltaLo = %d\n", nDeltaHi, nDeltaLo);
-        #endif
-        const int32_t nPosDest = nPos + nDeltaHi + ((nPosLo + nDeltaLo)>>16);
-        #ifdef ANOS
-        printf("2nd: nInc >= 0; nPosDest = %d\n", nPosDest);
-        #endif
-        if (nPosDest >= (int32_t)pChn->length)
-        {
-            nSmpCount = (uint32_t)(((((LONGLONG)pChn->length - nPos) << 16) - nPosLo - 1) / nInc) + 1;
-        }
-    }
-#ifdef _DEBUG
-    {
-        int32_t nDeltaHi = (nInc>>16) * (nSmpCount - 1);
-        int32_t nDeltaLo = (nInc&0xffff) * (nSmpCount - 1);
-        int32_t nPosDest = nPos + nDeltaHi + ((nPosLo + nDeltaLo)>>16);
-        if ((nPosDest < 0) || (nPosDest > (int32_t)pChn->length))
-        {
-            Log("Incorrect delta:\n");
-            Log("nSmpCount=%d: nPos=%5d.x%04X Len=%5d Inc=%2d.x%04X\n",
-                nSmpCount, nPos, nPosLo, pChn->length, pChn->position_delta>>16, pChn->position_delta&0xffff);
-            return 0;
-        }
-    }
-#endif
-    if (nSmpCount <= 1) return 1;
-    if (nSmpCount > nSamples) return nSamples;
-    return nSmpCount;
-}
-
-
 ////////////////////////////////////////////////////////////////////
 // Mix Plugins
 #define MIXPLUG_MIXREADY                    0x01        // Set when cleared
@@ -401,8 +267,10 @@ public:
     void StopAllVsti();    //rewbs.VSTCompliance
     void RecalculateGainForAllPlugs();
     void ResetChannels();
+
     uint32_t superduper_read_pattern(int16_t * const, const size_t);
-    UINT ReadPattern(void * const, const size_t);
+    uint32_t ReadPattern(int16_t *, const size_t);
+
     UINT ReadMix(LPVOID lpBuffer, UINT cbBuffer, module_renderer *, uint32_t *, LPBYTE ps=NULL);
     UINT CreateStereoMix(int count);
     BOOL FadeSong(UINT msec);
@@ -529,11 +397,6 @@ public:
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
-    // System-Dependant functions
-public:
-    static UINT Normalize24BitBuffer(LPBYTE pbuffer, UINT cbsizebytes, uint32_t lmax24, uint32_t dwByteInc);
-
-    // Song message helper functions
 public:
     // Allocate memory for song message.
     // [in]  length: text length in characters, without possible trailing null terminator.
@@ -666,7 +529,6 @@ private: //Misc data
     VisitedRowsType m_VisitedRows;
 
 public:    // Static Members
-    static float m_nMaxSample;
     static UINT m_nStereoSeparation;
     static UINT m_nMaxMixChannels;
     static LONG m_nStreamVolume;
@@ -893,10 +755,8 @@ inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instru
 // Calling conventions
 #ifdef WIN32
 #define MPPASMCALL    __cdecl
-#define MPPFASTCALL    __fastcall
 #else
 #define MPPASMCALL
-#define MPPFASTCALL
 #endif
 
 #define MOD2XMFineTune(k)    ((int)( (signed char)((k)<<4) ))

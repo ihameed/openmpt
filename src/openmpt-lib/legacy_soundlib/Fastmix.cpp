@@ -13,6 +13,8 @@
 #include <math.h>
 #endif
 
+#include "old_utils.h"
+
 #include "../mixgraph/constants.hpp"
 #include "../mixgraph/mixer.hpp"
 #include "../tracker/mixer.hpp"
@@ -31,170 +33,110 @@ using namespace modplug::tracker;
 
 #pragma bss_seg(".modplug")
 
-// Front Mix Buffer (Also room for interleaved rear mix)
-int MixSoundBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*4];
-
-
 float MixFloatBuffer[modplug::mixgraph::MIX_BUFFER_SIZE*2];
 
 #pragma bss_seg()
 
+bool __forceinline
+should_mix(const int chans_mixed, const int max_mix_chans, const voice_ty &chan) {
+    //&& (!(deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK))
+    return (chans_mixed >= max_mix_chans) ||
+        ( (chan.nRampLength == 0) &&
+          ( (chan.left_volume == 0) && (chan.right_volume == 0) ) );
+}
 
-
-extern LONG gnDryROfsVol;
-extern LONG gnDryLOfsVol;
-extern LONG gnRvbROfsVol;
-extern LONG gnRvbLOfsVol;
-typedef VOID (MPPASMCALL * LPMIXINTERFACE)(modplug::tracker::voice_ty *, int *, int *);
-
-UINT module_renderer::CreateStereoMix(int count)
-//-----------------------------------------
-{
-    uint32_t nchused, nchmixed;
-
+uint32_t
+module_renderer::CreateStereoMix(const int32_t count) {
     if (!count) return 0;
-    nchused = nchmixed = 0;
-    for (UINT nChn=0; nChn<m_nMixChannels; nChn++)
-    {
-        modplug::tracker::voice_ty * const pChannel = &Chn[ChnMix[nChn]];
-        LONG nSmpCount;
-        int nsamples;
+    uint32_t nchused = 0;
+    uint32_t nchmixed = 0;
+    for (uint32_t chanidx = 0; chanidx < m_nMixChannels; ++chanidx) {
+        auto &chan = Chn[ChnMix[chanidx]];
+        auto remaining_frames = count;
 
+        const auto attribution_channel = chan.parent_channel
+            ? (chan.parent_channel - 1)
+            : ChnMix[chanidx];
+            /*
+        const auto outnode = attribution_channel > modplug::mixgraph::MAX_PHYSICAL_CHANNELS ?
+            mixgraph.channel_bypass :
+            mixgraph.channel_vertices[attribution_channel];
+            */
+        const auto outnode = mixgraph.channel_vertices[0];
+        const auto oldleft = outnode->channels[0];
+        const auto oldright = outnode->channels[0];
+        auto left = outnode->channels[0];
+        auto right = outnode->channels[1];
 
-
-        uint32_t functionNdx = 0;
-
-        size_t channel_i_care_about = pChannel->parent_channel ? (pChannel->parent_channel - 1) : (ChnMix[nChn]);
-        auto herp = (channel_i_care_about > modplug::mixgraph::MAX_PHYSICAL_CHANNELS) ?
-            (mixgraph.channel_bypass) :
-            (mixgraph.channel_vertices[channel_i_care_about]);
-        auto herp_left = herp->channels[0];
-        auto herp_right = herp->channels[1];
-
-        if (!pChannel->active_sample_data.generic) continue;
-        //nFlags |= GetResamplingFlag(pChannel);
-        nsamples = count;
+        if (!chan.active_sample_data.generic) continue;
+        //nFlags |= GetResamplingFlag(chan);
 
         //Look for plugins associated with this implicit tracker channel.
-        UINT nMixPlugin = GetBestPlugin(ChnMix[nChn], PRIORITISE_INSTRUMENT, RESPECT_MUTES);
+        const auto nMixPlugin = GetBestPlugin(ChnMix[chanidx], PRIORITISE_INSTRUMENT, RESPECT_MUTES);
 
-        //rewbs.instroVSTi
-/*            UINT nMixPlugin=0;
-        if (pChannel->instrument && pChannel->pInstrument) {    // first try intrument VST
-            if (!(pChannel->pInstrument->uFlags & ENV_MUTE))
-                nMixPlugin = pChannel->instrument->nMixPlug;
-        }
-        if (!nMixPlugin && (nMasterCh > 0) && (nMasterCh <= m_nChannels)) {     // Then try Channel VST
-            if(!(pChannel->dwFlags & CHN_NOFX))
-                nMixPlugin = ChnSettings[nMasterCh-1].nMixPlugin;
-        }
-*/
+        ++nchused;
+        uint32_t naddmix = 0;
+        while (remaining_frames > 0) {
+            //XXXih: mix-src-revamp
+            //const auto contiguous_frames = GetSampleCount(chan, remaining_frames, m_bITBidiMode);
+            const auto contiguous_frames = remaining_frames;
 
-        //end rewbs.instroVSTi
-        //XXXih: vchan mix -> plugin prepopulated state heer
-        /*
-        if ((nMixPlugin > 0) && (nMixPlugin <= MAX_MIXPLUGINS))
-        {
-            PSNDMIXPLUGINSTATE pPlugin = m_MixPlugins[nMixPlugin-1].pMixState;
-            if ((pPlugin) && (pPlugin->pMixBuffer))
+            if (contiguous_frames <= 0) {
+                // Stopping the channel
+                chan.active_sample_data.generic = nullptr;
+                chan.length = 0;
+                chan.sample_position = 0;
+                chan.fractional_sample_position = 0;
+                chan.nRampLength = 0;
+
+                chan.nROfs = chan.nLOfs = 0;
+                bitset_remove(chan.flags, vflag_ty::ScrubBackwards);
+                goto nextchannel;
+            }
+
+            if (should_mix(nchmixed, m_nMaxMixChannels, chan)) {
+                /*
+                LONG delta = (chan->position_delta * (LONG)contiguous_frames) + (LONG)chan->fractional_sample_position;
+                chan->fractional_sample_position = delta & 0xFFFF;
+                chan->sample_position += (delta >> 16);
+                chan->nROfs = chan->nLOfs = 0;
+                */
+                advance_silently(chan, contiguous_frames);
+
+                left += contiguous_frames;
+                right += contiguous_frames;
+                naddmix = 0;
+            } else {
+                const auto do_frames = remaining_frames;
+                chan.nROfs = 0;
+                chan.nLOfs = 0;
+
+                //modplug::mixgraph::resample_and_mix(left, right, &chan, contiguous_frames);
+                const auto unrendered_frames = modplug::tracker::mix_and_advance(left, right, contiguous_frames, &chan);
+
+                left += contiguous_frames;
+                right += contiguous_frames;
+                naddmix = 1;
+            }
+            remaining_frames -= contiguous_frames;
+            if (chan.nRampLength)
             {
-                pbuffer = pPlugin->pMixBuffer;
-                pOfsR = &pPlugin->nVolDecayR;
-                pOfsL = &pPlugin->nVolDecayL;
-                if (!(pPlugin->dwFlags & MIXPLUG_MIXREADY))
+                chan.nRampLength -= contiguous_frames;
+                if (chan.nRampLength <= 0)
                 {
-                    //modplug::mixer::stereo_fill(pbuffer, count, pOfsR, pOfsL);
-                    pPlugin->dwFlags |= MIXPLUG_MIXREADY;
+                    chan.nRampLength = 0;
+                    chan.right_volume = chan.nNewRightVol;
+                    chan.left_volume = chan.nNewLeftVol;
+                    chan.right_ramp = chan.left_ramp = 0;
+                    if (bitset_is_set(chan.flags, vflag_ty::NoteFade) && (!(chan.nFadeOutVol)))
+                    {
+                        chan.length = 0;
+                        chan.active_sample_data.generic = nullptr;
+                    }
                 }
             }
         }
-        pbuffer = MixSoundBuffer;
-        */
-        nchused++;
-        ////////////////////////////////////////////////////
-    SampleLooping:
-        UINT nrampsamples = nsamples;
-        if (pChannel->nRampLength > 0)
-        {
-            if ((LONG)nrampsamples > pChannel->nRampLength) nrampsamples = pChannel->nRampLength;
-        }
-        nSmpCount = GetSampleCount(pChannel, nrampsamples, m_bITBidiMode);
-        //nSmpCount = calc_contiguous_span_in_place_legacy(*pChannel, nrampsamples, m_bITBidiMode);
-
-        if (nSmpCount <= 0) {
-            // Stopping the channel
-            pChannel->active_sample_data.generic = nullptr;
-            pChannel->length = 0;
-            pChannel->sample_position = 0;
-            pChannel->fractional_sample_position = 0;
-            pChannel->nRampLength = 0;
-
-            pChannel->nROfs = pChannel->nLOfs = 0;
-            bitset_remove(pChannel->flags, vflag_ty::ScrubBackwards);
-            continue;
-        }
-        // Should we mix this channel ?
-        UINT naddmix;
-        if (
-            ( (nchmixed >= m_nMaxMixChannels)
-             && (!(deprecated_global_sound_setup_bitmask & SNDMIX_DIRECTTODISK))
-            )
-         || ( (pChannel->nRampLength == 0)
-             && ( (pChannel->left_volume == 0) && (pChannel->right_volume == 0) )
-            )
-           )
-        {
-            /*
-            LONG delta = (pChannel->position_delta * (LONG)nSmpCount) + (LONG)pChannel->fractional_sample_position;
-            pChannel->fractional_sample_position = delta & 0xFFFF;
-            pChannel->sample_position += (delta >> 16);
-            pChannel->nROfs = pChannel->nLOfs = 0;
-            */
-            advance_silently(*pChannel, nSmpCount);
-
-            herp_left += nSmpCount;
-            herp_right += nSmpCount;
-            naddmix = 0;
-        } else
-        // Do mixing
-        {
-            // Choose function for mixing
-            //LPMIXINTERFACE pMixFunc;
-            //XXXih: disabled legacy garbage
-            //pMixFunc = (pChannel->nRampLength) ? pMixFuncTable[nFlags|MIXNDX_RAMP] : pMixFuncTable[nFlags];
-            //pMixFunc = (pChannel->nRampLength) ? pMixFuncTable[nFlags|MIXNDX_RAMP] : pMixFuncTable[nFlags];
-
-            int maxlen = nSmpCount;
-
-            pChannel->nROfs = 0;
-            pChannel->nLOfs = 0;
-
-            //modplug::mixgraph::resample_and_mix(herp_left, herp_right, pChannel, maxlen);
-            modplug::tracker::mix_and_advance(herp_left, herp_right, maxlen, pChannel);
-
-            herp_left += maxlen;
-            herp_right += maxlen;
-
-            naddmix = 1;
-        }
-        nsamples -= nSmpCount;
-        if (pChannel->nRampLength)
-        {
-            pChannel->nRampLength -= nSmpCount;
-            if (pChannel->nRampLength <= 0)
-            {
-                pChannel->nRampLength = 0;
-                pChannel->right_volume = pChannel->nNewRightVol;
-                pChannel->left_volume = pChannel->nNewLeftVol;
-                pChannel->right_ramp = pChannel->left_ramp = 0;
-                if (bitset_is_set(pChannel->flags, vflag_ty::NoteFade) && (!(pChannel->nFadeOutVol)))
-                {
-                    pChannel->length = 0;
-                    pChannel->active_sample_data.generic = nullptr;
-                }
-            }
-        }
-        if (nsamples > 0) goto SampleLooping;
+        nextchannel:
         nchmixed += naddmix;
     }
     return nchused;
@@ -347,14 +289,6 @@ void module_renderer::ProcessPlugins(UINT nCount)
     gbInitPlugins = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//
-// Float <-> Int conversion
-//
-
-
-float module_renderer::m_nMaxSample = 0;
-
 //////////////////////////////////////////////////////////////////////////
 // Noise Shaping (Dither)
 
@@ -405,25 +339,5 @@ noiseloop:
     pop ebp
     mov gDitherA, edi
     mov gDitherB, ebx
-    }
-}
-
-VOID MPPASMCALL X86_MonoFromStereo(int *pMixBuf, UINT nSamples)
-//-------------------------------------------------------------
-{
-    _asm {
-    mov ecx, nSamples
-    mov esi, pMixBuf
-    mov edi, esi
-stloop:
-    mov eax, dword ptr [esi]
-    mov edx, dword ptr [esi+4]
-    add edi, 4
-    add esi, 8
-    add eax, edx
-    sar eax, 1
-    dec ecx
-    mov dword ptr [edi-4], eax
-    jnz stloop
     }
 }

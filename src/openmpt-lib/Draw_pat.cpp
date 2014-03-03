@@ -376,8 +376,6 @@ void CViewPattern::DrawVolumeCommand(int x, int y, const modplug::tracker::modev
 void CViewPattern::OnDraw(CDC *pDC)
 //---------------------------------
 {
-    ghettotimer homie(__FUNCTION__);
-
     CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
     CHAR s[256];
     HGDIOBJ oldpen;

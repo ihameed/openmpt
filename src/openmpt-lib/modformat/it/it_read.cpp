@@ -134,8 +134,10 @@ pitch_env_flags(const uint8_t val) {
 
 template <typename FunTy>
 auto
-read_envelope(context &ctx, FunTy parse) -> envelope_ty<decltype(parse(0))> {
-    envelope_ty<decltype(parse(0))> ret;
+read_envelope(context &ctx, uint32_t offset, FunTy parse)
+    -> envelope_ty<decltype(parse(std::declval<uint8_t>()))>
+{
+    envelope_ty<decltype(parse(std::declval<uint8_t>()))> ret;
     ret.flags              = parse(read_uint8(ctx));
     ret.num_points         = read_uint8(ctx);
     ret.loop_begin         = read_uint8(ctx);
@@ -143,8 +145,9 @@ read_envelope(context &ctx, FunTy parse) -> envelope_ty<decltype(parse(0))> {
     ret.sustain_loop_begin = read_uint8(ctx);
     ret.sustain_loop_end   = read_uint8(ctx);
     for (auto &item : ret.points) {
-        const auto y = clamp(read_uint8(ctx), (uint8_t) 0, (uint8_t) 64);
+        const auto y_ = read_uint8(ctx) + offset;
         const auto x = read_uint16_le(ctx);
+        const auto y = clamp<uint8_t>(y_, 0, 64);
         item = std::make_tuple(x, y);
     }
     read_skip(ctx, 1);
@@ -207,9 +210,9 @@ read_instrument(context &ctx) {
         const auto sample = read_uint8(ctx);
         item = std::make_tuple(note, sample);
     }
-    ret.volume_envelope = read_envelope(ctx, &env_flags);
-    ret.pan_envelope    = read_envelope(ctx, &env_flags);
-    ret.pitch_envelope  = read_envelope(ctx, &pitch_env_flags);
+    ret.volume_envelope = read_envelope(ctx, 0, env_flags);
+    ret.pan_envelope    = read_envelope(ctx, 32, env_flags);
+    ret.pitch_envelope  = read_envelope(ctx, 32, pitch_env_flags);
     read_skip(ctx, 4);
     return ret;
 }

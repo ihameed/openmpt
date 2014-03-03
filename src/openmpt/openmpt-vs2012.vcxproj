@@ -66,7 +66,7 @@
       <SDLCheck>false</SDLCheck>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\..\extlib\agg-2.4\font_win32_tt;..\..\extlib\agg-2.4\include;..\..\extlib\boost_1_54_0;..\..\extlib\jsoncpp-src-0.5.0\include;..\..\extlib\qtwinmigrate\src;..\..\extlib\pa_stable_v19_20111121\include;..\..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\..\extlib\soundtouch;..\..\extlib\unlha;..\..\extlib\unrar;..\..\extlib\unzip;..\..\extlib\vstsdk2.4;..\..\extlib\WDL\include;..\..\extlib\zlib-1.2.5;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);.\;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\..\qtsvg\include\QtSvg;$(QTDIR)\..\qtsvg\include;.\serializers;.\mixgraph;.\audioio;.\tracker;.\legacy_soundlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\extlib\agg-2.4\font_win32_tt;..\..\extlib\agg-2.4\include;..\..\extlib\boost_1_54_0;..\..\extlib\jsoncpp-src-0.5.0\include;..\..\extlib\qtwinmigrate\src;..\..\extlib\pa_stable_v19_20140130\include;..\..\extlib\pa_stable_v19_20140130\bindings\cpp\include;..\..\extlib\soundtouch;..\..\extlib\unlha;..\..\extlib\unrar;..\..\extlib\unzip;..\..\extlib\vstsdk2.4;..\..\extlib\WDL\include;..\..\extlib\zlib-1.2.5;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);.\;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\..\qtsvg\include\QtSvg;$(QTDIR)\..\qtsvg\include;.\serializers;.\mixgraph;.\audioio;.\tracker;.\legacy_soundlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <StringPooling>true</StringPooling>
@@ -94,7 +94,7 @@
       <SDLCheck>false</SDLCheck>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\..\extlib\agg-2.4\font_win32_tt;..\..\extlib\agg-2.4\include;..\..\extlib\boost_1_54_0;..\..\extlib\jsoncpp-src-0.5.0\include;..\..\extlib\qtwinmigrate\src;..\..\extlib\pa_stable_v19_20111121\include;..\..\extlib\pa_stable_v19_20111121\bindings\cpp\include;..\..\extlib\soundtouch;..\..\extlib\unlha;..\..\extlib\unrar;..\..\extlib\unzip;..\..\extlib\vstsdk2.4;..\..\extlib\WDL\include;..\..\extlib\zlib-1.2.5;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);.\;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\..\qtsvg\include\QtSvg;$(QTDIR)\..\qtsvg\include;.\serializers;.\mixgraph;.\audioio;.\tracker;.\legacy_soundlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\extlib\agg-2.4\font_win32_tt;..\..\extlib\agg-2.4\include;..\..\extlib\boost_1_54_0;..\..\extlib\jsoncpp-src-0.5.0\include;..\..\extlib\qtwinmigrate\src;..\..\extlib\pa_stable_v19_20140130\include;..\..\extlib\pa_stable_v19_20140130\bindings\cpp\include;..\..\extlib\soundtouch;..\..\extlib\unlha;..\..\extlib\unrar;..\..\extlib\unzip;..\..\extlib\vstsdk2.4;..\..\extlib\WDL\include;..\..\extlib\zlib-1.2.5;.\GeneratedFiles;.\GeneratedFiles\$(ConfigurationName);.\;$(QTDIR)\include;$(QTDIR)\include\qtmain;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;$(QTDIR)\include\QtWidgets;$(QTDIR)\..\qtsvg\include\QtSvg;$(QTDIR)\..\qtsvg\include;.\serializers;.\mixgraph;.\audioio;.\tracker;.\legacy_soundlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <StringPooling>true</StringPooling>
@@ -121,10 +121,10 @@
     <ProjectReference Include="..\..\extlib\jsoncpp-src-0.5.0\makefiles\vs71\lib_json.vcxproj">
       <Project>{b84f7231-16ce-41d8-8c08-7b523ff4225b}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\extlib\pa_stable_v19_20111121\bindings\cpp\build\vc7_1\static_library.vcxproj">
+    <ProjectReference Include="..\..\extlib\pa_stable_v19_20140130\bindings\cpp\build\vc7_1\static_library.vcxproj">
       <Project>{d18ea0c9-8c65-441d-884c-55eb43a84f2a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\extlib\pa_stable_v19_20111121\build\msvc\portaudio.vcxproj">
+    <ProjectReference Include="..\..\extlib\pa_stable_v19_20140130\build\msvc\portaudio.vcxproj">
       <Project>{0a18a071-125e-442f-aff7-a3f68abecf99}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\extlib\qtwinmigrate\build\qtwinmigrate.vcxproj">

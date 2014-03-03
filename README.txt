@@ -1,5 +1,6 @@
 build dependencies:
  - visual studio 2012 professional+
+ - libsndfile 1.0.25+
  - vst 2.4 sdk (disable by defining NO_VST)
  - asio sdk
  - directx sdk

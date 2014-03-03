@@ -167,40 +167,28 @@ paudio_callback::paudio_callback(CMainFrame &main_frame, paudio_settings_t &sett
     settings(settings)
 { }
 
-int paudio_callback::invoke(const void *input, void *output, unsigned long frames,
-                            const PaStreamCallbackTimeInfo *time_info,
-                            PaStreamCallbackFlags status_flags)
+int
+paudio_callback::invoke(
+    const void *input, void *output, unsigned long frames,
+    const PaStreamCallbackTimeInfo *time_info,
+    PaStreamCallbackFlags status_flags)
 {
 
-    auto ret = 0;
-
-    const unsigned long width = sizeof(int16_t);
-    size_t buf_len = frames * settings.channels * width;
-
-    /*
-    DEBUG_FUNC("thread id = %x, buf_len = %d, frames = %d, width = %d",
-        GetCurrentThreadId(),
-        buf_len,
-        frames,
-        width
-    );
-    */
+    uint32_t ret = 0;
+    /* GetCurrentThreadId() */
 
     if (main_frame.IsPlaying() && main_frame.renderer && !gbStopSent) {
-        //ret = main_frame.renderer->ReadPattern(output, buf_len);
         ret = main_frame.renderer->superduper_read_pattern((int16_t *)output, frames);
         main_frame.DoNotification(ret, settings.buffer_length);
     }
 
     if (ret == 0) {
+        const auto width = sizeof(int16_t);
         if (!gbStopSent) {
             gbStopSent = TRUE;
             main_frame.PostMessage(WM_COMMAND, ID_PLAYER_STOP);
         }
-        auto out = reinterpret_cast<char *>(output);
-        for (unsigned long i = 0; i < buf_len; ++i) {
-            out[i] = 0;
-        }
+        memset(output, 0, frames * settings.channels * width);
     }
 
     return paContinue;

@@ -80,6 +80,8 @@ struct linear {
     }
 };
 
+#define MIRROR_ACCURATELY 1
+
 template <typename Conv, template <class> class Lookup, int chans>
 sample_t __forceinline
 convolve_with_kernel(
@@ -92,6 +94,7 @@ convolve_with_kernel(
 {
     Lookup<Conv> lookup;
     sample_t sample = 0;
+    #if MIRROR_ACCURATELY
     if ((pos < (src.loop_start + 3)) || (pos >= (src.length - 4))) {
         sample += fir_table[0] * (lookup(src, chan + (pos - 3) * chans, buf));
         sample += fir_table[1] * (lookup(src, chan + (pos - 2) * chans, buf));
@@ -102,6 +105,7 @@ convolve_with_kernel(
         sample += fir_table[6] * (lookup(src, chan + (pos + 3) * chans, buf));
         sample += fir_table[7] * (lookup(src, chan + (pos + 4) * chans, buf));
     } else {
+    #endif
         sample += fir_table[0] * (normalize_single<Conv>(buf[chan + (pos - 3) * chans]));
         sample += fir_table[1] * (normalize_single<Conv>(buf[chan + (pos - 2) * chans]));
         sample += fir_table[2] * (normalize_single<Conv>(buf[chan + (pos - 1) * chans]));
@@ -110,7 +114,9 @@ convolve_with_kernel(
         sample += fir_table[5] * (normalize_single<Conv>(buf[chan + (pos + 2) * chans]));
         sample += fir_table[6] * (normalize_single<Conv>(buf[chan + (pos + 3) * chans]));
         sample += fir_table[7] * (normalize_single<Conv>(buf[chan + (pos + 4) * chans]));
+    #if MIRROR_ACCURATELY
     }
+    #endif
     return sample;
 }
 

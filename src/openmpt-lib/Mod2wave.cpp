@@ -468,7 +468,7 @@ void CDoWaveConvert::OnButton1()
     CMainFrame::GetMainFrame()->InitRenderer(m_pSndFile);    //rewbs.VSTTimeInfo
     for (UINT n = 0; ; n++)
     {
-        UINT lRead = m_pSndFile->ReadPattern(buffer, sizeof(buffer));
+        UINT lRead = m_pSndFile->ReadPattern(reinterpret_cast<int16_t *>(buffer), sizeof(buffer) / (sizeof(int16_t) * 2));
 
 /*            if (m_bGivePlugsIdleTime) {
             LARGE_INTEGER startTime, endTime, duration,Freq;
@@ -580,7 +580,7 @@ void CDoWaveConvert::OnButton1()
             if (dwSize > dwCount) dwSize = dwCount;
             fseek(f, dwPos, SEEK_SET);
             if (fread(buffer, 1, dwSize, f) != dwSize) break;
-            module_renderer::Normalize24BitBuffer(buffer, dwSize, lMax, dwBitSize);
+            //module_renderer::Normalize24BitBuffer(buffer, dwSize, lMax, dwBitSize);
             fseek(f, dwOutPos, SEEK_SET);
             datahdr.length += (dwSize/3)*dwBitSize;
             fwrite(buffer, 1, (dwSize/3)*dwBitSize, f);

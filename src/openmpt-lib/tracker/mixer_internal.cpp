@@ -24,6 +24,7 @@ by_resampler(sample_t *l, sample_t *r, size_t n, voice_ty *s) {
     if (bitset_is_set(s->flags, vflag_ty::DisableInterpolation)) {
         return by_chan<Conv, resamplers::zero_order_hold>(l, r, n, s);
     } else {
+        //return by_chan<Conv, resamplers::zero_order_hold>(l, r, n, s);
         //return by_chan<Conv, resamplers::linear>(l, r, n, s);
         return by_chan<Conv, resamplers::windowed_sinc>(l, r, n, s);
     }

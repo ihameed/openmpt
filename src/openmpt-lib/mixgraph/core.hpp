@@ -50,7 +50,7 @@ public:
     ~core();
 
     void pre_process(size_t);
-    void process(int *, size_t, const sample_t, const sample_t);
+    void process(size_t);
 
     id_t add_channel();
     id_t add_vst();

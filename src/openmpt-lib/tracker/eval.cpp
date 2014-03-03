@@ -231,9 +231,8 @@ calc_safe_frames(const fixedpt_t pos_dt, const int32_t frame_count) {
 void
 advance_silently(voice_ty &channel, const int32_t frame_count) {
     const auto delta = channel.position_delta * frame_count +
-        static_cast<int32_t>(channel.fractional_sample_position);
-    channel.fractional_sample_position = static_cast<uint32_t>(delta) & 0xffff;
-    //XXXih: type errors ahoy!
+        channel.fractional_sample_position;
+    channel.fractional_sample_position = delta & 0xffff;
     channel.sample_position += delta >> 16;
     channel.nROfs = 0;
     channel.nLOfs = 0;
@@ -302,7 +301,7 @@ eval_pattern(int16_t * const out, const size_t out_frames, eval_state_ty &state)
 
         state.mixgraph->pre_process(computed_frames);
         //CreateStereoMix(computed_samples);
-        state.mixgraph->process(temp_buffer, computed_frames, FloatToInt, IntToFloat);
+        state.mixgraph->process(computed_frames);
 
         const auto num_samples = computed_frames * 2;
         truncate_copy(outptr, temp_buffer, num_samples);

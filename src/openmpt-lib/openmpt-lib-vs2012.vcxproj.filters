@@ -263,6 +263,9 @@
     <ClInclude Include="tracker\mixer_internal_filter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="legacy_soundlib\old_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gui\qt5\config_dialog.hpp" />

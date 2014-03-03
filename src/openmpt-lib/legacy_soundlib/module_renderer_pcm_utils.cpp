@@ -248,25 +248,3 @@ LONG module_renderer::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT
 }
 
 extern void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
-extern int MixSoundBuffer[];
-
-UINT module_renderer::Normalize24BitBuffer(LPBYTE pbuffer, UINT dwSize, uint32_t lmax24, uint32_t dwByteInc)
-//-----------------------------------------------------------------------------------------------
-{
-    LONG lMax = (lmax24 / 128) + 1;
-    UINT i = 0;
-    for (UINT j=0; j<dwSize; j+=3, i+=dwByteInc)
-    {
-        LONG l = ((((pbuffer[j+2] << 8) + pbuffer[j+1]) << 8) + pbuffer[j]) << 8;
-        l /= lMax;
-        if (dwByteInc > 1)
-        {
-            pbuffer[i] = (uint8_t)(l & 0xFF);
-            pbuffer[i+1] = (uint8_t)(l >> 8);
-        } else
-        {
-            pbuffer[i] = (uint8_t)((l + 0x8000) >> 8);
-        }
-    }
-    return i;
-}

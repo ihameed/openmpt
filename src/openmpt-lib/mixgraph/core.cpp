@@ -103,21 +103,19 @@ bool id_map_del(std::map<id_t, has_id_t> &map, const id_t key) {
 core::core() : _largest_id(1) {
     debug_log("created core");
 
-    master_sink = new modplug::mixgraph::vertex(1, std::string("audio out"));
+    master_sink = new vertex(1, std::string("audio out"));
     master_sink->_input_channels = 2;
     id_map_put(vertices, 1, master_sink);
 
     for (size_t idx = 0; idx < modplug::mixgraph::MAX_PHYSICAL_CHANNELS; ++idx) {
-        char my_nuts[256];
-        sprintf(my_nuts, "channel %d", idx + 1);
+        vertex *vtx = new source_vertex(new_id(),
+            "channel " + std::to_string(idx + 1));
+        vtx->_output_channels = 2;
+        id_map_put(vertices, vtx->id, vtx);
+        channel_vertices[idx] = vtx;
 
-        vertex *jenkmaster = new source_vertex(new_id(), std::string(my_nuts));
-        jenkmaster->_output_channels = 2;
-        id_map_put(vertices, jenkmaster->id, jenkmaster);
-        channel_vertices[idx] = jenkmaster;
-
-        link_vertices(jenkmaster->id, 0, master_sink->id, 0);
-        link_vertices(jenkmaster->id, 1, master_sink->id, 1);
+        link_vertices(vtx->id, 0, master_sink->id, 0);
+        link_vertices(vtx->id, 1, master_sink->id, 1);
     }
 
     channel_bypass = new source_vertex(new_id(), "bypass");
@@ -198,54 +196,38 @@ bool core::remove_vertex(id_t vertex_id) {
     return id_map_del(vertices, vertex_id);
 }
 
-inline void __mix_buffer_in_place(sample_t *mixtarget, const sample_t *source, const size_t num_samples) {
-    for (size_t idx = 0; idx < num_samples; ++idx) {
-        mixtarget[idx] += source[idx];
+void
+mix_buffer_in_place(sample_t *dst, const sample_t *src, const size_t frames) {
+    for (size_t idx = 0; idx < frames; ++idx) {
+        dst[idx] += src[idx];
     }
 }
 
-void __process(vertex *tail, const size_t num_samples) {
-    for (size_t idx = 0, maxsz = tail->_input_arrows.size(); idx < maxsz; ++idx) {
-        arrow *link = tail->_input_arrows[idx];
-        vertex *head = link->head;
-        __process(head, num_samples);
+void
+__process(vertex *dst, const size_t frames) {
+    for (size_t idx = 0, maxsz = dst->_input_arrows.size(); idx < maxsz; ++idx) {
+        arrow *link = dst->_input_arrows[idx];
+        vertex *src = link->head;
+        __process(src, frames);
 
-        sample_t *tail_channel = tail->channels[link->tail_channel];
-        sample_t *head_channel = head->channels[link->head_channel];
-        __mix_buffer_in_place(tail_channel, head_channel, num_samples);
+        sample_t *tail_channel = dst->channels[link->tail_channel];
+        sample_t *head_channel = src->channels[link->head_channel];
+        mix_buffer_in_place(tail_channel, head_channel, frames);
     }
 }
 
-void core::process(int *interleaved_out, const size_t num_samples, const sample_t float_to_int_scale, const sample_t int_to_float_scale) {
-    memset(master_sink->channels[0], 0, sizeof(sample_t) * num_samples);
-    memset(master_sink->channels[1], 0, sizeof(sample_t) * num_samples);
-
-    sample_t *left  = master_sink->channels[0];
-    sample_t *right = master_sink->channels[1];
-
-    //debug_log("pre process master vs child (left %f, right %f), (left %f, right %f)", left[0], right[0], channel_vertices[0]->channels[0][0], channel_vertices[0]->channels[0][1]);
-    __process(master_sink, num_samples);
-    //debug_log("process master vs child (left %f, right %f), (left %f, right %f)", left[0], right[0], channel_vertices[0]->channels[0][0], channel_vertices[0]->channels[0][1]);
-
-    auto *dest = interleaved_out;
-    auto *r = right;
-    auto *l = left;
-    for (size_t i = 0; i < num_samples; ++i) {
-        *interleaved_out = static_cast<int>(*r * float_to_int_scale);
-        ++r;
-        ++interleaved_out;
-
-        *interleaved_out = static_cast<int>(*l * float_to_int_scale);
-        ++l;
-        ++interleaved_out;
-    };
+void
+core::process(const size_t frames) {
+    memset(master_sink->channels[0], 0, sizeof(sample_t) * frames);
+    memset(master_sink->channels[1], 0, sizeof(sample_t) * frames);
+    __process(master_sink, frames);
 }
 
-void core::pre_process(const size_t num_samples) {
+void core::pre_process(const size_t frames) {
     auto clear_buffers = [&] (vertex *node) {
-        memset(node->ghetto_channels, 0, sizeof(int) * num_samples * 2);
-        memset(node->channels[0], 0, sizeof(sample_t) * num_samples);
-        memset(node->channels[1], 0, sizeof(sample_t) * num_samples);
+        memset(node->ghetto_channels, 0, sizeof(int) * frames * 2);
+        memset(node->channels[0], 0, sizeof(sample_t) * frames);
+        memset(node->channels[1], 0, sizeof(sample_t) * frames);
     };
     for_each(channel_vertices, clear_buffers);
     clear_buffers(channel_bypass);

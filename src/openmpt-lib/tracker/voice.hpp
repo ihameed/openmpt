@@ -122,7 +122,9 @@ struct voice_ty {
     int32_t nPeriod, nC5Speed, nPortamentoDest;
 
     modinstrument_t *instrument;
-    modenvstate_t volume_envelope, panning_envelope, pitch_envelope;
+    modenvstate_t volume_envelope;
+    modenvstate_t panning_envelope;
+    modenvstate_t pitch_envelope;
     modsample_t *sample;
 
     uint32_t parent_channel, nVUMeter;
