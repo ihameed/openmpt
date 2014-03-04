@@ -1165,16 +1165,6 @@ BOOL CMainFrame::DoNotification(uint32_t dwSamplesRead, uint32_t dwLatency)
                     }
                 }
             } else
-            if (m_dwNotifyType & (MPTNOTIFY_VUMETERS))
-            {
-                for (UINT k=0; k<MAX_VIRTUAL_CHANNELS; k++)
-                {
-                    modplug::tracker::voice_ty *pChn = &renderer->Chn[k];
-                    UINT vul = pChn->nLeftVU;
-                    UINT vur = pChn->nRightVU;
-                    p->dwPos[k] = (vul << 8) | (vur);
-                }
-            } else
             if (m_dwNotifyType & MPTNOTIFY_MASTERVU)
             {
                 uint32_t lVu = (gnLVuMeter >> 11);
@@ -2023,11 +2013,7 @@ void CMainFrame::OnInitMenu(CMenu* pMenu)
 }
 
 //end rewbs.VSTTimeInfo
-long CMainFrame::GetSampleRate()
-//------------------------------
-{
-    return module_renderer::GetSampleRate();
-}
+long CMainFrame::GetSampleRate() { return 0; }
 
 long CMainFrame::GetTotalSampleCount()
 //------------------------------------

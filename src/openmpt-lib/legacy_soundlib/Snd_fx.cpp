@@ -951,7 +951,6 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
     if (!bPorta)
     {
         pChn->nVUMeter = 0x100;
-        pChn->nLeftVU = pChn->nRightVU = 0xFF;
         bitset_remove(pChn->flags, vflag_ty::Filter);
         bitset_add(pChn->flags, vflag_ty::FastVolRamp);
         // IT Compatibility: Autovibrato reset

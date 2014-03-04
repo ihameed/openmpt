@@ -22,10 +22,6 @@
 
 #include "../tracker/eval.hpp"
 
-#ifdef MODPLUG_TRACKER
-    #define ENABLE_STEREOVU
-#endif
-
 // Volume ramp length, in 1/10 ms
 #define VOLUMERAMPLEN    0        // 1.46ms = 64 samples at 44.1kHz                //rewbs.soundQ exp - was 146
 
@@ -671,9 +667,6 @@ BOOL module_renderer::ReadNote()
         if (current_vchan->muted() || ((vchan_idx >= m_nChannels) && current_vchan->inactive()))
         {
             current_vchan->nVUMeter = 0;
-#ifdef ENABLE_STEREOVU
-            current_vchan->nLeftVU = current_vchan->nRightVU = 0;
-#endif
 
             vchan_idx++;
             current_vchan++;
@@ -1600,10 +1593,6 @@ BOOL module_renderer::ReadNote()
         bitset_remove(current_vchan->flags, vflag_ty::VolumeRamp);
         if ((current_vchan->nRealVolume) || (current_vchan->left_volume) || (current_vchan->right_volume))
             bitset_add(current_vchan->flags, vflag_ty::VolumeRamp);
-#ifdef ENABLE_STEREOVU
-        if (current_vchan->nLeftVU > VUMETER_DECAY) current_vchan->nLeftVU -= VUMETER_DECAY; else current_vchan->nLeftVU = 0;
-        if (current_vchan->nRightVU > VUMETER_DECAY) current_vchan->nRightVU -= VUMETER_DECAY; else current_vchan->nRightVU = 0;
-#endif
         // Check for too big position_delta
         if (((current_vchan->position_delta >> 16) + 1) >= (LONG)(current_vchan->loop_end - current_vchan->loop_start)) {
             bitset_remove(current_vchan->flags, vflag_ty::Loop);
@@ -1614,21 +1603,6 @@ BOOL module_renderer::ReadNote()
             ? current_vchan->sample_data.generic : nullptr;
         #pragma region HaveSampleData
         if (current_vchan->active_sample_data.generic) {
-            #pragma region DoVuMeterUpdate
-            // Update VU-Meter (nRealVolume is 14-bit)
-#ifdef ENABLE_STEREOVU
-            UINT vul = (current_vchan->nRealVolume * current_vchan->nRealPan) >> 14;
-            if (vul > 127) vul = 127;
-            if (current_vchan->nLeftVU > 127) current_vchan->nLeftVU = (uint8_t)vul;
-            vul >>= 1;
-            if (current_vchan->nLeftVU < vul) current_vchan->nLeftVU = (uint8_t)vul;
-            UINT vur = (current_vchan->nRealVolume * (256-current_vchan->nRealPan)) >> 14;
-            if (vur > 127) vur = 127;
-            if (current_vchan->nRightVU > 127) current_vchan->nRightVU = (uint8_t)vur;
-            vur >>= 1;
-            if (current_vchan->nRightVU < vur) current_vchan->nRightVU = (uint8_t)vur;
-#endif
-            #pragma endregion DoVuMeterUpdate
             UINT kChnMasterVol = bitset_is_set(current_vchan->flags, vflag_ty::ExtraLoud) ? 0x100 : nMasterVol;
             // Adjusting volumes
             #pragma region MoreThanTwoOutputChannels
@@ -1818,11 +1792,7 @@ BOOL module_renderer::ReadNote()
         }
         #pragma endregion HaveSampleData
         else {
-#ifdef ENABLE_STEREOVU
-            // Note change but no sample
-            if (current_vchan->nLeftVU > 128) current_vchan->nLeftVU = 0;
-            if (current_vchan->nRightVU > 128) current_vchan->nRightVU = 0;
-#endif // ENABLE_STEREOVU
+
             if (current_vchan->nVUMeter > 0xFF) current_vchan->nVUMeter = 0;
             current_vchan->left_volume = current_vchan->right_volume = 0;
             current_vchan->length = 0;
@@ -2020,44 +1990,3 @@ int module_renderer::GetVolEnvValueFromPosition(int position, modplug::tracker::
 }
 
 #endif
-
-
-VOID module_renderer::ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount)
-//---------------------------------------------------------------------------
-{
-        long delta       = 0;
-        long step        = 0;
-        long ramp_length = 0;
-
-        if (m_nGlobalVolumeDestination != m_nGlobalVolume) { //user has provided new global volume
-            bool rampUp = m_nGlobalVolumeDestination > m_nGlobalVolume;
-            m_nGlobalVolumeDestination = m_nGlobalVolume;
-            ramp_length = m_nSamplesToGlobalVolRampDest = rampUp ? gnVolumeRampInSamples : gnVolumeRampOutSamples;
-        }
-
-        if (m_nSamplesToGlobalVolRampDest > 0) {    // still some ramping left to do.
-            long highResGlobalVolumeDestination = static_cast<long>(m_nGlobalVolumeDestination)<<modplug::mixgraph::VOLUME_RAMP_PRECISION;
-
-            delta = highResGlobalVolumeDestination - m_lHighResRampingGlobalVolume;
-            step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
-
-            //XXXih: divide by zero >:l
-            UINT maxStep = bad_max(50, (10000 / (ramp_length + 1))); //define bad_max step size as some factor of user defined ramping value: the lower the value, the more likely the click.
-            while (abs(step) > maxStep) {                                     //if step is too big (might cause click), extend ramp length.
-                m_nSamplesToGlobalVolRampDest += ramp_length;
-                step = delta / static_cast<long>(m_nSamplesToGlobalVolRampDest);
-            }
-        }
-
-        for (int pos = 0; pos < lTotalSampleCount; pos++) {
-            if (m_nSamplesToGlobalVolRampDest > 0) { //ramping required
-                m_lHighResRampingGlobalVolume += step;
-                SoundBuffer[pos] = _muldiv(SoundBuffer[pos], m_lHighResRampingGlobalVolume, MAX_GLOBAL_VOLUME<<modplug::mixgraph::VOLUME_RAMP_PRECISION);
-                m_nSamplesToGlobalVolRampDest--;
-            } else {
-                SoundBuffer[pos] = _muldiv(SoundBuffer[pos], m_nGlobalVolume, MAX_GLOBAL_VOLUME);
-                m_lHighResRampingGlobalVolume = m_nGlobalVolume<<modplug::mixgraph::VOLUME_RAMP_PRECISION;
-            }
-
-        }
-}

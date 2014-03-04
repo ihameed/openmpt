@@ -776,25 +776,6 @@ void module_renderer::SanitizeMacros()
 }
 
 
-BOOL module_renderer::deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX)
-//----------------------------------------------------------------------------
-{
-    DEBUG_FUNC(
-        "thread id = %x; nRate = %d, nBits = %d, nChannels = %d, bMMX = %d",
-        GetCurrentThreadId(), nRate, nBits, nChannels, bMMX);
-    BOOL bReset = FALSE;
-    uint32_t d = deprecated_global_sound_setup_bitmask & ~SNDMIX_ENABLEMMX;
-    if (bMMX) d |= SNDMIX_ENABLEMMX;
-    if ((deprecated_global_mixing_freq != nRate) || (deprecated_global_bits_per_sample != nBits) || (deprecated_global_channels != nChannels) || (d != deprecated_global_sound_setup_bitmask)) bReset = TRUE;
-    deprecated_global_channels = nChannels;
-    deprecated_global_sound_setup_bitmask = d;
-    deprecated_global_mixing_freq = nRate;
-    deprecated_global_bits_per_sample = nBits;
-    InitPlayer(bReset);
-    return TRUE;
-}
-
-
 BOOL module_renderer::deprecated_SetResamplingMode(UINT nMode)
 //--------------------------------------------
 {

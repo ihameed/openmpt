@@ -3176,7 +3176,7 @@ void CModDoc::OnPatternRestart()
 
         if (pModPlaying != this)
         {
-            pMainFrm->PlayMod(this, followSonghWnd, m_dwNotifyType|MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS); //rewbs.fix2977
+            pMainFrm->PlayMod(this, followSonghWnd, m_dwNotifyType|MPTNOTIFY_POSITION); //rewbs.fix2977
         }
     }
     //SwitchToView();
@@ -3232,7 +3232,7 @@ void CModDoc::OnPatternPlay()
         END_CRITICAL();
 
         if (pModPlaying != this) {
-            pMainFrm->PlayMod(this, followSonghWnd, m_dwNotifyType|MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);  //rewbs.fix2977
+            pMainFrm->PlayMod(this, followSonghWnd, m_dwNotifyType|MPTNOTIFY_POSITION);  //rewbs.fix2977
         }
     }
     //SwitchToView();
@@ -3293,7 +3293,7 @@ void CModDoc::OnPatternPlayNoLoop()
 
         if (pModPlaying != this)
         {
-            pMainFrm->PlayMod(this, followSonghWnd, m_dwNotifyType|MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);  //rewbs.fix2977
+            pMainFrm->PlayMod(this, followSonghWnd, m_dwNotifyType|MPTNOTIFY_POSITION);  //rewbs.fix2977
         }
     }
     //SwitchToView();

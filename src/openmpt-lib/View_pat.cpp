@@ -662,7 +662,7 @@ void CViewPattern::OnSetFocus(CWnd *pOldWnd)
     CModDoc *pModDoc = GetDocument();
     if (pModDoc)
     {
-        pModDoc->SetFollowWnd(m_hWnd, MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);
+        pModDoc->SetFollowWnd(m_hWnd, MPTNOTIFY_POSITION);
         UpdateIndicator();
     }
 }
@@ -1989,7 +1989,7 @@ void CViewPattern::PatternStep(bool autoStep)
         END_CRITICAL();
         if (pMainFrm->GetModPlaying() != pModDoc)
         {
-            pMainFrm->PlayMod(pModDoc, m_hWnd, MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);
+            pMainFrm->PlayMod(pModDoc, m_hWnd, MPTNOTIFY_POSITION);
         }
         if(autoStep)
         {
@@ -2980,8 +2980,8 @@ LRESULT CViewPattern::OnModViewMsg(WPARAM wParam, LPARAM lParam)
             CMainFrame *pMainFrm = CMainFrame::GetMainFrame();
             CModDoc *pModDoc = GetDocument();
             m_dwStatus |= PATSTATUS_FOLLOWSONG;
-            if (pModDoc) pModDoc->SetFollowWnd(m_hWnd, MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);
-            if (pMainFrm) pMainFrm->SetFollowSong(pModDoc, m_hWnd, TRUE, MPTNOTIFY_POSITION|MPTNOTIFY_VUMETERS);
+            if (pModDoc) pModDoc->SetFollowWnd(m_hWnd, MPTNOTIFY_POSITION);
+            if (pMainFrm) pMainFrm->SetFollowSong(pModDoc, m_hWnd, TRUE, MPTNOTIFY_POSITION);
             SetFocus();
         } else
         {

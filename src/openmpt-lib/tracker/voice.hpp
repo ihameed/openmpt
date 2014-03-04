@@ -159,7 +159,6 @@ struct voice_ty {
     uint8_t nRowNote, nRowInstr;
     uint8_t nRowVolCmd, nRowVolume;
     uint8_t nRowCommand, nRowParam;
-    uint8_t nLeftVU, nRightVU;
     uint8_t nActiveMacro, nFilterMode;
     uint8_t nEFxSpeed, nEFxDelay; // memory for Invert Loop (EFx, .MOD only)
 

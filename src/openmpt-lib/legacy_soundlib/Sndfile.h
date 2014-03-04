@@ -279,9 +279,7 @@ public:
 public:
     // Mixer Config
     static BOOL InitPlayer(BOOL bReset=FALSE);
-    static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
     static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
-    static uint32_t GetSampleRate() { return deprecated_global_mixing_freq; }
 
 public:
     BOOL ReadNote();
@@ -387,7 +385,6 @@ public:
 #ifdef MODPLUG_TRACKER
     VOID ProcessMidiOut(UINT nChn, modplug::tracker::voice_ty *pChn);            //rewbs.VSTdelay : added arg.
 #endif
-    VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
 
 public:
     int GetVolEnvValueFromPosition(int position, modplug::tracker::modinstrument_t* pIns) const;

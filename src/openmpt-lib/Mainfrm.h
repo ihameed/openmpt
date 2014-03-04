@@ -350,7 +350,6 @@ enum
 #define MPTNOTIFY_VOLENV            0x00040000
 #define MPTNOTIFY_PANENV            0x00080000
 #define MPTNOTIFY_PITCHENV            0x00100000
-#define MPTNOTIFY_VUMETERS            0x00200000
 #define MPTNOTIFY_MASTERVU            0x00400000
 #define MPTNOTIFY_STOP                    0x00800000
 #define MPTNOTIFY_POSVALID            0x80000000        // dwPos[i] is valid
