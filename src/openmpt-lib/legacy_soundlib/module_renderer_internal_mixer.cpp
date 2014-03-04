@@ -73,23 +73,6 @@ extern uint32_t FineLinearSlideUpTable[16];
 extern uint32_t FineLinearSlideDownTable[16];
 extern signed char ft2VibratoTable[256];    // -64 .. +64
 
-// Log tables for pre-amp
-const UINT PreAmpTable[16] =
-{
-    0x60, 0x60, 0x60, 0x70,    // 0-7
-    0x80, 0x88, 0x90, 0x98,    // 8-15
-    0xA0, 0xA4, 0xA8, 0xAC,    // 16-23
-    0xB0, 0xB4, 0xB8, 0xBC,    // 24-31
-};
-
-const UINT PreAmpAGCTable[16] =
-{
-    0x60, 0x60, 0x60, 0x64,
-    0x68, 0x70, 0x78, 0x80,
-    0x84, 0x88, 0x8C, 0x90,
-    0x92, 0x94, 0x96, 0x98,
-};
-
 typedef CTuning::RATIOTYPE RATIOTYPE;
 
 static const RATIOTYPE TwoToPowerXOver12Table[16] =

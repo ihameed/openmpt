@@ -177,7 +177,6 @@
     <ClCompile Include="AbstractVstEditor.cpp" />
     <ClCompile Include="audioio\paudio.cpp" />
     <ClCompile Include="ChildFrm.cpp" />
-    <ClCompile Include="ColourEdit.cpp" />
     <ClCompile Include="ctrl_gen.cpp" />
     <ClCompile Include="ctrl_pat.cpp" />
     <ClCompile Include="ctrl_seq.cpp" />
@@ -601,7 +600,6 @@
     <ClInclude Include="mixgraph\vst_vertex.hpp" />
     <ClInclude Include="AbstractVstEditor.h" />
     <ClInclude Include="ChildFrm.h" />
-    <ClInclude Include="ColourEdit.h" />
     <ClInclude Include="ctrl_gen.h" />
     <ClInclude Include="ctrl_pat.h" />
     <ClInclude Include="DefaultVstEditor.h" />

@@ -76,7 +76,6 @@
 #define IDS_ERR_DIALOG                  355
 #define IDD_SOUNDBANK_INFO              401
 #define IDD_OPTIONS_GENERAL             402
-#define IDD_MIDIMACRO                   404
 #define IDD_WAVECOMPRESSION             405
 #define IDD_TREEVIEW                    409
 #define IDD_MOD2MIDI                    420
@@ -621,8 +620,6 @@
 #define IDC_STATIC2                     2207
 #define IDC_STATIC1                     2208
 #define IDC_TEXT_PREVIEW                2208
-#define IDC_MACROPLUG                   2209
-#define IDC_MACROPARAM                  2210
 #define IDC_SAMPLE_LENGTH_NEW           2211
 #define IDC_SAMPLE_LENGTH_ORIGINAL      2212
 #define IDC_ROW_LENGTH_NEW2             2213
@@ -648,8 +645,6 @@
 #define IDC_SLIDER_GLOBALVOL            2249
 #define IDC_EDIT_VSTIVOL                2250
 #define IDC_SLIDER_VSTIVOL              2251
-#define IDC_MACROCC                     2252
-#define IDC_GENMACROLABEL               2253
 #define IDC_PATTERN_LOOP                2255
 #define IDC_EDIT_ORDERLIST_MARGINS      2258
 #define IDC_STATICRATIOMAP              2259
