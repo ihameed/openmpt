@@ -948,9 +948,7 @@ void module_renderer::NoteChange(UINT nChn, int note, bool bPorta, bool bResetEn
     bitset_remove(pChn->flags, vflag_ty::ExtraLoud);
     bitset_remove(pChn->flags, vflag_ty::KeyOff);
     // Enable Ramping
-    if (!bPorta)
-    {
-        pChn->nVUMeter = 0x100;
+    if (!bPorta) {
         bitset_remove(pChn->flags, vflag_ty::Filter);
         bitset_add(pChn->flags, vflag_ty::FastVolRamp);
         // IT Compatibility: Autovibrato reset

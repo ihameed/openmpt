@@ -263,9 +263,6 @@
     <ClInclude Include="legacy_soundlib\old_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tracker\eval_commands.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="gui\qt5\config_dialog.hpp" />

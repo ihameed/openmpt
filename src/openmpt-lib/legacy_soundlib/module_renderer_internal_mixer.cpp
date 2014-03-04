@@ -666,8 +666,6 @@ BOOL module_renderer::ReadNote()
         // Check for unused channel
         if (current_vchan->muted() || ((vchan_idx >= m_nChannels) && current_vchan->inactive()))
         {
-            current_vchan->nVUMeter = 0;
-
             vchan_idx++;
             current_vchan++;
             if (vchan_idx >= m_nChannels)
@@ -1792,8 +1790,6 @@ BOOL module_renderer::ReadNote()
         }
         #pragma endregion HaveSampleData
         else {
-
-            if (current_vchan->nVUMeter > 0xFF) current_vchan->nVUMeter = 0;
             current_vchan->left_volume = current_vchan->right_volume = 0;
             current_vchan->length = 0;
         }

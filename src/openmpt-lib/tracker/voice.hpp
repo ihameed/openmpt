@@ -127,7 +127,7 @@ struct voice_ty {
     modenvstate_t pitch_envelope;
     modsample_t *sample;
 
-    uint32_t parent_channel, nVUMeter;
+    uint32_t parent_channel;
     int32_t nGlobalVol, nInsVol;
     int32_t nFineTune, nTranspose;
     int32_t nPortamentoSlide, nAutoVibDepth;
