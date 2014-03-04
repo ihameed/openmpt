@@ -351,7 +351,6 @@
     <ClCompile Include="gui\qt5\song_overview.cpp" />
     <ClCompile Include="legacy_soundlib\Fastmix.cpp" />
     <ClCompile Include="legacy_soundlib\Load_it.cpp" />
-    <ClCompile Include="legacy_soundlib\Message.cpp" />
     <ClCompile Include="legacy_soundlib\misc.cpp" />
     <ClCompile Include="legacy_soundlib\Mmcmp.cpp" />
     <ClCompile Include="legacy_soundlib\modcommand.cpp" />

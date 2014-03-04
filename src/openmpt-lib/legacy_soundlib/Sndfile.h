@@ -44,8 +44,6 @@ struct eval_state_ty;
 
 static const TCHAR gszEmpty[] = TEXT("");
 
-//modplug::tracker::modinstrument_t;
-
 // -----------------------------------------------------------------------------------------
 // MODULAR modplug::tracker::modinstrument_t FIELD ACCESS : body content at the (near) top of Sndfile.cpp !!!
 // -----------------------------------------------------------------------------------------
@@ -259,7 +257,6 @@ public:
 
     void change_audio_settings(const modplug::audioio::paudio_settings_t &);
 
-    //XXXih: old api follows:
 public:
     // Real-time sound functions
     void SuspendPlugins(); //rewbs.VSTCompliance
@@ -285,11 +282,6 @@ public:
     static BOOL deprecated_SetWaveConfig(UINT nRate,UINT nBits,UINT nChannels,BOOL bMMX=FALSE);
     static BOOL deprecated_SetResamplingMode(UINT nMode); // SRCMODE_XXXX
     static uint32_t GetSampleRate() { return deprecated_global_mixing_freq; }
-
-    // Analyzer Functions
-    static UINT WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
-    static UINT WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples);
-    static LONG SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nChannels);
 
 public:
     BOOL ReadNote();
@@ -396,37 +388,6 @@ public:
     VOID ProcessMidiOut(UINT nChn, modplug::tracker::voice_ty *pChn);            //rewbs.VSTdelay : added arg.
 #endif
     VOID ApplyGlobalVolume(int SoundBuffer[], long lTotalSampleCount);
-
-public:
-    // Allocate memory for song message.
-    // [in]  length: text length in characters, without possible trailing null terminator.
-    // [out] returns true on success.
-    bool AllocateMessage(size_t length);
-
-    // Free previously allocated song message memory.
-    void FreeMessage();
-
-protected:
-    // Read song message from a mapped file.
-    // [in]  data: pointer to the data in memory that is going to be read
-    // [in]  length: number of characters that should be read, not including a possible trailing null terminator (it is automatically appended).
-    // [in]  lineEnding: line ending formatting of the text in memory.
-    // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
-    // [out] returns true on success.
-    bool ReadMessage(const uint8_t *data, const size_t length, enmLineEndings lineEnding, void (*pTextConverter)(char &) = nullptr);
-
-    // Read comments with fixed line length from a mapped file.
-    // [in]  data: pointer to the data in memory that is going to be read
-    // [in]  length: number of characters that should be read, not including a possible trailing null terminator (it is automatically appended).
-    // [in]  lineLength: The fixed length of a line.
-    // [in]  lineEndingLength: The padding space between two fixed lines. (there could for example be a null char after every line)
-    // [in]  pTextConverter: Pointer to a callback function which can be used to pre-process the read characters, if necessary (nullptr otherwise).
-    // [out] returns true on success.
-    bool ReadFixedLineLengthMessage(const uint8_t *data, const size_t length, const size_t lineLength, const size_t lineEndingLength, void (*pTextConverter)(char &) = nullptr);
-
-    // Currently unused (and the code doesn't look very nice :)
-    UINT GetSongMessage(LPSTR s, UINT cbsize, UINT linesize=32);
-    UINT GetRawSongMessage(LPSTR s, UINT cbsize, UINT linesize=32);
 
 public:
     int GetVolEnvValueFromPosition(int position, modplug::tracker::modinstrument_t* pIns) const;
@@ -624,11 +585,6 @@ public:    // for Editing
     uint32_t m_dwCreatedWithVersion;
     uint32_t m_dwLastSavedWithVersion;
 
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-    CHAR m_szInstrumentPath[MAX_INSTRUMENTS][_MAX_PATH];
-// -! NEW_FEATURE#0023
-
 public:
     BOOL Create(const uint8_t * lpStream, CModDoc *pModDoc, uint32_t dwMemLength=0);
     BOOL Destroy();
@@ -654,7 +610,6 @@ public:
     UINT GetMaxPosition() const;
     modplug::tracker::chnindex_t GetNumChannels() const { return m_nChannels; }
 
-    IMixPlugin* GetInstrumentPlugin(modplug::tracker::instrumentindex_t instr);
     const CModSpecifications& GetModSpecifications() const {return *m_pModSpecs;}
     static const CModSpecifications& GetModSpecifications(const MODTYPE type);
 
@@ -695,10 +650,7 @@ public:
     bool ReadIT(const uint8_t * const lpStream, const uint32_t dwMemLength);
 
     // Save Functions
-#ifndef MODPLUG_NO_FILESAVE
     UINT WriteSample(FILE *f, modplug::tracker::modsample_t *pSmp, UINT nFlags, UINT nMaxLen=0);
-    bool SaveS3M(LPCSTR lpszFileName, UINT nPacking=0);
-    bool SaveMod(LPCSTR lpszFileName, UINT nPacking=0, const bool bCompatibilityExport = false);
     bool SaveIT(LPCSTR lpszFileName, UINT nPacking=0);
     bool SaveCompatIT(LPCSTR lpszFileName);
     UINT SaveMixPlugins(FILE *f=NULL, BOOL bUpdate=TRUE);
@@ -706,7 +658,6 @@ public:
     void SaveExtendedInstrumentProperties(modplug::tracker::modinstrument_t *instruments[], UINT nInstruments, FILE* f);
     void SaveExtendedSongProperties(FILE* f);
     void LoadExtendedSongProperties(const MODTYPE modtype, const uint8_t * ptr, const uint8_t * const startpos, const size_t seachlimit, bool* pInterpretMptMade = nullptr);
-#endif // MODPLUG_NO_FILESAVE
 
     // Reads extended instrument properties(XM/IT/MPTM).
     // If no errors occur and song extension tag is found, returns pointer to the beginning
@@ -738,16 +689,6 @@ private:
 };
 
 #pragma warning(default : 4324) //structure was padded due to __declspec(align())
-
-
-inline IMixPlugin* module_renderer::GetInstrumentPlugin(modplug::tracker::instrumentindex_t instr)
-//-----------------------------------------------------------------------
-{
-    if(instr > 0 && instr < MAX_INSTRUMENTS && Instruments[instr] && Instruments[instr]->nMixPlug && Instruments[instr]->nMixPlug <= MAX_MIXPLUGINS)
-        return m_MixPlugins[Instruments[instr]->nMixPlug-1].pMixPlugin;
-    else
-        return NULL;
-}
 
 
 #define FADESONGDELAY            100

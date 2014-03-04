@@ -636,7 +636,7 @@ bool module_renderer::ReadIT(const uint8_t * const lpStream, const uint32_t dwMe
         // Generally, IT files should use CR for line endings. However, ChibiTracker uses LF. One could do...
         // if(pifh->cwtv == 0x0214 && pifh->cmwt == 0x0214 && pifh->reserved == LittleEndian(IT_CHBI)) --> Chibi detected.
         // But we'll just use autodetection here:
-        ReadMessage(lpStream + pifh->msgoffset, pifh->msglength, leAutodetect);
+        //ReadMessage(lpStream + pifh->msgoffset, pifh->msglength, leAutodetect);
     }
     // Reading orders
     UINT nordsize = pifh->ordnum;

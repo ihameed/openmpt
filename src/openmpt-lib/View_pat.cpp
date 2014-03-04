@@ -2929,6 +2929,8 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
             if(CMainFrame::m_dwMidiSetup & MIDISETUP_MIDITOPLUG
                 && pMainFrm->GetModPlaying() == pModDoc)
             {
+                //XXXih: comm-revamp
+                /*
                 const UINT instr = GetCurrentInstrument();
                 IMixPlugin* plug = pSndFile->GetInstrumentPlugin(instr);
                 if(plug)
@@ -2939,7 +2941,7 @@ LRESULT CViewPattern::OnMidiMsg(WPARAM dwMidiDataParam, LPARAM)
                     if(dwMidiData != MIDISTATUS_ACTIVESENSING)
                         pMainFrm->ThreadSafeSetModified(pModDoc);
                 }
-
+                */
             }
         break;
     }

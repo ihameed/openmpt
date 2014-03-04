@@ -551,11 +551,6 @@ modplug::tracker::instrumentindex_t CModDoc::InsertInstrument(modplug::tracker::
             if (pDup)
             {
                     *pIns = *pDup;
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-                    strcpy(m_SndFile.m_szInstrumentPath[newins - 1], m_SndFile.m_szInstrumentPath[nDuplicate - 1]);
-                    m_bsInstrumentModified.reset(newins - 1);
-// -! NEW_FEATURE#0023
             } else
             {
                     InitializeInstrument(pIns, newsmp);

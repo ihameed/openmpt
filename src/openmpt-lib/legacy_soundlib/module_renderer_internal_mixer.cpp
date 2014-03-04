@@ -58,7 +58,6 @@ bool gbInitTables = 0;
 
 typedef size_t (MPPASMCALL * LPCONVERTPROC)(void *, int *, size_t);
 
-extern VOID MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);
 extern VOID SndMixInitializeTables();
 
 extern short int ModSinusTable[64];

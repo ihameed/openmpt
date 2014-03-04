@@ -41,17 +41,6 @@ bool module_renderer::DestroyInstrument(modplug::tracker::instrumentindex_t nIns
     }
 // -! BEHAVIOUR_CHANGE#0003
 
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-    m_szInstrumentPath[nInstr - 1][0] = '\0';
-#ifdef MODPLUG_TRACKER
-    if(GetpModDoc())
-    {
-        GetpModDoc()->m_bsInstrumentModified.reset(nInstr - 1);
-    }
-#endif // MODPLUG_TRACKER
-// -! NEW_FEATURE#0023
-
     modplug::tracker::modinstrument_t *pIns = Instruments[nInstr];
     Instruments[nInstr] = nullptr;
     for(modplug::tracker::chnindex_t i = 0; i < MAX_VIRTUAL_CHANNELS; i++)

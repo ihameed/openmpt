@@ -135,72 +135,6 @@ void X86_Cvt8M_8S(LPBYTE lpSrc, signed char *lpDest, UINT nSamples, uint32_t dwI
 }
 
 
-
-UINT module_renderer::WaveConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
-//----------------------------------------------------------------------------
-{
-    uint32_t dwInc;
-    if ((!lpSrc) || (!lpDest) || (!nSamples)) return 0;
-    dwInc = _muldiv(deprecated_global_mixing_freq, 0x10000, 22050);
-    if (deprecated_global_channels >= 2)
-    {
-        if (deprecated_global_bits_per_sample == 16)
-        {
-            // Stereo, 16-bit
-            X86_Cvt16S_8M(lpSrc, lpDest, nSamples, dwInc);
-        } else
-        {
-            // Stereo, 8-bit
-            X86_Cvt8S_8M(lpSrc, lpDest, nSamples, dwInc);
-        }
-    } else
-    {
-        if (deprecated_global_bits_per_sample == 16)
-        {
-            // Mono, 16-bit
-            X86_Cvt16M_8M(lpSrc, lpDest, nSamples, dwInc);
-        } else
-        {
-            // Mono, 8-bit
-            X86_Cvt8M_8M(lpSrc, lpDest, nSamples, dwInc);
-        }
-    }
-    return nSamples;
-}
-
-
-UINT module_renderer::WaveStereoConvert(LPBYTE lpSrc, signed char *lpDest, UINT nSamples)
-//----------------------------------------------------------------------------------
-{
-    uint32_t dwInc;
-    if ((!lpSrc) || (!lpDest) || (!nSamples)) return 0;
-    dwInc = _muldiv(deprecated_global_mixing_freq, 0x10000, 22050);
-    if (deprecated_global_channels >= 2)
-    {
-        if (deprecated_global_bits_per_sample == 16)
-        {
-            // Stereo, 16-bit
-            X86_Cvt16S_8S(lpSrc, lpDest, nSamples, dwInc);
-        } else
-        {
-            // Stereo, 8-bit
-            X86_Cvt8S_8S(lpSrc, lpDest, nSamples, dwInc);
-        }
-    } else
-    {
-        if (deprecated_global_bits_per_sample == 16)
-        {
-            // Mono, 16-bit
-            X86_Cvt16M_8S(lpSrc, lpDest, nSamples, dwInc);
-        } else
-        {
-            // Mono, 8-bit
-            X86_Cvt8M_8S(lpSrc, lpDest, nSamples, dwInc);
-        }
-    }
-    return nSamples;
-}
-
 ///////////////////////////////////////////////////////////////////////
 // Spectrum Analyzer
 
@@ -224,27 +158,3 @@ void X86_Spectrum(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nSmpSize,
     lpSinCos[0] = esin;
     lpSinCos[1] = ecos;
 }
-
-
-
-LONG module_renderer::SpectrumAnalyzer(signed char *pBuffer, UINT nSamples, UINT nInc, UINT nChannels)
-//-----------------------------------------------------------------------------------------------
-{
-    LONG sincos[2];
-    UINT n = nSamples & (~3);
-    if ((pBuffer) && (n))
-    {
-        sincos[0] = sincos[1] = 0;
-        X86_Spectrum(pBuffer, n, nInc, nChannels, sincos);
-        LONG esin = sincos[0], ecos = sincos[1];
-        if (ecos < 0) ecos = -ecos;
-        if (esin < 0) esin = -esin;
-        int bug = 64*8 + (64*64 / (nInc+5));
-        if (ecos > bug) ecos -= bug; else ecos = 0;
-        if (esin > bug) esin -= bug; else esin = 0;
-        return ((ecos + esin) << 2) / nSamples;
-    }
-    return 0;
-}
-
-extern void MPPASMCALL X86_Dither(int *pBuffer, UINT nSamples, UINT nBits);

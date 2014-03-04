@@ -360,15 +360,6 @@ module_renderer::module_renderer()
     m_dwCreatedWithVersion=0;
     MemsetZero(m_bChannelMuteTogglePending);
 
-
-// -> CODE#0023
-// -> DESC="IT project files (.itp)"
-    for(UINT i = 0; i < MAX_INSTRUMENTS; i++)
-    {
-        MemsetZero(m_szInstrumentPath[i]);
-    }
-// -! NEW_FEATURE#0023
-
     MemsetZero(Chn);
     MemsetZero(ChnMix);
     MemsetZero(Samples);
@@ -713,8 +704,6 @@ BOOL module_renderer::Destroy()
 {
     size_t i;
     Patterns.DestroyPatterns();
-
-    FreeMessage();
 
     for (i=1; i<MAX_SAMPLES; i++)
     {
